@@ -3,18 +3,28 @@ package dbc.opensearch.components.datadock;
 import dbc.opensearch.components.pti.FedoraHandler;
 import dbc.opensearch.components.processqueue.*;
 
-import java.util.concurrent.*;
-import java.sql.*;
+import java.sql.Connection;
+
+import java.sql.Statement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import java.util.concurrent.Callable;
+
 import oracle.jdbc.driver.OracleDriver;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.commons.configuration.*;
-import org.apache.commons.lang.*;
+
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+
 import java.net.URL;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.NoSuchElementException;
+
 
 /**
  * \brief The public interface for the OpenSearch DataDockService
@@ -100,7 +110,7 @@ public class DataDock implements Callable<Long>{
       * check this, but then an exceprion should have been thrown 
       */
 
-    public Long call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException{
+    public Long call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
         long processEstimate = 0l;
         
         try{
@@ -132,8 +142,8 @@ public class DataDock implements Callable<Long>{
          catch(IOException  ioe) {
              throw new IOException( ioe.getMessage() );
          }         
-         catch( java.lang.Exception jle ) {
-             throw new IOException( jle.getMessage() );
+         catch( Exception e ) {
+             throw new Exception( e.getMessage() );
          }
         
 
@@ -201,7 +211,7 @@ public class DataDock implements Callable<Long>{
          
          
     }
-         public String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, Exception{
+    public String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, Exception {
         String fedoraHandle = "";
         /**
          * \todo find out where and how we get the pid
@@ -246,9 +256,13 @@ public class DataDock implements Callable<Long>{
             throw new XMLStreamException(xmle.getMessage());
         }catch( IOException ioe ){
             throw new IOException(ioe.getMessage());
-        }catch( Exception e ){
-            throw new Exception( e.getMessage() );
         }
+        catch( fedora.server.errors.ServerException se ){
+            throw new Exception( se.getMessage() ) ;
+        }
+            //        }catch( Exception e ){
+            // throw new Exception( e.getMessage() );
+            
         // 30: deposit objectInfo as dissaminator to data
         // 40: deposit metadata as dissamminator to data
         // 50: convert handle to data from fedora to String
