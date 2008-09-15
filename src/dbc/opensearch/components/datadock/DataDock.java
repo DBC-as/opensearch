@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
  * Fedora repository and indexed by Lucene. When submitted, the data
  * is validated against a dictionary of possible handlers using the
  * supplied metadata and object-information. All methods throw
- * exceptions on errors.  
+ * exceptions on errors.
  *
  * \todo a schema for errors returned should be defined
  *
@@ -56,32 +56,32 @@ public class DataDock implements Callable<Long>{
     private static volatile FedoraHandler fh;
     /**
      * The following 4 privates are for use for the databaseoperation
-     * for the estimate of the processtime. The "s" in the variable name 
+     * for the estimate of the processtime. The "s" in the variable name
      * means its for the operations on statisticDB
      */
     private static String sDriver = "";
     private static String sUrl = "";
     private static String sUserID = "";
     private static String sPasswd = "";
-    
+
     /**
      * Log
      */
     private static final Logger log = Logger.getRootLogger();
 
     /**
-     * DataDock is initialized with a CargoContainer and a configuration file for the 
+     * DataDock is initialized with a CargoContainer and a configuration file for the
      * database access. The same config file is used for all the needed connections
      */
     //public DataDock( CargoContainer cargo, String pid ){
 
     public DataDock( CargoContainer cargo ) throws ConfigurationException{
-         
-        log.debug("DataDock Constructor"); 
-        cc = cargo; 
 
-        // read the config file 
-        log.debug( "Obtain config paramaters");                
+        log.debug("DataDock Constructor");
+        cc = cargo;
+
+        // read the config file
+        log.debug( "Obtain config paramaters");
         URL cfgURL = getClass().getResource("/config.xml");
         config = null;
         try{
@@ -96,58 +96,58 @@ public class DataDock implements Callable<Long>{
         sUrl = config.getString("database.url");
         sUserID = config.getString("database.userID");
         sPasswd = config.getString("database.passwd");
-        
+
         log.debug( "sDriver: " +sDriver );
         log.debug( "sUrl:    " +sUrl );
         log.debug( "sUserID: " +sUserID );
-        
+
     }
-     /**
-      * call estimates processtime, stores the data and queues 
-      * the handle. 
-      * @return the processtime estimate.
-      * If the return value == 0l, no estimate is made, caller must 
-      * check this, but then an exceprion should have been thrown 
-      */
+    /**
+     * call estimates processtime, stores the data and queues
+     * the handle.
+     * @return the processtime estimate.
+     * If the return value == 0l, no estimate is made, caller must
+     * check this, but then an exceprion should have been thrown
+     */
 
     public Long call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
         long processEstimate = 0l;
-        
+
         try{
-        // 10: Estimate
-            processEstimate = estimate(cc.getMimeType(), cc.getStreamLength()); 
-        // 20: Store data in Fedora
-        // 30: queue FedoraHandle
+            // 10: Estimate
+            processEstimate = estimate(cc.getMimeType(), cc.getStreamLength());
+            // 20: Store data in Fedora
+            // 30: queue FedoraHandle
             queueFedoraHandle(fedoraStoreData());
         }
-        
+
         catch(ClassNotFoundException cne){
             throw new ClassNotFoundException(cne.getMessage());
         }
         catch(ConfigurationException ce) {
-             throw new ConfigurationException( ce.getMessage() );
-         }         
+            throw new ConfigurationException( ce.getMessage() );
+        }
         catch(SQLException sqe) {
-             throw new SQLException( sqe.getMessage() );
-         }         
-         catch(NoSuchElementException nee) {
-             throw new NoSuchElementException( nee.getMessage() );
-         }
-         catch(RemoteException re) {
-             throw new RemoteException( re.getMessage() );
-         }        
+            throw new SQLException( sqe.getMessage() );
+        }
+        catch(NoSuchElementException nee) {
+            throw new NoSuchElementException( nee.getMessage() );
+        }
+        catch(RemoteException re) {
+            throw new RemoteException( re.getMessage() );
+        }
         catch(XMLStreamException xe) {
-             throw new XMLStreamException( xe.getMessage() );
-         }         
-         catch(IOException  ioe) {
-             throw new IOException( ioe.getMessage() );
-         }         
-         catch( Exception e ) {
-             throw new Exception( e.getMessage() );
-         }
-        
+            throw new XMLStreamException( xe.getMessage() );
+        }
+        catch(IOException  ioe) {
+            throw new IOException( ioe.getMessage() );
+        }
+        catch( Exception e ) {
+            throw new Exception( e.getMessage() );
+        }
 
-        // 40: Return estimate 
+
+        // 40: Return estimate
         return processEstimate;
     }
 
@@ -157,67 +157,67 @@ public class DataDock implements Callable<Long>{
         long average_time = 0l;
         ResultSet rs = null;
 
-         // 20: open database connection
-         log.debug( "Establishing connection to statisticDB" );
-         Connection con = establishConnection();
+        // 20: open database connection
+        log.debug( "Establishing connection to statisticDB" );
+        Connection con = establishConnection();
 
-         // 25: create statement
-         Statement stmt = null;
+        // 25: create statement
+        Statement stmt = null;
 
-         String sqlQuery = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType );
+        String sqlQuery = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType );
 
-         try{
-             stmt = con.createStatement();
-         }
-         catch(SQLException sqe) {
-             log.fatal( "SQLException: " + sqe.getMessage() );
-             throw new SQLException( sqe.getMessage() );
-         }
-         
-         // 30: query database:
-         //     SELECT average_time FROM statisticDB WHERE mimetype = mimeType;
-         // We know we get only one row from the query
-         /** \todo: ...but we should still check that we actually get _exactly_ one row */
-         try{
-             rs = stmt.executeQuery ( sqlQuery );
-             log.debug( "statisticDB queried" );         
-         }         
-         catch(SQLException sqe) {
-             log.fatal( "SQLException: " + sqe.getMessage() );
-             throw new SQLException( sqe.getMessage() );
-         }
-         
-             // 35: compute this.average_time from length, processtime and dataamount 
-             /* The statisticDB must garantie that mimetypes are unique, the pti must make a insert stmt 
-                like update statisticDB processtime = processtime + newtime, dataamount = dataamount + newdata 
-                WHERE mimitype = mimitype.
-                The registration of new handlers must manage the mimetype uniqueness.*/
-             /** \todo: Do we need a language in connection with the mimetype, 
-                 since different languages have different handlers? yes, make later*/
-       
-         if( rs != null ){
-             /** \todo: what is the content of average_time, if there are more than one row? */
-             while(rs.next()){
-                 average_time = ( (rs.getInt("processtime") / rs.getInt("dataamount") ) * length);
-             }
-         }
+        try{
+            stmt = con.createStatement();
+        }
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
 
-         else{ // No matching mimetype found
-             throw new NoSuchElementException("We didnt get anything from the database, the mimetype is unknown.");
-         
-         }
-         // 30: return the estimate
-             return average_time;
-         
-         
+        // 30: query database:
+        //     SELECT average_time FROM statisticDB WHERE mimetype = mimeType;
+        // We know we get only one row from the query
+        /** \todo: ...but we should still check that we actually get _exactly_ one row */
+        try{
+            rs = stmt.executeQuery ( sqlQuery );
+            log.debug( "statisticDB queried" );
+        }
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        // 35: compute this.average_time from length, processtime and dataamount
+        /* The statisticDB must garantie that mimetypes are unique, the pti must make a insert stmt
+           like update statisticDB processtime = processtime + newtime, dataamount = dataamount + newdata
+           WHERE mimitype = mimitype.
+           The registration of new handlers must manage the mimetype uniqueness.*/
+        /** \todo: Do we need a language in connection with the mimetype,
+            since different languages have different handlers? yes, make later*/
+
+        if( rs != null ){
+            /** \todo: what is the content of average_time, if there are more than one row? */
+            while(rs.next()){
+                average_time = ( (rs.getInt("processtime") / rs.getInt("dataamount") ) * length);
+            }
+        }
+
+        else{ // No matching mimetype found
+            throw new NoSuchElementException("We didnt get anything from the database, the mimetype is unknown.");
+
+        }
+        // 30: return the estimate
+        return average_time;
+
+
     }
     public String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, Exception {
         String fedoraHandle = "";
         /**
          * \todo find out where and how we get the pid
-         * its format is "namespace:identifier" fx "faktalink:2"  
-         * If we use the submitter as namespace we still need a way 
-         * to be sure the identifier is unique      
+         * its format is "namespace:identifier" fx "faktalink:2"
+         * If we use the submitter as namespace we still need a way
+         * to be sure the identifier is unique
          */
         String usePid = this.cc.getSubmitter();
         /**
@@ -225,8 +225,8 @@ public class DataDock implements Callable<Long>{
          */
         String itemId = this.cc.getMimeType();
         //String label = "";
-        
-       // 10: open connection to fedora base
+
+        // 10: open connection to fedora base
         if( this.fh == null ){
             try{
                 this.fh = new FedoraHandler();
@@ -238,7 +238,7 @@ public class DataDock implements Callable<Long>{
         }else{
             log.info( String.format( "A FedoraHandler is already initialized, using it" ) );
         }
-        
+
         // 20: submit data
         try{
             // The next 2 lines of code waits for the getNextPid method from fh
@@ -260,26 +260,26 @@ public class DataDock implements Callable<Long>{
         catch( fedora.server.errors.ServerException se ){
             throw new Exception( se.getMessage() ) ;
         }
-            //        }catch( Exception e ){
-            // throw new Exception( e.getMessage() );
-            
+        //        }catch( Exception e ){
+        // throw new Exception( e.getMessage() );
+
         // 30: deposit objectInfo as dissaminator to data
         // 40: deposit metadata as dissamminator to data
         // 50: convert handle to data from fedora to String
         // 60: return fedoraHandle
-        
+
         return fedoraHandle;
     }
 
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     public void queueFedoraHandle( String fedoraHandle ) throws ClassNotFoundException, ConfigurationException, SQLException {
         /**
-         * the Enqueue class queues a fedoraHandle on the processQueue 
-         * to take the parameteres from the config file          
+         * the Enqueue class queues a fedoraHandle on the processQueue
+         * to take the parameteres from the config file
          */
         // 10: call Enqueue
         try{
-        enq = new Enqueue(fedoraHandle);
+            enq = new Enqueue(fedoraHandle);
         }
         catch(ClassNotFoundException cne){
             throw new ClassNotFoundException(cne.getMessage());
@@ -295,9 +295,9 @@ public class DataDock implements Callable<Long>{
 
     /**
      * Creates a connection to the statisticDB
-     * code stolen from Enqueue.java 
+     * code stolen from Enqueue.java
      */
- private static Connection establishConnection() {
+    private static Connection establishConnection() {
 
         Connection con = null;
 
