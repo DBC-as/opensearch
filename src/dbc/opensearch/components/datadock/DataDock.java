@@ -223,6 +223,7 @@ public class DataDock implements Callable<Long>{
         /**
          * \todo find out where and how we get the itemId
          */
+        // ?????
         String itemId = this.cc.getMimeType();
         //String label = "";
 

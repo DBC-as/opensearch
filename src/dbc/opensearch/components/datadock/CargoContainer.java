@@ -50,7 +50,7 @@ public class CargoContainer {
      * @params submitter: the submitter of the data, for authentication purposes
      * @throws java.io.IOException if the stream is corrupted
      */
-    public CargoContainer( InputStream data, String mime, String lang, String submitter ) throws IOException{
+    public CargoContainer( InputStream data, String mime, String lang, String submitter ) throws IOException, IllegalArgumentException{
         // 05: get the stream into the object
         if( data.available() > 0 ){
             this.data = new BufferedInputStream( data );
@@ -60,7 +60,7 @@ public class CargoContainer {
         
         // 07: timestamp the container
         date = System.currentTimeMillis();
-        // 10: check mimetype
+
         /** \todo: How do we specify the allowed mimetypes? enums? config? 
          *
          * Seeing that we need a xmlcontentconverter and a
@@ -69,6 +69,18 @@ public class CargoContainer {
          * anyway. This lends itself to specifying the mimetypes and
          * languages through enums.
          */
+        // 10: check mimetype
+        CargoMimeType CMT = null;
+        log.debug( "checking mimetype" );
+        for (CargoMimeType cmt : CargoMimeType.values() ){
+            if( mime == cmt.getMimeType() ){
+                CMT = cmt;                
+            }
+        }
+        if( CMT == null ){
+            throw new IllegalArgumentException( String.format( "no mimetype goes by the name of %s", mime ) ); 
+        }
+
         // 30: check language
         /** \todo: How to specify allowed languages? enums? db? */
         // 35: check submitter (credentials checking)
@@ -100,9 +112,7 @@ public class CargoContainer {
         }
 
         // 50: construct CargoObjectInfo object
-
-        coi = new CargoObjectInfo( mime, lang, submitter, contentLength );
-
+        coi = new CargoObjectInfo( CMT, lang, submitter, contentLength );
     }
     
     /**
@@ -118,14 +128,20 @@ public class CargoContainer {
 
     /**
      * @returns true if mimetype is allowed in OpenSearch, false otherwise
-     */
-    public boolean checkMimeType( String mimetype ) throws IllegalArgumentException{
-        if( mimetype != "text/xml" ) {
-            throw new IllegalArgumentException( String.format( "no mimetype goes by the name of %s", mimetype ) );
+     */        
+    public boolean checkMimeType( String mimetype ){
+        CargoMimeType CMT = null;
+        log.debug( "checking mimetype" );
+        for (CargoMimeType cmt : CargoMimeType.values() ){
+            if( mimetype == cmt.getMimeType() ){
+                CMT = cmt;                
+            }
         }
-        else {
-            return true;
+        if( CMT == null ){
+            return false;
         }
+        return true;
+        
     }
     /**
      *@returns true if language is alowed in Opensearch, otherwise false
@@ -217,8 +233,8 @@ public class CargoContainer {
     /**
      * @return the mimetype of the data as a string
      */    
-    public String getMimeType(){
-        return this.coi.getMimeType();
+    public String getMimeType(){        
+        return this.coi.getMimeType().getMimeType();
     }
     /**
      *@return the submitter as a string

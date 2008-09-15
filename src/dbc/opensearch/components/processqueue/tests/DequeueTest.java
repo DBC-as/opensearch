@@ -17,13 +17,11 @@ public class DequeueTest {
 
     Dequeue dequeue;
 
-
     @Before public void setUp(){
         try{
             dequeue = new Dequeue();
         }
         catch (Exception e){}
-
 
     }
     /**

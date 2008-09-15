@@ -5,7 +5,7 @@ import java.util.Date;
  */
 public class CargoObjectInfo {
 
-    private String mimeType;/** \see CargoMimeType */
+    private CargoMimeType mimeType;/** \see CargoMimeType */
 
     /** \todo: the language of the submitted data determines which analyzer
      * should be used in the indexing process, therefore we want full
@@ -30,7 +30,7 @@ public class CargoObjectInfo {
      * for the metadata associated with a given CargoContainers data
      * \todo: should this constructor throw? And on what occasions?
      */
-    public CargoObjectInfo ( String mimeType, String lang, String submitter, int contentLength ) {
+    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, int contentLength ) {
 
         this.mimeType = mimeType;
 
@@ -51,7 +51,7 @@ public class CargoObjectInfo {
     long getTimestamp(){
         return this.timestamp.getTime();
     }
-    String getMimeType(){
+    CargoMimeType getMimeType(){
         return this.mimeType;
     }
     /**

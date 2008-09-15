@@ -79,7 +79,7 @@ public class DataDockTest {
         // 17: create 
         // 20: construct the CargoContainer
         ByteArrayInputStream data = new ByteArrayInputStream(new byte[500]);
-        String mime = "testtype";
+        String mime = "text/xml";
         String lang = "test";
         String submitter = "testSubmitter";
 
@@ -135,7 +135,7 @@ public class DataDockTest {
         System.out.print(config.getString("database.passwd") + "\n");
 
         try{
-            long testEstimate =  dd.estimate( "testtype", 2l );
+            long testEstimate =  dd.estimate( "text/xml", 2l );
             if( testEstimate != 2l){
                 System.out.print("DataDock.Estimate didnt estimate correctly \n");
                 System.out.print("Printing the estimate: "+ testEstimate +" \n");
