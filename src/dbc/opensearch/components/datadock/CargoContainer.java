@@ -147,7 +147,7 @@ public class CargoContainer {
     }
 
     /**
-     * @return the data of the container-object as an InputStream
+     * @return the data of the container-object as an BufferedInputStream
      */
     public BufferedInputStream getData(){
         return this.data;

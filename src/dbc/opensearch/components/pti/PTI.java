@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -53,7 +54,8 @@ public class PTI {
 
     private static volatile FedoraHandler fh;
 
-    private boolean isIndexed;
+    // not needed:
+    //    private boolean isIndexed;
 
     /**
      * An org.compass.core.Compass object is constructed only once,
@@ -72,7 +74,10 @@ public class PTI {
      */
 
     /**
-     * Constructor whose primary responsibility it is to configure the Compass instance. First time this constructor is called, a Compass object is initialized from the xml-configuration. All subsequent calls to this constructor 
+     * Constructor whose primary responsibility it is to configure the
+     * Compass instance. First time this constructor is called, a
+     * Compass object is initialized from the xml-configuration. All
+     * subsequent calls to this constructor
      */
     public PTI( ) throws ConfigurationException {
         if( PTI.theCompass == null ) {
@@ -95,12 +100,9 @@ public class PTI {
             
         }
         else {
-            //compass object is already initialized, please pass the street - nothing to see here...
             log.info( String.format( "A Compass object is already initialized, using it" ) );
         }
         if( PTI.fh == null ){
-
-
             try{
                 fh = new FedoraHandler();
             }
@@ -108,7 +110,6 @@ public class PTI {
                 log.fatal( "ConfigurationException: " + cex.getMessage() );
                 throw new ConfigurationException( cex.getMessage() );
             }
-
         }else{
             log.info( String.format( "A FedoraHandler is already initialized, using it" ) );
         }
@@ -124,35 +125,43 @@ public class PTI {
         // prePTI: String fedoraHandle = queue.pop(  ); ... and remember to commit on the queue
 
         // 20: CargoContainer cc = PTI.getDataFromRepository( fedoraHandle );
-        CargoContainer cargo = this.fh.getDatastream( fedoraHandle );
+        CargoContainer cargo = fh.getDatastream( fedoraHandle );
 
         // 25: retrieve the xml from the cargo:
-        Document doc = convertCargoToXml( cargo );
+        //Document doc = convertCargoToXml( cargo );
 
         // 30: get a compasssession:
-        CompassSession sess = this.getSession();
+        CompassSession session = getSession();
 
         // 35: start a transaction:
-        CompassTransaction transact = sess.beginTransaction();
-        
-        // 37: construct Compass Xml object:
-        // AliasedXmlObject xo = new NodeAliasedXmlObject( "faktalink", doc.getRootElement() );
+        CompassTransaction transaction = session.beginTransaction();
+
+
+        Document doc = null;
+        SAXReader saxReader = new SAXReader( false );
+
+        try{
+            doc = saxReader.read( cargo.getData() );
+        }catch( DocumentException de){
+            System.out.println(String.format( "DocumentException=%s",de.getMessage() ) );
+        }
+
+        AliasedXmlObject xmlObject = 
+            new Dom4jAliasedXmlObject( "faktalink", doc.getRootElement() ); 
 
         // 40: index the object and end iff we succeed: 
-        // try{
-        //     sess.save( xo ); 
-        //     this.isIndexed = true;
-        // }catch( CompassException ce) {
-        //     // 50: We catch all possible exceptions here and log.fatal them
-        //     log.fatal( 
-        //               String.format( "Could not index CargoContainer with fedoraHandle %s:\n%s",
-        //                              fedoraHandle, 
-        //                              ce.getMessage()
-        //                              )
-        //                );
-        //     throw new CompassException( String.format( "Could not index CargoContainer with fedoraHandle %s",
-        //                                                fedoraHandle ), ce);
-        // }
+        try{
+            indexDocument( session, transaction, xmlObject );
+        }catch( CompassException ce) {
+            // 50: We catch all possible exceptions here and log.fatal them
+            log.fatal( 
+                      String.format( "Could not index CargoContainer with fedoraHandle %s:\n%s",
+                                     fedoraHandle, 
+                                     ce.getMessage()
+                                     )
+                       );
+            throw new CompassException( String.format( "Could not index CargoContainer with fedoraHandle %s", fedoraHandle ), ce);
+        }
     }
 
     /**
@@ -191,6 +200,11 @@ public class PTI {
         return cargo;
     }
 
+    /**
+     * Extracts the datastream from the CargoContainer and converts it
+     * to a org.dom4j.Document
+     * @returns The contents of the CargoContainer as a Document
+     */
     private Document convertCargoToXml( CargoContainer cargo ) throws DocumentException, IOException{
         
         /** \todo: encoding should be determined by config/object-fields */
@@ -198,8 +212,25 @@ public class PTI {
             .parseText( new String( cargo.getDataBytes(), "ISO-8859-1") );
     }
 
-    private void indexDocument( Document cargoXML ){
+    private void indexDocument( CompassSession session, 
+                                CompassTransaction trans, 
+                                AliasedXmlObject cargoXML )throws CompassException {
+        if( !session.isClosed() ){
+            trans = session.beginTransaction();
+        }else{
+            log.fatal( String.format( "Compass session closed. The object was not indexed and any indexes currently in orbit was not saved." ) );
+            throw new CompassException( "Session unexpectedly closed, cannot initiate transaction on the index" );
+        }
+        session.save( cargoXML );
         
+        if( !session.isClosed() ){
+            trans.commit();
+            session.close();
+        }else{
+            log.fatal( String.format( "Compass session closed. The object was indexed but never saved" ) );
+            throw new CompassException( "Session closed unexpectedly, object was indexed, but not saved" );
+        }
+
     }
 
     /**
