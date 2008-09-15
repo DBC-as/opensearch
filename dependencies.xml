@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- define component/project dependencies in this file -->
+<project name="dependencies" default="depend.all">
+    <dirname property="dependencies.basedir" file="${ant.file.dependencies}"/>
+
+    <!-- ================================================================== -->
+    <target name="depend.all" 
+            depends="depend.opensearch">
+    </target>
+
+    <!-- ================================================================== -->
+    <target name="depend.components">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components"
+             target="${dependency.target}" 
+             inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <target name="depend.opensearch">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch"
+             target="${dependency.target}" 
+             inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <target name="depend.datadock">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/datadock"
+             target="${dependency.target}" 
+             inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <target name="depend.pti">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/pti"
+             target="${dependency.datadock}" 
+             inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <target name="depend.processqueue">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/processqueue"
+             target="${dependency.target}" 
+             inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <target name="depend.lantern">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/lantern"
+             target="${dependency.target}" 
+             inheritAll="false"/>
+    </target>
+</project>

@@ -1,0 +1,96 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[utf8]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{\today}
+\title{Usecase: PTI, Validering af data til indeksering\thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+% Det er hensigten, at alle informationer der er i < eller > tegn skal
+% slettes inden dokumentet bygges
+
+\section{Usecase beskrivelse}
+Denne usecase beskriver PTI komponentens validering af data før dette
+kan indekseres.
+
+\section{Type}
+Konkret
+
+
+\section{Relationer}
+
+
+\section{Aktører}
+
+\begin{itemize}
+\item PTI komponenten
+\end{itemize}
+
+\section{Forudsætninger}
+
+Data skal være processeret og transformeret til et xml dokument, der
+indeholder det indekserbare fra dataobjektet og dets tilhørende metadata.
+
+
+\section{Initiering}
+
+Efter endt transformation af dataobjektet, dets metadata og Fedora
+URI'en skal resultatet indekseres. Før det kan blive indekseret skal
+det valideres at den datafletning der har fundet sted konformerer til
+Compass/Lucenes schema for det pågældende data.
+
+
+\section{Beskrivelse}
+
+For at et xml dokument kan validere skal følgende være opfyldt:
+\begin{itemize}
+\item Der skal være en Analyzer for det sprog der er angivet i xml dokumentet.
+\item xml dokumentet skal konformere med det schema vi indekserer efter
+\end{itemize}
+
+Hvis der ikke er en passende Analyzer tilgængelig, smider
+PTI en [AnalyzerNotFoundException] der består af fejlmeddelelsen og
+oplysninger om hvilke krav den manglende Analyzer skal opfylde. 
+Hvis xml dokumentet ikke konformerer smides [InvalidXMLStructureException]. 
+
+\section{Terminationstilstande}
+
+\subsection{Succes}
+
+\begin{itemize}
+\item Det processerede data validerer
+\end{itemize}
+
+\subsection{Exception}
+
+\begin{itemize}
+\item \textbf{AnalyzerNotFoundException} Der er ikke en passende
+  Analyzer. Der sendes filhandle, metadata og mimetype sendes sammen
+  med exceptionen
+\item \textbf{InvalidXMLStructureException} xml dokumentet konformerer
+  ikke med det schema der er specificeret for datas type. Der sendes
+  mimetype og informationer fra SAXParseException sammen med exceptionen
+\end{itemize}
+
+\section{Status på usecase}
+
+\begin{itemize}
+\item Analyzers kan måske have andre krav end sprog for at være
+  passende 
+\end{itemize}
+\end{document}

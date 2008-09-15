@@ -1,0 +1,31 @@
+3rd party libraries
+===================
+
+The following libraries are distributed with OpenSearch because they
+are required either for building specific components or in the
+execution of OpenSearch services. Below is described the libraries,
+their distribution license and which OpenSearch component is affected
+by the library.
+
+ant
+~~~
+ - ant.jar ant-launcher.jar ant-junit.jar
+ - Apache Software License Version 2.0
+ - ant is used to build OpenSearch and perform unit-tests
+
+ant_doxygen
+~~~~~~~~~~~
+ - ant_doxygen.jar
+ -
+
+ant_latex
+~~~~~~~~~
+ - ant_doxygen.jar
+
+ant_svn
+~~~~~~~
+ -
+
+jax-xmlrpc
+~~~~~~~~~~
+ - fedora-server depends on jax-xmlrpc.jar

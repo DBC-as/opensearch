@@ -1,0 +1,4 @@
+<project name="OpenSearch.PTI" default="usage">
+  <!--Time-stamp: <2008-08-19 13:03:37 stm> -->
+  <import file="../../../../../build-common.xml"/>
+</project>

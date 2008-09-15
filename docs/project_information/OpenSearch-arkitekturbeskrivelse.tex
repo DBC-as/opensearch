@@ -1,0 +1,324 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[utf8]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{\today}
+\title{OpenSearch arkitekturbeskrivelse \thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\section{OpenSearch arkitektur}
+\label{sec:arkitektur}
+
+Arkitekturen kan beskrives på komponentniveau ved flg. diagram:
+
+\texttt{svn://svn.dbc.dk/OpenSearch/project\_information/OpenSearch\_diagram.fig}.
+
+
+
+\section{OpenSearch komponenter}
+\label{sec:komponent}
+
+Vi har identificeret tre komponenter til OpenSearch. Udfra
+komponenterne skal der dannes services, der stiller funktionalitet til
+rådighed over http eller gennem NEP'en. Komponenterne kan i visse
+tilfælde opdeles i sub-komponenter, hvis der er forskellige kategorier
+af logik i komponentet eller adskilte processer opererer i komponent.
+
+De identificerede komponenter og deres ansvarsområder er:
+
+\begin{itemize}
+\item \texttt{DataDock} - modtagelse og validering af data og metadata
+  samt lagring i Fedora og håndtering af uuid'er.
+
+\item \texttt{PTI (Processing-Transformation-Indexing)} - Som navnet
+  antyder, processering indkommende data, transformation af data til
+  xml og endeligt indexering\footnote{Herunder indbefattet
+    analysering} af det transformerede xml.
+
+\item \texttt{Lantern} - fremsøgning
+\end{itemize}
+
+Af disse komponenter bruger vi tredie parts software i tre af dem:
+\texttt{DataDock} anvender Fedora.Commons objektrepositorie,
+\texttt{PTI} bruger Compass og Lucene og det samme gør
+\texttt{Lantern}.
+
+\section{Use cases}
+\label{sec:usecases}
+
+De usecases vi udfører koncentrerer sig omkring dataflow igennem
+systemet og komponenterne. De fokuserer på hvilke transformationer
+data gennemgår, hvilke checkpoints der er i komponenterne for datas
+tilstand samt de forventede resultater af indeksering.
+
+En forløbig liste, fordelt på komponenter er:
+
+\begin{itemize}
+\item \textbf{DataDock}:\newline
+  \begin{itemize}
+  \item $\surd$ Validering af data og metadata
+  \item $\surd$ Lagring af data og metadata samt uuid-håndtering
+  \item $\surd$ Estimering (af tidsforbrug ved processering (dvs. tid før dataemnet er søgbart))
+  \item $\surd$ Aflevering af filpeger til kø
+  \end{itemize}
+
+\item \textbf{PTI}: \newline
+  \begin{itemize}
+  \item $\surd$ Afhentning af filpeger fra kø
+  \item $\surd$ tilføjelse af Handlers
+  \item $\surd$ Forespørgsel på Handlers
+  \item $\surd$ Transformation af data/metadata til XML
+  \item $\surd$ Validering af data til indexering
+  \item $\surd$ Indexering af transformeret data
+  \end{itemize}
+
+\item \textbf{Lantern}: \newline
+  \begin{itemize}
+  \item $\surd$ Simpel fremsøgning baseret på termer
+%  \item Fremsøgning baseret på søgeveje/facetter
+  \end{itemize}
+
+\end{itemize}
+
+For en detajleret beskrivelse af de enkelte usecases, se \url{svn://svn.dbc.dk/OpenSearch/trunk/docs/project_information/usecases} eller \url{http://wiki.dbc.dk/dbcwiki/bin/view/Udvikler/OpenSearch/UseCases}.
+
+\section{Implementation}
+\label{sec:implementation}
+
+\subsection{Objectinfo}
+Objectinfo er oplysninger om dataobjektet, der skal bruges til
+processering og estimering.
+Det indeholder følgende information:
+\begin{itemize}
+\item mimetype
+\item encoding/country-code
+\item content-length
+\item submitter
+\item timestamp
+\end{itemize}
+
+Mimetype er en af de listede mimetyper i /etc/mime.types eller
+\url{http://www.iana.org/assignments/media-types/index.html}. Der kan
+kun afleveres data i registrerede mimetyper; en registrering der
+styres af PTI-modulet. Afleveringen af mimetyper kommer fra den med
+data leverede \texttt{ObjectInfo}. Hvis ikke der er specificeret en mimetype -
+eller en ikke understøttet mimetype - i \texttt{ObjectInfo}, kastes en
+\texttt{MimeTypeParseException}\footnote{med en angivelse af, at
+  parsningen slog fejl fordi der ikke var noget at parse}.
+
+Angivelsen af encoding skal ske i formen $<$language code
+element\footnote{\url{http://www.iso.org/iso/country_codes/iso_3166_code_lists/english_country_names_and_code_elements.htm}},
+encoding-type$>$, eksempelvis med en dansksproget tekst i utf-8
+tegnsæt:
+\texttt{da/utf-8}\footnote{\url{http://iana.org/assignments/character_sets/}}. For
+at materialet bliver accepteret skal både tegnsæt og sprog være
+understøttet. Ansvaret for håndteringen af dette ligger i
+PTI-modulet. Hvis ikke der er angivet et sprog og encoding i
+\texttt{ObjectInfo}, skal der kastes en
+\texttt{UnsupportedEncodingException} eller en
+\texttt{IllegalArgumentException}.
+
+Content-length er et udtryk for størrelsen på det data der bliver
+afleveret til indeksering, altså eksklusivt objectinfo og
+metadata. Content-length angives i bytes. Størrelsen bliver beregnet
+efter datadocken har modtaget ContainerCargo objektet og bliver brugt
+til at beregne det estimat, der skal returneres til klienten.
+
+Submitter er en identifikation af indsenderen af data. Det er tanken
+at det skal bruges som autentifikation. Hvis ikke der er en submitter
+i \texttt{ObjectInfo}, skal der kastes en \texttt{*Exception}.
+
+Timestamp bliver dannet af DataDock'en ved modtagelse og skal bruges
+som identifikation af det afleverede materiale i både statistik og
+estimering af processeringstid.
+
+\subsection{Proceskø}
+
+Proceskøen implementeres vha. en database for at få afkoblet
+\texttt{DataDock}en og \texttt{PTI}'en.  På denne måde kan
+\texttt{DataDock}en og \texttt{PTI}'en operere uden at skulle holde
+tilstande omkring det modtagne data.
+
+\subsubsection{implementering og fejlhåndtering}
+\label{iof}
+Ved brug af processkøen kan flg. fejl opstå:
+\begin{itemize}
+\item \texttt{DataDock}'en går ned før data er skrevet til
+  repositoriet.  
+
+  Ingen mulighed for at få \texttt{DataDock}en, til at starte jobbet
+  igen. brugeren vil få en en connectionerror fra NEP'en, og
+  transaktionen skal startes på ny.
+
+\item \texttt{DataDock}en går ned efter der er skrevet til
+  repositoriet, men før filpegeren er lagt på \texttt{ProcessQueue}.
+
+  Ingen mulighed for at få \texttt{DataDock}en, til at starte
+  jobbet igen. da filpegeren ikke findes på køen vil data befinde sig
+  repositoriet, men det vil være "død" data, da der ikke findes en
+  henvisning til det.
+  
+  Indlæseren skal have en fejlbesked\footnote{sandsynligvis en
+    \texttt{SQLException} med passende info vedsendt}} i dette
+tilfælde.
+  
+  Selvom fejlen vil give "død"  data i repositoriet, vil vi tage højde
+  for denne fejl, da det kun er et enkelt dataemne der kan blive
+  indlæst og ikke sendes til viderebehandling per \texttt{DataDock}
+  tråd.
+  
+\item \texttt{PTI} komponenten går ned inden endt indexering, men
+  efter filpegeren er blevet poppet fra \texttt{ProcessQueue}.
+  
+  Denne fejlmulighed har indflydelse på hvorledes
+  \texttt{ProcessQueue} skal implementeres, nærmere bestemt, kan
+`  \texttt{ProcessQueue} ikke kun bestå af de push og pop metoder.
+  \texttt{ProcessQueue} implementeres v.h.a en oracledatabase, og
+  heruinder beskrives kort implementationsovervejelser for tre af
+  \texttt{ProcessQueue}'ens metoder:
+  \begin{itemize}
+  \item push()
+    
+    Denne metode vil ligne en alm. push operation. Der vil blive tilføjet lidt \texttt{ProcessQueue} metadata, såsom timestamp, men ellers simpel implementation
+  \item pop() 
+
+    En pop fra \texttt{ProcessQueue} returnerer det højst
+    prioriterede element der ikke er låst i databasen, og herefter låse
+    elementet. Dette sikre at kun en \texttt{PTI} tråd behandler et
+    element.
+  \item update() 
+
+    Efter endt indeksering laves en update på
+    \texttt{ProcessQueue}, der fjerner låsen fra elementet og sletter
+    det fra \texttt{ProcessQueue}.
+
+  \end{itemize}
+
+Udfra denne implementationsmodel, vil filpegeren på
+\texttt{ProcessQueue}, stadig eksistere, hvis en \texttt{PTI} tråd går
+ned under indeksering.
+
+\end{itemize}
+
+\subsubsection{Prioritering af kø elementer}
+
+Vi skal have afgjort hvordan \texttt{ProcessQueue}'en skal prioritere mellem køelementerne. 
+Den nemme løsning der ligger ligefor, er at implementere \texttt{ProcessQueue} som en FIFO kø, men yderligere prioritering kan implementeres. Herunder er beskrevet en FIFO implementering, og en lidt mere avanceret prioritering baseret på ankomst, mimetype og indsender. synkronisering er beskrevet under \ref{iof}
+
+\textbf{FIFO Queue}
+Hvis køen implementeres som en FIFO kø, skal der kun tilføjes et unikt inkrementeret id pr. køelement, der kan bruges til at identificere først indkomne køelement. 
+\textbf{Prio Queue}
+Hvis køen skal have prioriteringsfunktionalitet, er den enkleste løsning nok at tilføje et prioriterings argument til køens push metode. 
+En prioritetsalgoritme finder en passende prioritet for dataemnet, hvilket gives videre til \texttt{ProcessQueue}'en igennem push metoden. Desuden tilknyttes et unikt inkrementeret id pr. køelement. Det næste element der skal poppes, er så det element i sættet af elementer med højest prioritet, med det laveste id.
+
+Prioriteringsalgoritmen behøver ikke være særlig avanceret. Udfra de informationer der er tilgængelige ved reception af data, kan vi prioritere udfra følgende kriterier: indsender og MIME-type. 
+
+\subsubsection{Database definition schema}
+
+\begin{verbatim}
+
+
+
+
+\end{verbatim}
+\subsection{Processering og indexering}
+
+Processering og indexering er sammenlagt idet det kan være nødvendigt
+i forbindelse med processeringen af hente data fra eksterne kilder, og
+vi har derfor valgt at lave en skrive/læse operation fra fedora
+fremfor at have adskilte processer med at processere og indeksere og
+dermed spare i/o operationer i fedora.
+
+Processering er behandlingen af input data og transformationen af
+dette til dete XML-format der er specificeret af
+Compass-implementationen.
+
+Indexeringen i Lucene sker via Compass.
+
+\subsection{NEP-kommunikation}
+
+I \texttt{DataDock}en findes NEP-kommunikationsservicen
+\texttt{Reception}, der modtager z39.50 requests fra NEP'en og pakker
+dem ud til data, metadata og evt. andre ting fra z39.50-requestet og
+sender disse data til validering og lagring. \texttt{Reception} kan
+returnere enten et \texttt{Estimate} eller en \texttt{Exception}. Et
+\texttt{Estimate} er en vurdering af processeringstid pr. megabyte for
+en given mimetype fra aflevering til data er skrevet til
+index'et. Alle \texttt{Exceptions} bliver pakket af \texttt{Reception}
+og sendt til NEP'en igen.
+
+\subsection{Estimater og statistik}
+
+Motivationen for at lave statistik over processeret data udspringer af
+ønsket om at kunne give estimater til klienter for, hvornår deres
+afleverede data er blevet indexeret og er klar til fremsøgning.
+
+Et estimat er udtrykt ved et gennemsnit af processeringstid pr. MiB
+for en given mimetype. For hver processeringsopgave der bliver
+afleveret til OpenSearch prototypen, vil der blive udført
+flg. operationer (der også er beskrevet i usecasen
+datadock-estimering):
+
+\begin{enumerate}
+\item Når data modtages i DataDock'en, bliver der dannet et timestamp,
+  der bliver tilføjet objectinfo objektet.
+\item Estimering udarbejdes på baggrund af mimetype og content-length
+  for det indkommende materiale
+\item Når PTI indexeringsrutinen er færdig med indexeringen (dvs. når
+  indexet er skrevet og lukket), skriver den dataobjektets mimietype,
+  content-length og processeringstid (udregnet på baggrund af
+  timestamp) til statistikdatabasen.
+\end{enumerate}
+
+Gennemsnittet opnås ved | for en given mimetype | at addere den
+samlede tid processen fra aflevering til afsluttet indexering har
+taget for en processering og dele dette med antallet af MiB for den
+data der er blevet processeret. Dette resultat adderes for alle
+processeringer af en given mimetype og deler det med antallet af
+processeringer for den givne mimetype.
+
+Dette gennemsnit ganges med det indkommende datas størrelse i MiB og
+returneres som udtryk for en estimering af den tid det vil tage at
+processere det afleverede data.
+
+\subsection{Konfigurationsfiler}
+
+Konfigurationsfiler til test og dokumentation af
+konfigurationsmulighederne, lægges i et \textbf{.conf} fil, i det
+tilhørende komponent katalog. eks: 
+.  
+|-- applications 
+`-- components
+    |-- README 
+    |-- processqueue
+    | |-- dequeue.java
+    | |-- enqueue.java
+    | |-- processqueue-build.xml 
+    | `-- processqueue.conf
+    
+Under komponentet processqueue, ligger filen
+\textbf{processqueue.conf}, der indeholder konfigurationen for
+processqueue klasserne. Konfigurationsfilen er et XML ark, hvor
+rod elementet er komponentet, og hver konfigurerbarklasse har sit
+eget under element i XML filen, så en config reader kan hive
+relevant data ud af arket. I første iteration, vil konfigurations
+parametre blive hardcoded, men isoleret så de nemt kan smides i en
+\textbf{.conf} fil senere.
+
+
+\end{document}

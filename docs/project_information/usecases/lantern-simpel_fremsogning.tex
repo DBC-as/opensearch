@@ -1,0 +1,105 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[utf8]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{\today}
+\title{Use case: Lantern, simpel fremsøgnig ved søgning på termer
+  \thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+% Det er hensigten, at alle informationer der er i < eller > tegn skal
+% slettes inden dokumentet bygges
+
+\section{Use case beskrivelse}
+Denne use case beskriver hvorledes Lantern komponenten modtager
+termer og finder information ud fra dem og sender dette tilbage. Der
+beskrives også hvordan Lantern modtager en forespørgsel på et
+objekt og sender dette tilbage til spørgeren. 
+
+\section{Type}
+Konkret
+
+\section{Relationer}
+
+
+\section{Aktører}
+
+\begin{itemize}
+\item Lantern
+\item NEP
+\item Compass/Lucene
+\item Storage
+\item Fedora
+\end{itemize}
+
+\section{Forudsætninger}
+
+\section{Initiering}
+NEP sender en fremsøgningsforespørgsel til Lantern
+
+\section{Beskrivelse}
+Lantern modtager en forespørgsel fra NEP. Valideringsrutinen
+forsøger at validerer forespørgslen. Hvis den ikke validerer sendes en
+fejl [NotValidQueryException] til NEP. Hvis den validerer ser Lantern hvilken type
+forespørgsel der er tale om. De to muligheder er:
+\begin{enumerate}
+\item Forespørgsel på en søgning udfra simple termer
+\item Forespørgsel på et eller flere specifikke dataobjekter
+\end{enumerate}
+
+Hvis der er tale om den første type forespørgsel gøres følgende:
+\begin{itemize}
+\item Compass/Lucene sættes til at søge i indexerne i Storage med søgetermerne
+  som argument (skal søgetermerne gennem noget behandling, fx en
+  Analyzer, for at stemme overens med formatet af indholdet af indexerne?) 
+\item Modtager søgeresultatet fra Compass/Lucene
+\item Processerer søgeresultatet således at det stemmer overens med
+  formatinformation i forespørgslen
+\item Sender det processerede søgeresultat tilbage til NEP
+\end{itemize}
+
+Hvis der er tale om den anden type forespørgsel gøres følgende:
+\begin{itemize}
+\item Lantern henter de(t) ønskede dataobjekt(er) ud af Fedora
+  udfra uuid'et.
+\item Hvis uuid'erne ikke giver noget resultat smides
+  [NotValidUuidException] og en fejlmeddelse sendes til NEP
+\item De hentede objekter pakkes ind og sendes til NEP
+\end{itemize}
+
+\section{Terminationstilstande}
+
+\subsection{Succes}
+Lantern har enten afleveret en mængde søgeresultater til NEP
+eller et eller flere dataobjekter.
+
+\subsection{Exception}
+\begin{itemize}
+\item \texttt{[NotValidQueryException]} smides hvis en forespørgsel
+  fra NEP ikke validerer.
+\item \textt{[NotValidUuidException]} smides hvis uuid'et der forsøges
+  hentes et objekt i Fedora på baggrund af ikke giver noget resultat
+\end{itemize}
+\section{Status på use case}
+
+\begin{itemize}
+\item Det skal afklares hvordan termerne skal formateres før de gives
+  til Compas/Lucene 
+\item Denne use case skal splittes op i flere mere præcise use cases
+\end{itemize}
+
+\end{document}

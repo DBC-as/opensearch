@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[utf8]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{\today}
+\title{Usecase: \thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+% Det er hensigten, at alle informationer der er i < eller > tegn skal
+% slettes inden dokumentet bygges
+
+\section{Use case beskrivelse}
+<Overordnet beskrivelse af use casen, dens formål og resultater>
+
+
+\section{Type}
+<Konkret|Abstrakt>
+
+
+\section{Relationer}
+<Om use casen f.eks. anvender andre use cases>
+
+
+\section{Aktører}
+<Liste af de aktører der indgår>
+
+
+\section{Forudsætninger}
+<Typisk ting aktørerne skal have gjort, en tilstand systemet skal være
+i, eller noget der på anden måde skal være tilgængeligt>
+
+
+\section{Initiering}
+<Hvorfor og hvordan use casen startes, som regel af en aktør>
+
+
+\section{Beskrivelse}
+<En beskrivelse af forløbet i use casen, evt. afbrudt af [exception] klammer>
+
+
+\section{Terminationstilstande}
+
+\subsection{Succes}
+<Beskrivelse af en eller flere succes situationer>
+
+\subsection{Exception}
+<Beskrivelse af de undtagelser der kan forekomme, hvor use casen afbrydes>
+
+\section{Status på use case}
+
+
+<En beskrivelse af evt. ting der mangler afklaring omkring use casen>
+
+\end{document}

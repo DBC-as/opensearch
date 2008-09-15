@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[utf8]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{\today}
+\title{Usecase: Tilføjelse af Handler til transformation af data\thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\section{ }
+
+
+\subsection{Use case beskrivelse}
+Denne usecase dækker den situation hvor der skal tilføjes en Handler
+til at tranformere en type data til XML. 
+
+En Handler er en java-klasse, der sørger for at udtrække bestemte
+informationer fra et givent input og derefter danne et XML-dokument,
+der indeholder disse informationer i adskilte elementer.
+
+En Handler identificeres ved en kombination af mimetype og
+navn. mimetypen skal overholde standarden for mimetyper. Eksempler på
+ofte brugte mimetyper kan findes i specificeret i /etc/mime.types
+eller på
+\url{http://www.iana.org/assignments/media-types/index.html}. Navnet
+er en arbitrær (men foretrukket meningsfuld) streng.
+
+\subsection{Type}
+Konkret
+
+\subsection{Relationer}
+\begin{itemize}
+\item ``Forespørg om Handler i TransformationEngine''
+\item Muligvis ``Validering af Handler''
+\end{itemize}
+
+
+
+\subsection{Aktører}
+\begin{itemize}
+\item \texttt{TransformationEngine} - proceslaget
+\item Systemadministrator (dette er sandsynligvis et opstartsscript / en opstartsrutine)
+\end{itemize}
+
+\subsection{Forudsætninger}
+<Typisk ting aktørerne skal have gjort, en tilstand systemet skal være
+i, eller noget der på anden måde skal være tilgængeligt>
+
+
+\begin{itemize}
+\item Der skal være kodet en Handler, der fungerer i overensstemmelse
+  med et dertil specificeret interface for Handlers.
+
+\item Handleren skal være lagt i et katalog (sandsynligvis som en
+  jar-fil), der er specificeret af \texttt{TransformationEngine}s
+  konfiguration.
+
+\item Der skal eksistere en mimetype for hvilken Handleren er
+  konstrueret.
+\end{itemize}
+
+
+\subsection{Initiering}
+Tilføjelsen initieres ved at en metode for registrering af Handlere
+bliver kaldt. Metoden er sandsynligvis et led i opstartsproceduren for
+en \texttt{TransformationEngine}, hvis formål det er at transformere
+data fra inddata til et nærmere specificeret XML-format.
+
+
+\subsection{Beskrivelse}
+<En beskrivelse af forløbet i use casen, evt. afbrudt af [exception] klammer>
+
+
+\subsection{Terminationstilstande}
+
+\subsubsection{Succes}
+<Beskrivelse af en eller flere succes situationer>
+
+\subsubsection{Exception}
+<Beskrivelse af de undtagelser der kan forekomme, hvor use casen afbrydes>
+
+
+\subsection{Status på use case}
+<En beskrivelse af evt. ting der mangler afklaring omkring use casen>
+
+\end{document}

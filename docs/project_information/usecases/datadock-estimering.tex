@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[utf8]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{\today}
+\title{Use case: Datadock, estimering af tidsforbrug ved processering \thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+% Det er hensigten, at alle informationer der er i < eller > tegn skal
+% slettes inden dokumentet bygges
+
+\section{Use case beskrivelse}
+Beskriver hvorledes tiden, før et indleveret dataobjekt er søgbart i
+Databrønden, estimeres.
+
+\section{Type}
+Konkret
+
+\section{Relationer}
+
+\section{Aktører}
+\begin{itemize}
+\item PTI kompomemtens valideringsrutine
+\item PTI komponentens estimeringsrutine
+\item Statistik databasen
+\item NEP
+\end{itemize}
+
+
+
+\section{Forudsætninger}
+
+Dataobjektet skal være valideret af komponentens valideringsrutine.
+
+\section{Initiering}
+
+Efter succesfuld validering af et dataobjekt, gives dette til
+estimeringsrutinen, der startes.
+
+\section{Beskrivelse}
+
+Udfra mimetype, størrelse og gennemsnitlige proceserings tid
+for pågældende mimetype udregnes den gennemsnitlige tid før
+dataobjektet er søgbart i Databrønden. Estimatet sendes til
+indsenderen af dataobjektet(gennem NEP).
+Mimetype og størrelse hentes fra metadata. Den gennemsnitlige
+processeringstid for minetypen per megabyte udregnes på baggrund
+af data fra Statistik databasen. De data der hentes fra Statistik
+databasen er mændgen af proceseret data af pågældende mimetype samt det
+samlede tidsforbrug til processering af dette.
+Når estimatet er afsendt gives dataobjektet til DataDock komponentens
+lagringsrutine og der sættes et timestamp, som kan bruges til senere
+registrering i Statistik databasen.
+
+Hvis der ikke findes statistik om pågældende mimetype i statistik
+databasen, kan der ikke udregnes et estimat, og en besked om dette
+sendes til indsenderen (gennem NEP).
+
+\section{Terminationstilstande}
+
+\subsection{Succes}
+Estimatbesked er afsendt til indsenderen af dataobjektet (gennem NEP)
+og der er sat et timestamp i dataobjektets metadata.
+
+\subsection{Exception}
+
+
+\section{Status på use case}
+
+
+\end{document}

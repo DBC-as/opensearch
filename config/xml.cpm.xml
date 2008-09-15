@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE compass-core-mapping PUBLIC
+      "-//Compass/Compass Core Mapping DTD 2.0//EN"
+      "http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd">
+<compass-core-mapping>
+    <xml-object alias="author" xpath="/xml-fragment/author">
+      <xml-id name="id" xpath="@id" />
+      <xml-property xpath="firstName" />
+      <xml-property xpath="lastName" />
+      <xml-content name="content" />
+    </xml-object>
+    <!-- <mapping resource="/config/xml.cpm.xml" /> -->
+</compass-core-mapping>

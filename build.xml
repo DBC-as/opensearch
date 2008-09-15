@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="OpenSearch.all" default="usage">
+    <import file="dependencies.xml"/>
+
+    <target name="test-target" description="Test target">
+      <antcall target="depend.all">
+        <param name="dependency.target" value="test-target"/>
+      </antcall>
+    </target>
+
+    <target name="usage" description="usage options">
+      <antcall target="depend.all">
+        <param name="dependency.target" value="usage"/>
+      </antcall>
+    </target>
+
+    <target name="clean" description="Deletes build files">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="clean"/>
+        </antcall>
+    </target>
+
+    <target name="compile" description="Compiles source code">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="compile"/>
+        </antcall>
+    </target>
+
+    <target name="compile-tests" description="Compiles source code">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="compile-tests"/>
+        </antcall>
+    </target>
+
+    <target name="dist" description="Creates distributable">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="dist"/>
+        </antcall>
+    </target>
+
+    <target name="doc" description="Creates api documentation">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="doc"/>
+        </antcall>
+    </target>
+
+    <target name="update" description="Creates api documentation">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="update"/>
+        </antcall>
+    </target>
+
+    
+    <target name="test" description="Run unit tests">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="test"/>
+        </antcall>
+    </target>
+
+    
+</project>

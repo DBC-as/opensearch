@@ -1,0 +1,30 @@
+<compass-core-config xmlns="http://www.compass-project.org/schema/core-config"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.compass-project.org/schema/core-config
+          http://www.compass-project.org/schema/compass-core-config-2.0.xsd">
+
+   <compass name="default">
+
+     <connection>
+         <jdbc dialect="org.apache.lucene.store.jdbc.dialect.OracleDialect">
+             <dataSourceProvider>
+                 <driverManager url="jdbc:oracle:thin:shm/shm@tora1.dbc.dk:1521" username="shm" password="shm"
+                                driverClass="oracle.jdbc.driver.OracleDriver" />
+             </dataSourceProvider>
+         </jdbc>
+     </connection>
+
+     <!-- <connection> -->
+     <!--   <file path="admin/test-index"/> -->
+     <!-- </connection> -->
+
+     <converters>
+       <converter name="xmlContentMapping"
+                  type="org.compass.core.converter.mapping.xsem.XmlContentMappingConverter">
+         <setting name="xmlContentConverter.type"
+                  value="org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter" />
+       </converter>
+     </converters>
+     
+   </compass>
+</compass-core-config>

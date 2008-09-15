@@ -1,0 +1,36 @@
+The components folder contains the components used in OpenSearch.  
+
+For a detailed description of the components and their role in the
+architecture, please refer to the docs/project_information/ folder.
+
+A brief description of the components follow:
+
+* datadock: This component is responsible for communication with the
+  NEP, validation of incoming data and storage in an object repository
+  of said data 
+
+* PTI (Processing-Transformation-Indexing): As the name implies, this
+  component fetches data from the object repository, performs a
+  transformation from the datasource format into an XML-format
+  specified by the indexing engine. Finally it performs the indexing
+  and storage of indexed data
+
+* lantern: This component is responsible for conducting interpretation
+  of user requests for retrieval of data based on queries. It queries
+  the indexes and returns results to the NEP (through the datadock)
+
+* processqueue: The processqueue handles the intermediate storing,
+  prioritizing and state handling of the received data. It is
+  implemented through a database .
+
+Overview of classes:
+
+DataDock.Reception:
+        Recieves input
+        Writes timestamp
+
+Datadock:
+        Validates input
+        Returns estimate to client
+        Puts data into fedora repository and recieves file-pointer
+

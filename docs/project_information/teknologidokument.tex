@@ -1,0 +1,300 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[latin1]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\usepackage{footmisc}
+
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{Version 0.1 \linebreak\today}
+\title{OpenSearch teknologidokument\thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Indledning}
+
+Dette dokument prøver at afdække hvilken udviklingsmodel OpenSearch
+projektet gør brug af, og hvilke teknologier og værktøjer vi har brug
+for, for at realisere denne.  I dette dokument vil kravene til de
+værktøjer og teknologier vi vil gøre brug af, blive beskrevet, mens
+beskrivelsen af de konkrete værktøjer vil befinde sig i
+javateknologidokumentet \footnote{\url{svn://svn.dbc.dk/OpenSearch/project_information}\label{fn:repeat}}
+
+\section{Teknologivalg i OpenSearch}
+
+OpenSearch er et projekt der skal implementere indexerings- og
+søgefunktionalitet for produkter, der bliver udviklet i forbindelse
+med OLS. OpenSearch udvikles under SOA (Service-oriented
+Architecture), og implementeres som forskellige services relaterede
+til de krav og behov der stilles igennem OLS.
+
+SOA er kort beskrevet en arkitektur model der sigter mod en løst
+koblet arkitektur, med stor mulighed for genbrug af kode.  Med SOA
+adskiller man systemets funktioner i forskellige komponenter eller
+services, der så kan snakke med hinanden over netværk. Med dette
+udgangspunkt for arkitekturen får man bl.a. følgende fordele:
+
+\begin{itemize}
+\item \textbf{Løst koblet system} 
+  
+  Da de enkelte komponenter i systemet er
+  selvstændige services, kan et enkelt komponent gå ned, uden at hele
+  systemet går ned.
+\item \textbf{Genbrug} 
+  
+  Da et komponent kun stiller en funktionalitet til
+  rådighed, er der større chance for at komponentet kan genbruges i et
+  andet system.
+\item \textbf{Distribution} 
+  
+  Da kommunikation mellem services foregår over
+  netværk, er der ikke noget krav til at de enkelte services skal
+  køres på samme maskine.
+\end{itemize}
+
+OpenSearch vil gøre brug af mange allerede eksisterende open-source
+frameworks og systemer, der vil blive beskrevet i dette dokument.
+OpenSearch bliver implementeret i java, Men de javaspecifikke aspekter
+af teknologierne vil ikke blive beskrevet her, men i
+javateknologidokumentet \footref{fn:repeat}
+
+\section{Udviklingsmodel}
+
+OpenSearch bliver udviklet i overensstemmelse med den test-drevne
+udviklingsmodel (TDD - test driven development), B-team som helhed
+udvikler under. Denne model indebærer at der bruges bestemte værktøjer
+og teknikker, samt at koden overordnet set bliver testet på bestemte
+måder. med denne udviklingsmodel bliver der lagt stor vægt på test og
+integration. 
+Overordnet er ideen bag TDD at man først laver test til afprøvningen
+af programmet, og derefter laver man så selve programmet. med brug af
+denne udviklingsmodel opnår man bl.a. følgende fordele:
+
+\begin{itemize}
+\item \textbf{Klare succeskriterier for kodeudvikling}
+
+Da koden til testene bliver udviklet før selve programmet, er det nemt
+at finde ud af om implementationen er korrekt; man køre testene på
+programmet, og hvis de ikke fejler, er koden korrekt. 
+
+\item \textbf{kontinuerlig integration}
+
+De udviklede test til programmet bliver kørt hver gang der bliver
+tilføjet kode til kodebasen, således at man ikke kun sikrer sig at det
+nyudviklede kode virker som man ønsker sig, men også at det
+nyudviklede kode ikke knækker allerede eksisterende funktionalitet. 
+
+\item \textbf{Dokumentation}
+
+Testene fungerer også som dokumentation af programmet. Da de netop
+afprøver programmerne- også hjørnetilfælde, giver de eksempler på
+hvorledes programmerne kan bruges.
+
+\end{itemize}
+
+Herunder vil det blive nærmere beskrevet hvilke værktøjer vi vil
+bruge til at realisere dette.
+
+\section{Værktøjer til realisering af TTD}
+\subsection{Unittesting}
+
+Unittesting er tests af atomiske dele af kode - typisk klasser - for
+at teste funktionalitet, fejlhåndtering samt at sikre den rette
+implementationshåndtering.
+ 
+Kort beskrevet er processen for at tilføje en unittest for en given
+funktionalitet i systemet, som følger:
+
+\begin{itemize}
+ \item Tilføj en test
+ \item Verificer at den fejler
+ \item Implementer funktionaliteten i koden
+ \item Verificer at testen passerer
+\end{itemize}
+
+Unittests muliggør at rettelser i systemet understøttes af alle
+klassers relevante funktioner. En ændring i eksempelvis typer eller
+udregninger, bliver testet og godkendt af alle allerede eksisterende
+unittests og dermed får man en garanti for, at systemet ikke går ned
+ved runtime på grund af disse ændringer.  Derudover tjener unittest
+også som en dokumentation af koden og en forklaring af den tiltænkte
+funktionalitet.
+
+En unittest bruger som udgangspunkt ikke netværksforbindelser,
+databasetilgang eller manipulation med filsystemet. Hvis der skal
+bruges data, leveres de enten direkte i koden af unittesten, eller
+gennem mock objekter, der bliver nærmere beskrevet herunder.
+
+Vi har valgt at implementere unitests i java vha. \texttt{JUnit}(
+\url{http://www.junit.org/}).  For en nærmere beskrivelse i forhold
+til OpenSearch se
+javateknologidokumentet \footref{fn:repeat}
+
+\subsection{Mocking}
+
+Mocking er en form for
+dependency-injection \footnote{\url{http://en.wikipedia.org/wiki/Dependency_injection}}
+(DI). DI går i korthed ud instantiere et objekt på en kontrolleret
+måde. Mock frameworks indeholder en del hjælpemetoder til at gøre
+dette så nemt som muligt og kunne integrere det med
+unittests\footnote{En udmærket forklaring på skellet mellem DI og
+  Mocks kan læses her:
+  \url{http://fredrik.nsquared2.com/viewpost.aspx?PostID=364&showfeedback=true}}.
+
+På denne måde kan man stadig foretage atomiske unittests for mere
+komplekse testemner. F.eks. kan klasse 1, der afhænger af inddata fra
+klasse 2, testes uden at klasse 2 behøver at være tilstede, da den
+data klasse 2 skulle levere til klasse 1, bliver leveret af mocking
+objektet i stedet for. På denne måde fejler testen af klasse 1 ikke,
+selvom klasse 2 fejler, så fejlbeskeder fra unitests bliver mere
+præcise, da fejl fremkommet i kraft af afhængigheder ikke optræder.
+
+Vi har valgt at implementere mocking i java vha. \texttt{EasyMock}
+(\url{http://www.easymock.org/}). For en nærmere beskrivelse i forhold
+til OpenSearch se
+javateknologidokumentet \footref{fn:repeat}
+
+\subsection{Code coverage tests}
+
+For at holde styr på sine tests - og ikke mindst for at opdage de dele
+af koden, der ikke bliver testet - kan man med fordel bruge
+code-coverage værktøjer. Typisk vil man vælge at integrere checks
+lavet af code-coverage værktøjer i sin continouos integration server.
+
+\subsection{Continouos integration}
+
+Countinouos integration (CI) er betegnelsen for den proces der går ud
+på at sikre at den kode der bliver committet til
+revisionskontrolsystemet rent faktisk fungere i systemet som
+helhed. CI bliver normalt implementeret som en byggeserver, der
+håndterer at checke koden ud fra revisionskontrolsystemet, sætte
+byggevariabler op, bygge koden og udføre diverse tests på systemet
+(primært unittests). En byggeserver kan sættes op til at foretage hele
+eller delvise bygninger når kode bliver checket ind i
+revisionsstyringssystemet, på bestemte tidspunkter eller når det
+eksplicit bliver bedt om det.
+
+En byggeserver kan desuden bruges til at validere at koden kan bygge
+på forskellige platforme eller under særlige opsætninger af
+byggesystemet.
+
+Vi vælger at tjekke koden ud og bygge den samt at udføre tilhørende
+unittests, hver gang der bliver committet nyt kode til vores
+revisionskontrolsystem. Desuden vil der blive foretaget et byg og
+testning af dette hver nat.
+
+Vi har valgt at bruge CruiseControl
+\url{http://cruisecontrol.sourceforge.net/}, som vores
+integrationsserver.
+
+\subsection{Kildekode}
+
+Vi vælger også aktivt at tage stilling til udformning af kildekoden.
+herunder er de forskellige aspekter af udformningen identificeret og
+beskrevet.
+
+\subsubsection{Style checking og profilering}
+
+Vi vælger at style checke vores kode med følgende bevæggrunde:
+
+\begin{itemize}
+\item Ensartet kode
+  
+  Koden bliver ensartet, hvilket giver bedre overblik, samt bedre
+  mulighed for at identificere uregelmæssigheder og fejl i koden
+
+\item Vedligeholdelse
+  
+  Det bliver nemmere at vedligeholde koden senere, da man ikke skal
+  sætte sig ind i den enkelte programmørs måde at programmere java på,
+  da stilen i koden er den samme uanset programmør.
+
+\item Sikre dokumentation af koden
+
+  En af de "stil" parametre vil vil undersøge for et givent stykke
+  kode er, hvorvidt den nødvendige dokumentation forefindes.
+
+  Dette er hovedformålet med style checket, mens de ovenfor nævnte
+  punkter er rare egenskaber der følger med.
+
+\end{itemize}
+
+\subsubsection{Logning}
+
+Der skal logges fra OpenSearch på flere niveauer, bl.a. log i
+driftssammenhæng og til brug ved debugning. Samtidig skal
+logningsmekanismen være trådsikker da OpenSearch programmellet vil
+bestå af flere tråde.  Vi har valgt at bruge log4j
+(\url{http://logging.apache.org/log4j/}) til dette, da det opfylder
+vores krav.
+
+\subsubsection{Dokumentationskrav og -teknikker}
+
+Der vil blive udarbejdet dokumentation til Opensearch projektet.
+Dokumentationen er opdelt som følger:
+
+på wikien findes foranalyser samt overordnede projektspecifik
+information.
+
+I OpenSearch kataloget i svn ligger udviklingsdokumentation, som
+bruges under udarbejdelse af programmellet, hvilket også kan bruges
+til videreudvikling og vedligeholdelse af OpenSearch
+
+
+\subsubsection{Publicering}
+
+På docs.dbc.dk, vil selve dokumentationen af koden befinde sig, og den
+vil være genereret af doxygen.
+
+\subsection{Perfomance/Load-testing}
+
+Der vil blive udarbejdet en testplan, der kan afdække problem områder vedrørende performance og load af de forskellige moduler i Opensearch projektet. Dette skal være med til at afdække hvor performance flaskehalsene er.
+
+\subsection{Bug-håndtering og opgavestyring}
+
+Opgaver der drejer sig om funktionaliteten af programmellet skal
+registreres i vores bug-håndterings system. Der  er som udgangspunkt ingen
+nedre grænse for hvor små opgaverne skal være for at blive registreret
+i systemet.
+
+Vi bruger bugzilla (\url{http://www.bugzilla.org/}) til at håndtere bugs. Systemet er velintegreret på
+DBC, og det virker hensigtsmæssigt.
+
+\section{Driftmodel}
+\label{sec:driftmodel}
+
+OpenSearch vil bestå af en række services, hvor udvalgte services vil
+blive eksponeret til omverdenen og andre services være interne eller
+indgå i kombinationer med hinanden. En service vil blive repræsenteret
+som eksekverbare applikationer, der er tiltænkt 100\% oppetid. De
+enkelte services skal kunne duplikeres og distribueres over flere
+adskilte maskiner. Hvis en service indgår i en kombination med andre
+services og en af disse services fejler, skal de være muligt
+automatisk at checke om de andre services skal genstartes.
+
+OpenSearch services skal være konfigurerbare på køretidspunktet, og
+eksterne afhængigheder skal i videst mulig omfang være formuleret i
+konfigurationer og kunne ændres runtime. Dette gælder eksempelvis
+ip-adresser, porte, referencer til servere, databaser, andre services
+eller andre ressourcer. Målet for OpenSearch er at rekonfigurationer
+og afhængighedsresolutioner skal kunne løses automatisk.
+
+De enkelte services skal kunne distribueres over flere maskiner, og der
+skal være mekanismer til at håndtere denne situation. Der skal, efter
+endt udvikling af OpenSearch, foreligge automatiserede testsuiter, der
+tester den grundlæggende funktionalitet og godtgår krav til
+tilgængelighed, performance og andre parametre defineret i
+kravspecifikationen. Hensigten er at så mange services som muligt skal
+kunne duplikeres og distribueres.
+
+\end{document}

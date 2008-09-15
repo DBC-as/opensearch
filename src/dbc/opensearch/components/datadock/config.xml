@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<opensearch-definition>
+  <processqueue>
+    <driver>oracle.jdbc.driver.OracleDriver</driver>
+    <url>jdbc:oracle:thin:shm/shm@tora1.dbc.dk:1521</url>
+    <userID>shm</userID>
+    <passwd>shm</passwd>
+  </processqueue>
+ <estimateDB>
+    <driver>oracle.jdbc.driver.OracleDriver</driver>
+    <url>jdbc:oracle:thin:lvh/lvh@tora1.dbc.dk:1521</url>
+    <userID>lvh</userID>
+    <passwd>lvh</passwd>
+  </estimateDB>
+</opensearch-definition>

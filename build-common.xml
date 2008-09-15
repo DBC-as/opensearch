@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-common" >
+  <import file="dependencies.xml"/>
+
+  <property name="base.dir"       value="${dependencies.basedir}"/>
+
+  <property name="lib.dir"        value="${base.dir}/lib"/>
+  <property name="src.dir"        value="${base.dir}/src"/>
+  <property name="build.dir"      value="${base.dir}/build"/>
+  <property name="dist.dir"       value="${base.dir}/dist"/>
+  <property name="classes.dir"    value="${build.dir}/classes"/>
+  <!-- please note that the "docs" value is hardcoded in the Doxyfile -->
+  <property name="doc.dir"        value="${base.dir}/docs"/>
+  <property name="api.dir"        value="${doc.dir}/api"/>
+  <property name="opensearch.dir" value="${src.dir}/dbc/opensearch"/>
+  <property name="components.dir" value="${opensearch.dir}/components"/>
+  <property name="datadock.dir"   value="${components.dir}/datadock"/>
+  <property name="config.dir"     value="${base.dir}/config"/>
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant*.jar"/>
+    <pathelement location="${classes.dir}" />
+    <pathelement location="${config.dir}" />
+  </path>
+
+  <!-- libraries used internally by ant is named ant_*.jar -->
+  <path id="antlibpath">
+    <fileset dir="${lib.dir}" includes="ant_*.jar"/>
+  </path>
+
+  <!-- just for debugging purposes, putting the classpath into a property-->
+  <pathconvert targetos="unix" property="cp" refid="classpath">
+    <map from="${classpath}" to="${cp}"/>
+  </pathconvert>
+  <pathconvert targetos="unix" property="alp" refid="antlibpath">
+    <map from="${antlibpath}}" to="${alp}"/>
+  </pathconvert>
+  <!-- end debugging section -->
+
+  <target name="clean" description="Deletes files created during the build">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+    <delete dir="${api.dir}"/>
+    <delete file="${base.dir}/doxygen-warnings"/>
+  </target>
+
+  <target name="test-target">
+    <echo>
+      ant classpath=${cp}
+      Basedir=${base.dir}
+      lib.dir=${lib.dir}
+      ant libs=${alp}
+    </echo>
+  </target>
+
+  <target name="compile" description="Compiles source code" depends="clean">
+    <mkdir dir="${classes.dir}"/>
+    <echo>
+      Building from ${basedir},
+      building project ${ant.project.name},
+      using ${cp},
+      and putting it all into ${classes.dir}
+    </echo>
+    <javac srcdir="${basedir}" destdir="${classes.dir}" excludes="**/tests/*" debug="on">
+      <classpath refid="classpath"/>
+      <!-- <compilerarg value="-Xlint"/> -->
+    </javac>
+  </target>
+
+  <target name="compile-tests" description="builds the tests for the component" depends="compile">
+    <javac srcdir="${basedir}" destdir="${classes.dir}" includes="**/tests/*" debug="on">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  
+
+  <!-- <target name="dist" depends="compile" description="Creates distributable"> -->
+  <!--   <echo message="${ant.project.name} - build-common.dist"/> -->
+  <!-- </target> -->
+
+  <!-- <target name="clean.dependencies" -->
+  <!--         description="Deletes files created during the build (includes dependencies)"> -->
+  <!--   <antcall target="depend.${ant.project.name}"> -->
+  <!--     <param name="dependency.target" value="clean"/> -->
+  <!--   </antcall> -->
+  <!-- </target> -->
+
+  <!-- <target name="dist.dependencies" -->
+  <!--         description="Creates distributable (includes dependencies)"> -->
+  <!--   <antcall target="depend.${ant.project.name}"> -->
+  <!--     <param name="dependency.target" value="dist"/> -->
+  <!--   </antcall> -->
+  <!-- </target> -->
+
+  <target name="doc" description="generates documentation for the files found in ${src.dir}">
+    <taskdef
+       name="doxygen"
+       classname="org.doxygen.tools.DoxygenTask"
+       classpath="${alp}" />
+
+    <doxygen configFilename="${base.dir}/Doxyfile" />
+  </target>
+
+  <target name="test" description="Run unit tests" depends="compile-tests" >
+    <junit printsummary="withOutAndErr">
+      <formatter type="plain" usefile="no"/>
+      <classpath refid="classpath"/>
+
+
+      <batchtest fork="yes">
+        <fileset dir="${src.dir}" includes="**/tests/*Test.java"/>
+      </batchtest>
+    </junit>
+  </target>
+
+
+  <target name="update" description="updates the sources to HEAD">
+    <typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="${alp}" />
+
+    <svn javahl="false">
+      <wcVersion path="${base.dir}"/>
+      <update dir="${base.dir}"/>
+    </svn>
+    <echo message="${base.dir} updated to ${revision.max}"/>
+  </target>
+
+  <target name="usage">
+    <echo>Buildfile for OpenSearch
+      Available targets:
+      build:         Builds and performs unittests. Output is in ${build.dir}
+      test:          Performs unittests
+      !   examples:      Builds and tests the example files. Output is in the 'examples/build' folder
+      !   test_examples: Performs unittests on the examples
+      clean:         Removes the build, dist folders and any cruft generated in builds
+      dist:          builds, tests and packages the core files into a jar. Output is in the 'dist' folder
+      checkout:      checks out the sources from the subversion repository
+      !   build_clean:   cleans build folders, checks out source, builds, unittests and output to ${build.dir}
+      doc:           generates the doxygen documentation
+      all:           clean, checkout, build, unittest, jar. Output is in ${dist.dir}
+      usage:         This message
+    </echo>
+  </target>
+
+
+</project>

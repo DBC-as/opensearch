@@ -1,0 +1,86 @@
+\documentclass{article}
+\usepackage{a4wide}
+\usepackage[utf8]{inputenc} %             be able to use danish letters
+\usepackage[danish]{babel} %                and danish macros
+\usepackage{url}                            %, hyperref} hyperref makes clickable refs.
+\usepackage{amsmath}
+\renewcommand\sfdefault{phv}%               use helvetica for sans serif
+\renewcommand\familydefault{\sfdefault}%    use sans serif by default
+\setlength{\parskip}{2mm plus1mm minus1mm}% a bit of (rubber) space between paragraphs
+
+\author{Lars Vensild Hørnell \and Søren Mollerup \and Steen
+  Manniche\thanks{\{lvh, shm, stm\}\@dbc.dk}}
+\date{\today}
+\title{Usecase: Afhentning filpeger fra kø\thanks{Dette dokument kan hentes fra \texttt{svn://svn.dbc.dk/OpenSearch/project\_information}}}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+% Det er hensigten, at alle informationer der er i < eller > tegn skal
+% slettes inden dokumentet bygges
+
+\section{Use case beskrivelse}
+Denne usecase beskriver den situation, hvor
+\texttt{PTI} opdager at der ligger en filpeger i køen fra
+\texttt{DataDock}en. Filpegeren peger på et dataobjekt indeholdende
+data og metadata i Fedora repositoriet, der som udgangspunkt
+indeholder noget Dublin Core metadata foruden informationer relateret
+til leverancen af data.
+
+Umiddelbart er det interessant for \texttt{PTI} at
+verificere at den mimetype der er beskrevet i metadata er understøttet
+af en handler der er registreret i \texttt{PTI}. Hvis
+metadata konformerer til de krav der stilles til dem, antages det at
+data er i overenstemmelse med denne beskrivelse og denne proces
+videregiver data til transformation.
+
+\section{Type}
+Konkret
+
+\section{Relationer}
+Kun hvis check af metadata.mimetype bliver en use case
+
+\section{Aktører}
+\begin{itemize}
+\item \texttt{PTI}
+\item \texttt{Processeringskøen} 
+\item Muligvis en proces, der overvåger køen og starter tråde.
+\end{itemize}
+
+\section{Forudsætninger}
+Datadock skal have afleveret en filpeger \texttt{tilProcesseringskøen} eller en overvågningsproces skal have
+registreret at der er et objekt i køen.
+
+\section{Initiering}
+Use casen starter når \texttt{PTI} bliver gjort
+opmærksom på at der er noget i \texttt{Processeringskøen}.
+
+\section{Beskrivelse}
+\begin{enumerate}
+\item En filpeger hentes fra PTI-køen
+\item Data hentes fra fedora-basen
+\item hvis der ikke er data på pegeren smides [NullPointerException]
+\item Aflevering af data og metadata til videre processering
+\end{enumerate}
+
+
+\section{Terminationstilstande}
+
+\subsection{Succes}
+Data bliver sendt videre i PTI-modulet
+
+\subsection{Exception}
+\begin{itemize}
+\item NullPointerException hvis ikke der er data for enden af pegeren
+\end{itemize}
+
+\section{Status på use case}
+Jeg er usikker på NullPointerException'en. Den skal nok ikke være så
+generisk. Desuden antyder denne exception en run-time fejl i
+bytekoden, hvilket jo ikke er tilfældet.
+
+\end{document}

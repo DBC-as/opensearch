@@ -1,0 +1,134 @@
+
+<project name="OpenSearch-examples" default="usage" basedir=".">
+  <!--Time-stamp: <2008-08-21 09:52:57 stm> -->
+
+  <property name="src.dir"   value="src"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir"  value="dist"/>
+  <property name="doc.dir"   value="doc"/>
+  <property name="lib.dir"   value="lib"/>
+  <property name="index.dir" value="cranfieldindex"/>
+  <property name="tests.dir" value="src/dbc/lucene/test-results"/>
+
+  <property name="junit.jar"            value="${lib.dir}/junit-4.4.jar"/>
+  <property name="lucene.jar"           value="${lib.dir}/lucene-core-2.3.jar"/>
+  <property name="lucene-snowball.jar"  value="${lib.dir}/lucene-snowball-2.3.jar"/>
+  <property name="doxygen.jar"          value="${lib.dir}/ant_doxygen.jar"/>
+  <!-- Properties for the pdfToXml example -->
+  <property name="pdf-to-xml-src.dir" value="${src.dir}/dbc/pdf2xml"/>
+  <property name="pdfbox.jar" value="${lib.dir}/PDFBox-0.7.3.jar"/>
+  <property name="fontbox.jar" value="${lib.dir}/FontBox-0.1.0-dev.jar"/>
+  <!-- the doxygen task needs to be defined, as it is not part of ant-->
+
+  <property name="jdbc.jar" value="lib/ojdbc14.jar"/>
+  <property name="log.jar" value="lib/log4j-1.2.15.jar"/>
+  <taskdef name="doxygen" 
+           classname="org.doxygen.tools.DoxygenTask"
+           classpath="${doxygen.jar}" />
+
+  <path id="classpath">
+    <pathelement location="${build.dir}" />
+    <pathelement location="${junit.jar}" />
+    <pathelement location="${lucene.jar}" />
+    <pathelement location="${lucene-snowball.jar}" />
+    <pathelement location="${dist.dir}"/>
+    <pathelement location="${fontbox.jar}"/>
+    <pathelement location="${pdfbox.jar}"/>
+    <pathelement location="${jdbc.jar}"/>
+    <pathelement location="${log.jar}"/>
+  </path>
+
+  <target name="usage">
+    <echo>
+      Usage:
+      available targets:
+
+      build:
+      pdf-to-xml-build:
+      jar-dist:
+      unit-tests:
+      run-indexer:
+      doc:
+      clean:
+    </echo>
+  </target>
+
+  <target name="init">
+    <available property="lucene_index.exists" file="${index.dir}"/>
+    <available property="build.exists" file="${build.dir}"/>
+  </target>
+
+  <target name="build" description="builds the sources in ${src.dir}">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="pdf-to-xml-build" description="builds the example in ${pdf-to-xml-src.dir}">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${pdf-to-xml-src.dir}" destdir="${build.dir}"> 
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="jar-dist" depends="build" description="packages an executable jar">
+    <mkdir dir="${dist.dir}"/>
+    <jar jarfile="${dist.dir}/app.jar" basedir="${build.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="dbc.lucene.exercise.Main"/>
+        <attribute name="Class-Path" value="build dist . lib lib/lucene-core-2.3.jar dist/app.jar"/>
+      </manifest>
+    </jar>
+  </target>
+
+<!--   <target name="jar-dist-core" depends="build" description="packages the core (ie. w/o tests) files into a jar"> -->
+<!--     <mkdir dir="${dist.dir}"/> -->
+<!--     <jar jarfile="${dist.dir}/app.jar" basedir="${build.dir}" excludes="**/*Test.class"> -->
+<!--       <manifest> -->
+<!--         <attribute name="Main-Class" value="dbc.lucene.exercise.Main"/> -->
+<!--       </manifest> -->
+<!--     </jar> -->
+<!--   </target> -->
+
+  <target name="unit-tests" depends="build" description="perform unittests on the project">
+    <mkdir dir="${tests.dir}"/>
+    <junit printsummary="on" showoutput="true">
+      <formatter type="xml" usefile="true"/>
+      <formatter type="plain" usefile="false"/>
+      <classpath refid="classpath"/>
+      <!-- name refers to the whole class of tests found in the named class-->
+      <test name="dbc.examples.lucene.exercise.tests.CranfieldIndexerTest" todir="${tests.dir}"/>
+    </junit>
+  </target>
+
+  <target name="run-indexer" depends="build, jar-dist" description="run java">
+    <echo message="The test indexer should be run as:"/>
+    <echo message="java -classpath build:lib/lucene-core-2.3.jar:build/dbc/lucene/exercise dbc.lucene.exercise.Main -f lib/cran.all.1400"/>
+    <echo message="while standing in the examples directory"/>
+  </target>
+
+ 
+  <target name="doc" description="generates documentation for the files found in ${src.dir}">
+    <mkdir dir="${doc.dir}"/>
+    <doxygen configFilename="Doxyfile" />
+  </target>
+
+  <target name="clean" description="cleans the dirs ${build.dir}, ${doc.dir}" depends="init">
+    <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}"/>
+    <delete dir="${dist.dir}"/>
+    <delete dir="${tests.dir}"/>
+    <delete file="doxygen-warnings"/>
+    <!-- very hardcoded value. the generation and the deletion of app.jar should be through a property name-->
+    <delete file="lib/app.jar"/>
+  </target>
+
+  <target name="clean-index" description="removes the indexes created by lucene." depends="init" if="lucene_index.exists">
+    <delete dir="${index.dir}"/>
+<!--       <delete> -->
+<!--         <fileset dir="${index.dir}" includes="*.cfs"/> -->
+<!--         <fileset dir="${index.dir}" includes="segments*"/> -->
+<!--       </delete> -->
+  </target>
+</project>

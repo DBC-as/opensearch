@@ -1,0 +1,45 @@
+<project name="pdfToXml" default="build" basedir="."> 
+
+<description>Buildfile for the pdfToXml example</description>
+
+<property name="src.dir" value="src/dbc/pdf2xml"/>
+<property name="build.dir" value="build"/>
+<property name="lib.dir" value="lib"/>
+<property name="junit.jar" value="${lib.dir}/junit-4.4.jar"/>
+<property name="pdfbox.jar" value="${lib.dir}/PDFBox-0.7.3.jar"/>
+
+<path id="classpath">
+<pathelement location="${build.dir}"/>
+<pathelement location="${junit.jar}"/>
+<pathelement location="${lib.dir}"/>
+<pathelement location="${pdfbox.jar}"/>
+</path>
+
+<target name="init">
+<available property="build.exists" file="${build.dir}"/>
+</target>
+
+<target name="build" description="builds the source in the ${src.dir}">
+<mkdir dir="${build.dir}"/>
+<javac srcdir="${src.dir}" destdir="${build.dir}">
+<classpath refid="classpath"/>
+</javac>
+</target>
+
+<!-- no unittest on these file operations
+<target name="unit-test" depends="build" description="perform unittests on the project">
+<junit printsummary="withOutAndErr">
+<formatter type="plain" usefile="false"/>
+<classpath refid="classpath"/>
+-->
+<!-- name refers to the whole class of tests found in the named class-->
+<!--
+<test name="testPackage.test.ReadWriterTest" haltonerror="on" todir="${build.dir}"/>
+</junit>
+</target>
+-->
+<target name="clean" depends="init" description="cleans the build dir">
+<delete dir="${build.dir}"/>
+</target>
+
+</project>

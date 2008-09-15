@@ -1,0 +1,42 @@
+<project>
+  <taskdef name="latex"    classname="de.dokutransdata.antlatex.LaTeX"  
+    classpath="../../lib/ant_latex.jar"/>
+
+  <target name="pdfify">  
+    <mkdir dir="pdf"/>
+
+    <latex  
+       verbose="on"  
+       clean="on"  
+       pdftex="on"  
+       workingDir="."
+       outputDir="pdf"
+       >         
+      <fileset dir=".">
+        <include name="**/*.tex"/>  
+      </fileset> 
+    </latex>
+
+    <!-- the clean task doesn't seem to work properly -->
+    <delete>
+      <fileset dir=".">
+        <include name="*.aux"/>
+        <include name="*.toc"/>
+        <include name="*.log"/>
+
+      </fileset>
+    </delete>
+
+    <move todir="pdf">
+      <fileset dir=".">
+        <include name="**/*.pdf"/>
+      </fileset>
+    </move>
+
+  </target>
+  
+  <target name="clean">
+    <delete dir="pdf"/>
+  </target>
+
+</project>

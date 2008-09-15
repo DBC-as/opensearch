@@ -1,0 +1,24 @@
+#!/bin/bash
+
+ME=$(type -p $0 )
+MYPATH=$(dirname $ME ) 
+JAVABIN=${JAVA_HOME}/bin/java
+
+
+#---------------------------------#
+# dynamically build the classpath #
+#---------------------------------#
+THE_CLASSPATH=
+for i in `ls ${MYPATH}/../lib/*.jar`
+do
+  THE_CLASSPATH=${THE_CLASSPATH}:${i}
+done
+THE_CLASSPATH=${THE_CLASSPATH}:${MYPATH}/../build/classes:${MYPATH}/../config:.
+
+echo ${THE_CLASSPATH}
+#-----------------#
+# run the program #
+#-----------------#
+
+#exec ${JAVABIN} -cp "${CLASSPATH}" "$@"
+

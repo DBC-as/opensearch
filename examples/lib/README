@@ -1,0 +1,30 @@
+CRANFIELD TEST COLLECTION (1400 doc)
+
+These are the files receiced from K. Spark-Jones in February 1991:
+
+	cran-conv: document oldno serialno conversion list;
+
+	cran-rel: relevance assessments;
+
+	cran-req: requests;
+
+	cran-voc: terms vocabulary;
+
+	cran-oldno:  documents with oldnos as identifiers;
+
+	cran-serno: documents with serialnos as identifiers;
+
+
+These are the files included in the Virginia One CD ROM (from Fox, at
+the IR European Summer School in Bressanone, Italy):
+
+	cran.all: the complete text of all documents;
+
+	cran.qry: the text of all queries;
+
+	cran.rel: relevance assessments;
+
+	cranq.rel.txt: codes for relevancy scale in cran.rel; 
+
+
+Fabio, 18.02.91
