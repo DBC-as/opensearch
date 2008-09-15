@@ -94,8 +94,15 @@ public class DataDockTest {
         }
         System.out.print("CargoContainer created \n Creating the DataDock object \n");
         // 30: construct the DataDock
-        
+
+        try{
         dd = new DataDock(cc);
+        }
+        catch(Exception e){
+            System.out.println( "Caught exception, bailing out. ");
+            System.out.println( e.getMessage() );
+            e.printStackTrace();
+        }
         System.out.print("DataDock created \n");
         System.out.print("DataDockTest object created \n");
     }
