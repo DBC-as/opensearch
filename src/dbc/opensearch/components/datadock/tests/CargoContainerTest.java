@@ -20,7 +20,7 @@ public class CargoContainerTest {
     @Before public void SetUp(){
         InputStream data = new ByteArrayInputStream( new byte[1] );
         try{
-            cargo = new CargoContainer( data, "", "", "" );
+            cargo = new CargoContainer( data, "text/xml", "", "" );
         } catch ( IOException ioe ){
             System.out.println( ioe.toString() );
         }
@@ -49,9 +49,8 @@ public class CargoContainerTest {
 
     /** \todo: need real users and possibly a constructor-check instead of this */
     /** \todo: and this only really makes sense as a static method */
-    @Test( expected = IllegalArgumentException.class )
     public void testDisallowedSubmitter() {
-        cargo.checkSubmitter( "findes_ikke" );
+        assertFalse( cargo.checkSubmitter( "NonExistantSubmitter" ) );
     }
 
 }

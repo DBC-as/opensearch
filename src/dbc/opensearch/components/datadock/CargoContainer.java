@@ -32,6 +32,10 @@ public class CargoContainer {
     /** the length of the InputStream */
     private final int contentLength;
 
+    /** \todo: FIXME: Hardcoded values for allowed submitters */
+    private static final String allowedSubmitters[] = 
+        { "stm", "shm", "lvh" };
+
     Logger log = Logger.getLogger("CargoContainer");
 
     /**
@@ -119,11 +123,14 @@ public class CargoContainer {
      * @returns true if name is found in submitter-list, false otherwise
      */
     public boolean checkSubmitter( String name ) throws IllegalArgumentException{
-        if ( name != "stm"){
-            throw new IllegalArgumentException( String.format( "no submitter goes by the name of %s", name ) );
-        }else{
-            return true;
+        /** \todo: FIXME: Hardcoded values for allowed submitters */
+        for(String sName : allowedSubmitters){
+            if( name.equals( sName ) ){
+                return true;
+            }
         }
+
+        return false;
     }
 
     /**
