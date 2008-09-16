@@ -116,6 +116,7 @@ public class DataDock implements Callable<Float>{
         Float processEstimate = 0f;
 
         try{
+            log.info( "\n calling DataDock.estimate \n" );
             // 10: Estimate
             processEstimate = estimate(cc.getMimeType(), cc.getStreamLength());
             // 20: Store data in Fedora
@@ -152,6 +153,7 @@ public class DataDock implements Callable<Float>{
 
 
         // 40: Return estimate
+        log.info("\n about to return estimate in DataDock.call \n");
         return processEstimate;
     }
 
