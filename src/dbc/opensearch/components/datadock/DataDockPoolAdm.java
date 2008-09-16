@@ -64,6 +64,7 @@ public class DataDockPoolAdm {
                 }catch(Exception e){
                     System.out.print("\n Exception in DataDockPoolAdm \n");
                     e.printStackTrace();
+                    System.exit(1);
                 }
             }
             System.out.print("All files given to the DataDockPool \n");
