@@ -59,7 +59,7 @@ public class DataDockPoolAdm {
                     data = new FileInputStream(fileList[filesSent]);
                     CargoContainer cc = new CargoContainer(data, mimetype, lang, submitter);
                     FTList[filesSent] = DDP.createAndJoinThread(cc);
-
+                    log.info( String.format( "number og futureTasks in FTList = %s", FTList.length ) );
                 }catch(Exception e){
                     System.out.print("\n");
                     e.printStackTrace();
