@@ -35,9 +35,9 @@ public class DataDockPoolAdm {
             String estimateMessageString;
             int answersReceived = 0;
 
-            fileNameList = dir.list();
-            fileList = dir.listFiles();
-
+            fileNameList = dir.list( new FileFilter() );
+            fileList = dir.listFiles( new FileFilter() );
+       
             // 35: check if we got any files from the filepath
             if( fileList == null ){
                 throw new IllegalArgumentException( String.format( "no files on specified path: %s", filepath ) );
