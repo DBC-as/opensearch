@@ -1,8 +1,10 @@
 package dbc.opensearch.components.pti.tests.fedora_test;
 
 import fedora.server.storage.types.BasicDigitalObject;
-import fedora.server.storage.types.Datastream;
+//import fedora.server.storage.types.Datastream;
 import fedora.server.storage.types.DatastreamDef;
+import fedora.server.types.gen.DatastreamControlGroup;
+import fedora.server.types.gen.Datastream;
 
 import fedora.server.storage.translation.FOXML1_1DOSerializer;
 
@@ -25,16 +27,13 @@ public class DigitalObjectTest {
     public DigitalObjectTest() {
         BasicDigitalObject bdo = new BasicDigitalObject();
         Datastream ds = new Datastream();
-        DatastreamDef dsd = new DatastreamDef();
-
-
     }
 
     private static Datastream[] MakeBlankRelsExtDatastream() {
         Datastream[] ds = new Datastream[1];
         ds[0] =
             new Datastream(DatastreamControlGroup.fromValue("X"),
-                           s_dsid,
+                           "RELS-EXT",
                            "RELS-EXT.0",
                            null,
                            "RDF Statements about this object",
@@ -59,25 +58,28 @@ public class DigitalObjectTest {
                                             String mimeType,
                                             String formatURI,
                                             String location,
-                                            Char state,
+                                            String state,
                                             String checksumType,
-                                            String logMessage){
+                                            String logMessage) throws java.rmi.RemoteException{
 
-        String newID =
-            Administrator.APIM.addDatastream(m_pid,
-                                             s_dsid,
-                                             altIDs,
-                                             label,
-                                             versionable, // DEFAULT_VERSIONABLE
-                                             mimeType,
-                                             formatURI,
-                                             location,
-                                             "X",
-                                             state,
-                                             checksumType,
-                                             null, // checksum type and checksum
-                                             logMessage); // DEFAULT_LOGMESSAGE
-        
+        return Administrator.APIM.addDatastream(pid,
+                                                dsid,
+                                                altIDs,
+                                                label,
+                                                versionable, // DEFAULT_VERSIONABLE
+                                                mimeType,
+                                                formatURI,
+                                                location,
+                                                "X",
+                                                state,
+                                                checksumType,
+                                                null, // checksum type and checksum
+                                                logMessage); // DEFAULT_LOGMESSAGE
+
+    }
+
+    public static void main(String[] args){
+        DigitalObjectTest dot = new DigitalObjectTest();
     }
 
 }
