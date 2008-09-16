@@ -103,5 +103,7 @@ public class DataDockPoolAdm {
             log.info("\n Could not initialize the DataDockPool \n");
             e.printStackTrace();
         }
+        log.info("\n\n Program ends, bye bye ");
+        System.exit(1);
     }
 }
