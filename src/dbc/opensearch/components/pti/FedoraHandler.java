@@ -63,7 +63,7 @@ public class FedoraHandler implements Constants{
      * The constructor for the FedoraHandler connects to the fedora
      * base and initializes the FedoraClient. FedoraClient is used to
      * get the Fedora API objects.
-     * FedoraHandler 
+     * FedoraHandler
      */
     public FedoraHandler() throws ConfigurationException {
 
@@ -84,13 +84,16 @@ public class FedoraHandler implements Constants{
         user       = config.getString( "fedora.user" );
         passphrase = config.getString( "fedora.passphrase" );
         fedoraUrl  = "http://" + host + ":" + port + "/fedora";
-        
+
         log.debug( String.format( "Connecting to fedora server at:\n%s\n using user: %s, pass: %s ", fedoraUrl, user, passphrase ) );
 
         try {
+            long stamp = System.currentTimeMillis();
+            log.info( String.format( "Constructing FedoraClient" ) );
             FedoraClient client = new FedoraClient( fedoraUrl, user, passphrase );
             apia = client.getAPIA();
             apim = client.getAPIM();
+            log.info( String.format( "Finished setting up FedoraClient (%s secs)", (System.currentTimeMillis()-stamp)/1000.0 ) );
         }catch ( java.net.MalformedURLException mue ){
             log.fatal( String.format( "The url %s could not be used. Either it is malformed or the protocol is not supported", this.fedoraUrl ) );
             /** \todo: should we propagate? */
@@ -111,7 +114,7 @@ public class FedoraHandler implements Constants{
      *
      */
     public String submitDatastream( CargoContainer cargo, String pidNS, String itemId, String label )throws RemoteException, XMLStreamException, IOException, fedora.server.errors.ServerException{
-        
+
         log.debug( String.format( "Entering submitDatastream" ) );
         DatastreamDef dDef = null;
         String pid         = null;
@@ -129,13 +132,13 @@ public class FedoraHandler implements Constants{
             log.fatal( String.format( "Unable to construct xml from CargoContainer:\n%s", xse.getMessage() ) );
             throw new XMLStreamException( xse );
         }
-        
+
         log.debug( String.format( "and submitting the data to fedora" ) );
         try{
-        pid = apim.ingest( foxml, FOXML1_1.uri, "Ingesting "+label );
-         } catch( RemoteException rme ){
+            pid = apim.ingest( foxml, FOXML1_1.uri, "Ingesting "+label );
+        } catch( RemoteException rme ){
             log.fatal( String.format( "Unable to submit cargo with label \"%s\" to fedora. \nStack:%s", label, rme.toString() ) );
-         throw new RemoteException( String.format( "Unable to submit cargo with label \"%s\" to fedora. \nStack:%s", label, rme.toString() ), rme );
+            throw new RemoteException( String.format( "Unable to submit cargo with label \"%s\" to fedora. \nStack:%s", label, rme.toString() ), rme );
         }
 
         log.debug( String.format( "Submitted data, recieved pid %s", pid ) );
@@ -147,9 +150,9 @@ public class FedoraHandler implements Constants{
 
         log.info( String.format( "Entering constructFoxml" ) );
         log.debug( String.format( "Beginning construction of foxml using XMLStreamWriter with stream of length=%s, pid=%s, itemId=%s, label=%s", cargo.getStreamLength(), pidNS, itemId, label ) );
-   
+
         Document document = DocumentHelper.createDocument();
-        
+
         // Generate root element
         QName root_qn = QName.get( "digitalObject", "foxml", "info:fedora/fedora-system:def/foxml#" );
         Element root = document.addElement( root_qn );
@@ -169,14 +172,14 @@ public class FedoraHandler implements Constants{
 
         // label
         property = objproperties.addElement( "foxml:property" );
-        property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#label" ); 
+        property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#label" );
         property.addAttribute( "VALUE", label );
 
         // OwnerID - fedoraUser
         property = objproperties.addElement( "foxml:property" );
         property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#ownerId" );
         property.addAttribute( "VALUE", user );
-        
+
         // createdDate
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
         String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
@@ -187,22 +190,21 @@ public class FedoraHandler implements Constants{
 
         // lastModifiedDate
         property = objproperties.addElement( "foxml:property" );
-        property.addAttribute( "NAME", "info:fedora/fedora-system:def/view#lastModifiedDate" ); 
+        property.addAttribute( "NAME", "info:fedora/fedora-system:def/view#lastModifiedDate" );
         property.addAttribute( "VALUE", timeNow );
 
-        
-        // datastreamVersionElement
+        // datastreamElement
         /** todo: ryd op i flg linjer */
         property = root.addElement( "foxml:datastream" );
         property.addAttribute( "CONTROL_GROUP", "M" ); //this shold be programmable -- bestemt dynamisk gives af objektet
-        property.addAttribute( "ID", "DC"); //itemId ); // TRYLLE-RYLLE
+        property.addAttribute( "ID", cargo.getSubmitter() ); 
         property.addAttribute( "STATE", "A" ); //... as should this
         property.addAttribute( "VERSIONABLE", "false" ); //... and this
 
         // datastreamVersionElement
         property = property.addElement( "foxml:datastreamVersion" );
         property.addAttribute( "CREATED", String.format( "%s", timeNow ) );
-        property.addAttribute( "ID", itemId ); //note: we use the same itemId as for the digital object
+        property.addAttribute( "ID", itemId ); 
         property.addAttribute( "LABEL", label ); //note: we use the same label as for the digital object
         property.addAttribute( "MIMETYPE", cargo.getMimeType() );
         property.addAttribute( "SIZE", String.format( "%s", cargo.getStreamLength() ) );
@@ -211,10 +213,8 @@ public class FedoraHandler implements Constants{
 
         log.debug( "Finished constructing xml" );
 
-        System.out.println( document.asXML() );
-
         /** \todo: This constructing business would be a lot better with xml serialization. Mainly in terms of 1:characters types, 2: boilerplate statements, 3: portability/managability and 4: type safety */
-        
+
         log.info( String.format( "Exiting constructFoxml" ) );
 
         return document.asXML().getBytes( "UTF-8" );
@@ -258,7 +258,7 @@ public class FedoraHandler implements Constants{
 
         try{
             datastreams = this.apia.listDatastreams( pid, null );
-            
+
         }catch( RemoteException re){
             log.fatal( String.format( "Could not get a list of available datastreams" ) );
             throw new RemoteException( String.format( "Could not retrieve list of available datastreams: %s", re.getMessage() ), re );
@@ -274,10 +274,10 @@ public class FedoraHandler implements Constants{
             } catch( RemoteException re ){
                 throw new RemoteException( String.format( "Could not retrieve the datastream for the pid=%s, id=%s", pid, def.getID() ) );
             }
-            
+
             log.debug( String.format( "Making a bytearray of the datastream" ) );
             byte[] datastr = ds.getStream();
-            
+
             log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
             InputStream inputStream = new ByteArrayInputStream( datastr );
 
@@ -295,15 +295,15 @@ public class FedoraHandler implements Constants{
             String language = "";
             String submitter = "";
 
-            cargo = new CargoContainer( inputStream, 
-                                        def.getMIMEType(), 
-                                        language, 
+            cargo = new CargoContainer( inputStream,
+                                        def.getMIMEType(),
+                                        language,
                                         submitter );
             log.info( String.format( "Leaving getDatastream" ) );
         }
         return cargo;
     } //end getDatastream
-    
+
     private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state ){
         /**
          * For future reference (mostly because the Fedora API is unclear on this):
@@ -317,11 +317,11 @@ public class FedoraHandler implements Constants{
          * String formatURI specify the data format through an uri instead of a mimetype
          * String dsLocation specifies the location of the datastream. eg. through an url
          * String controlGroup "X", "M", "R" or "E"
-         * String state Initial state of the datastream A, I or D (active, inactive or deleted) 
+         * String state Initial state of the datastream A, I or D (active, inactive or deleted)
          * String checksumType
          * String checksum
-         * String logMessage 
-         * 
+         * String logMessage
+         *
          */
 
         // apim.addDatastream(pid,

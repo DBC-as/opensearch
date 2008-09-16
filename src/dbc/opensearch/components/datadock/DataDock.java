@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
 import java.util.concurrent.Callable;
 
 import oracle.jdbc.driver.OracleDriver;
@@ -154,6 +155,8 @@ public class DataDock implements Callable<Long>{
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     public long estimate( String mimeType, long length ) throws SQLException, NoSuchElementException{
 
+        log.info( String.format( "in estimate(). Length=%s",length ) );
+
         long average_time = 0l;
         ResultSet rs = null;
 
@@ -166,8 +169,10 @@ public class DataDock implements Callable<Long>{
 
         String sqlQuery = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType );
 
+        log.info( String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType ) );
+
         try{
-            stmt = con.createStatement();
+            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
         }
         catch(SQLException sqe) {
             log.fatal( "SQLException: " + sqe.getMessage() );
@@ -180,12 +185,21 @@ public class DataDock implements Callable<Long>{
         /** \todo: ...but we should still check that we actually get _exactly_ one row */
         try{
             rs = stmt.executeQuery ( sqlQuery );
-            log.debug( "statisticDB queried" );
+            log.info( String.format( "statisticDB queried with \"%s\"", sqlQuery ) );
         }
         catch(SQLException sqe) {
             log.fatal( "SQLException: " + sqe.getMessage() );
             throw new SQLException( sqe.getMessage() );
         }
+
+        rs.last();
+        int rowCount = rs.getRow();
+        log.info( String.format( "rows = %s", rowCount ) );
+
+        if( rowCount != 1 ){
+            throw new SQLException( String.format( "Count if rows is different from 1. RowCount==%s", rowCount) );
+        }
+        rs.first();
 
         // 35: compute this.average_time from length, processtime and dataamount
         /* The statisticDB must garantie that mimetypes are unique, the pti must make a insert stmt
@@ -195,10 +209,17 @@ public class DataDock implements Callable<Long>{
         /** \todo: Do we need a language in connection with the mimetype,
             since different languages have different handlers? yes, make later*/
 
+
         if( rs != null ){
             /** \todo: what is the content of average_time, if there are more than one row? */
-            while(rs.next()){
-                average_time = ( (rs.getInt("processtime") / rs.getInt("dataamount") ) * length);
+
+            log.info( String.format( "***********************************************" ) );
+            log.info( String.format( "rs.next==%s",rs.next() ) );
+            while( rs.next() ){
+                int p = rs.getInt("processtime");
+                int d = rs.getInt("dataamount");
+                log.info( String.format( "processtime=%s ** dataamount=%s", p, d ) );
+                average_time = ( ( p / d ) * length );
             }
         }
 
@@ -271,7 +292,7 @@ public class DataDock implements Callable<Long>{
         // 40: deposit metadata as dissamminator to data
         // 50: convert handle to data from fedora to String
         // 60: return fedoraHandle
-
+        log.info( String.format( "Ingest succeded, returning pid=%s",fedoraHandle ) );
         return fedoraHandle;
     }
 
