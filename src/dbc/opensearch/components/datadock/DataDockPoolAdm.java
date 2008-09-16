@@ -45,7 +45,7 @@ public class DataDockPoolAdm {
 
             // 37: should check that we arent taking directories, later...
             int numOfFiles = fileList.length;
-
+            log.info(String.format( "\n number of files = %s \n", numOfFiles ) );
             FTList = new FutureTask[ numOfFiles ];
 
             InputStream data;
@@ -78,7 +78,7 @@ public class DataDockPoolAdm {
                         log.info("file done");
                     }else{
                         log.info( "\n calling isDone \n" );
-                        if(FTList[x].isDone()){
+                        if( FTList[x].isDone() ){
                             
                             estimateMessageString = String.format("The file: %s , will take approximately: %s to process \n", fileNameList[x],FTList[x].get() );
                             log.info(estimateMessageString);
