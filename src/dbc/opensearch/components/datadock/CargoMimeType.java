@@ -23,11 +23,11 @@ public enum CargoMimeType{
      * use instanceOfCargoMimeType.getMimeType() to get the (official)
      * name of the mimetype
      */
-    String getMimeType(){
+    public String getMimeType(){
         return this.mimetype;
     }
 
-    String getDescription(){
+    public String getDescription(){
         return this.description;
     }
 }
