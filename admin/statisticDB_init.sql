@@ -7,4 +7,4 @@ CREATE TABLE statisticDB(
 /* Initialize table ... should be handled ind the datadock add handler class */
 
 INSERT INTO statisticDB
-VALUES (0,0,'TEXT/XML');
+VALUES (0,0,'text/xml');
