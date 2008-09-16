@@ -12,7 +12,8 @@ import java.io.*;
  *
  */
 public class DataDockPoolAdm {
-
+    private static final Logger log = Logger.getRootLogger();
+    
     public final static void main(String[] args){
         // 10: start the datadockpool
         DataDockPool DDP;
@@ -66,17 +67,22 @@ public class DataDockPoolAdm {
             }
             System.out.print("All files given to the DataDockPool \n");
             //Loop that continues until all files have docked
+            log.info("\n entering while loop in DataDockPoolAdm \n");
+            log.info(String.format("answers = %s numOfFiles = %s ",answersReceived, numOfFiles));
             while(answersReceived < numOfFiles){
                 for(int x = 0; x < numOfFiles; x++){
                     //check if answer is received for this file
                     if(fileNameList[x].equals( doneString) ){
+                        // go to next element
+                        log.info("file done");
+                    }else{
+                        
                         if(FTList[x].isDone()){
-
+                            
                             estimateMessageString = String.format("The file: %s , will take approximately: %s to process \n", fileNameList[x],FTList[x].get() );
-                            System.out.print(estimateMessageString);
+                            log.info(estimateMessageString);
                             fileNameList[x] = doneString;
-                            answersReceived++;
-
+                            answersReceived++;   
                         }
                     }
 
