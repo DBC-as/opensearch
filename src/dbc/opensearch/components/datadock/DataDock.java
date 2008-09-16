@@ -215,6 +215,7 @@ public class DataDock implements Callable<Float>{
      *
      */
     public String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, Exception {
+        log.info( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
         /**
          * \todo find out where and how we get the pid
@@ -272,6 +273,7 @@ public class DataDock implements Callable<Float>{
         // 50: convert handle to data from fedora to String
         // 60: return fedoraHandle
         log.info( String.format( "Ingest succeded, returning pid=%s",fedoraHandle ) );
+        log.info( "Exiting DataDock.fedoraStoreData" );
         return fedoraHandle;
     }
 
@@ -281,6 +283,7 @@ public class DataDock implements Callable<Float>{
          * the Enqueue class queues a fedoraHandle on the processQueue
          * to take the parameteres from the config file
          */
+        log.info( "Entering DataDock.queueFedoraHandle" );
         // 10: call Enqueue
         try{
             enq = new Enqueue(fedoraHandle);
@@ -294,7 +297,7 @@ public class DataDock implements Callable<Float>{
         catch(SQLException sqe){
             throw new SQLException(sqe.getMessage());
         }
-
+        log.info( "Exiting.queueFedoraHandle" );
     }
 
     /**

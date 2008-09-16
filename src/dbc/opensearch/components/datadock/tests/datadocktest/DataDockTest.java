@@ -11,6 +11,8 @@ import java.net.URL;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import org.apache.log4j.Logger;
+
 /**
  * Test for the DataDock class
  *
@@ -18,6 +20,7 @@ import java.rmi.RemoteException;
 */
 
 public class DataDockTest {
+    private static final Logger log = Logger.getRootLogger();
 
     /**
      * Setting up a DataDock
@@ -99,8 +102,8 @@ public class DataDockTest {
         dd = new DataDock(cc);
         }
         catch(Exception e){
-            log.debugln( "Caught exception, bailing out. ");
-            log.debugln( e.getMessage() );
+            log.debug( "Caught exception, bailing out. ");
+            log.debug( e.getMessage() );
             e.printStackTrace();
         }
         log.debug("DataDock created ");
