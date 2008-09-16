@@ -135,7 +135,7 @@ public class DataDockTest {
         System.out.print(config.getString("database.passwd") + "\n");
 
         try{
-            long testEstimate =  dd.estimate( "text/xml", 2l );
+            float testEstimate =  dd.estimate( "text/xml", 2l );
             if( testEstimate != 2l){
                 System.out.print("DataDock.Estimate didnt estimate correctly \n");
                 System.out.print("Printing the estimate: "+ testEstimate +" \n");

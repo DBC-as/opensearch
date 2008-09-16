@@ -49,7 +49,7 @@ import java.util.NoSuchElementException;
  * search-capabilities
  */
 
-public class DataDock implements Callable<Long>{
+public class DataDock implements Callable<Float>{
     CargoContainer cc;
     Enqueue enq;
     // String pid;
@@ -98,9 +98,9 @@ public class DataDock implements Callable<Long>{
         sUserID = config.getString("database.userID");
         sPasswd = config.getString("database.passwd");
 
-        log.debug( "sDriver: " +sDriver );
-        log.debug( "sUrl:    " +sUrl );
-        log.debug( "sUserID: " +sUserID );
+        log.info( "sDriver: " +sDriver );
+        log.info( "sUrl:    " +sUrl );
+        log.info( "sUserID: " +sUserID );
 
     }
     /**
@@ -111,8 +111,8 @@ public class DataDock implements Callable<Long>{
      * check this, but then an exceprion should have been thrown
      */
 
-    public Long call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
-        long processEstimate = 0l;
+    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
+        Float processEstimate = 0f;
 
         try{
             // 10: Estimate
@@ -153,11 +153,11 @@ public class DataDock implements Callable<Long>{
     }
 
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
-    public long estimate( String mimeType, long length ) throws SQLException, NoSuchElementException{
+    public float estimate( String mimeType, long length ) throws SQLException, NoSuchElementException{
 
         log.info( String.format( "in estimate(). Length=%s",length ) );
 
-        long average_time = 0l;
+        float average_time = 0f;
         ResultSet rs = null;
 
         // 20: open database connection
@@ -169,7 +169,7 @@ public class DataDock implements Callable<Long>{
 
         String sqlQuery = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType );
 
-        log.info( String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType ) );
+        log.info( String.format( "SQL Query == %s", sqlQuery ) );
 
         try{
             stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
@@ -179,10 +179,6 @@ public class DataDock implements Callable<Long>{
             throw new SQLException( sqe.getMessage() );
         }
 
-        // 30: query database:
-        //     SELECT average_time FROM statisticDB WHERE mimetype = mimeType;
-        // We know we get only one row from the query
-        /** \todo: ...but we should still check that we actually get _exactly_ one row */
         try{
             rs = stmt.executeQuery ( sqlQuery );
             log.info( String.format( "statisticDB queried with \"%s\"", sqlQuery ) );
@@ -191,7 +187,9 @@ public class DataDock implements Callable<Long>{
             log.fatal( "SQLException: " + sqe.getMessage() );
             throw new SQLException( sqe.getMessage() );
         }
-
+        if( rs == null ){
+            throw new NoSuchElementException( String.format( "We didnt get anything from the database, the mimetype \"%s\"is unknown.", mimeType ) );
+        }
         rs.last();
         int rowCount = rs.getRow();
         log.info( String.format( "rows = %s", rowCount ) );
@@ -201,33 +199,11 @@ public class DataDock implements Callable<Long>{
         }
         rs.first();
 
-        // 35: compute this.average_time from length, processtime and dataamount
-        /* The statisticDB must garantie that mimetypes are unique, the pti must make a insert stmt
-           like update statisticDB processtime = processtime + newtime, dataamount = dataamount + newdata
-           WHERE mimitype = mimitype.
-           The registration of new handlers must manage the mimetype uniqueness.*/
-        /** \todo: Do we need a language in connection with the mimetype,
-            since different languages have different handlers? yes, make later*/
+        float p = rs.getInt("processtime");
+        float d = rs.getInt("dataamount");
+        average_time = ( ( p / d ) * length );
+        log.info( String.format( "\nprocesstime=%s\ndataamount=%s\np/d=%s\naverage time for mimetype %s = %s", p, d, p/d, mimeType, average_time ) );
 
-
-        if( rs != null ){
-            /** \todo: what is the content of average_time, if there are more than one row? */
-
-            log.info( String.format( "***********************************************" ) );
-            log.info( String.format( "rs.next==%s",rs.next() ) );
-            while( rs.next() ){
-                int p = rs.getInt("processtime");
-                int d = rs.getInt("dataamount");
-                log.info( String.format( "processtime=%s ** dataamount=%s", p, d ) );
-                average_time = ( ( p / d ) * length );
-            }
-        }
-
-        else{ // No matching mimetype found
-            throw new NoSuchElementException("We didnt get anything from the database, the mimetype is unknown.");
-
-        }
-        // 30: return the estimate
         return average_time;
 
 

@@ -50,7 +50,7 @@ public class DataDockShmTest {
             e.printStackTrace();
         }
         
-        Long estimate=null;
+        Float estimate=null;
         try{
             estimate = dd.call(); 
         }catch(Exception e){
