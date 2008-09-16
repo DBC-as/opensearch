@@ -62,7 +62,7 @@ public class DataDockPoolAdm {
                     log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
                     log.info( String.format( "Number of futureTasks in FTList = %s", FTList.length ) );
                 }catch(Exception e){
-                    System.out.print("\n");
+                    System.out.print("\n Exception in DataDockPoolAdm \n");
                     e.printStackTrace();
                 }
             }
