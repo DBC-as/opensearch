@@ -27,7 +27,7 @@ public class DataDockTest {
     Connection con = null;
     public DataDockTest(){
         
-        System.out.print("Constructing the DataDockTest object \n");
+        log.debug("Constructing the DataDockTest object ");
         
         // values for the DB connection
         String driver = "oracle.jdbc.driver.OracleDriver";
@@ -41,13 +41,13 @@ public class DataDockTest {
         config.setProperty("statisticDB.userID" , userID );
         config.setProperty("statisticDB.passwd" , passwd );
         */
-        System.out.print("Database connection will be created with values: \n");
-        System.out.print("driver = " + driver + "  \n");
-        System.out.print("url = " + url + " \n");
-        System.out.print("userID = " + userID + " \n");
-        System.out.print("passwd = " + passwd + " \n");
+        log.debug("Database connection will be created with values: ");
+        log.debug("driver = " + driver + "  ");
+        log.debug("url = " + url + " ");
+        log.debug("userID = " + userID + " ");
+        log.debug("passwd = " + passwd + " ");
         // 10: create connection to the DB
-        System.out.print("Creating connection to the database \n");
+        log.debug("Creating connection to the database ");
         
         //       Connection con = null;
         
@@ -60,17 +60,17 @@ public class DataDockTest {
         try {
             con = DriverManager.getConnection(url, userID, passwd);
             
-            System.out.print("Connection created for the test insertion \n");
+            log.debug("Connection created for the test insertion ");
             
             Statement stmt = null;
             
             stmt = con.createStatement();
             
-            System.out.print("Statement created in setUp \n");
+            log.debug("Statement created in setUp ");
             // 13: setup the statisticDB with mimetype "testtype", dataamount and processtime 2l    
             stmt.executeUpdate ( "INSERT INTO statisticDB (dataamount, processtime, mimetype) VALUES( 2, 2, 'testtype' )" );
             
-            System.out.print("StatisticDB updated and ready for test query \n");
+            log.debug("StatisticDB updated and ready for test query ");
 
         }catch(SQLException ex){
             ex.printStackTrace();
@@ -83,7 +83,7 @@ public class DataDockTest {
         String lang = "test";
         String submitter = "testSubmitter";
 
-        System.out.print("Creating the CargoContainer object \n");
+        log.debug("Creating the CargoContainer object ");
 
         try{
             cc = new CargoContainer(data, mime, lang, submitter);
@@ -92,19 +92,19 @@ public class DataDockTest {
         }catch(Exception e){
             e.printStackTrace();
         }
-        System.out.print("CargoContainer created \n Creating the DataDock object \n");
+        log.debug("CargoContainer created  Creating the DataDock object ");
         // 30: construct the DataDock
 
         try{
         dd = new DataDock(cc);
         }
         catch(Exception e){
-            System.out.println( "Caught exception, bailing out. ");
-            System.out.println( e.getMessage() );
+            log.debugln( "Caught exception, bailing out. ");
+            log.debugln( e.getMessage() );
             e.printStackTrace();
         }
-        System.out.print("DataDock created \n");
-        System.out.print("DataDockTest object created \n");
+        log.debug("DataDock created ");
+        log.debug("DataDockTest object created ");
     }
     
     /**
@@ -128,20 +128,20 @@ public class DataDockTest {
             // log.fatal( "ConfigurationException: " + cex.getMessage());
             cex.printStackTrace();
         }
-        System.out.print("Printing the values of the config file \n");
-        System.out.print(config.getString("database.driver") + "\n");
-        System.out.print(config.getString("database.url") + "\n");
-        System.out.print(config.getString("database.userID") + "\n");
-        System.out.print(config.getString("database.passwd") + "\n");
+        log.debug("Printing the values of the config file ");
+        log.debug(config.getString("database.driver") + "");
+        log.debug(config.getString("database.url") + "");
+        log.debug(config.getString("database.userID") + "");
+        log.debug(config.getString("database.passwd") + "");
 
         try{
             float testEstimate =  dd.estimate( "text/xml", 2l );
             if( testEstimate != 2l){
-                System.out.print("DataDock.Estimate didnt estimate correctly \n");
-                System.out.print("Printing the estimate: "+ testEstimate +" \n");
+                log.debug("DataDock.Estimate didnt estimate correctly ");
+                log.debug("Printing the estimate: "+ testEstimate +" ");
             }
             else{
-                System.out.print("DataDock.estimate estimated correctly \n");
+                log.debug("DataDock.estimate estimated correctly ");
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -168,12 +168,12 @@ public class DataDockTest {
             e.printStackTrace();
         }
         if(testFH != ""){
-            System.out.print("Something returned, checking what it is \n");
+            log.debug("Something returned, checking what it is ");
             if (testFH.indexOf("testSubmitter") != 0){
-                System.out.print("The fedoraHandle received is misshaped.");
-                System.out.print(" Should be testSubmitter, but is: " + testFH + "\n" );
+                log.debug("The fedoraHandle received is misshaped.");
+                log.debug(" Should be testSubmitter, but is: " + testFH + "" );
             }else{
-                System.out.print("The returned fedoraHandle is wellshaped \n");
+                log.debug("The returned fedoraHandle is wellshaped ");
             }
         }    
     }
@@ -188,50 +188,50 @@ public class DataDockTest {
 
         // 10: create the table processqueue with a sequence and check.
         try{
-            System.out.print("creating statement on the connection \n");
+            log.debug("creating statement on the connection ");
             stmt = con.createStatement(); 
             
-            System.out.print("creating table processqueue \n");
-            String tableStmt1 = "CREATE TABLE processqueue(\n "+
+            log.debug("creating table processqueue ");
+            String tableStmt1 = "CREATE TABLE processqueue( \n"+
                 "queueid INTEGER,\n "+
                 " fedoraHandle VARCHAR(100),\n"+
                 " processing CHAR(1) CHECK (processing IN ( 'Y','N')))";
             String tableStmt2 = "CREATE SEQUENCE processqueue_seq\n"+
                 "MAXVALUE 1000000000\n"+
                 "NOCYCLE";
-                System.out.print(tableStmt1 + " \n");
+                log.debug(tableStmt1 + " ");
                 stmt.executeUpdate(tableStmt1);
-                System.out.print("Table processqueue created \n");
+                log.debug("Table processqueue created ");
 
-                System.out.print(tableStmt2 + " \n");
+                log.debug(tableStmt2 + " ");
                 stmt.executeUpdate(tableStmt2);
-                System.out.print("Sequence processqueue_seq created \n");
+                log.debug("Sequence processqueue_seq created ");
         }catch(SQLException sqle){
             sqle.printStackTrace();
         }
         // 20: queue the fedora handle
-        System.out.print("Trying to queue a fedorahandle  \n");
+        log.debug("Trying to queue a fedorahandle  ");
         try{
             dd.queueFedoraHandle(testFH);
-            System.out.print("DataDock.queueFedoraHandle(testFH) called without exceptions thrown\n");
+            log.debug("DataDock.queueFedoraHandle(testFH) called without exceptions thrown");
         }catch(Exception e){
             e.printStackTrace();
         }
         
         // 30: Select the content of the processqueue table to check 
         // the validity of the Enqueue operation
-        System.out.print("Selecting in the processqueue table to see if it is queued correctly \n");        
+        log.debug("Selecting in the processqueue table to see if it is queued correctly ");        
         try{
             rs = stmt.executeQuery("SELECT * FROM processqueue WHERE fedorahandle = 'test'");
             
             
             if( rs != null ){
-                System.out.print("Something selected from the processqueue\n");
+                log.debug("Something selected from the processqueue");
                 while(rs.next()){
-                    System.out.print("Printing content of resultset\n");
-                    System.out.print("fedorahandle = "+ rs.getString("fedorahandle") +", should be test \n");
-                    System.out.print("queueid = "+ rs.getInt("queueid") +", should be 1 \n");
-                    System.out.print("processing = "+ rs.getString("processing") +", should be N \n");
+                    log.debug("Printing content of resultset");
+                    log.debug("fedorahandle = "+ rs.getString("fedorahandle") +", should be test ");
+                    log.debug("queueid = "+ rs.getInt("queueid") +", should be 1 ");
+                    log.debug("processing = "+ rs.getString("processing") +", should be N ");
                     
                 } 
             } }catch(SQLException sqle){
@@ -240,13 +240,13 @@ public class DataDockTest {
         // 40: drop the processqueue table
         try{
             stmt.executeUpdate("DROP TABLE processqueue");
-            System.out.print("Table processqueue dropped \n");
+            log.debug("Table processqueue dropped ");
             stmt.executeUpdate("DROP SEQUENCE processqueue_seq");
-            System.out.print("sequence processqueue_seq dropped \n");
+            log.debug("sequence processqueue_seq dropped ");
         }catch(SQLException sqle){
             sqle.printStackTrace();
             }
-        System.out.print("testDataDockQueueFedoraHandle ended \n");
+        log.debug("testDataDockQueueFedoraHandle ended ");
     }
     
 }   

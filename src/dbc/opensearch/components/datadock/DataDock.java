@@ -112,6 +112,7 @@ public class DataDock implements Callable<Float>{
      */
 
     public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
+        log.info( String.format( "Entering DataDock.call" ) );
         Float processEstimate = 0f;
 
         try{
@@ -119,7 +120,9 @@ public class DataDock implements Callable<Float>{
             processEstimate = estimate(cc.getMimeType(), cc.getStreamLength());
             // 20: Store data in Fedora
             // 30: queue FedoraHandle
+            log.info( String.format( "Estimate = %s ", processEstimate ) );
             queueFedoraHandle(fedoraStoreData());
+            log.info( String.format( "data queued" ) );
         }
 
         catch(ClassNotFoundException cne){

@@ -71,9 +71,10 @@ public class CargoContainer {
          */
         // 10: check mimetype
         CargoMimeType CMT = null;
-        log.debug( "checking mimetype" );
+        log.debug( String.format( "checking mimetype: %s", mime ) );
         for (CargoMimeType cmt : CargoMimeType.values() ){
-            if( mime == cmt.getMimeType() ){
+            if( mime.equals( cmt.getMimeType() ) ){
+                log.debug( String.format( "mimetype %s validated", mime ) );
                 CMT = cmt;                
             }
         }
@@ -132,7 +133,7 @@ public class CargoContainer {
         CargoMimeType CMT = null;
         log.debug( "checking mimetype" );
         for (CargoMimeType cmt : CargoMimeType.values() ){
-            if( mimetype == cmt.getMimeType() ){
+            if( mimetype.equals( cmt.getMimeType() ) ){
                 CMT = cmt;                
             }
         }

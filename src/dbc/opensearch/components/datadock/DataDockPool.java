@@ -57,7 +57,9 @@ public class DataDockPool {
         //String pid = getnextPid( cc.getSubmitter() );
         // FutureTask future = new FutureTask(new DataDock(cc), pid);
         FutureTask future = new FutureTask(new DataDock(cc));
-       
+        
+        //        log.info( String.format( "Thread returned with estimate %s", future.get() ) );
+
         // 30: join the thread to the pool
         ThreadExecutor.submit(future);
         // 40: return the FutureTask to the caller
