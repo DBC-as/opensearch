@@ -104,8 +104,7 @@ public class CargoContainer {
             http://java.sun.com/javase/6/docs/api/java/io/InputStream.html#available()
          */
         try{
-            contentLength = this.data.available();
-            //            contentLength = this.data.available();
+            contentLength = this.data.available();            
         } catch( IOException ioe ){
             log.fatal( String.format( "Unable to read from the InputStream: %s", ioe.toString() ) );
             throw new IOException( ioe );

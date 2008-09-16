@@ -1,5 +1,5 @@
 CREATE TABLE processqueue(
-  queueid INTEGER,
+  queueid INTEGER PRIMARY KEY,
   fedorahandle VARCHAR(100),
   processing CHAR(1) CHECK (processing IN ( 'Y', 'N' ))
 );

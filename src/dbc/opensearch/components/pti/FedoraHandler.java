@@ -107,10 +107,6 @@ public class FedoraHandler implements Constants{
         }
     }
 
-    public String submitDatastream( CargoContainer cargo, String pidNS, String itemId )throws RemoteException, XMLStreamException, IOException, fedora.server.errors.ServerException{
-        return submitDatastream( cargo, pidNS, itemId, "" );
-    }
-
     /**
      *
      */
@@ -213,7 +209,7 @@ public class FedoraHandler implements Constants{
         property = property.addElement( "foxml:binaryContent" );
         property.addText( Base64.encode( cargo.getDataBytes() ) );
 
-        log.debug( String.format( "Finished constructing xml" ) );
+        log.debug( "Finished constructing xml" );
 
         System.out.println( document.asXML() );
 

@@ -211,6 +211,9 @@ public class DataDock implements Callable<Long>{
 
 
     }
+    /**
+     *
+     */
     public String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, Exception {
         String fedoraHandle = "";
         /**
@@ -219,18 +222,18 @@ public class DataDock implements Callable<Long>{
          * If we use the submitter as namespace we still need a way
          * to be sure the identifier is unique
          */
-        String usePid = this.cc.getSubmitter();
+        String usePid = cc.getSubmitter();
         /**
          * \todo find out where and how we get the itemId
          */
-        // ?????
-        String itemId = this.cc.getMimeType();
-        //String label = "";
-
+        String itemId = cc.getMimeType().substring( cc.getMimeType().indexOf("/") + 1 );
+        
+        /** todo: give real applicable value to label. value should be given by cargo container*/
+        String label = "test";
         // 10: open connection to fedora base
-        if( this.fh == null ){
+        if( fh == null ){
             try{
-                this.fh = new FedoraHandler();
+                fh = new FedoraHandler();
             }
             catch (ConfigurationException cex){
                 throw new ConfigurationException( cex.getMessage() );
@@ -250,7 +253,7 @@ public class DataDock implements Callable<Long>{
             // }catch(XMLStreamException xmle){
             // }catch(IOException ioe){
             //}
-            fedoraHandle = this.fh.submitDatastream( this.cc, usePid, itemId );
+            fedoraHandle = fh.submitDatastream( cc, usePid, itemId, label );
         }catch( RemoteException re ){
             throw new RemoteException(re.getMessage());
         }catch( XMLStreamException xmle ){
