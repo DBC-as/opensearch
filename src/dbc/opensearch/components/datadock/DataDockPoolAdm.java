@@ -70,13 +70,14 @@ public class DataDockPoolAdm {
             log.info("\n entering while loop in DataDockPoolAdm \n");
             log.info(String.format("answers = %s numOfFiles = %s ",answersReceived, numOfFiles));
             while(answersReceived < numOfFiles){
+                log.info("\n In the while loop \n");
                 for(int x = 0; x < numOfFiles; x++){
                     //check if answer is received for this file
                     if(fileNameList[x].equals( doneString) ){
                         // go to next element
                         log.info("file done");
                     }else{
-                        
+                        log.info( "\n calling isDone \n" );
                         if(FTList[x].isDone()){
                             
                             estimateMessageString = String.format("The file: %s , will take approximately: %s to process \n", fileNameList[x],FTList[x].get() );
@@ -94,7 +95,7 @@ public class DataDockPoolAdm {
                 // 60 write the num of files stored in Fedora
             }
         }catch(Exception e){
-            System.out.print("Could not initialize the datapool \n");
+            log.info("\n Could not initialize the DataDockPool \n");
             e.printStackTrace();
         }
     }
