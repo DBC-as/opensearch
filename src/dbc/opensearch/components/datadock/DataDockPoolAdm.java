@@ -72,7 +72,7 @@ public class DataDockPoolAdm {
             log.info("\n entering while loop in DataDockPoolAdm \n");
             log.info(String.format("answers = %s numOfFiles = %s ",answersReceived, numOfFiles));
             while(answersReceived < numOfFiles){
-                log.info("\n In the while loop \n");
+                //         log.info("\n In the while loop \n");
                 for(int x = 0; x < numOfFiles; x++){
                     //check if answer is received for this file
                     if(fileNameList[x].equals( doneString) ){
@@ -86,6 +86,8 @@ public class DataDockPoolAdm {
                             log.info(estimateMessageString);
                             fileNameList[x] = doneString;
                             answersReceived++;   
+                            log.info(String.format("stored %s files to Fedora",answersReceived ));
+                            log.info(String.format("%s files to go",numOfFiles - answersReceived));
                         }
                     }
 
@@ -96,6 +98,7 @@ public class DataDockPoolAdm {
                 // with a new created with createAndJoinThread
                 // 60 write the num of files stored in Fedora
             }
+            log.info( "exited while loop in DataDockPoolAdm" );
         }catch(Exception e){
             log.info("\n Could not initialize the DataDockPool \n");
             e.printStackTrace();
