@@ -1,4 +1,0 @@
-<project name="OpenSearch.ProcessQueue" default="usage">
-  <!--Time-stamp: <2008-08-19 13:03:55 stm> -->
-  <import file="../../../../../build-common.xml"/>
-</project>
