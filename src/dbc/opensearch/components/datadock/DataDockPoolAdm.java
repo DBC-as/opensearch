@@ -101,7 +101,7 @@ public class DataDockPoolAdm {
                 // 60 write the num of files stored in Fedora
             }
             log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
-            log.info( "exited while loop in DataDockPoolAdm" );
+          
         }catch(Exception e){
             log.info("\n Could not initialize the DataDockPool \n");
             e.printStackTrace();
