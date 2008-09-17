@@ -1,0 +1,288 @@
+package dbc.opensearch.components.tools;
+
+import dbc.opensearch.components.tools.tuple.Tuple;
+import dbc.opensearch.components.tools.tuple.Pair;
+import java.sql.Connection;
+import java.sql.CallableStatement;
+import java.sql.Statement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import oracle.jdbc.driver.OracleDriver;
+import org.apache.log4j.Logger;
+import org.apache.log4j.xml.DOMConfigurator;
+
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+
+import java.net.URL;
+import java.util.NoSuchElementException;
+import java.lang.ClassNotFoundException;
+
+public class Processqueue {
+
+    /**
+     * Variables to hold configuration parameters
+     */
+    private static String driver = "";
+    private static String url = "";
+    private static String userID = "";
+    private static String passwd = "";
+
+    /**
+     *  Popped_queueid holds elements queueid after pop
+     */
+    //private int popped_queueid = 0;
+
+    /**
+     *  Log
+     */
+
+    private static final Logger log = Logger.getRootLogger();
+
+
+    /**
+     *  database Connection
+     */
+    private Connection con;
+    
+    
+    public Processqueue() throws ConfigurationException {
+
+        log.debug( "Processqueue Constructor" );
+
+        log.debug( "Obtain config paramaters");
+        
+        URL cfgURL = getClass().getResource("/config.xml");
+        XMLConfiguration config = null;
+        try{
+            config = new XMLConfiguration( cfgURL );
+        }
+        catch (ConfigurationException cex){
+            log.fatal( "ConfigurationException: " + cex.getMessage() );
+            throw new ConfigurationException( cex.getMessage() );
+        }
+
+        driver = config.getString( "database.driver" );
+        url    = config.getString( "database.url" );
+        userID = config.getString( "database.userID" );
+        passwd = config.getString( "database.passwd" );
+        
+        log.debug( "driver: "+driver );
+        log.debug( "url:    "+url );
+        log.debug( "userID: "+userID );
+    } 
+
+    /**
+     * Push an fedorahandle to the processqueue
+     * @params fedorahandle: a fedorahandle, i.e. a pointer to a document in the opensearch repository.
+     */
+    public void push( String fedorahandle ) throws ClassNotFoundException, SQLException {
+        log.debug( "Processqueue.pop() called" );
+        // establish databaseconnection
+        log.debug( "establish databaseconnection" );
+        Connection con;        
+        try{
+            con = establishConnection();
+        }
+        catch(ClassNotFoundException ce){
+            throw new ClassNotFoundException( ce.getMessage() );
+        }
+        catch(SQLException sqe){
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        /** \todo: reset counter if queue is empty */
+        
+        Statement stmt = null;
+        try{
+            // Write fedorahandle and queueID to database
+            stmt = con.createStatement();
+            
+            stmt.executeUpdate( "INSERT INTO processqueue(queueid, fedorahandle, processing)" +
+                                " VALUES(processqueue_seq.nextval ,'"+fedorahandle+"','N')" );
+            log.debug( "Written to database" );
+        }
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        // Close database connection
+
+        stmt.close();
+        con.close();
+
+    }
+
+    /**
+     * pops the top-most element from the Processqueue, returning the fedorahandle as a String
+     * @returns A pair cointaning the fedorahandle (a String containing the unique handle), and queueid a number identifying the fedorahandle in the queue. Used later for commit or rollback.
+     * for the resource in the object repository
+     */
+    public Pair<String, Integer>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
+        log.debug( "Processqueue.pop() called" );
+
+        // establish databaseconnection
+        log.debug( "establish databaseconnection" );
+        try{
+            con = establishConnection();
+        }
+        catch(ClassNotFoundException ce){
+            throw new ClassNotFoundException( ce.getMessage() );
+        }
+        catch(SQLException sqe){
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        // preparing call of stored procedure
+        CallableStatement cs=null;
+        ResultSet rs=null;
+        
+        try{
+            cs = con.prepareCall("{call proc_prod(?,?,?)}");
+            cs.registerOutParameter(1, java.sql.Types.VARCHAR);
+            cs.registerOutParameter(2, java.sql.Types.INTEGER);
+            cs.registerOutParameter(3, java.sql.Types.VARCHAR);
+            
+            // execute procedure
+            rs = cs.executeQuery();
+        }
+        catch ( SQLException sqe ){            
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+        
+        if ( cs.getString(1) == null ) { // Queue is empty
+            log.info( "Processqueue is empty" );
+            throw new NoSuchElementException("No elements on processqueue");
+        } 
+
+        //fetch data
+        String handle = cs.getString(1);
+        int popped_queueid = cs.getInt(2);
+        log.info( "Handle obtained by pop: "+ handle );
+        log.debug( "popped_queueid: "+popped_queueid );
+
+        // Close database connection
+        cs.close();
+        con.close();
+
+        //        return handle;
+        return Tuple.from( handle, popped_queueid );
+    }
+
+
+    /**
+     * commits the pop to the queue. This operation removes the
+     * element from the queue for good, and rollback is not possible
+     */
+    public void commit( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException {
+        log.debug( "Dequeue.update() called" );
+                
+        // establish databaseconnection
+        log.debug( "establish databaseconnection" );
+        try{
+            con = establishConnection();
+        }
+        catch(ClassNotFoundException ce){
+            throw new ClassNotFoundException( ce.getMessage() );
+        }
+        catch(SQLException sqe){
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        Statement stmt = null;
+        int rowsRemoved = 0;
+        
+        // remove element from queue ie. delete row from processqueue table
+        try{
+            stmt = con.createStatement();
+            rowsRemoved = stmt.executeUpdate("DELETE FROM processqueue WHERE queueid = "+queueid);
+        }
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        if( rowsRemoved == 0 ) {
+            throw new NoSuchElementException( "The queueid does not match a popped element." ); 
+        }
+        
+        // Close database connection
+        stmt.close();
+        con.close();
+    }
+
+    /**
+     * rolls back the pop. This restores the element in the queue and
+     * the element is in concideration the next time a pop i done.
+     */    
+    public void rollback( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException{
+        log.debug( "Processqueue.rollback() called" );
+
+        // establish databaseconnection
+        log.debug( "establish databaseconnection" );
+        try{
+            con = establishConnection();
+        }
+        catch(ClassNotFoundException ce){
+            throw new ClassNotFoundException( ce.getMessage() );
+        }
+        catch(SQLException sqe){
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        Statement stmt = null;
+        int rowsRemoved = 0;
+        
+        // restore element in queue ie. update queueid in row from processqueue table
+        try{
+            stmt = con.createStatement();
+            stmt.executeUpdate( "UPDATE processqueue SET processing = 'N' WHERE queueid = "+queueid );
+        }
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+        
+        if( rowsRemoved == 0 ) {
+            throw new NoSuchElementException( "The queueid does not match a popped element." ); 
+        }
+
+        // Close database connection
+        stmt.close();
+        con.close();
+
+    }
+
+
+
+    private static Connection establishConnection() throws ClassNotFoundException, SQLException {
+
+        Connection con = null;
+
+        try {
+            Class.forName(driver);
+
+        } 
+        catch(ClassNotFoundException ce) {
+            log.fatal( "ClassNotFoundException: " + ce.getMessage() );
+            throw new ClassNotFoundException( ce.getMessage() );
+        }
+
+        try {
+            con = DriverManager.getConnection(url, userID, passwd);
+        } 
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        log.debug( "Got connection." );
+
+        return con;
+    }
+
+}
