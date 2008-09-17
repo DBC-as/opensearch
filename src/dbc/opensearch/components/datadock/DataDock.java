@@ -2,6 +2,7 @@ package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.components.pti.FedoraHandler;
 import dbc.opensearch.components.processqueue.*;
+import dbc.opensearch.components.tools.*;
 
 import java.sql.Connection;
 
@@ -50,8 +51,8 @@ import java.util.NoSuchElementException;
  */
 
 public class DataDock implements Callable<Float>{
-    CargoContainer cc;
-    Enqueue enq;
+    private CargoContainer cc;
+    private Processqueue queue;
     // String pid;
     private XMLConfiguration config;
     private static volatile FedoraHandler fh;
@@ -80,7 +81,8 @@ public class DataDock implements Callable<Float>{
 
         log.debug("DataDock Constructor");
         cc = cargo;
-
+        queue = new Processqueue();
+        
         // read the config file
         log.debug( "Obtain config paramaters");
         URL cfgURL = getClass().getResource("/config.xml");
@@ -282,19 +284,17 @@ public class DataDock implements Callable<Float>{
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     public void queueFedoraHandle( String fedoraHandle ) throws ClassNotFoundException, ConfigurationException, SQLException {
         /**
-         * the Enqueue class queues a fedoraHandle on the processQueue
+         * the push queues a fedoraHandle on the processQueue
          * to take the parameteres from the config file
          */
         log.info( "Entering DataDock.queueFedoraHandle" );
-        // 10: call Enqueue
+        // 10: call push
         try{
-            enq = new Enqueue(fedoraHandle);
+            queue.push( fedoraHandle );
+
         }
         catch(ClassNotFoundException cne){
             throw new ClassNotFoundException(cne.getMessage());
-        }
-        catch(ConfigurationException ce){
-            throw new ConfigurationException(ce.getMessage());
         }
         catch(SQLException sqe){
             throw new SQLException(sqe.getMessage());
