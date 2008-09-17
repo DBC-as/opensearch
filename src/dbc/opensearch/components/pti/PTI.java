@@ -34,13 +34,55 @@ public class PTI implements Callable<Float>{
      */
     private static final Logger log = Logger.getRootLogger();
 
+
+    private static volatile FedoraHandler fh;
+
+    public PTI(CompassSession session ) throws ConfigurationException {
+        /*      
+  if( PTI.theCompass == null ) {
+
+            CompassConfiguration conf = new CompassConfiguration();
+        */
+            /** \todo: when we get more types of data (than the one we got now...) we should be able to load configurations at runtime. Or just initialize with all possible input-format? */
+        /*  
+        URL cfg = getClass().getResource("/compass.cfg.xml");
+            URL cpm = getClass().getResource("/xml.cpm.xml");
+            
+            log.debug( String.format( "Compass configuration=%s", cfg.getFile() ) );
+            log.debug( String.format( "XSEM mappings file   =%s", cpm.getFile() ) );
+            
+            File cpmFile = new File( cpm.getFile() );
+            
+            conf.configure( cfg );
+            conf.addFile( cpmFile );
+            
+            theCompass = conf.buildCompass();        
+            
+        }
+        else {
+            log.info( String.format( "A Compass object is already initialized, using it" ) );
+        }
+        if( PTI.fh == null ){
+            try{
+                fh = new FedoraHandler();
+            }
+            catch (ConfigurationException cex){
+                log.fatal( "ConfigurationException: " + cex.getMessage() );
+                throw new ConfigurationException( cex.getMessage() );
+            }
+        }else{
+            log.info( String.format( "A FedoraHandler is already initialized, using it" ) );
+            }*/
+        
+    }
+
     
     /**
      * Constructor
      */
-    public PTI( String fedorahandle, compasssession s ){
-        log.debug( "Entering PTI Constructor" );
-    }
+    //public PTI( String fedorahandle, compasssession s ){
+    //    log.debug( "Entering PTI Constructor" );
+    //}
     /**
      * call is the main function of the PTI class. It reads the data
      * pointed to by the fedorahandler given to the class in the
