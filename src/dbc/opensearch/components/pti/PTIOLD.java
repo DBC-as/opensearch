@@ -40,8 +40,8 @@ import org.apache.commons.configuration.ConfigurationException;
  * open sessions that can be handled at any given time. When the last
  * reference to PTI dies, the Compass object dies as well.
  */
-public class PTI {
-
+public class PTIOLD {
+    //public class PTI {
     Logger log = Logger.getLogger("PTI");
 
     /**
@@ -79,8 +79,10 @@ public class PTI {
      * Compass object is initialized from the xml-configuration. All
      * subsequent calls to this constructor
      */
-    public PTI( ) throws ConfigurationException {
-        if( PTI.theCompass == null ) {
+    public PTIOLD( ) throws ConfigurationException {
+        if( PTIOLD.theCompass == null ) {
+            //public PTI( ) throws ConfigurationException {
+            //if( PTI.theCompass == null ) {
 
             CompassConfiguration conf = new CompassConfiguration();
 
@@ -102,7 +104,8 @@ public class PTI {
         else {
             log.info( String.format( "A Compass object is already initialized, using it" ) );
         }
-        if( PTI.fh == null ){
+        if( PTIOLD.fh == null ){
+            //        if( PTI.fh == null ){
             try{
                 fh = new FedoraHandler();
             }

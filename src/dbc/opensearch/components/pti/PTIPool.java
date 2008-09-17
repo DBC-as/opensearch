@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 //import org.compass.core.CompassSession
 //import org.compass.core.CompassSession
+import org.apache.commons.configuration.ConfigurationException;
 
 public class PTIPool {
 
@@ -26,7 +27,7 @@ public class PTIPool {
      */
     private static final Logger log = Logger.getRootLogger();
 
-    public PTIPool( int numberOfThreads ){
+    public PTIPool( int numberOfThreads ) throws Exception{
         // Securing nuberOfThreads > 0
         if ( numberOfThreads <= 0 ){
             /** \todo Find suitable exception */
@@ -55,16 +56,27 @@ public class PTIPool {
         initialised = true;
         log.info( "The PTIPool has been constructed" );
     }   
-    public FutureTask createAndjoinThread (){
+    /** \todo find better Exception to throw*/
+    public FutureTask createAndjoinThread ()throws Exception, RuntimeException, ConfigurationException{
         if( !initialised){
             throw new Exception("Trying to start a PTIThread without constructing the PTIPool");
         }
-        CompassSession session = getSession();
-        FutureTask future = new FutureTask( new PTI( session ));
-
+        CompassSession session = null;
+        FutureTask future = null;
+        try{
+        session = getSession();
+        future = new FutureTask( new PTI( session ));
+        }catch(RuntimeException re){
+            throw new RuntimeException( re.getMessage() );
+        }catch(ConfigurationException ce){
+            throw new ConfigurationException( ce.getMessage() );
+        }
+        
+        
         ThreadExecutor.submit(future);
         return future;
-    }
+    }       
+
 
     /**
      * Returns a Compass session, and check whether its instantiated.
