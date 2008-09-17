@@ -31,9 +31,12 @@ public class DataDockPoolAdm {
             String[] fileNameList;
             File[] fileList;
             FutureTask[] FTList = null;
-            String doneString = "så er jeg færdig og du skal ikke kigge på mig";
+            String doneString = "narn noRl saRang hATi arNar";
             String estimateMessageString;
             int answersReceived = 0;
+
+            // The FileFilter let only files through  that arent directories 
+            // and there names doesnt start with "."
 
             fileNameList = dir.list( new FileFilter() );
             fileList = dir.listFiles( new FileFilter() );
@@ -43,7 +46,6 @@ public class DataDockPoolAdm {
                 throw new IllegalArgumentException( String.format( "no files on specified path: %s", filepath ) );
             }
 
-            // 37: should check that we arent taking directories, later...
             int numOfFiles = fileList.length;
             log.info(String.format( "\n number of files = %s \n", numOfFiles ) );
             FTList = new FutureTask[ numOfFiles ];
@@ -60,44 +62,45 @@ public class DataDockPoolAdm {
                     CargoContainer cc = new CargoContainer(data, mimetype, lang, submitter);
                     FTList[filesSent] = DDP.createAndJoinThread(cc);
                     log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
-                    log.info( String.format( "Number of futureTasks in FTList = %s", FTList.length ) );
+                  
                 }catch(Exception e){
                     System.out.print("\n Exception in DataDockPoolAdm \n");
                     e.printStackTrace();
                     System.exit(1);
                 }
             }
-            System.out.print("All files given to the DataDockPool \n");
+            log.info( "All files given to the DataDockPool \n" );
             //Loop that continues until all files have docked
             log.info("\n entering while loop in DataDockPoolAdm \n");
-            log.info(String.format("answers = %s numOfFiles = %s ",answersReceived, numOfFiles));
+           
             while(answersReceived < numOfFiles){
                 //         log.info("\n In the while loop \n");
                 for(int x = 0; x < numOfFiles; x++){
                     //check if answer is received for this file
                     if(fileNameList[x].equals( doneString) ){
                         // go to next element
-                        log.info("file done");
                     }else{
-                        log.info( "\n calling isDone \n" );
+                        //log.info( "\n calling isDone \n" );
                         if( FTList[x].isDone() ){
                             
                             estimateMessageString = String.format("The file: %s , will take approximately: %s to process \n", fileNameList[x],FTList[x].get() );
                             log.info(estimateMessageString);
-                            fileNameList[x] = doneString;
+                            /**
+                             * Changing the corresponding String in the nameList 
+                             * to the donestring, yes its crappy, but it works for now 
+                             */                          
+                            fileNameList[x] = doneString; 
                             answersReceived++;   
-                            log.info(String.format("stored %s files to Fedora",answersReceived ));
                             log.info(String.format("%s files to go",numOfFiles - answersReceived));
                         }
                     }
 
                 }
                 // 50: pol the FutureTasks, when an answer is received,
-                // print it to std out and create a CargoContainer from the next
-                // element in fileList and overwrite the answering FutureTask
-                // with a new created with createAndJoinThread
+                // print it to std out 
                 // 60 write the num of files stored in Fedora
             }
+            log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
             log.info( "exited while loop in DataDockPoolAdm" );
         }catch(Exception e){
             log.info("\n Could not initialize the DataDockPool \n");
