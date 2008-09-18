@@ -1,4 +1,4 @@
-package dbc.opensearch.components.datadock.tests;
+package dbc.opensearch.components.tools.tests;
 /** \brief UnitTest for FileFilter */
 
 import static org.junit.Assert.*;
