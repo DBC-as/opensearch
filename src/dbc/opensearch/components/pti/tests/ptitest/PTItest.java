@@ -1,6 +1,6 @@
 package dbc.opensearch.components.pti.tests.ptitest;
 
-// import dbc.opensearch.components.pti.*;
+import dbc.opensearch.components.pti.*;
 
 // import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -61,10 +61,33 @@ public class PTItest{
         
         log.info( "Getting Session" );
         CompassSession session = getSession();
+        
+        /////////////////////////////////
 
+
+        PTI pti = null;
+        log.info( "Stating PTI thread" );
+        try{
+            pti = new PTI( session );
+        }catch(Exception e){
+            System.out.println( "Error: creating pti ");
+            System.exit(0);
+        }
+        if ( pti == null ){
+            System.out.println( "Error: pti = null");
+            System.exit(0);
+        }
+        
+        float returnval = pti.call();
+        System.out.println( "returnval "+ returnval);
+            
 
     }
     
+
+
+
+
     /**
      * returns a new session from the sessionpool, throwing an
      * exception if the session cannot be obtained.
