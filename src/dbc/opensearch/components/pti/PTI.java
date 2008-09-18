@@ -76,22 +76,11 @@ public class PTI implements Callable<Float>{
         log.debug( "PTI call function" );
         float processtime = -1f;
 
-        /*
-        try{
-        handlePair = queue.pop();
-        }catch(ClassNotFoundException cnfe){
-            throw new ClassNotFoundException( cnfe.getMessage() );
-        }catch( SQLException sqle ){
-            throw new SQLException( sqle.getMessage() );
-        }catch( NoSuchElementException nsee ){
-            throw new NoSuchElementException( nsee.getMessage() );
-        }
-        fHandle = Tuple.get1(handlePair);
-        */
-
         // start timer <-- no need to, timestamp is set in DataDock
-        // retrive fedoraHandle from the processqueue
         // retrive data from handle : gets done in doProcessing method
+        // start compasss transaction : gets done in doProcessing method 
+        // index data : Gets done in doProcessing method
+        // store data : Gets done in the doProcessing method
         try{
         doProcessing(fHandle);
         }catch( CompassException ce ){
@@ -101,9 +90,6 @@ public class PTI implements Callable<Float>{
         }catch( DocumentException de ){
             throw new DocumentException( de.getMessage() );
         }
-        // start compasss transaction : gets done in doProcessing method 
-        // index data
-        // store data 
         // create processtime from timestamp and current time
         // commit to processqueue that the element can be removed
         finishTime = new Date();
