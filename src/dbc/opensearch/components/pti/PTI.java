@@ -1,14 +1,20 @@
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.components.datadock.CargoContainer;
+import dbc.opensearch.components.tools.Processqueue;
+import dbc.opensearch.components.tools.tuple.Tuple;
+import dbc.opensearch.components.tools.tuple.Pair;
 
 import java.util.concurrent.Callable;
 // import java.io.ByteArrayInputStream;
 // import java.io.File;
- import java.io.IOException;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.sql.SQLException;
+//import java.lang.ClassNotFoundException;
 // import java.net.URL;
-// // import javax.xml.parsers.DocumentBuilderFactory;
-// // import javax.xml.parsers.DocumentBuilder;
+// import javax.xml.parsers.DocumentBuilderFactory;
+// import javax.xml.parsers.DocumentBuilder;
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
@@ -24,7 +30,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
-
+import java.util.Date;
 import org.apache.commons.configuration.ConfigurationException;
 
 public class PTI implements Callable<Float>{
@@ -37,12 +43,24 @@ public class PTI implements Callable<Float>{
 
     private static volatile FedoraHandler fh;
     private CompassSession ourSession;
+    private CargoContainer cc;
+    private Processqueue queue;
+    private Date finishTime;
+    private Pair<String, Integer> handlePair;
+    private String fHandle;
+    private int queueID;
 
+    /**
+     * Constructor
+     */
     public PTI(CompassSession session ) throws ConfigurationException {
         ourSession = session;
- 
-        
-    } 
+        try{
+        queue = new Processqueue();
+        }catch(ConfigurationException ce){
+            throw new ConfigurationException( ce.getMessage() );
+        }
+    }
    
     /**
      * call is the main function of the PTI class. It reads the data
@@ -52,15 +70,38 @@ public class PTI implements Callable<Float>{
      * by the fedorahandle.
      * @return the processtime
      */
-    public Float call(){
+    public Float call() throws ClassNotFoundException, CompassException, IOException, DocumentException, SQLException, NoSuchElementException {
         log.debug( "PTI call function" );
-        float processtime = 0f;
+        float processtime = -1f;
+
+        try{
+        handlePair = queue.pop();
+        }catch(ClassNotFoundException cnfe){
+            throw new ClassNotFoundException( cnfe.getMessage() );
+        }catch( SQLException sqle ){
+            throw new SQLException( sqle.getMessage() );
+        }catch( NoSuchElementException nsee ){
+            throw new NoSuchElementException( nsee.getMessage() );
+        }
+        fHandle = Tuple.get1(handlePair);
         // start timer <-- no need to, timestamp is set in DataDock
+        // retrive fedoraHandle from the processqueue
         // retrive data from handle : gets done in doProcessing method
+        try{
+        doProcessing(fHandle);
+        }catch( CompassException ce ){
+            throw new CompassException( ce.getMessage() );
+        }catch( IOException ioe ){
+            throw new IOException( ioe.getMessage() );
+        }catch( DocumentException de ){
+            throw new DocumentException( de.getMessage() );
+        }
         // start compasss transaction : gets done in doProcessing method 
         // index data
         // store data 
         // create processtime from timestamp and current time
+        finishTime = new Date();
+        processtime = finishTime.getTime() - cc.getTimestamp();
         // update statisticDB
         // return processtime
         return processtime;
@@ -75,8 +116,9 @@ public class PTI implements Callable<Float>{
         // prePTI: String fedoraHandle = queue.pop(  ); ... and remember to commit on the queue
         
         // 20: CargoContainer cc = PTI.getDataFromRepository( fedoraHandle );
-        CargoContainer cargo = fh.getDatastream( fedoraHandle );
-        
+        // CargoContainer cargo = fh.getDatastream( fedoraHandle );
+        this.cc = fh.getDatastream( fedoraHandle );
+
         // 25: retrieve the xml from the cargo:
         //Document doc = convertCargoToXml( cargo );
         
@@ -91,7 +133,7 @@ public class PTI implements Callable<Float>{
         SAXReader saxReader = new SAXReader( false );
         
         try{
-            doc = saxReader.read( cargo.getData() );
+            doc = saxReader.read( cc.getData() );
         }catch( DocumentException de){
             System.out.println(String.format( "DocumentException=%s",de.getMessage() ) );
         }

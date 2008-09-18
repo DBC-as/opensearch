@@ -22,8 +22,12 @@ public class CargoContainer {
     /** object to hold information about the data*/
     private CargoObjectInfo coi;
 
-    /** date when the container was constructed*/
-    private final long date;
+    /** 
+     * date when the container was constructed <-- for what use? 
+     * the CargoObjectInfo has a timestamp and a getTimestamp method.
+     *     
+     * private final long date;
+     */
 
     /** holder for the data (InputStream supports estimations through .available()) */
     private BufferedInputStream data;
@@ -63,7 +67,7 @@ public class CargoContainer {
         }
         
         // 07: timestamp the container
-        date = System.currentTimeMillis();
+        // date = System.currentTimeMillis();
 
         /** \todo: How do we specify the allowed mimetypes? enums? config? 
          *
@@ -163,11 +167,12 @@ public class CargoContainer {
     }
 
     /**
-     * @returns the jave.util.Date (in milliseconds) for when the 
+     * @returns the jave.util.Date (in milliseconds) not used anymore...
+     *
+     * public long getDate(){
+     *    return this.date;
+     * }
      */
-    public long getDate(){
-        return this.date;
-    }
 
     /**
      * @return the data of the container-object as an BufferedInputStream
@@ -248,6 +253,9 @@ public class CargoContainer {
      */
     public String getSubmitter(){
         return this.coi.getSubmitter();
+    }
+    public long getTimestamp(){
+        return this.coi.getTimestamp();
     }
 
 }
