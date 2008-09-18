@@ -29,15 +29,6 @@ public class PTIPoolAdm {
 
     private static final Logger log = Logger.getRootLogger();
 
-    /**
-     * Variables to hold configuration parameters
-     */
-
-    private static String driver = "";
-    private static String url = "";
-    private static String userID = "";
-    private static String passwd = "";
-
     private Processqueue processqueue;
     private PTIPool PTIpool;
 
@@ -46,30 +37,13 @@ public class PTIPoolAdm {
 
     private long sleepInMilleSec;
 
+    
+    /**
+     * Constructor 
+     */
     public PTIPoolAdm()throws ConfigurationException, RuntimeException, NoSuchElementException, SQLException, ClassNotFoundException, InterruptedException, Exception{
 
         log.debug( "PTIPoolAdm Constructor" );
-
-        log.debug( "Obtain config paramaters");
-
-        URL cfgURL = getClass().getResource("/config.xml");
-        XMLConfiguration config = null;
-        try{
-            config = new XMLConfiguration( cfgURL );
-        }
-        catch (ConfigurationException cex){
-            log.fatal( "ConfigurationException: " + cex.getMessage() );
-            System.exit(0);
-        }
-
-        driver = config.getString( "database.driver" );
-        url    = config.getString( "database.url" );
-        userID = config.getString( "database.userID" );
-        passwd = config.getString( "database.passwd" );
-
-        log.debug( "driver: "+driver );
-        log.debug( "url:    "+url );
-        log.debug( "userID: "+userID );
 
         /** todo: where should sleepInMilleSec be set?? in a configuration file or what*/
         sleepInMilleSec= 2;
@@ -87,6 +61,7 @@ public class PTIPoolAdm {
 
         activeThreads = new Vector();
         
+        // starts the mainloop
         try{
         mainLoop();
         }
@@ -99,7 +74,13 @@ public class PTIPoolAdm {
         
     }
 
+    /**
+     * the mainLoop polls the processqueue and start threads when the queue pops a fedorahandle.   
+     * the mainLoop also checks whether already active threads are finished.
+     */
+    
     private void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException, Exception {
+        log.debug( "PTIPoolAdm mainloop" );
         try{
             startThreads();
         }
@@ -169,7 +150,6 @@ public class PTIPoolAdm {
      * where the associated thread is done. The entrys are also
      * committed to the processqueue, which effectivly removes them
      */
-
     private void removeThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, Exception {
         log.debug( "PTIPoolAdm.removeThreads() called" );
 
@@ -217,7 +197,6 @@ public class PTIPoolAdm {
      * fetch and process data from the fedora repository. Puts thread
      * (futureTask, and queueid on activeThreads vector)
      */
-
     private void startThreads()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException{
         log.debug( "PTIPoolAdm.startThreads() called" );
 
