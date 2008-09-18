@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
+import java.lang.InterruptedException;
+import java.util.concurrent.ExecutionException;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +46,7 @@ public class PTIPoolAdm {
 
     private long sleepInMilleSec;
 
-    public PTIPoolAdm()throws ConfigurationException, RuntimeException, NoSuchElementException, SQLException, ClassNotFoundException{
+    public PTIPoolAdm()throws ConfigurationException, RuntimeException, NoSuchElementException, SQLException, ClassNotFoundException, InterruptedException, Exception{
 
         log.debug( "PTIPoolAdm Constructor" );
 
@@ -84,11 +86,20 @@ public class PTIPoolAdm {
         }
 
         activeThreads = new Vector();
-
+        
+        try{
         mainLoop();
+        }
+        catch(InterruptedException ie){
+            throw new InterruptedException( ie.getMessage() );
+        }
+        catch(Exception ee){
+            throw new Exception( ee.getMessage() );
+        }
+        
     }
 
-    private void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException{
+    private void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException, Exception {
         try{
             startThreads();
         }
@@ -143,6 +154,13 @@ public class PTIPoolAdm {
             catch(NoSuchElementException nse){
                 throw new NoSuchElementException( nse.getMessage() );
             }
+            catch(InterruptedException ie){
+                throw new InterruptedException( ie.getMessage() );
+            }
+            catch(Exception ee){// Catching ExecutionException
+                throw new Exception( ee.getMessage() );
+            }
+
         }
     }
 
@@ -152,7 +170,7 @@ public class PTIPoolAdm {
      * committed to the processqueue, which effectivly removes them
      */
 
-    private void removeThreads()throws ClassNotFoundException, SQLException, NoSuchElementException {
+    private void removeThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, Exception {
         log.debug( "PTIPoolAdm.removeThreads() called" );
 
         Pair<FutureTask, Integer> vectorPair = null;
@@ -167,7 +185,11 @@ public class PTIPoolAdm {
 
             if( future.isDone() ){// this thread is done
                 log.debug( "thread is done... associated queueID = "+queueID );
+                log.debug( "Commiting to queue" );
+                long processtime = 0l;
+                
                 try{
+                    processtime = (Long) future.get();
                     processqueue.commit( queueID );
                 }
                 catch(NoSuchElementException nse){
@@ -177,7 +199,15 @@ public class PTIPoolAdm {
                     throw new ClassNotFoundException( cne.getMessage() );
                 }catch(SQLException sqe){
                     throw new SQLException( sqe.getMessage() );
+                }catch(InterruptedException ie){
+                    throw new InterruptedException( ie.getMessage() );
                 }
+                catch(Exception ee){// Catching ExecutionException
+                    throw new Exception( ee.getMessage() );
+                }
+
+                log.debug( "Commiting to queue" );
+                
                 activeThreads.remove( vectorPair );
             }
         }
