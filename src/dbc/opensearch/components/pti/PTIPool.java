@@ -35,7 +35,7 @@ public class PTIPool {
      */
     private static final Logger log = Logger.getRootLogger();
 
-    public PTIPool( int numberOfThreads ) throws ConfigurationException, RuntimeException, NoSuchElementException, SQLException, ClassNotFoundException{
+    public PTIPool( int numberOfThreads ) throws ConfigurationException/* , RuntimeException, NoSuchElementException, SQLException, ClassNotFoundException*/{
         // Securing nuberOfThreads > 0
         if ( numberOfThreads <= 0 ){
             /** \todo Find suitable exception */
@@ -70,6 +70,7 @@ public class PTIPool {
         
         initialised = true;
         log.info( "The PTIPool has been constructed" );
+        /**obsolete
         log.info( "The PTIPool starts to pol the processqueue" );
         try{
             pol();
@@ -84,10 +85,12 @@ public class PTIPool {
         }catch(ConfigurationException ce){
             throw new ConfigurationException( ce.getMessage() );
         }
+
+        */
     }   
     /** \todo find better Exception to throw*/
     /** \todo find out whether we need a return value at all */
-    private FutureTask createAndJoinThread (String fHandle, int queueID)throws RuntimeException, ConfigurationException{
+    public FutureTask createAndJoinThread (String fHandle, int queueID)throws RuntimeException, ConfigurationException{
         if( !initialised){
             throw new ConfigurationException("Trying to start a PTIThread without constructing the PTIPool");
         }
@@ -119,6 +122,8 @@ public class PTIPool {
         CompassSession s = theCompass.openSession();
         return s;
     }
+
+    /** obsolete
     public void pol() throws RuntimeException, ConfigurationException, ClassNotFoundException, SQLException, NoSuchElementException {
         Pair<String, Integer> handlePair;
         String fHandle;
@@ -152,4 +157,5 @@ public class PTIPool {
             }
         }
     }
+    */
 }

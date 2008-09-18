@@ -72,7 +72,7 @@ public class PTI implements Callable<Float>{
      * by the fedorahandle.
      * @return the processtime
      */
-    public Float call() throws ClassNotFoundException, CompassException, IOException, DocumentException, SQLException, NoSuchElementException {
+    public Float call() throws /*ClassNotFoundException,*/ CompassException, IOException, DocumentException/*, SQLException, NoSuchElementException*/ {
         log.debug( "PTI call function" );
         float processtime = -1f;
 
