@@ -53,7 +53,7 @@ public class PTI implements Callable<Float>{
     /**
      * Constructor
      */
-    public PTI(CompassSession session, String fHandle, int queueID ) throws ConfigurationException {
+    public PTI(CompassSession session, String fHandle ) throws ConfigurationException {
         ourSession = session;
         this.fHandle = fHandle;
         this.queueID = queueID;

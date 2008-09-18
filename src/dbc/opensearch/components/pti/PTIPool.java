@@ -90,7 +90,7 @@ public class PTIPool {
     }   
     /** \todo find better Exception to throw*/
     /** \todo find out whether we need a return value at all */
-    public FutureTask createAndJoinThread (String fHandle, int queueID)throws RuntimeException, ConfigurationException{
+    public FutureTask createAndJoinThread (String fHandle )throws RuntimeException, ConfigurationException{
         if( !initialised){
             throw new ConfigurationException("Trying to start a PTIThread without constructing the PTIPool");
         }
@@ -98,7 +98,7 @@ public class PTIPool {
         FutureTask future = null;
         try{
         session = getSession();
-        future = new FutureTask( new PTI( session, fHandle, queueID  ));
+        future = new FutureTask( new PTI( session, fHandle ));
         }catch(RuntimeException re){
             throw new RuntimeException( re.getMessage() );
         }catch(ConfigurationException ce){
