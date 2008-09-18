@@ -1,8 +1,7 @@
 package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.components.pti.FedoraHandler;
-import dbc.opensearch.components.processqueue.*;
-import dbc.opensearch.components.tools.*;
+import dbc.opensearch.components.tools.Processqueue;
 
 import java.sql.Connection;
 
