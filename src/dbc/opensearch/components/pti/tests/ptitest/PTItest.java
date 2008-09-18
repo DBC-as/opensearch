@@ -1,6 +1,8 @@
 package dbc.opensearch.components.pti.tests.ptitest;
 
+
 import dbc.opensearch.components.pti.*;
+import dbc.opensearch.components.tools.*;
 
 // import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -29,6 +31,8 @@ import org.apache.log4j.Logger;
 
 // import org.apache.commons.configuration.ConfigurationException;
 
+import dbc.opensearch.components.tools.tuple.Tuple;
+import dbc.opensearch.components.tools.tuple.Pair;
 
 public class PTItest{
     
@@ -64,9 +68,16 @@ public class PTItest{
         
         /////////////////////////////////
 
+        Pair<String, Integer> handlePair;
+        String fHandle;
+        int queueID;
+        
+        handlePair = queue.pop();
+        fHandle = Tuple.get1(handlePair);
+
 
         PTI pti = null;
-        log.info( "Stating PTI thread" );
+        log.info( "Starting PTI thread" );
         try{
             pti = new PTI( session );
         }catch(Exception e){
@@ -78,6 +89,7 @@ public class PTItest{
             System.exit(0);
         }
         
+
         //float returnval = pti.call();
         //System.out.println( "returnval "+ returnval);
             
