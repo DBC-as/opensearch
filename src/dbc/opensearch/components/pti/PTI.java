@@ -2,8 +2,8 @@ package dbc.opensearch.components.pti;
 
 import dbc.opensearch.components.datadock.CargoContainer;
 import dbc.opensearch.components.tools.Processqueue;
-import dbc.opensearch.components.tools.tuple.Tuple;
-import dbc.opensearch.components.tools.tuple.Pair;
+//import dbc.opensearch.components.tools.tuple.Tuple;
+//import dbc.opensearch.components.tools.tuple.Pair;
 
 import java.util.concurrent.Callable;
 // import java.io.ByteArrayInputStream;
@@ -46,15 +46,17 @@ public class PTI implements Callable<Float>{
     private CargoContainer cc;
     private Processqueue queue;
     private Date finishTime;
-    private Pair<String, Integer> handlePair;
+    // private Pair<String, Integer> handlePair;
     private String fHandle;
     private int queueID;
 
     /**
      * Constructor
      */
-    public PTI(CompassSession session ) throws ConfigurationException {
+    public PTI(CompassSession session, String fHandle, int queueID ) throws ConfigurationException {
         ourSession = session;
+        this.fHandle = fHandle;
+        this.queueID = queueID;
         try{
         queue = new Processqueue();
         }catch(ConfigurationException ce){
@@ -74,6 +76,7 @@ public class PTI implements Callable<Float>{
         log.debug( "PTI call function" );
         float processtime = -1f;
 
+        /*
         try{
         handlePair = queue.pop();
         }catch(ClassNotFoundException cnfe){
@@ -84,6 +87,8 @@ public class PTI implements Callable<Float>{
             throw new NoSuchElementException( nsee.getMessage() );
         }
         fHandle = Tuple.get1(handlePair);
+        */
+
         // start timer <-- no need to, timestamp is set in DataDock
         // retrive fedoraHandle from the processqueue
         // retrive data from handle : gets done in doProcessing method
@@ -100,6 +105,7 @@ public class PTI implements Callable<Float>{
         // index data
         // store data 
         // create processtime from timestamp and current time
+        // commit to processqueue that the element can be removed
         finishTime = new Date();
         processtime = finishTime.getTime() - cc.getTimestamp();
         // update statisticDB

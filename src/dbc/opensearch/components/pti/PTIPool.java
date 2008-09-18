@@ -1,5 +1,9 @@
 package dbc.opensearch.components.pti;
 
+import dbc.opensearch.components.tools.tuple.Tuple;
+import dbc.opensearch.components.tools.tuple.Pair;
+import dbc.opensearch.components.tools.Processqueue;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.*;
@@ -13,25 +17,29 @@ import org.compass.core.CompassException;
 import java.net.URL;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.NoSuchElementException;
 //import org.compass.core.CompassSession
 //import org.compass.core.CompassSession
 import org.apache.commons.configuration.ConfigurationException;
+
 
 public class PTIPool {
 
     private boolean initialised;
     private ExecutorService ThreadExecutor; /**The threadpool */
     private static volatile Compass theCompass;
+    private Processqueue queue;
     /**
      * log
      */
     private static final Logger log = Logger.getRootLogger();
 
-    public PTIPool( int numberOfThreads ) throws Exception{
+    public PTIPool( int numberOfThreads ) throws ConfigurationException, RuntimeException, NoSuchElementException, SQLException, ClassNotFoundException{
         // Securing nuberOfThreads > 0
         if ( numberOfThreads <= 0 ){
             /** \todo Find suitable exception */
-            throw new Exception( "Refusing to construct empty PTIPool" );
+            throw new ConfigurationException( "Refusing to construct empty PTIPool" );
         }
         //Starting the threadPool
         ThreadExecutor = Executors.newFixedThreadPool( numberOfThreads );
@@ -53,19 +61,41 @@ public class PTIPool {
             theCompass = conf.buildCompass();   
         }
         
+        log.info( "Constructing the processqueue" );
+        try{
+            queue = new Processqueue();
+        }catch(ConfigurationException ce){
+            throw new ConfigurationException( ce.getMessage() );
+        }
+        
         initialised = true;
         log.info( "The PTIPool has been constructed" );
+        log.info( "The PTIPool starts to pol the processqueue" );
+        try{
+            pol();
+        }catch(ClassNotFoundException cnfe){
+            throw new ClassNotFoundException( cnfe.getMessage() );
+        }catch( SQLException sqle ){
+            throw new SQLException( sqle.getMessage() );
+        }catch( NoSuchElementException nsee ){
+            throw new NoSuchElementException( nsee.getMessage() );
+        }catch(RuntimeException re){
+            throw new RuntimeException( re.getMessage() );
+        }catch(ConfigurationException ce){
+            throw new ConfigurationException( ce.getMessage() );
+        }
     }   
     /** \todo find better Exception to throw*/
-    public FutureTask createAndjoinThread ()throws Exception, RuntimeException, ConfigurationException{
+    /** \todo find out whether we need a return value at all */
+    private FutureTask createAndJoinThread (String fHandle, int queueID)throws RuntimeException, ConfigurationException{
         if( !initialised){
-            throw new Exception("Trying to start a PTIThread without constructing the PTIPool");
+            throw new ConfigurationException("Trying to start a PTIThread without constructing the PTIPool");
         }
         CompassSession session = null;
         FutureTask future = null;
         try{
         session = getSession();
-        future = new FutureTask( new PTI( session ));
+        future = new FutureTask( new PTI( session, fHandle, queueID  ));
         }catch(RuntimeException re){
             throw new RuntimeException( re.getMessage() );
         }catch(ConfigurationException ce){
@@ -89,5 +119,37 @@ public class PTIPool {
         CompassSession s = theCompass.openSession();
         return s;
     }
+    public void pol() throws RuntimeException, ConfigurationException, ClassNotFoundException, SQLException, NoSuchElementException {
+        Pair<String, Integer> handlePair;
+        String fHandle;
+        int queueID;
+        FutureTask future;// dont quite know if we need any return value
+        boolean hat = false; // please kill me
+        boolean ged = false; // please kill me
 
+
+        while(hat){
+            //does something shm defines ;-)
+            if(ged){
+                try{
+                handlePair = queue.pop();
+                }catch(ClassNotFoundException cnfe){
+                    throw new ClassNotFoundException( cnfe.getMessage() );
+                }catch( SQLException sqle ){
+                    throw new SQLException( sqle.getMessage() );
+                }catch( NoSuchElementException nsee ){
+                    throw new NoSuchElementException( nsee.getMessage() );
+                }
+                fHandle = Tuple.get1(handlePair);
+                queueID = Tuple.get2(handlePair);
+                try{
+                    future = createAndJoinThread(fHandle, queueID);
+                }catch(RuntimeException re){
+                    throw new RuntimeException( re.getMessage() );
+                }catch(ConfigurationException ce){
+                    throw new ConfigurationException( ce.getMessage() );
+                }
+            }
+        }
+    }
 }
