@@ -78,8 +78,8 @@ public class PTItest{
             System.exit(0);
         }
         
-        float returnval = pti.call();
-        System.out.println( "returnval "+ returnval);
+        //float returnval = pti.call();
+        //System.out.println( "returnval "+ returnval);
             
 
     }
