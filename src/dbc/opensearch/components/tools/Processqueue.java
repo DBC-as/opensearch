@@ -20,6 +20,9 @@ import java.net.URL;
 import java.util.NoSuchElementException;
 import java.lang.ClassNotFoundException;
 
+/**
+ * \brief The Processqueue class handles all communication to the processqueue
+ */
 public class Processqueue {
 
     /**
@@ -29,11 +32,6 @@ public class Processqueue {
     private static String url = "";
     private static String userID = "";
     private static String passwd = "";
-
-    /**
-     *  Popped_queueid holds elements queueid after pop
-     */
-    //private int popped_queueid = 0;
 
     /**
      *  Log
@@ -256,9 +254,12 @@ public class Processqueue {
         con.close();
 
     }
+    
+    
 
-
-
+    /**
+     * Establishes the connction to the database
+     */
     private static Connection establishConnection() throws ClassNotFoundException, SQLException {
 
         Connection con = null;

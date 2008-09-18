@@ -1,6 +1,7 @@
 package dbc.opensearch.components.datadock.tests.datadocktest;
 //import dbc.opensearch.components.processqueue.*; isnt gonna use it
 import dbc.opensearch.components.datadock.*;
+import dbc.opensearch.components.tools.Estimate;
 
 import java.io.*;
 import org.apache.commons.lang.*;
@@ -28,6 +29,7 @@ public class DataDockTest {
     DataDock dd;
     CargoContainer cc;
     Connection con = null;
+    Estimate estimate;
     public DataDockTest(){
         
         log.debug("Constructing the DataDockTest object ");
@@ -37,7 +39,10 @@ public class DataDockTest {
         String url = "dbc:oracle:thin:lvh/lvh@tora1.dbc.dk:1521";
         String userID = "lvh"; 
         String passwd = "lvh";
-
+        try{
+        estimate = new Estimate();
+        }
+        catch(Exception e){}
         /*
         config.setProperty("statisticDB.driver" , driver );       
         config.setProperty("statisticDB.url" , url );
@@ -138,7 +143,7 @@ public class DataDockTest {
         log.debug(config.getString("database.passwd") + "");
 
         try{
-            float testEstimate =  dd.estimate( "text/xml", 2l );
+            float testEstimate =  estimate.getEstimate( "text/xml", 2l );
             if( testEstimate != 2l){
                 log.debug("DataDock.Estimate didnt estimate correctly ");
                 log.debug("Printing the estimate: "+ testEstimate +" ");

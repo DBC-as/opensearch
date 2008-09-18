@@ -18,9 +18,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
+/**
+ * \brief The Estimate class handles all communication to the statisticDB table
+ */
 public class Estimate{
-
 
     /**
      * Variables to hold configuration parameters
@@ -68,11 +69,10 @@ public class Estimate{
     }
 
     /**
-     * call estimates processtime, stores the data and queues
-     * the handle.
+     * getestimate retrieves estimate from statisticDB table.
      * @return the processtime estimate.
      * If the return value == 0l, no estimate is made, caller must
-     * check this, but then an exceprion should have been thrown
+     * check this, but then an exception should have been thrown
      */
 
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
@@ -114,7 +114,7 @@ public class Estimate{
 
         try{
             rs = stmt.executeQuery ( sqlQuery );
-            log.info( String.format( "statisticDB queried with \"%s\"", sqlQuery ) );
+            log.debug( String.format( "statisticDB queried with \"%s\"", sqlQuery ) );
         }
         catch(SQLException sqe) {
             log.fatal( "SQLException: " + sqe.getMessage() );
@@ -125,7 +125,7 @@ public class Estimate{
         }
         rs.last();
         int rowCount = rs.getRow();
-        log.info( String.format( "rows = %s", rowCount ) );
+        log.debug( String.format( "rows = %s", rowCount ) );
 
         if( rowCount != 1 ){
             throw new SQLException( String.format( "Count if rows is different from 1. RowCount==%s", rowCount) );
@@ -135,13 +135,19 @@ public class Estimate{
         long p = rs.getLong( "processtime" );
         long d = rs.getLong( "dataamount" );
         average_time = ( ( (float)p / d ) * length );
-        log.info( String.format( "\nprocesstime=%s\ndataamount=%s\np/d=%s\naverage time for mimetype %s = %s", p, d, p/d, mimeType, average_time ) );
+        log.debug( String.format( "\nprocesstime=%s\ndataamount=%s\np/d=%s\naverage time for mimetype %s = %s", p, d, p/d, mimeType, average_time ) );
 
         return average_time;
 
 
     }
 
+    /**
+     * updateEstimate updates the entry in statisticDB that matches the given mimetype, with the length and time.
+     * @param mimeType is the mimetype of the processed object 
+     * @param length is the length in bytes of the processed object 
+     * @param time is time in millisecs that it took to proces the object
+     */
     public void updateEstimate( String mimeType, long length, long time ) throws SQLException, ClassNotFoundException{
         log.debug( String.format( "Entering UpdateEstimate(mimeType = %s, length = %s, time = %s)", mimeType, length, time ) );
 
@@ -178,11 +184,12 @@ public class Estimate{
         catch(SQLException sqe) {
             log.fatal( "SQLException: " + sqe.getMessage() );
             throw new SQLException( sqe.getMessage() );
-        }
-
-        
+        }        
      }
 
+    /**
+     * Establishes the connction to the database
+     */
     private static Connection establishConnection() throws ClassNotFoundException, SQLException {
 
         Connection con = null;

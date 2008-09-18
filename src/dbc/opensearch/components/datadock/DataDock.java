@@ -59,20 +59,16 @@ public class DataDock implements Callable<Float>{
     // String pid;
     private XMLConfiguration config;
     private static volatile FedoraHandler fh;
-    /**
-     * The following 4 privates are for use for the databaseoperation
-     * for the estimate of the processtime. The "s" in the variable name
-     * means its for the operations on statisticDB
-     */
-    private static String sDriver = "";
-    private static String sUrl = "";
-    private static String sUserID = "";
-    private static String sPasswd = "";
-
+   
     /**
      * Log
      */
     private static final Logger log = Logger.getRootLogger();
+
+    /**
+     * Estimate class
+     */
+    Estimate estimate;
 
     /**
      * DataDock is initialized with a CargoContainer and a configuration file for the
@@ -86,35 +82,9 @@ public class DataDock implements Callable<Float>{
         cc = cargo;
         queue = new Processqueue();
         
-        // read the config file
-        log.debug( "Obtain config paramaters");
-        URL cfgURL = getClass().getResource("/config.xml");
-        config = null;
-        try{
-            config = new XMLConfiguration( cfgURL );
-        }
-        catch (ConfigurationException cex){
-            log.fatal( "ConfigurationException: " + cex.getMessage() );
-            throw new ConfigurationException( cex.getMessage() );
-        }
-
-        sDriver = config.getString("database.driver");
-        sUrl = config.getString("database.url");
-        sUserID = config.getString("database.userID");
-        sPasswd = config.getString("database.passwd");
-
-        log.info( "sDriver: " +sDriver );
-        log.info( "sUrl:    " +sUrl );
-        log.info( "sUserID: " +sUserID );
+        estimate = new Estimate();
 
     }
-    /**
-     * call estimates processtime, stores the data and queues
-     * the handle.
-     * @return the processtime estimate.
-     * If the return value == 0l, no estimate is made, caller must
-     * check this, but then an exceprion should have been thrown
-     */
 
     public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
         log.info( String.format( "Entering DataDock.call" ) );
@@ -123,7 +93,7 @@ public class DataDock implements Callable<Float>{
         try{
             log.info( "\n calling DataDock.estimate \n" );
             // 10: Estimate
-            processEstimate = estimate(cc.getMimeType(), cc.getStreamLength());
+            processEstimate = estimate.getEstimate(cc.getMimeType(), cc.getStreamLength());
             // 20: Store data in Fedora
             // 30: queue FedoraHandle
             log.info( String.format( "Estimate = %s ", processEstimate ) );
@@ -162,62 +132,6 @@ public class DataDock implements Callable<Float>{
         return processEstimate;
     }
 
-    /** \todo: construct proper exception like an connnectionerrorexception-type thing */
-    public float estimate( String mimeType, long length ) throws SQLException, NoSuchElementException{
-
-        log.info( String.format( "in estimate(). Length=%s",length ) );
-
-        float average_time = 0f;
-        ResultSet rs = null;
-
-        // 20: open database connection
-        log.debug( "Establishing connection to statisticDB" );
-        Connection con = establishConnection();
-
-        // 25: create statement
-        Statement stmt = null;
-
-        String sqlQuery = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType );
-
-        log.info( String.format( "SQL Query == %s", sqlQuery ) );
-
-        try{
-            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
-        }
-        catch(SQLException sqe) {
-            log.fatal( "SQLException: " + sqe.getMessage() );
-            throw new SQLException( sqe.getMessage() );
-        }
-
-        try{
-            rs = stmt.executeQuery ( sqlQuery );
-            log.info( String.format( "statisticDB queried with \"%s\"", sqlQuery ) );
-        }
-        catch(SQLException sqe) {
-            log.fatal( "SQLException: " + sqe.getMessage() );
-            throw new SQLException( sqe.getMessage() );
-        }
-        if( rs == null ){
-            throw new NoSuchElementException( String.format( "We didnt get anything from the database, the mimetype \"%s\"is unknown.", mimeType ) );
-        }
-        rs.last();
-        int rowCount = rs.getRow();
-        log.info( String.format( "rows = %s", rowCount ) );
-
-        if( rowCount != 1 ){
-            throw new SQLException( String.format( "Count if rows is different from 1. RowCount==%s", rowCount) );
-        }
-        rs.first();
-
-        float p = rs.getInt("processtime");
-        float d = rs.getInt("dataamount");
-        average_time = ( ( p / d ) * length );
-        log.info( String.format( "\nprocesstime=%s\ndataamount=%s\np/d=%s\naverage time for mimetype %s = %s", p, d, p/d, mimeType, average_time ) );
-
-        return average_time;
-
-
-    }
     /**
      *
      */
@@ -304,34 +218,4 @@ public class DataDock implements Callable<Float>{
         }
         log.info( "Exiting.queueFedoraHandle" );
     }
-
-    /**
-     * Creates a connection to the statisticDB
-     * code stolen from Enqueue.java
-     */
-    private static Connection establishConnection() {
-
-        Connection con = null;
-
-        try {
-            Class.forName(sDriver);
-
-        } catch(java.lang.ClassNotFoundException e) {
-            log.fatal( "Exception: " + e.getMessage() );
-            e.printStackTrace();
-        }
-
-        try {
-            con = DriverManager.getConnection(sUrl, sUserID, sPasswd);
-        } catch(SQLException ex) {
-            log.fatal( "1SQLException: " + ex.getMessage() );
-            ex.printStackTrace();
-        }
-
-        log.debug( "Got connection." );
-
-        return con;
-
-    }
-
 }
