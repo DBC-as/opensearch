@@ -72,8 +72,8 @@ public class PTItest{
         String fHandle;
         int queueID;
         
-        handlePair = queue.pop();
-        fHandle = Tuple.get1(handlePair);
+        //handlePair = queue.pop();
+        //fHandle = Tuple.get1(handlePair);
 
 
         PTI pti = null;
