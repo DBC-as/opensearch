@@ -2,6 +2,9 @@ package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.FileFilter;
 
+import dbc.opensearch.tools.Estimate;
+
+
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.log4j.Logger;
@@ -17,9 +20,21 @@ public class DataDockPoolAdm {
     private static final Logger log = Logger.getRootLogger();
     
     public final static void main(String[] args){
+
+
+        try{
+            Estimate e = new Estimate();
+            e.getEstimate( "text/xml", 0 );
+
+        }catch(Exception sletmig){
+            sletmig.printStackTrace();
+        }
+
+
         // 10: start the datadockpool
         DataDockPool DDP;
         try{
+            log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
             DDP = new DataDockPool(10);
             // 20: get the properties defined at program start
             // Submitter, mimetype, lang, path. Antager at alle filer er på samme sprog
@@ -65,15 +80,15 @@ public class DataDockPoolAdm {
                     FTList[filesSent] = DDP.createAndJoinThread(cc);
                     log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
                   
-                }catch(Exception e){
+                }catch(Exception thise){
                     System.out.print("\n Exception in DataDockPoolAdm \n");
-                    e.printStackTrace();
+                    thise.printStackTrace();
                     System.exit(1);
                 }
             }
-            log.info( "All files given to the DataDockPool \n" );
+            log.info( "All files given to the DataDockPool" );
             //Loop that continues until all files have docked
-            log.info("\n entering while loop in DataDockPoolAdm \n");
+            log.info("entering while loop in DataDockPoolAdm");
            
             while(answersReceived < numOfFiles){
                 //         log.info("\n In the while loop \n");
@@ -104,9 +119,9 @@ public class DataDockPoolAdm {
             }
             log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
           
-        }catch(Exception e){
-            log.info("\n Could not initialize the DataDockPool \n");
-            e.printStackTrace();
+        }catch(Exception alle){
+            log.info("Could not initialize the DataDockPool");
+            alle.printStackTrace();
         }
         log.info("\n\n Program ends, bye bye ");
         System.exit(1);

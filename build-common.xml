@@ -103,7 +103,7 @@
   </target>
 
   <target name="test" description="Run unit tests" depends="compile-tests" >
-    <junit printsummary="withOutAndErr">
+    <junit printsummary="no" haltonerror="true" haltonfailure="true">
       <formatter type="plain" usefile="no"/>
       <classpath refid="classpath"/>
 

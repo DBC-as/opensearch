@@ -63,7 +63,7 @@ public class PTIPoolAdm {
         
         // starts the mainloop
         try{
-        mainLoop();
+            mainLoop();
         }
         catch(InterruptedException ie){
             throw new InterruptedException( ie.getMessage() );
@@ -169,7 +169,7 @@ public class PTIPoolAdm {
                 long processtime = 0l;
                 
                 try{
-                    processtime = (Long) future.get();
+                    // processtime = (Long) future.get();
                     processqueue.commit( queueID );
                 }
                 catch(NoSuchElementException nse){
@@ -179,15 +179,17 @@ public class PTIPoolAdm {
                     throw new ClassNotFoundException( cne.getMessage() );
                 }catch(SQLException sqe){
                     throw new SQLException( sqe.getMessage() );
-                }catch(InterruptedException ie){
-                    throw new InterruptedException( ie.getMessage() );
+                // }catch(InterruptedException ie){
+                //     throw new InterruptedException( ie.getMessage() );
+                }catch(NullPointerException npe){
+                    log.debug( String.format( "vectorPair was possibly null? vectorPair = %s", vectorPair.toString() ) );
                 }
                 catch(Exception ee){// Catching ExecutionException
                     throw new Exception( ee.getMessage() );
                 }
 
-                log.debug( "Commiting to queue" );
-                
+                log.debug( String.format( "Commiting to queue vectorPair = %s", vectorPair.toString() ) );
+                log.debug( activeThreads.toString() );
                 activeThreads.remove( vectorPair );
             }
         }

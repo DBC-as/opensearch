@@ -134,12 +134,15 @@ public class Estimate{
 
         long p = rs.getLong( "processtime" );
         long d = rs.getLong( "dataamount" );
-        average_time = ( ( (float)p / d ) * length );
-        log.debug( String.format( "\nprocesstime=%s\ndataamount=%s\np/d=%s\naverage time for mimetype %s = %s", p, d, p/d, mimeType, average_time ) );
+        
+        log.info( String.format( "processtime=%s dataamount=%s average time for mimetype %s = %s", p, d, mimeType, average_time ) );
+
+        if ( d != 0l && p != 0l ){
+            average_time = ( ( (float)p / d ) * length );
+            log.debug( String.format( "\nprocesstime=%s\ndataamount=%s\np/d=%s\naverage time for mimetype %s = %s", p, d, p/d, mimeType, average_time ) );
+        }
 
         return average_time;
-
-
     }
 
     /**

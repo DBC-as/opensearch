@@ -84,8 +84,16 @@ public class CargoContainer {
 
         // 30: check language
         /** \todo: How to specify allowed languages? enums? db? */
+        if( !checkLanguage( lang ) ){
+            throw new IllegalArgumentException( String.format( "%s is not in the languagelist", lang ) ); 
+        }
+
         // 35: check submitter (credentials checking)
         /** \todo: need better checking of values (perhaps using enums?) before constructing */
+        if( !checkSubmitter( submitter ) ){
+            throw new IllegalArgumentException( String.format( "%s is not in the submitterlist", submitter ) ); 
+        }
+
         // 40: get stream length
         // available returns (count - pos), both of which are private
         /** \todo: Make _absolutely_ sure that a call to the length of
@@ -152,10 +160,6 @@ public class CargoContainer {
      * \todo: Find the right language codes for Danish and English     
      */
     public boolean checkLanguage(String lang){
-        if ("dk" != lang.toLowerCase() ||
-            "eng" != lang.toLowerCase()){
-            return false;
-        }
         return true;   
     }
 
