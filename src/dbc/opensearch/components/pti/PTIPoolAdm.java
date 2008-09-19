@@ -35,7 +35,7 @@ public class PTIPoolAdm {
     private Vector activeThreads;
     private Iterator iter;
 
-    private long sleepInMilleSec;
+    private long sleepInMilliSec;
 
     
     /**
@@ -45,8 +45,8 @@ public class PTIPoolAdm {
 
         log.debug( "PTIPoolAdm Constructor" );
 
-        /** todo: where should sleepInMilleSec be set?? in a configuration file or what*/
-        sleepInMilleSec= 2;
+        /** todo: where should sleepInMilliSec be set?? in a configuration file or what*/
+        sleepInMilliSec= 200;
         //
         try{
             PTIpool = new PTIPool(10);
@@ -81,29 +81,14 @@ public class PTIPoolAdm {
     
     private void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException, Exception {
         log.debug( "PTIPoolAdm mainloop" );
-        try{
-            startThreads();
-        }
-        catch(ClassNotFoundException cne){
-            throw new ClassNotFoundException( cne.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
-        catch(RuntimeException re){
-            throw new RuntimeException( re.getMessage() );
-        }
-        catch(ConfigurationException ce){
-            throw new ConfigurationException( ce.getMessage() );
-        }
 
-        long stamp = System.currentTimeMillis();
+        long stamp = System.currentTimeMillis() - ( sleepInMilliSec+ 1 ) ;
 
         while(true){
 
-            if( System.currentTimeMillis() > stamp+sleepInMilleSec ){
+            if( System.currentTimeMillis() > stamp+sleepInMilliSec ){
                 // poll processqueue again
-
+                log.info( "Poll processqueue" );
                 try{
                     startThreads();
                 }
@@ -124,7 +109,7 @@ public class PTIPoolAdm {
             }
 
             try{
-                removeThreads();
+                checkThreads();
             }
             catch(ClassNotFoundException cne){
                 throw new ClassNotFoundException( cne.getMessage() );
@@ -150,26 +135,26 @@ public class PTIPoolAdm {
      * where the associated thread is done. The entries are also
      * committed to the processqueue, which effectivly removes them
      */
-    private void removeThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, Exception {
-        log.debug( "PTIPoolAdm.removeThreads() called" );
+    private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, Exception {
+        log.debug( "PTIPoolAdm.checkThreads() called" );
 
         Pair<FutureTask, Integer> vectorPair = null;
         int queueID;
         FutureTask future;
+        Vector removeableThreads = new Vector();
 
         iter = activeThreads.iterator();
+
         while( iter.hasNext() ){
+
             vectorPair = ( Pair ) iter.next();
             future = Tuple.get1(vectorPair);
             queueID = Tuple.get2(vectorPair);
-
+            log.debug( "checking future belonging to queueID = "+queueID );
             if( future.isDone() ){// this thread is done
-                log.debug( "thread is done... associated queueID = "+queueID );
-                log.debug( "Commiting to queue" );
                 long processtime = 0l;
                 
                 try{
-                    // processtime = (Long) future.get();
                     processqueue.commit( queueID );
                 }
                 catch(NoSuchElementException nse){
@@ -179,20 +164,22 @@ public class PTIPoolAdm {
                     throw new ClassNotFoundException( cne.getMessage() );
                 }catch(SQLException sqe){
                     throw new SQLException( sqe.getMessage() );
-                // }catch(InterruptedException ie){
-                //     throw new InterruptedException( ie.getMessage() );
                 }catch(NullPointerException npe){
                     log.debug( String.format( "vectorPair was possibly null? vectorPair = %s", vectorPair.toString() ) );
                 }
-                catch(Exception ee){// Catching ExecutionException
-                    throw new Exception( ee.getMessage() );
-                }
 
-                log.debug( String.format( "Commiting to queue vectorPair = %s", vectorPair.toString() ) );
-                log.debug( activeThreads.toString() );
-                activeThreads.remove( vectorPair );
+                removeableThreads.add( vectorPair );
+                log.info( String.format( "job done, Committed to queue, queueID = %s", queueID ) );
+                
             }
+
         }
+        
+        iter = removeableThreads.iterator();
+        while( iter.hasNext() ){
+            activeThreads.remove( iter.next() );
+        }        
+
     }
 
     /** pop processqueue until its empty, and starts threads which

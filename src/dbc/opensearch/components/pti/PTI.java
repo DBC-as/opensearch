@@ -66,7 +66,7 @@ public class PTI implements Callable<Long>{
      * @return the processtime
      */
     public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException {
-        log.debug( "Entering PTI.call()" );
+        log.info( "Entering PTI.call()" );
 
         log.debug( "process data in cargocontainer" );
 
@@ -80,9 +80,11 @@ public class PTI implements Callable<Long>{
             throw new DocumentException( de.getMessage() );
         }
 
-        log.debug( "Update estimate base" );
+        log.info( "Update estimate base" );
         long processtime = finishTime.getTime() - cc.getTimestamp();
         try{
+            log.info( String.format("Update estimate base with mimetype = %s, streamlength = %s, processtime = %s",
+                                    cc.getMimeType(), cc.getStreamLength(), processtime ) );
             estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
         }
         catch(SQLException sqe){
