@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="OpenSearch.all" default="usage">
+<project name="opensearch.all" default="usage">
     <import file="dependencies.xml"/>
 
     <target name="test-target" description="Test target">

@@ -1,10 +1,11 @@
-The components folder contains the components used in OpenSearch.  
+The components folder contains the components and tools used in OpenSearch.  
 
 For a detailed description of the components and their role in the
 architecture, please refer to the docs/project_information/ folder.
 
-A brief description of the components follow:
+A brief description of the components and tools follow:
 
+Components
 * datadock: This component is responsible for communication with the
   NEP, validation of incoming data and storage in an object repository
   of said data 
@@ -19,18 +20,11 @@ A brief description of the components follow:
   of user requests for retrieval of data based on queries. It queries
   the indexes and returns results to the NEP (through the datadock)
 
+Tools
+
 * processqueue: The processqueue handles the intermediate storing,
   prioritizing and state handling of the received data. It is
   implemented through a database .
 
-Overview of classes:
-
-DataDock.Reception:
-        Recieves input
-        Writes timestamp
-
-Datadock:
-        Validates input
-        Returns estimate to client
-        Puts data into fedora repository and recieves file-pointer
-
+* tuple: third party (javatuple.com) implementation of typesafe
+  tuples. Available tuples are from 1-10 elements

@@ -1,4 +1,4 @@
-package dbc.opensearch.components.tools.tuple;
+package dbc.opensearch.tools.tuple;
 
 public class Sextuple<T1, T2, T3, T4, T5, T6> extends Tuple<T1, Tuple<T2, Tuple<T3, Tuple<T4, Tuple<T5, Tuple<T6, End>>>>>> {
 

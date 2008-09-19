@@ -1,5 +1,7 @@
 package dbc.opensearch.components.datadock;
 
+import dbc.opensearch.tools.FileFilter;
+
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.log4j.Logger;

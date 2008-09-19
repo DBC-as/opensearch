@@ -1,7 +1,7 @@
 package dbc.opensearch.components.datadock.tests.datadocktest;
 //import dbc.opensearch.components.processqueue.*; isnt gonna use it
 import dbc.opensearch.components.datadock.*;
-import dbc.opensearch.components.tools.Estimate;
+import dbc.opensearch.tools.Estimate;
 
 import java.io.*;
 import org.apache.commons.lang.*;

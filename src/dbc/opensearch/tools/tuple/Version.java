@@ -1,4 +1,4 @@
-package dbc.opensearch.components.tools.tuple;
+package dbc.opensearch.tools.tuple;
 
 public class Version extends Quadruple<Integer, Integer, Integer, Integer> {
     

@@ -69,14 +69,6 @@ public class CargoContainer {
         // 07: timestamp the container
         // date = System.currentTimeMillis();
 
-        /** \todo: How do we specify the allowed mimetypes? enums? config? 
-         *
-         * Seeing that we need a xmlcontentconverter and a
-         * modification of mappings each time we need to handle a new
-         * mimetype, we already need to rebuild the entire project
-         * anyway. This lends itself to specifying the mimetypes and
-         * languages through enums.
-         */
         // 10: check mimetype
         CargoMimeType CMT = null;
         log.debug( String.format( "checking mimetype: %s", mime ) );
@@ -96,8 +88,9 @@ public class CargoContainer {
         /** \todo: need better checking of values (perhaps using enums?) before constructing */
         // 40: get stream length
         // available returns (count - pos), both of which are private
-        /** \todo: Make _absolutely_ sure that .available() returns
-            the total, always.  
+        /** \todo: Make _absolutely_ sure that a call to the length of
+            the internal representation of the stream returns the
+            total, always.
 
             The InputStream.available() returns the number of bytes
             available in the stream, not the total number of bytes in
@@ -155,7 +148,7 @@ public class CargoContainer {
         
     }
     /**
-     *@returns true if language is alowed in Opensearch, otherwise false
+     *@returns true if language is allowed in Opensearch, false otherwise
      * \todo: Find the right language codes for Danish and English     
      */
     public boolean checkLanguage(String lang){
@@ -165,14 +158,6 @@ public class CargoContainer {
         }
         return true;   
     }
-
-    /**
-     * @returns the jave.util.Date (in milliseconds) not used anymore...
-     *
-     * public long getDate(){
-     *    return this.date;
-     * }
-     */
 
     /**
      * @return the data of the container-object as an BufferedInputStream

@@ -1,4 +1,4 @@
-package dbc.opensearch.components.tools.tuple;
+package dbc.opensearch.tools.tuple;
 
 public class Variable<T> {
 

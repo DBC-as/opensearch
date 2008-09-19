@@ -1,4 +1,4 @@
-package dbc.opensearch.components.pti;
+package dbc.opensearch.tools;
 
 import dbc.opensearch.components.datadock.*;
 

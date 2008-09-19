@@ -1,10 +1,11 @@
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.components.datadock.CargoContainer;
-import dbc.opensearch.components.tools.Processqueue;
-import dbc.opensearch.components.tools.Estimate;
-import dbc.opensearch.components.tools.tuple.Tuple;
-import dbc.opensearch.components.tools.tuple.Pair;
+import dbc.opensearch.tools.Processqueue;
+import dbc.opensearch.tools.Estimate;
+import dbc.opensearch.tools.tuple.Tuple;
+import dbc.opensearch.tools.tuple.Pair;
+import dbc.opensearch.tools.FedoraHandler;
 
 import java.util.concurrent.Callable;
 import java.io.IOException;

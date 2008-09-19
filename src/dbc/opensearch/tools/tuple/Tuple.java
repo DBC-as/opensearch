@@ -1,4 +1,4 @@
-package dbc.opensearch.components.tools.tuple;
+package dbc.opensearch.tools.tuple;
 
 /**
  * Ordered set of elements.

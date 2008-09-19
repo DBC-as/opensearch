@@ -1,7 +1,7 @@
-package dbc.opensearch.components.tools;
+package dbc.opensearch.tools;
 
-import dbc.opensearch.components.tools.tuple.Tuple;
-import dbc.opensearch.components.tools.tuple.Pair;
+import dbc.opensearch.tools.tuple.Tuple;
+import dbc.opensearch.tools.tuple.Pair;
 import java.sql.Connection;
 import java.sql.CallableStatement;
 import java.sql.Statement;

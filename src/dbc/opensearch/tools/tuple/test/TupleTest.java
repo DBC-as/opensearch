@@ -1,4 +1,4 @@
-package dbc.opensearch.components.tools.tuple.test;
+package dbc.opensearch.tools.tuple.test;
 
 
 import java.util.HashMap;
@@ -8,12 +8,12 @@ import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
-import dbc.opensearch.components.tools.tuple.End;
-import dbc.opensearch.components.tools.tuple.Pair;
-import dbc.opensearch.components.tools.tuple.Triple;
-import dbc.opensearch.components.tools.tuple.Tuple;
-import dbc.opensearch.components.tools.tuple.Variable;
-import dbc.opensearch.components.tools.tuple.Version;
+import dbc.opensearch.tools.tuple.End;
+import dbc.opensearch.tools.tuple.Pair;
+import dbc.opensearch.tools.tuple.Triple;
+import dbc.opensearch.tools.tuple.Tuple;
+import dbc.opensearch.tools.tuple.Variable;
+import dbc.opensearch.tools.tuple.Version;
 
 public class TupleTest extends TestCase {
 

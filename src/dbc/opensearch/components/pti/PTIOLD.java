@@ -1,6 +1,7 @@
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.components.datadock.CargoContainer;
+import dbc.opensearch.tools.FedoraHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

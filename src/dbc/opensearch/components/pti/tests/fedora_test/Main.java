@@ -1,7 +1,7 @@
 package dbc.opensearch.components.pti.tests.fedora_test;
 
 import dbc.opensearch.components.datadock.CargoContainer;
-import dbc.opensearch.components.pti.FedoraHandler;
+import dbc.opensearch.tools.FedoraHandler;
 import org.apache.log4j.Logger;
 import java.io.FileInputStream;
 import java.io.PrintStream;

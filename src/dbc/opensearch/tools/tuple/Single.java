@@ -1,4 +1,4 @@
-package dbc.opensearch.components.tools.tuple;
+package dbc.opensearch.tools.tuple;
 
 public class Single<T1> extends Tuple<T1, End> {
 	

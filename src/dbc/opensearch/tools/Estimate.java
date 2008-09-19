@@ -1,4 +1,4 @@
-package dbc.opensearch.components.tools;
+package dbc.opensearch.tools;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;

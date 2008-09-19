@@ -1,4 +1,4 @@
-<project name="OpenSearch.Lantern" default="usage">
-  <!--Time-stamp: <2008-08-19 13:03:17 stm> -->
+<project name="opensearch.lantern" default="usage">
+  <!--Time-stamp: <2008-09-18 22:59:58 stm> -->
   <import file="../../../../../build-common.xml"/>
 </project>
