@@ -146,8 +146,8 @@ public class PTIPoolAdm {
     }
 
     /**
-     * Iterates through the activeThreads vector and remove all entrys
-     * where the associated thread is done. The entrys are also
+     * Iterates through the activeThreads vector and remove all entries
+     * where the associated thread is done. The entries are also
      * committed to the processqueue, which effectivly removes them
      */
     private void removeThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, Exception {

@@ -62,8 +62,17 @@ public class PTIPool {
         log.info( "The PTIPool has been constructed" );
        
     }   
+
+    /**
+     * createAndJoinThread takes a handle to the fedora base and and a Compass session. 
+     * The it starts a PTI (callable) that extracts the data. the handle points to, 
+     * from the fedora base, index it and store it. The return value is the handle, 
+     * that the PTIPoolAdm uses for keeping track of which digitalobjects 
+     * are in process 
+     */
+
     /** \todo find better Exception to throw*/
-    /** \todo find out whether we need a return value at all */
+   
     public FutureTask createAndJoinThread (String fHandle )throws RuntimeException, ConfigurationException{
         
         CompassSession session = null;
@@ -84,7 +93,7 @@ public class PTIPool {
 
 
     /**
-     * Returns a Compass session, and check whether its instantiated.
+     * Returns a Compass session, and checks whether its instantiated.
      */
     public CompassSession getSession() throws RuntimeException {
         if( theCompass == null) {
