@@ -256,6 +256,66 @@ public class Processqueue {
     }
     
     
+    /**
+     * getActiveprocesses queries the processqueue table and find
+     * elements that are marked as processing.
+     * @return an integer arrey contaning queueids matching active processing threads
+     */
+    public int[] getActiveProcesses()throws ClassNotFoundException, SQLException, NoSuchElementException{
+        log.debug( "Processqueue.getActiveProcesses() called" );
+        
+        // establish databaseconnection
+        log.debug( "establish databaseconnection" );
+        try{
+            con = establishConnection();
+        }
+        catch(ClassNotFoundException ce){
+            throw new ClassNotFoundException( ce.getMessage() );
+        }
+        catch(SQLException sqe){
+            throw new SQLException( sqe.getMessage() );
+        }
+
+        // Query database
+        Statement stmt = null;
+        String SQL_query = "SELECT queueid FROM processqueue WHERE processing = 'Y' ";
+        log.debug( String.format( "SQL Query == %s", SQL_query ) );
+
+        try{
+            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
+        }
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+        
+        ResultSet rs = null;
+        try{
+            rs = stmt.executeQuery ( SQL_query );
+            log.debug( String.format( "Processqueue queried with \"%s\"", SQL_query ) );
+        }
+        catch(SQLException sqe) {
+            log.fatal( "SQLException: " + sqe.getMessage() );
+            throw new SQLException( sqe.getMessage() );
+        }
+        int [] queueIDArray = null;
+        
+        if( rs != null ){ // items marked as prccessing found
+            
+            rs.last();
+            queueIDArray = new int[ rs.getRow() ];
+            rs.first();
+            
+            int i=0;
+            while( rs.next() ){
+                queueIDArray[i] = rs.getInt("queueid");
+            }
+            
+        }
+        return queueIDArray;
+
+    }
+
 
     /**
      * Establishes the connction to the database
