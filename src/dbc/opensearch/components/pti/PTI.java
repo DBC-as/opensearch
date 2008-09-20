@@ -3,32 +3,32 @@ package dbc.opensearch.components.pti;
 import dbc.opensearch.components.datadock.CargoContainer;
 import dbc.opensearch.tools.Processqueue;
 import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.tuple.Tuple;
-import dbc.opensearch.tools.tuple.Pair;
 import dbc.opensearch.tools.FedoraHandler;
 
-import java.util.concurrent.Callable;
+import com.mallardsoft.tuple.Tuple;
+import com.mallardsoft.tuple.Pair;
+
 import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
-
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
 import org.compass.core.xml.javax.NodeAliasedXmlObject;
 import org.compass.core.CompassException;
-import org.apache.log4j.Logger;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
-import java.util.Date;
-import org.apache.commons.configuration.ConfigurationException;
 
+import org.apache.log4j.Logger;
+import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * /brief the PTI class is responsible for getting an dataobject from the
@@ -51,7 +51,7 @@ public class PTI implements Callable<Long>{
      * Constructor
      */
     public PTI(CompassSession session, String fedoraHandle ) throws ConfigurationException {
-
+        log.debug( String.format( "Setting up PTI with compassSession '%s' and fedoraHandle '%s'", session.getSettings().toString(), fedoraHandle ) );
         this.session = session;
         this.fedoraHandle = fedoraHandle;
         estimate = new Estimate();
@@ -66,7 +66,7 @@ public class PTI implements Callable<Long>{
      * @return the processtime
      */
     public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException {
-        log.info( "Entering PTI.call()" );
+        log.debug( "Entering PTI.call()" );
 
         log.debug( "process data in cargocontainer" );
 
@@ -80,8 +80,8 @@ public class PTI implements Callable<Long>{
             throw new DocumentException( de.getMessage() );
         }
 
-        log.info( "Update estimate base" );
         long processtime = finishTime.getTime() - cc.getTimestamp();
+
         try{
             log.info( String.format("Update estimate base with mimetype = %s, streamlength = %s, processtime = %s",
                                     cc.getMimeType(), cc.getStreamLength(), processtime ) );
@@ -103,26 +103,32 @@ public class PTI implements Callable<Long>{
      * @returns Returns a pair where first element is the stream length of the processed item, and the second element is the timestamp from when the item arrived in the datadock
      */
     public void doProcessing( String fedoraHandle ) throws CompassException, IOException, DocumentException {//, javax.xml.parsers.ParserConfigurationException, IOException, org.xml.sax.SAXException{
-        log.debug( "Entering PTI.doProcessing( String fedoraHandle )" );
+        log.debug( "Entering doProcessing" );
 
+        log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s'", fedoraHandle ) );
         this.cc = fh.getDatastream( fedoraHandle );
 
+        log.debug( String.format( "Starting transaction on running CompassSession" ) );
         // start a transaction:
         CompassTransaction transaction = session.beginTransaction();
         Document doc = null;
         SAXReader saxReader = new SAXReader( false );
 
         try{
+            log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
             doc = saxReader.read( cc.getData() );
         }catch( DocumentException de){
+            /** \todo: should this really just dump? How about propagation? */
             System.out.println(String.format( "DocumentException=%s",de.getMessage() ) );
         }
 
+        log.debug( String.format( "Constructing AliasedXmlObject from Document" ) );
         AliasedXmlObject xmlObject =
             new Dom4jAliasedXmlObject( "faktalink", doc.getRootElement() );
 
         // index the object and end if we succeed:
         try{
+            log.debug( String.format( "Indexing document" ) );
             indexDocument( session, transaction, xmlObject );
         }catch( CompassException ce) {
             // We catch all possible exceptions here and log.fatal them
@@ -134,7 +140,7 @@ public class PTI implements Callable<Long>{
                       );
             throw new CompassException( String.format( "Could not index CargoContainer with fedoraHandle %s", fedoraHandle ), ce);
         }
-
+        log.debug( String.format( "Exiting doProcessing" ) );
     }
 
     /**
@@ -160,21 +166,27 @@ public class PTI implements Callable<Long>{
     private void indexDocument( CompassSession session,
                                 CompassTransaction trans,
                                 AliasedXmlObject cargoXML )throws CompassException {
+        log.debug( String.format( "Entering indexDocument" ) );
         if( !session.isClosed() ){
+            log.debug( String.format( "Beginning transaction" ) );
             trans = session.beginTransaction();
         }else{
             log.fatal( String.format( "Compass session closed. The object was not indexed and any indexes currently in orbit was not saved." ) );
             throw new CompassException( "Session unexpectedly closed, cannot initiate transaction on the index" );
         }
+        log.debug( String.format( "Saving aliased xml object to the index" ) );
         session.save( cargoXML );
 
         if( !session.isClosed() ){
+            log.debug( String.format( "Committing index on transaction" ) );
             trans.commit();
+            log.debug( String.format( "Closing session" ) );
             session.close();
         }else{
-            log.fatal( String.format( "Compass session closed. The object was indexed but never saved" ) );
+            log.fatal( String.format( "An error occured. Compass session was closed and the object was indexed but never saved (ie. never committed to the index)" ) );
             throw new CompassException( "Session closed unexpectedly, object was indexed, but not saved" );
         }
+        log.debug( String.format( "Exiting indexDocument" ) );
 
     }
 

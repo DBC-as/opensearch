@@ -76,6 +76,7 @@ public class Estimate{
      */
 
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
+    /** \todo: As this is a function without sideeffects, it should perhaps be static? */
     public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException{
 
         log.info( String.format( "in estimate(). Length=%s",length ) );

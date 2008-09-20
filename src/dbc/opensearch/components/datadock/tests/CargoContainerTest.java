@@ -23,7 +23,7 @@ public class CargoContainerTest {
         teststring = "æøå";
         InputStream data = new ByteArrayInputStream( teststring.getBytes( "UTF-8" ) );
         try{
-            cargo = new CargoContainer( data, "text/xml", "", "" );
+            cargo = new CargoContainer( data, "text/xml", "dk", "stm" );
         } catch ( IOException ioe ){
             System.out.println( ioe.toString() );
         }

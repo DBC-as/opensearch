@@ -148,7 +148,7 @@ public class FedoraHandler implements Constants{
 
     private byte[] constructFoxml( CargoContainer cargo, String pidNS, String itemId, String label ) throws IOException, XMLStreamException {
 
-        log.info( String.format( "Entering constructFoxml" ) );
+        log.debug( String.format( "Entering constructFoxml" ) );
         log.debug( String.format( "Beginning construction of foxml using XMLStreamWriter with stream of length=%s, pid=%s, itemId=%s, label=%s", cargo.getStreamLength(), pidNS, itemId, label ) );
 
         Document document = DocumentHelper.createDocument();
@@ -215,7 +215,7 @@ public class FedoraHandler implements Constants{
 
         /** \todo: This constructing business would be a lot better with xml serialization. Mainly in terms of 1:characters types, 2: boilerplate statements, 3: portability/managability and 4: type safety */
 
-        log.info( String.format( "Exiting constructFoxml" ) );
+        log.debug( String.format( "Exiting constructFoxml" ) );
 
         return document.asXML().getBytes( "UTF-8" );
     }
@@ -230,7 +230,7 @@ public class FedoraHandler implements Constants{
     }
 
     private CargoContainer getDatastream( String pid, String itemID ) throws IOException, NoSuchElementException{
-        log.info( String.format( "Entering getDatastream" ) );
+        log.debug( String.format( "Entering getDatastream" ) );
         CargoContainer cargo = null;
 
         DatastreamDef[] datastreams = null;
@@ -299,7 +299,7 @@ public class FedoraHandler implements Constants{
                                         def.getMIMEType(),
                                         language,
                                         submitter );
-            log.info( String.format( "Leaving getDatastream" ) );
+            log.debug( String.format( "Leaving getDatastream" ) );
         }
         return cargo;
     } //end getDatastream

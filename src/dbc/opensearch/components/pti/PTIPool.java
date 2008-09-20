@@ -1,7 +1,7 @@
 package dbc.opensearch.components.pti;
 
-import dbc.opensearch.tools.tuple.Tuple;
-import dbc.opensearch.tools.tuple.Pair;
+import com.mallardsoft.tuple.Tuple;
+import com.mallardsoft.tuple.Pair;
 import dbc.opensearch.tools.Processqueue;
 
 import java.util.concurrent.Executors;

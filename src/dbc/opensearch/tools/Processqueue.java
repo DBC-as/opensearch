@@ -1,7 +1,7 @@
 package dbc.opensearch.tools;
 
-import dbc.opensearch.tools.tuple.Tuple;
-import dbc.opensearch.tools.tuple.Pair;
+import com.mallardsoft.tuple.Tuple;
+import com.mallardsoft.tuple.Pair;
 import java.sql.Connection;
 import java.sql.CallableStatement;
 import java.sql.Statement;

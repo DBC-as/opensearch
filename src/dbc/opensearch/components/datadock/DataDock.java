@@ -87,11 +87,11 @@ public class DataDock implements Callable<Float>{
     }
 
     public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
-        log.info( String.format( "Entering DataDock.call" ) );
+        log.debug( String.format( "Entering DataDock.call" ) );
         Float processEstimate = 0f;
 
         try{
-            log.info( "\n calling DataDock.estimate \n" );
+            log.info( "calling DataDock.estimate" );
             // 10: Estimate
             processEstimate = estimate.getEstimate(cc.getMimeType(), cc.getStreamLength());
             // 20: Store data in Fedora
@@ -128,7 +128,7 @@ public class DataDock implements Callable<Float>{
 
 
         // 40: Return estimate
-        log.info("\n about to return estimate in DataDock.call \n");
+        log.info("about to return estimate in DataDock.call");
         return processEstimate;
     }
 
@@ -136,7 +136,7 @@ public class DataDock implements Callable<Float>{
      *
      */
     public String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, Exception {
-        log.info( "Entering DataDock.fedoraStoreData" );
+        log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
         /**
          * \todo find out where and how we get the pid
@@ -194,7 +194,7 @@ public class DataDock implements Callable<Float>{
         // 50: convert handle to data from fedora to String
         // 60: return fedoraHandle
         log.info( String.format( "Ingest succeded, returning pid=%s",fedoraHandle ) );
-        log.info( "Exiting DataDock.fedoraStoreData" );
+        log.debug( "Exiting DataDock.fedoraStoreData" );
         return fedoraHandle;
     }
 
@@ -204,7 +204,7 @@ public class DataDock implements Callable<Float>{
          * the push queues a fedoraHandle on the processQueue
          * to take the parameteres from the config file
          */
-        log.info( "Entering DataDock.queueFedoraHandle" );
+        log.debug( "Entering DataDock.queueFedoraHandle" );
         // 10: call push
         try{
             queue.push( fedoraHandle );
@@ -216,6 +216,6 @@ public class DataDock implements Callable<Float>{
         catch(SQLException sqe){
             throw new SQLException(sqe.getMessage());
         }
-        log.info( "Exiting.queueFedoraHandle" );
+        log.debug( "Exiting.queueFedoraHandle" );
     }
 }
