@@ -2,31 +2,35 @@ package dbc.opensearch.components.pti;
 
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Pair;
-import dbc.opensearch.tools.Processqueue;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.*;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.log4j.Logger;
+import dbc.opensearch.tools.Processqueue;
+import dbc.opensearch.tools.FedoraHandler;
+
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassConfigurationFactory;
 import org.compass.core.CompassException;
+
 import java.net.URL;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
+
+import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.log4j.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 
 
 public class PTIPool {
 
-    private ExecutorService ThreadExecutor; /**The threadpool */
+    private ExecutorService threadExecutor; /**The threadpool */
     private static volatile Compass theCompass;
-
+    private static volatile FedoraHandler theFedoraHandler;
     /**
      * log
      */
@@ -34,62 +38,73 @@ public class PTIPool {
 
     public PTIPool( int numberOfThreads ) throws ConfigurationException {
 
+        log.debug( String.format( "Number of threads = %s", numberOfThreads ) );
         // Securing nuberOfThreads > 0
         if ( numberOfThreads <= 0 ){
             /** \todo Find suitable exception */
             throw new ConfigurationException( "Refusing to construct empty PTIPool" );
         }
-        //Starting the threadPool
-        ThreadExecutor = Executors.newFixedThreadPool( numberOfThreads );
         
-        //Setting up the Compass
+        log.debug( String.format( "Starting the threadPool" ) );
+        threadExecutor = Executors.newFixedThreadPool( numberOfThreads );
+
+        log.debug( String.format( "Setting up the Compass object" ) );
         if( theCompass == null ){
             CompassConfiguration conf = new CompassConfiguration();
-            
-            URL cfg = getClass().getResource("/compass.cfg.xml"); 
-            URL cpm = getClass().getResource("/xml.cpm.xml"); 
+
+            URL cfg = getClass().getResource("/compass.cfg.xml");
+            URL cpm = getClass().getResource("/faktalink.cpm.xml");
             log.debug( String.format( "Compass configuration=%s", cfg.getFile() ) );
             log.debug( String.format( "XSEM mappings file   =%s", cpm.getFile() ) );
-            
+
             File cpmFile = new File( cpm.getFile() );
-            
+
             conf.configure( cfg );
             conf.addFile( cpmFile );
-            
-            theCompass = conf.buildCompass();   
+
+            theCompass = conf.buildCompass();
         }
-        
+
+        log.debug( String.format( "Setting up the FedoraHandler" ) );
+        if( theFedoraHandler == null) {
+            theFedoraHandler = new FedoraHandler();
+        }
+
         log.info( "The PTIPool has been constructed" );
-       
-    }   
+    }
 
     /**
-     * createAndJoinThread takes a handle to the fedora base and and a Compass session. 
-     * The it starts a PTI (callable) that extracts the data. the handle points to, 
-     * from the fedora base, index it and store it. The return value is the handle, 
-     * that the PTIPoolAdm uses for keeping track of which digitalobjects 
-     * are in process 
+     * createAndJoinThread takes a handle to the fedora base and and a Compass session.
+     * The it starts a PTI (callable) that extracts the data. the handle points to,
+     * from the fedora base, index it and store it. The return value is the handle,
+     * that the PTIPoolAdm uses for keeping track of which digitalobjects
+     * are in process
      */
 
     /** \todo find better Exception to throw*/
-   
-    public FutureTask createAndJoinThread (String fHandle )throws RuntimeException, ConfigurationException{
-        
+
+    public FutureTask createAndJoinThread (String fHandle, String itemID )throws ConfigurationException{
+
         CompassSession session = null;
         FutureTask future = null;
         try{
-        session = getSession();
-
-        future = new FutureTask( new PTI( session, fHandle ));
+            log.debug( String.format( "Getting CompassSession" ) );
+            session = getSession();
+            log.debug( String.format( "Constructing FutureTask on PTI" ) );
+            future = new FutureTask( new PTI( session, fHandle, itemID, theFedoraHandler ));
         }catch(RuntimeException re){
+            log.fatal( String.format( "RunTimeException occured in createAndJoinThread" ) );
             throw new RuntimeException( re.getMessage() );
         }catch(ConfigurationException ce){
+            log.fatal( String.format( "ConfigurationException occured in createAndJoinThread" ) );
             throw new ConfigurationException( ce.getMessage() );
         }
-                
-        ThreadExecutor.submit(future);
+
+        log.debug( String.format( "Submitting the FutureTask to the threads" ) );
+        threadExecutor.submit(future);
+        log.debug( String.format( "Returning the FutureTask" ) );
         return future;
-    }       
+    }
 
 
     /**
@@ -101,6 +116,7 @@ public class PTIPool {
             throw new RuntimeException( "getSession was called on an object that in the meantime went null. Aborting" );
         }
         CompassSession s = theCompass.openSession();
+        log.debug( String.format( "returning compass session %s", s.getSettings().toString() ) );
         return s;
     }
 

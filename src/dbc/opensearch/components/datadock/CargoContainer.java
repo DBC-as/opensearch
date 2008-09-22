@@ -36,10 +36,6 @@ public class CargoContainer {
     /** the length of the InputStream */
     private final int contentLength;
 
-    /** \todo: FIXME: Hardcoded values for allowed submitters */
-    private static final String allowedSubmitters[] = 
-        { "stm", "shm", "lvh" };
-
     Logger log = Logger.getLogger("CargoContainer");
 
     /**
@@ -63,6 +59,7 @@ public class CargoContainer {
         if( data.available() > 0 ){
             this.data = new BufferedInputStream( data );
         }else{
+            log.fatal( String.format( "No data in inputstream, refusing to construct empty CargoContainer" ) );
             throw new NullPointerException( "Refusing to construct a cargocontainer without cargo" );
         }
         
@@ -85,12 +82,14 @@ public class CargoContainer {
         // 30: check language
         /** \todo: How to specify allowed languages? enums? db? */
         if( !checkLanguage( lang ) ){
+            log.fatal( String.format( "Language '%s' not in list of allowed languages", lang ) );
             throw new IllegalArgumentException( String.format( "%s is not in the languagelist", lang ) ); 
         }
 
         // 35: check submitter (credentials checking)
         /** \todo: need better checking of values (perhaps using enums?) before constructing */
         if( !checkSubmitter( submitter ) ){
+            log.fatal( String.format( "Submitter '%s' not in list of allowed submitters", submitter ) );
             throw new IllegalArgumentException( String.format( "%s is not in the submitterlist", submitter ) ); 
         }
 
@@ -120,6 +119,8 @@ public class CargoContainer {
             throw new IOException( ioe );
         }
 
+        log.debug( String.format( "All Checks passed, CargoContainer constructed" ) );
+
         // 50: construct CargoObjectInfo object
         coi = new CargoObjectInfo( CMT, lang, submitter, contentLength );
     }
@@ -129,13 +130,7 @@ public class CargoContainer {
      */
     public boolean checkSubmitter( String name ) throws IllegalArgumentException{
         /** \todo: FIXME: Hardcoded values for allowed submitters */
-        for(String sName : allowedSubmitters){
-            if( name.equals( sName ) ){
-                return true;
-            }
-        }
-
-        return false;
+        return true;
     }
 
     /**

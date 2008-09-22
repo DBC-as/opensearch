@@ -197,14 +197,14 @@ public class FedoraHandler implements Constants{
         /** todo: ryd op i flg linjer */
         property = root.addElement( "foxml:datastream" );
         property.addAttribute( "CONTROL_GROUP", "M" ); //this shold be programmable -- bestemt dynamisk gives af objektet
-        property.addAttribute( "ID", cargo.getSubmitter() ); 
+        property.addAttribute( "ID", cargo.getSubmitter() );
         property.addAttribute( "STATE", "A" ); //... as should this
         property.addAttribute( "VERSIONABLE", "false" ); //... and this
 
         // datastreamVersionElement
         property = property.addElement( "foxml:datastreamVersion" );
         property.addAttribute( "CREATED", String.format( "%s", timeNow ) );
-        property.addAttribute( "ID", itemId ); 
+        property.addAttribute( "ID", itemId );
         property.addAttribute( "LABEL", label ); //note: we use the same label as for the digital object
         property.addAttribute( "MIMETYPE", cargo.getMimeType() );
         property.addAttribute( "SIZE", String.format( "%s", cargo.getStreamLength() ) );
@@ -220,16 +220,17 @@ public class FedoraHandler implements Constants{
         return document.asXML().getBytes( "UTF-8" );
     }
 
-    public CargoContainer getDatastream( String pid ) throws IOException {
-        return getDatastream( pid, "" );
-    }
+    // public CargoContainer getDatastream( String pid ) throws IOException {
+    //     log.debug( String.format( "Forwarding getDatastream( String ) call to getDatastream( String, String )" ) );
+    //     return getDatastream( pid, "" );
+    // }
 
     public CargoContainer getDatastream( java.util.regex.Pattern pid ) throws NotImplementedException{
         throw new NotImplementedException( "RegEx matching on pids not yet implemented" );
         //        return cargo;
     }
 
-    private CargoContainer getDatastream( String pid, String itemID ) throws IOException, NoSuchElementException{
+    public CargoContainer getDatastream( String pid, String itemID ) throws IOException, NoSuchElementException{
         log.debug( String.format( "Entering getDatastream" ) );
         CargoContainer cargo = null;
 
@@ -266,39 +267,42 @@ public class FedoraHandler implements Constants{
 
         log.debug( String.format( "Iterating datastreams" ) );
         for ( DatastreamDef def : datastreams ){
-
+            log.debug( String.format( "Got DatastreanDef with id=%s", def.getID() ) );
             // String fileStr = null;
 
-            try{
-                ds = apia.getDatastreamDissemination( pid, def.getID(), null );
-            } catch( RemoteException re ){
-                throw new RemoteException( String.format( "Could not retrieve the datastream for the pid=%s, id=%s", pid, def.getID() ) );
+            if( def.getID.equals( itemID ) ){
+
+                try{
+                    ds = apia.getDatastreamDissemination( pid, def.getID(), null );
+                } catch( RemoteException re ){
+                    throw new RemoteException( String.format( "Could not retrieve the datastream for the pid=%s, id=%s", pid, def.getID() ) );
+                }
+
+                log.debug( String.format( "Making a bytearray of the datastream" ) );
+                byte[] datastr = ds.getStream();
+
+                log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
+                InputStream inputStream = new ByteArrayInputStream( datastr );
+
+                // try{
+                //     fileStr = new String( file, "utf-8" );
+                // } catch( java.io.UnsupportedEncodingException ee ){}
+
+                log.info( String.format( "DataStream ID      =%s", def.getID() ) );
+                log.info( String.format( "DataStream Label   =%s", def.getLabel() ) );
+                log.info( String.format( "DataStream MIMEType=%s", def.getMIMEType() ) );
+                log.info( String.format( "Datastream = %s", inputStream.toString() ) );
+                // dc:format holds mimetype as well
+                /** \todo: need to get language dc:language */
+                /** \todo: need to get submitter dc:creator */
+                String language = "";
+                String submitter = "";
+
+                cargo = new CargoContainer( inputStream,
+                                            def.getMIMEType(),
+                                            language,
+                                            submitter );
             }
-
-            log.debug( String.format( "Making a bytearray of the datastream" ) );
-            byte[] datastr = ds.getStream();
-
-            log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
-            InputStream inputStream = new ByteArrayInputStream( datastr );
-
-            // try{
-            //     fileStr = new String( file, "utf-8" );
-            // } catch( java.io.UnsupportedEncodingException ee ){}
-
-            log.info( String.format( "DataStream ID      =%s", def.getID() ) );
-            log.info( String.format( "DataStream Label   =%s", def.getLabel() ) );
-            log.info( String.format( "DataStream MIMEType=%s", def.getMIMEType() ) );
-            log.info( String.format( "Datastream = %s", inputStream.toString() ) );
-            // dc:format holds mimetype as well
-            /** \todo: need to get language dc:language */
-            /** \todo: need to get submitter dc:creator */
-            String language = "";
-            String submitter = "";
-
-            cargo = new CargoContainer( inputStream,
-                                        def.getMIMEType(),
-                                        language,
-                                        submitter );
             log.debug( String.format( "Leaving getDatastream" ) );
         }
         return cargo;

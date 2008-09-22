@@ -21,7 +21,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.*;
 
-import dbc.opensearch.tools.*;
+import dbc.opensearch.tools.FedoraHandler;
+import dbc.opensearch.tools.Processqueue;
+
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Pair;
 
@@ -46,10 +48,10 @@ public class PTIPoolAdm {
         log.debug( "PTIPoolAdm Constructor" );
 
         /** todo: where should sleepInMilliSec be set?? in a configuration file or what*/
-        sleepInMilliSec= 200;
+        sleepInMilliSec= 20000;
         //
         try{
-            PTIpool = new PTIPool(10);
+            PTIpool = new PTIPool(1);
             processqueue = new Processqueue();
         }
         catch(ConfigurationException ce){
@@ -136,7 +138,9 @@ public class PTIPoolAdm {
      * committed to the processqueue, which effectivly removes them
      */
     private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, RuntimeException {
-        log.debug( "PTIPoolAdm.checkThreads() called" );
+        //        log.debug( "PTIPoolAdm.checkThreads() called" );
+
+        
 
         Pair<FutureTask, Integer> vectorPair = null;
         int queueID;
@@ -150,7 +154,7 @@ public class PTIPoolAdm {
             vectorPair = ( Pair ) iter.next();
             future = Tuple.get1(vectorPair);
             queueID = Tuple.get2(vectorPair);
-            log.debug( "checking future belonging to queueID = "+queueID );
+            // log.debug( "checking future belonging to queueID = "+queueID );
             if( future.isDone() ){// this thread is done
                 try{
                     Long processtime = (Long) future.get();
@@ -193,16 +197,17 @@ public class PTIPoolAdm {
         log.debug( "PTIPoolAdm.startThreads() called" );
 
         boolean fetchedLast = false;
-        Pair<String, Integer> queuePair = null;
+        Triple<String, Integer, String> queueTriple = null;
         Pair<FutureTask, Integer> vectorPair = null;
         String fedoraHandle;
+        String itemID;
         int queueID;
         FutureTask future;
 
         while( !fetchedLast ){
 
             try{
-                queuePair = processqueue.pop();
+                queueTriple = processqueue.pop();
             }
             catch(NoSuchElementException nse){
                 log.debug( "processqueue is empty" );
@@ -217,12 +222,13 @@ public class PTIPoolAdm {
 
             if( !fetchedLast ){
 
-                fedoraHandle = Tuple.get1(queuePair);
-                queueID = Tuple.get2(queuePair);
+                fedoraHandle = Tuple.get1(queueTriple);
+                queueID = Tuple.get2(queueTriple);
+                itemID = Tuple.get3(queueTriple)
 
                 try{
-                    log.debug( "starting new thread with fedoraHandle: "+fedoraHandle+" and queueID: "+queueID );
-                    future = PTIpool.createAndJoinThread(fedoraHandle );
+                    log.debug( String.format( "starting new thread with fedoraHandle: %s, queueID: %s and itemID: %s ", fedoraHandle, queueID, itemID );
+                    future = PTIpool.createAndJoinThread( fedoraHandle, itemID );
                 }catch(RuntimeException re){
                     throw new RuntimeException( re.getMessage() );
                 }catch(ConfigurationException ce){
