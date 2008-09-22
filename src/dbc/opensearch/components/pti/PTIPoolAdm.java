@@ -68,8 +68,8 @@ public class PTIPoolAdm {
         catch(InterruptedException ie){
             throw new InterruptedException( ie.getMessage() );
         }
-        catch(Exception ee){
-            throw new Exception( ee.getMessage() );
+        catch(Exception e){
+            throw new Exception( e.getMessage() );
         }
         
     }
@@ -123,8 +123,8 @@ public class PTIPoolAdm {
             catch(InterruptedException ie){
                 throw new InterruptedException( ie.getMessage() );
             }
-            catch(Exception ee){// Catching ExecutionException
-                throw new Exception( ee.getMessage() );
+            catch(Exception e){// Catching ExecutionException
+                throw new Exception( e.getMessage() );
             }
 
         }
@@ -135,7 +135,7 @@ public class PTIPoolAdm {
      * where the associated thread is done. The entries are also
      * committed to the processqueue, which effectivly removes them
      */
-    private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, Exception {
+    private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, RuntimeException {
         log.debug( "PTIPoolAdm.checkThreads() called" );
 
         Pair<FutureTask, Integer> vectorPair = null;
@@ -152,8 +152,14 @@ public class PTIPoolAdm {
             queueID = Tuple.get2(vectorPair);
             log.debug( "checking future belonging to queueID = "+queueID );
             if( future.isDone() ){// this thread is done
-                long processtime = 0l;
-                
+                try{
+                    Long processtime = (Long) future.get();
+                }
+                catch(ExecutionException ee){
+                     Throwable cause = ee.getCause();
+                     log.debug( String.format( "Catched thread error associated with queueid = %s", queueID ) );                     
+                         throw new RuntimeException( cause );
+                }
                 try{
                     processqueue.commit( queueID );
                 }
@@ -170,11 +176,8 @@ public class PTIPoolAdm {
 
                 removeableThreads.add( vectorPair );
                 log.info( String.format( "job done, Committed to queue, queueID = %s", queueID ) );
-                
             }
-
         }
-        
         iter = removeableThreads.iterator();
         while( iter.hasNext() ){
             activeThreads.remove( iter.next() );
