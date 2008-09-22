@@ -286,6 +286,7 @@ public class FedoraHandler implements Constants{
         log.debug( String.format( "CargoContainer.mimetype", cargo.getMimeType() ) );
         log.debug( String.format( "CargoContainer.submitter", cargo.getSubmitter() ) );
         log.debug( String.format( "CargoContainer.streamlength", cargo.getStreamLength() ) );
+        log.debug( String.format( "CargoContainer.getStream", cargo.getData().toString() ) );
 
         log.debug( String.format( "Leaving getDatastream" ) );
 
