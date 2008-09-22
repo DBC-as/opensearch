@@ -47,15 +47,15 @@ public class CargoContainerTest {
 
     /** \todo: need real users and possibly a constructor-check instead of this */
     /** \todo: and this only really makes sense as a static method */
-    @Test public void testAllowedSubmitter() {
-        assertTrue( cargo.checkSubmitter( "stm" ) );
-    }
+    // @Test public void testAllowedSubmitter() {
+    //     assertTrue( cargo.checkSubmitter( "stm" ) );
+    // }
 
     /** \todo: need real users and possibly a constructor-check instead of this */
     /** \todo: and this only really makes sense as a static method */
-    @Test public void testDisallowedSubmitter() {
-        assertFalse( cargo.checkSubmitter( "NonExistantSubmitter" ) );
-    }
+    // @Test public void testDisallowedSubmitter() {
+    //     assertFalse( cargo.checkSubmitter( "NonExistantSubmitter" ) );
+    // }
 
     @Test public void testGetByteArrayPreservesUTF8()throws IOException, UnsupportedEncodingException{
         byte[] sixBytes = cargo.getDataBytes();
@@ -65,6 +65,10 @@ public class CargoContainerTest {
     @Test public void testgetDataBAOSPreservesUTF8()throws IOException, UnsupportedEncodingException{
         ByteArrayOutputStream baos = cargo.getDataBAOS();
         assertTrue( teststring.equals( baos.toString( "UTF-8" ) ) );
+    }
+
+    @Test public void testGetMimetype(){
+        assertTrue( "text/xml".equals( cargo.getMimeType()) );
     }
 
 }

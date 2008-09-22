@@ -45,20 +45,20 @@ public class CargoObjectInfo {
     }
 
     int getContentLength(){
-        return this.contentLength;
+        return contentLength;
     }
 
     long getTimestamp(){
-        return this.timestamp.getTime();
+        return timestamp.getTime();
     }
-    CargoMimeType getMimeType(){
-        return this.mimeType;
+    String getMimeType(){
+        return mimeType.getMimeType();
     }
     /**
      *@return submitter as string
      */
     public String getSubmitter(){
-        return this.submitter;
+        return submitter;
     }
     
 }

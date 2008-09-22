@@ -55,6 +55,8 @@ public class CargoContainer {
      * @throws java.io.IOException if the stream is corrupted
      */
     public CargoContainer( InputStream data, String mime, String lang, String submitter ) throws IOException, IllegalArgumentException{
+
+        log.debug( String.format( "Entering CargoContainer constructor" ) );
         // 05: get the stream into the object
         if( data.available() > 0 ){
             this.data = new BufferedInputStream( data );
@@ -78,6 +80,8 @@ public class CargoContainer {
         if( CMT == null ){
             throw new IllegalArgumentException( String.format( "no mimetype goes by the name of %s", mime ) ); 
         }
+
+        //log.debug( String.format( "Saved mimetype %s", this.getMimeType() ) );
 
         // 30: check language
         /** \todo: How to specify allowed languages? enums? db? */
@@ -229,8 +233,8 @@ public class CargoContainer {
     /**
      * @return the mimetype of the data as a string
      */    
-    public String getMimeType(){        
-        return this.coi.getMimeType().getMimeType();
+    public String getMimeType(){
+        return coi.getMimeType();
     }
     /**
      *@return the submitter as a string

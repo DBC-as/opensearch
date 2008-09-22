@@ -225,7 +225,7 @@ public class FedoraHandler implements Constants{
     //     return getDatastream( pid, "" );
     // }
 
-    public CargoContainer getDatastream( java.util.regex.Pattern pid ) throws NotImplementedException{
+    public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException{
         throw new NotImplementedException( "RegEx matching on pids not yet implemented" );
         //        return cargo;
     }
