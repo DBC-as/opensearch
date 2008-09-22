@@ -167,14 +167,13 @@ public class PTIPoolAdm {
                 }
                 try{
                     processqueue.commit( queueID );
-                }
-                catch(NoSuchElementException nse){
-                    throw new NoSuchElementException( nse.getMessage() );
-                }
-                catch(ClassNotFoundException cne){
-                    throw new ClassNotFoundException( cne.getMessage() );
-                }catch(SQLException sqe){
-                    throw new SQLException( sqe.getMessage() );
+                // }catch(NoSuchElementException nse){
+                //     throw new NoSuchElementException( nse.getMessage() );
+                // }
+                // catch(ClassNotFoundException cne){
+                //     throw new ClassNotFoundException( cne.getMessage() );
+                // }catch(SQLException sqe){
+                //     throw new SQLException( sqe.getMessage() );
                 }catch(NullPointerException npe){
                     log.debug( String.format( "vectorPair was possibly null? vectorPair = %s", vectorPair.toString() ) );
                 }
@@ -214,12 +213,12 @@ public class PTIPoolAdm {
                 log.debug( "processqueue is empty" );
                 fetchedLast = true;
             }
-            catch(ClassNotFoundException cne){
-                throw new ClassNotFoundException( cne.getMessage() );
-            }
-            catch(SQLException sqe){
-                throw new SQLException( sqe.getMessage() );
-            }
+            // catch(ClassNotFoundException cne){
+            //     throw new ClassNotFoundException( cne.getMessage() );
+            // }
+            // catch(SQLException sqe){
+            //     throw new SQLException( sqe.getMessage() );
+            // }
 
             if( !fetchedLast ){
 
@@ -227,14 +226,14 @@ public class PTIPoolAdm {
                 queueID = Tuple.get2(queueTriple);
                 itemID = Tuple.get3(queueTriple);
 
-                try{
+                // try{
                     log.debug( String.format( "starting new thread with fedoraHandle: %s, queueID: %s and itemID: %s ", fedoraHandle, queueID, itemID ) );
                     future = PTIpool.createAndJoinThread( fedoraHandle, itemID );
-                }catch(RuntimeException re){
-                    throw new RuntimeException( re.getMessage() );
-                }catch(ConfigurationException ce){
-                    throw new ConfigurationException( ce.getMessage() );
-                }
+                // }catch(RuntimeException re){
+                //     throw new RuntimeException( re.getMessage() );
+                // }catch(ConfigurationException ce){
+                //     throw new ConfigurationException( ce.getMessage() );
+                // }
 
                 // add thread to active thread vector
                 vectorPair = Tuple.from(future, queueID);

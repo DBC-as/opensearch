@@ -49,7 +49,7 @@ public class CompassTest{
         // a non-validating saxreader instance
         SAXReader saxReader = new SAXReader( false);
 
-        File xmlFile = new File( "./src/dbc/opensearch/components/pti/tests/compass_test/data1.xml" );
+        File xmlFile = new File( "./src/dbc/opensearch/components/pti/tests/compass_test/data2.xml" );
 
         log.debug( String.format( "file=%s", xmlFile.getAbsolutePath() ) );
 
@@ -61,7 +61,7 @@ public class CompassTest{
             System.out.println(String.format( "DocumentException=%s",de.getMessage() ) );
         }
 
-        AliasedXmlObject xmlObjext = new Dom4jAliasedXmlObject( "author", doc.getRootElement() ); 
+        AliasedXmlObject xmlObjext = new Dom4jAliasedXmlObject( "data1", doc.getRootElement() ); 
         
         CompassSession session = compass.openSession();
         CompassTransaction trans = null;

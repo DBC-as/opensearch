@@ -42,6 +42,7 @@ public class PTIPool {
         // Securing nuberOfThreads > 0
         if ( numberOfThreads <= 0 ){
             /** \todo Find suitable exception */
+            log.fatal( String.format( "Number of threads specified was 0, quite absurd." ) );
             throw new ConfigurationException( "Refusing to construct empty PTIPool" );
         }
         
@@ -52,8 +53,10 @@ public class PTIPool {
         if( theCompass == null ){
             CompassConfiguration conf = new CompassConfiguration();
 
+
+            /** \todo: FIXME hardcoded values. Should come from startup config file */
             URL cfg = getClass().getResource("/compass.cfg.xml");
-            URL cpm = getClass().getResource("/faktalink.cpm.xml");
+            URL cpm = getClass().getResource("/xml.cpm.xml");
             log.debug( String.format( "Compass configuration=%s", cfg.getFile() ) );
             log.debug( String.format( "XSEM mappings file   =%s", cpm.getFile() ) );
 
@@ -87,18 +90,18 @@ public class PTIPool {
 
         CompassSession session = null;
         FutureTask future = null;
-        try{
+        // try{
             log.debug( String.format( "Getting CompassSession" ) );
             session = getSession();
             log.debug( String.format( "Constructing FutureTask on PTI" ) );
             future = new FutureTask( new PTI( session, fHandle, itemID, theFedoraHandler ));
-        }catch(RuntimeException re){
-            log.fatal( String.format( "RunTimeException occured in createAndJoinThread" ) );
-            throw new RuntimeException( re.getMessage() );
-        }catch(ConfigurationException ce){
-            log.fatal( String.format( "ConfigurationException occured in createAndJoinThread" ) );
-            throw new ConfigurationException( ce.getMessage() );
-        }
+        // }catch(RuntimeException re){
+        //     log.fatal( String.format( "RunTimeException occured in createAndJoinThread" ) );
+        //     throw new RuntimeException( re.getMessage() );
+        // }catch(ConfigurationException ce){
+        //     log.fatal( String.format( "ConfigurationException occured in createAndJoinThread" ) );
+        //     throw new ConfigurationException( ce.getMessage() );
+        // }
 
         log.debug( String.format( "Submitting the FutureTask to the threads" ) );
         threadExecutor.submit(future);

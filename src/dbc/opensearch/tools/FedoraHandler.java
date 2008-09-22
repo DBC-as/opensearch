@@ -268,10 +268,10 @@ public class FedoraHandler implements Constants{
                 //     fileStr = new String( file, "utf-8" );
                 // } catch( java.io.UnsupportedEncodingException ee ){}
 
-                log.info( String.format( "DataStream ID      =%s", def.getID() ) );
-                log.info( String.format( "DataStream Label   =%s", def.getLabel() ) );
-                log.info( String.format( "DataStream MIMEType=%s", def.getMIMEType() ) );
-                log.info( String.format( "Datastream = %s", inputStream.toString() ) );
+                log.debug( String.format( "DataStream ID      =%s", def.getID() ) );
+                log.debug( String.format( "DataStream Label   =%s", def.getLabel() ) );
+                log.debug( String.format( "DataStream MIMEType=%s", def.getMIMEType() ) );
+
                 // dc:format holds mimetype as well
                 /** \todo: need to get language dc:language */
                 String language = "";
@@ -283,10 +283,10 @@ public class FedoraHandler implements Constants{
             }
         }
         log.debug( String.format( "Successfully retrieved datastream. CargoContainer has length %s", cargo.getStreamLength() ) );
-        log.debug( String.format( "CargoContainer.mimetype", cargo.getMimeType() ) );
-        log.debug( String.format( "CargoContainer.submitter", cargo.getSubmitter() ) );
-        log.debug( String.format( "CargoContainer.streamlength", cargo.getStreamLength() ) );
-        log.debug( String.format( "CargoContainer.getStream", cargo.getData().toString() ) );
+        log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getMimeType() ) );
+        log.debug( String.format( "CargoContainer.submitter=     %s", cargo.getSubmitter() ) );
+        log.debug( String.format( "CargoContainer.streamlength = %s", cargo.getStreamLength() ) );
+        log.debug( String.format( "CargoContainer.getStream =    %s", cargo.getData().toString() ) );
 
         log.debug( String.format( "Leaving getDatastream" ) );
 

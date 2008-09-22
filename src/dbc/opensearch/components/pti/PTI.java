@@ -73,29 +73,29 @@ public class PTI implements Callable<Long>{
 
         log.debug( "process data in cargocontainer" );
 
-        try{
+        // try{
             doProcessing( );
-        }catch( CompassException ce ){
-            throw new CompassException( ce.getMessage() );
-        }catch( IOException ioe ){
-            throw new IOException( ioe.getMessage() );
-        }catch( DocumentException de ){
-            throw new DocumentException( de.getMessage() );
-        }
+        // }catch( CompassException ce ){
+        //     throw new CompassException( ce.getMessage() );
+        // }catch( IOException ioe ){
+        //     throw new IOException( ioe.getMessage() );
+        // }catch( DocumentException de ){
+        //     throw new DocumentException( de.getMessage() );
+        // }
 
         long processtime = finishTime.getTime() - cc.getTimestamp();
 
-        try{
+        // try{
             log.info( String.format("Update estimate base with mimetype = %s, streamlength = %s, processtime = %s",
                                     cc.getMimeType(), cc.getStreamLength(), processtime ) );
             estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
-        catch(ClassNotFoundException cne){
-            throw new ClassNotFoundException( cne.getMessage() );
-        }
+        // }
+        // catch(SQLException sqe){
+        //     throw new SQLException( sqe.getMessage() );
+        // }
+        // catch(ClassNotFoundException cne){
+        //     throw new ClassNotFoundException( cne.getMessage() );
+        // }
 
         return processtime;
     }
@@ -127,33 +127,36 @@ public class PTI implements Callable<Long>{
         Document doc = null;
         SAXReader saxReader = new SAXReader( false );
 
-        try{
+        // try{
             log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
             doc = saxReader.read( cc.getData() );
-        }catch( DocumentException de){
-            /** \todo: should this really just dump? How about propagation? */
-            System.out.println(String.format( "DocumentException=%s",de.getMessage() ) );
-        }
+        // }catch( DocumentException de){
+        //     /** \todo: should this really just dump? How about propagation? */
+        //     System.out.println(String.format( "DocumentException=%s",de.getMessage() ) );
+        // }
 
-        log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:%s", doc.getRootElement().getText() ) );
+        log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
+
         /** \todo: hardcoded values for alias on xmlaliasedobject */
         AliasedXmlObject xmlObject =
             new Dom4jAliasedXmlObject( "data1", doc.getRootElement() );
 
+        log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
+
         // index the object and end if we succeed:
-        try{
+        // try{
             log.debug( String.format( "Indexing document" ) );
             indexDocument( session, transaction, xmlObject );
-        }catch( CompassException ce) {
+        // }catch( CompassException ce) {
             // We catch all possible exceptions here and log.fatal them
-            log.fatal(
-                      String.format( "Could not index CargoContainer with fedoraHandle %s:\n%s",
-                                     fedoraHandle,
-                                     ce.getMessage()
-                                     )
-                      );
-            throw new CompassException( String.format( "Could not index CargoContainer with fedoraHandle %s", fedoraHandle ), ce);
-        }
+        //     log.fatal(
+        //               String.format( "Could not index CargoContainer with fedoraHandle %s:\n%s",
+        //                              fedoraHandle,
+        //                              ce.getMessage()
+        //                              )
+        //               );
+        //     throw new CompassException( String.format( "Could not index CargoContainer with fedoraHandle %s", fedoraHandle ), ce);
+        // }
         log.debug( String.format( "Exiting doProcessing" ) );
     }
 
@@ -168,7 +171,9 @@ public class PTI implements Callable<Long>{
      */
     private Document convertCargoToXml( CargoContainer cargo ) throws DocumentException, IOException{
 
-        /** \todo: encoding should be determined by config/object-fields */
+        /** \todo: encoding should be determined by config/object-fields. See discussion below */
+        /** ... it could be retrieved from the dom4j.Document.getXMLEncoding() */
+        /** which would probably benifit from being put into the CargoContainer in the first place... */
         return DocumentHelper
             .parseText( new String( cargo.getDataBytes(), "ISO-8859-1") );
     }
