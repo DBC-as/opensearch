@@ -14,7 +14,7 @@ PROCEDURE proc_prod(fedorahandle OUT VARCHAR, queueid OUT INTEGER, processing OU
 IS
   CURSOR proc_cur 
   IS 
-    SELECT fedorahandle,itemID,processing, queueid 
+    SELECT fedorahandle,queueid,processing,itemID
     FROM processqueue 
     WHERE queueid = ( SELECT MIN(queueid)
                       FROM processqueue 
@@ -23,7 +23,7 @@ IS
 BEGIN
   OPEN proc_cur;
   IF proc_cur%ISOPEN THEN
-    FETCH proc_cur into fedorahandle,processing,queueid,itemID;
+    FETCH proc_cur into fedorahandle,queueid,processing,itemID;
     IF proc_cur%FOUND THEN
       UPDATE processqueue
       SET processing = 'Y'
