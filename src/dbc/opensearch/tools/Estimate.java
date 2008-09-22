@@ -1,35 +1,20 @@
 package dbc.opensearch.tools;
 
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-
-import java.net.URL;
-import java.util.NoSuchElementException;
-import java.lang.ClassNotFoundException;
-
-import oracle.jdbc.driver.OracleDriver;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 
 import java.sql.Connection;
-import java.sql.CallableStatement;
 import java.sql.Statement;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import java.util.NoSuchElementException;
+import java.lang.ClassNotFoundException;
+import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * \brief The Estimate class handles all communication to the statisticDB table
  */
-public class Estimate{
-
-    /**
-     * Variables to hold configuration parameters
-     */
-    private static String driver = "";
-    private static String url = "";
-    private static String userID = "";
-    private static String passwd = "";
+public class Estimate extends DBConnection {
 
     /**
      *  database Connection
@@ -39,33 +24,13 @@ public class Estimate{
     /**
      * Log
      */
-
     private static final Logger log = Logger.getRootLogger();
 
+    /**
+     * Constructor
+     */
     public Estimate() throws ConfigurationException {
         log.debug( "Estimate Constructor" );
-
-        log.debug( "Obtain config paramaters");
-
-        URL cfgURL = getClass().getResource("/config.xml");
-        XMLConfiguration config = null;
-        try{
-            config = new XMLConfiguration( cfgURL );
-        }
-        catch (ConfigurationException cex){
-            log.fatal( "ConfigurationException: " + cex.getMessage() );
-            throw new ConfigurationException( cex.getMessage() );
-        }
-
-        driver = config.getString( "database.driver" );
-        url    = config.getString( "database.url" );
-        userID = config.getString( "database.userID" );
-        passwd = config.getString( "database.passwd" );
-
-        log.debug( "driver: "+driver );
-        log.debug( "url:    "+url );
-        log.debug( "userID: "+userID );
-
     }
 
     /**
@@ -76,8 +41,7 @@ public class Estimate{
      */
 
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
-    /** \todo: As this is a function without sideeffects, it should perhaps be static? */
-    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException{
+    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException {
 
         log.info( String.format( "in estimate(). Length=%s",length ) );
 
@@ -142,7 +106,6 @@ public class Estimate{
             average_time = ( ( (float)p / d ) * length );
             log.debug( String.format( "\nprocesstime=%s\ndataamount=%s\np/d=%s\naverage time for mimetype %s = %s", p, d, p/d, mimeType, average_time ) );
         }
-
         return average_time;
     }
 
@@ -179,8 +142,7 @@ public class Estimate{
         
         // Write new estimate values to database
         Statement stmt = null;
-        try{
-            
+        try{      
             stmt = con.createStatement();
             stmt.executeUpdate( sqlQuery );
             log.debug( "New estimate written to database" );
@@ -190,33 +152,4 @@ public class Estimate{
             throw new SQLException( sqe.getMessage() );
         }        
      }
-
-    /**
-     * Establishes the connction to the database
-     */
-    private static Connection establishConnection() throws ClassNotFoundException, SQLException {
-
-        Connection con = null;
-
-        try {
-            Class.forName(driver);
-
-        }
-        catch(ClassNotFoundException ce) {
-            log.fatal( "ClassNotFoundException: " + ce.getMessage() );
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-
-        try {
-            con = DriverManager.getConnection(url, userID, passwd);
-        }
-        catch(SQLException sqe) {
-            log.fatal( "SQLException: " + sqe.getMessage() );
-            throw new SQLException( sqe.getMessage() );
-        }
-
-        log.debug( "Got connection." );
-
-        return con;
-    }
 }

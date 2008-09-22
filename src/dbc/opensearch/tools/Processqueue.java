@@ -1,75 +1,39 @@
 package dbc.opensearch.tools;
 
+import org.apache.log4j.Logger;
+
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Pair;
+
 import java.sql.Connection;
 import java.sql.CallableStatement;
 import java.sql.Statement;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import oracle.jdbc.driver.OracleDriver;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
-
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-
-import java.net.URL;
 import java.util.NoSuchElementException;
-import java.lang.ClassNotFoundException;
+import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * \brief The Processqueue class handles all communication to the processqueue
  */
-public class Processqueue {
-
-    /**
-     * Variables to hold configuration parameters
-     */
-    private static String driver = "";
-    private static String url = "";
-    private static String userID = "";
-    private static String passwd = "";
+public class Processqueue extends DBConnection {
 
     /**
      *  Log
      */
-
     private static final Logger log = Logger.getRootLogger();
-
 
     /**
      *  database Connection
      */
     private Connection con;
     
-    
+    /**
+     * Constructor
+     */
     public Processqueue() throws ConfigurationException {
-
         log.debug( "Processqueue Constructor" );
-
-        log.debug( "Obtain config paramaters");
-        
-        URL cfgURL = getClass().getResource("/config.xml");
-        XMLConfiguration config = null;
-        try{
-            config = new XMLConfiguration( cfgURL );
-        }
-        catch (ConfigurationException cex){
-            log.fatal( "ConfigurationException: " + cex.getMessage() );
-            throw new ConfigurationException( cex.getMessage() );
-        }
-
-        driver = config.getString( "database.driver" );
-        url    = config.getString( "database.url" );
-        userID = config.getString( "database.userID" );
-        passwd = config.getString( "database.passwd" );
-        
-        log.debug( "driver: "+driver );
-        log.debug( "url:    "+url );
-        log.debug( "userID: "+userID );
     } 
 
     /**
@@ -111,7 +75,6 @@ public class Processqueue {
 
         stmt.close();
         con.close();
-
     }
 
     /**
@@ -170,7 +133,6 @@ public class Processqueue {
         //        return handle;
         return Tuple.from( handle, popped_queueid );
     }
-
 
     /**
      * commits the pop to the queue. This operation removes the
@@ -255,7 +217,6 @@ public class Processqueue {
 
     }
     
-    
     /**
      * getActiveprocesses queries the processqueue table and find
      * elements that are marked as processing.
@@ -309,41 +270,8 @@ public class Processqueue {
             int i=0;
             while( rs.next() ){
                 queueIDArray[i] = rs.getInt("queueid");
-            }
-            
+            }            
         }
         return queueIDArray;
-
     }
-
-
-    /**
-     * Establishes the connction to the database
-     */
-    private static Connection establishConnection() throws ClassNotFoundException, SQLException {
-
-        Connection con = null;
-
-        try {
-            Class.forName(driver);
-
-        } 
-        catch(ClassNotFoundException ce) {
-            log.fatal( "ClassNotFoundException: " + ce.getMessage() );
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-
-        try {
-            con = DriverManager.getConnection(url, userID, passwd);
-        } 
-        catch(SQLException sqe) {
-            log.fatal( "SQLException: " + sqe.getMessage() );
-            throw new SQLException( sqe.getMessage() );
-        }
-
-        log.debug( "Got connection." );
-
-        return con;
-    }
-
 }
