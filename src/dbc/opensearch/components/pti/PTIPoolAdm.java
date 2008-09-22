@@ -224,10 +224,10 @@ public class PTIPoolAdm {
 
                 fedoraHandle = Tuple.get1(queueTriple);
                 queueID = Tuple.get2(queueTriple);
-                itemID = Tuple.get3(queueTriple)
+                itemID = Tuple.get3(queueTriple);
 
                 try{
-                    log.debug( String.format( "starting new thread with fedoraHandle: %s, queueID: %s and itemID: %s ", fedoraHandle, queueID, itemID );
+                    log.debug( String.format( "starting new thread with fedoraHandle: %s, queueID: %s and itemID: %s ", fedoraHandle, queueID, itemID ) );
                     future = PTIpool.createAndJoinThread( fedoraHandle, itemID );
                 }catch(RuntimeException re){
                     throw new RuntimeException( re.getMessage() );

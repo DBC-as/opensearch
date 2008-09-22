@@ -3,7 +3,7 @@ package dbc.opensearch.tools;
 import org.apache.log4j.Logger;
 
 import com.mallardsoft.tuple.Tuple;
-import com.mallardsoft.tuple.Pair;
+import com.mallardsoft.tuple.Triple;
 
 import java.sql.Connection;
 import java.sql.CallableStatement;
@@ -40,7 +40,7 @@ public class Processqueue extends DBConnection {
      * Push an fedorahandle to the processqueue
      * @params fedorahandle: a fedorahandle, i.e. a pointer to a document in the opensearch repository.
      */
-    public void push( String fedorahandle ) throws ClassNotFoundException, SQLException {
+    public void push( String fedorahandle, String itemID ) throws ClassNotFoundException, SQLException {
         log.debug( "Processqueue.pop() called" );
         // establish databaseconnection
         log.debug( "establish databaseconnection" );
@@ -61,10 +61,10 @@ public class Processqueue extends DBConnection {
         try{
             // Write fedorahandle and queueID to database
             stmt = con.createStatement();
+            String sql_query = (  String.format( "INSERT INTO processqueue(queueid, fedorahandle, itemID, processing) VALUES(processqueue_seq.nextval ,'%s','%s','N')", fedorahandle, itemID ) );
             
-            stmt.executeUpdate( "INSERT INTO processqueue(queueid, fedorahandle, processing)" +
-                                " VALUES(processqueue_seq.nextval ,'"+fedorahandle+"','N')" );
-            log.debug( "Written to database" );
+            stmt.executeUpdate( sql_query );
+                log.debug( String.format( "Written sqlQuery %sto database", sql_query ) );
         }
         catch(SQLException sqe) {
             log.fatal( "SQLException: " + sqe.getMessage() );
@@ -82,7 +82,7 @@ public class Processqueue extends DBConnection {
      * @returns A pair cointaning the fedorahandle (a String containing the unique handle), and queueid a number identifying the fedorahandle in the queue. Used later for commit or rollback.
      * for the resource in the object repository
      */
-    public Pair<String, Integer>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
+    public Triple<String, Integer, String>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
         log.debug( "Processqueue.pop() called" );
 
         // establish databaseconnection
@@ -106,6 +106,7 @@ public class Processqueue extends DBConnection {
             cs.registerOutParameter(1, java.sql.Types.VARCHAR);
             cs.registerOutParameter(2, java.sql.Types.INTEGER);
             cs.registerOutParameter(3, java.sql.Types.VARCHAR);
+            cs.registerOutParameter(4, java.sql.Types.VARCHAR);
             
             // execute procedure
             rs = cs.executeQuery();
@@ -121,17 +122,19 @@ public class Processqueue extends DBConnection {
         } 
 
         //fetch data
-        String handle = cs.getString(1);
-        int popped_queueid = cs.getInt(2);
+        String handle = cs.getString( 1 );
+        int popped_queueid = cs.getInt( 2 );
+        String itemID = cs.getString( 4 );
         log.info( "Handle obtained by pop: "+ handle );
         log.debug( "popped_queueid: "+popped_queueid );
+        log.debug( "itemID: " + itemID );
 
         // Close database connection
         cs.close();
         con.close();
-
+        
         //        return handle;
-        return Tuple.from( handle, popped_queueid );
+        return Tuple.from( handle, popped_queueid, itemID );
     }
 
     /**

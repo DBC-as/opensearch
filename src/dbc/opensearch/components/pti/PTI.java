@@ -54,7 +54,7 @@ public class PTI implements Callable<Long>{
         log.debug( String.format( "Setting up PTI with compassSession and fedoraHandle '%s'", fedoraHandle ) );
         this.session = session;
         this.fedoraHandle = fedoraHandle;
-        this.datastreamItemID = itemID
+        this.datastreamItemID = itemID;
         this.fh = fh;
         estimate = new Estimate();
     }

@@ -97,7 +97,7 @@ public class DataDock implements Callable<Float>{
             // 20: Store data in Fedora
             // 30: queue FedoraHandle
             log.info( String.format( "Estimate = %s ", processEstimate ) );
-            queueFedoraHandle(fedoraStoreData());
+            queueFedoraHandle(fedoraStoreData(), cc.getSubmitter() );
             log.info( String.format( "data queued" ) );
         }
 
@@ -199,7 +199,7 @@ public class DataDock implements Callable<Float>{
     }
 
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
-    public void queueFedoraHandle( String fedoraHandle ) throws ClassNotFoundException, ConfigurationException, SQLException {
+    public void queueFedoraHandle( String fedoraHandle, String itemID ) throws ClassNotFoundException, ConfigurationException, SQLException {
         /**
          * the push queues a fedoraHandle on the processQueue
          * to take the parameteres from the config file
@@ -207,7 +207,7 @@ public class DataDock implements Callable<Float>{
         log.debug( "Entering DataDock.queueFedoraHandle" );
         // 10: call push
         try{
-            queue.push( fedoraHandle );
+            queue.push( fedoraHandle, itemID );
 
         }
         catch(ClassNotFoundException cne){
