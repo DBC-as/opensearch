@@ -119,10 +119,10 @@ public class CargoContainer {
             throw new IOException( ioe );
         }
 
-        log.debug( String.format( "All Checks passed, CargoContainer constructed" ) );
-
         // 50: construct CargoObjectInfo object
         coi = new CargoObjectInfo( CMT, lang, submitter, contentLength );
+
+        log.debug( String.format( "All Checks passed, CargoContainer constructed with values %s, %s, %s, %s", this.getStreamLength(), this.getMimeType(), lang, this.getSubmitter() ) );
     }
     
     /**

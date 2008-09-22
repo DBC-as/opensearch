@@ -24,8 +24,9 @@ import java.util.concurrent.*;
 import dbc.opensearch.tools.FedoraHandler;
 import dbc.opensearch.tools.Processqueue;
 
-import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Pair;
+import com.mallardsoft.tuple.Tuple;
+import com.mallardsoft.tuple.Triple;
 
 public class PTIPoolAdm {
 

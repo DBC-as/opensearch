@@ -236,24 +236,7 @@ public class FedoraHandler implements Constants{
 
         DatastreamDef[] datastreams = null;
 
-        // RepositoryInfo ri = null;
-
-        // ObjectMethodsDef[] methods = null;
-
         MIMETypedStream ds = null;
-
-
-        // try {
-        //     // ri = this.apia.describeRepository();
-        //     methods = this.apia.listMethods( pid, null );
-        // }
-        // catch(Exception e) {
-        //     log.fatal( String.format( "encountered an error: %s", e.getMessage() ) );
-        // }
-
-        // for ( ObjectMethodsDef om : methods ){
-        //     System.out.println( om.getMethodName() );
-        // }
 
         log.debug( String.format( "Retrieving datastream information for PID %s", pid ) );
 
@@ -268,10 +251,7 @@ public class FedoraHandler implements Constants{
         log.debug( String.format( "Iterating datastreams" ) );
         for ( DatastreamDef def : datastreams ){
             log.debug( String.format( "Got DatastreanDef with id=%s", def.getID() ) );
-            // String fileStr = null;
-
-            if( def.getID.equals( itemID ) ){
-
+            if( def.getID().equals( itemID ) ){
                 try{
                     ds = apia.getDatastreamDissemination( pid, def.getID(), null );
                 } catch( RemoteException re ){
@@ -294,17 +274,21 @@ public class FedoraHandler implements Constants{
                 log.info( String.format( "Datastream = %s", inputStream.toString() ) );
                 // dc:format holds mimetype as well
                 /** \todo: need to get language dc:language */
-                /** \todo: need to get submitter dc:creator */
                 String language = "";
-                String submitter = "";
 
                 cargo = new CargoContainer( inputStream,
                                             def.getMIMEType(),
                                             language,
-                                            submitter );
+                                            itemID );
             }
-            log.debug( String.format( "Leaving getDatastream" ) );
         }
+        log.debug( String.format( "Successfully retrieved datastream. CargoContainer has length %s", cargo.getStreamLength() ) );
+        log.debug( String.format( "CargoContainer.mimetype", cargo.getMimeType() ) );
+        log.debug( String.format( "CargoContainer.submitter", cargo.getSubmitter() ) );
+        log.debug( String.format( "CargoContainer.streamlength", cargo.getStreamLength() ) );
+
+        log.debug( String.format( "Leaving getDatastream" ) );
+
         return cargo;
     } //end getDatastream
 

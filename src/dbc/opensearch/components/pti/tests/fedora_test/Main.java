@@ -98,7 +98,7 @@ log.debug( String.format( "Constructed fedoraHandler, with %s, %s", args[0], arg
 
     private static void getDatastreamAndPrint( FedoraHandler fh, String id ) throws java.io.IOException, java.io.UnsupportedEncodingException{
         log.debug( String.format( "Entering getDatastreamAndPrint" ) );
-        CargoContainer cargo = fh.getDatastream( id );
+        CargoContainer cargo = fh.getDatastream( id, "" );
         //        byte[] db = cargo.getDataBytes();
         //System.out.println( new String( db, "UTF-8" ) );
     }

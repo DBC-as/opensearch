@@ -64,7 +64,7 @@ public class Processqueue extends DBConnection {
             String sql_query = (  String.format( "INSERT INTO processqueue(queueid, fedorahandle, itemID, processing) VALUES(processqueue_seq.nextval ,'%s','%s','N')", fedorahandle, itemID ) );
             
             stmt.executeUpdate( sql_query );
-                log.debug( String.format( "Written sqlQuery %sto database", sql_query ) );
+                log.debug( String.format( "Written sqlQuery %s to database", sql_query ) );
         }
         catch(SQLException sqe) {
             log.fatal( "SQLException: " + sqe.getMessage() );
@@ -102,7 +102,7 @@ public class Processqueue extends DBConnection {
         ResultSet rs=null;
         
         try{
-            cs = con.prepareCall("{call proc_prod(?,?,?)}");
+            cs = con.prepareCall("{call proc_prod(?,?,?,?)}");
             cs.registerOutParameter(1, java.sql.Types.VARCHAR);
             cs.registerOutParameter(2, java.sql.Types.INTEGER);
             cs.registerOutParameter(3, java.sql.Types.VARCHAR);

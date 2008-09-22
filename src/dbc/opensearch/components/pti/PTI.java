@@ -44,6 +44,7 @@ public class PTI implements Callable<Long>{
     private Processqueue queue;
     private Date finishTime;
     private String fedoraHandle;
+    private String datastreamItemID;
     private int queueID;
     private Estimate estimate;
 
@@ -107,13 +108,14 @@ public class PTI implements Callable<Long>{
     public void doProcessing( ) throws CompassException, IOException, DocumentException {//, javax.xml.parsers.ParserConfigurationException, IOException, org.xml.sax.SAXException{
         log.debug( "Entering doProcessing" );
 
-        log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s'", fedoraHandle ) );
+        log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle,datastreamItemID ) );
         if( fh != null ){
             cc = fh.getDatastream( fedoraHandle, datastreamItemID );
         }else{
             throw new NullPointerException( "FedoraHandler was null, aborting" );
         }
 
+        log.debug( String.format( "CargoContainer isNull == %s", cc == null ) );
         log.debug( String.format( "CargoContainer.mimetype", cc.getMimeType() ) );
         log.debug( String.format( "CargoContainer.submitter", cc.getSubmitter() ) );
         log.debug( String.format( "CargoContainer.streamlength", cc.getStreamLength() ) );
