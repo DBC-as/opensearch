@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.*;
+import java.util.concurrent.FutureTask;
 
 import dbc.opensearch.tools.FedoraHandler;
 import dbc.opensearch.tools.Processqueue;
@@ -30,7 +30,7 @@ import com.mallardsoft.tuple.Triple;
 
 public class PTIPoolAdm {
 
-    private static final Logger log = Logger.getRootLogger();
+    Logger log = Logger.getLogger("PTIPoolAdm");
 
     private Processqueue processqueue;
     private PTIPool PTIpool;
@@ -42,47 +42,45 @@ public class PTIPoolAdm {
 
     
     /**
-     * Constructor 
+     * Initializes the PTIPool with the given number of
+     * threads. Initializes a Processqueue and starts the mainLoop for
+     * the processing of data within the threads.
+     * @param numberOfThreads is the number of threads to initialize the PTIPool with
+     * @throws ConfigurationException if the PTIPool could not be correctly initialized
+     * @throws ClassNotFoundException if the Processqueue could not load the database driver
      */
-    public PTIPoolAdm()throws ConfigurationException, RuntimeException, NoSuchElementException, SQLException, ClassNotFoundException, InterruptedException, Exception{
-
+    public PTIPoolAdm( int numberOfThreads )throws ConfigurationException, ClassNotFoundException{
         log.debug( "PTIPoolAdm Constructor" );
 
         /** todo: where should sleepInMilliSec be set?? in a configuration file or what*/
         sleepInMilliSec= 20000;
         //
-        try{
-            PTIpool = new PTIPool(1);
-            processqueue = new Processqueue();
-        }
-        catch(ConfigurationException ce){
-            throw new ConfigurationException( ce.getMessage() );
-        }
-        catch(RuntimeException re){
-            throw new RuntimeException( re.getMessage() );
-        }
+        // try{
+        log.debug( String.format( "Setting up the PTIPool with %s threads", numberOfThreads ) );
+        PTIpool = new PTIPool( numberOfThreads );
+        log.debug( String.format( "Starting a Processqueue" ) );
+        processqueue = new Processqueue();
+        // }
+        // catch(ConfigurationException ce){
+        //     throw new ConfigurationException( ce.getMessage() );
+        // }
+        // catch(RuntimeException re){
+        //     throw new RuntimeException( re.getMessage() );
+        // }
 
         activeThreads = new Vector();
         
-        // starts the mainloop
-        try{
-            mainLoop();
-        }
-        catch(InterruptedException ie){
-            throw new InterruptedException( ie.getMessage() );
-        }
-        catch(Exception e){
-            throw new Exception( e.getMessage() );
-        }
-        
+        log.debug( String.format( "Finished the PTIPoolAdm constructor" ) );
     }
 
     /**
      * the mainLoop polls the processqueue and start threads when the queue pops a fedorahandle.   
      * the mainLoop also checks whether already active threads are finished.
+     * @throws ClassNotFoundException if the Processqueue could not load the database driver
+     * @throws SQLException if the processqueue could not retrieve information from the database
      */
     
-    private void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException, Exception {
+    public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException, Exception {
         log.debug( "PTIPoolAdm mainloop" );
 
         long stamp = System.currentTimeMillis() - ( sleepInMilliSec+ 1 ) ;

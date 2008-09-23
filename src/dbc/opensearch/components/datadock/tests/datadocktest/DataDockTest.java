@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 */
 
 public class DataDockTest {
-    private static final Logger log = Logger.getRootLogger();
+    Logger log = Logger.getLogger("DataDockTest");
 
     /**
      * Setting up a DataDock

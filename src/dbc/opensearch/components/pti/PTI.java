@@ -168,14 +168,14 @@ public class PTI implements Callable<Long>{
      * the data is retrived in doProcessing
      *
      */
-    private Document convertCargoToXml( CargoContainer cargo ) throws DocumentException, IOException{
+    // private Document convertCargoToXml( CargoContainer cargo ) throws DocumentException, IOException{
 
-        /** \todo: encoding should be determined by config/object-fields. See discussion below */
-        /** ... it could be retrieved from the dom4j.Document.getXMLEncoding() */
-        /** which would probably benifit from being put into the CargoContainer in the first place... */
-        return DocumentHelper
-            .parseText( new String( cargo.getDataBytes(), "ISO-8859-1") );
-    }
+    //     /** \todo: encoding should be determined by config/object-fields. See discussion below */
+    //     /** ... it could be retrieved from the dom4j.Document.getXMLEncoding() */
+    //     /** which would probably benifit from being put into the CargoContainer in the first place... */
+    //     return DocumentHelper
+    //         .parseText( new String( cargo.getDataBytes(), "ISO-8859-1") );
+    // }
 
     /**
      * Does the indexing and the saving of them

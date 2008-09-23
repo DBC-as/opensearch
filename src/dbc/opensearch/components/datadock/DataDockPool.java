@@ -3,37 +3,32 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;
-//import org.apache.commons.configuration.*;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-/**
- * 
- */
+
 public class DataDockPool {
 
     private boolean initialised; /** tells whether the pool is initialised */
-    private ExecutorService ThreadExecutor; /** The threadpool */
-    //private XMLConfiguration config;
+    private ExecutorService threadExecutor; /** The threadpool */
+
     // private String[][] NSpidArray; for the management of the pids 
     // for storage in Fedora 
-    /**
-     * Log
-     */
 
-    private static final Logger log = Logger.getRootLogger();
+    Logger log = Logger.getLogger("DataDockPool");
 
     /**
      * Constructor
      * Checks that the number of threads the threadpool is instantiated with
-     * is legal 
-     * \todo: find suitable exception(s)
+     * is legal and initializes a FixedThreadPool
+     * \see java.util.concurrent.FixedThreadPool
+     * @throws IllegalArgumentException if the threadpool is tried initialized with no threads
      */
-    DataDockPool( int numberOfThreads ) throws Exception{
+    DataDockPool( int numberOfThreads ) throws IllegalArgumentException{
         if ( numberOfThreads <= 0 ){
-            /** \todo: find suitable exception */
-            throw new Exception( "refusing to construct empty pool" );
-        }
-        
-        ThreadExecutor = Executors.newFixedThreadPool(numberOfThreads);
+            throw new IllegalArgumentException( "refusing to construct empty pool" );
+        }        
+        threadExecutor = Executors.newFixedThreadPool(numberOfThreads);
+        /** \todo: is this boolean useful? */
         initialised = true;
     }
     
@@ -44,33 +39,32 @@ public class DataDockPool {
      * needs the cargocontainer as an argument
      * This method should have a more telling name form the callers
      * point of view
-     * \todo: What is the format of the data we receive
+     * @returns the FutureTask with the (future) return value of the DataDock calls
+     * @throws IllegalArgumentException if the threadpool is not initialized
+     * @throws ConfigurationException if the DataDock could not be initialized
      */
-    public FutureTask createAndJoinThread( CargoContainer cc )throws Exception{
+    public FutureTask createAndJoinThread( CargoContainer cc )throws IllegalArgumentException, ConfigurationException, ClassNotFoundException{
+        /** \todo: this boolean can only and always be true */
         if(!initialised){
-            /**\todo: find suitable exception*/
-            throw new Exception("trying to create a thread without a threadpool");
+            throw new IllegalArgumentException("trying to create a thread without a threadpool");
         }
-         // 20: create the thread, actually a Callable, the DataDock, 
-        // with the argument data
 
         //String pid = getnextPid( cc.getSubmitter() );
         // FutureTask future = new FutureTask(new DataDock(cc), pid);
+        log.info( String.format( "Creating the FutureTask with a DataDock" ) );
         FutureTask future = new FutureTask(new DataDock(cc));
         
-        //        log.info( String.format( "Thread returned with estimate %s", future.get() ) );
-
-        // 30: join the thread to the pool
-        ThreadExecutor.submit(future);
-        // 40: return the FutureTask to the caller
+        log.debug( String.format( "join the thread to the pool" ) );
+        threadExecutor.submit(future);
+        log.debug( String.format( "return the FutureTask to the caller" ) );
         return future;
-        // make compiler happy:
     }
     /**
      * get the next pid for a namespace. If there are no pid's available for 
      * the namespace in question, it will retrive 20 more from the fedorabase 
      * and store them in the NSpidArray, that manages the pids for the 
      * namespaces
+     * @returns the next pid from the fedorabase as a String
      */
     private String getNextPid (String nameSpace){
         String returnPid = "";

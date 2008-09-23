@@ -17,7 +17,7 @@ import java.io.*;
  *
  */
 public class DataDockPoolAdm {
-    private static final Logger log = Logger.getRootLogger();
+    static Logger log = Logger.getLogger("DataDockPoolAdm");
     
     public final static void main(String[] args){
 
@@ -31,34 +31,36 @@ public class DataDockPoolAdm {
         }
 
 
-        // 10: start the datadockpool
+        log.debug( String.format( "start the datadockpool" ) );
         DataDockPool DDP;
         try{
             log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
             DDP = new DataDockPool(10);
-            // 20: get the properties defined at program start
-            // Submitter, mimetype, lang, path. Antager at alle filer er på samme sprog
+
+            log.debug( String.format( "Getting properties for the CargoContainer" ) );
             String submitter = System.getProperty("submitter");
             String mimetype = System.getProperty("mimetype");
             String lang = System.getProperty("lang");
             String filepath = System.getProperty("filepath");
-            // 30: read the files defined in the properties into an arraylist (fileList)
+            log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
             File dir = new File(filepath);
             //int[] activeFilesList = int[10];
             String[] fileNameList;
             File[] fileList;
             FutureTask[] FTList = null;
+
+            /** \todo: what the *&^%$ is this */
             String doneString = "narn noRl saRang hATi arNar";
             String estimateMessageString;
             int answersReceived = 0;
 
-            // The FileFilter let only files through  that arent directories 
+            // The FileFilter let only files through  that aren't directories 
             // and there names doesnt start with "."
 
             fileNameList = dir.list( new FileFilter() );
             fileList = dir.listFiles( new FileFilter() );
        
-            // 35: check if we got any files from the filepath
+            log.debug( String.format( "check if we got any files from the filepath" ) );
             if( fileList == null ){
                 throw new IllegalArgumentException( String.format( "no files on specified path: %s", filepath ) );
             }
@@ -69,11 +71,10 @@ public class DataDockPoolAdm {
 
             InputStream data;
 
-            // create CargoContainers and give them to the DDP.createAndJoinThread method
-            // store the FutureTask in an array together with documenttitle
+            log.debug( String.format( "create CargoContainers and give them to the DDP.createAndJoinThread method" ) );
+            log.debug( String.format( "store the FutureTask in an array together with documenttitle" ) );
 
             for(int filesSent = 0; filesSent < numOfFiles; filesSent++){
-                // create cc
                 try{
                     data = new FileInputStream(fileList[filesSent]);
                     CargoContainer cc = new CargoContainer(data, mimetype, lang, submitter);
@@ -113,9 +114,6 @@ public class DataDockPoolAdm {
                     }
 
                 }
-                // 50: pol the FutureTasks, when an answer is received,
-                // print it to std out 
-                // 60 write the num of files stored in Fedora
             }
             log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
           
