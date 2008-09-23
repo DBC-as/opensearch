@@ -260,6 +260,7 @@ public class FedoraHandler implements Constants{
         return cargo;
     } 
 
+    /** \todo: what is this? */
     private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state ){
         /**
          * For future reference (mostly because the Fedora API is unclear on this):

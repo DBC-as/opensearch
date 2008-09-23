@@ -1,10 +1,11 @@
 package  dbc.opensearch.tools;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 /**
  *Filter to remove directories and .files
  */
-public  class FileFilter implements FilenameFilter{
+public class FileFilter implements FilenameFilter{
     
     /**
      * This method returns true only if arguments dir+name evals to a
