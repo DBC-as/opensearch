@@ -62,7 +62,7 @@ public class FedoraHandler implements Constants{
     FedoraAPIM apim;
 
     /**
-     * The constructor for the FedoraHandler connects to the fedora
+     * \brief The constructor for the FedoraHandler connects to the fedora
      * base and initializes the FedoraClient. FedoraClient is used to
      * get the Fedora API objects.
      * FedoraHandler
@@ -83,64 +83,58 @@ public class FedoraHandler implements Constants{
 
         log.debug( String.format( "Connecting to fedora server at:\n%s\n using user: %s, pass: %s ", fedoraUrl, user, passphrase ) );
 
-        long stamp = System.currentTimeMillis();
         log.debug( "Constructing FedoraClient");
         FedoraClient client = new FedoraClient( fedoraUrl, user, passphrase );
         apia = client.getAPIA();
         apim = client.getAPIM();
-        
+        log.debug( "Constructed FedoraClient");
     }
 
     /**
-     *
+     * \brief Submits the datastream to fedora repository 
+     * \todo: what are these parameters?
+     * @param cargo the cargocontainer with the data 
+     * @param pidNS 
+     * @param itemId
+     * @param label
      */
     public String submitDatastream( CargoContainer cargo, String pidNS, String itemId, String label )throws RemoteException, XMLStreamException, IOException {
-
-        log.debug( String.format( "Entering submitDatastream" ) );
+        log.debug( String.format( "submitDatastream(cargo, pidNS=%s, itemId=%s, label=%s) called", pidNS, itemId, label ) );
+        
         DatastreamDef dDef = null;
         String pid         = null;
         String namespace   = null;
         byte[] foxml       = null;
 
-        log.debug( String.format( "Constructing the foxml from the cargocontainer with:\npidNS=%s\nitemId=%s\nlabel=%s", pidNS, itemId, label ) );
-        try{
-            foxml = constructFoxml( cargo, pidNS, itemId, label );
-        }catch( IOException ioe ){
-            /** \todo: todo: should we throw on this? Yes, I think we should */
-            log.fatal( String.format( "Could not read data from the CargoContainer object into the xml, ingesting empty datastream" ) );
-            throw new IOException( "Could not read data from the CargoContainer object into the xml, ingesting empty datastream", ioe );
-        }catch( XMLStreamException xse ){
-            log.fatal( String.format( "Unable to construct xml from CargoContainer:\n%s", xse.getMessage() ) );
-            throw new XMLStreamException( xse );
-        }
+        foxml = constructFoxml( cargo, pidNS, itemId, label );
+        log.debug( "FOXML constructed, ready for ingesting" );
 
-        log.debug( String.format( "and submitting the data to fedora" ) );
-        try{
-            pid = apim.ingest( foxml, FOXML1_1.uri, "Ingesting "+label );
-        } catch( RemoteException rme ){
-            log.fatal( String.format( "Unable to submit cargo with label \"%s\" to fedora. \nStack:%s", label, rme.toString() ) );
-            throw new RemoteException( String.format( "Unable to submit cargo with label \"%s\" to fedora. \nStack:%s", label, rme.toString() ), rme );
-        }
+        pid = apim.ingest( foxml, FOXML1_1.uri, "Ingesting "+label );
 
-        log.debug( String.format( "Submitted data, recieved pid %s", pid ) );
-
+        log.info( String.format( "Submitted data, recieved pid %s", pid ) );
         return pid;
     }
-
+    
+    /**
+     * \brief constructs a foxml stream from the parameters
+     * \todo: what are these parameters?
+     * @param cargo the cargocontainer with the data 
+     * @param pidNS 
+     * @param itemId
+     * @param label
+     * @returns a byte array contaning the foxml string
+     */
     private byte[] constructFoxml( CargoContainer cargo, String pidNS, String itemId, String label ) throws IOException, XMLStreamException {
-
-        log.debug( String.format( "Entering constructFoxml" ) );
-        log.debug( String.format( "Beginning construction of foxml using XMLStreamWriter with stream of length=%s, pid=%s, itemId=%s, label=%s", cargo.getStreamLength(), pidNS, itemId, label ) );
-
+        log.debug( String.format( "constructFoxml(cargo, pidNS=%s, itemId=%s, label=%s) called", pidNS, itemId, label ) );
+    
+        log.debug( "Starting constructing xml" );
         Document document = DocumentHelper.createDocument();
-
         // Generate root element
         QName root_qn = QName.get( "digitalObject", "foxml", "info:fedora/fedora-system:def/foxml#" );
         Element root = document.addElement( root_qn );
         root.addAttribute( "xmlns:xsi",          "http://www.w3.org/2001/XMLSchema-instance" );
         root.addAttribute( "xsi:scheamLocation", "info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd");
         root.addAttribute( "VERSION",            "1.1");
-
         // Generate objectProperties node
         Element objproperties = root.addElement( "foxml:objectProperties" );
 
@@ -195,49 +189,48 @@ public class FedoraHandler implements Constants{
         log.debug( "Finished constructing xml" );
 
         /** \todo: This constructing business would be a lot better with xml serialization. Mainly in terms of 1:characters types, 2: boilerplate statements, 3: portability/managability and 4: type safety */
-
-        log.debug( String.format( "Exiting constructFoxml" ) );
-
+       
         return document.asXML().getBytes( "UTF-8" );
     }
 
-    // public CargoContainer getDatastream( String pid ) throws IOException {
-    //     log.debug( String.format( "Forwarding getDatastream( String ) call to getDatastream( String, String )" ) );
-    //     return getDatastream( pid, "" );
-    // }
-
+    /**
+     * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
+     * \todo: what are these parameters?
+     * @param pid 
+     * @param itemID
+     * @returns The cargocontainer constructed
+     */    
     public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException{
         throw new NotImplementedException( "RegEx matching on pids not yet implemented" );
-        //        return cargo;
     }
-
+    
+    /**
+     * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
+     * \todo: what are these parameters?
+     * @param pid 
+     * @param itemID
+     * @returns The cargocontainer constructed
+     */    
     public CargoContainer getDatastream( String pid, String itemID ) throws IOException, NoSuchElementException, RemoteException{
-        log.debug( String.format( "Entering getDatastream" ) );
+        log.debug( String.format( "getDatastream( pid=%s, itemID=%s ) called", pid, itemID ) );
+        
         CargoContainer cargo = null;
-
         DatastreamDef[] datastreams = null;
-
         MIMETypedStream ds = null;
 
         log.debug( String.format( "Retrieving datastream information for PID %s", pid ) );
-
-        try{
-            datastreams = this.apia.listDatastreams( pid, null );
-
-        }catch( RemoteException re){
-            log.fatal( String.format( "Could not get a list of available datastreams" ) );
-            throw new RemoteException( String.format( "Could not retrieve list of available datastreams: %s", re.getMessage() ), re );
-        }
-
+        
+        datastreams = this.apia.listDatastreams( pid, null );
+        
         log.debug( String.format( "Iterating datastreams" ) );
+        
         for ( DatastreamDef def : datastreams ){
-            log.debug( String.format( "Got DatastreanDef with id=%s", def.getID() ) );
+            log.debug( String.format( "Got DatastreamDef with id=%s", def.getID() ) );
+            
             if( def.getID().equals( itemID ) ){
-                    ds = apia.getDatastreamDissemination( pid, def.getID(), null );
-                // } catch( RemoteException re ){
-                //     throw new RemoteException( String.format( "Could not retrieve the datastream for the pid=%s, id=%s", pid, def.getID() ) );
-                // }
-
+                
+                ds = apia.getDatastreamDissemination( pid, def.getID(), null );
+ 
                 log.debug( String.format( "Making a bytearray of the datastream" ) );
                 byte[] datastr = ds.getStream();
 
@@ -262,11 +255,10 @@ public class FedoraHandler implements Constants{
         log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getMimeType() ) );
         log.debug( String.format( "CargoContainer.submitter=     %s", cargo.getSubmitter() ) );
         log.debug( String.format( "CargoContainer.streamlength = %s", cargo.getStreamLength() ) );
-
-        log.debug( String.format( "Leaving getDatastream" ) );
-
+        
+        log.info( "Successfully retrieved datastream." );
         return cargo;
-    } //end getDatastream
+    } 
 
     private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state ){
         /**
