@@ -2,7 +2,7 @@ package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.FedoraHandler;
 
-import dbc.opensearch.tools.*;
+import dbc.opensearch.tools.Estimate;
 
 import dbc.opensearch.tools.Processqueue;
 
@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import fedora.server.errors.ServerException;
 
 import java.util.concurrent.Callable;
 
@@ -60,82 +61,93 @@ public class DataDock implements Callable<Float>{
     private XMLConfiguration config;
     private static volatile FedoraHandler fh;
    
-    /**
-     * Log
-     */
-    private static final Logger log = Logger.getRootLogger();
+    private Logger log = Logger.getLogger("DataDock");
 
-    /**
-     * Estimate class
-     */
     Estimate estimate;
 
     /**
-     * DataDock is initialized with a CargoContainer and a configuration file for the
-     * database access. The same config file is used for all the needed connections
+     * DataDock is initialized with a CargoContainer containing the
+     * data to be 'docked' into to system
      */
-    //public DataDock( CargoContainer cargo, String pid ){
-
     public DataDock( CargoContainer cargo ) throws ConfigurationException{
-
-        log.debug("DataDock Constructor");
+        log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
         queue = new Processqueue();
         
         estimate = new Estimate();
-
+        log.debug( String.format( "DataDock Construction finished" ) );
     }
 
-    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, Exception{
-        log.debug( String.format( "Entering DataDock.call" ) );
+    /**
+     * call is the thread entry method on the DataDock. Call operates
+     * on the DataDock object, and all data critical for its success
+     * is given at DataDock initialization. This method is used with
+     * java.util.concurrent.FutureTask, which upon finalisation
+     * (completion, exception or termination) will return an
+     * estimation of how long time it will take to bzw. index and save
+     * in fedora the data given with the CargoContainer.
+     * \see dbc.opensearch.tools.Estimation
+     * @returns an estimate on the completion-time of indexing and fedora submission
+     * @throws SQLException if the estimate could not be retrieved from the database
+     * @throws NoSuchElementException if the mimetype is unknown to the estimate method. \see dbc.opensearch.tools.Estimation.getEstimate(String, long)
+     * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
+     * @throws RemoteException if the datastream could not be ingested into the fedora base
+     * @throws XMLStreamException if the foxml could not be constructed in the FedoraHandler \see dbc.opensearch.tools.FedoraHandler
+     * @throws IOException if the FedoraHandler could not read data from the CargoContainer
+     * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dbc.opensearch.tools.Estimate
+     */
+    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException{
+        log.debug( String.format( "Entering call" ) );
         Float processEstimate = 0f;
 
-        try{
-            log.info( "calling DataDock.estimate" );
-            // 10: Estimate
-            processEstimate = estimate.getEstimate(cc.getMimeType(), cc.getStreamLength());
-            // 20: Store data in Fedora
-            // 30: queue FedoraHandle
-            log.info( String.format( "Estimate = %s ", processEstimate ) );
-            queueFedoraHandle(fedoraStoreData(), cc.getSubmitter() );
-            log.info( String.format( "data queued" ) );
-        }
+        // try{
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );
+        
+        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+        
+        
+        queueFedoraHandle( fedoraStoreData(), cc.getSubmitter() );
+        log.info( String.format( "data queued" ) );
+        // }
 
-        catch(ClassNotFoundException cne){
-            throw new ClassNotFoundException(cne.getMessage());
-        }
-        catch(ConfigurationException ce) {
-            throw new ConfigurationException( ce.getMessage() );
-        }
-        catch(SQLException sqe) {
-            throw new SQLException( sqe.getMessage() );
-        }
-        catch(NoSuchElementException nee) {
-            throw new NoSuchElementException( nee.getMessage() );
-        }
-        catch(RemoteException re) {
-            throw new RemoteException( re.getMessage() );
-        }
-        catch(XMLStreamException xe) {
-            throw new XMLStreamException( xe.getMessage() );
-        }
-        catch(IOException  ioe) {
-            throw new IOException( ioe.getMessage() );
-        }
-        catch( Exception e ) {
-            throw new Exception( e.getMessage() );
-        }
+        // catch(ClassNotFoundException cne){
+        //     throw new ClassNotFoundException(cne.getMessage());
+        // }
+        // catch(ConfigurationException ce) {
+        //     throw new ConfigurationException( ce.getMessage() );
+        // }
+        // catch(SQLException sqe) {
+        //     throw new SQLException( sqe.getMessage() );
+        // }
+        // catch(NoSuchElementException nee) {
+        //     throw new NoSuchElementException( nee.getMessage() );
+        // }
+        // catch(RemoteException re) {
+        //     throw new RemoteException( re.getMessage() );
+        // }
+        // catch(XMLStreamException xe) {
+        //     throw new XMLStreamException( xe.getMessage() );
+        // }
+        // catch(IOException  ioe) {
+        //     throw new IOException( ioe.getMessage() );
+        // }
+        // catch( Exception e ) {
+        //     throw new Exception( e.getMessage() );
+        // }
 
-
-        // 40: Return estimate
-        log.info("about to return estimate in DataDock.call");
+        log.info( String.format( "Returning estimate = %s", processEstimate ) );
         return processEstimate;
     }
 
     /**
-     *
+     * fedoraStoreData is an internal method for storing data given
+     * with the initialization of the DataDock into a fedora base.
+     * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
+     * @throws RemoteException if the datastream could not be ingested into the fedora base
+     * @throws XMLStreamException if the foxml could not be constructed in the FedoraHandler \see dbc.opensearch.tools.FedoraHandler
+     * @throws IOException if the FedoraHandler could not read data from the CargoContainer
      */
-    public String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, Exception {
+    private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException{
         log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
         /**
@@ -154,19 +166,19 @@ public class DataDock implements Callable<Float>{
         String label = "test";
         // 10: open connection to fedora base
         if( fh == null ){
-            try{
+            // try{
                 fh = new FedoraHandler();
-            }
-            catch (ConfigurationException cex){
-                throw new ConfigurationException( cex.getMessage() );
-            }
+            // }
+            // catch (ConfigurationException cex){
+            //     throw new ConfigurationException( cex.getMessage() );
+            // }
 
         }else{
             log.info( String.format( "A FedoraHandler is already initialized, using it" ) );
         }
 
         // 20: submit data
-        try{
+        // try{
             // The next 2 lines of code waits for the getNextPid method from fh
             // String submitter = cargo.getSubmitter();
             //try{
@@ -175,17 +187,16 @@ public class DataDock implements Callable<Float>{
             // }catch(XMLStreamException xmle){
             // }catch(IOException ioe){
             //}
-            fedoraHandle = fh.submitDatastream( cc, usePid, itemId, label );
-        }catch( RemoteException re ){
-            throw new RemoteException(re.getMessage());
-        }catch( XMLStreamException xmle ){
-            throw new XMLStreamException(xmle.getMessage());
-        }catch( IOException ioe ){
-            throw new IOException(ioe.getMessage());
-        }
-        catch( fedora.server.errors.ServerException se ){
-            throw new Exception( se.getMessage() ) ;
-        }
+        fedoraHandle = fh.submitDatastream( cc, usePid, itemId, label );
+        // }catch( RemoteException re ){
+        //     throw new RemoteException(re.getMessage());
+        // }catch( XMLStreamException xmle ){
+        //     throw new XMLStreamException(xmle.getMessage());
+        // }catch( IOException ioe ){
+        //     throw new IOException(ioe.getMessage());
+        // }catch( ServerException se ){
+        //     throw new ServerException( se.getMessage() ) ;
+            //        }
         //        }catch( Exception e ){
         // throw new Exception( e.getMessage() );
 
@@ -198,7 +209,7 @@ public class DataDock implements Callable<Float>{
         return fedoraHandle;
     }
 
-    /** \todo: construct proper exception like an connnectionerrorexception-type thing */
+
     public void queueFedoraHandle( String fedoraHandle, String itemID ) throws ClassNotFoundException, ConfigurationException, SQLException {
         /**
          * the push queues a fedoraHandle on the processQueue

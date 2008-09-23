@@ -162,28 +162,28 @@ public class DataDockTest {
     public void testDataDockFedoraStoreData(){
         String testFH = "";
         
-        try{
-            testFH = dd.fedoraStoreData();
-        }catch(RemoteException re){
-            re.printStackTrace();
-        }catch (XMLStreamException xmle){
-            xmle.printStackTrace();
-        }catch(IOException ioe){
-            ioe.printStackTrace();
-        }catch (ConfigurationException cex){
-            cex.printStackTrace();
-        }catch( Exception e ){
-            e.printStackTrace();
-        }
-        if(testFH != ""){
-            log.debug("Something returned, checking what it is ");
-            if (testFH.indexOf("testSubmitter") != 0){
-                log.debug("The fedoraHandle received is misshaped.");
-                log.debug(" Should be testSubmitter, but is: " + testFH + "" );
-            }else{
-                log.debug("The returned fedoraHandle is wellshaped ");
-            }
-        }    
+        // try{
+        //     testFH = dd.fedoraStoreData();
+        // }catch(RemoteException re){
+        //     re.printStackTrace();
+        // }catch (XMLStreamException xmle){
+        //     xmle.printStackTrace();
+        // }catch(IOException ioe){
+        //     ioe.printStackTrace();
+        // }catch (ConfigurationException cex){
+        //     cex.printStackTrace();
+        // }catch( Exception e ){
+        //     e.printStackTrace();
+        // }
+        // if(testFH != ""){
+        //     log.debug("Something returned, checking what it is ");
+        //     if (testFH.indexOf("testSubmitter") != 0){
+        //         log.debug("The fedoraHandle received is misshaped.");
+        //         log.debug(" Should be testSubmitter, but is: " + testFH + "" );
+        //     }else{
+        //         log.debug("The returned fedoraHandle is wellshaped ");
+        //     }
+        // }    
     }
     
     /**

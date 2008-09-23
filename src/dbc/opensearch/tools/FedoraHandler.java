@@ -113,7 +113,7 @@ public class FedoraHandler implements Constants{
     /**
      *
      */
-    public String submitDatastream( CargoContainer cargo, String pidNS, String itemId, String label )throws RemoteException, XMLStreamException, IOException, fedora.server.errors.ServerException{
+    public String submitDatastream( CargoContainer cargo, String pidNS, String itemId, String label )throws RemoteException, XMLStreamException, IOException {
 
         log.debug( String.format( "Entering submitDatastream" ) );
         DatastreamDef dDef = null;
@@ -230,7 +230,7 @@ public class FedoraHandler implements Constants{
         //        return cargo;
     }
 
-    public CargoContainer getDatastream( String pid, String itemID ) throws IOException, NoSuchElementException{
+    public CargoContainer getDatastream( String pid, String itemID ) throws IOException, NoSuchElementException, RemoteException{
         log.debug( String.format( "Entering getDatastream" ) );
         CargoContainer cargo = null;
 
@@ -252,21 +252,16 @@ public class FedoraHandler implements Constants{
         for ( DatastreamDef def : datastreams ){
             log.debug( String.format( "Got DatastreanDef with id=%s", def.getID() ) );
             if( def.getID().equals( itemID ) ){
-                try{
                     ds = apia.getDatastreamDissemination( pid, def.getID(), null );
-                } catch( RemoteException re ){
-                    throw new RemoteException( String.format( "Could not retrieve the datastream for the pid=%s, id=%s", pid, def.getID() ) );
-                }
+                // } catch( RemoteException re ){
+                //     throw new RemoteException( String.format( "Could not retrieve the datastream for the pid=%s, id=%s", pid, def.getID() ) );
+                // }
 
                 log.debug( String.format( "Making a bytearray of the datastream" ) );
                 byte[] datastr = ds.getStream();
 
                 log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
                 InputStream inputStream = new ByteArrayInputStream( datastr );
-
-                // try{
-                //     fileStr = new String( file, "utf-8" );
-                // } catch( java.io.UnsupportedEncodingException ee ){}
 
                 log.debug( String.format( "DataStream ID      =%s", def.getID() ) );
                 log.debug( String.format( "DataStream Label   =%s", def.getLabel() ) );
@@ -286,7 +281,6 @@ public class FedoraHandler implements Constants{
         log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getMimeType() ) );
         log.debug( String.format( "CargoContainer.submitter=     %s", cargo.getSubmitter() ) );
         log.debug( String.format( "CargoContainer.streamlength = %s", cargo.getStreamLength() ) );
-        log.debug( String.format( "CargoContainer.getStream =    %s", cargo.getData().toString() ) );
 
         log.debug( String.format( "Leaving getDatastream" ) );
 
