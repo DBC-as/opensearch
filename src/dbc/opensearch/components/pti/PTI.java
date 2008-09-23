@@ -70,11 +70,11 @@ public class PTI implements Callable<Long>{
      */
     public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException {
         log.debug( "Entering PTI.call()" );
-
+        
         log.debug( "process data in cargocontainer" );
-
+        
         // try{
-            doProcessing( );
+        doProcessing( );
         // }catch( CompassException ce ){
         //     throw new CompassException( ce.getMessage() );
         // }catch( IOException ioe ){
@@ -82,13 +82,12 @@ public class PTI implements Callable<Long>{
         // }catch( DocumentException de ){
         //     throw new DocumentException( de.getMessage() );
         // }
-
+        finishTime = new Date();
         long processtime = finishTime.getTime() - cc.getTimestamp();
-
+        
         // try{
-            log.info( String.format("Update estimate base with mimetype = %s, streamlength = %s, processtime = %s",
-                                    cc.getMimeType(), cc.getStreamLength(), processtime ) );
-            estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
+        log.info( String.format("Update estimate base with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
+        estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
         // }
         // catch(SQLException sqe){
         //     throw new SQLException( sqe.getMessage() );
@@ -96,10 +95,10 @@ public class PTI implements Callable<Long>{
         // catch(ClassNotFoundException cne){
         //     throw new ClassNotFoundException( cne.getMessage() );
         // }
-
+        
         return processtime;
     }
-
+    
     /**
      * This is the main entry point for getting stuff
      * processed.
