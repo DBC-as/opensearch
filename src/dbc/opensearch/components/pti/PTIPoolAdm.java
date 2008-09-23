@@ -73,9 +73,12 @@ public class PTIPoolAdm {
      * the mainLoop also checks whether already active threads are finished.
      * @throws ClassNotFoundException if the Processqueue could not load the database driver
      * @throws SQLException if the processqueue could not retrieve information from the database
+     * @throws RuntimeException if the started thread stop due to an exception
+     * @throws ConfigurationException if the PTIPool could not be correctly initialized
+     * @throws InterruptedException is a thread exception
      */
     
-    public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException, Exception {
+    public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException{
         log.debug( "PTIPoolAdm mainloop" );
 
         // creates initial timestamp. creates it with an offset - so
@@ -86,51 +89,31 @@ public class PTIPoolAdm {
         /** /todo: we need a nicer way to do this than a while true loop. */
         while(true){
 
-            if( System.currentTimeMillis() > stamp+sleepInMilliSec ){
-                log.info( "Poll processqueue" );
-                
+            if( System.currentTimeMillis() > stamp+sleepInMilliSec ){                
                 startThreads();
                 stamp = System.currentTimeMillis();
-            
-            }
-
-            try{
-                checkThreads();
-            }
-            catch(ClassNotFoundException cne){
-                throw new ClassNotFoundException( cne.getMessage() );
-            }
-            catch(SQLException sqe){
-                throw new SQLException( sqe.getMessage() );
-            }
-            catch(NoSuchElementException nse){
-                throw new NoSuchElementException( nse.getMessage() );
-            }
-            catch(InterruptedException ie){
-                throw new InterruptedException( ie.getMessage() );
-            }
-            catch(Exception e){// Catching ExecutionException
-                throw new Exception( e.getMessage() );
-            }
-
+            }            
+            checkThreads();
         }
     }
-
+    
     /**
      * Iterates through the activeThreads vector and remove all entries
      * where the associated thread is done. The entries are also
      * committed to the processqueue, which effectivly removes them
+     * @throws ClassNotFoundException if the Processqueue could not load the database driver
+     * @throws SQLException if the processqueue could not retrieve information from the database
+     * @throws NoSuchElementException if the processqueue does not contain an element matching the queueid
+     * @throws InterruptedException is a thread exception
+     * @throws RuntimeException if the started thread stop due to an exception
      */
     private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, RuntimeException {
-        //        log.debug( "PTIPoolAdm.checkThreads() called" );
-
+        log.debug( "Entering PTIPoolAdm.checkThreads()" );
         
-
         Pair<FutureTask, Integer> vectorPair = null;
         int queueID;
         FutureTask future;
         Vector removeableThreads = new Vector();
-
         iter = activeThreads.iterator();
 
         while( iter.hasNext() ){
@@ -144,27 +127,19 @@ public class PTIPoolAdm {
                     Long processtime = (Long) future.get();
                 }
                 catch(ExecutionException ee){
-                     Throwable cause = ee.getCause();
-                     log.debug( String.format( "Catched thread error associated with queueid = %s", queueID ) );                     
-                         throw new RuntimeException( cause );
+                    // catching exception from thread
+                    Throwable cause = ee.getCause();
+                    log.fatal( String.format( "Catched thread error associated with queueid = %s", queueID ) );                     
+                    throw new RuntimeException( cause );
                 }
-                try{
-                    processqueue.commit( queueID );
-                // }catch(NoSuchElementException nse){
-                //     throw new NoSuchElementException( nse.getMessage() );
-                // }
-                // catch(ClassNotFoundException cne){
-                //     throw new ClassNotFoundException( cne.getMessage() );
-                // }catch(SQLException sqe){
-                //     throw new SQLException( sqe.getMessage() );
-                }catch(NullPointerException npe){
-                    log.debug( String.format( "vectorPair was possibly null? vectorPair = %s", vectorPair.toString() ) );
-                }
-
+                
+                processqueue.commit( queueID );
                 removeableThreads.add( vectorPair );
                 log.info( String.format( "job done, Committed to queue, queueID = %s", queueID ) );
             }
         }
+
+        // remove threads that have returned, from activeThreads
         iter = removeableThreads.iterator();
         while( iter.hasNext() ){
             activeThreads.remove( iter.next() );
@@ -175,9 +150,14 @@ public class PTIPoolAdm {
     /** pop processqueue until its empty, and starts threads which
      * fetch and process data from the fedora repository. Puts thread
      * (futureTask, and queueid on activeThreads vector)
+     * committed to the processqueue, which effectivly removes them
+     * @throws ClassNotFoundException if the Processqueue could not load the database driver
+     * @throws SQLException if the processqueue could not retrieve information from the database
+     * @throws RuntimeException if the started thread stop due to an exception
+     * @throws ConfigurationException if the PTIPool could not be correctly initialized
      */
     private void startThreads()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException{
-        log.debug( "PTIPoolAdm.startThreads() called" );
+        log.debug( "Entering PTIPoolAdm.startThreads()" );
 
         boolean fetchedLast = false;
         Triple<String, Integer, String> queueTriple = null;
@@ -196,33 +176,23 @@ public class PTIPoolAdm {
                 log.debug( "processqueue is empty" );
                 fetchedLast = true;
             }
-            // catch(ClassNotFoundException cne){
-            //     throw new ClassNotFoundException( cne.getMessage() );
-            // }
-            // catch(SQLException sqe){
-            //     throw new SQLException( sqe.getMessage() );
-            // }
 
             if( !fetchedLast ){
-
+                log.debug( "Fetched element from processqueue" );
                 fedoraHandle = Tuple.get1(queueTriple);
                 queueID = Tuple.get2(queueTriple);
                 itemID = Tuple.get3(queueTriple);
 
-                // try{
-                    log.debug( String.format( "starting new thread with fedoraHandle: %s, queueID: %s and itemID: %s ", fedoraHandle, queueID, itemID ) );
-                    future = PTIpool.createAndJoinThread( fedoraHandle, itemID );
-                // }catch(RuntimeException re){
-                //     throw new RuntimeException( re.getMessage() );
-                // }catch(ConfigurationException ce){
-                //     throw new ConfigurationException( ce.getMessage() );
-                // }
-
+                log.debug( String.format( "starting new thread with fedoraHandle: %s, queueID: %s and itemID: %s ", 
+                                         fedoraHandle, queueID, itemID ) );
+                future = PTIpool.createAndJoinThread( fedoraHandle, itemID );
+                
                 // add thread to active thread vector
                 vectorPair = Tuple.from(future, queueID);
                 activeThreads.add( vectorPair );
+                log.info( String.format( "started new thread with fedoraHandle: %s, queueID: %s and itemID: %s ",             
+                                         fedoraHandle, queueID, itemID ) );
             }
         }
-        log.debug( "End of PTIPool.startThread()" );
     }
 }

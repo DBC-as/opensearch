@@ -42,6 +42,11 @@ public class PTIPool {
     /**
      * \brief Constructor initializes the threadpool 
      * @param numberOfThreads The number of threads in the pool
+     * @throws ConfigurationException
+     * @throws MalformedURLException
+     * @throws UnknownHostException
+     * @throws ServiceException
+     * @throws IOException
      */
     public PTIPool( int numberOfThreads ) throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( String.format( "Entering PTIPool(NumberOfThreads=%s)", numberOfThreads ) );
@@ -89,6 +94,8 @@ public class PTIPool {
      * from the fedora base, index it and store it. The return value is the handle,
      * that the PTIPoolAdm uses for keeping track of which digitalobjects
      * are in process
+     * @throws ConfigurationException
+     * @throws ClassNotFoundException
      */
     public FutureTask createAndJoinThread (String fHandle, String itemID )throws ConfigurationException, ClassNotFoundException{
         log.debug( String.format( "entering createAndJoinThreads( fhandle=%s, itemID=%s )", fHandle, itemID ) );
@@ -111,6 +118,7 @@ public class PTIPool {
 
     /**
      * Returns a Compass session, and checks whether its instantiated.
+     * @throws RuntimeException
      */
     public CompassSession getSession() throws RuntimeException {
         log.debug( "Entering getSession" );

@@ -49,6 +49,8 @@ public class PTI implements Callable<Long>{
      * @param fedoraHandle the handle identifying the data object
      * @param itemID identifying the data object
      * @param fh the fedorahandler, which communicates with the fedora repository
+     * @throws ConfigurationException
+     * @throws ClassNotFoundException
      */
     public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "PTI constructor(session, fedoraHandle=%s, itemID=%s, fh", fedoraHandle, itemID ) );
@@ -66,6 +68,11 @@ public class PTI implements Callable<Long>{
      * a float, representing the processtime for the data pointed to
      * by the fedorahandle.
      * @return the processtime
+     * @throws CompassException
+     * @throws IOException
+     * @throws DocumentException
+     * @throws SQLException
+     * @throws ClassNotFoundException
      */
     public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException {
         log.debug( "Entering PTI.call()" );
@@ -87,6 +94,9 @@ public class PTI implements Callable<Long>{
      * /brief doProcessing constructs a cargoContainer by calling the
      * fedorahandler and indexing the document wint the indexDocument
      * menthod
+     * @throws CompassException
+     * @throws IOException
+     * @throws DocumentException
      */
     public void doProcessing( ) throws CompassException, IOException, DocumentException {//, javax.xml.parsers.ParserConfigurationException, IOException, org.xml.sax.SAXException{
         log.debug( "Entering doProcessing" );
@@ -149,6 +159,7 @@ public class PTI implements Callable<Long>{
      * @param session The compassSession to use
      * @param trans the compassTrasnaction to use
      * @param cargoXML the xml constructed from a CargoContainer
+     * @throws CompassException
      */
 
     private void indexDocument( CompassSession session,
