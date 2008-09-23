@@ -29,18 +29,20 @@ public class Estimate extends DBConnection {
     /**
      * Constructor
      */
-    public Estimate() throws ConfigurationException, ClassNotFoundException {
+    public Estimate() {
         log.debug( "Estimate Constructor" );
     }
 
+    /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     /**
      * \brief getEstimate retrieves estimate from statisticDB table.
      * @param mimeType The mimeType of the element were trying to estimate processtime for
      * @param length length in bytes of the element were trying to estimate processtime for
      * @return the processtime estimate.
+     * @throws SQLException
+     * @throws NoSuchElementException
+     * @throws ClassNotFoundException
      */
-
-    /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException {
         log.debug( String.format( "estimate.getEstimate(mimeType=%s, length=%s) called", mimeType, length ) );
 
@@ -90,6 +92,8 @@ public class Estimate extends DBConnection {
      * @param mimeType is the mimetype of the processed object 
      * @param length is the length in bytes of the processed object 
      * @param time is time in millisecs that it took to proces the object
+     * @throws SQLException
+     * @throws ClassNotFoundException
      */
     public void updateEstimate( String mimeType, long length, long time ) throws SQLException, ClassNotFoundException{
         log.debug( String.format( "UpdateEstimate(mimeType = %s, length = %s, time = %s) called", mimeType, length, time ) );

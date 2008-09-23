@@ -40,6 +40,8 @@ public class DBConnection{
     
     /**
      * /brief Gets configuration and driver information 
+     * @throws ConfigurationException
+     * @throws ClassNotFoundException
      */
     public DBConnection() throws ConfigurationException, ClassNotFoundException {
         log.debug( "DBConnection constructor");
@@ -63,6 +65,7 @@ public class DBConnection{
 
     /**
      * Establishes the connction to the database
+     * @throws SQLException
      */
     protected static Connection establishConnection() throws SQLException {
         log.debug( "Establishing connection." );
