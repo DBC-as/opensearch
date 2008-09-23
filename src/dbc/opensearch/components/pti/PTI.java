@@ -116,9 +116,9 @@ public class PTI implements Callable<Long>{
         }
 
         log.debug( String.format( "CargoContainer isNull == %s", cc == null ) );
-        log.debug( String.format( "CargoContainer.mimetype", cc.getMimeType() ) );
-        log.debug( String.format( "CargoContainer.submitter", cc.getSubmitter() ) );
-        log.debug( String.format( "CargoContainer.streamlength", cc.getStreamLength() ) );
+        log.debug( String.format( "CargoContainer.mimetype %s", cc.getMimeType() ) );
+        log.debug( String.format( "CargoContainer.submitter %s", cc.getSubmitter() ) );
+        log.debug( String.format( "CargoContainer.streamlength %s", cc.getStreamLength() ) );
 
 
         log.debug( String.format( "Starting transaction on running CompassSession" ) );
