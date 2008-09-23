@@ -134,10 +134,7 @@ public class Estimate extends DBConnection {
             throw new SQLException( sqe.getMessage() );
         }
         // create query
-        String sqlQuery = "UPDATE statisticDB"+
-            " SET processtime = processtime+"+time+
-            " SET dataamount = dataamount+"+length+
-            " WHERE mimetype = '"+mimeType+"'";
+        String sqlQuery = String.format( "UPDATE statisticDB SET processtime = processtime+%s SET dataamount = dataamount+%s WHERE mimetype = '%s'", time, length, mimeType);
         log.debug( String.format( "SQL Query == %s", sqlQuery ) );
         
         // Write new estimate values to database
