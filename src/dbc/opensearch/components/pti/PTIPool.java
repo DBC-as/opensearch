@@ -26,6 +26,10 @@ import org.apache.log4j.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 
 
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import javax.xml.rpc.ServiceException;
+
 public class PTIPool {
 
     private ExecutorService threadExecutor; /**The threadpool */
@@ -36,7 +40,7 @@ public class PTIPool {
      */
     private static final Logger log = Logger.getRootLogger();
 
-    public PTIPool( int numberOfThreads ) throws ConfigurationException {
+    public PTIPool( int numberOfThreads ) throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
 
         log.debug( String.format( "Number of threads = %s", numberOfThreads ) );
         // Securing nuberOfThreads > 0

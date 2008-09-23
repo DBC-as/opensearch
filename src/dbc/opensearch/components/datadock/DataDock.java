@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.NoSuchElementException;
 
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import javax.xml.rpc.ServiceException;
 
 /**
  * \brief The public interface for the OpenSearch DataDockService
@@ -96,7 +99,7 @@ public class DataDock implements Callable<Float>{
      * @throws IOException if the FedoraHandler could not read data from the CargoContainer
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dbc.opensearch.tools.Estimate
      */
-    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException{
+    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( String.format( "Entering call" ) );
         Float processEstimate = 0f;
 
@@ -147,7 +150,7 @@ public class DataDock implements Callable<Float>{
      * @throws XMLStreamException if the foxml could not be constructed in the FedoraHandler \see dbc.opensearch.tools.FedoraHandler
      * @throws IOException if the FedoraHandler could not read data from the CargoContainer
      */
-    private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException{
+    private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, MalformedURLException, UnknownHostException, ServiceException{
         log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
         /**

@@ -28,6 +28,12 @@ import com.mallardsoft.tuple.Pair;
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Triple;
 
+
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+
 public class PTIPoolAdm {
 
     Logger log = Logger.getLogger("PTIPoolAdm");
@@ -49,7 +55,7 @@ public class PTIPoolAdm {
      * @throws ConfigurationException if the PTIPool could not be correctly initialized
      * @throws ClassNotFoundException if the Processqueue could not load the database driver
      */
-    public PTIPoolAdm( int numberOfThreads )throws ConfigurationException, ClassNotFoundException{
+    public PTIPoolAdm( int numberOfThreads )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException{
         log.debug( "PTIPoolAdm Constructor" );
 
         /** todo: where should sleepInMilliSec be set?? in a configuration file or what*/

@@ -24,13 +24,12 @@ public class Main {
         try{
                 fh = new FedoraHandler();
             }
-            catch (ConfigurationException cex){
+            catch (Exception e){
                 
                 System.out.println( "We encountered an exception:" );
-                System.out.println( cex.getMessage() );
-                cex.printStackTrace();
+                System.out.println( e.getMessage() );
+                e.printStackTrace();
             }
-        
         
 
 log.debug( String.format( "Constructed fedoraHandler, with %s, %s", args[0], args[1] ) );

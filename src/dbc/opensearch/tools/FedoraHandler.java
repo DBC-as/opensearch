@@ -1,6 +1,6 @@
 package dbc.opensearch.tools;
 
-import dbc.opensearch.components.datadock.*;
+import dbc.opensearch.components.datadock.CargoContainer;
 
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
@@ -38,14 +38,16 @@ import org.apache.commons.configuration.ConfigurationException;
 
 import java.net.URL;
 
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+
 /**
  * The FedoraHandler class handles connections and communication with
  * the fedora repository.
  */
 public class FedoraHandler implements Constants{
-
-    // prefix for use in the fedora-base
-    private static final String pid_prefix = "";
 
     private static String host = "";
     private static String port = "";
@@ -55,8 +57,8 @@ public class FedoraHandler implements Constants{
 
     Logger log = Logger.getLogger("FedoraHandler");
 
+    // The fedora api
     FedoraAPIA apia;
-
     FedoraAPIM apim;
 
     /**
@@ -65,20 +67,14 @@ public class FedoraHandler implements Constants{
      * get the Fedora API objects.
      * FedoraHandler
      */
-    public FedoraHandler() throws ConfigurationException {
+    public FedoraHandler() throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+        log.debug( "Fedorahandler constructor");
 
-        log.debug( "Obtain config paramaters");
-
+        log.debug( "Obtain config paramaters for configuring fedora connection");
         URL cfgURL = getClass().getResource("/config.xml");
         XMLConfiguration config = null;
-        try{
-            config = new XMLConfiguration( cfgURL );
-        }
-        catch (ConfigurationException cex){
-            log.fatal( "ConfigurationException: " + cex.getMessage() );
-            throw new ConfigurationException( cex.getMessage() );
-        }
-
+        config = new XMLConfiguration( cfgURL );
+        
         host       = config.getString( "fedora.host" );
         port       = config.getString( "fedora.port" );
         user       = config.getString( "fedora.user" );
@@ -87,27 +83,12 @@ public class FedoraHandler implements Constants{
 
         log.debug( String.format( "Connecting to fedora server at:\n%s\n using user: %s, pass: %s ", fedoraUrl, user, passphrase ) );
 
-        try {
-            long stamp = System.currentTimeMillis();
-            log.info( String.format( "Constructing FedoraClient" ) );
-            FedoraClient client = new FedoraClient( fedoraUrl, user, passphrase );
-            apia = client.getAPIA();
-            apim = client.getAPIM();
-            log.info( String.format( "Finished setting up FedoraClient (%s secs)", (System.currentTimeMillis()-stamp)/1000.0 ) );
-        }catch ( java.net.MalformedURLException mue ){
-            log.fatal( String.format( "The url %s could not be used. Either it is malformed or the protocol is not supported", this.fedoraUrl ) );
-            /** \todo: should we propagate? */
-        }catch( java.net.UnknownHostException ue ){
-            log.fatal( String.format( "Could not reach fedora server: %s", ue.getMessage() ) );
-            /** \todo: should we propagate? */
-        }catch (javax.xml.rpc.ServiceException SE) {
-            log.fatal( "Fedora Service Exception " );
-            log.fatal( SE.getMessage() );
-            /** \todo: should we propagate? */
-        } catch ( Exception e ){
-            log.fatal( String.format( "Could not connect to fedorabase/fedora-service layer %s", e.toString() ) );
-            /** \todo: should we propagate? */
-        }
+        long stamp = System.currentTimeMillis();
+        log.debug( "Constructing FedoraClient");
+        FedoraClient client = new FedoraClient( fedoraUrl, user, passphrase );
+        apia = client.getAPIA();
+        apim = client.getAPIM();
+        
     }
 
     /**
