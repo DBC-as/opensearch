@@ -17,7 +17,10 @@ import java.net.URL;
 import java.lang.ClassNotFoundException;
 
 /**
- * 
+ * /brief Handles the connection to the database. Database parameters is
+ * obtained by the xml configurator reading them from disk, and a the
+ * associated driver is setup in the constructor, and after that a
+ * connection can be estabished
  */
 public class DBConnection{
     
@@ -34,27 +37,26 @@ public class DBConnection{
      */
     static Logger log = Logger.getLogger("DBConnection");
 
+    
+    /**
+     * /brief Gets configuration and driver information 
+     */
     public DBConnection() throws ConfigurationException, ClassNotFoundException {
         log.debug( "DBConnection constructor");
-        
-        Class.forName(driver);
-
+   
         log.debug( "Obtain config paramaters");
         
         URL cfgURL = getClass().getResource("/config.xml");
         XMLConfiguration config = null;
-        try{
-            config = new XMLConfiguration( cfgURL );
-        }
-        catch (ConfigurationException cex){
-            log.fatal( "ConfigurationException: " + cex.getMessage() );
-            throw new ConfigurationException( cex );
-        }
-
+        
+        config = new XMLConfiguration( cfgURL );
+        
         driver = config.getString( "database.driver" );
         url    = config.getString( "database.url" );
         userID = config.getString( "database.userID" );
         passwd = config.getString( "database.passwd" );
+
+        Class.forName(driver);
         
         log.debug( String.format( "driver: %s, url: %s, userID: %s",driver, url, userID) );
     }
