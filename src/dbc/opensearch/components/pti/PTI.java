@@ -1,12 +1,8 @@
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.components.datadock.CargoContainer;
-import dbc.opensearch.tools.Processqueue;
 import dbc.opensearch.tools.Estimate;
 import dbc.opensearch.tools.FedoraHandler;
-
-import com.mallardsoft.tuple.Tuple;
-import com.mallardsoft.tuple.Pair;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -37,15 +33,14 @@ import org.apache.commons.configuration.ConfigurationException;
  */
 public class PTI implements Callable<Long>{
 
-    private static final Logger log = Logger.getRootLogger();
+    Logger log = Logger.getLogger("PTI");
+
     private FedoraHandler fh;
     private CompassSession session;
     private CargoContainer cc;
-    private Processqueue queue;
     private Date finishTime;
     private String fedoraHandle;
     private String datastreamItemID;
-    private int queueID;
     private Estimate estimate;
 
     /**
@@ -89,9 +84,9 @@ public class PTI implements Callable<Long>{
     }
     
     /**
-     * This is the main entry point for getting stuff
-     * processed.
-     * @returns Returns a pair where first element is the stream length of the processed item, and the second element is the timestamp from when the item arrived in the datadock
+     * /brief doProcessing constructs a cargoContainer by calling the
+     * fedorahandler and indexing the document wint the indexDocument
+     * menthod
      */
     public void doProcessing( ) throws CompassException, IOException, DocumentException {//, javax.xml.parsers.ParserConfigurationException, IOException, org.xml.sax.SAXException{
         log.debug( "Entering doProcessing" );
@@ -150,7 +145,10 @@ public class PTI implements Callable<Long>{
     // }
 
     /**
-     * Does the indexing and the saving of them
+     * Does the indexing and the saving of the indexes
+     * @param session The compassSession to use
+     * @param trans the compassTrasnaction to use
+     * @param cargoXML the xml constructed from a CargoContainer
      */
 
     private void indexDocument( CompassSession session,
