@@ -69,7 +69,7 @@ public class DataDock implements Callable<Float>{
      * DataDock is initialized with a CargoContainer containing the
      * data to be 'docked' into to system
      */
-    public DataDock( CargoContainer cargo ) throws ConfigurationException{
+    public DataDock( CargoContainer cargo ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
         queue = new Processqueue();

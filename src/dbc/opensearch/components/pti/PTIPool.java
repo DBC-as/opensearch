@@ -86,7 +86,7 @@ public class PTIPool {
 
     /** \todo find better Exception to throw*/
 
-    public FutureTask createAndJoinThread (String fHandle, String itemID )throws ConfigurationException{
+    public FutureTask createAndJoinThread (String fHandle, String itemID )throws ConfigurationException, ClassNotFoundException{
 
         CompassSession session = null;
         FutureTask future = null;

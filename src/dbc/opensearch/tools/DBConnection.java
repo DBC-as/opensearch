@@ -32,11 +32,13 @@ public class DBConnection{
     /**
      *  Log
      */
+    static Logger log = Logger.getLogger("DBConnection");
 
-    private static final Logger log = Logger.getRootLogger();
-
-    public DBConnection() throws ConfigurationException {
+    public DBConnection() throws ConfigurationException, ClassNotFoundException {
+        log.debug( "DBConnection constructor");
         
+        Class.forName(driver);
+
         log.debug( "Obtain config paramaters");
         
         URL cfgURL = getClass().getResource("/config.xml");
@@ -46,7 +48,7 @@ public class DBConnection{
         }
         catch (ConfigurationException cex){
             log.fatal( "ConfigurationException: " + cex.getMessage() );
-            throw new ConfigurationException( cex.getMessage() );
+            throw new ConfigurationException( cex );
         }
 
         driver = config.getString( "database.driver" );
@@ -54,35 +56,18 @@ public class DBConnection{
         userID = config.getString( "database.userID" );
         passwd = config.getString( "database.passwd" );
         
-        log.debug( "driver: "+driver );
-        log.debug( "url:    "+url );
-        log.debug( "userID: "+userID );
+        log.debug( String.format( "driver: %s, url: %s, userID: %s",driver, url, userID) );
     }
 
     /**
      * Establishes the connction to the database
      */
-    protected static Connection establishConnection() throws ClassNotFoundException, SQLException {
+    protected static Connection establishConnection() throws SQLException {
+        log.debug( "Establishing connection." );
 
         Connection con = null;
-
-        try {
-            Class.forName(driver);
-
-        } 
-        catch(ClassNotFoundException ce) {
-            log.fatal( "ClassNotFoundException: " + ce.getMessage() );
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-
-        try {
-            con = DriverManager.getConnection(url, userID, passwd);
-        } 
-        catch(SQLException sqe) {
-            log.fatal( "SQLException: " + sqe.getMessage() );
-            throw new SQLException( sqe.getMessage() );
-        }
-
+        con = DriverManager.getConnection(url, userID, passwd);        
+        
         log.debug( "Got connection." );
 
         return con;

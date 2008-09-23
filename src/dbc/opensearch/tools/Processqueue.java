@@ -22,7 +22,7 @@ public class Processqueue extends DBConnection {
     /**
      *  Log
      */
-    private static final Logger log = Logger.getRootLogger();
+    Logger log = Logger.getLogger("Processqueue");
 
     /**
      *  database Connection
@@ -32,45 +32,36 @@ public class Processqueue extends DBConnection {
     /**
      * Constructor
      */
-    public Processqueue() throws ConfigurationException {
+    public Processqueue() throws ConfigurationException, ClassNotFoundException {
         log.debug( "Processqueue Constructor" );
     } 
 
     /**
      * Push an fedorahandle to the processqueue
      * @params fedorahandle: a fedorahandle, i.e. a pointer to a document in the opensearch repository.
+     * @params itemID: an  itemID, identifying the dataobject, later used for indexing purposes
      */
     public void push( String fedorahandle, String itemID ) throws ClassNotFoundException, SQLException {
+        
         log.debug( "Processqueue.pop() called" );
-        // establish databaseconnection
-        log.debug( "establish databaseconnection" );
-        Connection con;        
-        try{
-            con = establishConnection();
-        }
-        catch(ClassNotFoundException ce){
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
 
+        // establish databaseconnection
+        Connection con;        
+        
+        con = establishConnection();
+        
         /** \todo: reset counter if queue is empty */
         
         Statement stmt = null;
-        try{
-            // Write fedorahandle and queueID to database
-            stmt = con.createStatement();
-            String sql_query = (  String.format( "INSERT INTO processqueue(queueid, fedorahandle, itemID, processing) VALUES(processqueue_seq.nextval ,'%s','%s','N')", fedorahandle, itemID ) );
+        
+        // Write fedorahandle and queueID to database
+        stmt = con.createStatement();
+        String sql_query = (  String.format( "INSERT INTO processqueue(queueid, fedorahandle, itemID, processing) "+
+                                             "VALUES(processqueue_seq.nextval ,'%s','%s','N')", fedorahandle, itemID ) );
             
-            stmt.executeUpdate( sql_query );
-                log.debug( String.format( "Written sqlQuery %s to database", sql_query ) );
-        }
-        catch(SQLException sqe) {
-            log.fatal( "SQLException: " + sqe.getMessage() );
-            throw new SQLException( sqe.getMessage() );
-        }
-
+        stmt.executeUpdate( sql_query );
+        log.debug( String.format( "Written sqlQuery %s to database", sql_query ) );
+        
         // Close database connection
 
         stmt.close();
@@ -87,15 +78,9 @@ public class Processqueue extends DBConnection {
 
         // establish databaseconnection
         log.debug( "establish databaseconnection" );
-        try{
-            con = establishConnection();
-        }
-        catch(ClassNotFoundException ce){
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
+        
+        con = establishConnection();
+        
 
         // preparing call of stored procedure
         CallableStatement cs=null;
@@ -146,15 +131,8 @@ public class Processqueue extends DBConnection {
                 
         // establish databaseconnection
         log.debug( "establish databaseconnection" );
-        try{
+
             con = establishConnection();
-        }
-        catch(ClassNotFoundException ce){
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
 
         Statement stmt = null;
         int rowsRemoved = 0;
@@ -187,16 +165,8 @@ public class Processqueue extends DBConnection {
 
         // establish databaseconnection
         log.debug( "establish databaseconnection" );
-        try{
-            con = establishConnection();
-        }
-        catch(ClassNotFoundException ce){
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
 
+            con = establishConnection();
         Statement stmt = null;
         int rowsRemoved = 0;
         
@@ -230,16 +200,8 @@ public class Processqueue extends DBConnection {
         
         // establish databaseconnection
         log.debug( "establish databaseconnection" );
-        try{
-            con = establishConnection();
-        }
-        catch(ClassNotFoundException ce){
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
 
+            con = establishConnection();
         // Query database
         Statement stmt = null;
         String SQL_query = "SELECT queueid FROM processqueue WHERE processing = 'Y' ";

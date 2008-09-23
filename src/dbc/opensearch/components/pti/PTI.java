@@ -51,7 +51,7 @@ public class PTI implements Callable<Long>{
     /**
      * Constructor
      */
-    public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh ) throws ConfigurationException {
+    public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "Setting up PTI with compassSession and fedoraHandle '%s'", fedoraHandle ) );
         this.session = session;
         this.fedoraHandle = fedoraHandle;

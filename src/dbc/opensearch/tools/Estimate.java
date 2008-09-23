@@ -29,7 +29,7 @@ public class Estimate extends DBConnection {
     /**
      * Constructor
      */
-    public Estimate() throws ConfigurationException {
+    public Estimate() throws ConfigurationException, ClassNotFoundException {
         log.debug( "Estimate Constructor" );
     }
 
@@ -52,16 +52,9 @@ public class Estimate extends DBConnection {
         log.debug( "Establishing connection to statisticDB" );
 
         Connection con = null;
-        try{
-            con = establishConnection();
-        }
-        catch(ClassNotFoundException ce){
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
-
+       
+        con = establishConnection();
+       
         // 25: create statement
         Statement stmt = null;
 
@@ -124,15 +117,8 @@ public class Estimate extends DBConnection {
         log.debug( "Establishing connection to statisticDB" );
 
         Connection con = null;
-        try{
+
             con = establishConnection();
-        }
-        catch(ClassNotFoundException ce){
-            throw new ClassNotFoundException( ce.getMessage() );
-        }
-        catch(SQLException sqe){
-            throw new SQLException( sqe.getMessage() );
-        }
         // create query
         String sqlQuery = String.format( "UPDATE statisticDB SET processtime = processtime+%s, dataamount = dataamount+%s WHERE mimetype = '%s'", time, length, mimeType);
         log.debug( String.format( "SQL Query == %s", sqlQuery ) );
