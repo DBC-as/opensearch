@@ -29,7 +29,7 @@ public class Estimate extends DBConnection {
     /**
      * Constructor
      */
-    public Estimate() {
+    public Estimate() throws ConfigurationException, ClassNotFoundException {
         log.debug( "Estimate Constructor" );
     }
 

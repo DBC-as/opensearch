@@ -32,7 +32,7 @@ public class Processqueue extends DBConnection {
     /**
      * Constructor
      */
-    public Processqueue() {
+    public Processqueue()throws ConfigurationException, ClassNotFoundException {
         log.debug( "Processqueue Constructor" );
     } 
 
