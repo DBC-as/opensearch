@@ -28,7 +28,6 @@ import com.mallardsoft.tuple.Pair;
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Triple;
 
-
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import javax.xml.rpc.ServiceException;
@@ -46,7 +45,6 @@ public class PTIPoolAdm {
 
     private long sleepInMilliSec;
 
-    
     /**
      * Initializes the PTIPool with the given number of
      * threads. Initializes a Processqueue and starts the mainLoop for
@@ -56,27 +54,18 @@ public class PTIPoolAdm {
      * @throws ClassNotFoundException if the Processqueue could not load the database driver
      */
     public PTIPoolAdm( int numberOfThreads )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException{
-        log.debug( "PTIPoolAdm Constructor" );
+        log.debug( String.format( "Entering PTIPoolAdm(numberOfThreads=%s)", numberOfThreads ) );
 
-        /** todo: where should sleepInMilliSec be set?? in a configuration file or what*/
+        /** /todo: where should sleepInMilliSec be set?? in a configuration file or what*/
         sleepInMilliSec= 20000;
-        //
-        // try{
+        
         log.debug( String.format( "Setting up the PTIPool with %s threads", numberOfThreads ) );
         PTIpool = new PTIPool( numberOfThreads );
-        log.debug( String.format( "Starting a Processqueue" ) );
+        
         processqueue = new Processqueue();
-        // }
-        // catch(ConfigurationException ce){
-        //     throw new ConfigurationException( ce.getMessage() );
-        // }
-        // catch(RuntimeException re){
-        //     throw new RuntimeException( re.getMessage() );
-        // }
-
         activeThreads = new Vector();
         
-        log.debug( String.format( "Finished the PTIPoolAdm constructor" ) );
+        log.debug( String.format( "PTIPoolAdm is set up" ) );
     }
 
     /**
@@ -89,30 +78,20 @@ public class PTIPoolAdm {
     public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException, Exception {
         log.debug( "PTIPoolAdm mainloop" );
 
+        // creates initial timestamp. creates it with an offset - so
+        // when the loop is entered it polls the processqueue
+        // immediatly
         long stamp = System.currentTimeMillis() - ( sleepInMilliSec+ 1 ) ;
 
+        /** /todo: we need a nicer way to do this than a while true loop. */
         while(true){
 
             if( System.currentTimeMillis() > stamp+sleepInMilliSec ){
-                // poll processqueue again
                 log.info( "Poll processqueue" );
-                try{
-                    startThreads();
-                }
-                catch(ClassNotFoundException cne){
-                    throw new ClassNotFoundException( cne.getMessage() );
-                }
-                catch(SQLException sqe){
-                    throw new SQLException( sqe.getMessage() );
-                }
-                catch(RuntimeException re){
-                    throw new RuntimeException( re.getMessage() );
-                }
-                catch(ConfigurationException ce){
-                    throw new ConfigurationException( ce.getMessage() );
-                }
-
+                
+                startThreads();
                 stamp = System.currentTimeMillis();
+            
             }
 
             try{

@@ -91,7 +91,7 @@ public class PTIPool {
      * are in process
      */
     public FutureTask createAndJoinThread (String fHandle, String itemID )throws ConfigurationException, ClassNotFoundException{
-        log.debug( String.format( "entering createAndJoinThreads( fhandle=%s, itemID=%s )", numberOfThreads, itemID ) );
+        log.debug( String.format( "entering createAndJoinThreads( fhandle=%s, itemID=%s )", fHandle, itemID ) );
         
         CompassSession session = null;
         FutureTask future = null;
