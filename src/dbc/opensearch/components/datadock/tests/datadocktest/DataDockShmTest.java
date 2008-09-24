@@ -36,13 +36,13 @@ public class DataDockShmTest {
         String mime = "text/xml";
         String lang = "dk"; /// fix enum und so weiter
         String submitter = "stm"; /// fix enum und so weiter
-
+        String format = "faktalink";
 
         CargoContainer cc = null;
         DataDock dd = null;
         try{
             System.out.print("Creating CargoContainer");
-            cc = new CargoContainer(BAIS, mime, lang, submitter);
+            cc = new CargoContainer( BAIS, mime, lang, submitter, format );
             System.out.print("Creating DataDock");
             dd = new DataDock(cc);
         }catch(Exception e){

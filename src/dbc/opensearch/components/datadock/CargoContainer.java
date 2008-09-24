@@ -41,10 +41,11 @@ public class CargoContainer {
      * ByteArrayInputStream (or any stream that have a count method )
      * @params mime: The mimetype of the data. Must conform to the allowed mimetypes
      * @params lang: the language used in the data
-     * @params submitter: the submitter of the data, for authentication purposes
+     * @params submitter: the submitter of the data, for identifying the pid namespace
+     * @params format: the format of the submitted data, for generating itemIDs and getting the correct Compass mappings
      * @throws java.io.IOException if the stream is corrupted
      */
-    public CargoContainer( InputStream data, String mime, String lang, String submitter ) throws IOException, IllegalArgumentException{
+    public CargoContainer( InputStream data, String mime, String lang, String submitter, String format ) throws IOException, IllegalArgumentException{
 
         log.debug( String.format( "Entering CargoContainer constructor" ) );
         // 05: get the stream into the object
@@ -54,16 +55,14 @@ public class CargoContainer {
             log.fatal( String.format( "No data in inputstream, refusing to construct empty CargoContainer" ) );
             throw new NullPointerException( "Refusing to construct a cargocontainer without cargo" );
         }
+        log.debug( String.format( "Saved data" ) );
 
-        log.debug( String.format( "Setting timestamp" ) );
-
-        
         // 10: check mimetype
         CargoMimeType CMT = null;
         log.debug( String.format( "checking mimetype: %s", mime ) );
         for (CargoMimeType cmt : CargoMimeType.values() ){
             if( mime.equals( cmt.getMimeType() ) ){
-                log.debug( String.format( "mimetype %s validated", mime ) );
+                log.debug( String.format( "Identified mimetype %s", mime ) );
                 CMT = cmt;
             }
         }
@@ -77,6 +76,12 @@ public class CargoContainer {
             log.fatal( String.format( "Language '%s' not in list of allowed languages", lang ) );
             throw new IllegalArgumentException( String.format( "%s is not in the languagelist", lang ) );
         }
+        log.debug( String.format( "Identified language %s", lang ) );
+
+        // 33: check format
+        /** \todo: how to identify allowed formats? */
+        log.debug( String.format( "Identified format %s", format ) );
+
 
         // 35: check submitter (credentials checking)
         /** \todo: need better checking of values (perhaps using enums?) before constructing */
@@ -84,6 +89,8 @@ public class CargoContainer {
             log.fatal( String.format( "Submitter '%s' not in list of allowed submitters", submitter ) );
             throw new IllegalArgumentException( String.format( "%s is not in the submitterlist", submitter ) );
         }
+
+        log.debug( String.format( "Identified submitter %s", submitter ) );
 
         // 40: get stream length
         // available returns (count - pos), both of which are private
@@ -104,15 +111,12 @@ public class CargoContainer {
             stream:
             http://java.sun.com/javase/6/docs/api/java/io/InputStream.html#available()
         */
-        // try{
         contentLength = this.data.available();
-        // } catch( IOException ioe ){
-        //     log.fatal( String.format( "Unable to read from the InputStream: %s", ioe.toString() ) );
-        //     throw new IOException( ioe );
-        //   }
+
+        log.debug( String.format( "Identified streamlength %s", contentLength ) );
 
         // 50: construct CargoObjectInfo object
-        coi = new CargoObjectInfo( CMT, lang, submitter, contentLength );
+        coi = new CargoObjectInfo( CMT, lang, submitter, format, contentLength );
         
         log.debug( String.format( "All Checks passed, CargoContainer constructed with values %s, %s, %s, %s", this.getStreamLength(), this.getMimeType(), lang, this.getSubmitter() ) );
         
@@ -222,12 +226,14 @@ public class CargoContainer {
     public int getStreamLength() {
         return contentLength;
     }
+
     /**
      * @returns the mimetype of the data as a string
      */
     public String getMimeType(){
         return coi.getMimeType();
     }
+
     /**
      *@returns the submitter as a string
      */
@@ -235,6 +241,13 @@ public class CargoContainer {
         return coi.getSubmitter();
     }
 
+    /**
+     *@returns the format as a string
+     */
+    public String getFormat(){
+        return coi.getFormat();
+    }
+ 
     /** \todo: needs unittest */
 
     /**

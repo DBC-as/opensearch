@@ -102,14 +102,17 @@ public class DataDock implements Callable<Float>{
     public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( String.format( "Entering call" ) );
         Float processEstimate = 0f;
-
+        String fedoraHandle = null;
         // try{
         log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );
         
         processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
         
-        
-        queueFedoraHandle( fedoraStoreData(), cc.getSubmitter() );
+
+        fedoraHandle = fedoraStoreData();
+
+        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+        queueFedoraHandle( fedoraHandle, cc.getFormat() );
         log.info( String.format( "data queued" ) );
         // }
 
@@ -153,17 +156,11 @@ public class DataDock implements Callable<Float>{
     private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, MalformedURLException, UnknownHostException, ServiceException{
         log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
-        /**
-         * \todo find out where and how we get the pid
-         * its format is "namespace:identifier" fx "faktalink:2"
-         * If we use the submitter as namespace we still need a way
-         * to be sure the identifier is unique
-         */
-        String usePid = cc.getSubmitter();
+
         /**
          * \todo find out where and how we get the itemId
          */
-        String itemId = cc.getMimeType().substring( cc.getMimeType().indexOf("/") + 1 );
+        // String itemId = cc.getMimeType().substring( cc.getMimeType().indexOf("/") + 1 );
         
         /** todo: give real applicable value to label. value should be given by cargo container*/
         String label = "test";
@@ -190,7 +187,10 @@ public class DataDock implements Callable<Float>{
             // }catch(XMLStreamException xmle){
             // }catch(IOException ioe){
             //}
-        fedoraHandle = fh.submitDatastream( cc, usePid, itemId, label );
+        /** \todo: retrieve next pid from fedora */
+        
+
+        fedoraHandle = fh.submitDatastream( cc, label );
         // }catch( RemoteException re ){
         //     throw new RemoteException(re.getMessage());
         // }catch( XMLStreamException xmle ){

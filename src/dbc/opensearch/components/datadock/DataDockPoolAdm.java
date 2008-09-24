@@ -38,9 +38,10 @@ public class DataDockPoolAdm {
             DDP = new DataDockPool(10);
 
             log.debug( String.format( "Getting properties for the CargoContainer" ) );
-            String submitter = System.getProperty("submitter");
             String mimetype = System.getProperty("mimetype");
             String lang = System.getProperty("lang");
+            String submitter = System.getProperty("submitter");
+            String format = System.getProperty("format");
             String filepath = System.getProperty("filepath");
             log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
             File dir = new File(filepath);
@@ -77,7 +78,7 @@ public class DataDockPoolAdm {
             for(int filesSent = 0; filesSent < numOfFiles; filesSent++){
                 try{
                     data = new FileInputStream(fileList[filesSent]);
-                    CargoContainer cc = new CargoContainer(data, mimetype, lang, submitter);
+                    CargoContainer cc = new CargoContainer(data, mimetype, lang, submitter, format);
                     FTList[filesSent] = DDP.createAndJoinThread(cc);
                     log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
                   

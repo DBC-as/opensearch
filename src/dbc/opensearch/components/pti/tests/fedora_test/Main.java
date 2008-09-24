@@ -47,9 +47,9 @@ log.debug( String.format( "Constructed fedoraHandler, with %s, %s", args[0], arg
             try {
                 in = new FileInputStream( args[1] );
                 log.debug( String.format( "FileinputStream.available()=%s", in.available() ) );
-                CargoContainer cargo = new CargoContainer( in, "text/xml", "da", "stm" );
+                CargoContainer cargo = new CargoContainer( in, "text/xml", "da", "stm", "faktalink" );
 
-                fh.submitDatastream( cargo, "faktalink", "XML", "Test ingest af faktalink" );
+                fh.submitDatastream( cargo, "hej jeg er en lille besked til loggenz" );
             // }catch( ServerException e ){
             //     System.out.println( e.getMessage() );
             //     System.out.println( e.getCode() );

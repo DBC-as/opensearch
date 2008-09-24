@@ -183,8 +183,6 @@ public class PTIPoolAdm {
                 queueID = Tuple.get2(queueTriple);
                 itemID = Tuple.get3(queueTriple);
 
-                log.debug( String.format( "starting new thread with fedoraHandle: %s, queueID: %s and itemID: %s ", 
-                                         fedoraHandle, queueID, itemID ) );
                 future = PTIpool.createAndJoinThread( fedoraHandle, itemID );
                 
                 // add thread to active thread vector

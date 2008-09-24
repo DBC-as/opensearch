@@ -18,6 +18,8 @@ public class CargoObjectInfo {
      */
     private String submitter;
 
+    private String format;
+
     /** contentlength is used in estimating the processing time of the
      * data. Contentlength is provided by datadock-reception, by the count method on the stream 
      * \todo streams are iterators, we need content-length before-hand
@@ -30,7 +32,7 @@ public class CargoObjectInfo {
      * for the metadata associated with a given CargoContainers data
      * \todo: should this constructor throw? And on what occasions?
      */
-    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, int contentLength ) {
+    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format, int contentLength ) {
 
         this.mimeType = mimeType;
 
@@ -38,6 +40,8 @@ public class CargoObjectInfo {
 
         this.submitter = submitter;
         
+        this.format = format;
+
         this.contentLength = contentLength;
         
         this.timestamp = new Date();
@@ -54,11 +58,18 @@ public class CargoObjectInfo {
     String getMimeType(){
         return mimeType.getMimeType();
     }
+
     /**
      *@return submitter as string
      */
     public String getSubmitter(){
         return submitter;
     }
-    
+ 
+    /**
+     *@return format as string
+     */
+    public String getFormat(){
+        return format;
+    }
 }

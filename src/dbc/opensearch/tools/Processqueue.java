@@ -139,7 +139,7 @@ public class Processqueue extends DBConnection {
         Statement stmt = null;
         int rowsRemoved = 0;
 
-        String sql_query = String.format( "DELETE FROM processqueue WHERE queueid = ", queueid );
+        String sql_query = String.format( "DELETE FROM processqueue WHERE queueid = %s", queueid );
 
         log.debug( String.format( "query database with %s ", sql_query ) );
         

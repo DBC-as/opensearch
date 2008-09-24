@@ -90,11 +90,11 @@ public class DataDockTest {
         String mime = "text/xml";
         String lang = "test";
         String submitter = "testSubmitter";
-
+        String format = "faktalink";
         log.debug("Creating the CargoContainer object ");
 
         try{
-            cc = new CargoContainer(data, mime, lang, submitter);
+            cc = new CargoContainer(data, mime, lang, submitter, format);
         }catch(IOException ioe){
             ioe.printStackTrace();
         }catch(Exception e){

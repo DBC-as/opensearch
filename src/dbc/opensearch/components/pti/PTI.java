@@ -102,13 +102,13 @@ public class PTI implements Callable<Long>{
         log.debug( "Entering doProcessing" );
 
         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle,datastreamItemID ) );
-        if( fh != null ){
-            cc = fh.getDatastream( fedoraHandle, datastreamItemID );
-        }else{
+       
+        if( fh == null ){
             throw new NullPointerException( "FedoraHandler was null, aborting" );
         }
 
-        log.debug( String.format( "CargoContainer isNull == %s", cc == null ) );
+        cc = fh.getDatastream( fedoraHandle, datastreamItemID );
+
         log.debug( String.format( "CargoContainer.mimetype %s", cc.getMimeType() ) );
         log.debug( String.format( "CargoContainer.submitter %s", cc.getSubmitter() ) );
         log.debug( String.format( "CargoContainer.streamlength %s", cc.getStreamLength() ) );
