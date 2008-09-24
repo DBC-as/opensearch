@@ -198,15 +198,35 @@ public class Processqueue extends DBConnection {
     }
     
     /**
-     * getActiveprocesses queries the processqueue table and find
-     * elements that are marked as processing.
-     * @return an integer arrey contaning queueids matching active processing threads
+     * deactivate elements on the processqueue.  It finds all elements
+     * on the processqueue which are marked as active and mark them as
+     * inactive, ie. they are ready for indexing.
+     * @return the number of elements which are reactivated
      * @throws ClassNotFoundException
      * @throws SQLException
      * @throws  NoSuchElementException
      */
-    public int[] getActiveProcesses()throws ClassNotFoundException, SQLException, NoSuchElementException{
-        log.debug( "Processqueue.getActiveProcesses() called" );
+    public int deActivate() throws ClassNotFoundException, SQLException, NoSuchElementException{
+        log.debug( "Processqueue.deActive()" );
+        int[] activeJobs = getActiveProcesses();
+        int length = activeJobs.length;
+        for( int i = 0; i < length; i++ ){
+            rollback( activeJobs[i] );
+        }
+        return length;
+    }
+    
+
+    /**
+     * getActiveprocesses queries the processqueue table and find
+     * elements that are marked as processing.
+     * @return An integer array contaning queueids matching active processing threads
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     * @throws  NoSuchElementException
+     */
+    private int[] getActiveProcesses()throws ClassNotFoundException, SQLException, NoSuchElementException{
+        log.debug( "Entering Processqueue.getActiveProcesses()" );
         
         con = establishConnection();
         
