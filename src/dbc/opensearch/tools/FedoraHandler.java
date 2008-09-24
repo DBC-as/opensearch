@@ -257,7 +257,8 @@ public class FedoraHandler implements Constants{
             
             if( def.getID().equals( itemId ) ){
                 
-                ds = apia.getDatastreamDissemination( itemId_version, def.getID(), null );
+                log.debug( String.format( "trying to retrieve datastream with pid='%s' and itemId_version='%s'", pid, itemId ) );
+                ds = apia.getDatastreamDissemination( pid, itemId, null );
  
                 log.debug( String.format( "Making a bytearray of the datastream" ) );
                 byte[] datastr = ds.getStream();
@@ -265,7 +266,7 @@ public class FedoraHandler implements Constants{
                 log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
                 InputStream inputStream = new ByteArrayInputStream( datastr );
 
-                log.debug( String.format( "DataStream ID      =%s", itemId_version ) );
+                log.debug( String.format( "DataStream ID      =%s", itemId ) );
                 log.debug( String.format( "DataStream Label   =%s", def.getLabel() ) );
                 log.debug( String.format( "DataStream MIMEType=%s", def.getMIMEType() ) );
 
