@@ -125,7 +125,7 @@ public class PTI implements Callable<Long>{
 
         /** \todo: hardcoded values for alias on xmlaliasedobject */
         AliasedXmlObject xmlObject =
-            new Dom4jAliasedXmlObject( "data1", doc.getRootElement() );
+            new Dom4jAliasedXmlObject( cc.getFormat(), doc.getRootElement() );
 
         log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 

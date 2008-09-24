@@ -108,7 +108,7 @@ public class PTIPoolAdm {
      * @throws RuntimeException if the started thread stop due to an exception
      */
     private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, RuntimeException {
-        log.debug( "Entering PTIPoolAdm.checkThreads()" );
+        //        log.debug( "Entering PTIPoolAdm.checkThreads()" );
         
         Pair<FutureTask, Integer> vectorPair = null;
         int queueID;
