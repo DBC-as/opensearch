@@ -13,7 +13,7 @@ public class XmlFileFilter implements FilenameFilter{
      * @param dir the path of the directory to be tested
      * @param name the dir- or filename on the path
      * @throws NullPointerException if the dir- or filename is null
-     * @returns true iff path denotes a file not beginning with a '.'
+     * @returns true if path denotes a file that ends with ".xml"
      */
     public boolean accept(File dir, String name) throws NullPointerException{
         if( name.endsWith( ".xml" ) ){

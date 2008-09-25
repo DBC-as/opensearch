@@ -77,7 +77,7 @@ public class DataDockPoolAdm {
                     
                 }else{//we assume its a path ending with *.xml signaling that we must take 
                     // all .xml files in the directory
-                    log.debug(String.format("Extracting from index '%s' to index '%s'", 0, filepath.lastIndexOf('/') ));
+                    log.debug(String.format("Extracting from the dirpath form index '%s' to index '%s'", 0, filepath.lastIndexOf('/') ));
 
 
                     String dirpathString = filepath.substring( 0, filepath.lastIndexOf('/') );
