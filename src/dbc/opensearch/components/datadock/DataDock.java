@@ -113,6 +113,7 @@ public class DataDock implements Callable<Float>{
 
         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
         queueFedoraHandle( fedoraHandle, cc.getFormat() );
+
         log.info( String.format( "data queued" ) );
         // }
 
@@ -158,8 +159,13 @@ public class DataDock implements Callable<Float>{
         String fedoraHandle = "";
 
         /**
-         * \todo find out where and how we get the itemId
+         * \todo find out where and how we get the itemId. 
+         * It should come from
+         * the fedorabase as the next free identifier for the namespace of 
+         * the submitter
+         * \todo must call getNextPid( pidNS ) on fh, when that method is implemented
          */
+
         // String itemId = cc.getMimeType().substring( cc.getMimeType().indexOf("/") + 1 );
         
         /** todo: give real applicable value to label. value should be given by cargo container*/
@@ -182,15 +188,16 @@ public class DataDock implements Callable<Float>{
             // The next 2 lines of code waits for the getNextPid method from fh
             // String submitter = cargo.getSubmitter();
             //try{
-            // String usePid = submitter + ":" + fh.getNextPid(submitter);
+            // String itemID = fh.getNextPid(pidNS);
             // }catch (RemoteException re){
             // }catch(XMLStreamException xmle){
             // }catch(IOException ioe){
             //}
-        /** \todo: retrieve next pid from fedora */
-        
 
+        /** \todo: retrieve next pid from fedora */
+ 
         fedoraHandle = fh.submitDatastream( cc, label );
+
         // }catch( RemoteException re ){
         //     throw new RemoteException(re.getMessage());
         // }catch( XMLStreamException xmle ){
@@ -213,7 +220,7 @@ public class DataDock implements Callable<Float>{
     }
 
 
-    public void queueFedoraHandle( String fedoraHandle, String itemID ) throws ClassNotFoundException, ConfigurationException, SQLException {
+    public void queueFedoraHandle( String fedoraHandle, String namespace ) throws ClassNotFoundException, ConfigurationException, SQLException {
         /**
          * the push queues a fedoraHandle on the processQueue
          * to take the parameteres from the config file
@@ -221,7 +228,7 @@ public class DataDock implements Callable<Float>{
         log.debug( "Entering DataDock.queueFedoraHandle" );
         // 10: call push
         try{
-            queue.push( fedoraHandle, itemID );
+            queue.push( fedoraHandle, namespace );
 
         }
         catch(ClassNotFoundException cne){
