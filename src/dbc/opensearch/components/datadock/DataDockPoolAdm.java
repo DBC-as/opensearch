@@ -1,6 +1,7 @@
 package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.FileFilter;
+import dbc.opensearch.tools.XmlFileFilter;
 
 import dbc.opensearch.tools.Estimate;
 
@@ -42,46 +43,73 @@ public class DataDockPoolAdm {
             String lang = System.getProperty("lang");
             String submitter = System.getProperty("submitter");
             String format = System.getProperty("format");
-            String filepath = System.getProperty("filepath");
-            log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
-            File dir = new File(filepath);
-            //int[] activeFilesList = int[10];
+            String filepath = System.getProperty("filepath"); 
             String[] fileNameList;
             File[] fileList;
             FutureTask[] FTList = null;
 
-            /** \todo: what the *&^%$ is this */
+            /** \todo: what the *&^%$ is this? very simple: a unique string to 
+             * match on, this code is NOT intended to be reused! It is a transcription
+             * of a Korean sentence meaning "I do not love you"
+             */
             String doneString = "narn noRl saRang hATi arNar";
             String estimateMessageString;
             int answersReceived = 0;
 
-            // The FileFilter let only files through  that aren't directories 
-            // and there names doesnt start with "."
+            log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
+            // 10: check whether the filepath String is a dir, file or a filetype specification such as "dir/*.xml"
+            // 12: if the filepath is a dir, then get all from that dir
+            if ( new File( filepath ).isDirectory() ){
+                File dir = new File(filepath);
+                // The FileFilter let only files through  that aren't directories 
+                // and if their names doesnt start with "."
+                fileNameList = dir.list( new FileFilter() );
+                fileList = dir.listFiles( new FileFilter() );
+                
+            }else{
+                // 15: if it is a filename get that file
+                if( new File ( filepath ).isFile() ){
+                    File file = new File(filepath);
+                    fileNameList = new String[1]; //there must be a better way to do this
+                    fileNameList[0] = file.getName();
+                    fileList = new File[1]; // and this
+                    fileList[0] = file;
+                    
+                }else{//we assume its a path ending with *.xml signaling that we must take 
+                    // all .xml files in the directory
+                    log.debug(String.format("Extracting from index '%s' to index '%s'", 0, filepath.lastIndexOf('/') ));
 
-            fileNameList = dir.list( new FileFilter() );
-            fileList = dir.listFiles( new FileFilter() );
-       
+
+                    String dirpathString = filepath.substring( 0, filepath.lastIndexOf('/') );
+                    log.debug(String.format("dirpathString = '%s'", dirpathString) );
+                    File dirpath = new File(dirpathString);
+                    fileNameList = dirpath.list( new XmlFileFilter() );
+                    fileList = dirpath.listFiles( new XmlFileFilter() );
+                    
+                }                        
+            }
+            
             log.debug( String.format( "check if we got any files from the filepath" ) );
             if( fileList == null ){
                 throw new IllegalArgumentException( String.format( "no files on specified path: %s", filepath ) );
             }
-
+            
             int numOfFiles = fileList.length;
             log.info(String.format( "\n number of files = %s \n", numOfFiles ) );
             FTList = new FutureTask[ numOfFiles ];
-
+            
             InputStream data;
-
+            
             log.debug( String.format( "create CargoContainers and give them to the DDP.createAndJoinThread method" ) );
             log.debug( String.format( "store the FutureTask in an array together with documenttitle" ) );
-
+            
             for(int filesSent = 0; filesSent < numOfFiles; filesSent++){
                 try{
                     data = new FileInputStream(fileList[filesSent]);
                     CargoContainer cc = new CargoContainer(data, mimetype, lang, submitter, format);
                     FTList[filesSent] = DDP.createAndJoinThread(cc);
                     log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
-                  
+                    
                 }catch(Exception thise){
                     System.out.print("\n Exception in DataDockPoolAdm \n");
                     thise.printStackTrace();
