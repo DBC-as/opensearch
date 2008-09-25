@@ -74,9 +74,9 @@ public class PTI implements Callable<Long>{
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException {
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
         log.debug( "Entering PTI.call()" );
-        
+
         doProcessing( );
 
         log.debug( "Obtain processtime, and writing to statisticDB table in database" );
@@ -85,11 +85,11 @@ public class PTI implements Callable<Long>{
         estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
 
         log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
-        
-        
+
+
         return processtime;
     }
-    
+
     /**
      * /brief doProcessing constructs a cargoContainer by calling the
      * fedorahandler and indexing the document wint the indexDocument
@@ -98,11 +98,11 @@ public class PTI implements Callable<Long>{
      * @throws IOException
      * @throws DocumentException
      */
-    public void doProcessing( ) throws CompassException, IOException, DocumentException {//, javax.xml.parsers.ParserConfigurationException, IOException, org.xml.sax.SAXException{
+    public void doProcessing( ) throws CompassException, IOException, DocumentException, InterruptedException {
         log.debug( "Entering doProcessing" );
 
         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
-       
+
         if( fh == null ){
             throw new NullPointerException( "FedoraHandler was null, aborting" );
         }
@@ -114,16 +114,15 @@ public class PTI implements Callable<Long>{
         log.debug( String.format( "CargoContainer.streamlength %s", cc.getStreamLength() ) );
 
         log.debug( "Starting transaction on running CompassSession" );
-        CompassTransaction transaction = session.beginTransaction();
         Document doc = null;
         SAXReader saxReader = new SAXReader( false );
 
         log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
         doc = saxReader.read( cc.getData() );
 
-        log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
+        // this log line is _very_ verbose, but useful in a tight situation
+        // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
-        /** \todo: hardcoded values for alias on xmlaliasedobject */
         AliasedXmlObject xmlObject =
             new Dom4jAliasedXmlObject( cc.getFormat(), doc.getRootElement() );
 
@@ -131,9 +130,10 @@ public class PTI implements Callable<Long>{
 
         // index the object and end if we succeed:
         log.debug( String.format( "Indexing document" ) );
-        indexDocument( session, transaction, xmlObject );
-        
+        indexDocument( session, xmlObject );
+
         log.info( String.format( "Document indexed and stored with Compass" ) );
+
     }
 
     /**
@@ -157,30 +157,34 @@ public class PTI implements Callable<Long>{
     /**
      * Does the indexing and the saving of the indexes
      * @param session The compassSession to use
-     * @param trans the compassTrasnaction to use
      * @param cargoXML the xml constructed from a CargoContainer
      * @throws CompassException
      */
-
     private void indexDocument( CompassSession session,
-                                CompassTransaction trans,
-                                AliasedXmlObject cargoXML ) throws CompassException {
-        
+                                AliasedXmlObject cargoXML ) throws CompassException, InterruptedException {
         log.debug( "Entering indexDocument" );
- 
-        log.debug( "Beginning transaction" );        
+
+        log.debug( String.format( "Getting transaction object" ) );
+        CompassTransaction trans;
+
+        log.debug( "Beginning transaction" );
         trans = session.beginTransaction();
-     
+
         log.debug( "Saving aliased xml object to the index" );
         session.save( cargoXML );
-
         log.debug( "Committing index on transaction" );
         trans.commit();
-
+        // while( ! trans.wasCommitted() ){
+            // log.debug( String.format( "Sleeping %s", System.currentTimeMillis()/1000f ) );
+            // Thread.sleep( 1000 );
+        // }
+        log.debug( String.format( "************ Transaction wasCommitted() == %s", trans.wasCommitted() ) );
+        log.debug( "Document indexed" );
         log.debug( "Closing session" );
         session.close();
 
-        log.debug( "Document indexed" );
+
+
     }
 
 }

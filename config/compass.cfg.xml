@@ -18,6 +18,11 @@
      <!--   <file path="admin/test-index"/> -->
      <!-- </connection> -->
 
+     <transaction 
+         lockTimeout="300"
+         lockPollInterval="200"
+     />
+
      <converters>
        <converter name="xmlContentMapping"
                   type="org.compass.core.converter.mapping.xsem.XmlContentMappingConverter">

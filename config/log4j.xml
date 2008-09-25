@@ -12,4 +12,15 @@
     <level value="debug"/>
     <appender-ref ref="RootConsoleAppender"/>
   </root>
+
+  <logger name="org.apache">
+    <level value="info"/> 
+  </logger>
+
+  <logger name="httpclient">
+    <level value="info"/> 
+  </logger>
+
+
+
 </log4j:configuration>

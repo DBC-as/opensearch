@@ -34,9 +34,9 @@ import javax.xml.rpc.ServiceException;
 public class PTIPool {
 
     private ExecutorService threadExecutor; /**The threadpool */
-    private static volatile Compass theCompass;
-    private static volatile FedoraHandler theFedoraHandler;
-   
+    private static Compass theCompass;
+    private static FedoraHandler theFedoraHandler;
+
     Logger log = Logger.getLogger("PTIPool");
 
     /**
@@ -104,6 +104,7 @@ public class PTIPool {
         FutureTask future = null;
         
         log.debug( "Getting CompassSession" );
+
         session = getSession();
         
         log.debug( "Constructing FutureTask on PTI" );
@@ -127,7 +128,7 @@ public class PTIPool {
             throw new RuntimeException( "getSession was called on an object that in the meantime went null. Aborting" );
         }
         CompassSession s = theCompass.openSession();
-        log.debug( String.format( "returning compass session %s", s.getSettings().toString() ) );
+        log.debug( String.format( "returning compass session %s", s.toString() ) );
         return s;
     }
 
