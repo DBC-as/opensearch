@@ -94,8 +94,8 @@ public class PTIPool {
      * from the fedora base, index it and store it. The return value is the handle,
      * that the PTIPoolAdm uses for keeping track of which digitalobjects
      * are in process
-     * @throws ConfigurationException
-     * @throws ClassNotFoundException
+     * @throws ConfigurationException error reading the PTI configuration file
+     * @throws ClassNotFoundException if the databasedriver is not found
      */
     public FutureTask createAndJoinThread (String fHandle, String itemID )throws ConfigurationException, ClassNotFoundException{
         log.debug( String.format( "entering createAndJoinThreads( fhandle=%s, itemID=%s )", fHandle, itemID ) );
@@ -119,7 +119,7 @@ public class PTIPool {
 
     /**
      * Returns a Compass session, and checks whether its instantiated.
-     * @throws RuntimeException
+     * @throws RuntimeException called getSession on non-existing compass
      */
     public CompassSession getSession() throws RuntimeException {
         log.debug( "Entering getSession" );

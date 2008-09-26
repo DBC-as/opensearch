@@ -43,7 +43,7 @@ public class Estimate extends DBConnection {
      * @return the processtime estimate.
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
-     * @throws NoSuchElementException if there is no element on the queue to pop
+     * @throws NoSuchElementException if the mimetype is not known
 
      */
     public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException {

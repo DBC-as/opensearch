@@ -69,8 +69,8 @@ public class PTI implements Callable<Long>{
      * by the fedorahandle.
      * @return the processtime
      * @throws CompassException something went wrong with the compasssession
-     * @throws IOException
-     * @throws DocumentException
+     * @throws IOException something went wrong initializing the fedora client
+     * @throws DocumentException Couldnt read the xml data from the cargocontainer
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
      */
@@ -95,9 +95,9 @@ public class PTI implements Callable<Long>{
      * /brief doProcessing constructs a cargoContainer by calling the
      * fedorahandler and indexing the document wint the indexDocument
      * menthod
-     * @throws CompassException something went wrong with the compasssession
-     * @throws IOException 
-     * @throws DocumentException
+     * @throws CompassException something went wrong with the compassSession
+     * @throws IOException something went wrong initializing the fedora client
+     * @throws DocumentException Couldnt read the xml data from the cargocontainer
      */
     public void doProcessing( ) throws CompassException, IOException, DocumentException {
         log.debug( "Entering doProcessing" );
