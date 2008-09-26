@@ -176,7 +176,10 @@ public class FedoraHandler implements Constants{
         property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#state" );
         property.addAttribute( "VALUE", "Active" );
 
-        // label
+        // label - Description of the digital object. We would like
+        // the title of the document as this label, but we would
+        // rather not parse the data for a title, so what to do?
+        /** \todo: bug 7873 for the label field: http://bugs.dbc.dk/show_bug.cgi?id=7873 */        
         property = objproperties.addElement( "foxml:property" );
         property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#label" );
         property.addAttribute( "VALUE", label );
@@ -213,8 +216,11 @@ public class FedoraHandler implements Constants{
         property = property.addElement( "foxml:datastreamVersion" );
         property.addAttribute( "CREATED", String.format( "%s", timeNow ) );
         property.addAttribute( "ID", itemId_version );
-        /** \todo: bug 7873 for the label field: http://bugs.dbc.dk/show_bug.cgi?id=7873 */
-        property.addAttribute( "LABEL", "bug 7873" );
+
+        // label for the dissaminator - should describe type of data
+        // contained in the dissaminator ie. a string
+        // containingitemID+mimetype
+        property.addAttribute( "LABEL", String.format("%s [%s]",itemId, cargo.getMimeType()) );
         property.addAttribute( "MIMETYPE", cargo.getMimeType() );
         property.addAttribute( "SIZE", String.format( "%s", cargo.getStreamLength() ) );
         property = property.addElement( "foxml:binaryContent" );

@@ -18,10 +18,8 @@ import fedora.server.errors.ServerException;
 
 import java.util.concurrent.Callable;
 
-import oracle.jdbc.driver.OracleDriver;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -60,7 +58,6 @@ import javax.xml.rpc.ServiceException;
 public class DataDock implements Callable<Float>{
     private CargoContainer cc;
     private Processqueue queue;
-    // String pid;
     private XMLConfiguration config;
     private static volatile FedoraHandler fh;
    
@@ -103,46 +100,17 @@ public class DataDock implements Callable<Float>{
         log.debug( String.format( "Entering call" ) );
         Float processEstimate = 0f;
         String fedoraHandle = null;
-        // try{
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );
-        
-        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
-        
 
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );        
+        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
         fedoraHandle = fedoraStoreData();
 
         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-        queueFedoraHandle( fedoraHandle, cc.getFormat() );
+        queue.push( fedoraHandle, cc.getFormat() );
 
-        log.info( String.format( "data queued" ) );
-        // }
+        log.debug( String.format( "data queued" ) );
 
-        // catch(ClassNotFoundException cne){
-        //     throw new ClassNotFoundException(cne.getMessage());
-        // }
-        // catch(ConfigurationException ce) {
-        //     throw new ConfigurationException( ce.getMessage() );
-        // }
-        // catch(SQLException sqe) {
-        //     throw new SQLException( sqe.getMessage() );
-        // }
-        // catch(NoSuchElementException nee) {
-        //     throw new NoSuchElementException( nee.getMessage() );
-        // }
-        // catch(RemoteException re) {
-        //     throw new RemoteException( re.getMessage() );
-        // }
-        // catch(XMLStreamException xe) {
-        //     throw new XMLStreamException( xe.getMessage() );
-        // }
-        // catch(IOException  ioe) {
-        //     throw new IOException( ioe.getMessage() );
-        // }
-        // catch( Exception e ) {
-        //     throw new Exception( e.getMessage() );
-        // }
-
-        log.info( String.format( "Returning estimate = %s", processEstimate ) );
+        log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
         return processEstimate;
     }
 
@@ -158,85 +126,22 @@ public class DataDock implements Callable<Float>{
         log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
 
-        /**
-         * \todo find out where and how we get the itemId. 
-         * It should come from
-         * the fedorabase as the next free identifier for the namespace of 
-         * the submitter
-         * \todo must call getNextPid( pidNS ) on fh, when that method is implemented
-         */
-
-        // String itemId = cc.getMimeType().substring( cc.getMimeType().indexOf("/") + 1 );
-        
         /** todo: give real applicable value to label. value should be given by cargo container*/
         String label = "test";
-        // 10: open connection to fedora base
+        
+        // open connection to fedora base
         if( fh == null ){
-            // try{
-                fh = new FedoraHandler();
-            // }
-            // catch (ConfigurationException cex){
-            //     throw new ConfigurationException( cex.getMessage() );
-            // }
-
+            log.info( "No FedoraHandler exists, initializing a new one" );
+            fh = new FedoraHandler();
+        
         }else{
-            log.info( String.format( "A FedoraHandler is already initialized, using it" ) );
+            log.info( "A FedoraHandler is already initialized, using it" );
         }
 
-        // 20: submit data
-        // try{
-            // The next 2 lines of code waits for the getNextPid method from fh
-            // String submitter = cargo.getSubmitter();
-            //try{
-            // String itemID = fh.getNextPid(pidNS);
-            // }catch (RemoteException re){
-            // }catch(XMLStreamException xmle){
-            // }catch(IOException ioe){
-            //}
-
-        /** \todo: retrieve next pid from fedora */
- 
+        // submit data 
         fedoraHandle = fh.submitDatastream( cc, label );
-
-        // }catch( RemoteException re ){
-        //     throw new RemoteException(re.getMessage());
-        // }catch( XMLStreamException xmle ){
-        //     throw new XMLStreamException(xmle.getMessage());
-        // }catch( IOException ioe ){
-        //     throw new IOException(ioe.getMessage());
-        // }catch( ServerException se ){
-        //     throw new ServerException( se.getMessage() ) ;
-            //        }
-        //        }catch( Exception e ){
-        // throw new Exception( e.getMessage() );
-
-        // 30: deposit objectInfo as dissaminator to data
-        // 40: deposit metadata as dissamminator to data
-        // 50: convert handle to data from fedora to String
-        // 60: return fedoraHandle
         log.info( String.format( "Ingest succeded, returning pid=%s",fedoraHandle ) );
         log.debug( "Exiting DataDock.fedoraStoreData" );
         return fedoraHandle;
-    }
-
-
-    public void queueFedoraHandle( String fedoraHandle, String namespace ) throws ClassNotFoundException, ConfigurationException, SQLException {
-        /**
-         * the push queues a fedoraHandle on the processQueue
-         * to take the parameteres from the config file
-         */
-        log.debug( "Entering DataDock.queueFedoraHandle" );
-        // 10: call push
-        try{
-            queue.push( fedoraHandle, namespace );
-
-        }
-        catch(ClassNotFoundException cne){
-            throw new ClassNotFoundException(cne.getMessage());
-        }
-        catch(SQLException sqe){
-            throw new SQLException(sqe.getMessage());
-        }
-        log.debug( "Exiting.queueFedoraHandle" );
     }
 }

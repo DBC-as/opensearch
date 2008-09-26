@@ -220,7 +220,7 @@ public class DataDockTest {
         // 20: queue the fedora handle
         log.debug("Trying to queue a fedorahandle  ");
         try{
-            dd.queueFedoraHandle(testFH, "");
+            //dd.queueFedoraHandle(testFH, "");
             log.debug("DataDock.queueFedoraHandle(testFH) called without exceptions thrown");
         }catch(Exception e){
             e.printStackTrace();
