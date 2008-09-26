@@ -42,11 +42,11 @@ public class PTIPool {
     /**
      * \brief Constructor initializes the threadpool 
      * @param numberOfThreads The number of threads in the pool
-     * @throws ConfigurationException
-     * @throws MalformedURLException
-     * @throws UnknownHostException
-     * @throws ServiceException
-     * @throws IOException
+     * @throws ConfigurationException if the pool is instanciated with less than 1 thread 
+     * @throws MalformedURLException Could not obtain compass configuration
+     * @throws UnknownHostException error obtaining fedora configuration
+     * @throws ServiceException ServiceException something went wrong initializing the fedora client
+     * @throws IOException something went wrong initializing the fedora client
      */
     public PTIPool( int numberOfThreads ) throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( String.format( "Entering PTIPool(NumberOfThreads=%s)", numberOfThreads ) );
