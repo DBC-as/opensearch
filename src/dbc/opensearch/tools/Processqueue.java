@@ -31,6 +31,8 @@ public class Processqueue extends DBConnection {
     
     /**
      * Constructor
+     * @throws ConfigurationException error reading configuration file
+     * @throws ClassNotFoundException if the databasedriver is not found
      */
     public Processqueue()throws ConfigurationException, ClassNotFoundException {
         log.debug( "Processqueue Constructor" );

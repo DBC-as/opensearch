@@ -74,7 +74,7 @@ public class PTI implements Callable<Long>{
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-     */
+ 
     public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
         log.debug( "Entering PTI.call()" );
 
