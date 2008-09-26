@@ -21,18 +21,8 @@ public class DataDockPoolAdm {
     static Logger log = Logger.getLogger("DataDockPoolAdm");
     
     public final static void main(String[] args){
-
-
-        try{
-            Estimate e = new Estimate();
-            e.getEstimate( "text/xml", 0 );
-
-        }catch(Exception sletmig){
-            sletmig.printStackTrace();
-        }
-
-
         log.debug( String.format( "start the datadockpool" ) );
+
         DataDockPool DDP;
         try{
             log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );

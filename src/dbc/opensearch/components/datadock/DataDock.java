@@ -68,6 +68,8 @@ public class DataDock implements Callable<Float>{
     /**
      * DataDock is initialized with a CargoContainer containing the
      * data to be 'docked' into to system
+     * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
+     * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dbc.opensearch.tools.DBConnection
      */
     public DataDock( CargoContainer cargo ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "Entering DataDock Constructor" ) );

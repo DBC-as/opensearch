@@ -10,10 +10,6 @@ public class DataDockPool {
 
     private boolean initialised; /** tells whether the pool is initialised */
     private ExecutorService threadExecutor; /** The threadpool */
-
-    // private String[][] NSpidArray; for the management of the pids 
-    // for storage in Fedora 
-
     Logger log = Logger.getLogger("DataDockPool");
 
     /**
@@ -49,31 +45,12 @@ public class DataDockPool {
             throw new IllegalArgumentException("trying to create a thread without a threadpool");
         }
 
-        //String pid = getnextPid( cc.getSubmitter() );
-        // FutureTask future = new FutureTask(new DataDock(cc), pid);
         log.info( String.format( "Creating the FutureTask with a DataDock" ) );
         FutureTask future = new FutureTask(new DataDock(cc));
         
-        log.debug( String.format( "join the thread to the pool" ) );
+        log.debug( "join the thread to the pool" );
         threadExecutor.submit(future);
-        log.debug( String.format( "return the FutureTask to the caller" ) );
+        log.debug( "return the FutureTask to the caller" );
         return future;
     }
-    /**
-     * get the next pid for a namespace. If there are no pid's available for 
-     * the namespace in question, it will retrive 20 more from the fedorabase 
-     * and store them in the NSpidArray, that manages the pids for the 
-     * namespaces
-     * @returns the next pid from the fedorabase as a String
-     */
-    private String getNextPid (String nameSpace){
-        String returnPid = "";
-        // 10: if pid available for namespace, get one into returnPid
-        // 15: delete pid from that namespace 
-        // 20: if no pid available for namespace get 21 from the fedorabase
-        // write 20 of them into the NSpidArray, write the 21th. into returnPid
-        // 30: return the pid
-        return returnPid;
-    }
-
 }

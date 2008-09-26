@@ -50,10 +50,15 @@ public class PTIPoolAdm {
      * threads. Initializes a Processqueue and starts the mainLoop for
      * the processing of data within the threads.
      * @param numberOfThreads is the number of threads to initialize the PTIPool with
-     * @throws ConfigurationException if the PTIPool could not be correctly initialized
-     * @throws ClassNotFoundException if the Processqueue could not load the database driver
+     * @throws ConfigurationException If the PTIPool could not be correctly initialized
+     * @throws ClassNotFoundException If the Processqueue could not load the database driver
+     * @throws MalformedURLException Could not obtain compass configuration
+     * @throws UnknownHostException Error obtaining fedora configuration
+     * @throws ServiceException Something went wrong initializing the fedora client
+     * @throws IOException Something went wrong initializing the fedora client
+     * @throws SQLException The processqueue could not retrieve information from the database
      */
-    public PTIPoolAdm( int numberOfThreads )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException{
+    public PTIPoolAdm( int numberOfThreads )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, SQLException{
         log.debug( String.format( "Entering PTIPoolAdm(numberOfThreads=%s)", numberOfThreads ) );
 
         /** /todo: where should sleepInMilliSec be set?? in a configuration file or what*/
@@ -65,7 +70,10 @@ public class PTIPoolAdm {
         processqueue = new Processqueue();
         activeThreads = new Vector();
         
-        log.debug( String.format( "PTIPoolAdm is set up" ) );
+        log.debug( "Removing entries marked as active from the processqueue" );
+        int removed = processqueue.deActivate( );
+        log.debug( String.format( "marked  %s 'active' threads as ready to process", removed ) );
+        log.debug( "PTIPoolAdm is set up" );
     }
 
     /**
@@ -77,7 +85,6 @@ public class PTIPoolAdm {
      * @throws ConfigurationException if the PTIPool could not be correctly initialized
      * @throws InterruptedException is a thread exception
      */
-    
     public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException{
         log.debug( "PTIPoolAdm mainloop" );
 
