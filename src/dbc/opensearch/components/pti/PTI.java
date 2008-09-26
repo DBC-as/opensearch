@@ -49,8 +49,8 @@ public class PTI implements Callable<Long>{
      * @param fedoraHandle the handle identifying the data object
      * @param itemID identifying the data object
      * @param fh the fedorahandler, which communicates with the fedora repository
-     * @throws ConfigurationException
-     * @throws ClassNotFoundException
+     * @throws ConfigurationException error reading configuration file
+     * @throws ClassNotFoundException if the databasedriver is not found
      */
     public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "PTI constructor(session, fedoraHandle=%s, itemID=%s, fh", fedoraHandle, itemID ) );
@@ -71,8 +71,9 @@ public class PTI implements Callable<Long>{
      * @throws CompassException
      * @throws IOException
      * @throws DocumentException
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     * @throws ClassNotFoundException if the databasedriver is not found
+     */
      */
     public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
         log.debug( "Entering PTI.call()" );

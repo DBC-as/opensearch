@@ -40,8 +40,8 @@ public class Processqueue extends DBConnection {
      * Push an fedorahandle to the processqueue
      * @params fedorahandle: a fedorahandle, i.e. a pointer to a document in the opensearch repository.
      * @params itemID: an  itemID, identifying the dataobject, later used for indexing purposes
-     * @throws ClassNotFoundException
-     * @throws SQLException
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
     public void push( String fedorahandle, String itemID ) throws ClassNotFoundException, SQLException {
         
@@ -77,9 +77,9 @@ public class Processqueue extends DBConnection {
      * teh databoject, used for indexing),and queueid a number
      * identifying the fedorahandle in the queue. Used later for
      * commit or rollback.  for the resource in the object repository
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     * @throws  NoSuchElementException
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     * @throws NoSuchElementException if there is no element on the queue to pop
      */
     public Triple<String, Integer, String>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
         log.debug( "Processqueue.pop() called" );
@@ -127,9 +127,9 @@ public class Processqueue extends DBConnection {
      * commits the pop to the queue. This operation removes the
      * element from the queue for good, and rollback is not possible
      * @param queueid identifies the element to commit.
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     * @throws  NoSuchElementException
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     * @throws NoSuchElementException if there is no element on the queue to pop
      */
     public void commit( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException {
         log.debug( "Processqueue.update() called" );
@@ -165,10 +165,10 @@ public class Processqueue extends DBConnection {
     /**
      * rolls back the pop. This restores the element in the queue and
      * the element is in concideration the next time a pop i done.
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     * @throws  NoSuchElementException
-     */    
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     * @throws NoSuchElementException if there is no element on the queue to pop
+     */
     public void rollback( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException{
         log.debug( "Processqueue.rollback() called" );
 
@@ -216,7 +216,6 @@ public class Processqueue extends DBConnection {
         return length;
     }
     
-
     /**
      * getActiveprocesses queries the processqueue table and find
      * elements that are marked as processing.
