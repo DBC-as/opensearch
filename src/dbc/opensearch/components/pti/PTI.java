@@ -68,7 +68,7 @@ public class PTI implements Callable<Long>{
      * a float, representing the processtime for the data pointed to
      * by the fedorahandle.
      * @return the processtime
-     * @throws CompassException
+     * @throws CompassException something went wrong with the compasssession
      * @throws IOException
      * @throws DocumentException
      * @throws SQLException if there is something wrong the database connection or the sqlquery
@@ -95,11 +95,11 @@ public class PTI implements Callable<Long>{
      * /brief doProcessing constructs a cargoContainer by calling the
      * fedorahandler and indexing the document wint the indexDocument
      * menthod
-     * @throws CompassException
-     * @throws IOException
+     * @throws CompassException something went wrong with the compasssession
+     * @throws IOException 
      * @throws DocumentException
      */
-    public void doProcessing( ) throws CompassException, IOException, DocumentException, InterruptedException {
+    public void doProcessing( ) throws CompassException, IOException, DocumentException {
         log.debug( "Entering doProcessing" );
 
         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
@@ -138,31 +138,13 @@ public class PTI implements Callable<Long>{
     }
 
     /**
-     * Extracts the datastream from the CargoContainer and converts it
-     * to a org.dom4j.Document
-     * @returns The contents of the CargoContainer as a Document
-     *
-     * ***** Dont think this method is needed *****
-     * the data is retrived in doProcessing
-     *
-     */
-    // private Document convertCargoToXml( CargoContainer cargo ) throws DocumentException, IOException{
-
-    //     /** \todo: encoding should be determined by config/object-fields. See discussion below */
-    //     /** ... it could be retrieved from the dom4j.Document.getXMLEncoding() */
-    //     /** which would probably benifit from being put into the CargoContainer in the first place... */
-    //     return DocumentHelper
-    //         .parseText( new String( cargo.getDataBytes(), "ISO-8859-1") );
-    // }
-
-    /**
      * Does the indexing and the saving of the indexes
      * @param session The compassSession to use
      * @param cargoXML the xml constructed from a CargoContainer
-     * @throws CompassException
+     * @throws CompassException something went wrong with the compasssession
      */
     private void indexDocument( CompassSession session,
-                                AliasedXmlObject cargoXML ) throws CompassException, InterruptedException {
+                                AliasedXmlObject cargoXML ) throws CompassException {
         log.debug( "Entering indexDocument" );
 
         log.debug( String.format( "Getting transaction object" ) );
@@ -175,16 +157,10 @@ public class PTI implements Callable<Long>{
         session.save( cargoXML );
         log.debug( "Committing index on transaction" );
         trans.commit();
-        // while( ! trans.wasCommitted() ){
-            // log.debug( String.format( "Sleeping %s", System.currentTimeMillis()/1000f ) );
-            // Thread.sleep( 1000 );
-        // }
         log.debug( String.format( "************ Transaction wasCommitted() == %s", trans.wasCommitted() ) );
         log.debug( "Document indexed" );
         log.debug( "Closing session" );
         session.close();
-
-
 
     }
 

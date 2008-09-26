@@ -67,6 +67,11 @@ public class FedoraHandler implements Constants{
      * base and initializes the FedoraClient. FedoraClient is used to
      * get the Fedora API objects.
      * FedoraHandler
+     * @throws ConfigurationException error reading configuration file
+     * @throws MalformedURLException error obtaining fedora configuration
+     * @throws UnknownHostException error obtaining fedora configuration
+     * @throws ServiceException something went wrong initializing the fedora client
+     * @throws IOException something went wrong initializing the fedora client
      */
     public FedoraHandler() throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( "Fedorahandler constructor");
@@ -98,6 +103,10 @@ public class FedoraHandler implements Constants{
      * @param pidNS 
      * @param itemId
      * @param label
+     * @throws RemoteException error in communiction with fedora
+     * @throws XMLStreamException an error occured during xml document creation
+     * @throws IOException something went wrong initializing the fedora client
+     * @throws IllegalStateException pid mismatch when trying to write to fedora
      */
     public String submitDatastream( CargoContainer cargo, String label )throws RemoteException, XMLStreamException, IOException, IllegalStateException {
         log.debug( String.format( "submitDatastream(cargo, %s) called", label ) );
@@ -139,6 +148,8 @@ public class FedoraHandler implements Constants{
      * @param itemId, a unique identifier for the namespace
      * @param label, ?
      * @returns a byte array contaning the foxml string
+     * @throws IOException something went wrong initializing the fedora client
+     * @throws XMLStreamException an error occured during xml document creation
      */
     private byte[] constructFoxml( CargoContainer cargo, String nextPid, String itemId, String label ) throws IOException, XMLStreamException {
         log.debug( String.format( "constructFoxml(cargo, %s, %s, %s) called", nextPid, itemId, label ) );
@@ -222,6 +233,7 @@ public class FedoraHandler implements Constants{
      * @param pid 
      * @param itemID
      * @returns The cargocontainer constructed
+     * @throws NotImplementedException
      */    
     public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException{
         throw new NotImplementedException( "RegEx matching on pids not yet implemented" );
@@ -233,6 +245,10 @@ public class FedoraHandler implements Constants{
      * @param pid 
      * @param itemId
      * @returns The cargocontainer constructed
+     * @throws IOException something went wrong initializing the fedora client
+     * @throws NoSuchElementException if there is no matching element on the queue to pop
+     * @throws RemoteException error in communiction with fedora
+     * @throws IllegalStateException pid mismatch when trying to write to fedora
      */    
     public CargoContainer getDatastream( String pid, String itemId ) throws IOException, NoSuchElementException, RemoteException, IllegalStateException{
         log.debug( String.format( "getDatastream( pid=%s, itemId=%s ) called", pid, itemId ) );
