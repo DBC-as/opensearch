@@ -1,12 +1,12 @@
 package dbc.opensearch.components.pti;
 
+import dbc.opensearch.tools.FedoraHandler;
+import dbc.opensearch.tools.Processqueue;
+
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.log4j.Logger;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
-
-import java.net.URL;
 
 import java.util.Vector;
 import java.util.Iterator;
@@ -20,9 +20,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
-
-import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.tools.Processqueue;
 
 import com.mallardsoft.tuple.Pair;
 import com.mallardsoft.tuple.Tuple;
@@ -151,7 +148,6 @@ public class PTIPoolAdm {
         while( iter.hasNext() ){
             activeThreads.remove( iter.next() );
         }        
-
     }
 
     /** pop processqueue until its empty, and starts threads which
