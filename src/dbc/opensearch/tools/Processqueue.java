@@ -62,13 +62,13 @@ public class Processqueue extends DBConnection {
         
         try{
             stmt.executeUpdate( sql_query );
+            con.commit();
         }
         finally{
             // Close database connection
             stmt.close();
             con.close();
-        }
-        
+        }        
         log.info( String.format( "fedorahandle=%s, itemID=%s pushed to queue", fedorahandle, itemID ) );
     }
 
@@ -84,7 +84,7 @@ public class Processqueue extends DBConnection {
      * @throws NoSuchElementException if there is no element on the queue to pop
      */
     public Triple<String, Integer, String>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
-        log.debug( "Processqueue.pop() called" );
+        log.debug( "Entering Processqueue.pop()" );
         
         con = establishConnection();
         
@@ -112,13 +112,13 @@ public class Processqueue extends DBConnection {
             handle = cs.getString( 1 );
             popped_queueid = cs.getInt( 2 );
             itemID = cs.getString( 4 );
+            con.commit();
         }
         finally{
             // Close database connection
             cs.close();
             con.close();
         } 
-        
         log.info( "Handle obtained by pop: "+ handle );
         log.debug( String.format( "popped_queueid=%s, itemID=%s", popped_queueid, itemID ) );
 
@@ -152,8 +152,8 @@ public class Processqueue extends DBConnection {
             
             if( rowsRemoved == 0 ) {
                 throw new NoSuchElementException( "The queueid does not match a popped element." ); 
-            }
-            
+            }            
+            con.commit();
         }
         finally{
             // Close database connection
@@ -184,18 +184,18 @@ public class Processqueue extends DBConnection {
         // restore element in queue ie. update queueid in row from processqueue table
         try{
             stmt = con.createStatement();
-            stmt.executeUpdate( sql_query );
+            rowsRemoved = stmt.executeUpdate( sql_query );
             
             if( rowsRemoved == 0 ) {
                 throw new NoSuchElementException( "The queueid does not match a popped element." ); 
             }
+            con.commit();
         }
         finally{
             // Close database connection
             stmt.close();
             con.close();
         }
-        
         log.info( String.format( "Element with queueid=%s is rolled back",queueid ) );
     }
     
@@ -226,7 +226,7 @@ public class Processqueue extends DBConnection {
      * @throws SQLException
      * @throws  NoSuchElementException
      */
-    private int[] getActiveProcesses()throws ClassNotFoundException, SQLException, NoSuchElementException{
+    private int[] getActiveProcesses() throws ClassNotFoundException, SQLException, NoSuchElementException{
         log.debug( "Entering Processqueue.getActiveProcesses()" );
         
         con = establishConnection();
@@ -255,7 +255,6 @@ public class Processqueue extends DBConnection {
                     i++;
                 }            
             }
-            
         }
         finally{
             // Close database connection

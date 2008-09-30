@@ -114,10 +114,15 @@ public class Estimate extends DBConnection {
                                          "SET processtime = processtime+%s, dataamount = dataamount+%s "+
                                          "WHERE mimetype = '%s'", time, length, mimeType);
         log.debug( String.format( "query database with %s ", sqlQuery ) );
-        
+
+        int rowsUpdated = 0;        
         try{      
             stmt = con.createStatement();
-            stmt.executeUpdate( sqlQuery );
+            rowsUpdated = stmt.executeUpdate( sqlQuery );
+            if( rowsUpdated == 0 ) {
+                throw new NoSuchElementException( "The mimetype does not match a known mimetype, couldn't update." ); 
+            }
+            con.commit();
         }
         finally{
             stmt.close();
