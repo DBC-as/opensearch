@@ -75,14 +75,17 @@ public class Estimate extends DBConnection {
             }
             rs.first();
             */
+            long p = 0l;
+            long d = 0l;
             log.debug("obtained resultset");
-            long p = rs.getLong( "processtime" );
-            log.debug("got element out of resultset");
-            long d = rs.getLong( "dataamount" );
-            if ( d != 0l && p != 0l ){ // if either is zero
-                average_time = ( ( (float)p / d ) * length );
+            while(rs.next()){
+                p = rs.getLong( "processtime" );
+                log.debug("got element out of resultset");
+                d = rs.getLong( "dataamount" );
+                if ( d != 0l && p != 0l ){ // if either is zero
+                    average_time = ( ( (float)p / d ) * length );
+                }
             }
-            
             log.debug( String.format( "processtime=%s dataamount=%s, averagetime=%s", p, d, average_time ) );
         }
         finally{
