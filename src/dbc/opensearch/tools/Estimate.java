@@ -65,7 +65,7 @@ public class Estimate extends DBConnection {
                 throw new NoSuchElementException( String.format( "We didnt get anything from the database, the mimetype \"%s\"is unknown.", mimeType ) );
 
             }
-            
+            /** 
             rs.last();
             int rowCount = rs.getRow();
             log.debug( String.format( "rows = %s", rowCount ) );
@@ -73,7 +73,9 @@ public class Estimate extends DBConnection {
             if( rowCount != 1 ){
                 throw new SQLException( String.format( "Count if rows is different from 1. RowCount==%s", rowCount) );
             }
-            rs.first();            
+            rs.first();
+            */
+            
             long p = rs.getLong( "processtime" );
             long d = rs.getLong( "dataamount" );
             if ( d != 0l && p != 0l ){ // if either is zero
