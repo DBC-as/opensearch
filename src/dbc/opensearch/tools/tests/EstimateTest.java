@@ -58,7 +58,6 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter {
         String mimetype = "notype";
         try{
             float returnval = estimate.getEstimate( mimetype, 3 );
-            System.out.println( "FLOATL "+returnval );
             fail("Should have gotten NoSuchElementException - returned zero rows updated from statisticsDB table");
         }
         catch(NoSuchElementException nse){
