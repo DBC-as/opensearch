@@ -252,6 +252,7 @@ public class Processqueue extends DBConnection {
                 int i=0;
                 while( rs.next() ){
                     queueIDArray[i] = rs.getInt("queueid");
+                    i++;
                 }            
             }
             
