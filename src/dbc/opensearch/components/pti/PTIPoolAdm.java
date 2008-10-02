@@ -137,7 +137,7 @@ public class PTIPoolAdm {
                     log.fatal( String.format( "Caught thread error associated with queueid = %s", queueID ) );     
                    
                     
-                    //log.debug(cause.getMessage());
+                    log.debug(ee.getClass().getName());
                     if(ee.getClass().getName().equals("ConversionException") ) {
                         processqueue.removeElem(queueID);
                         log.debug( String.format( "Element removed with queueID: '%s'",queueID ) );  
