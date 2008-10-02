@@ -238,7 +238,7 @@ public class Processqueue extends DBConnection {
         ResultSet rs = null;
         int [] queueIDArray = null;
         
-        String sql_query = "SELECT queueid FROM processqueue WHERE processing = 'Y' ";
+        String sql_query = "SELECT queueid FROM processqueue WHERE processing = 'Y'";
         log.debug( String.format( "query database with %s ", sql_query ) );
 
         try{
@@ -247,13 +247,12 @@ public class Processqueue extends DBConnection {
          
             if( rs != null ){ // items marked as prccessing found
                 
-                
-                queueIDArray = new int[ 3 ];
-                // rs.last();
-                // queueIDArray = new int[ rs.getRow() ];
-                // rs.first();
+                rs.last();
+                queueIDArray = new int[ rs.getRow() ];
+                rs.first();
                 int hat = 0;
                 int i=0;
+                log.debug(String.format("length of the queueIDArray: '%s'", queueIDArray.length));
                 while( rs.next() ){
                     hat = rs.getInt("queueid");
                     log.debug(String.format("queueID: '%s'", hat));
