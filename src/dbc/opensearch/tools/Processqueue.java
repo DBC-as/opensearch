@@ -263,7 +263,9 @@ public class Processqueue extends DBConnection {
             con.close();
             rs.close();
         }
-        log.debug( String.format( "Obtained following queueid associated with active indexprocesses '%s'", queueIDArray.toString() ) );
+        for(int x = 0; x < queueIDArray.length; x++){
+            log.debug( String.format( "Obtained following queueid associated with active indexprocesses '%s'", queueIDArray[x] ) );
+        }
         return queueIDArray;
     }
 }
