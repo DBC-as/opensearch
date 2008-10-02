@@ -139,11 +139,12 @@ public class PTIPoolAdm {
                     RuntimeException re = new RuntimeException(cause);
                     
                     if(re.getMessage().startsWith("org.compass.core.converter.ConversionException") ) {
-                        processqueue.removeElem(queueID);
-                        log.debug( String.format( "Element removed with queueID: '%s'",queueID ) );  
+                        //processqueue.removeElem(queueID);
+                        log.debug( String.format( "Element to be removed with queueID: '%s'",queueID ) );  
                         log.error("An element on the processqueue does not match its promised format and can therefore not be indexed. The Validation of the elements being pushed to the queue is flawed!");
+                    }else{
+                        throw re;
                     }
-                    throw re;
                 }
                 
                 processqueue.commit( queueID );
