@@ -135,9 +135,12 @@ public class PTIPoolAdm {
                     // catching exception from thread
                     Throwable cause = ee.getCause();
                     log.fatal( String.format( "Caught thread error associated with queueid = %s", queueID ) );     
-                    log.debug(cause.getMessage());
-                    if(cause.getMessage().toLowerCase().startsWith( "org.compass.core.converter.conversionexception" ) ){
+                   
+                    
+                    //log.debug(cause.getMessage());
+                    if(ee.getClass().getName().equals("ConversionException") ) {
                         processqueue.removeElem(queueID);
+                        log.debug( String.format( "Element removed with queueID: '%s'",queueID ) );  
                     }
                     throw new RuntimeException( cause );
                 }
