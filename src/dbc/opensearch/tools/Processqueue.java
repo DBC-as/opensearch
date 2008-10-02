@@ -251,19 +251,8 @@ public class Processqueue extends DBConnection {
          
             if( rs != null ){ // items marked as prccessing found
                 
-//                 rs.last();
-//                 queueIDArray = new int[ rs.getRow() ];
-//                 rs.first();
-                int hat= 0;
-                int i=0;
-                //log.debug(queueIDArray[0]);
-                //log.debug(String.format("length of the queueIDArray: '%s'", queueIDArray.length));
-                while( rs.next() ){
-                    hat = rs.getInt("queueid");
-                    log.debug(String.format("queueID: '%s'", hat));
-                    queueIDVector.add(hat);
-                    //queueIDArray[i] = hat;
-                    i++;
+                while( rs.next() ){                
+                    queueIDVector.add( rs.getInt("queueid" ) );
                 }            
             }
         }
@@ -272,14 +261,13 @@ public class Processqueue extends DBConnection {
             con.close();
             rs.close();
         }
-        //        for(int x = 0; x < queueIDArray.length; x++){
-        //    log.debug( String.format( "Obtained following queueid associated with active indexprocesses '%s'", queueIDArray[x] ) );
-        //}
+        
         queueIDArray = new int[ queueIDVector.size() ];
         for( int i=0; i < queueIDArray.length ;i++){
-            queueIDArray[i] = (Integer) queueIDVector.elementAt(i);
+            int element = (Integer) queueIDVector.elementAt(i);
+            log.debug( String.format( "Obtained queueID %s marked as active process", element ) );
+            queueIDArray[i] = element;
         }
-        
         return queueIDArray;
     }
 }
