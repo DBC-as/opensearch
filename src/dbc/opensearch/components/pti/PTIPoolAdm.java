@@ -138,8 +138,8 @@ public class PTIPoolAdm {
                    
                     RuntimeException re = new RuntimeException(cause);
                     log.debug( String.format( "message of the exception: '%s'", re.getMessage() ) );
-                    if(re.getClass().getName().equals("ConversionException") ) {
-                        processqueue.removeElem(queueID);
+                    if(re.getMessage().startsWith("org.compass.core.converter.ConversionException") ) {
+                        //processqueue.removeElem(queueID);
                         log.debug( String.format( "Element removed with queueID: '%s'",queueID ) );  
                     }
                     throw re;
