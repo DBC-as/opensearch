@@ -137,10 +137,11 @@ public class PTIPoolAdm {
                     log.fatal( String.format( "Caught thread error associated with queueid = %s", queueID ) );     
                    
                     RuntimeException re = new RuntimeException(cause);
-                    log.debug( String.format( "message of the exception: '%s'", re.getMessage() ) );
+                    
                     if(re.getMessage().startsWith("org.compass.core.converter.ConversionException") ) {
-                        //processqueue.removeElem(queueID);
+                        processqueue.removeElem(queueID);
                         log.debug( String.format( "Element removed with queueID: '%s'",queueID ) );  
+                        log.error("An element on the processqueue does not match its promised format and can therefore not be indexed. The Validation of the elements being pushed to the queue is flawed!");
                     }
                     throw re;
                 }
