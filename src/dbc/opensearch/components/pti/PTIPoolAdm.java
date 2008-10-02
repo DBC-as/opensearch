@@ -16,6 +16,7 @@ import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
 import java.lang.InterruptedException;
 import java.util.concurrent.ExecutionException;
+//import org.compass.core.converter.ConversionException;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -133,7 +134,11 @@ public class PTIPoolAdm {
                 catch(ExecutionException ee){
                     // catching exception from thread
                     Throwable cause = ee.getCause();
-                    log.fatal( String.format( "Catched thread error associated with queueid = %s", queueID ) );                     
+                    log.fatal( String.format( "Catched thread error associated with queueid = %s", queueID ) );     
+                    
+                    if(cause.getMessage().startsWith( "org.compass.core.converter.ConversionException" ) ){
+                        processqueue.removeElem(queueID);
+                    }
                     throw new RuntimeException( cause );
                 }
                 
@@ -185,9 +190,9 @@ public class PTIPoolAdm {
                 fedoraHandle = Tuple.get1(queueTriple);
                 queueID = Tuple.get2(queueTriple);
                 itemID = Tuple.get3(queueTriple);
-
+              
                 future = PTIpool.createAndJoinThread( fedoraHandle, itemID );
-                
+              
                 // add thread to active thread vector
                 vectorPair = Tuple.from(future, queueID);
                 activeThreads.add( vectorPair );

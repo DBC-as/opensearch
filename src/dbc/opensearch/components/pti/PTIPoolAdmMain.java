@@ -18,7 +18,7 @@ public class PTIPoolAdmMain {
         }try{
             ptiPoolAdm.mainLoop();
         }catch( Exception ee ){
-            log.fatal( String.format( "Could not start the threads" ) );
+            log.fatal( String.format( "Could not start the threads or a runtime error occured" ) );
             System.out.println("caught error: "+ee.getMessage() );
             ee.printStackTrace();
 

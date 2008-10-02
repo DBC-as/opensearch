@@ -157,6 +157,7 @@ public class PTI implements Callable<Long>{
         session.save( cargoXML );
         log.debug( "Committing index on transaction" );
         trans.commit();
+        
         log.debug( String.format( "************ Transaction wasCommitted() == %s", trans.wasCommitted() ) );
         log.debug( "Document indexed" );
         log.debug( "Closing session" );

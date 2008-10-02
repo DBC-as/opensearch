@@ -136,7 +136,7 @@ public class Processqueue extends DBConnection {
      * @throws NoSuchElementException if there is no element on the queue to pop
      */
     public void commit( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException {
-        log.debug( "Processqueue.update() called" );
+        log.debug( "Processqueue.commit() called" );
 
         con = establishConnection();
 
@@ -264,5 +264,23 @@ public class Processqueue extends DBConnection {
             con.close();
         }
         return queueIDVector;
+    }
+
+    public void removeElem( int queueId ) throws SQLException{
+        log.debug( String.format("Entering removeElemFromQueue with parameter: '%s'", queueId) );
+        con = establishConnection();
+        Statement stmt = null;
+        String sql_query = String.format( "DELETE FROM processqueue WHERE queueid = %s", queueId );    
+        try{
+            stmt = con.createStatement();
+            int rowDeleted= stmt.executeUpdate(sql_query);
+            log.debug( String.format( "number of rows deleted: '%s'",rowDeleted ) );
+        }finally{
+            con.commit(); 
+            con.close();
+        }
+
+    
+
     }
 }
