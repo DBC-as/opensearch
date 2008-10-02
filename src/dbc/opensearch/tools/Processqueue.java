@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import org.apache.commons.configuration.ConfigurationException;
 
+import java.util.Vector;
+
 /**
  * \brief The Processqueue class handles all communication to the processqueue
  */
@@ -241,15 +243,17 @@ public class Processqueue extends DBConnection {
         String sql_query = "SELECT queueid FROM processqueue WHERE processing = 'Y'";
         log.debug( String.format( "query database with %s ", sql_query ) );
 
+        Vector queueIDVector = new Vector();
+        
         try{
             stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
             rs = stmt.executeQuery ( sql_query );
          
             if( rs != null ){ // items marked as prccessing found
                 
-                rs.last();
-                queueIDArray = new int[ rs.getRow() ];
-                rs.first();
+//                 rs.last();
+//                 queueIDArray = new int[ rs.getRow() ];
+//                 rs.first();
                 int hat= 0;
                 int i=0;
                 log.debug(queueIDArray[0]);
@@ -257,7 +261,8 @@ public class Processqueue extends DBConnection {
                 while( rs.next() ){
                     hat = rs.getInt("queueid");
                     log.debug(String.format("queueID: '%s'", hat));
-                    queueIDArray[i] = hat;
+                    queueIDVector.add(hat);
+                    //queueIDArray[i] = hat;
                     i++;
                 }            
             }
@@ -270,6 +275,11 @@ public class Processqueue extends DBConnection {
         for(int x = 0; x < queueIDArray.length; x++){
             log.debug( String.format( "Obtained following queueid associated with active indexprocesses '%s'", queueIDArray[x] ) );
         }
+        queueIDArray = new int[ queueIDVector.size() ];
+        for( int i=0; i < queueIDArray.length ;i++){
+            queueIDArray[i] = (Integer) queueIDVector.elementAt(i);
+        }
+        
         return queueIDArray;
     }
 }
