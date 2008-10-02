@@ -247,9 +247,11 @@ public class Processqueue extends DBConnection {
          
             if( rs != null ){ // items marked as prccessing found
                 
-                rs.last();
-                queueIDArray = new int[ rs.getRow() ];
-                rs.first();
+                
+                queueIDArray = new int[ 3 ];
+                // rs.last();
+                // queueIDArray = new int[ rs.getRow() ];
+                // rs.first();
                 int hat = 0;
                 int i=0;
                 while( rs.next() ){
