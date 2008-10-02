@@ -250,10 +250,12 @@ public class Processqueue extends DBConnection {
                 rs.last();
                 queueIDArray = new int[ rs.getRow() ];
                 rs.first();
-                
+                int hat = 0;
                 int i=0;
                 while( rs.next() ){
-                    queueIDArray[i] = rs.getInt("queueid");
+                    hat = rs.getInt("queueid");
+                    log.debug(String.format("queueID: '%s'", hat));
+                    queueIDArray[i] = hat;
                     i++;
                 }            
             }
