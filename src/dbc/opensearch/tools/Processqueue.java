@@ -47,7 +47,7 @@ public class Processqueue extends DBConnection {
      */
     public void push( String fedorahandle, String itemID ) throws ClassNotFoundException, SQLException {
         
-        log.debug( "Processqueue.pop() called" );
+        log.debug( "Processqueue.push() called" );
 
         con = establishConnection();
         
@@ -209,11 +209,13 @@ public class Processqueue extends DBConnection {
      * @throws  NoSuchElementException
      */
     public int deActivate() throws ClassNotFoundException, SQLException, NoSuchElementException{
-        log.debug( "Processqueue.deActive()" );
+        log.debug( "Processqueue.deActivate()" );
         int[] activeJobs = getActiveProcesses();
         int length = activeJobs.length;
+        log.debug( String.format("Length: '%s'", length) );
         for( int i = 0; i < length; i++ ){
             rollback( activeJobs[i] );
+            log.debug(String.format("queueID: '%s'",activeJobs[i] ));
         }
         return length;
     }
@@ -261,7 +263,7 @@ public class Processqueue extends DBConnection {
             con.close();
             rs.close();
         }
-        log.debug( String.format( "Obtained following queueid associated with active indexprocesses", queueIDArray.toString() ) );
+        log.debug( String.format( "Obtained following queueid associated with active indexprocesses '%s'", queueIDArray.toString() ) );
         return queueIDArray;
     }
 }
