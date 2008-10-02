@@ -30,7 +30,7 @@ public class Processqueue extends DBConnection {
      *  database Connection
      */
     private Connection con;
-    
+
     /**
      * Constructor
      * @throws ConfigurationException error reading configuration file
@@ -38,7 +38,7 @@ public class Processqueue extends DBConnection {
      */
     public Processqueue()throws ConfigurationException, ClassNotFoundException {
         log.debug( "Processqueue Constructor" );
-    } 
+    }
 
     /**
      * Push an fedorahandle to the processqueue
@@ -48,11 +48,11 @@ public class Processqueue extends DBConnection {
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
     public void push( String fedorahandle, String itemID ) throws ClassNotFoundException, SQLException {
-        
+
         log.debug( "Processqueue.push() called" );
 
         con = establishConnection();
-        
+
         /** \todo: reset counter if queue is empty */
 
         log.debug( String.format( "push fedorahandle=%s, itemID=%s to queue", fedorahandle, itemID ) );
@@ -61,7 +61,7 @@ public class Processqueue extends DBConnection {
         String sql_query = (  String.format( "INSERT INTO processqueue(queueid, fedorahandle, itemID, processing) "+
                                              "VALUES(processqueue_seq.nextval ,'%s','%s','N')", fedorahandle, itemID ) );
         log.debug( String.format( "query database with %s ", sql_query ) );
-        
+
         try{
             stmt.executeUpdate( sql_query );
             con.commit();
@@ -70,7 +70,7 @@ public class Processqueue extends DBConnection {
             // Close database connection
             stmt.close();
             con.close();
-        }        
+        }
         log.info( String.format( "fedorahandle=%s, itemID=%s pushed to queue", fedorahandle, itemID ) );
     }
 
@@ -87,9 +87,9 @@ public class Processqueue extends DBConnection {
      */
     public Triple<String, Integer, String>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
         log.debug( "Entering Processqueue.pop()" );
-        
+
         con = establishConnection();
-        
+
         // preparing call of stored procedure
         CallableStatement cs=null;
         ResultSet rs=null;
@@ -101,7 +101,7 @@ public class Processqueue extends DBConnection {
             cs.registerOutParameter(1, java.sql.Types.VARCHAR);
             cs.registerOutParameter(2, java.sql.Types.INTEGER);
             cs.registerOutParameter(3, java.sql.Types.VARCHAR);
-            cs.registerOutParameter(4, java.sql.Types.VARCHAR);    
+            cs.registerOutParameter(4, java.sql.Types.VARCHAR);
             // execute procedure
             rs = cs.executeQuery();
 
@@ -109,7 +109,7 @@ public class Processqueue extends DBConnection {
                 throw new NoSuchElementException("No elements on processqueue");
             }
             log.debug( "obtained handle " );
-            
+
             //fetch data
             handle = cs.getString( 1 );
             popped_queueid = cs.getInt( 2 );
@@ -120,7 +120,7 @@ public class Processqueue extends DBConnection {
             // Close database connection
             cs.close();
             con.close();
-        } 
+        }
         log.info( "Handle obtained by pop: "+ handle );
         log.debug( String.format( "popped_queueid=%s, itemID=%s", popped_queueid, itemID ) );
 
@@ -137,7 +137,7 @@ public class Processqueue extends DBConnection {
      */
     public void commit( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException {
         log.debug( "Processqueue.update() called" );
-        
+
         con = establishConnection();
 
         Statement stmt = null;
@@ -146,15 +146,15 @@ public class Processqueue extends DBConnection {
         String sql_query = String.format( "DELETE FROM processqueue WHERE queueid = %s", queueid );
 
         log.debug( String.format( "query database with %s ", sql_query ) );
-        
+
         // remove element from queue ie. delete row from processqueue table
         try{
             stmt = con.createStatement();
             rowsRemoved = stmt.executeUpdate( sql_query );
-            
+
             if( rowsRemoved == 0 ) {
-                throw new NoSuchElementException( "The queueid does not match a popped element." ); 
-            }            
+                throw new NoSuchElementException( "The queueid does not match a popped element." );
+            }
             con.commit();
         }
         finally{
@@ -162,7 +162,7 @@ public class Processqueue extends DBConnection {
             stmt.close();
             con.close();
         }
-        
+
         log.info( String.format( "Element with queueid=%s is commited",queueid ) );
     }
 
@@ -177,19 +177,19 @@ public class Processqueue extends DBConnection {
         log.debug( "Processqueue.rollback() called" );
 
         con = establishConnection();
-        
+
         Statement stmt = null;
         int rowsRemoved = 0;
         String sql_query = String.format( "UPDATE processqueue SET processing = 'N' WHERE queueid = %s", queueid );
         log.debug( String.format( "query database with %s ", sql_query ) );
-        
+
         // restore element in queue ie. update queueid in row from processqueue table
         try{
             stmt = con.createStatement();
             rowsRemoved = stmt.executeUpdate( sql_query );
-            
+
             if( rowsRemoved == 0 ) {
-                throw new NoSuchElementException( "The queueid does not match a popped element." ); 
+                throw new NoSuchElementException( "The queueid does not match a popped element." );
             }
             con.commit();
         }
@@ -200,74 +200,69 @@ public class Processqueue extends DBConnection {
         }
         log.info( String.format( "Element with queueid=%s is rolled back",queueid ) );
     }
-    
+
     /**
      * deactivate elements on the processqueue.  It finds all elements
      * on the processqueue which are marked as active and mark them as
      * inactive, ie. they are ready for indexing.
      * @return the number of elements which are reactivated
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     * @throws  NoSuchElementException
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public int deActivate() throws ClassNotFoundException, SQLException, NoSuchElementException{
-        log.debug( "Processqueue.deActivate()" );
-        int[] activeJobs = getActiveProcesses();
-        int length = activeJobs.length;
-        log.debug( String.format("Length: '%s'", length) );
-        for( int i = 0; i < length; i++ ){
-            rollback( activeJobs[i] );
-            log.debug(String.format("queueID: '%s'",activeJobs[i] ));
+    public int deActivate() throws ClassNotFoundException, SQLException {
+        log.debug( "Entering Processqueue.deActivate()" );
+
+        String sql_query = "UPDATE processqueue SET processing = 'N' WHERE processing = 'Y'";
+        con = establishConnection();
+        Statement stmt = null;
+        stmt = con.createStatement();
+        int rowsUpdated = 0;
+        try{
+            rowsUpdated = stmt.executeUpdate( sql_query );
         }
-        return length;
+        finally{
+            // Close database connection
+            stmt.close();
+            con.close();
+        }
+        log.info(String.format("Updated %S processes from active to not active" , rowsUpdated ));
+        return rowsUpdated;
+
     }
-    
+
     /**
      * getActiveprocesses queries the processqueue table and find
      * elements that are marked as processing.
      * @return An integer array contaning queueids matching active processing threads
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     * @throws  NoSuchElementException
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    private int[] getActiveProcesses() throws ClassNotFoundException, SQLException, NoSuchElementException{
+    private Vector getActiveProcesses() throws ClassNotFoundException, SQLException {
         log.debug( "Entering Processqueue.getActiveProcesses()" );
-        
+
         con = establishConnection();
-        
+
         // Query database
         Statement stmt = null;
         ResultSet rs = null;
-        int [] queueIDArray = null;
-        
+        Vector queueIDVector = new Vector();
+
         String sql_query = "SELECT queueid FROM processqueue WHERE processing = 'Y'";
         log.debug( String.format( "query database with %s ", sql_query ) );
-
-        Vector queueIDVector = new Vector();
-        
         try{
             stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
             rs = stmt.executeQuery ( sql_query );
-         
             if( rs != null ){ // items marked as prccessing found
-                
-                while( rs.next() ){                
+                while( rs.next() ){
                     queueIDVector.add( rs.getInt("queueid" ) );
-                }            
+                }
             }
         }
         finally{
             // Close database connection
-            con.close();
             rs.close();
+            con.close();
         }
-        
-        queueIDArray = new int[ queueIDVector.size() ];
-        for( int i=0; i < queueIDArray.length ;i++){
-            int element = (Integer) queueIDVector.elementAt(i);
-            log.debug( String.format( "Obtained queueID %s marked as active process", element ) );
-            queueIDArray[i] = element;
-        }
-        return queueIDArray;
+        return queueIDVector;
     }
 }
