@@ -272,9 +272,9 @@ public class Processqueue extends DBConnection {
             con.close();
             rs.close();
         }
-        for(int x = 0; x < queueIDArray.length; x++){
-            log.debug( String.format( "Obtained following queueid associated with active indexprocesses '%s'", queueIDArray[x] ) );
-        }
+        //        for(int x = 0; x < queueIDArray.length; x++){
+        //    log.debug( String.format( "Obtained following queueid associated with active indexprocesses '%s'", queueIDArray[x] ) );
+        //}
         queueIDArray = new int[ queueIDVector.size() ];
         for( int i=0; i < queueIDArray.length ;i++){
             queueIDArray[i] = (Integer) queueIDVector.elementAt(i);
