@@ -9,3 +9,4 @@ CREATE TABLE statisticDB(
 INSERT INTO statisticDB
 VALUES (0,0,'text/xml');
 
+COMMIT;
