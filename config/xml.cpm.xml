@@ -8,7 +8,7 @@
   <xml-object alias="faktalink">
     <xml-id
         name="id"
-        xpath="/faktalink/hovedmenu/@type"/>
+        xpath="/faktalink/hovedmenu/title"/>
     <xml-property
         name="titel"
         xpath="/faktalink/hovedmenu/title"
@@ -17,8 +17,43 @@
         name="abstrakt"
         xpath="/faktalink/hovedmenu/abstrakt"
         />
+    <xml-property
+        name="emneord"
+        xpath="/faktalink/hovedmenu/emneord_ukontrolleret/*"
+        />
+    <xml-property
+        name="resume"
+        xpath="/faktalink/hovedmenu/resume"
+        />
+    <xml-property
+        name="dk5"
+        xpath="/faktalink/hovedmenu/dk5"
+        />
+    <xml-property
+        name="kapitel-titler"
+        xpath="/faktalink/kapitel/overskrift"
+        />
+    <xml-property
+        name="kapitel-afsnit"
+        xpath="/faktalink/kapitel/afsnit/afsnittitle"
+        />
+    <xml-property
+        name="kapitel-tekst"
+        xpath="/faktalink/kapitel/afsnit/broedtekst"
+        />
+    <xml-property
+        name="referencer"
+        xpath="/faktalink/kapitel/henvisninger/henvisning/tekst"
+        />
+
   </xml-object>
 
+
+
+
+
+
+  <!-- below are test mappings, kept for validation/testing purposes -->
 
   <xml-object alias="data1">
     <xml-id 
@@ -35,19 +70,6 @@
     <xml-id name="id" xpath="id/@value" />
     <xml-property xpath="data1/@value" />
     <xml-property name="eleText" xpath="data1" />
-  </xml-object>
-
-  <xml-object alias="data3" xpath="/xml-fragment/data">
-    <xml-id name="id" xpath="id/@value" />
-    <xml-property xpath="data1/@value" />
-    <xml-property name="eleText" xpath="data1" />
-  </xml-object>
-
-  <xml-object alias="data4" xpath="/xml-fragment/data">
-    <xml-id name="id" xpath="id/@value" />
-    <xml-property xpath="data1/@value" />
-    <xml-property name="eleText" xpath="data1" />
-    <xml-content name="content" />
   </xml-object>
 
 </compass-core-mapping>
