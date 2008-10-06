@@ -92,10 +92,10 @@ public class Processqueue extends DBConnection {
 
         // preparing call of stored procedure
         CallableStatement cs=null;
-        ResultSet rs=null;
-        String handle;
-        int popped_queueid;
-        String itemID;
+        ResultSet rs=null;           
+        String handle = null;
+        int popped_queueid = 0;
+        String itemID = null;
         try{
             cs = con.prepareCall("{call proc_prod(?,?,?,?)}");
             cs.registerOutParameter(1, java.sql.Types.VARCHAR);
@@ -105,15 +105,19 @@ public class Processqueue extends DBConnection {
             // execute procedure
             rs = cs.executeQuery();
 
-            if ( cs.getString(1) == null ) { // Queue is empty
+            if ( rs == null){
                 throw new NoSuchElementException("No elements on processqueue");
             }
-            log.debug( "obtained handle " );
 
-            //fetch data
-            handle = cs.getString( 1 );
-            popped_queueid = cs.getInt( 2 );
-            itemID = cs.getString( 4 );
+            while( rs.next() ){
+                //fetch data
+                handle = rs.getString( 1 );
+                popped_queueid = rs.getInt( 2 );
+                itemID = rs.getString( 4 );
+            }
+
+            
+            log.debug( "obtained handle " );
             con.commit();
         }
         finally{
@@ -241,7 +245,6 @@ public class Processqueue extends DBConnection {
         log.debug( "Entering Processqueue.getActiveProcesses()" );
 
         con = establishConnection();
-
         // Query database
         Statement stmt = null;
         ResultSet rs = null;

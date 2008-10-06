@@ -11,7 +11,8 @@ import com.mockrunner.jdbc.CallableStatementResultSetHandler;
 
 
 
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import java.lang.ClassNotFoundException;
@@ -35,7 +36,7 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
 
         super.setUp();
         connection = getJDBCMockObjectFactory().getMockConnection();
-   
+        callableStatementHandler = connection.getCallableStatementResultSetHandler();   
         statementHandler = connection.getStatementResultSetHandler();
         result = statementHandler.createResultSet();
         processqueue = new Processqueue();
@@ -59,27 +60,47 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         verifyConnectionClosed();
     }
 
-
-
     /////////////////////////
     public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {
-
-        callableStatementHandler = getJDBCMockObjectFactory().getMockConnection().getCallableStatementResultSetHandler();
-        MockResultSet procResult = callableStatementHandler.createResultSet();
-        procResult.addColumn("fedoraHandle", new String[] {"testfedoraHandle1"  });
-        procResult.addColumn("queueid", new Integer[] { 1  });
-        procResult.addColumn("processing", new String[] { "N"  });
-        procResult.addColumn("itemID", new String[] {"testItem1"  });
-        callableStatementHandler.prepareResultSet( "call proc_prod", procResult );
         
+        String fedorahandle = "test_handle_1";
+        int queueid = 1;
+        String processing = "N";
+        String itemid = "item_1";
+        
+        MockResultSet procResult = callableStatementHandler.createResultSet();        
+        procResult.addColumn("fedoraHandle", new String[] { fedorahandle } );
+        procResult.addColumn("queueid", new Integer[] { queueid } );
+        procResult.addColumn("processing", new String[] { processing  });
+        procResult.addColumn("itemID", new String[] { itemid } );
+        
+        callableStatementHandler.prepareResultSet( "call proc_prod", procResult );
+    
         Triple<String, Integer, String> triple = processqueue.pop();
 
-        System.out.println( triple.toString() );
-
+        assertEquals(fedorahandle , Tuple.get1(triple) );
+        assertEquals(queueid , (int )Tuple.get2(triple) );
+        assertEquals(itemid , Tuple.get3(triple) );
+        
+        verifyCommitted();
+        verifyAllStatementsClosed();
+        verifyCallableStatementClosed("call proc_prod");
+        verifyConnectionClosed();
     }
 
-    private void TestPopFromProcessqueueWithNoActiveElements(){}
-    //////////////////
+    public void testPopFromProcessqueueWithNoActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {
+        try{
+            Triple<String, Integer, String> triple = processqueue.pop();
+        }
+        catch(NoSuchElementException nse){
+            // Expected - intentional
+        }
+        verifyNotCommitted();
+        verifyCallableStatementClosed("call proc_prod");
+        verifyAllStatementsClosed();
+        verifyConnectionClosed();
+    }
+    
 
     public void testPushToProcessqueue() throws ConfigurationException, ClassNotFoundException, SQLException {
 
