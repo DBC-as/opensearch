@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.apache.commons.configuration.ConfigurationException;
 
 public class FedoraHandlerTest{
-    @Ignore( "Runtime failure" )
+    
     @Test public void constructorTest() throws ConfigurationException, IOException, MalformedURLException, ServiceException { 
         
         /**1*/
