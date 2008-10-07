@@ -5,18 +5,18 @@
 
    <compass name="default">
 
-     <connection>
-         <jdbc dialect="org.apache.lucene.store.jdbc.dialect.OracleDialect">
-             <dataSourceProvider>
-                 <driverManager url="jdbc:oracle:thin:shm/shm@tora1.dbc.dk:1521" username="shm" password="shm"
-                                driverClass="oracle.jdbc.driver.OracleDriver" />
-             </dataSourceProvider>
-         </jdbc>
-     </connection>
-
      <!-- <connection> -->
-     <!--   <file path="admin/test-index"/> -->
+     <!--     <jdbc dialect="org.apache.lucene.store.jdbc.dialect.OracleDialect"> -->
+     <!--         <dataSourceProvider> -->
+     <!--             <driverManager url="jdbc:oracle:thin:stm/stm@tora1.dbc.dk:1521" username="stm" password="stm" -->
+     <!--                            driverClass="oracle.jdbc.driver.OracleDriver" /> -->
+     <!--         </dataSourceProvider> -->
+     <!--     </jdbc> -->
      <!-- </connection> -->
+
+     <connection>
+       <file path="admin/test-index"/>
+     </connection>
 
      <transaction 
          lockTimeout="300"

@@ -2,9 +2,9 @@
 <opensearch-definition>
   <database>
     <driver>oracle.jdbc.driver.OracleDriver</driver>
-    <url>dbc:oracle:thin:shm/shm@tora1.dbc.dk:1521</url>
-    <userID>shm</userID>
-    <passwd>shm</passwd>
+    <url>dbc:oracle:thin:stm/stm@tora1.dbc.dk:1521</url>
+    <userID>stm</userID>
+    <passwd>stm</passwd>
   </database> 
   <fedora>
     <host>sempu.dbc.dk</host>

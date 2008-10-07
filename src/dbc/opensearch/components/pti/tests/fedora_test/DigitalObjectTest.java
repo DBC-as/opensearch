@@ -8,38 +8,45 @@ import fedora.server.storage.types.DatastreamDef;
 import fedora.server.types.gen.DatastreamControlGroup;
 //import fedora.server.types.gen.Datastream;
 
-import fedora.server.storage.translation.FOXML1_1DOSerializer;
+import fedora.server.storage.translation.FOXMLDODeserializer;
+import fedora.server.storage.translation.FOXMLDOSerializer;
+
+import fedora.server.storage.translation.DOTranslationUtility;
+
+//import fedora.server.storage.translation.FOXML1_1DOSerializer;
 
 //for MakeBlankRelsExtDatastream:
 import fedora.common.Constants;
-
 
 // for addDatastreamToDO:
 import fedora.client.Administrator;
 
 import java.util.Date;
+import java.io.ByteArrayOutputStream;
+
+import java.util.HashMap;
+
+import fedora.server.storage.translation.DOTranslatorImpl;
+
 
 /**
  *
  */
 public class DigitalObjectTest {
 
-    BasicDigitalObject bdo;
     fedora.server.access.FedoraAPIA apia;
     fedora.server.management.FedoraAPIM apim;
-    /**
-     *
-     */
-    public DigitalObjectTest()throws java.net.MalformedURLException, javax.xml.rpc.ServiceException, java.io.IOException{
-        bdo = new BasicDigitalObject();
-        Datastream ds = new Datastream();
 
-        fedora.client.FedoraClient fc = new fedora.client.FedoraClient( "","","");
+    public DigitalObjectTest()throws java.net.MalformedURLException, javax.xml.rpc.ServiceException, java.io.IOException{
+
+        fedora.client.FedoraClient fc = new fedora.client.FedoraClient( "http://sempu.dbc.dk:8080/fedora", "fedoraAdmin", "fedora_1");
         apia = fc.getAPIA();
         apim = fc.getAPIM();
     }
 
-    private DigitalObject constructDO(){
+    public BasicDigitalObject constructDO(  ){
+        
+        BasicDigitalObject bdo = new BasicDigitalObject();
 
         bdo.setPid( "dbc:1" );
         bdo.setState( "Active" );
@@ -53,7 +60,7 @@ public class DigitalObjectTest {
 
         String[] altId = new String[]{""};
 
-        bdo.addDatastreamVersion( DigitalObjectTest.constructDatastream( DatastreamControlGroup.M, "", "", altId, "", false, "", "", new Date(), 1l, "", "", "", ""), true );
+        bdo.addDatastreamVersion( DigitalObjectTest.constructDatastream( DatastreamControlGroup.M, "", "", altId, "", false, "", "", new Date(), 1l, "", "", "", "") , true );
 
         return bdo;
     }
@@ -117,18 +124,17 @@ public class DigitalObjectTest {
         return ds;
     }
 
-    private String addDatastreamToExistingPid(
-                                              String pid,
-                                              String dsid,
-                                              String[] altIDs,
-                                              String label,
-                                              boolean versionable,
-                                              String mimeType,
-                                              String formatURI,
-                                              String location,
-                                              String state,
-                                              String checksumType,
-                                              String logMessage) throws java.rmi.RemoteException{
+    private String addDatastreamToExistingPid( String pid,
+                                               String dsid,
+                                               String[] altIDs,
+                                               String label,
+                                               boolean versionable,
+                                               String mimeType,
+                                               String formatURI,
+                                               String location,
+                                               String state,
+                                               String checksumType,
+                                               String logMessage) throws java.rmi.RemoteException{
 
         return apim.addDatastream(pid,
                                   dsid,
@@ -145,8 +151,35 @@ public class DigitalObjectTest {
                                   logMessage); // DEFAULT_LOGMESSAGE
     }
 
-    public static void main(String[] args)throws java.net.MalformedURLException, javax.xml.rpc.ServiceException, java.io.IOException{
+    public static void main(String[] args)throws java.net.MalformedURLException, 
+                                                 javax.xml.rpc.ServiceException, 
+                                                 java.io.IOException,fedora.server.errors.ObjectIntegrityException, 
+                                                 fedora.server.errors.StreamIOException,
+                                                 fedora.server.errors.UnsupportedTranslationException,
+                                                 fedora.server.errors.ServerException{
+
+
         DigitalObjectTest dot = new DigitalObjectTest();
+
+        BasicDigitalObject bdo = dot.constructDO();
+
+
+        ByteArrayOutputStream baos  = new ByteArrayOutputStream();
+        FOXMLDODeserializer deser=new FOXMLDODeserializer();
+        FOXMLDOSerializer ser=new FOXMLDOSerializer();
+        HashMap desermap=new HashMap();
+        HashMap sermap=new HashMap();
+        sermap.put("foxml1.1", ser);
+        desermap.put( "foxml1.1", deser );
+
+        DOTranslatorImpl translator = new DOTranslatorImpl( sermap, desermap );
+
+        int transContext = DOTranslationUtility.SERIALIZE_EXPORT_MIGRATE;
+
+        translator.serialize( bdo, baos, "foxml1.1", "UFT-8", transContext );
+
+        System.out.println( String.format( "DigitalObject:\n%s", baos.toString() ) );
+
     }
 
 }
