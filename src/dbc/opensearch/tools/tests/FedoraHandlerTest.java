@@ -22,7 +22,7 @@ import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import org.apache.commons.configuration.ConfigurationException;
 
-public class FedoraHandlerTest{
+public class FedoraHandlerTest {
     
     @Test public void constructorTest() throws ConfigurationException, IOException, MalformedURLException, ServiceException { 
         
@@ -32,21 +32,22 @@ public class FedoraHandlerTest{
         FedoraAPIM mockFedoraAPIM = createMock( FedoraAPIM.class );
         
         /**2*/
-        expect( new FedoraClient( isA(String.class), isA(String.class), isA(String.class) ) ).andReturn( mockFedoraClient );
+        /** Use dependency injection here
+           expect( FedoraClient client = new FedoraClient( isA(String.class), isA(String.class), isA(String.class) ) );*/
         expect( mockFedoraClient.getAPIA() ).andReturn( mockFedoraAPIA );
         expect( mockFedoraClient.getAPIM() ).andReturn( mockFedoraAPIM );
         
         /**3*/
         replay( mockFedoraClient );
-        replay( mockFedoraAPIA );
-        replay( mockFedoraAPIM );
-        FedoraHandler fh = new FedoraHandler(); 
+        //replay( mockFedoraAPIA );
+        //replay( mockFedoraAPIM );
+        FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
      
         
         /**4*/  
         verify( mockFedoraClient );
-        verify( mockFedoraAPIA );
-        verify( mockFedoraAPIM );
+        //verify( mockFedoraAPIA );
+        //verify( mockFedoraAPIM );
         
     }
     /*

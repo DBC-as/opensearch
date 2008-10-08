@@ -49,16 +49,18 @@ import java.io.IOException;
  * the fedora repository.
  */
 public class FedoraHandler implements Constants{
-
+    /*
     private static String host = "";
     private static String port = "";
     private static String fedoraUrl = "";
-    private static String user = "";
     private static String passphrase = "";
+    */
+    private static String user = "";
 
     Logger log = Logger.getLogger("FedoraHandler");
 
     // The fedora api
+    FedoraClient client;
     FedoraAPIA apia;
     FedoraAPIM apim;
 
@@ -73,27 +75,32 @@ public class FedoraHandler implements Constants{
      * @throws ServiceException something went wrong initializing the fedora client
      * @throws IOException something went wrong initializing the fedora client
      */
-    public FedoraHandler() throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+    public FedoraHandler( FedoraClient client ) throws ConfigurationException,/* MalformedURLException,*/ UnknownHostException, ServiceException, IOException {
         log.debug( "Fedorahandler constructor");
-
-        log.debug( "Obtain config paramaters for configuring fedora connection");
+        this.client = client;
+       
+        log.debug( "Obtain config parameters for the fedora user");
         URL cfgURL = getClass().getResource("/config.xml");
         XMLConfiguration config = null;
         config = new XMLConfiguration( cfgURL );
         
-        host       = config.getString( "fedora.host" );
-        port       = config.getString( "fedora.port" );
+        //host       = config.getString( "fedora.host" );
+        //port       = config.getString( "fedora.port" );
         user       = config.getString( "fedora.user" );
+        /*
         passphrase = config.getString( "fedora.passphrase" );
         fedoraUrl  = "http://" + host + ":" + port + "/fedora";
-
+        
         log.debug( String.format( "Connecting to fedora server at:\n%s\n using user: %s, pass: %s ", fedoraUrl, user, passphrase ) );
 
         log.debug( "Constructing FedoraClient");
+
         FedoraClient client = new FedoraClient( fedoraUrl, user, passphrase );
+        */
+        
         apia = client.getAPIA();
         apim = client.getAPIM();
-        log.debug( "Constructed FedoraClient");
+        log.debug( "Constructed got ClientAPIA and APIM");
     }
 
     /**

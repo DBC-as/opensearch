@@ -2,13 +2,16 @@ package dbc.opensearch.components.pti.tests.fedora_test;
 
 import dbc.opensearch.components.datadock.CargoContainer;
 import dbc.opensearch.tools.FedoraHandler;
+import dbc.opensearch.tools.FedoraClientFactory;
+
+import fedora.client.FedoraClient;
 import org.apache.log4j.Logger;
 import java.io.FileInputStream;
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import org.apache.commons.configuration.ConfigurationException;
-
+import java.net.MalformedURLException;
 import fedora.server.errors.ServerException;
 import javax.xml.stream.XMLStreamException;
 
@@ -18,11 +21,14 @@ import javax.xml.stream.XMLStreamException;
 public class Main {
     static Logger log = Logger.getLogger("Main");
 
-    public static void main(String[] args) throws java.io.IOException, java.io.UnsupportedEncodingException{
-        
+    public static void main(String[] args) throws java.io.IOException, java.io.UnsupportedEncodingException, MalformedURLException, ConfigurationException{
+     
+        FedoraClientFactory fcf = new FedoraClientFactory();
         FedoraHandler fh = null;
+        FedoraClient fc = fcf.getFedoraClient();
         try{
-                fh = new FedoraHandler();
+            
+                fh = new FedoraHandler(fc);
             }
             catch (Exception e){
                 

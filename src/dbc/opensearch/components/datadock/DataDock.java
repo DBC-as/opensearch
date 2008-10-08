@@ -1,9 +1,8 @@
 package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.FedoraHandler;
-
+import dbc.opensearch.tools.FedoraClientFactory;
 import dbc.opensearch.tools.Estimate;
-
 import dbc.opensearch.tools.Processqueue;
 
 
@@ -15,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fedora.server.errors.ServerException;
+import fedora.client.FedoraClient;
 
 import java.util.concurrent.Callable;
 
@@ -59,6 +59,7 @@ public class DataDock implements Callable<Float>{
     private CargoContainer cc;
     private Processqueue queue;
     private XMLConfiguration config;
+    private FedoraClientFactory fcf;
     private static volatile FedoraHandler fh;
    
     private Logger log = Logger.getLogger("DataDock");
@@ -130,11 +131,15 @@ public class DataDock implements Callable<Float>{
 
         /** todo: give real applicable value to label. value should be given by cargo container*/
         String label = "test";
-        
+        // log.debug ( "creating a FedoraClientFactory" );  
+        fcf = new FedoraClientFactory();
         // open connection to fedora base
         if( fh == null ){
             log.info( "No FedoraHandler exists, initializing a new one" );
-            fh = new FedoraHandler();
+            //create the FedoraClient to give to the FedoraHandler
+            log.debug( "getting a FedroaClient for the FedoraHandler" );
+            FedoraClient client = fcf.getFedoraClient();
+            fh = new FedoraHandler( client );
         
         }else{
             log.info( "A FedoraHandler is already initialized, using it" );
