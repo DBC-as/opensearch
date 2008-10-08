@@ -105,19 +105,15 @@ public class Processqueue extends DBConnection {
             // execute procedure
             rs = cs.executeQuery();
 
-            if ( rs == null){
+            if ( cs.getString(1) == null ) { // Queue is empty
                 throw new NoSuchElementException("No elements on processqueue");
             }
-
-            while( rs.next() ){
-                //fetch data
-                handle = rs.getString( 1 );
-                popped_queueid = rs.getInt( 2 );
-                itemID = rs.getString( 4 );
-            }
-
-            
             log.debug( "obtained handle " );
+
+            //fetch data
+            handle = cs.getString( 1 );
+            popped_queueid = cs.getInt( 2 );
+            itemID = cs.getString( 4 );
             con.commit();
         }
         finally{
