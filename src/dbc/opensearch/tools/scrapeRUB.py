@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
 
+###
+# Small python script to scrape the rub files
+# The script takes one argument (NO CHECKS!), which is the destination directory
+###
+
 import fileinput
 import urllib2
 import string
 import urllib
 import os
+import os.path
 import sys
 
 from BeautifulSoup import BeautifulSoup          # For processing HTML
@@ -16,17 +22,26 @@ def  retrieveData( record, destdir ):
     if destdir[-1] != '/':
         destdir = destdir + '/'
 
+
+    #print 'record',record
+
     ### retriving rub page
+
     dspaceSoup = BeautifulSoup( str(record) )
     urllst = dspaceSoup.findAll(  'dc:identifier' )
     url = str(urllst[-1]).split("<dc:identifier>")[1].split("</dc:identifier>")[0]
-    #print url
     page = urllib2.urlopen( url )
 
     ### isolating document references
     pagesoup = BeautifulSoup( page )
     table = pagesoup.findAll( 'table', attrs={"class" : "miscTable", "align" : "center" } )[1]
+        
     tablesoup = BeautifulSoup( str(table) )
+
+    ### find document name
+    docTitle = str( tablesoup.findAll( 'td', attrs={"headers" : "t1", "class" : "standard" } )[0] )
+    docTitle = docTitle.split('>')[1].split('<')[0] 
+    
     hreflst = tablesoup.findAll( 'a')
 
     ### make recdir
@@ -43,17 +58,18 @@ def  retrieveData( record, destdir ):
     for href in hreflst:
         
         href = "http://rudar.ruc.dk"+str( href ).split( 'href="' )[1].split( '">')[0]
-        docname = href.split( '/' )[-1]
-        destfile = destdir + recdir + docname
+        destfile = destdir + recdir + docTitle
         #print "href          -> ", href
-        #print "docname -> ", docname
-        #print "destfile    -> ", destfile
-        print 'downloading ', docname
+        #print "docTitle -> ", docTitle
+        print "destfile    -> ", destfile
+        print 'downloading ', docTitle
         urllib.urlretrieve( href  , destfile )
 
 
 
 def main(destdir):
+    if not os.path.isdir(destdir):
+        os.mkdir( destdir )
     
     page = urllib2.urlopen( 'http://rudar.ruc.dk/dspace-oai/request?verb=ListRecords&metadataPrefix=oai_dc' )
     RUBsoup = BeautifulStoneSoup( page )
