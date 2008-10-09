@@ -93,22 +93,10 @@ public class Processqueue extends DBConnection {
         // preparing call of stored procedure
         CallableStatement cs=null;
         ResultSet rs=null;           
-        String handle = null;
-        int popped_queueid = 0;
-        String itemID = null;
+        Triple returntriple = null;
         try{
-
             cs = getStatement(con);
-            
-            if ( cs.getString(1) == null ) { // Queue is empty
-                throw new NoSuchElementException("No elements on processqueue");
-            }
-            log.debug( "obtained handle " );
-
-            //fetch data
-            handle = cs.getString( 1 );
-            popped_queueid = cs.getInt( 2 );
-            itemID = cs.getString( 4 );
+            returntriple = getValues(cs);
             con.commit();
         }
         finally{
@@ -116,11 +104,26 @@ public class Processqueue extends DBConnection {
             cs.close();
             con.close();
         }
+        return returntriple;
+    }
+
+    private Triple getValues(CallableStatement cs)throws SQLException {
+        
+        if ( cs.getString(1) == null ) { // Queue is empty
+            throw new NoSuchElementException("No elements on processqueue");
+        }
+        log.debug( "obtained handle " );
+        
+        //fetch data
+        String handle = cs.getString( 1 );
+        int popped_queueid = cs.getInt( 2 );
+        String itemID = cs.getString( 4 );
+        
         log.info( "Handle obtained by pop: "+ handle );
         log.debug( String.format( "popped_queueid=%s, itemID=%s", popped_queueid, itemID ) );
-
         return Tuple.from( handle, popped_queueid, itemID );
     }
+
 
     private CallableStatement getStatement(Connection con) throws SQLException {
         CallableStatement cs=null;

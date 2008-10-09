@@ -1,4 +1,5 @@
 package dbc.opensearch.tools.tests;
+//package dbc.opensearch.tools.tests;
 import dbc.opensearch.tools.Processqueue;
 
 import com.mockrunner.jdbc.*;
@@ -10,10 +11,10 @@ import com.mockrunner.mock.jdbc.MockStatement;
 import com.mockrunner.jdbc.CallableStatementResultSetHandler;
 
 import static org.easymock.classextension.EasyMock.*;
-import org.easymock.classextension.MockClassControl;
-import org.easymock.MockControl;
+//import org.easymock.classextension.MockClassControl;
+//import org.easymock.MockControl;
 
-
+import java.sql.CallableStatement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,24 +73,38 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         int queueid = 1;
         String processing = "N";
         String itemid = "item_1";
-        
+        System.out.println( "HEST1" );
+
+        //        CallableStatement cs = null;
+        CallableStatement mockCallableStatement = createMock( CallableStatement.class );
+        System.out.println( "HEST2" );
+        expect( mockCallableStatement.getString( isA( Integer.class ) ) ).andReturn( fedorahandle );
+        System.out.println( "HEST3" );
+        expect( mockCallableStatement.getString( isA( Integer.class ) ) ).andReturn( itemid );
+        expect( mockCallableStatement.getInt( isA( Integer.class ) ) ).andReturn( queueid );
+        replay( mockCallableStatement );
+
+        System.out.println( "HEST4" );
 
 
+        Triple<String, Integer, String> triple = processqueue.getValues( mockCallableStatement );
+
+        System.out.println( Tuple.get1(triple) );
+
+//         MockControl mockProcessqueueControl = 
+//             MockClassControl.createNiceControl( Processqueue.class );
+//         final Processqueue mockProcessqueue = ( Processqueue )mockProcessqueueControl.getMock();
         
-        MockControl mockProcessqueueControl = 
-            MockClassControl.createNiceControl( Processqueue.class );
-        final Processqueue mockProcessqueue = ( Processqueue )mockProcessqueueControl.getMock();
-        
-        mockProcessqueue.pop();
-        mockProcessqueueControl.setReturnValue( Tuple.from( fedorahandle, queueid, itemid ) );
+//         mockProcessqueue.pop();
+//         mockProcessqueueControl.setReturnValue( Tuple.from( fedorahandle, queueid, itemid ) );
 
     
-        Triple<String, Integer, String> triple = processqueue.pop();
+//         Triple<String, Integer, String> triple = processqueue.pop();
         
         
-        assertEquals(fedorahandle , Tuple.get1(triple) );
-        assertEquals(queueid , (int )Tuple.get2(triple) );
-        assertEquals(itemid , Tuple.get3(triple) );
+//         assertEquals(fedorahandle , Tuple.get1(triple) );
+//         assertEquals(queueid , (int )Tuple.get2(triple) );
+//         assertEquals(itemid , Tuple.get3(triple) );
         
 //         verifyCommitted();
 //         verifyAllStatementsClosed();
