@@ -123,16 +123,16 @@ public class FedoraHandler implements Constants{
         String nextPid     = null;
         String itemId      = null;
         byte[] foxml       = null;
-
+        String submitter = cargo.getSubmitter();
         /** \todo: We need a pid-manager for getting lists of available pids for a given ns */
-        log.debug( String.format( "Getting next pid for namespace %s", cargo.getSubmitter() ) );
-        String pids[] = apim.getNextPID( new NonNegativeInteger( "1" ), cargo.getSubmitter() );
+        log.debug( String.format( "Getting next pid for namespace %s", submitter ) );
+        String pids[] = apim.getNextPID( new NonNegativeInteger( "1" ), submitter );
         nextPid = pids[0];
 
         log.debug( String.format( "Getting itemId for datastream" ) );
         itemId = cargo.getFormat();
 
-        log.debug( String.format( "Constructing foxml with pid=%s, itemId=%s and label=%s", pid, itemId, label ) );
+        log.debug( String.format( "Constructing foxml with pid=%s, itemId=%s and label=%s", nextPid, itemId, label ) );
         foxml = constructFoxml( cargo, nextPid, itemId, label );
         log.debug( "FOXML constructed, ready for ingesting" );
 
