@@ -97,14 +97,9 @@ public class Processqueue extends DBConnection {
         int popped_queueid = 0;
         String itemID = null;
         try{
-            cs = con.prepareCall("{call proc_prod(?,?,?,?)}");
-            cs.registerOutParameter(1, java.sql.Types.VARCHAR);
-            cs.registerOutParameter(2, java.sql.Types.INTEGER);
-            cs.registerOutParameter(3, java.sql.Types.VARCHAR);
-            cs.registerOutParameter(4, java.sql.Types.VARCHAR);
-            // execute procedure
-            rs = cs.executeQuery();
 
+            cs = getStatement(con);
+            
             if ( cs.getString(1) == null ) { // Queue is empty
                 throw new NoSuchElementException("No elements on processqueue");
             }
@@ -126,6 +121,21 @@ public class Processqueue extends DBConnection {
 
         return Tuple.from( handle, popped_queueid, itemID );
     }
+
+    private CallableStatement getStatement(Connection con) throws SQLException {
+        CallableStatement cs=null;
+        ResultSet rs=null;           
+        cs = con.prepareCall("{call proc_prod(?,?,?,?)}");
+        cs.registerOutParameter(1, java.sql.Types.VARCHAR);
+        cs.registerOutParameter(2, java.sql.Types.INTEGER);
+        cs.registerOutParameter(3, java.sql.Types.VARCHAR);
+        cs.registerOutParameter(4, java.sql.Types.VARCHAR);
+        // execute procedure
+        rs = cs.executeQuery();
+        return cs;
+    }
+
+
 
     /**
      * commits the pop to the queue. This operation removes the
