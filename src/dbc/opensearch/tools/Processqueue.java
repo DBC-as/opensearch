@@ -107,7 +107,7 @@ public class Processqueue extends DBConnection {
         return returntriple;
     }
 
-    public Triple getValues(CallableStatement cs)throws SQLException {
+    private Triple getValues(CallableStatement cs)throws SQLException {
         
         if ( cs.getString(1) == null ) { // Queue is empty
             throw new NoSuchElementException("No elements on processqueue");

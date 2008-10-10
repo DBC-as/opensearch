@@ -1,5 +1,5 @@
 package dbc.opensearch.tools.tests;
-//package dbc.opensearch.tools.tests;
+
 import dbc.opensearch.tools.Processqueue;
 
 import com.mockrunner.jdbc.*;
@@ -11,8 +11,12 @@ import com.mockrunner.mock.jdbc.MockStatement;
 import com.mockrunner.jdbc.CallableStatementResultSetHandler;
 
 import static org.easymock.classextension.EasyMock.*;
-//import org.easymock.classextension.MockClassControl;
-//import org.easymock.MockControl;
+
+import java.lang.reflect.Method;
+
+import junit.framework.TestCase;
+import java.lang.reflect.InvocationTargetException;
+
 
 import java.sql.CallableStatement;
 
@@ -26,6 +30,8 @@ import java.util.NoSuchElementException;
 
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Triple;
+
+
 
 public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
 
@@ -65,17 +71,15 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         verifyConnectionClosed();
     }
 
-
-    /////////////////////////
-    public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {
+    public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException, IllegalAccessException, InvocationTargetException {
         
         String fedorahandle = "test_handle_1";
         int queueid = 1;
         String processing = "N";
         String itemid = "item_1";
 
+        Triple<String, Integer, String> triple = null;
 
-        //        CallableStatement cs = null;
         CallableStatement mockCallableStatement = createMock( CallableStatement.class );
         
         expect( mockCallableStatement.getString( 1 ) ).andReturn( fedorahandle ).times(2);
@@ -83,12 +87,18 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         expect( mockCallableStatement.getString( 4 ) ).andReturn( itemid );
         replay( mockCallableStatement );
 
-        Triple<String, Integer, String> triple = processqueue.getValues( mockCallableStatement );
+        final Method methods[] = processqueue.getClass().getDeclaredMethods();
+        for( int i = 0; i < methods.length; i++ ){
+            if( methods[i].getName().equals( "getValues" ) ){
+                final CallableStatement cs2 = mockCallableStatement;
+                methods[i].setAccessible(true);
+                triple = ( Triple ) methods[i].invoke( processqueue, cs2 );
+            }
+        }  
       
         assertEquals(fedorahandle , Tuple.get1(triple) );
         assertEquals(queueid , (int )Tuple.get2(triple) );
-        assertEquals(itemid , Tuple.get3(triple) );
-        
+        assertEquals(itemid , Tuple.get3(triple) );        
         verifyAllStatementsClosed();
     }
 
@@ -144,6 +154,7 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         catch(NoSuchElementException nse){
             // Expected - intentional
         }
+
         String sql_query = String.format( "DELETE FROM processqueue WHERE queueid = %s", testQueueID );
         verifySQLStatementExecuted( sql_query );
 
