@@ -100,7 +100,7 @@ public class FedoraHandler implements Constants{
         
         apia = client.getAPIA();
         apim = client.getAPIM();
-        log.debug( "Constructed got ClientAPIA and APIM");
+        log.debug( "Got the ClientAPIA and APIM");
     }
 
     /**
