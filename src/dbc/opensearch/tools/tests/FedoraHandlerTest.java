@@ -28,15 +28,56 @@ import org.apache.commons.configuration.ConfigurationException;
 import java.rmi.RemoteException;
 import java.net.UnknownHostException;  
 import javax.xml.stream.XMLStreamException;
+import java.io.UnsupportedEncodingException;
 
 public class FedoraHandlerTest {
 
+    /**
+     * The (mock)objects we need for the most of the tests
+     */
+    FedoraClient mockFedoraClient; 
+    FedoraAPIA mockFedoraAPIA;
+    FedoraAPIM mockFedoraAPIM; 
+    CargoContainer mockCargoContainer;
+    
+    FedoraHandler fh;
+    String[] pids;
+    String testString;
+    String returnPid;
+    byte[] data;
+    
+    /**
+     * Before each test we construct the needed mockobjects 
+     * the FedoraClient to pas to the FedoraHandler
+     * The FedoraAPIA and M to call methods on
+     * The CargoContainer to get data from 
+     */
+    @Before public void Setup()throws UnsupportedEncodingException {
+        mockFedoraClient = createMock( FedoraClient.class );
+        mockFedoraAPIA = createMock( FedoraAPIA.class );
+        mockFedoraAPIM = createMock( FedoraAPIM.class );
+        mockCargoContainer = createMock( CargoContainer.class );
+        
+        //constructing up other needed objects
+        pids = new String[]{"test:1"};    
+        testString = "æøå";
+        data = testString.getBytes( "UTF-8" );
+        returnPid = null;
+
+    }
+    /*
+    @After public void TearDown(){
+        mockFedoraClient.reset();
+            mockFedoraAPIA.resest();
+        mockFedoraAPIM = createMock( FedoraAPIM.class );
+        mockCargoContainer = createMock( CargoContainer.class );  
+        }*/
+
     @Test public void constructorTest() throws ConfigurationException, IOException, MalformedURLException, ServiceException { 
          
-        /**1 setting up the needed mocks */
-        FedoraClient mockFedoraClient = createMock( FedoraClient.class );
-        FedoraAPIA mockFedoraAPIA = createMock( FedoraAPIA.class );
-        FedoraAPIM mockFedoraAPIM = createMock( FedoraAPIM.class );
+        /**1 setting up the needed mocks 
+         * Is done in setUp()
+         */
         
         /**2 the expectations */
         expect( mockFedoraClient.getAPIA() ).andReturn( mockFedoraAPIA );
@@ -44,17 +85,14 @@ public class FedoraHandlerTest {
         
         /**3 replay*/
         replay( mockFedoraClient );
-        //replay( mockFedoraAPIA );
-        //replay( mockFedoraAPIM );
+        
 
         /** do the stuff */
-        FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
+        fh = new FedoraHandler(mockFedoraClient); 
         
         
         /**4 check if it happened as expected */  
         verify( mockFedoraClient );
-        //verify( mockFedoraAPIA );
-        //verify( mockFedoraAPIM );
         
     }
     
@@ -65,7 +103,7 @@ public class FedoraHandlerTest {
     
     @Test public void submitDatastreamTest()throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException {
         
-        /**1 Setting up the needed mocks */
+        /**1 Setting up the needed mocks
         FedoraClient mockFedoraClient = createMock( FedoraClient.class );
         FedoraAPIA mockFedoraAPIA = createMock( FedoraAPIA.class );
         FedoraAPIM mockFedoraAPIM = createMock( FedoraAPIM.class );
@@ -77,7 +115,7 @@ public class FedoraHandlerTest {
         String testString = "æøå";
         String returnPid = null;
         byte[] data = testString.getBytes( "UTF-8" );
-        
+        */
         
         /**2 the expectations */
         expect( mockFedoraClient.getAPIA() ).andReturn( mockFedoraAPIA );
@@ -85,25 +123,21 @@ public class FedoraHandlerTest {
         expect( mockCargoContainer.getSubmitter() ).andReturn ( "test" ); 
         expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andReturn( pids );
         expect( mockCargoContainer.getFormat() ).andReturn( "format" );
-
         //Calls from constructFoxml
         expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
         expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
         expect( mockCargoContainer.getStreamLength() ).andReturn( 6 );
         expect( mockCargoContainer.getDataBytes() ).andReturn( data );
         // out of constructFoxml
-        
         expect( mockFedoraAPIM.ingest( isA( byte[].class ), isA( String.class ), isA( String.class ) ) ).andReturn( "test:1" );
-
 
         /**3 replay */
         replay( mockFedoraClient );
         replay( mockFedoraAPIM );
         replay( mockCargoContainer );
-        
 
         /** do the stuff */ 
-        FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
+        fh = new FedoraHandler(mockFedoraClient); 
         returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
         
         /**4 check if it happened as expected */  
@@ -118,7 +152,7 @@ public class FedoraHandlerTest {
      */
     @Test public void SubmitDatastreamWrongPidReturnedTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException {
     
-    /**1 Setting up the needed mocks */
+    /**1 Setting up the needed mocks
     FedoraClient mockFedoraClient = createMock( FedoraClient.class );
     FedoraAPIA mockFedoraAPIA = createMock( FedoraAPIA.class );
     FedoraAPIM mockFedoraAPIM = createMock( FedoraAPIM.class );
@@ -130,7 +164,7 @@ public class FedoraHandlerTest {
     String testString = "æøå";
     String returnPid = null;
     byte[] data = testString.getBytes( "UTF-8" );
-    
+    */
     
     /**2 the expectations */
     expect( mockFedoraClient.getAPIA() ).andReturn( mockFedoraAPIA );
@@ -138,19 +172,18 @@ public class FedoraHandlerTest {
     expect( mockCargoContainer.getSubmitter() ).andReturn ( "test" ); 
     expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andReturn( pids );
     expect( mockCargoContainer.getFormat() ).andReturn( "format" );
+    // calls from constructFoxml
     expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
     expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
     expect( mockCargoContainer.getStreamLength() ).andReturn( 6 );
     expect( mockCargoContainer.getDataBytes() ).andReturn( data );
-    
+    // out of constructFoxml
     expect( mockFedoraAPIM.ingest( isA( byte[].class ), isA( String.class ), isA( String.class ) ) ).andReturn( "test:1" );
-    
     
     /**3 replay */
     replay( mockFedoraClient );
     replay( mockFedoraAPIM );
     replay( mockCargoContainer );
-    
     
     /** do the stuff */ 
     FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
