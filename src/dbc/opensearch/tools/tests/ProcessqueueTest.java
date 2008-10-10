@@ -1,6 +1,8 @@
 package dbc.opensearch.tools.tests;
 
 import dbc.opensearch.tools.Processqueue;
+import dbc.opensearch.tools.PrivateAccessor;
+
 
 import com.mockrunner.jdbc.*;
 import com.mockrunner.mock.jdbc.MockConnection;
@@ -87,15 +89,8 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         expect( mockCallableStatement.getString( 4 ) ).andReturn( itemid );
         replay( mockCallableStatement );
 
-        final Method methods[] = processqueue.getClass().getDeclaredMethods();
-        for( int i = 0; i < methods.length; i++ ){
-            if( methods[i].getName().equals( "getValues" ) ){
-                final CallableStatement cs2 = mockCallableStatement;
-                methods[i].setAccessible(true);
-                triple = ( Triple ) methods[i].invoke( processqueue, cs2 );
-            }
-        }  
-      
+        triple = (Triple) PrivateAccessor.invokePrivateMethod( processqueue, "getValues", mockCallableStatement );
+        
         assertEquals(fedorahandle , Tuple.get1(triple) );
         assertEquals(queueid , (int )Tuple.get2(triple) );
         assertEquals(itemid , Tuple.get3(triple) );        
@@ -162,6 +157,7 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         verifyAllStatementsClosed();
         verifyConnectionClosed();
     }
+
     public void testRollbackWithValidQueueID() throws ConfigurationException, ClassNotFoundException, SQLException{
 
         statementHandler.prepareGlobalUpdateCount( 1 );
