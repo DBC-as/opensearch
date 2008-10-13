@@ -44,12 +44,15 @@ public class FedoraHandlerTest {
     FedoraAPIA mockFedoraAPIA;
     FedoraAPIM mockFedoraAPIM; 
     CargoContainer mockCargoContainer;
-    
+    DatastreamDef mockDatastreamDef;
+    MIMETypedStream mockMIMETypedStream;
+
     FedoraHandler fh;
     String[] pids;
     String testString;
     String returnPid;
     byte[] data;
+    DatastreamDef[] datastreams;
     
     /**
      * Before each test we construct the needed mockobjects 
@@ -62,7 +65,9 @@ public class FedoraHandlerTest {
         mockFedoraAPIA = createMock( FedoraAPIA.class );
         mockFedoraAPIM = createMock( FedoraAPIM.class );
         mockCargoContainer = createMock( CargoContainer.class );
-        
+        mockDatastreamDef = createMock( DatastreamDef.class );
+        mockMIMETypedStream = createMock( MIMETypedStream.class );
+
         //constructing up other needed objects
         pids = new String[]{"test:1"};    
         testString = "æøå";
@@ -81,6 +86,7 @@ public class FedoraHandlerTest {
         reset( mockFedoraAPIA );
         reset( mockFedoraAPIM );
         reset( mockCargoContainer );
+        reset( mockDatastreamDef );
                 
     }
     
@@ -106,72 +112,6 @@ public class FedoraHandlerTest {
         verify( mockFedoraClient );
         
     }
-
-    /**
-     * Tests that the IOException that the getAPIA call can throw is propagated 
-     * and execution stops
-     */
-    @Test public void constructorGetAPIAIOExceptionTest()throws ConfigurationException, IOException, MalformedURLException, ServiceException {
-    
-     /**1 setting up the needed mocks 
-         * Is done in setup()
-         */
-        
-        /**2 the expectations 
-         * moved to setup()
-         */
-        reset( mockFedoraClient ); // we need it from scratch
-        expect( mockFedoraClient.getAPIA() ).andThrow( new IOException( "" ) );
-        
-        /**3 replay*/
-        replay( mockFedoraClient );
-        
-
-        /** do the stuff */
-        try{
-        fh = new FedoraHandler(mockFedoraClient); 
-        }catch( Exception re ){
-            assertTrue( re.getClass() == IOException.class ); 
-        }
-        
-        /**4 check if it happened as expected */  
-        verify( mockFedoraClient );    
-    
-    }
-
- /**
-     * Tests that the IOException that the getAPIM call can throw is propagated 
-     * and execution stops
-     */
-    @Test public void constructorGetAPIMIOExceptionTest()throws ConfigurationException, IOException, MalformedURLException, ServiceException {
-    
-     /**1 setting up the needed mocks 
-         * Is done in setup()
-         */
-        
-        /**2 the expectations 
-         * moved to setup()
-         */
-        reset( mockFedoraClient ); // we need it from scratch
-        expect( mockFedoraClient.getAPIA() ).andReturn( mockFedoraAPIA );
-        expect( mockFedoraClient.getAPIM() ).andThrow( new IOException( "" ) );
-        
-        /**3 replay*/
-        replay( mockFedoraClient );
-        
-
-        /** do the stuff */
-        try{
-        fh = new FedoraHandler(mockFedoraClient); 
-        }catch( Exception re ){
-            assertTrue( re.getClass() == IOException.class ); 
-        }
-        
-        /**4 check if it happened as expected */  
-        verify( mockFedoraClient );    
-    
-    }
-
     
     /***
      * Tests the basic functionality og the submitdatastream
@@ -257,140 +197,84 @@ public class FedoraHandlerTest {
         verify( mockFedoraAPIM ); 
         verify( mockCargoContainer );
 
-    }  
+    }      
+    /**
+     * Tests the basic functionality of the getDataStream method 
+     */
+    @Test public void getDatastreamTest() throws RemoteException, ConfigurationException, UnknownHostException, ServiceException, IOException {
 
-    /**
-     * Test that submitDatastream throws the correct exception when its call to
-     * apim.ingest returns a RemoteException
-     */
-    @Test public void SubmitDatastreamRemoteExceptionFromIngestTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException {
-        
-        /**1 Setting up the needed mocks
-         * done in setup()
-         */
-        String exceptionTestString = "ingestRemoteExceptionThrownTest";
-        
-        /**2 the expectations 
-         * partly done in setup()
-         */
-        
-        expect( mockCargoContainer.getSubmitter() ).andReturn ( exceptionTestString ); 
-        expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andReturn( pids );
-        expect( mockCargoContainer.getFormat() ).andReturn( "format" );
-        // calls from constructFoxml
-        expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
-        expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
-        expect( mockCargoContainer.getStreamLength() ).andReturn( 6 );
-        expect( mockCargoContainer.getDataBytes() ).andReturn( data );
-        // out of constructFoxml
-        expect( mockFedoraAPIM.ingest( isA( byte[].class ), isA( String.class ), isA( String.class ) ) ).andThrow( new RemoteException ( exceptionTestString ) );
-        
-        
-        /**3 replay */
+       /**1 Setting up the needed mocks
+        * partly done in setup()
+        */
+       String getDatastreamTestString = "Testing basic info flow"; 
+       String testPid = "test:Pid";;
+       String testItemId = "testItemId";
+       datastreams = new DatastreamDef[]{mockDatastreamDef};
+       CargoContainer cargo = null;
+       
+       /**2 the expectations
+        * partly done in setup()
+        */
+       expect( mockFedoraAPIA.listDatastreams( testPid, null) ).andReturn( datastreams );
+       expect( mockDatastreamDef.getID() ).andReturn( testItemId ).times( 2 );
+       expect( mockFedoraAPIA.getDatastreamDissemination( testPid, testItemId, null ) ).andReturn( mockMIMETypedStream );
+       expect( mockMIMETypedStream.getStream() ).andReturn( data );
+       expect( mockDatastreamDef.getLabel() ).andReturn( "testLabel" );
+       expect( mockDatastreamDef.getMIMEType() ).andReturn( "text/xml" ).times( 2 ); 
+       
+       /**3 replay */
         replay( mockFedoraClient );
-        replay( mockFedoraAPIM );
-        replay( mockCargoContainer );
-        
-        /** do the stuff */ 
-        fh = new FedoraHandler(mockFedoraClient); 
-        try{
-            returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
-        }catch( Exception re ){
-            assertTrue(re.getClass() == RemoteException.class);
-            assertTrue( re.getMessage().equals( exceptionTestString ) );
-        }
-        
-        /**4 check if it happened as expected */  
-        verify( mockFedoraClient );
-        verify( mockFedoraAPIM );
-        verify( mockCargoContainer );        
-        
-    }  
-    
-    /**
-     * Test that submitDatastream throws the correct exception when its call to
-     * apim.getNextPID returns a RemoteException
-     */
-    @Test public void SubmitDatastreamRemoteExceptionFromGetNextPIDTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException {
-        
-        /**1 Setting up the needed mocks
-         * done in setup()
-         */
-        
-        /**2 the expectations 
-         * partly done in setup()
-         */
-        String exceptionTestString = "getNextPIDRemoteExceptionThrownTest";
-        
-        expect( mockCargoContainer.getSubmitter() ).andReturn ( exceptionTestString ); 
-        expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andThrow( new RemoteException( exceptionTestString ) );
-        
-        
-        /**3 replay */
-        replay( mockFedoraClient );
-        replay( mockFedoraAPIM );
-        replay( mockCargoContainer );
-        
-        /** do the stuff */ 
-        fh = new FedoraHandler(mockFedoraClient); 
-        try{
-            returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
-        }catch( Exception re ){
-            assertTrue( re.getClass() == RemoteException.class );
-            assertTrue( re.getMessage().equals( exceptionTestString ) );
-        }
-        
-        /**4 check if it happened as expected */  
-        verify( mockFedoraClient );
-        verify( mockFedoraAPIM );
-        verify( mockCargoContainer );        
-        
-    }  
-    
-    /**
-     * Test that submitDatastream and constructFoxml propagtes the IOException 
-     * on when construtFoxml gets an exception from cargoContainer.getDataBytes()
-     * 
-     * \todo: decide whether I have to test the propagation of the 
-     * nullpointerException as well?
-     */
-    @Test public void submitDatastreamIOException()throws IOException, ServiceException, RemoteException, ConfigurationException, UnknownHostException, XMLStreamException {
-
-        /**1 Setting up the needed mocks
-         * done in setup()
-         */
-        
-        /**2 the expectations 
-         * partly done in setup()
-         */
-        expect( mockCargoContainer.getSubmitter() ).andReturn ( "IOExceptionPropagationTest" ); 
-        expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andReturn( pids );
-        expect( mockCargoContainer.getFormat() ).andReturn( "format" );
-        // calls from constructFoxml
-        expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
-        expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
-        expect( mockCargoContainer.getStreamLength() ).andReturn( 6 );
-        expect( mockCargoContainer.getDataBytes() ).andThrow( new IOException( "" ) );
-        // out of constructFoxml
-               
-        /**3 replay */
-        replay( mockFedoraClient );
-        replay( mockFedoraAPIM );
-        replay( mockCargoContainer );
-        
+        replay( mockFedoraAPIA );
+        replay( mockDatastreamDef );
+        replay( mockMIMETypedStream );               
         /** do the stuff */ 
         FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
-        try{
-            returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
-        }catch( Exception ise ){
-            assertTrue(ise.getClass() == IOException.class);
-        }
-        
+        cargo = fh.getDatastream( testPid, testItemId );
+               
         /**4 check if it happened as expected */  
         verify( mockFedoraClient );
-        verify( mockFedoraAPIM ); 
-        verify( mockCargoContainer );
-    }  
-   //public void getDatastreamTest(){}
+        verify( mockFedoraAPIA ); 
+        verify( mockDatastreamDef );
+        verify( mockMIMETypedStream );
+ 
+   }
+
+    /**
+     * Tests that the getDatastream method throws an IllegalStateException
+     * when there is nothing that matches the given itemId
+     */
+    @Test public void getDatastreamNoMatchingStream() throws IOException, RemoteException, ConfigurationException, ServiceException {
+     /**1 Setting up the needed mocks
+        * partly done in setup()
+        */
+       String getDatastreamTestString = "Testing basic info flow"; 
+       String testPid = "test:Pid";;
+       String testItemId = "testItemId";
+       datastreams = new DatastreamDef[]{ mockDatastreamDef };
+       CargoContainer cargo = null;
+       
+       /**2 the expectations
+        * partly done in setup()
+        */
+       expect( mockFedoraAPIA.listDatastreams( testPid, null) ).andReturn( datastreams );
+       expect( mockDatastreamDef.getID() ).andReturn( "hat" ).times( 2 );
+       
+       /**3 replay */
+        replay( mockFedoraClient );
+        replay( mockFedoraAPIA );
+        replay( mockDatastreamDef );
+               
+        /** do the stuff */ 
+        FedoraHandler fh = new FedoraHandler( mockFedoraClient ); 
+        try{
+        cargo = fh.getDatastream( testPid, testItemId );
+        }catch( IllegalStateException ise ){
+            assertTrue( ise.getMessage().equals( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", testItemId, testPid ) ) );
+        }   
+        /**4 check if it happened as expected */  
+        verify( mockFedoraClient );
+        verify( mockFedoraAPIA ); 
+        verify( mockDatastreamDef );
+    }
 
 }
