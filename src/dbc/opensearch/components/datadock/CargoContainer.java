@@ -5,6 +5,20 @@ import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.BufferedInputStream;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.xml.sax.InputSource;
+import java.io.StringReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import java.io.IOException; 
+
 import org.apache.log4j.Logger;
 /**
  * CargoContainer is a datastructure used throughout OpenSearch for
@@ -14,6 +28,9 @@ import org.apache.log4j.Logger;
  * when dealing with the data.
  */
 public class CargoContainer {
+    
+    private String dublinCoreMetadata = null;
+
 
     /** object to hold information about the data*/
     private CargoObjectInfo coi;
@@ -121,6 +138,69 @@ public class CargoContainer {
         log.debug( String.format( "All Checks passed, CargoContainer constructed with values %s, %s, %s, %s", this.getStreamLength(), this.getMimeType(), lang, this.getSubmitter() ) );
         
     }
+
+    public CargoContainer(InputStream data, String dublinCore, String submitter, String format) throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException{
+        // read data
+        if( data.available() > 0 ){
+            this.data = new BufferedInputStream( data );
+        }
+        
+        dublinCoreMetadata = dublinCore;
+        
+        // 10: isolate and validate used dublin core fields
+        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = db.parse(new InputSource(new StringReader( dublinCore )));
+
+
+
+        NodeList langCand = doc.getElementsByTagName( "dc:language" );
+        String language = null;
+        for( int i = 0; i < langCand.getLength() ; i++ ){
+            Element tmpElem = (Element) langCand.item( i );
+            String cand =  tmpElem.getFirstChild().getNodeValue();
+            language = cand;
+            break;            
+        }        
+        if ( language == null){
+            throw new IllegalArgumentException( "No language specifier found" );
+        }
+
+        NodeList mimeCand = doc.getElementsByTagName( "dc:format" );
+        String mimeType = null;
+        String candMime = null;
+        for( int i = 0; i < mimeCand.getLength() ; i++ ){
+   
+            Element tmpElem = (Element) mimeCand.item( i );
+            candMime =  tmpElem.getFirstChild().getNodeValue();
+            if ( checkMimeType( candMime ) ){
+                mimeType = candMime;
+                break;
+            }
+        }
+        
+        // TODO: make getMime method
+
+        if ( mimeType == null){
+            throw new IllegalArgumentException( String.format( "Mimetype '%s' not supported ", candMime ) );
+        }
+        CargoMimeType CMT = null;
+        for (CargoMimeType cmt : CargoMimeType.values() ){
+            if( mimeType.equals( cmt.getMimeType() ) ){
+                log.debug( String.format( "Identified mimetype %s", mimeType ) );
+                CMT = cmt;
+            }
+        }
+
+        System.out.println( "MIMETYPE '"+mimeType+"'" );
+        System.out.println( "LANGUAGE '"+language+"'" );
+                
+        contentLength = this.data.available();
+        
+       log.debug( String.format( "Identified streamlength %s", contentLength ) );
+
+       coi = new CargoObjectInfo( CMT, language, submitter, format, contentLength );
+    }
+
     /**
      * @returns true if name is found in submitter-list, false otherwise
      */

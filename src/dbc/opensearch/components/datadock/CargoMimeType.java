@@ -9,7 +9,8 @@ public enum CargoMimeType{
     /** represents known mimetypes. All handler registrations must use
      * mimetypes defined here. Mimetypes from /etc/mime.types
      */
-    TEXT_XML( "text/xml", "XML Document");
+    TEXT_XML( "text/xml", "XML Document"),
+    APPLICATION_PDF( "application/pdf", "PDF Document" );
 
     private final String mimetype;
     private final String description;
