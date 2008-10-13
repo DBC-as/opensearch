@@ -219,7 +219,7 @@ public class FedoraHandlerTest {
      * Test that submitDatastream throws the correct exception when its call to
      * apim.ingest returns a wrong pid
      */
-    @Test public void submitDatastreamWrongPidReturnedTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException {
+    @Test public void submitDatastreamIngestReturnsWrongPidTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException {
         
         /**1 Setting up the needed mocks
          * done in setup()
@@ -228,7 +228,7 @@ public class FedoraHandlerTest {
         /**2 the expectations 
          * partly done in setup()
          */
-        expect( mockCargoContainer.getSubmitter() ).andReturn ( "wrongPidReturnedTest" ); 
+        expect( mockCargoContainer.getSubmitter() ).andReturn ( "IngestReturnsWrongPidTest" ); 
         expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andReturn( pids );
         expect( mockCargoContainer.getFormat() ).andReturn( "format" );
         // calls from constructFoxml
@@ -249,7 +249,7 @@ public class FedoraHandlerTest {
         try{
             returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
         }catch( Exception ise ){
-            assertTrue(ise.getClass() == IllegalStateException.class);
+            assertTrue( ise.getClass() == IllegalStateException.class );
         }
         
         /**4 check if it happened as expected */  
@@ -257,7 +257,55 @@ public class FedoraHandlerTest {
         verify( mockFedoraAPIM ); 
         verify( mockCargoContainer );
 
-    } 
+    }  
+
+    /**
+     * Test that submitDatastream throws the correct exception when its call to
+     * apim.ingest returns a RemoteException
+     */
+    @Test public void SubmitDatastreamRemoteExceptionFromIngestTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException {
+        
+        /**1 Setting up the needed mocks
+         * done in setup()
+         */
+        String exceptionTestString = "ingestRemoteExceptionThrownTest";
+        
+        /**2 the expectations 
+         * partly done in setup()
+         */
+        
+        expect( mockCargoContainer.getSubmitter() ).andReturn ( exceptionTestString ); 
+        expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andReturn( pids );
+        expect( mockCargoContainer.getFormat() ).andReturn( "format" );
+        // calls from constructFoxml
+        expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
+        expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
+        expect( mockCargoContainer.getStreamLength() ).andReturn( 6 );
+        expect( mockCargoContainer.getDataBytes() ).andReturn( data );
+        // out of constructFoxml
+        expect( mockFedoraAPIM.ingest( isA( byte[].class ), isA( String.class ), isA( String.class ) ) ).andThrow( new RemoteException ( exceptionTestString ) );
+        
+        
+        /**3 replay */
+        replay( mockFedoraClient );
+        replay( mockFedoraAPIM );
+        replay( mockCargoContainer );
+        
+        /** do the stuff */ 
+        fh = new FedoraHandler(mockFedoraClient); 
+        try{
+            returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
+        }catch( Exception re ){
+            assertTrue(re.getClass() == RemoteException.class);
+            assertTrue( re.getMessage().equals( exceptionTestString ) );
+        }
+        
+        /**4 check if it happened as expected */  
+        verify( mockFedoraClient );
+        verify( mockFedoraAPIM );
+        verify( mockCargoContainer );        
+        
+    }  
     
     /**
      * Test that submitDatastream throws the correct exception when its call to
@@ -272,9 +320,10 @@ public class FedoraHandlerTest {
         /**2 the expectations 
          * partly done in setup()
          */
+        String exceptionTestString = "getNextPIDRemoteExceptionThrownTest";
         
-        expect( mockCargoContainer.getSubmitter() ).andReturn ( "getNextPIDRemoteExceptionThrownTest" ); 
-        expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andThrow( new RemoteException("") );
+        expect( mockCargoContainer.getSubmitter() ).andReturn ( exceptionTestString ); 
+        expect( mockFedoraAPIM.getNextPID( isA( NonNegativeInteger.class ), isA( String.class ) ) ).andThrow( new RemoteException( exceptionTestString ) );
         
         
         /**3 replay */
@@ -287,7 +336,8 @@ public class FedoraHandlerTest {
         try{
             returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
         }catch( Exception re ){
-            assertTrue(re.getClass() == RemoteException.class);
+            assertTrue( re.getClass() == RemoteException.class );
+            assertTrue( re.getMessage().equals( exceptionTestString ) );
         }
         
         /**4 check if it happened as expected */  
