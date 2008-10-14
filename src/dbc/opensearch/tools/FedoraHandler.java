@@ -360,16 +360,6 @@ public class FedoraHandler implements Constants{
         //                    "Adding Datastream labelled"+label);
 
     }
-    /**
-     * Gives the caller a legal identifier for a namspace
-     * @return String, the next valid identifier
-     **/
-
-    public String getNextPid( String namespace ){
-        String pid = "";
-        //get next free pid from the base for the specified namespace
-        // using the getNextPid method from the API
-        return pid;
-    }
+  
 }
 

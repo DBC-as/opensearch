@@ -118,6 +118,47 @@ public class DataDock implements Callable<Float>{
     }
 
     /**
+     * doProcessing is the main method for the DataDock. Call operates
+     * on the DataDock object, and all data critical for its success
+     * is given at DataDock initialization. This method is used with
+     * java.util.concurrent.FutureTask, which upon finalisation
+     * (completion, exception or termination) will return an
+     * estimation of how long time it will take to bzw. index and save
+     * in fedora the data given with the CargoContainer.
+     * \see dbc.opensearch.tools.Estimation
+     * @returns an estimate on the completion-time of indexing and fedora submission
+     * @throws SQLException if the estimate could not be retrieved from the database
+     * @throws NoSuchElementException if the mimetype is unknown to the estimate method.
+     * \see dbc.opensearch.tools.Estimation.getEstimate(String, long)
+     * @throws ConfigurationException if the FedoraHandler could not be initialized.
+     * \see dbc.opensearch.tools.FeodraHandler
+     * @throws RemoteException if the datastream could not be ingested into the fedora base
+     * @throws XMLStreamException if the foxml could not be constructed in the FedoraHandler
+     * \see dbc.opensearch.tools.FedoraHandler
+     * @throws IOException if the FedoraHandler could not read data from the CargoContainer
+     * @throws ClassNotFoundException if the database could not be initialised 
+     * in the Estimation class \see dbc.opensearch.tools.Estimate 
+     */
+
+ //    private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException{
+//         log.debug( String.format( "Entering doProcessing" ) );
+//         Float processEstimate = 0f;
+//         String fedoraHandle = null;
+
+//         log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );        
+//         processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+//         fedoraHandle = fedoraStoreData();
+
+//         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+//         queue.push( fedoraHandle, cc.getFormat() );
+
+//         log.debug( String.format( "data queued" ) );
+
+//         log.info( String.format( "Data queued ") );
+//         return processEstimate;
+//     }
+
+    /**
      * fedoraStoreData is an internal method for storing data given
      * with the initialization of the DataDock into a fedora base.
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler

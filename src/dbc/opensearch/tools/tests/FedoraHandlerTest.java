@@ -227,9 +227,12 @@ public class FedoraHandlerTest {
         replay( mockFedoraAPIA );
         replay( mockDatastreamDef );
         replay( mockMIMETypedStream );               
+        
         /** do the stuff */ 
         FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
         cargo = fh.getDatastream( testPid, testItemId );
+        assertTrue( cargo.getSubmitter().equals( "test" ) );
+        assertTrue( cargo.getStreamLength() == 6 );
                
         /**4 check if it happened as expected */  
         verify( mockFedoraClient );
@@ -252,6 +255,7 @@ public class FedoraHandlerTest {
        String testItemId = "testItemId";
        datastreams = new DatastreamDef[]{ mockDatastreamDef };
        CargoContainer cargo = null;
+       boolean exceptionThrown = false;
        
        /**2 the expectations
         * partly done in setup()
@@ -270,7 +274,10 @@ public class FedoraHandlerTest {
         cargo = fh.getDatastream( testPid, testItemId );
         }catch( IllegalStateException ise ){
             assertTrue( ise.getMessage().equals( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", testItemId, testPid ) ) );
-        }   
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown); //To make sure we did get the exception
+        
         /**4 check if it happened as expected */  
         verify( mockFedoraClient );
         verify( mockFedoraAPIA ); 
