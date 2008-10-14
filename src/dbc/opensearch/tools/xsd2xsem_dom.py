@@ -3,6 +3,7 @@
 
 from xml.dom import minidom
 from xml.dom import Node
+from xml.etree import ElementTree
 from pprint import pprint
 import logging
 
@@ -71,17 +72,26 @@ class XSEMGenerator( object ):
 
         self.xsd_types = self.xsd_datatypes+self.xsd_derived_datatypes
 
-        # the instance_model holds all the paths traversed to reach the xpaths of the elements of the instance document
+        # the instance_model holds all the paths traversed to reach
+        # the xpaths of the elements of the instance document
         self.instance_model = {}
+
+        self.instance_model_list = []
 
         self.node = ""
         self.name = ""
+        self.parentName = ""
 
-        # for a given path, this variable tracks if the path is a necessary xpath of the instance document or an optional one.
-        # or perhaps we should just be lenient and let all elements have their chance. Empty field has never killed an index...
+        self.xml_instance_root = None
+        
+        # for a given path, this variable tracks if the path is a
+        # necessary xpath of the instance document or an optional one.
+        # or perhaps we should just be lenient and let all elements
+        # have their chance. Empty field has never killed an index...
         self.optional = False
 
-        # the mappings dict hold the data needed to build a mapping from an xpath expression to a compass field
+        # the mappings dict hold the data needed to build a mapping
+        # from an xpath expression to a compass field
         self.mappings = {}
 
         # instance counter for uid'ing the mappings
@@ -103,9 +113,6 @@ class XSEMGenerator( object ):
         Return an XPath expression that provides a unique path to
         the given node (supports elements, attributes, root nodes,
         text nodes, comments and PIs) within a document
-
-        >>> c = XSEMGenerator()
-
 
         """
         # extension to the base Node.{dom element defintions}
@@ -193,51 +200,127 @@ class XSEMGenerator( object ):
         """
 
         for child in document.childNodes:
-            
+
             #there is only one top level element node, let's find it: 
-            logging.debug( "searching for %s, node == %s", search_criteria, child.nodeName )
-            if child.parentNode.nodeName == "xsd:schema" and self.is_element_with_name( child, search_criteria ):
+            logging.debug( "searching for %s, node == %s, parent == %s", search_criteria, child.nodeName, self.find_parent_element_name( child ) )
+            if child.parentNode.nodeName == "xsd:schema" and \
+                   self.is_element_with_name( child, search_criteria ):
                 logging.debug( "name=\"%s\"", child.getAttribute( 'name' ) )
-                     
+
+                # if child has att name, it is in the instance model:
+                if child.hasAttribute( 'name' ):
+                    self.instance_model = { child.getAttribute( 'name' ) : '' }
+                    self.instance_model_list = [ child.getAttribute( 'name' ) ]
+                    self.xml_instance_root = ElementTree.Element( "fakeroot" )
+                    ElementTree.SubElement( self.xml_instance_root, child.getAttribute( 'name' ) )
+
+                    self.parentName = child.getAttribute( 'name' )
                 #if element has no type attribute, it has a nested definition
                 if not child.hasAttribute( 'type' ):
                     logging.debug( "node %s has no attribute type, searching for complexType", child.nodeName )
                     self.read_xsd( child, [ 'xsd:element', 'xsd:attribute', 'xsd:complexType' ] )
 
-            # otherwise, we should end down here, with the rest of the nodes
+            # otherwise, if the parent is not the schema, we should
+            # end down here, with the rest of the nodes
             elif self.is_element_with_name( child, search_criteria ):
+
                 if child.hasAttribute( 'type' ):
                     try:
                         datatype = child.getAttribute( 'type' ).split( ':' )[1]
                     except IndexError:
                         datatype = child.getAttribute( 'type' )
+
                     logging.debug( "node has attribute type == %s", datatype )
                     logging.debug( "type %s in xsd_datatypes == %s", datatype, ( datatype in self.xsd_datatypes ) )
 
                     if datatype in self.xsd_datatypes:
-                        print "xpath expr: %s"% self.get_xpath( child )
+                        self.instance_model[ child.getAttribute( 'type' ) ] = datatype
+                        self.instance_model_list.append( [ child.getAttribute( 'name' ), datatype ] )
+
                     else:
                         self.read_xsd( child, [ 'xsd:element', 'xsd:attribute' ] )
+
+                    # if child has att name, it is in the instance model:
+                    if child.hasAttribute( 'name' ):
+
+#                         if child.nodeName == "xsd:attribute":
+
+                        self.instance_model[ self.find_parent_type_from_type( child, self.find_parent_element_name( child ) ) ] = { child.getAttribute( 'name' ) : child.getAttribute( 'type' ) }
+                        self.instance_model_list.append( [ self.find_parent_element_name( child ), [ child.getAttribute( 'name' ), child.getAttribute( 'type' )  ] ] )
+
+                        name = self.find_parent_element_name( child )
+#                         print "parent element name = %s"%name
+#                         print "this element name   = %s"%child.getAttribute( 'name' )
+#                         print "xml is              = %s"%ElementTree.tostring( self.xml_instance_root )
+#                         print "find element yields = %s"%self.xml_instance_root.find( ".//"+name )
+#                         print "find element yields = %s"%self.xml_instance_root.find( name )
+
+                        hej  = self.xml_instance_root.find( ".//"+name ) if self.xml_instance_root.find( ".//"+name ) != None else self.xml_instance_root.find( name )
+                        if hej is None:
+                            print "xml is              = %s"%ElementTree.tostring( self.xml_instance_root )
+                            print "tried to find       = %s"%child.getAttribute( 'name' )
+                            print "parent element name = %s"%name
+                        
+                        node = ElementTree.SubElement( hej, child.getAttribute( 'name' ) )
+                        ElementTree.SubElement( node , child.getAttribute( 'type' ) )
+                        
+
+
                 else:
                     logging.debug( "node %s has no type, going to children", child.nodeName )
                     self.read_xsd( child, [ 'xsd:element', 'xsd:attribute', 'xsd:complexType' ] )
 
-                    print child.nodeName
-                    print child.nodeValue
-                    print child.attributes.item(0)
-
-            else:
+            else: #recurse
                 self.read_xsd( child, search_criteria )
                 
-#                     logging.debug( "name=\"%s\"", child.item( c-1 ) )
-                
 
+    def find_parent_element_name( self, node ):
+        """
+        This method is only appliable for XSDs
+
+        Given a node, this function returns the immediate parent that
+        has a name of a complexType
+        """
+        #root nodes are different objects, but sometimes accidentially
+        #gets down here, so we handle them
+        if node.parentNode.nodeName == "xsd:schema":
+            # this is a bad bad hack. please fix me
+            return self.parentName
+        if node.parentNode.hasAttribute( 'name' ):
+            return node.parentNode.getAttribute( 'name' )
+        else:
+            return self.find_parent_element_name( node.parentNode )
+
+    def find_parent_type_from_type( self, node, name ):
+        #root nodes are different objects, but sometimes accidentially
+        #gets down here, so we handle them
+        if node.parentNode.nodeName == "xsd:schema":
+            # this is a bad bad hack. please fix me
+            logging.debug( "returning default %s"%( self.parentName) )
+            return self.parentName
+        if node.parentNode.hasAttribute( 'name' ) and node.parentNode.getAttribute( 'name' ) == name:
+            logging.debug( "returning %s "% node.parentNode.getAttribute( 'name' ) )
+            return node.parentNode.getAttribute( 'type' )
+        else:
+            logging.debug( "* recursing on %s, %s:"% (node.parentNode, name ) )
+            return self.find_parent_type_from_type( node.parentNode, name )
+
+#     def recurse_parents( self, node, name ):
+#         if node.hasAttributes() and node.hasAttribute( 'name' ):
+#             if node.getAttribute( 'name' ) == name:
+#                 return node
+#         else:
+#             return self.recurse_parents( node.parentNode, name )
+
+
+    #obsolete?
     def find_entity(self, sub_tree,search_criteria):
         """
         
         Arguments:
         - `sub_tree`: the node-tree to search for the search_criteria
-        - `search_criteria`: a list of the elements that we are searching for, eg. [ 'xsd:element', 'xsd:attribute' ]
+        - `search_criteria`: a list of the elements that we are searching for,
+                             eg. [ 'xsd:element', 'xsd:attribute' ]
         
         returns the first node node that matches the criteria
         """
@@ -247,51 +330,46 @@ class XSEMGenerator( object ):
                 return child
             else:
                 return self.find_entity( child, search_criteria)
-        
-
-
-                
+              
     def is_element_with_name( self, node, name ):
-        """ small boolean helper function"""
-#         logging.debug( "%s is element_node: %s" %(node.nodeName, ( Node.ELEMENT_NODE == node.nodeType) ) )
-#         logging.debug( "%s == %s is %s"% (node.nodeName, name, (node.nodeName == name ) ) )
-
+        """
+        This method is only appliable for XSDs
+        
+        returns true iff node is xsd:element and has parameter name as
+        name
+        """
         return Node.ELEMENT_NODE == node.nodeType and node.nodeName in name
 
-    def find_element( self, child ):
-        for nested_defs in child.childNodes:
-            # if element is a complextype, we go down that tree to find the contained elements
-            if self.is_element_with_name( nested_defs, "xsd:complexType" ):
-                logging.debug( "nested_defs is complextype" )
-                for sublings in nested_defs.childNodes:
-                    pass
-#                    logging.debug( self.is_element_with_name( self.find_type( nested_defs ), "xsd:element" ) )
+    def xml_from_dict( self, dict ):
+        elem = ElementTree.Element("compass-core-mapping")
+        return ElementTree.tostring(elem)
 
+    # obsolete 
+#     def find_element( self, child ):
+#         for nested_defs in child.childNodes:
+#             # if element is a complextype, we go down that tree to
+#             # find the contained elements
+#             if self.is_element_with_name( nested_defs, "xsd:complexType" ):
+#                 logging.debug( "nested_defs is complextype" )
+#                 for sublings in nested_defs.childNodes:
+#                     pass
 
-    #obsolete ?
-    def find_type_attribute( self, node ):
-        logging.debug( "name of node to find type attribute in = %s"% node.nodeName )
-#         logging.debug( self.is_element_with_name( node, 'xsd:element' ) )
-        if self.is_element_with_name( node, 'xsd:element' ):
-            logging.debug( "found node with name %s"%node.nodeName )
-            return node
-        else: #go one down
-            for children in node.childNodes:
-                logging.debug( "iterating on ",children )
-                self.find_type_attribute( children )
+    #obsolete 
+#     def find_type_attribute( self, node ):
+#         logging.debug( "name of node to find type attribute in = %s"% node.nodeName )
+# #         logging.debug( self.is_element_with_name( node, 'xsd:element' ) )
+#         if self.is_element_with_name( node, 'xsd:element' ):
+#             logging.debug( "found node with name %s"%node.nodeName )
+#             return node
+#         else: #go one down
+#             for children in node.childNodes:
+#                 logging.debug( "iterating on ",children )
+#                 self.find_type_attribute( children )
     
-    # obsolete ?
-    def find_node_name( self, node, nodename ):
-        logging.debug( nodename )
-        for child in node.getElementsByTagName( nodename ):
-            logging.debug( child )
-
 
 if __name__ == '__main__':
     import sys
     c = XSEMGenerator( sys.argv[1] )
-
-    c.read_xsd( c.xml_tree.documentElement )
     
     # poor mans file check. Works only if the files are named after convention
     filetokens = sys.argv[1].split( '.' )
@@ -300,6 +378,22 @@ if __name__ == '__main__':
         for thing in c.get_leaf_elements( c.xml_tree.documentElement ):
             print "\n", thing.nodeName
             print c.get_xpath( thing )
+
+            
     elif filetokens[ len(filetokens) - 1 ] == 'xsd':
-        for mapping in c.mappings:
-            print "\n", mapping
+        c.read_xsd( c.xml_tree.documentElement )
+
+    #     pprint( c.instance_model_list )
+        
+#     print ElementTree.tostring( c.xml_instance_root )
+
+    sys.exit(0)
+    def find_abs_path( liste, navn, indent=0 ):
+        for element in liste:
+            if type(element) == type(list()):
+                find_abs_path( element, "", indent+1 )
+            else:
+                print indent*" "+element
+            
+
+    find_abs_path( c.instance_model_list, "fileEntry" )
