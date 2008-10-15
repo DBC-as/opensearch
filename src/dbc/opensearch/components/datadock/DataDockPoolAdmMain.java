@@ -45,7 +45,8 @@ class DataDockPoolAdmMain {
         }catch(Exception e){
             e.printStackTrace();
         }
-        System.out.print( "Done" );
+        System.out.print( "Done \n" );
+        System.exit(1);
         
     }
 
