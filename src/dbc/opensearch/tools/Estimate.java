@@ -65,23 +65,18 @@ public class Estimate extends DBConnection {
                 throw new NoSuchElementException( String.format( "We didnt get anything from the database, the mimetype \"%s\"is unknown.", mimeType ) );
 
             }
-            /** 
-            rs.last();
-            int rowCount = rs.getRow();
-            log.debug( String.format( "rows = %s", rowCount ) );
-            
-            if( rowCount != 1 ){
-                throw new SQLException( String.format( "Count if rows is different from 1. RowCount==%s", rowCount) );
-            }
-            rs.first();
-            */
+           
             long p = 0l;
             long d = 0l;
             log.debug("obtained resultset");
             while(rs.next()){
+                log.debug("next in rs");
                 p = rs.getLong( "processtime" );
-                log.debug("got element out of resultset");
+                log.debug( String.format( "got p: '%s'", p ) );
+                //                log.debug("got element out of resultset");
                 d = rs.getLong( "dataamount" );
+                log.debug( String.format( "got d: '%s'", d ) );
+
                 if ( d != 0l && p != 0l ){ // if either is zero
                     average_time = ( ( (float)p / d ) * length );
                 }
