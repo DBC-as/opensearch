@@ -82,6 +82,9 @@ public class Estimate extends DBConnection {
                 }
             }
             log.debug( String.format( "processtime=%s dataamount=%s, averagetime=%s", p, d, average_time ) );
+        }catch(NullPointerException npe){
+            log.debug( "got nullpointer exception" );
+            npe.printStackTrace();
         }
         finally{
             stmt.close();
