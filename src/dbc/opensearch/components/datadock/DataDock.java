@@ -103,23 +103,21 @@ public class DataDock implements Callable<Float>{
     public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( String.format( "Entering call" ) );
         Float processEstimate = 0f;
-        String fedoraHandle = null;
+//    String fedoraHandle = null;
 
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) ); 
-        try{
-        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
-        }catch(SQLException sqle){
-            int errorCode = sqle.getErrorCode();
-            log.debug( String.format( "Errorcose from getEstimate: '%s'", errorCode ) );
-        }
-        fedoraHandle = fedoraStoreData();
+//         log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) ); 
+      
+//         processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+      
+//         fedoraHandle = fedoraStoreData();
 
-        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-        queue.push( fedoraHandle, cc.getFormat() );
+//         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+//         queue.push( fedoraHandle, cc.getFormat() );
 
-        log.debug( String.format( "data queued" ) );
+//         log.debug( String.format( "data queued" ) );
 
-        log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
+//         log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
+        processEstimate = doProcessing();
         return processEstimate;
     }
 
@@ -146,23 +144,23 @@ public class DataDock implements Callable<Float>{
      * in the Estimation class \see dbc.opensearch.tools.Estimate 
      */
 
- //    private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException{
-//         log.debug( String.format( "Entering doProcessing" ) );
-//         Float processEstimate = 0f;
-//         String fedoraHandle = null;
+    private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException{
+        log.debug( String.format( "Entering doProcessing" ) );
+        Float processEstimate = 0f;
+        String fedoraHandle = null;
 
-//         log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );        
-//         processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
-//         fedoraHandle = fedoraStoreData();
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );        
+        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+        fedoraHandle = fedoraStoreData();
 
-//         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-//         queue.push( fedoraHandle, cc.getFormat() );
+        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+        queue.push( fedoraHandle, cc.getFormat() );
 
-//         log.debug( String.format( "data queued" ) );
+        log.debug( String.format( "data queued" ) );
 
-//         log.info( String.format( "Data queued ") );
-//         return processEstimate;
-//     }
+        log.info( String.format( "Data queued ") );
+        return processEstimate;
+    }
 
     /**
      * fedoraStoreData is an internal method for storing data given
