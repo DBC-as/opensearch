@@ -167,16 +167,10 @@ public class DataDockPoolAdm {
                             log.info(String.format("%s files to go",numOfFiles - answersReceived));
                         }
                     }
-
+                    
                 }
             }
             log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
-          
-       //  }catch(Exception alle){
-//             log.info("Could not initialize the DataDockPool");
-//             alle.printStackTrace();
-//         }
-        log.info("\n\n Program ends, bye bye ");
-        System.exit(1);
+            
     }
 }
