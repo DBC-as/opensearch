@@ -49,22 +49,19 @@ public class DataDockPoolAdm {
     File[] fileList;
     FutureTask[] FTList = null;
     
-    public DataDockPoolAdm()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+    public DataDockPoolAdm(Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
 
         log.debug( "Entering the constructor" );
-//        processqueue = new Processqueue();
-//         estimate = new Estimate();
-//         fedoraClientFactory = new FedoraClientFactory();
-//       fedoraClient = fedoraClientFactory.getFedoraClient();
-//  
-//        fedoraHandler = new FedoraHandler( fedoraClient );
+       this.processqueue = processqueue;
+        this.estimate = estimate;
+        this.fedoraHandler = fedoraHandler;
         log.debug( "Exiting the constructor" );
     }
     
   //   public void start( String mimetype, String lang, String submitter, String format, String filepath, Estimate estimate ) throws InterruptedException, ExecutionException{
 //         start( mimetype, lang, submitter, format, filepath, estimate, processqueue, fedoraHandler );
     //  }
-    public void start ( String mimetype, String lang, String submitter, String format, String filepath, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )throws InterruptedException, ExecutionException{
+    public void start ( String mimetype, String lang, String submitter, String format, String filepath )throws InterruptedException, ExecutionException{
 
         log.debug( String.format( "start the DataDockPool" ) );
 

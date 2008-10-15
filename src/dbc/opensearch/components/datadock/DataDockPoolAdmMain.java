@@ -20,26 +20,27 @@ class DataDockPoolAdmMain {
     
     public final static void Main( String[] args ){
         
-        // Construct the DataDockPoolAdm 
-        try{       
-        DataDockPoolAdm DDPA = new DataDockPoolAdm();
-        
-        // get the arguments for the execution
-        String mimetype = System.getProperty("mimetype");
-        String lang = System.getProperty("lang");
-        String submitter = System.getProperty("submitter");
-        String format = System.getProperty("format");
-        String filepath = System.getProperty("filepath");
-
-        
-        Processqueue processqueue = new Processqueue();
-        Estimate estimate = new Estimate();
-        FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
-        FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
-        FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );
-
-        // start the DataDockPoolAdm        
-        DDPA.start( mimetype, lang, submitter, format, filepath, estimate, processqueue, fedoraHandler );  
+       
+        try{ 
+            // Construct the dependencies for the DataDockPoolAdm
+            Processqueue processqueue = new Processqueue();
+            Estimate estimate = new Estimate();
+            FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
+            FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
+            FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );      
+            // Construct the DataDockPoolAdm        
+            DataDockPoolAdm DDPA = new DataDockPoolAdm ( estimate, processqueue, fedoraHandler );
+            
+            // get the arguments for the execution
+            String mimetype = System.getProperty("mimetype");
+            String lang = System.getProperty("lang");
+            String submitter = System.getProperty("submitter");
+            String format = System.getProperty("format");
+            String filepath = System.getProperty("filepath");
+            
+            
+            // start the DataDockPoolAdm        
+            DDPA.start( mimetype, lang, submitter, format, filepath );  
 
         }catch(Exception e){
             e.printStackTrace();
