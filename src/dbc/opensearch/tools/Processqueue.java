@@ -29,7 +29,7 @@ public class Processqueue extends DBConnection {
     /**
      *  database Connection
      */
-    private Connection con;
+    // private Connection con;
 
     /**
      * Constructor
@@ -50,7 +50,7 @@ public class Processqueue extends DBConnection {
     public void push( String fedorahandle, String itemID ) throws ClassNotFoundException, SQLException {
 
         log.debug( "Processqueue.push() called" );
-
+        Connection con;
         con = establishConnection();
 
         /** \todo: reset counter if queue is empty */
@@ -87,7 +87,7 @@ public class Processqueue extends DBConnection {
      */
     public Triple<String, Integer, String>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
         log.debug( "Entering Processqueue.pop()" );
-
+        Connection con;
         con = establishConnection();
 
         // preparing call of stored procedure
@@ -150,7 +150,7 @@ public class Processqueue extends DBConnection {
      */
     public void commit( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException {
         log.debug( "Processqueue.commit() called" );
-
+        Connection con;
         con = establishConnection();
 
         Statement stmt = null;
@@ -188,7 +188,7 @@ public class Processqueue extends DBConnection {
      */
     public void rollback( int queueid ) throws ClassNotFoundException, SQLException, NoSuchElementException{
         log.debug( "Processqueue.rollback() called" );
-
+        Connection con;
         con = establishConnection();
 
         Statement stmt = null;
@@ -226,6 +226,7 @@ public class Processqueue extends DBConnection {
         log.debug( "Entering Processqueue.deActivate()" );
 
         String sql_query = "UPDATE processqueue SET processing = 'N' WHERE processing = 'Y'";
+        Connection con;
         con = establishConnection();
         Statement stmt = null;
         stmt = con.createStatement();
@@ -252,7 +253,7 @@ public class Processqueue extends DBConnection {
      */
     private Vector getActiveProcesses() throws ClassNotFoundException, SQLException {
         log.debug( "Entering Processqueue.getActiveProcesses()" );
-
+        Connection con;
         con = establishConnection();
         // Query database
         Statement stmt = null;
@@ -280,6 +281,7 @@ public class Processqueue extends DBConnection {
 
     public void removeElem( int queueId ) throws SQLException{
         log.debug( String.format("Entering removeElemFromQueue with parameter: '%s'", queueId) );
+        Connection con;
         con = establishConnection();
         Statement stmt = null;
         String sql_query = String.format( "DELETE FROM processqueue WHERE queueid = %s", queueId );    

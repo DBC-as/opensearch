@@ -19,7 +19,7 @@ public class Estimate extends DBConnection {
     /**
      *  database Connection
      */
-    private Connection con;
+    //private Connection con;
 
     /**
      * Log
@@ -104,7 +104,7 @@ public class Estimate extends DBConnection {
      */
     public void updateEstimate( String mimeType, long length, long time ) throws SQLException, ClassNotFoundException{
         log.debug( String.format( "UpdateEstimate(mimeType = %s, length = %s, time = %s) called", mimeType, length, time ) );
-
+        Connection con;
         con = establishConnection();
  
         Statement stmt = null;
