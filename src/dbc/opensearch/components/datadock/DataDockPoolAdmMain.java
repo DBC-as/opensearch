@@ -18,7 +18,7 @@ class DataDockPoolAdmMain {
 //     String filepath;
 //     DataDockPoolAdm DDPA;
     
-    public final static void Main( String[] args ){
+    public final static void main( String[] args ){
         
        
         try{ 
