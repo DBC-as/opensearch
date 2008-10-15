@@ -155,9 +155,18 @@ public class DataDockPoolAdm {
                     }else{
                         //log.info( "\n calling isDone \n" );
                         if( FTList[x].isDone() ){
-                            
-                            estimateMessageString = String.format("The file: %s , will take approximately: %s to process \n", fileNameList[x],FTList[x].get() );
-                            log.info(estimateMessageString);
+                            try{
+                                log.debug( "A thread is done or " );
+                                estimateMessageString = String.format("The file: %s , will take approximately: %s to process \n", fileNameList[x],FTList[x].get() );
+                                log.info(estimateMessageString);
+                            }catch(ExecutionException ee){
+                                //Catching exception from the thread
+                                Throwable cause = ee.getCause();
+                                log.fatal( String.format( "Caught thread error associated with file: '%s' ", fileNameList[x] ) );
+                                RuntimeException re = new RuntimeException(cause);
+                                throw re;
+                            }
+
                             /**
                              * Changing the corresponding String in the nameList 
                              * to the donestring, yes its crappy, but it works for now 
@@ -165,6 +174,7 @@ public class DataDockPoolAdm {
                             fileNameList[x] = doneString; 
                             answersReceived++;   
                             log.info(String.format("%s files to go",numOfFiles - answersReceived));
+                            
                         }
                     }
                     
