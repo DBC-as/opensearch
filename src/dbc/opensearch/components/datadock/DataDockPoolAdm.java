@@ -3,13 +3,23 @@ package dbc.opensearch.components.datadock;
 import dbc.opensearch.tools.FileFilter;
 import dbc.opensearch.tools.XmlFileFilter;
 
-//import dbc.opensearch.tools.Estimate;
+import dbc.opensearch.tools.Estimate;
+import dbc.opensearch.tools.Processqueue;
+import dbc.opensearch.tools.FedoraClientFactory;
+import dbc.opensearch.tools.FedoraHandler;
+import fedora.client.FedoraClient;
 
 
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.log4j.Logger;
 import java.io.*;
+import org.apache.commons.configuration.ConfigurationException; 
+import java.lang.ClassNotFoundException; 
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import javax.xml.rpc.ServiceException;
+import java.io.IOException;
 
 /**
  * This class administrates the start up of DataDockPool, giving it
@@ -18,26 +28,50 @@ import java.io.*;
  *
  */
 public class DataDockPoolAdm {
-    static Logger log = Logger.getLogger("DataDockPoolAdm");
+    static Logger log = Logger.getLogger( "DataDockPoolAdm" );
+    String mimetype;
+    String lang;
+    String submitter;
+    String format;
+    String filepath;
+    Estimate estimate;
+    Processqueue processqueue;
+    FedoraClientFactory fedoraClientFactory;
+    FedoraClient fedoraClient;
+    FedoraHandler fedoraHandler;
+    DataDockPool DDP;
+    String[] fileNameList;
+    File[] fileList;
+    FutureTask[] FTList = null;
     
-    public final static void main(String[] args){
-        log.debug( String.format( "start the datadockpool" ) );
+    public DataDockPoolAdm()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+        log.debug( "Entering the constructor" );
+        processqueue = new Processqueue();
+        estimate = new Estimate();
+        fedoraClientFactory = new FedoraClientFactory();
+        fedoraClient = fedoraClientFactory.getFedoraClient();
+        fedoraHandler = new FedoraHandler( fedoraClient );
+        log.debug( "Exiting the constructor" );
+    }
+    
+    public void start( String mimetype, String lang, String submitter, String format, String filepath ) {
+        start( mimetype, lang, submitter, format, filepath, estimate, processqueue, fedoraHandler );
+    }
+    public void start ( String mimetype, String lang, String submitter, String format, String filepath, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ){
+        log.debug( String.format( "start the DataDockPool" ) );
 
-        DataDockPool DDP;
+        //DataDockPool DDP;
         try{
             log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
             DDP = new DataDockPool(10);
-
+            
             log.debug( String.format( "Getting properties for the CargoContainer" ) );
-            String mimetype = System.getProperty("mimetype");
-            String lang = System.getProperty("lang");
-            String submitter = System.getProperty("submitter");
-            String format = System.getProperty("format");
-            String filepath = System.getProperty("filepath"); 
-            String[] fileNameList;
-            File[] fileList;
-            FutureTask[] FTList = null;
-
+            this.mimetype = mimetype;
+            this.lang = lang;
+            this.submitter = submitter;
+            this.format = format;
+            this.filepath = filepath;
+            
             /** \todo: what the *&^%$ is this? very simple: a unique string to 
              * match on, this code is NOT intended to be reused! It is a transcription
              * of a Korean sentence meaning "I do not love you"
