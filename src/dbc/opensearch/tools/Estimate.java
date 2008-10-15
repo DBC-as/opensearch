@@ -48,7 +48,7 @@ public class Estimate extends DBConnection {
      */
     public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException {
         log.debug( String.format( "estimate.getEstimate(mimeType=%s, length=%s) called", mimeType, length ) );
-
+        Connection con;
         con = establishConnection();
 
         float average_time = 0f;
