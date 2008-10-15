@@ -156,7 +156,7 @@ public class DataDockPoolAdm {
                         //log.info( "\n calling isDone \n" );
                         if( FTList[x].isDone() ){
                             try{
-                                log.debug( "A thread is done or " );
+                                // log.debug( "A thread is done or it terminated with an exception" );
                                 estimateMessageString = String.format("The file: %s , will take approximately: %s to process \n", fileNameList[x],FTList[x].get() );
                                 log.info(estimateMessageString);
                             }catch(ExecutionException ee){
