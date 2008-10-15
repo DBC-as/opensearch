@@ -105,8 +105,13 @@ public class DataDock implements Callable<Float>{
         Float processEstimate = 0f;
         String fedoraHandle = null;
 
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );        
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) ); 
+        try{
         processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+        }catch(SQLException sqle){
+            int errorCode = sqle.getErrorCode();
+            log.debug( String.format( "Errorcose from getEstimate: '%s'", errorCode ) );
+        }
         fedoraHandle = fedoraStoreData();
 
         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
