@@ -1,4 +1,9 @@
 package dbc.opensearch.components.datadock;
+
+import dbc.opensearch.tools.Estimate;
+import dbc.opensearch.tools.Processqueue;
+import dbc.opensearch.tools.FedoraHandler;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.*;
@@ -10,6 +15,9 @@ public class DataDockPool {
 
     private boolean initialised; /** tells whether the pool is initialised */
     private ExecutorService threadExecutor; /** The threadpool */
+    private Estimate estimate;
+    private Processqueue processqueue;
+    private FedoraHandler fedoraHandler;
     Logger log = Logger.getLogger("DataDockPool");
 
     /**
@@ -19,7 +27,12 @@ public class DataDockPool {
      * \see java.util.concurrent.FixedThreadPool
      * @throws IllegalArgumentException if the threadpool is tried initialized with no threads
      */
-    DataDockPool( int numberOfThreads ) throws IllegalArgumentException{
+    DataDockPool( int numberOfThreads, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws IllegalArgumentException{
+        
+        this.estimate = estimate;
+        this.processqueue = processqueue;
+        this.fedoraHandler = fedoraHandler;
+        
         if ( numberOfThreads <= 0 ){
             throw new IllegalArgumentException( "refusing to construct empty pool" );
         }        
@@ -46,7 +59,7 @@ public class DataDockPool {
         }
 
         log.info( String.format( "Creating the FutureTask with a DataDock" ) );
-        FutureTask future = new FutureTask(new DataDock(cc));
+        FutureTask future = new FutureTask(new DataDock(cc, estimate, processqueue, fedoraHandler ));
         
         log.debug( "join the thread to the pool" );
         threadExecutor.submit(future);

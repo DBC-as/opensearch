@@ -1,7 +1,7 @@
 package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.tools.FedoraClientFactory;
+//import dbc.opensearch.tools.FedoraClientFactory;
 import dbc.opensearch.tools.Estimate;
 import dbc.opensearch.tools.Processqueue;
 
@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fedora.server.errors.ServerException;
-import fedora.client.FedoraClient;
+//import fedora.client.FedoraClient;
 
 import java.util.concurrent.Callable;
 
@@ -59,7 +59,7 @@ public class DataDock implements Callable<Float>{
     private CargoContainer cc;
     private Processqueue queue;
     private XMLConfiguration config;
-    private FedoraClientFactory fcf;
+    //  private FedoraClientFactory fcf;
     private static volatile FedoraHandler fh;
    
     private Logger log = Logger.getLogger("DataDock");
@@ -72,12 +72,13 @@ public class DataDock implements Callable<Float>{
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dbc.opensearch.tools.DBConnection
      */
-    public DataDock( CargoContainer cargo ) throws ConfigurationException, ClassNotFoundException {
+    public DataDock( CargoContainer cargo, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
-        queue = new Processqueue();
+        queue = processqueue;
+        fh = fedoraHandler;
         
-        estimate = new Estimate();
+        this.estimate = estimate;
         log.debug( String.format( "DataDock Construction finished" ) );
     }
 
@@ -172,24 +173,12 @@ public class DataDock implements Callable<Float>{
 
         /** todo: give real applicable value to label. value should be given by cargo container*/
         String label = "test";
-        // log.debug ( "creating a FedoraClientFactory" );  
-        fcf = new FedoraClientFactory();
-        // open connection to fedora base
-        if( fh == null ){
-            log.info( "No FedoraHandler exists, initializing a new one" );
-            //create the FedoraClient to give to the FedoraHandler
-            log.debug( "getting a FedroaClient for the FedoraHandler" );
-            FedoraClient client = fcf.getFedoraClient();
-            fh = new FedoraHandler( client );
         
-        }else{
-            log.info( "A FedoraHandler is already initialized, using it" );
-        }
-
         // submit data 
         fedoraHandle = fh.submitDatastream( cc, label );
         log.info( String.format( "Ingest succeded, returning pid=%s",fedoraHandle ) );
         log.debug( "Exiting DataDock.fedoraStoreData" );
+        
         return fedoraHandle;
     }
 }

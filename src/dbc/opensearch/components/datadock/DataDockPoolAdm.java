@@ -49,18 +49,15 @@ public class DataDockPoolAdm {
     File[] fileList;
     FutureTask[] FTList = null;
     
-    public DataDockPoolAdm(Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+    public DataDockPoolAdm( Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
 
         log.debug( "Entering the constructor" );
-       this.processqueue = processqueue;
+        this.processqueue = processqueue;
         this.estimate = estimate;
         this.fedoraHandler = fedoraHandler;
         log.debug( "Exiting the constructor" );
     }
     
-  //   public void start( String mimetype, String lang, String submitter, String format, String filepath, Estimate estimate ) throws InterruptedException, ExecutionException{
-//         start( mimetype, lang, submitter, format, filepath, estimate, processqueue, fedoraHandler );
-    //  }
     public void start ( String mimetype, String lang, String submitter, String format, String filepath )throws InterruptedException, ExecutionException{
 
         log.debug( String.format( "start the DataDockPool" ) );
@@ -68,7 +65,7 @@ public class DataDockPoolAdm {
         //DataDockPool DDP;
         //try{
             log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
-            DDP = new DataDockPool(10);
+            DDP = new DataDockPool(10, estimate, processqueue, fedoraHandler );
             
             log.debug( String.format( "Getting properties for the CargoContainer" ) );
             this.mimetype = mimetype;
