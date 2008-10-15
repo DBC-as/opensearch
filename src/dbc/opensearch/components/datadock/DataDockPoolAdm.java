@@ -5,9 +5,9 @@ import dbc.opensearch.tools.XmlFileFilter;
 
 import dbc.opensearch.tools.Estimate;
 import dbc.opensearch.tools.Processqueue;
-import dbc.opensearch.tools.FedoraClientFactory;
+//import dbc.opensearch.tools.FedoraClientFactory;
 import dbc.opensearch.tools.FedoraHandler;
-import fedora.client.FedoraClient;
+//import fedora.client.FedoraClient;
 
 
 import java.util.concurrent.*;
@@ -20,6 +20,9 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
+import java.lang.InterruptedException; 
+import java.util.concurrent.ExecutionException;
+
 
 /**
  * This class administrates the start up of DataDockPool, giving it
@@ -35,33 +38,38 @@ public class DataDockPoolAdm {
     String format;
     String filepath;
     Estimate estimate;
+
     Processqueue processqueue;
-    FedoraClientFactory fedoraClientFactory;
-    FedoraClient fedoraClient;
+    //FedoraClientFactory fedoraClientFactory;
+    //FedoraClient fedoraClient;
     FedoraHandler fedoraHandler;
+
     DataDockPool DDP;
     String[] fileNameList;
     File[] fileList;
     FutureTask[] FTList = null;
     
     public DataDockPoolAdm()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+
         log.debug( "Entering the constructor" );
-        processqueue = new Processqueue();
-        estimate = new Estimate();
-        fedoraClientFactory = new FedoraClientFactory();
-        fedoraClient = fedoraClientFactory.getFedoraClient();
-        fedoraHandler = new FedoraHandler( fedoraClient );
+//        processqueue = new Processqueue();
+//         estimate = new Estimate();
+//         fedoraClientFactory = new FedoraClientFactory();
+//       fedoraClient = fedoraClientFactory.getFedoraClient();
+//  
+//        fedoraHandler = new FedoraHandler( fedoraClient );
         log.debug( "Exiting the constructor" );
     }
     
-    public void start( String mimetype, String lang, String submitter, String format, String filepath ) {
-        start( mimetype, lang, submitter, format, filepath, estimate, processqueue, fedoraHandler );
-    }
-    public void start ( String mimetype, String lang, String submitter, String format, String filepath, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ){
+  //   public void start( String mimetype, String lang, String submitter, String format, String filepath, Estimate estimate ) throws InterruptedException, ExecutionException{
+//         start( mimetype, lang, submitter, format, filepath, estimate, processqueue, fedoraHandler );
+    //  }
+    public void start ( String mimetype, String lang, String submitter, String format, String filepath, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )throws InterruptedException, ExecutionException{
+
         log.debug( String.format( "start the DataDockPool" ) );
 
         //DataDockPool DDP;
-        try{
+        //try{
             log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
             DDP = new DataDockPool(10);
             
@@ -170,10 +178,10 @@ public class DataDockPoolAdm {
             }
             log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
           
-        }catch(Exception alle){
-            log.info("Could not initialize the DataDockPool");
-            alle.printStackTrace();
-        }
+       //  }catch(Exception alle){
+//             log.info("Could not initialize the DataDockPool");
+//             alle.printStackTrace();
+//         }
         log.info("\n\n Program ends, bye bye ");
         System.exit(1);
     }

@@ -2,6 +2,11 @@ package dbc.opensearch.components.datadock;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.configuration.ConfigurationException;
+import dbc.opensearch.tools.Estimate;
+import dbc.opensearch.tools.Processqueue;
+import dbc.opensearch.tools.FedoraClientFactory;
+import dbc.opensearch.tools.FedoraHandler;
+import fedora.client.FedoraClient;
 
 class DataDockPoolAdmMain {
 
@@ -26,8 +31,15 @@ class DataDockPoolAdmMain {
         String format = System.getProperty("format");
         String filepath = System.getProperty("filepath");
 
+        
+        Processqueue processqueue = new Processqueue();
+        Estimate estimate = new Estimate();
+        FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
+        FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
+        FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );
+
         // start the DataDockPoolAdm        
-        DDPA.start( mimetype, lang, submitter, format, filepath );  
+        DDPA.start( mimetype, lang, submitter, format, filepath, estimate, processqueue, fedoraHandler );  
 
         }catch(Exception e){
             e.printStackTrace();
