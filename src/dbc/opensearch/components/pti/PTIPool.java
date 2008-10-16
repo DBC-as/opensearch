@@ -2,6 +2,7 @@ package dbc.opensearch.components.pti;
 
 import dbc.opensearch.tools.FedoraHandler;
 import dbc.opensearch.tools.FedoraClientFactory;
+import dbc.opensearch.tools.Estimate;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
@@ -38,8 +39,9 @@ public class PTIPool {
 
     private ExecutorService threadExecutor; /**The threadpool */
     private static Compass theCompass;
-    private static FedoraHandler theFedoraHandler;
-    private FedoraClientFactory fedoraClientFactory;
+    //private static FedoraHandler theFedoraHandler;
+    //private FedoraClientFactory fedoraClientFactory;
+    private FedoraHandler fedoraHandler;
     Logger log = Logger.getLogger("PTIPool");
 
     /**
@@ -51,17 +53,17 @@ public class PTIPool {
      * @throws ServiceException ServiceException something went wrong initializing the fedora client
      * @throws IOException something went wrong initializing the fedora client
      */
-    public PTIPool( int numberOfThreads ) throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+    public PTIPool( int numberOfThreads, FedoraHandler fedoraHandler ) throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( String.format( "Entering PTIPool(NumberOfThreads=%s)", numberOfThreads ) );
         
-        // Securing nuberOfThreads > 0
+        this.fedoraHandler = fedoraHandler;
+
         if ( numberOfThreads <= 0 ){
             /** \todo Find suitable exception */
             log.fatal( String.format( "Number of threads specified was 0 or less." ) );
             throw new ConfigurationException( "Refusing to construct empty PTIPool" );
         }
         
-        fedoraClientFactory = new FedoraClientFactory();
         log.debug( String.format( "Starting the threadPool" ) );
         threadExecutor = Executors.newFixedThreadPool( numberOfThreads );
 
@@ -81,16 +83,7 @@ public class PTIPool {
             theCompass = conf.buildCompass();
             
             log.debug( "Compass build" );
-        }
-
-        log.debug( "Setting up the FedoraHandler" );
-          
-        if( theFedoraHandler == null) {
-            log.debug( "No fedorahandler found. Initializing a new one" );
-            log.debug( "Getting the FedoraClient to give to the FedoraHandler" );
-            FedoraClient client = fedoraClientFactory.getFedoraClient();
-            theFedoraHandler = new FedoraHandler(client);
-        }
+        }        
         log.info( "The PTIPool has been constructed" );
     }
 
@@ -103,7 +96,7 @@ public class PTIPool {
      * @throws ConfigurationException error reading the PTI configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public FutureTask createAndJoinThread (String fHandle, String itemID )throws ConfigurationException, ClassNotFoundException{
+    public FutureTask createAndJoinThread (String fHandle, String itemID, Estimate estimate )throws ConfigurationException, ClassNotFoundException{
         log.debug( String.format( "entering createAndJoinThreads( fhandle=%s, itemID=%s )", fHandle, itemID ) );
         
         CompassSession session = null;
@@ -114,7 +107,7 @@ public class PTIPool {
         session = getSession();
         
         log.debug( "Constructing FutureTask on PTI" );
-        future = new FutureTask( new PTI( session, fHandle, itemID, theFedoraHandler ));
+        future = new FutureTask( new PTI( session, fHandle, itemID, fedoraHandler, estimate ));
         
         log.debug( String.format( "Submitting the FutureTask to the threads" ) );
         threadExecutor.submit(future);

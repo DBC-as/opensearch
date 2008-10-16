@@ -52,13 +52,13 @@ public class PTI implements Callable<Long>{
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh ) throws ConfigurationException, ClassNotFoundException {
+    public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh, Estimate estimate ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "PTI constructor(session, fedoraHandle=%s, itemID=%s, fh", fedoraHandle, itemID ) );
         this.session = session;
         this.fedoraHandle = fedoraHandle;
         datastreamItemID = itemID;
         this.fh = fh;
-        estimate = new Estimate();
+        this.estimate = estimate;
     }
 
     /**
@@ -75,7 +75,7 @@ public class PTI implements Callable<Long>{
      * @throws ClassNotFoundException if the databasedriver is not found
      */
  
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+    public Long call( ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
         log.debug( "Entering PTI.call()" );
 
         doProcessing( );
@@ -86,7 +86,6 @@ public class PTI implements Callable<Long>{
         estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
 
         log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
-
 
         return processtime;
     }
