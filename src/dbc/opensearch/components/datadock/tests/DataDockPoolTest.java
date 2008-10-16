@@ -106,30 +106,49 @@ public class DataDockPoolTest {
                 
     }
     
-  //   /***
-//      * Tests that construction throws an IllegalArgumentException when
-//      * the first argument is < 0
-//      */
+    /***
+     * Tests that construction throws an IllegalArgumentException when
+     * the first argument is < 0
+     */
     
-//     @Test public void illegalArgumentConstructionTest(){
+    @Test public void illegalArgumentConstructionTest(){
         
-//         /**1 Setting up the needed mocks
-//          * Done in setup()
-//          */
+        boolean gotException = false;
+        /**1 Setting up the needed mocks
+         * Done in setup()
+         */
         
-//         /**2 the expectations 
-//          * partly done in setup
-//          */
+        /**2 the expectations 
+         * partly done in setup
+         */
 
-//         /**3 replay */
+        /**3 replay */
 
-//         /** do the stuff */ 
+        /** do the stuff */ 
+        try{
+            DDP =new DataDockPool( -1, mockEstimate, mockProcessqueue, mockFedoraHandler );        
+        }catch( Exception iae ){
+            assertTrue(  IllegalArgumentException.class ==  iae.getClass() );
+            gotException = true;
+        }
+        assertTrue( gotException );
+        /**4 check if it happened as expected */  
+        
+     }
+   //  /**
+//      * Tests that the methods cant be called until the DataDockPool 
+//      * has been constructed
+//      */
+//     @Test public void noMethodCallsBeforeInitialisationTest(){
+//         DataDockPool DDP;
+//         boolean gotException = false;
+//         FutureTask future;
 //         try{
-//             DDP =new DataDockPool( -1, mockEstimate, mockProcessqueue, mockFedoraHandler );        
-//         }catch( IllegalArgumentException iae ){
-//             assertTrue(  IllegalArgumentException.class ==  iae.getClass() );
+//             DDP.createAndJoinThread( mockCargoContainer );
+//         }catch( Exception iae ){
+//             assertTrue( iae.getClass() == IllegalArgumentException.class ); 
+//             gotException = true;
 //         }
-//         /**4 check if it happened as expected */  
-        
-    //  }
+//         assertTrue( gotException );
+//     }
 }

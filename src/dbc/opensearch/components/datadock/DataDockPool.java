@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 public class DataDockPool {
 
-    private boolean initialised; /** tells whether the pool is initialised */
+    //private boolean initialised; /** tells whether the pool is initialised */
     private ExecutorService threadExecutor; /** The threadpool */
     private Estimate estimate;
     private Processqueue processqueue;
@@ -37,8 +37,8 @@ public class DataDockPool {
             throw new IllegalArgumentException( "refusing to construct empty pool" );
         }        
         threadExecutor = Executors.newFixedThreadPool(numberOfThreads);
-        /** \todo: is this boolean useful? */
-        initialised = true;
+        // /** \todo: is this boolean useful? */
+//         initialised = true;
     }
     
 
@@ -49,19 +49,19 @@ public class DataDockPool {
      * This method should have a more telling name form the callers
      * point of view
      * @returns the FutureTask with the (future) return value of the DataDock calls
-     * @throws IllegalArgumentException if the threadpool is not initialized
+    // * @throws IllegalArgumentException if the threadpool is not initialized
      * @throws ConfigurationException if the DataDock could not be initialized
      */
     public FutureTask createAndJoinThread( CargoContainer cc )throws IllegalArgumentException, ConfigurationException, ClassNotFoundException{
-        /** \todo: this boolean can only and always be true */
-        if(!initialised){
-            throw new IllegalArgumentException("trying to create a thread without a threadpool");
-        }
+//         /** \todo: this boolean can only and always be true, if it tried to call a method on a non-initialized object the compiler does not accept it */
+//         if(!initialised){
+//             throw new IllegalArgumentException("trying to create a thread without a threadpool");
+//         }
 
         log.info( String.format( "Creating the FutureTask with a DataDock" ) );
         FutureTask future = new FutureTask(new DataDock(cc, estimate, processqueue, fedoraHandler ));
         
-        log.debug( "join the thread to the pool" );
+        log.debug( "submit the thread to the pool" );
         threadExecutor.submit(future);
         log.debug( "return the FutureTask to the caller" );
         return future;
