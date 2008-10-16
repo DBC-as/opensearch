@@ -38,7 +38,8 @@ import javax.xml.rpc.ServiceException;
 public class PTIPool {
 
     private ExecutorService threadExecutor; /**The threadpool */
-    private static Compass theCompass;
+    //private static Compass theCompass;
+    
     //private static FedoraHandler theFedoraHandler;
     //private FedoraClientFactory fedoraClientFactory;
     private FedoraHandler fedoraHandler;
@@ -66,24 +67,7 @@ public class PTIPool {
         
         log.debug( String.format( "Starting the threadPool" ) );
         threadExecutor = Executors.newFixedThreadPool( numberOfThreads );
-
-        log.debug( "Setting up the Compass object" );
-        if( theCompass == null ){
-            log.debug( "No session found. Setting up a new one. getting parameters." );
-            
-            CompassConfiguration conf = new CompassConfiguration();
-            URL cfg = getClass().getResource("/compass.cfg.xml");
-            URL cpm = getClass().getResource("/xml.cpm.xml");
-            log.debug( String.format( "Compass configuration=%s", cfg.getFile() ) );
-            log.debug( String.format( "XSEM mappings file   =%s", cpm.getFile() ) );
-            File cpmFile = new File( cpm.getFile() );
-
-            conf.configure( cfg );
-            conf.addFile( cpmFile );
-            theCompass = conf.buildCompass();
-            
-            log.debug( "Compass build" );
-        }        
+      
         log.info( "The PTIPool has been constructed" );
     }
 
@@ -96,7 +80,7 @@ public class PTIPool {
      * @throws ConfigurationException error reading the PTI configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public FutureTask createAndJoinThread (String fHandle, String itemID, Estimate estimate )throws ConfigurationException, ClassNotFoundException{
+    public FutureTask createAndJoinThread (String fHandle, String itemID, Estimate estimate, Compass compass )throws ConfigurationException, ClassNotFoundException{
         log.debug( String.format( "entering createAndJoinThreads( fhandle=%s, itemID=%s )", fHandle, itemID ) );
         
         CompassSession session = null;
@@ -104,7 +88,7 @@ public class PTIPool {
         
         log.debug( "Getting CompassSession" );
 
-        session = getSession();
+        session = compass.openSession();
         
         log.debug( "Constructing FutureTask on PTI" );
         future = new FutureTask( new PTI( session, fHandle, itemID, fedoraHandler, estimate ));
@@ -115,20 +99,4 @@ public class PTIPool {
         log.debug( "FutureTask submitted" );
         return future;
     }
-
-    /**
-     * Returns a Compass session, and checks whether its instantiated.
-     * @throws RuntimeException called getSession on non-existing compass
-     */
-    public CompassSession getSession() throws RuntimeException {
-        log.debug( "Entering getSession" );
-        if( theCompass == null) {
-            log.fatal( "getSession was called on an object that in the meantime went null. Aborting" );
-            throw new RuntimeException( "getSession was called on an object that in the meantime went null. Aborting" );
-        }
-        CompassSession s = theCompass.openSession();
-        log.debug( String.format( "returning compass session %s", s.toString() ) );
-        return s;
-    }
-
 }
