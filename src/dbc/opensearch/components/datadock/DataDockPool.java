@@ -27,7 +27,7 @@ public class DataDockPool {
      * \see java.util.concurrent.FixedThreadPool
      * @throws IllegalArgumentException if the threadpool is tried initialized with no threads
      */
-    DataDockPool( int numberOfThreads, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws IllegalArgumentException{
+   public DataDockPool( int numberOfThreads, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws IllegalArgumentException{
         
         this.estimate = estimate;
         this.processqueue = processqueue;

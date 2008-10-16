@@ -266,8 +266,9 @@ public class FedoraHandler implements Constants{
     public CargoContainer getDatastream( String pid, String itemId ) throws IOException, NoSuchElementException, RemoteException, IllegalStateException{
         log.debug( String.format( "getDatastream( pid=%s, itemId=%s ) called", pid, itemId ) );
 
+       
         String pidNS = pid.substring( 0, pid.indexOf( ":" ));
-        
+       
         /** \todo: very hardcoded value */
         String itemId_version = itemId+".0";
         
