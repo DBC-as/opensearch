@@ -82,6 +82,7 @@ public class DataDockPoolAdm {
         
         // 10: call the reader and filter method
         log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
+
         readFiles( filepath, fileNameList, fileList);
         
         // 20: create the list of FutureTasks
@@ -99,6 +100,7 @@ public class DataDockPoolAdm {
      */
     private void readFiles( String filepath, String[] fileNameList, File[] fileList){   
         
+        this.fileList = fileList;
         log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
         
         // 10: check whether the filepath String is a dir, file or a filetype specification such as "dir/*.xml"
@@ -128,11 +130,12 @@ public class DataDockPoolAdm {
                 File dirpath = new File(dirpathString);
                 fileNameList = dirpath.list( new XmlFileFilter() );
                 fileList = dirpath.listFiles( new XmlFileFilter() );
-                log.debug(String.format( "Det er '%s' at der er noget i fileList", fileList == null ) );
+                log.debug( String.format( "Det er '%s' at der er noget i fileList", fileList != null ) );
                 
             }                        
         }
         this.filepath = filepath;
+        this.fileList = fileList;
     }
     
     /**
