@@ -135,20 +135,5 @@ public class DataDockPoolTest {
         /**4 check if it happened as expected */  
         
      }
-   //  /**
-//      * Tests that the methods cant be called until the DataDockPool 
-//      * has been constructed
-//      */
-//     @Test public void noMethodCallsBeforeInitialisationTest(){
-//         DataDockPool DDP;
-//         boolean gotException = false;
-//         FutureTask future;
-//         try{
-//             DDP.createAndJoinThread( mockCargoContainer );
-//         }catch( Exception iae ){
-//             assertTrue( iae.getClass() == IllegalArgumentException.class ); 
-//             gotException = true;
-//         }
-//         assertTrue( gotException );
-//     }
+
 }

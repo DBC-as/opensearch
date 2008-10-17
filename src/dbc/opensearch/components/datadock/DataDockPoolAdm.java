@@ -37,19 +37,20 @@ public class DataDockPoolAdm {
     String submitter;
     String format;
     String filepath;
+
     Estimate estimate;
-
     Processqueue processqueue;
-    //FedoraClientFactory fedoraClientFactory;
-    //FedoraClient fedoraClient;
     FedoraHandler fedoraHandler;
-
     DataDockPool DDP;
+
     String[] fileNameList;
+    /**
+    * \todo: fileList and fileNameList should be a vector instead
+    **/
     File[] fileList;
     FutureTask[] FTList = null;
-    int answersReceived = 0;
-    int numOfFiles = 0;
+    //    int answersReceived = 0;
+    // int numOfFiles = 0;
 
     public DataDockPoolAdm( Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
 
@@ -60,41 +61,42 @@ public class DataDockPoolAdm {
         log.debug( "Exiting the constructor" );
     }
     
-    public void start ( String mimetype, String lang, String submitter, String format, String filepath )throws FileNotFoundException, InterruptedException, ExecutionException, IOException {
+    public void start( String mimetype, String lang, String submitter, String format, String filepath )throws FileNotFoundException, InterruptedException, ExecutionException, IOException {
 
-        log.debug( String.format( "start the DataDockPool" ) );
-        log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
-
-        DDP = new DataDockPool(10, estimate, processqueue, fedoraHandler );
        
-
-    
-            
-            log.debug( String.format( "Getting properties for the CargoContainer" ) );
-            this.mimetype = mimetype;
-            this.lang = lang;
-            this.submitter = submitter;
-            this.format = format;
-            this.filepath = filepath;
-            
-            // 10: call the reader and filter method
-            log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
-            readFiles();
-            
-            // 20: create the list of FutureTasks
-            
-            createFutureTaskList();
-
-            log.debug( "Calling the checkThreads method" );
-     
-            checkThreads();
+        log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
+        DataDockPool DDP = new DataDockPool( 10, estimate, processqueue, fedoraHandler );
+        // passes it on in a method call so it can be mocked for testing
+        start(DDP, mimetype, lang, submitter, format, filepath);
+    }
+    private void start( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException {
+        this.DDP = DDP;
+        
+        log.debug( String.format( "Getting properties for the CargoContainer" ) );
+        this.mimetype = mimetype;
+        this.lang = lang;
+        this.submitter = submitter;
+        this.format = format;
+        //this.filepath = filepath;
+        
+        // 10: call the reader and filter method
+        log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
+        readFiles( filepath, fileNameList, fileList);
+        
+        // 20: create the list of FutureTasks
+        
+        createFutureTaskList( fileList);
+        
+        log.debug( "Calling the checkThreads method" );
+        
+        checkThreads( FTList );
     }
     
     /**
      * Reads the files from the specified path into the array fileList
      * and the names of the files into the array fileNameList
      */
-    private void readFiles(){   
+    private void readFiles( String filepath, String[] fileNameList, File[] fileList){   
         
         log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
         
@@ -128,15 +130,17 @@ public class DataDockPoolAdm {
                 
             }                        
         }
-        
+        this.filepath = filepath;
     }
     
     /**
     * creates the cargoContainers and gives them to the createAndJoinThread on the DDP
     * the returned FutureTask are put on the FTList
     */
-    private void createFutureTaskList() throws FileNotFoundException, IOException {
-        
+    private void createFutureTaskList( File[] fileList) throws FileNotFoundException, IOException {
+       
+        int numOfFiles = 0;
+ 
         log.debug( String.format( "check if we got any files from the filepath" ) );
         if( fileList == null ){
             throw new IllegalArgumentException( String.format( "no files on specified path: %s", filepath ) );
@@ -146,15 +150,12 @@ public class DataDockPoolAdm {
         log.info(String.format( "\n number of files = %s \n", numOfFiles ) );
         FTList = new FutureTask[ numOfFiles ];
         
-        InputStream data;
-        
         log.debug( String.format( "create CargoContainers and give them to the DDP.createAndJoinThread method" ) );
         log.debug( String.format( "store the FutureTask in an array together with documenttitle" ) );
         
         for(int filesSent = 0; filesSent < numOfFiles; filesSent++){
-            
-                data = new FileInputStream(fileList[filesSent]);
-                CargoContainer cc = new CargoContainer(data, mimetype, lang, submitter, format);
+           
+            CargoContainer cc = createCargoContainerFromFile(fileList[filesSent], mimetype, lang, submitter, format );
                 try{
                     FTList[filesSent] = DDP.createAndJoinThread(cc);
                     log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
@@ -171,7 +172,7 @@ public class DataDockPoolAdm {
      * checks the FutureTask whether they are done or running. When a FututreTask
      *  is done the result is "given to the user"
      */ 
-    private void checkThreads() throws InterruptedException {
+    private void checkThreads( FutureTask[] FTList) throws InterruptedException {
         log.info( "entering while loop in DataDockPoolAdm" );
         
         /** \todo: what the *&^%$ is this? very simple: a unique string to 
@@ -179,7 +180,8 @@ public class DataDockPoolAdm {
          * of a Korean sentence meaning "I do not love you"
          */
         String doneString = "narn noRl saRang hATi arNar";
-        
+        int numOfFiles = FTList.length;
+        int answersReceived = 0;
         String estimateMessageString;
 
         while(answersReceived < numOfFiles){
@@ -218,4 +220,14 @@ public class DataDockPoolAdm {
         }
         log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
     }
+    
+    /**
+    * Creates a CoragoContainer from a file, and other info needed
+    */
+    private CargoContainer createCargoContainerFromFile( File file, String mimetype, String lang, String submitter, String format ) throws IOException, FileNotFoundException {
+        InputStream data = new FileInputStream( file );
+        CargoContainer cc = new CargoContainer( data, mimetype, lang, submitter, format );
+        return cc;
+    }
+
 }
