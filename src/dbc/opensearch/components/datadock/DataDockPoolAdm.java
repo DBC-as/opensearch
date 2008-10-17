@@ -66,8 +66,10 @@ public class DataDockPoolAdm {
        
         log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
         DataDockPool DDP = new DataDockPool( 10, estimate, processqueue, fedoraHandler );
+
         // passes it on in a method call so it can be mocked for testing
         start(DDP, mimetype, lang, submitter, format, filepath);
+
     }
     private void start( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException {
         this.DDP = DDP;
@@ -220,7 +222,7 @@ public class DataDockPoolAdm {
         }
         log.info( String.format( "%s files stored in Fedora", numOfFiles ) );
     }
-    
+   
     /**
     * Creates a CoragoContainer from a file, and other info needed
     */
