@@ -79,7 +79,6 @@ public class DataDockPoolAdm {
         this.lang = lang;
         this.submitter = submitter;
         this.format = format;
-        //this.filepath = filepath;
         
         // 10: call the reader and filter method
         log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
