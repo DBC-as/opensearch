@@ -128,6 +128,7 @@ public class DataDockPoolAdm {
                 File dirpath = new File(dirpathString);
                 fileNameList = dirpath.list( new XmlFileFilter() );
                 fileList = dirpath.listFiles( new XmlFileFilter() );
+                log.debug(String.format( "Det er '%s' at der er noget i fileList", fileList == null ) );
                 
             }                        
         }
@@ -138,7 +139,7 @@ public class DataDockPoolAdm {
     * creates the cargoContainers and gives them to the createAndJoinThread on the DDP
     * the returned FutureTask are put on the FTList
     */
-    private void createFutureTaskList( File[] fileList) throws FileNotFoundException, IOException {
+    private void createFutureTaskList( File[] fileList ) throws FileNotFoundException, IOException {
        
         int numOfFiles = 0;
  
