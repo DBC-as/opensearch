@@ -68,10 +68,10 @@ public class DataDockPoolAdm {
         DataDockPool DDP = new DataDockPool( 10, estimate, processqueue, fedoraHandler );
 
         // passes it on in a method call so it can be mocked for testing
-        start(DDP, mimetype, lang, submitter, format, filepath);
+        privateStart(DDP, mimetype, lang, submitter, format, filepath);
 
     }
-    private void start( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException {
+    private void privateStart( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException {
         this.DDP = DDP;
         
         log.debug( String.format( "Getting properties for the CargoContainer" ) );
