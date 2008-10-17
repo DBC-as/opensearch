@@ -136,6 +136,7 @@ public class DataDockPoolAdm {
         }
         this.filepath = filepath;
         this.fileList = fileList;
+        this.fileNameList = fileNameList;
     }
     
     /**
