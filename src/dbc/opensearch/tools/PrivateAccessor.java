@@ -58,7 +58,7 @@ public final class PrivateAccessor{
 
         final Method methods[] = o.getClass().getDeclaredMethods();
         for( int i = 0; i < methods.length; i++ ){
-            
+            //can fail if there are overloaded methods... 
             if( methodName.equals( methods[i].getName() ) ){
                 try{
                     methods[i].setAccessible(true);
