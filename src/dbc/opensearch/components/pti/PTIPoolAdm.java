@@ -17,7 +17,6 @@ import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
 import java.lang.InterruptedException;
 import java.util.concurrent.ExecutionException;
-//import org.compass.core.converter.ConversionException;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
@@ -94,8 +93,8 @@ public class PTIPoolAdm {
      * @throws InterruptedException is a thread exception
      */    
     public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException{
-        mainLoop( processqueue, estimate, fedoraHandler, compass );
-    }
+        mainLoop( processqueue, estimate, fedoraHandler, compass ); 
+   }
 
     public void mainLoop(Processqueue processqueue, Estimate estimate, FedoraHandler fedoraHandler, Compass compass ) throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException{
         log.debug( "PTIPoolAdm mainloop" );
@@ -110,13 +109,30 @@ public class PTIPoolAdm {
         long stamp = System.currentTimeMillis() - ( sleepInMilliSec+ 1 ) ;
 
         /** /todo: we need a nicer way to do this than a while true loop. */
-        while(true){
+        
+        try{
+            while(true){
 
-            if( System.currentTimeMillis() > stamp+sleepInMilliSec ){                
-                startThreads( processqueue, estimate, fedoraHandler, compass );
-                stamp = System.currentTimeMillis();
-            }            
-            checkThreads( processqueue );
+                if( System.currentTimeMillis() > stamp+sleepInMilliSec ){                
+                    startThreads( processqueue, estimate, fedoraHandler, compass );
+                    stamp = System.currentTimeMillis();
+                }            
+                checkThreads( processqueue );
+            }
+        }
+        catch(InterruptedException ie){
+            if( activeThreads.size() == 0 ){
+                log.debug( "There are no active threads... Shutting down" );
+                
+            }
+            else{
+                
+                while( activeThreads.size() > 0 ){
+                    log.debug( String.format( "There are %s active threads... finishing before shutdown", activeThreads.size() ) );
+                    checkThreads( processqueue );
+                    Thread.currentThread().sleep(2000);
+                }
+            }
         }
     }
     

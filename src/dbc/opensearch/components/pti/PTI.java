@@ -19,6 +19,7 @@ import org.compass.core.xml.javax.NodeAliasedXmlObject;
 import org.compass.core.CompassException;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
@@ -42,6 +43,7 @@ public class PTI implements Callable<Long>{
     private String fedoraHandle;
     private String datastreamItemID;
     private Estimate estimate;
+    private SAXReader saxReader;
 
     /**
      * \brief Constructs the PTI instance with the given parameters
@@ -54,11 +56,19 @@ public class PTI implements Callable<Long>{
      */
     public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh, Estimate estimate ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "PTI constructor(session, fedoraHandle=%s, itemID=%s, fh", fedoraHandle, itemID ) );
+
+        if( fh == null ){
+            throw new NullPointerException( "FedoraHandler was null, aborting" );
+        }
+        this.fh = fh;        
+
         this.session = session;
         this.fedoraHandle = fedoraHandle;
         datastreamItemID = itemID;
-        this.fh = fh;
         this.estimate = estimate;
+
+        saxReader = new SAXReader( false );
+        finishTime = new Date();
     }
 
     /**
@@ -75,47 +85,24 @@ public class PTI implements Callable<Long>{
      * @throws ClassNotFoundException if the databasedriver is not found
      */
  
-    public Long call( ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+        return call( saxReader, finishTime, fh, fedoraHandle, datastreamItemID );
+    }
+    
+    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
         log.debug( "Entering PTI.call()" );
 
-        doProcessing( );
 
-        log.debug( "Obtain processtime, and writing to statisticDB table in database" );
-        finishTime = new Date();
-        long processtime = finishTime.getTime() - cc.getTimestamp();
-        estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
-
-        log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
-
-        return processtime;
-    }
-
-    /**
-     * /brief doProcessing constructs a cargoContainer by calling the
-     * fedorahandler and indexing the document wint the indexDocument
-     * menthod
-     * @throws CompassException something went wrong with the compassSession
-     * @throws IOException something went wrong initializing the fedora client
-     * @throws DocumentException Couldnt read the xml data from the cargocontainer
-     */
-    public void doProcessing( ) throws CompassException, IOException, DocumentException {
-        log.debug( "Entering doProcessing" );
-
+        // Constructing CargoConatiner
         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
-
-        if( fh == null ){
-            throw new NullPointerException( "FedoraHandler was null, aborting" );
-        }
-
         cc = fh.getDatastream( fedoraHandle, datastreamItemID );
-
         log.debug( String.format( "CargoContainer.mimetype %s", cc.getMimeType() ) );
         log.debug( String.format( "CargoContainer.submitter %s", cc.getSubmitter() ) );
         log.debug( String.format( "CargoContainer.streamlength %s", cc.getStreamLength() ) );
 
+        // Construct doc and Start Transaction
         log.debug( "Starting transaction on running CompassSession" );
         Document doc = null;
-        SAXReader saxReader = new SAXReader( false );
 
         log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
         doc = saxReader.read( cc.getData() );
@@ -123,29 +110,13 @@ public class PTI implements Callable<Long>{
         // this log line is _very_ verbose, but useful in a tight situation
         // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
-        AliasedXmlObject xmlObject =
-            new Dom4jAliasedXmlObject( cc.getFormat(), doc.getRootElement() );
+        AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  cc.getFormat(), doc.getRootElement() );
 
         log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
-        // index the object and end if we succeed:
         log.debug( String.format( "Indexing document" ) );
-        indexDocument( session, xmlObject );
 
-        log.info( String.format( "Document indexed and stored with Compass" ) );
-
-    }
-
-    /**
-     * Does the indexing and the saving of the indexes
-     * @param session The compassSession to use
-     * @param cargoXML the xml constructed from a CargoContainer
-     * @throws CompassException something went wrong with the compasssession
-     */
-    private void indexDocument( CompassSession session,
-                                AliasedXmlObject cargoXML ) throws CompassException {
-        log.debug( "Entering indexDocument" );
-
+        // getting transaction object and saving index
         log.debug( String.format( "Getting transaction object" ) );
         CompassTransaction trans;
 
@@ -153,15 +124,24 @@ public class PTI implements Callable<Long>{
         trans = session.beginTransaction();
 
         log.debug( "Saving aliased xml object to the index" );
-        session.save( cargoXML );
+        session.save( xmlObject );
         log.debug( "Committing index on transaction" );
         trans.commit();
         
-        log.debug( String.format( "************ Transaction wasCommitted() == %s", trans.wasCommitted() ) );
-        log.debug( "Document indexed" );
-        log.debug( "Closing session" );
+        log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );
         session.close();
 
-    }
+        log.info( String.format( "Document indexed and stored with Compass" ) );
 
+        log.debug( "Obtain processtime, and writing to statisticDB table in database" );
+        
+        long processtime = finishTime.getTime() - cc.getTimestamp();
+        
+
+        estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
+
+        log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
+
+        return processtime;
+    }    
 }
