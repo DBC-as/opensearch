@@ -18,6 +18,7 @@ import static org.easymock.classextension.EasyMock.*;
 
 import java.util.concurrent.*;
 import java.lang.reflect.Method;
+import java.io.*;
 
 // import org.apache.axis.types.NonNegativeInteger;
 
@@ -117,13 +118,14 @@ public class DataDockPoolAdmTest {
     }
     
     /***
-     * Tests that construction throws an IllegalArgumentException when
-     * the first argument is < 0
+     * Tests that an IllegalArgumentException is thrown when the filepath given 
+     * to the DataDaockPoolAdm is neither a directory, a file or ends with the 
+     * string "*.xml" meaning that all .xml files in the specified dir shold 
+     * be taken
      */
     
     @Test public void noFilesOnFilepathTest()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         
-       
         /**1 Setting up the needed mocks
          * Most done in setup()
          */
@@ -138,19 +140,17 @@ public class DataDockPoolAdmTest {
         DDPA = new DataDockPoolAdm( mockEstimate, mockProcessqueue, mockFedoraHandler );
         Method method;
         Class[] argClasses = new Class[]{ DataDockPool.class , String.class , String.class, String.class, String.class, String.class };
-        Object[] args = new Object[]{ mockDDP, "text/xml", "dan", "dbc", "test", "empty" };
+        Object[] args = new Object[]{ mockDDP, "text/xml", "dan", "dbc", "test", "notValid" };
         try{
-           
             method = DDPA.getClass().getDeclaredMethod("privateStart", argClasses);
-           
             method.setAccessible( true );
-            
             method.invoke( DDPA, args);
         }catch( IllegalAccessException iae ){
             Assert.fail( String.format( "IllegalAccessException accessing privateStart" ) );
         }catch( InvocationTargetException ite ){
             
             assertTrue( ite.getTargetException().getClass() == IllegalArgumentException.class );
+            assertTrue( ite.getTargetException().getMessage().startsWith( "the filepath: 'notValid'" )  );
         }catch( NoSuchMethodException nsme ){
             Assert.fail( String.format( "No method called privateStart" ) );
         }            
@@ -158,20 +158,22 @@ public class DataDockPoolAdmTest {
         /**4 check if it happened as expected */  
         
     }
-   //  /**
-//      * Tests that the methods cant be called until the DataDockPool 
-//      * has been constructed
-//      */
-//     @Test public void noMethodCallsBeforeInitialisationTest(){
-//         DataDockPool DDP;
-//         boolean gotException = false;
-//         FutureTask future;
-//         try{
-//             DDP.createAndJoinThread( mockCargoContainer );
-//         }catch( Exception iae ){
-//             assertTrue( iae.getClass() == IllegalArgumentException.class ); 
-//             gotException = true;
-//         }
-//         assertTrue( gotException );
-//     }
+    /**
+     * Tests that the createFutureTaskList throws an illegalArgumentException 
+     * if given an empty filelist
+     */
+    @Test public void emptyFileListTest()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, NoSuchMethodException, IllegalAccessException {
+        DDPA = new DataDockPoolAdm( mockEstimate, mockProcessqueue, mockFedoraHandler );
+        Method method;
+        Class[] argClasses = new Class[]{ File[].class };
+        Object[] args = new Object[]{ null };
+        try{
+            method = DDPA.getClass().getDeclaredMethod("createFutureTaskList", argClasses);
+            method.setAccessible( true );
+            method.invoke( DDPA, args);
+        }catch( InvocationTargetException ite ){
+            assertTrue( ite.getTargetException().getClass() == IllegalArgumentException.class ); 
+            assertTrue( ite.getTargetException().getMessage().startsWith( "no files on specified path:" ) );
+        }
+    }
 }

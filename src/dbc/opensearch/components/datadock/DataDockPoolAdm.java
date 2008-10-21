@@ -60,6 +60,7 @@ public class DataDockPoolAdm {
         this.estimate = estimate;
         this.fedoraHandler = fedoraHandler;
         log.debug( "Exiting the constructor" );
+        this.filepath = null;
     }
     
     public void start( String mimetype, String lang, String submitter, String format, String filepath )throws FileNotFoundException, InterruptedException, ExecutionException, IOException {
