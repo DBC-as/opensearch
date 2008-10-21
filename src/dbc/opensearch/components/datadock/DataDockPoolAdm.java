@@ -20,7 +20,8 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
-import java.lang.InterruptedException; 
+import java.lang.InterruptedException;
+import java.lang.IllegalArgumentException; 
 import java.util.concurrent.ExecutionException;
 
 
@@ -72,6 +73,7 @@ public class DataDockPoolAdm {
 
     }
     private void privateStart( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException {
+        log.debug( "Entering privateStart" );
         this.DDP = DDP;
         
         log.debug( String.format( "Getting properties for the CargoContainer" ) );
@@ -100,6 +102,14 @@ public class DataDockPoolAdm {
      */
     private void readFiles( String filepath, String[] fileNameList, File[] fileList){   
         
+        File testFile = new File( filepath );
+//         log.debug( String.format("Is the filepath a directory: '%s'", testFile.isDirectory() ) );
+//         log.debug( String.format("Is the filepath a file: '%s'", testFile.isFile() ) );
+//         log.debug( String.format("Does the filepath end with *.xml: '%s'", filepath.endsWith("*.xml"  ) ) );
+        if(!( testFile.isDirectory() || testFile.isFile() || filepath.endsWith( "*.xml" ) ) ){
+            log.debug( "throws exception" );
+            throw new IllegalArgumentException( String.format( "the filepath: '%s' defines noting usefull ", filepath ) );
+        }
         this.fileList = fileList;
         log.debug( String.format( "read the files defined in the properties into an arraylist (fileList)" ) );
         

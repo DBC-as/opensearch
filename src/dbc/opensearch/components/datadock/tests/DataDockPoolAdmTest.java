@@ -40,8 +40,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import java.lang.ClassNotFoundException; 
 // import java.rmi.RemoteException;
 import java.net.UnknownHostException;  
+import java.lang.IllegalArgumentException;
 // import javax.xml.stream.XMLStreamException;
 // import java.io.UnsupportedEncodingException;
+import java.lang.NoSuchMethodException;
 
 public class DataDockPoolAdmTest {
     
@@ -119,7 +121,7 @@ public class DataDockPoolAdmTest {
      * the first argument is < 0
      */
     
-    @Test public void startTest()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+    @Test public void noFilesOnFilepathTest()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         
        
         /**1 Setting up the needed mocks
@@ -134,22 +136,25 @@ public class DataDockPoolAdmTest {
 
         /** do the stuff */ 
         DDPA = new DataDockPoolAdm( mockEstimate, mockProcessqueue, mockFedoraHandler );
-        final Method[] methods = DDPA.getClass().getDeclaredMethods();
-        for( int i = 0; i < methods.length; i++ ){
-            if( "privateStart".equals(methods[i].getName() ) ){
-                try{
-                    methods[i].setAccessible( true );
-                    methods[i].invoke( DDPA, mockDDP, "text/xml", "dan", "dbc", "test", "test" );
-                }catch( IllegalAccessException iae ){
-                    Assert.fail( String.format( "IllegalAccessException accessing privateStart" ) );
-                }catch( InvocationTargetException ite ){
-                    Assert.fail( String.format( "InvocationTargetException (the method has thrown an error) accessing privateStart " ) );  
-                }
-            }
-        } 
-        //DataDockPoolAdm.privateStart.setAccessible(true);
-        //        DDPA.privateStart.setAccesible( true );
-        // DDPA.privateStart( mockDDP, "text/xml", "dan", "dbc", "test", "test" );
+        Method method;
+        Class[] argClasses = new Class[]{ DataDockPool.class , String.class , String.class, String.class, String.class, String.class };
+        Object[] args = new Object[]{ mockDDP, "text/xml", "dan", "dbc", "test", "empty" };
+        try{
+           
+            method = DDPA.getClass().getDeclaredMethod("privateStart", argClasses);
+           
+            method.setAccessible( true );
+            
+            method.invoke( DDPA, args);
+        }catch( IllegalAccessException iae ){
+            Assert.fail( String.format( "IllegalAccessException accessing privateStart" ) );
+        }catch( InvocationTargetException ite ){
+            
+            assertTrue( ite.getTargetException().getClass() == IllegalArgumentException.class );
+        }catch( NoSuchMethodException nsme ){
+            Assert.fail( String.format( "No method called privateStart" ) );
+        }            
+        
         /**4 check if it happened as expected */  
         
     }
