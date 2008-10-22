@@ -203,37 +203,27 @@ class XSEMGenerator( object ):
             self.xsd2xml_instance( children, node_list, sieve )
 
     def find_node_from_name( self, node, name ):
+        """
+        returns the first occurence of a node with the specified name
+        in the given (sub-) tree
+
+        """
         for node in [ c for c in node.childNodes if c.nodeType == 1]:
             if node.nodeType == Node.ELEMENT_NODE and node.hasAttribute( 'name' ):
                 if node.getAttribute( 'name' ) == name:
                     self.node = node
             self.find_node_from_name( node, name )
               
-    def is_element_with_name( self, node, name ):
-        """
-        This method is only appliable for XSDs
-        
-        returns true iff node is xsd:element and has parameter name as
-        name
-        """
-        return ( Node.ELEMENT_NODE == node.nodeType or Node.ATTRIBUTE_NODE == node.nodeType ) and node.nodeName in name
-
     def get_xpath( self, node ):
         """
         from http://cvs.4suite.org/viewcvs/lib/domtools.py and
         modified a bit
 
-        Return an XPath expression that provides a unique path to
-        the given node (supports elements, attributes, root nodes,
-        text nodes, comments and PIs) within a document
+        Return an XPath expression that provides a unique path to the
+        given node (supports elements, attributes and root nodes)
+        within a document
 
         """
-        # extension to the base Node.{dom element defintions}
-        OTHER_NODES = {
-            Node.TEXT_NODE: 'text',
-            Node.COMMENT_NODE: 'comment',
-            Node.PROCESSING_INSTRUCTION_NODE: 'processing-instruction'
-            }
         if node.nodeType == Node.ELEMENT_NODE:
             count = 1
             #Count previous siblings with same node name
@@ -246,17 +236,6 @@ class XSEMGenerator( object ):
         elif node.nodeType == Node.ATTRIBUTE_NODE:
             step = '@%s' % (node.nodeName)
             ancestor = node.ownerElement
-#         elif node.nodeType in OTHER_NODES:
-#             #Text nodes, comments and PIs
-#             count = 1
-#             #Count previous siblings of the same node type
-#             previous = node.previousSibling
-#             while previous:
-#                 if previous.nodeType == node.nodeType: count += 1
-#                 previous = previous.previousSibling
-#             test_func = OTHER_NODES[node.nodeType]
-#             step = '%s()[%i]' % (test_func, count)
-#             ancestor = node.parentNode
         elif not node.parentNode:
             #Root node
             step = ''
@@ -267,7 +246,6 @@ class XSEMGenerator( object ):
             return self.get_xpath( ancestor ) + '/' + step
         else:
             return '/' + step
-        
     
     def get_leaf_elements( self, node ):
         """
@@ -307,3 +285,48 @@ if __name__ == '__main__':
        
 #     tree = ET.ElementTree(c.current_element)
 #     tree.write( "testtest.xml" )
+
+
+    test_xsd = """<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' elementFormDefault='qualified' attributeFormDefault='unqualified'>
+  <xsd:element name='a'>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name='b' type='bType'/>
+      </xsd:sequence>
+    </xsd:complexType>
+
+  </xsd:element>
+
+  <xsd:complexType name='bType'>
+
+    <xsd:sequence>
+      <xsd:element name='c' type='cType'/>
+      <xsd:element name='a' type='xsd:string'/>
+    </xsd:sequence>
+
+  </xsd:complexType>
+  <xsd:complexType name='cType'>
+    <xsd:sequence>
+      <xsd:element name='e' minOccurs='0'>
+        <xsd:complexType>
+          <xsd:attribute name='name' type='xsd:string' use='optional' default='alias'/>
+          <xsd:attribute name='setting' type='xsd:string' use='optional'/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
+    """
+
+    verification_xml = """<?xml version='1.0' encoding='UTF-8'?>
+<a>
+  <b>
+    <c>
+      <e name='alias' setting=''/>
+    </c>
+    <a>test streng</a>
+  </b>
+</a>
+    """
