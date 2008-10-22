@@ -188,7 +188,8 @@ public class DataDockPoolAdm {
      * is done the result is "given to the user"
      */ 
     private void checkThreads( FutureTask[] FTList) throws InterruptedException {
-        log.info( "entering while loop in DataDockPoolAdm" );
+        
+        log.debug( "entering checkThreads" );
         
         /** \todo: what the *&^%$ is this? very simple: a unique string to 
          * match on, this code is NOT intended to be reused! It is a transcription

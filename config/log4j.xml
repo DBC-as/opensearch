@@ -4,7 +4,7 @@
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
   <appender class="org.apache.log4j.ConsoleAppender" name="RootConsoleAppender">
-    <param name="Threshold" value="debug"/>
+    <param name="Threshold" value="fatal"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss},%p,%c,%t,%C{1},%M %m%n"/>
     </layout>
@@ -19,7 +19,7 @@
   </logger>
 
   <root>
-    <level value="debug"/>
+    <level value="fatal"/>
     <appender-ref ref="RootConsoleAppender"/>
   </root>
 

@@ -231,4 +231,57 @@ public class DataDockPoolAdmTest {
             assertTrue( ite.getTargetException().getMessage().startsWith( "no files on specified path:" ) );
         }
     }
+    /**
+     * Tests that checkThreads throws an exception when the get() method
+     * on a FutureTask throws an ExecutionException and that this is a 
+     * RuntimeException
+     */
+    @Test public void getMethodExecutionException() throws InterruptedException, ConfigurationException, ExecutionException, ClassNotFoundException, MalformedURLException, ServiceException, IOException, UnknownHostException {
+ 
+        /**1 setting up the needed mocks 
+         * Is done in setup()
+         */
+        boolean gotException = false;
+        String testExceptionString = "testException";
+        IllegalArgumentException throwniae = new IllegalArgumentException( testExceptionString );
+        ExecutionException thrownee = new ExecutionException( throwniae );
+        
+        /**2 the expectations 
+         */
+        expect( mockDDP.createAndJoinThread( isA( CargoContainer.class ) ) ).andReturn( mockFutureTask ).times( 3 );
+        expect( mockFutureTask.isDone() ).andReturn( true );
+        expect( mockFutureTask.get() ).andThrow( thrownee );
+
+        /**3 replay
+         */       
+        replay( mockDDP );
+        replay( mockFutureTask );
+
+        /** do the stuff */
+        DDPA = new DataDockPoolAdm( mockEstimate, mockProcessqueue, mockFedoraHandler ); 
+        Method method;
+        Class[] argClasses = new Class[]{ DataDockPool.class , String.class , String.class, String.class, String.class, String.class };
+        Object[] args = new Object[]{ mockDDP, "text/xml", "dan", "dbc", "test", "testdir/datadockpooladmtestdir/" };
+        try{
+            method = DDPA.getClass().getDeclaredMethod("privateStart", argClasses);
+            method.setAccessible( true );
+            method.invoke( DDPA, args); 
+        }catch( IllegalAccessException iae ){
+            Assert.fail( String.format( "IllegalAccessException accessing privateStart" ) );
+        }catch( InvocationTargetException ite ){
+            assertTrue( ite.getTargetException().getClass() == RuntimeException.class );
+            assertTrue( ite.getTargetException().getCause().getClass() == IllegalArgumentException.class );
+            assertTrue( ite.getTargetException().getCause().getMessage().equals( testExceptionString ) );            
+            gotException = true;
+        }catch( NoSuchMethodException nsme ){
+            Assert.fail( String.format( "No method called privateStart" ) );
+        } 
+        
+        /**4 check if it happened as expected
+         */  
+        assertTrue( gotException );
+        verify( mockDDP );
+        verify( mockFutureTask );
+        
+    }
 }
