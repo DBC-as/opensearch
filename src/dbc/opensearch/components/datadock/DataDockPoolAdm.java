@@ -63,7 +63,7 @@ public class DataDockPoolAdm {
         this.filepath = null;
     }
     
-    public void start( String mimetype, String lang, String submitter, String format, String filepath )throws FileNotFoundException, InterruptedException, ExecutionException, IOException {
+    public void start( String mimetype, String lang, String submitter, String format, String filepath )throws FileNotFoundException, InterruptedException, ExecutionException, IOException, ConfigurationException, ClassNotFoundException {
 
        
         log.info( String.format( "Creating DataDockPool with %s threads", 10 ) );
@@ -73,8 +73,8 @@ public class DataDockPoolAdm {
         privateStart(DDP, mimetype, lang, submitter, format, filepath);
 
     }
-    private void privateStart( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException {
-        log.debug( "Entering privateStart" );
+    private void privateStart( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException, ConfigurationException, ClassNotFoundException {
+        log.debug( "Entering the privateStart method" );
         this.DDP = DDP;
         
         log.debug( String.format( "Getting properties for the CargoContainer" ) );
@@ -89,12 +89,14 @@ public class DataDockPoolAdm {
         readFiles( filepath, fileNameList, fileList);
         
         // 20: create the list of FutureTasks
-        
         createFutureTaskList( fileList);
         
         log.debug( "Calling the checkThreads method" );
         
+        // 30: check the futureTaskList
         checkThreads( FTList );
+        
+        log.debug( "Exiting the privateStart method" );
     }
     
     /**
@@ -154,7 +156,7 @@ public class DataDockPoolAdm {
     * creates the cargoContainers and gives them to the createAndJoinThread on the DDP
     * the returned FutureTask are put on the FTList
     */
-    private void createFutureTaskList( File[] fileList ) throws FileNotFoundException, IOException {
+    private void createFutureTaskList( File[] fileList ) throws FileNotFoundException, IOException, ConfigurationException, ClassNotFoundException {
        
         int numOfFiles = 0;
  
@@ -173,21 +175,17 @@ public class DataDockPoolAdm {
         for(int filesSent = 0; filesSent < numOfFiles; filesSent++){
            
             CargoContainer cc = createCargoContainerFromFile(fileList[filesSent], mimetype, lang, submitter, format );
-                try{
-                    FTList[filesSent] = DDP.createAndJoinThread(cc);
-                    log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
-                    
-                }catch( ConfigurationException ce ){
-                
-                }catch( ClassNotFoundException cnfe ){
-                }
+          
+            FTList[filesSent] = DDP.createAndJoinThread(cc);
+            log.info( String.format( "Calling createAndJoin %s. time", filesSent + 1 ) );
+            
         }
         log.info( "All files given to the DataDockPool" );
     }
 
     /**
      * checks the FutureTask whether they are done or running. When a FututreTask
-     *  is done the result is "given to the user"
+     * is done the result is "given to the user"
      */ 
     private void checkThreads( FutureTask[] FTList) throws InterruptedException {
         log.info( "entering while loop in DataDockPoolAdm" );
@@ -239,7 +237,8 @@ public class DataDockPoolAdm {
     }
    
     /**
-    * Creates a CoragoContainer from a file, and other info needed
+    * Creates a CargoContainer from a file, and other info needed
+    * \todo: Do we need this method? 
     */
     private CargoContainer createCargoContainerFromFile( File file, String mimetype, String lang, String submitter, String format ) throws IOException, FileNotFoundException {
         InputStream data = new FileInputStream( file );

@@ -88,11 +88,10 @@ public class DataDockPoolAdmTest {
         reset( mockDDP );
                 
     }
-    // return = (cast)PrivateAccessor.invokePrivateMethod(object, "method", arguments )
+  
     /**
      * Tests the construction with the correct arguments
      */    
-
     @Test public void constructorTest() throws ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
          
         /**1 setting up the needed mocks 
@@ -100,8 +99,9 @@ public class DataDockPoolAdmTest {
          */
         
         /**2 the expectations 
-         * none
+         * none      
          */
+      
         
         /**3 replay
          * Nothing to replay
@@ -116,6 +116,62 @@ public class DataDockPoolAdmTest {
          */  
                 
     }
+
+    /**
+    * Tests the overall functionality of the DataDockPoolAdm by calling the 
+    * privateStart method that invokes the readFiles, createFutureTaskList and 
+    * 
+    */
+    @Test public void privateStartTest() throws  ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException, InterruptedException, ExecutionException {
+        
+        /**1 setting up the needed mocks 
+         * Is done in setup()
+         */
+        
+        /**2 the expectations 
+         */
+        expect( mockDDP.createAndJoinThread( isA( CargoContainer.class ) ) ).andReturn( mockFutureTask ).times( 3 );
+        expect( mockFutureTask.isDone() ).andReturn( false ).times( 2 );
+        expect( mockFutureTask.isDone() ).andReturn( true );
+        expect( mockFutureTask.get() ).andReturn( 2l );
+        expect( mockFutureTask.isDone() ).andReturn( false ).times( 4 );
+        expect( mockFutureTask.isDone() ).andReturn( true );
+        expect( mockFutureTask.get() ).andReturn( 4l );
+        expect( mockFutureTask.isDone() ).andReturn( false ).times( 6 );
+        expect( mockFutureTask.isDone() ).andReturn( true );
+        expect( mockFutureTask.get() ).andReturn( 6l );
+
+        /**3 replay
+         */       
+        replay( mockDDP );
+        replay( mockFutureTask );
+
+        /** do the stuff */
+        DDPA = new DataDockPoolAdm( mockEstimate, mockProcessqueue, mockFedoraHandler ); 
+        Method method;
+        Class[] argClasses = new Class[]{ DataDockPool.class , String.class , String.class, String.class, String.class, String.class };
+        Object[] args = new Object[]{ mockDDP, "text/xml", "dan", "dbc", "test", "testdir/datadockpooladmtestdir/" };
+        try{
+            method = DDPA.getClass().getDeclaredMethod("privateStart", argClasses);
+            method.setAccessible( true );
+            method.invoke( DDPA, args);
+        }catch( IllegalAccessException iae ){
+            Assert.fail( String.format( "IllegalAccessException accessing privateStart" ) );
+        }catch( InvocationTargetException ite ){
+            
+            //   assertTrue( ite.getTargetException().getClass() == IllegalArgumentException.class );
+            //assertTrue( ite.getTargetException().getMessage().startsWith( "the filepath: 'notValid'" )  );
+            Assert.fail( String.format( "privateStart threw an unexpected exception. the type is: '%s' ", ite.getTargetException().getClass() ) );
+        }catch( NoSuchMethodException nsme ){
+            Assert.fail( String.format( "No method called privateStart" ) );
+        } 
+        
+        /**4 check if it happened as expected
+         */  
+        verify( mockDDP );
+        verify( mockFutureTask );
+                
+    }
     
     /***
      * Tests that an IllegalArgumentException is thrown when the filepath given 
@@ -123,7 +179,6 @@ public class DataDockPoolAdmTest {
      * string "*.xml" meaning that all .xml files in the specified dir shold 
      * be taken
      */
-    
     @Test public void noFilesOnFilepathTest()throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         
         /**1 Setting up the needed mocks
