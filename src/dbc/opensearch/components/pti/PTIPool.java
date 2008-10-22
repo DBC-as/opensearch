@@ -54,7 +54,7 @@ public class PTIPool {
      * @throws ServiceException ServiceException something went wrong initializing the fedora client
      * @throws IOException something went wrong initializing the fedora client
      */
-    public PTIPool( int numberOfThreads, FedoraHandler fedoraHandler ) throws ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+    public PTIPool( int numberOfThreads, FedoraHandler fedoraHandler ) throws IllegalArgumentException, MalformedURLException, UnknownHostException, ServiceException, IOException {
         log.debug( String.format( "Entering PTIPool(NumberOfThreads=%s)", numberOfThreads ) );
         
         this.fedoraHandler = fedoraHandler;
@@ -62,7 +62,7 @@ public class PTIPool {
         if ( numberOfThreads <= 0 ){
             /** \todo Find suitable exception */
             log.fatal( String.format( "Number of threads specified was 0 or less." ) );
-            throw new ConfigurationException( "Refusing to construct empty PTIPool" );
+            throw new IllegalArgumentException( "Refusing to construct empty PTIPool" );
         }
         
         log.debug( String.format( "Starting the threadPool" ) );
