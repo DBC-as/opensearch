@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
+import org.compass.core.converter.ConversionException;
 
 import org.compass.core.Compass;
 
@@ -172,7 +173,7 @@ public class PTIPoolAdm {
                     log.fatal( String.format( "error caused exception: %s with message %s", cause.getClass(), cause.getMessage() ) );
                     RuntimeException re = new RuntimeException(cause);
                     
-                    if(re.getMessage().startsWith("org.compass.core.converter.ConversionException") ) {
+                    if( cause.getClass() == ConversionException.class ) {
                         //processqueue.removeElem(queueID);
                         log.debug( String.format( "Element to be removed with queueID: '%s'",queueID ) );  
                         log.error("An element on the processqueue does not match its promised format and can therefore not be indexed. The Validation of the elements being pushed to the queue is flawed!");
