@@ -169,7 +169,7 @@ public class PTIPoolAdm {
                     // catching exception from thread
                     Throwable cause = ee.getCause();
                     log.fatal( String.format( "Caught thread error associated with queueid = %s", queueID ) );     
-                   
+                    log.fatal( String.format( "error caused exception: %s with message %s", cause.getClass(), cause.getMessage() ) );
                     RuntimeException re = new RuntimeException(cause);
                     
                     if(re.getMessage().startsWith("org.compass.core.converter.ConversionException") ) {
