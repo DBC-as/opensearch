@@ -138,5 +138,4 @@ public class PTITest {
         
         assertTrue( p_time - p_length == returnval );
     }
-
 }
