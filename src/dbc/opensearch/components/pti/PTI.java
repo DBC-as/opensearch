@@ -51,6 +51,7 @@ public class PTI implements Callable<Long>{
      * @param fedoraHandle the handle identifying the data object
      * @param itemID identifying the data object
      * @param fh the fedorahandler, which communicates with the fedora repository
+     * @param estimate used to update the estimate table in the database
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */

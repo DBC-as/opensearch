@@ -48,6 +48,7 @@ public class PTIPool {
     /**
      * \brief Constructor initializes the threadpool 
      * @param numberOfThreads The number of threads in the pool
+     * @param fedoraHandler The fedorahandler, which communicates with the fedora repository
      * @throws ConfigurationException if the pool is instanciated with less than 1 thread 
      * @throws MalformedURLException Could not obtain compass configuration
      * @throws UnknownHostException error obtaining fedora configuration

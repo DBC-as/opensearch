@@ -54,7 +54,10 @@ public class PTIPoolAdm {
      * Initializes the PTIPool with the given number of
      * threads. Initializes a Processqueue and starts the mainLoop for
      * the processing of data within the threads.
-     * @param numberOfThreads is the number of threads to initialize the PTIPool with
+     * @param ptiPool the pool that spawns and handles pti threads
+     * @param processqueue used to fetch new tasks from the processqueue
+     * @param estimate used to update the estimate table in the database
+     * @param compass used to index, the target and write the indexes 
      * @throws ConfigurationException If the PTIPool could not be correctly initialized
      * @throws ClassNotFoundException If the Processqueue could not load the database driver
      * @throws MalformedURLException Could not obtain compass configuration
