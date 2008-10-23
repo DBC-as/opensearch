@@ -54,12 +54,12 @@ public class CargoContainer {
      *
      * \see dbc.opensearch.components.pti
      *
-     * @params data: The incoming data represented as a
+     * @param data: The incoming data represented as a
      * ByteArrayInputStream (or any stream that have a count method )
-     * @params mime: The mimetype of the data. Must conform to the allowed mimetypes
-     * @params lang: the language used in the data
-     * @params submitter: the submitter of the data, for identifying the pid namespace
-     * @params format: the format of the submitted data, for generating itemIDs and getting the correct Compass mappings
+     * @param mime: The mimetype of the data. Must conform to the allowed mimetypes
+     * @param lang: the language used in the data
+     * @param submitter: the submitter of the data, for identifying the pid namespace
+     * @param format: the format of the submitted data, for generating itemIDs and getting the correct Compass mappings
      * @throws java.io.IOException if the stream is corrupted
      */
     public CargoContainer( InputStream data, String mime, String lang, String submitter, String format ) throws IOException, IllegalArgumentException{
