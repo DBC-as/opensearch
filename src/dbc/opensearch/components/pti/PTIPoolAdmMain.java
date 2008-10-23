@@ -21,7 +21,7 @@ public class PTIPoolAdmMain {
         FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
 
         CompassFactory compassFactory = new CompassFactory();
-        
+        int numberOfThreads = 10;
 
         try{
             Compass compass = compassFactory.getCompass();
@@ -29,9 +29,10 @@ public class PTIPoolAdmMain {
             FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );
             Estimate estimate = new Estimate();
             Processqueue processqueue = new Processqueue();
-            
-            /** \todo: the number of threads should be configurable */
-            ptiPoolAdm = new PTIPoolAdm( 10, processqueue, estimate, fedoraHandler, compass );
+            /** \todo: the number of threads should be configurable */           
+            PTIPool ptiPool = new PTIPool( numberOfThreads, fedoraHandler);  
+           
+            ptiPoolAdm = new PTIPoolAdm( ptiPool, processqueue, estimate, compass );
 
         }catch(Exception e){
             log.fatal( String.format( "Could not initialize the PTIPool" ) );
