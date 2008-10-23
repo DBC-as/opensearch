@@ -1,3 +1,9 @@
+/**
+ * \file PTI.java
+ * \brief The PTI Class
+ * \package pti
+ */
+
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.components.datadock.CargoContainer;

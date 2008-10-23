@@ -1,3 +1,9 @@
+/**
+ * \file DataDockPoolAdm.java
+ * \brief The DataDockPoolAdm class
+ * \package datadock
+ */
+
 package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.FileFilter;

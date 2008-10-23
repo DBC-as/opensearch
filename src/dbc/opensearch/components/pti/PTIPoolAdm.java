@@ -1,3 +1,9 @@
+/**
+ * \file PTIPoolAdm.java
+ * \brief The PTIPoolAdm Class
+ * \package pti
+ */
+
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.tools.FedoraHandler;

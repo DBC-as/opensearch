@@ -1,3 +1,8 @@
+/**
+ * \file CargoContainer.java
+ * \brief The CargoContainer class
+ * \package datadock
+ */
 package dbc.opensearch.components.datadock;
 
 import java.io.InputStream;

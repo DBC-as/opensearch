@@ -1,5 +1,11 @@
-/** \file */
+/**
+ * \file CargoMimeType.java
+ * \brief The CargoMimetype enum
+ * \package datadock
+ */
+
 package dbc.opensearch.components.datadock;
+
 /**
  * \ingroup datadock
  * \brief Enum to control the possible values of mimetypes that we can

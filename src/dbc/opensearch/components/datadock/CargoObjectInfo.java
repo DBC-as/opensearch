@@ -1,3 +1,9 @@
+/**
+ * \file CargoObjectInfo.java
+ * \brief The CargoObjectInfo class
+ * \package datadock
+ */
+
 package dbc.opensearch.components.datadock;
 import java.util.Date;
 /**

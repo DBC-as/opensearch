@@ -1,3 +1,9 @@
+/**
+ * \file IProcessingPluginHandler.java
+ * \brief The PTI plugin interface
+ * \package pti.interfaces
+ */
+
 package dbc.opensearch.components.pti.interfaces;
 
 import dbc.opensearch.components.datadock.*;

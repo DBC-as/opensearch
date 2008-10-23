@@ -1,3 +1,8 @@
+/**
+ * \file PTIPoolAdmMain.java
+ * \brief The PTIPoolAdmMain Class
+ * \package pti
+ */
 package dbc.opensearch.components.pti;
 
 import org.compass.core.Compass;

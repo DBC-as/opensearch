@@ -1,3 +1,8 @@
+/**
+ * \file DataDockPoolAdmMain.java
+ * \brief The DataDockPoolAdmMain class
+ * \package datadock
+ */
 package dbc.opensearch.components.datadock;
 
 import org.apache.log4j.Logger;

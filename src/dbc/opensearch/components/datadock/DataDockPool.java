@@ -1,3 +1,8 @@
+/**
+ * \file DataDockPool.java
+ * \brief The DataDockPool class
+ * \package datadock
+ */
 package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.Estimate;
