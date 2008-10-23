@@ -1,3 +1,8 @@
+/**
+ * \file FedoraClientFactoryFactory.java
+ * \brief The FedoraClientFactory class
+ * \package tools
+ */
 package dbc.opensearch.tools;
 
 import fedora.client.FedoraClient;

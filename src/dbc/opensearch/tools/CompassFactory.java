@@ -1,3 +1,8 @@
+/**
+ * \file CompassFactory.java
+ * \brief The CompassFactory class
+ * \package tools
+ */
 package dbc.opensearch.tools;
 
 import org.compass.core.Compass;

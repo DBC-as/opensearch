@@ -1,3 +1,8 @@
+/**
+ * \file XmlFileFilter.java
+ * \brief The XmlFileFilter class
+ * \package tools
+ */
 package  dbc.opensearch.tools;
 
 import java.io.File;

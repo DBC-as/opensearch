@@ -1,3 +1,8 @@
+/**
+ * \file DBConnection.java
+ * \brief The DBConnection class
+ * \package tools
+ */
 package dbc.opensearch.tools;
 
 import java.sql.Connection;

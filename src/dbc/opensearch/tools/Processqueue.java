@@ -1,3 +1,8 @@
+/**
+ * \file Processqueue.java
+ * \brief The Processqueue class
+ * \package tools
+ */
 package dbc.opensearch.tools;
 
 import org.apache.log4j.Logger;

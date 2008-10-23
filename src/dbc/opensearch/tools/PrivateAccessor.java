@@ -1,3 +1,8 @@
+/**
+ * \file PrivateAccessor.java
+ * \brief The PrivateAccessor class
+ * \package tools
+ */
 package dbc.opensearch.tools;
 
 import java.lang.reflect.Field;

@@ -1,3 +1,8 @@
+/**
+ * \file FedoraHandler.java
+ * \brief The FedoraHandler class
+ * \package tools
+ */
 package dbc.opensearch.tools;
 
 import dbc.opensearch.components.datadock.CargoContainer;
