@@ -27,7 +27,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 /**
  * \ingroup datadock
- * brief CargoContainer is a datastructure used throughout OpenSearch for
+ * \brief CargoContainer is a datastructure used throughout OpenSearch for
  * carrying the informations submitted for indexing. CargoContainer
  * Handles the verification of the submitted datatypes as well as
  * adding additional information used by the OpenSearch components
@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 public class CargoContainer {
     
     private String dublinCoreMetadata = null;
-
 
     /** object to hold information about the data*/
     private CargoObjectInfo coi;
@@ -66,9 +65,11 @@ public class CargoContainer {
      * @param lang: the language used in the data
      * @param submitter: the submitter of the data, for identifying the pid namespace
      * @param format: the format of the submitted data, for generating itemIDs and getting the correct Compass mappings
+     *
      * @throws java.io.IOException if the stream is corrupted
+     * @throws IllegalArgumentException if arguments are illformed.
      */
-    public CargoContainer( InputStream data, String mime, String lang, String submitter, String format ) throws IOException, IllegalArgumentException{
+    public CargoContainer( InputStream data, String mime, String lang, String submitter, String format ) throws IOException, IllegalArgumentException, NullPointerException{
 
         log.debug( String.format( "Entering CargoContainer constructor" ) );
         // 05: get the stream into the object
@@ -144,7 +145,23 @@ public class CargoContainer {
         log.debug( String.format( "All Checks passed, CargoContainer constructed with values %s, %s, %s, %s", this.getStreamLength(), this.getMimeType(), lang, this.getSubmitter() ) );
         
     }
-
+    
+    
+    /**
+     * Constructor for the CargoContainer class. facilitates dublin core.
+     *
+     * @param data: The incoming data represented as a
+     * ByteArrayInputStream (or any stream that have a count method )
+     * @param data The data to process
+     * @param dublinCore The dublin core data to attach to the data
+     * @param submitter the submitter of the data, for identifying the pid namespace
+     * @param format the format of the submitted data, for generating itemIDs and getting the correct Compass mappings
+     *
+     * @throws ParserConfigurationException if something goes wrong while parsing dcxml
+     * @throws SAXException if something goes wrong while parsing dcxml
+     * @throws java.io.IOException if the stream is corrupted
+     * @throws IllegalArgumentException if arguments are illformed.
+     */
     public CargoContainer(InputStream data, String dublinCore, String submitter, String format) throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException{
         // read data
         if( data.available() > 0 ){
@@ -208,6 +225,8 @@ public class CargoContainer {
     }
 
     /**
+     * Checks the validity if the submitter
+     *
      * @returns true if name is found in submitter-list, false otherwise
      */
     public boolean checkSubmitter( String name ) throws IllegalArgumentException{
@@ -216,6 +235,8 @@ public class CargoContainer {
     }
 
     /**
+     * Checks the validity if the mimeType
+     *
      * @returns true if mimetype is allowed in OpenSearch, false otherwise
      */
     public boolean checkMimeType( String mimetype ){
@@ -233,6 +254,8 @@ public class CargoContainer {
 
     }
     /**
+     * Checks the validity if the language
+     *
      *@returns true if language is allowed in Opensearch, false otherwise
      */
     public boolean checkLanguage(String lang){
@@ -240,6 +263,8 @@ public class CargoContainer {
     }
 
     /**
+     * Gets the data from the container
+     *
      * @returns the data of the container-object as an BufferedInputStream
      */
     public BufferedInputStream getData(){
@@ -248,7 +273,9 @@ public class CargoContainer {
 
     /**
      * Get the InputStream returned as a byte array
+     *
      * @returns the internal data representation as a byte[]
+     *
      * @throws IOException if the CargoContainer data could not be written to the byte[]
      * @throws NullPointerException if the pointer to the internal representation was corrupted
      */
@@ -280,7 +307,9 @@ public class CargoContainer {
 
     /**
      * Get the InputStream returned as a bytearrayoutputstream
+     *
      * @returns the internal data represented as a ByteArrayOutputStream
+     *
      * @throws IOException if the data could not be written to the ByteArrayOutputStream
      * @throws NullPointerException if the pointer to the internal representation was corrupted
      */
@@ -307,6 +336,8 @@ public class CargoContainer {
     }
 
     /**
+     * Returns the length of the datastream in bytes
+     *
      * @returns the length of the data-stream
      */
     public int getStreamLength() {
@@ -314,6 +345,8 @@ public class CargoContainer {
     }
 
     /**
+     * Returns the mimetype
+     *
      * @returns the mimetype of the data as a string
      */
     public String getMimeType(){
@@ -321,14 +354,18 @@ public class CargoContainer {
     }
 
     /**
-     *@returns the submitter as a string
+     * Returns the name of the submitter
+     *
+     * @returns the submitter as a string
      */
     public String getSubmitter(){
         return coi.getSubmitter();
     }
 
     /**
-     *@returns the format as a string
+     * Returns the format
+     *
+     * @returns the format as a string
      */
     public String getFormat(){
         return coi.getFormat();
@@ -337,6 +374,8 @@ public class CargoContainer {
     /** \todo: needs unittest */
 
     /**
+     * Returns this CargoContainers timestamp
+     *
      * @returns the timestamp of the CargoContainer
      */
     public long getTimestamp(){
@@ -346,6 +385,7 @@ public class CargoContainer {
     /** \todo: needs unittest */
 
     /**
+     * Sets this CargoContainers timestamp
      * Sets a timestamp on the cargocontainer. This is not reflecting
      * when the CargoContainer was initialized, but is solely up to
      * the client

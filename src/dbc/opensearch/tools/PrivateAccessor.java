@@ -19,12 +19,12 @@ import java.lang.reflect.InvocationTargetException;
  */
 public final class PrivateAccessor{
 
-
-    
     /**
      * Retrieves the value of a private field (for unitesting purposes) 
+     *
      * @param o is the object that the field resides in
      * @param fieldName is the name of the field you want access.
+     *
      * @returns an object containing the fields value
      */
     public static Object getPrivateField( Object o, String fieldName ){
@@ -52,9 +52,11 @@ public final class PrivateAccessor{
     
     /**
      * Invokes a private method and returns its returnvalue (for unitesting purposes) 
+     *
      * @param o is the object that the field resides in
      * @param methodName is the name of the method you want invoke.
      * @param args a list (vararg list) of arguments to the called function
+     *
      * @returns an object containing the methods return value, if any.
      */
     public static Object invokePrivateMethod(Object o, String methodName, Object... args){

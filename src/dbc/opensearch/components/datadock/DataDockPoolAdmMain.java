@@ -26,6 +26,10 @@ class DataDockPoolAdmMain {
 //     String filepath;
 //     DataDockPoolAdm DDPA;
     
+    /**
+     * The main method of the DataDock.
+     * Initializes used classes and starts recieving
+     */
     public final static void main( String[] args ){
         
        

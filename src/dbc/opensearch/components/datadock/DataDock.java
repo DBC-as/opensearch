@@ -7,10 +7,8 @@
 package dbc.opensearch.components.datadock;
 
 import dbc.opensearch.tools.FedoraHandler;
-//import dbc.opensearch.tools.FedoraClientFactory;
 import dbc.opensearch.tools.Estimate;
 import dbc.opensearch.tools.Processqueue;
-
 
 import java.sql.Connection;
 
@@ -20,7 +18,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fedora.server.errors.ServerException;
-//import fedora.client.FedoraClient;
 
 import java.util.concurrent.Callable;
 
@@ -61,7 +58,6 @@ import javax.xml.rpc.ServiceException;
  * process of fedora storing, data processing, indexing and
  * search-capabilities
  */
-
 public class DataDock implements Callable<Float>{
     private CargoContainer cc;
     private Processqueue queue;
@@ -76,8 +72,17 @@ public class DataDock implements Callable<Float>{
     /**
      * DataDock is initialized with a CargoContainer containing the
      * data to be 'docked' into to system
+     *
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dbc.opensearch.tools.DBConnection
+     *
+     * @param cargo The cargo to be processed
+     * @param estimate the estimation database handler
+     * @param processqueue the processqueue handler
+     * @param fedoraHandler the fedora repository handler
+     *
+     * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dbc.opensearch.tools.Estimate
+     * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
      */
     public DataDock( CargoContainer cargo, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "Entering DataDock Constructor" ) );
@@ -98,7 +103,9 @@ public class DataDock implements Callable<Float>{
      * estimation of how long time it will take to bzw. index and save
      * in fedora the data given with the CargoContainer.
      * \see dbc.opensearch.tools.Estimation
+     *
      * @returns an estimate on the completion-time of indexing and fedora submission
+     *
      * @throws SQLException if the estimate could not be retrieved from the database
      * @throws NoSuchElementException if the mimetype is unknown to the estimate method. \see dbc.opensearch.tools.Estimation.getEstimate(String, long)
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
@@ -137,7 +144,9 @@ public class DataDock implements Callable<Float>{
      * estimation of how long time it will take to bzw. index and save
      * in fedora the data given with the CargoContainer.
      * \see dbc.opensearch.tools.Estimation
+     *
      * @returns an estimate on the completion-time of indexing and fedora submission
+     *
      * @throws SQLException if the estimate could not be retrieved from the database
      * @throws NoSuchElementException if the mimetype is unknown to the estimate method.
      * \see dbc.opensearch.tools.Estimation.getEstimate(String, long)
@@ -172,6 +181,7 @@ public class DataDock implements Callable<Float>{
     /**
      * fedoraStoreData is an internal method for storing data given
      * with the initialization of the DataDock into a fedora base.
+     *
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dbc.opensearch.tools.FeodraHandler
      * @throws RemoteException if the datastream could not be ingested into the fedora base
      * @throws XMLStreamException if the foxml could not be constructed in the FedoraHandler \see dbc.opensearch.tools.FedoraHandler

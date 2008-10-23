@@ -10,7 +10,7 @@ import dbc.opensearch.components.datadock.*;
 
 /**
  * \ingroup pti
- * 
+ * Interface for the PluginHandler 
  */
 public interface IProcessingPluginHandler {
 

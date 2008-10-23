@@ -27,18 +27,11 @@ import java.util.Vector;
  */
 public class Processqueue extends DBConnection {
 
-    /**
-     *  Log
-     */
     Logger log = Logger.getLogger("Processqueue");
 
     /**
-     *  database Connection
-     */
-    // private Connection con;
-
-    /**
      * Constructor
+     *
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
@@ -48,8 +41,10 @@ public class Processqueue extends DBConnection {
 
     /**
      * Push an fedorahandle to the processqueue
+     *
      * @param fedorahandle a fedorahandle, i.e. a pointer to a document in the opensearch repository.
      * @param itemID an  itemID, identifying the dataobject, later used for indexing purposes
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
@@ -82,11 +77,13 @@ public class Processqueue extends DBConnection {
 
     /**
      * pops the top-most element from the Processqueue, returning the fedorahandle as a String
+     *
      * @returns A triple cointaning the fedorahandle (a String
      * containing the unique handle), the itemID (a String identifing
-     * teh databoject, used for indexing),and queueid a number
+     * the databoject, used for indexing),and queueid a number
      * identifying the fedorahandle in the queue. Used later for
      * commit or rollback.  for the resource in the object repository
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws NoSuchElementException if there is no element on the queue to pop
@@ -112,7 +109,19 @@ public class Processqueue extends DBConnection {
         }
         return returntriple;
     }
-
+    
+    
+    /**
+     * Retrives values from the CallableStatement
+     *
+     * @returns A triple cointaning the fedorahandle (a String
+     * containing the unique handle), the itemID (a String identifing
+     * the databoject, used for indexing),and queueid a number
+     * identifying the fedorahandle in the queue. Used later for
+     * commit or rollback.  for the resource in the object repository
+     *
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     */
     private Triple getValues(CallableStatement cs)throws SQLException {
         
         if ( cs.getString(1) == null ) { // Queue is empty
@@ -130,7 +139,14 @@ public class Processqueue extends DBConnection {
         return Tuple.from( handle, popped_queueid, itemID );
     }
 
-
+    
+    /**
+     * Retrives CallableStatement from Database
+     *
+     * @returns A CallableStatement containing the databases return value for the stored procedure prod_proc
+     *
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     */
     private CallableStatement getStatement(Connection con) throws SQLException {
         CallableStatement cs=null;
         ResultSet rs=null;           
@@ -145,11 +161,12 @@ public class Processqueue extends DBConnection {
     }
 
 
-
     /**
      * commits the pop to the queue. This operation removes the
      * element from the queue for good, and rollback is not possible
+     *
      * @param queueid identifies the element to commit.
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws NoSuchElementException if there is no element on the queue to pop
@@ -188,6 +205,7 @@ public class Processqueue extends DBConnection {
     /**
      * rolls back the pop. This restores the element in the queue and
      * the element is in concideration the next time a pop i done.
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws NoSuchElementException if there is no element on the queue to pop
@@ -224,7 +242,9 @@ public class Processqueue extends DBConnection {
      * deactivate elements on the processqueue.  It finds all elements
      * on the processqueue which are marked as active and mark them as
      * inactive, ie. they are ready for indexing.
+     *
      * @return the number of elements which are reactivated
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
@@ -247,13 +267,14 @@ public class Processqueue extends DBConnection {
         }
         log.info(String.format("Updated %S processes from active to not active" , rowsUpdated ));
         return rowsUpdated;
-
     }
 
     /**
      * getActiveprocesses queries the processqueue table and find
      * elements that are marked as processing.
+     *
      * @return An integer array contaning queueids matching active processing threads
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
@@ -284,7 +305,14 @@ public class Processqueue extends DBConnection {
         }
         return queueIDVector;
     }
-
+    
+    /**
+     * Removes an element from the processqueue
+     *
+     * @param queueId Removes element mathcing this queueID.
+     *
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     */
     public void removeElem( int queueId ) throws SQLException{
         log.debug( String.format("Entering removeElemFromQueue with parameter: '%s'", queueId) );
         Connection con;
@@ -298,9 +326,6 @@ public class Processqueue extends DBConnection {
         }finally{
             con.commit(); 
             con.close();
-        }
-
-    
-
+        }    
     }
 }

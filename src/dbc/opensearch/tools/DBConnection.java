@@ -38,14 +38,12 @@ public class DBConnection{
     private static String userID = "";
     private static String passwd = "";
 
-    /**
-     *  Log
-     */
     static Logger log = Logger.getLogger("DBConnection");
 
     
     /**
      * /brief Gets configuration and driver information 
+     *
      * @throws ConfigurationException
      * @throws ClassNotFoundException
      */
@@ -71,6 +69,7 @@ public class DBConnection{
 
     /**
      * Establishes the connction to the database
+     *
      * @throws SQLException
      */
     protected static Connection establishConnection() throws SQLException {

@@ -54,8 +54,10 @@ public class PTIPool {
 
     /**
      * \brief Constructor initializes the threadpool 
+     *
      * @param numberOfThreads The number of threads in the pool
      * @param fedoraHandler The fedorahandler, which communicates with the fedora repository
+     *
      * @throws ConfigurationException if the pool is instanciated with less than 1 thread 
      * @throws MalformedURLException Could not obtain compass configuration
      * @throws UnknownHostException error obtaining fedora configuration
@@ -85,6 +87,7 @@ public class PTIPool {
      * from the fedora base, index it and store it. The return value is the handle,
      * that the PTIPoolAdm uses for keeping track of which digitalobjects
      * are in process
+     *
      * @throws ConfigurationException error reading the PTI configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */

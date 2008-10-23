@@ -3,16 +3,17 @@
  * \brief The CargoObjectInfo class
  * \package datadock
  */
-
 package dbc.opensearch.components.datadock;
+
 import java.util.Date;
+
 /**
  * \ingroup datadock
  * \brief Holds the metadata for cargo
  */
 public class CargoObjectInfo {
 
-    private CargoMimeType mimeType;/** \see CargoMimeType */
+    private CargoMimeType mimeType;/**< \see CargoMimeType */
 
     /** \todo: the language of the submitted data determines which analyzer
      * should be used in the indexing process, therefore we want full
@@ -32,12 +33,18 @@ public class CargoObjectInfo {
      * \todo streams are iterators, we need content-length before-hand
      */
     private int contentLength;
-    private Date timestamp; /** used to make statistics and estimates regarding the processtime of the dataobject */
+    private Date timestamp; /**< used to make statistics and estimates regarding the processtime of the dataobject */
   
     /**
      * Constructs a CargoObjectInfo instance that acts as a container
      * for the metadata associated with a given CargoContainers data
      * \todo: should this constructor throw? And on what occasions?
+     *
+     * @param mimeType The dataobjects mimetype.
+     * @param lang The dataobjects language
+     * @param submitter The dataobjects submitter
+     * @param format The dataobjects format
+     * @param contentLength the dataobjects contentlength
      */
     public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format, int contentLength ) {
 
@@ -55,26 +62,47 @@ public class CargoObjectInfo {
 
     }
 
+
+    /**
+     * Returns the length of the datastream in bytes
+     *
+     * @returns the length of the data-stream
+     */
     int getContentLength(){
         return contentLength;
     }
-
+    
+    /**
+     * Returns this CargoContainers timestamp
+     *
+     * @returns the timestamp of the CargoContainer
+     */
     long getTimestamp(){
         return timestamp.getTime();
     }
+
+    /**
+     * Returns the mimetype
+     *
+     * @returns the mimetype of the data as a string
+     */
     String getMimeType(){
         return mimeType.getMimeType();
     }
 
     /**
-     *@return submitter as string
+     * Returns the name of the submitter
+     *
+     * @return submitter as string
      */
     public String getSubmitter(){
         return submitter;
     }
  
     /**
-     *@return format as string
+     * Returns the format
+     *
+     * @return format as string
      */
     public String getFormat(){
         return format;

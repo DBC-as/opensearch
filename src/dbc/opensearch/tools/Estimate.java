@@ -22,18 +22,11 @@ import org.apache.commons.configuration.ConfigurationException;
  */
 public class Estimate extends DBConnection {
 
-    /**
-     *  database Connection
-     */
-    //private Connection con;
-
-    /**
-     * Log
-     */    
     Logger log = Logger.getLogger("Estimate");
 
     /**
      * Constructor
+     *
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
@@ -44,9 +37,12 @@ public class Estimate extends DBConnection {
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     /**
      * \brief getEstimate retrieves estimate from statisticDB table.
+     *
      * @param mimeType The mimeType of the element were trying to estimate processtime for
      * @param length length in bytes of the element were trying to estimate processtime for
+     *
      * @return the processtime estimate.
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws NoSuchElementException if the mimetype is not known
@@ -102,9 +98,11 @@ public class Estimate extends DBConnection {
 
     /**
      * updateEstimate updates the entry in statisticDB that matches the given mimetype, with the length and time.
+     *
      * @param mimeType is the mimetype of the processed object 
      * @param length is the length in bytes of the processed object 
      * @param time is time in millisecs that it took to proces the object
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */

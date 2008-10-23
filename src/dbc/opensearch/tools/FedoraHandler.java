@@ -75,6 +75,7 @@ public class FedoraHandler implements Constants{
      * base and initializes the FedoraClient. FedoraClient is used to
      * get the Fedora API objects.
      * FedoraHandler
+     *
      * @throws ConfigurationException error reading configuration file
      * @throws MalformedURLException error obtaining fedora configuration
      * @throws UnknownHostException error obtaining fedora configuration
@@ -110,10 +111,12 @@ public class FedoraHandler implements Constants{
     }
 
     /**
-     * \brief Submits the datastream to fedora repository 
+     * Submits the datastream to fedora repository 
      * \todo: what are these parameters?
+     *
      * @param cargo the cargocontainer with the data 
      * @param label the identifier for the data - used to construct the FOXML
+     *
      * @throws RemoteException error in communiction with fedora
      * @throws XMLStreamException an error occured during xml document creation
      * @throws IOException something went wrong initializing the fedora client
@@ -152,13 +155,16 @@ public class FedoraHandler implements Constants{
     }
     
     /**
-     * \brief constructs a foxml stream from the parameters
+     * Constructs a foxml stream from the parameters
      * \todo: what are these parameters?
+     *
      * @param cargo the cargocontainer with the data 
      * @param nextPid the next valid pid
      * @param itemId a unique identifier for the namespace
      * @param label the identifier for the data - used to construct the FOXML
+     *
      * @returns byte array contaning the foxml string
+     *
      * @throws IOException something went wrong initializing the fedora client
      * @throws XMLStreamException an error occured during xml document creation
      */
@@ -247,9 +253,12 @@ public class FedoraHandler implements Constants{
     /**
      * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
      * \todo: what are these parameters?
+     *
      * @param pid 
      * @param itemID
+     *
      * @returns The cargocontainer constructed
+     *
      * @throws NotImplementedException
      */    
     public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException{
@@ -259,9 +268,12 @@ public class FedoraHandler implements Constants{
     /**
      * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
      * \todo: what are these parameters?
+     *
      * @param pid 
      * @param itemId
+     *
      * @returns The cargocontainer constructed
+     *
      * @throws IOException something went wrong initializing the fedora client
      * @throws NoSuchElementException if there is no matching element on the queue to pop
      * @throws RemoteException error in communiction with fedora

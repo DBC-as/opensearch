@@ -11,10 +11,12 @@ import dbc.opensearch.tools.FedoraHandler;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.*;
+import java.util.concurrent.FutureTask;
+
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
+
 /**
  * \ingroup datadock
  * \brief The pool controls the datadock threads
@@ -33,6 +35,12 @@ public class DataDockPool {
      * Checks that the number of threads the threadpool is instantiated with
      * is legal and initializes a FixedThreadPool
      * \see java.util.concurrent.FixedThreadPool
+     *
+     * @param numberOfThreads Number of concurrent threads in the thread pool.
+     * @param estimate the estimation database handler
+     * @param processqueue the processqueue handler
+     * @param fedoraHandler the fedora repository handler
+     *
      * @throws IllegalArgumentException if the threadpool is tried initialized with no threads
      */
    public DataDockPool( int numberOfThreads, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws IllegalArgumentException{
@@ -45,8 +53,6 @@ public class DataDockPool {
             throw new IllegalArgumentException( "refusing to construct empty pool" );
         }        
         threadExecutor = Executors.newFixedThreadPool(numberOfThreads);
-        // /** \todo: is this boolean useful? */
-//         initialised = true;
     }
     
 
@@ -56,16 +62,16 @@ public class DataDockPool {
      * needs the cargocontainer as an argument
      * This method should have a more telling name form the callers
      * point of view
+     *
+     * @param cc The cargo to be processed
+     *
      * @returns the FutureTask with the (future) return value of the DataDock calls
-    // * @throws IllegalArgumentException if the threadpool is not initialized
+     *
+     * @throws IllegalArgumentException if the threadpool is not initialized
      * @throws ConfigurationException if the DataDock could not be initialized
+     * @throws ClassNotFoundException if the database could not be initialised
      */
     public FutureTask createAndJoinThread( CargoContainer cc )throws IllegalArgumentException, ConfigurationException, ClassNotFoundException{
-//         /** \todo: this boolean can only and always be true, if it tried to call a method on a non-initialized object the compiler does not accept it */
-//         if(!initialised){
-//             throw new IllegalArgumentException("trying to create a thread without a threadpool");
-//         }
-
         log.info( String.format( "Creating the FutureTask with a DataDock" ) );
         FutureTask future = new FutureTask(new DataDock(cc, estimate, processqueue, fedoraHandler ));
         

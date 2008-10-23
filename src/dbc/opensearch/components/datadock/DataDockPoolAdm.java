@@ -11,10 +11,8 @@ import dbc.opensearch.tools.XmlFileFilter;
 
 import dbc.opensearch.tools.Estimate;
 import dbc.opensearch.tools.Processqueue;
-//import dbc.opensearch.tools.FedoraClientFactory;
-import dbc.opensearch.tools.FedoraHandler;
-//import fedora.client.FedoraClient;
 
+import dbc.opensearch.tools.FedoraHandler;
 
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -36,7 +34,6 @@ import java.util.concurrent.ExecutionException;
  * \brief This class administrates the start up of DataDockPool, giving it
  * CargoContainers to process and it maintains an array of documenttitles
  * and the related FutureTasks that will contain estinmates
- *
  */
 public class DataDockPoolAdm {
     static Logger log = Logger.getLogger( "DataDockPoolAdm" );
@@ -59,7 +56,23 @@ public class DataDockPoolAdm {
     FutureTask[] FTList = null;
     //    int answersReceived = 0;
     // int numOfFiles = 0;
-
+    
+    
+    /**
+     * Constructor
+     * Constructs the DataDockPoolAdm instance with all the needed resources
+     * 
+     * @param estimate the estimation database handler
+     * @param processqueue the processqueue handler
+     * @param fedoraHandler the fedora repository handler
+     *
+     * @throws ConfigurationException if the FedoraHandler could not be initialized.
+     * @throws ClassNotFoundException if the database could not be initialised
+     * @throws MalformedURLException error obtaining fedora configuration
+     * @throws UnknownHostException
+     * @throws ServiceException
+     * @throws IOException if the FedoraHandler could not read data from the CargoContainer
+     */
     public DataDockPoolAdm( Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
 
         log.debug( "Entering the constructor" );
@@ -70,6 +83,23 @@ public class DataDockPoolAdm {
         this.filepath = null;
     }
     
+    
+    /**
+     * Starts the datadock. Wrapper for privateStart for testing purposes
+     *
+     * @param mimetype The mimetype of the data
+     * @param lang The language of the data
+     * @param submitter The submitter of the data
+     * @param format The format of the data
+     * @param filepath The filepath to datafiles
+     *
+     * @throws FileNotFoundException if filepath is invalid
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws IOException something went wrong while reading file
+     * @throws ConfigurationException if the FedoraHandler could not be initialized.
+     * @throws ClassNotFoundException if the database could not be initialised
+     */
     public void start( String mimetype, String lang, String submitter, String format, String filepath )throws FileNotFoundException, InterruptedException, ExecutionException, IOException, ConfigurationException, ClassNotFoundException {
 
        
@@ -80,6 +110,24 @@ public class DataDockPoolAdm {
         privateStart(DDP, mimetype, lang, submitter, format, filepath);
 
     }
+
+    
+    /**
+     * Starts the datadock.
+     *
+     * @param DDP the DataDockPool which administrates DataDock threads
+     * @param mimetype The mimetype of the data
+     * @param lang The language of the data
+     * @param submitter The submitter of the data
+     * @param format The format of the data
+     * @param filepath The filepath to datafiles
+     *
+     * @throws FileNotFoundException if filepath is invalid
+     * @throws InterruptedException
+     * @throws IOException something went wrong while reading file
+     * @throws ConfigurationException if the FedoraHandler could not be initialized.
+     * @throws ClassNotFoundException if the database could not be initialised
+     */
     private void privateStart( DataDockPool DDP, String mimetype, String lang, String submitter, String format, String filepath ) throws FileNotFoundException, InterruptedException, IOException, ConfigurationException, ClassNotFoundException {
         log.debug( "Entering the privateStart method" );
         this.DDP = DDP;
@@ -109,6 +157,10 @@ public class DataDockPoolAdm {
     /**
      * Reads the files from the specified path into the array fileList
      * and the names of the files into the array fileNameList
+     *
+     * @param filepath The filepath to read files from
+     * @param fileNameList
+     * @param fileList
      */
     private void readFiles( String filepath, String[] fileNameList, File[] fileList){   
         
@@ -160,8 +212,15 @@ public class DataDockPoolAdm {
     }
     
     /**
-    * creates the cargoContainers and gives them to the createAndJoinThread on the DDP
+    * Creates the cargoContainers and gives them to the createAndJoinThread on the DDP
     * the returned FutureTask are put on the FTList
+    *
+    * @param fileList The datafiles to be processed
+    * 
+    * @throws FileNotFoundException if filepath is invalid
+    * @throws IOException something went wrong while reading file
+    * @throws ConfigurationException if the configuration  could not be initialized.
+    * @throws ClassNotFoundException if the database could not be initialised
     */
     private void createFutureTaskList( File[] fileList ) throws FileNotFoundException, IOException, ConfigurationException, ClassNotFoundException {
        
@@ -191,8 +250,12 @@ public class DataDockPoolAdm {
     }
 
     /**
-     * checks the FutureTask whether they are done or running. When a FututreTask
+     * Checks the FutureTask whether they are done or running. When a FututreTask
      * is done the result is "given to the user"
+     *
+     * @param FTList List containing FutureTask ie. active threads
+     *
+     * @throws InterruptedException
      */ 
     private void checkThreads( FutureTask[] FTList) throws InterruptedException {
         
@@ -247,6 +310,15 @@ public class DataDockPoolAdm {
     /**
     * Creates a CargoContainer from a file, and other info needed
     * \todo: Do we need this method? 
+    *
+    * @param file The file to be read
+    * @param mimetype The mimetype of the data
+    * @param lang The language of the data
+    * @param submitter The submitter of the data
+    * @param format The format of the data
+    *
+    * @throws FileNotFoundException if filepath is invalid
+    * @throws IOException something went wrong while reading file
     */
     private CargoContainer createCargoContainerFromFile( File file, String mimetype, String lang, String submitter, String format ) throws IOException, FileNotFoundException {
         InputStream data = new FileInputStream( file );

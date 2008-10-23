@@ -3,7 +3,6 @@
  * \brief The PTI Class
  * \package pti
  */
-
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.components.datadock.CargoContainer;
@@ -54,11 +53,13 @@ public class PTI implements Callable<Long>{
 
     /**
      * \brief Constructs the PTI instance with the given parameters
+     *
      * @param session the compass session this pti should communicate with
      * @param fedoraHandle the handle identifying the data object
      * @param itemID identifying the data object
      * @param fh the fedorahandler, which communicates with the fedora repository
      * @param estimate used to update the estimate table in the database
+     *
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
@@ -78,6 +79,25 @@ public class PTI implements Callable<Long>{
         saxReader = new SAXReader( false );
         finishTime = new Date();
     }
+    
+    /**
+     * call is the main function of the PTI class. It reads the data
+     * pointed to by the fedorahandler given to the class in the
+     * constructor and indexes it with compass, and finally returning
+     * a float, representing the processtime for the data pointed to
+     * by the fedorahandle.
+     *
+     * @return the processtime
+     *
+     * @throws CompassException something went wrong with the compasssession
+     * @throws IOException something went wrong initializing the fedora client
+     * @throws DocumentException Couldnt read the xml data from the cargocontainer
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     * @throws ClassNotFoundException if the databasedriver is not found
+     */
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+        return call( saxReader, finishTime, fh, fedoraHandle, datastreamItemID );
+    }
 
     /**
      * call is the main function of the PTI class. It reads the data
@@ -85,18 +105,22 @@ public class PTI implements Callable<Long>{
      * constructor and indexes it with compass, and finally returning
      * a float, representing the processtime for the data pointed to
      * by the fedorahandle.
+     * \todo: This method is probably not neccessary and should be removeed. made for testing purposes
+     *
      * @return the processtime
+     *
+     * @param saxReader The SaxReader instance to use
+     * @param finishTime Date to hold finishedprocessing time
+     * @param fh The FedoraHandler instance to use
+     * @param fedoraHandle the handle identifying the data object
+     * @param datastreamItemID identifying the data object
+     *
      * @throws CompassException something went wrong with the compasssession
      * @throws IOException something went wrong initializing the fedora client
      * @throws DocumentException Couldnt read the xml data from the cargocontainer
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
-     */
- 
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
-        return call( saxReader, finishTime, fh, fedoraHandle, datastreamItemID );
-    }
-    
+     */    
     public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
         log.debug( "Entering PTI.call()" );
 

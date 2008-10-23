@@ -3,7 +3,6 @@
  * \brief The CargoMimetype enum
  * \package datadock
  */
-
 package dbc.opensearch.components.datadock;
 
 /**
@@ -30,11 +29,18 @@ public enum CargoMimeType{
     /**
      * use instanceOfCargoMimeType.getMimeType() to get the (official)
      * name of the mimetype
+     *
+     * @returns The mimetype
      */
     public String getMimeType(){
         return this.mimetype;
     }
 
+    /**
+     * Returns The description of the mimetype.
+     *
+     * @returns The description of the mimetype.
+     */
     public String getDescription(){
         return this.description;
     }

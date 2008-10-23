@@ -1,5 +1,5 @@
 /**
- * \file FedoraClientFactoryFactory.java
+ * \file FedoraClientFactory.java
  * \brief The FedoraClientFactory class
  * \package tools
  */
@@ -16,9 +16,8 @@ import java.net.MalformedURLException;
 
 /**
  * \ingroup tools
- * \brief The factory spawns fedoraHandlers
+ * \brief The factory spawns fedoraClients
  */
-
 public class FedoraClientFactory {
     
     Logger log = Logger.getLogger("FedoraClientFactory"); 
@@ -29,6 +28,13 @@ public class FedoraClientFactory {
     private static String user = "";
     private static String passphrase = "";
     
+    
+    /**
+     * Builds And return a FedoraClient.   
+     *
+     * @throws ConfigurationException error reading configuration file
+     * @throws MalformedURLException error obtaining fedora configuration
+     */
     public FedoraClient getFedoraClient()throws ConfigurationException, MalformedURLException {
          
         log.debug( "Obtain config paramaters for configuring fedora connection");

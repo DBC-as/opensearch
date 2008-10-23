@@ -26,6 +26,9 @@ import fedora.client.FedoraClient;
  * \defgroup pti PTI
  * \ingroup components 
  * \brief The PTI component validates and indexes the newly arrived data.
+ *
+ *
+ *
  * \mainpage
  * \section Overview
  * \section Components
@@ -46,7 +49,10 @@ public class PTIPoolAdmMain {
     static Logger log = Logger.getLogger("PTIPoolAdmMain");
     static PTIPoolAdm ptiPoolAdm;
         
-
+    
+    /**
+     * The main class for the PTI component
+     */
     public final static void main(String[] args){
     
         FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();

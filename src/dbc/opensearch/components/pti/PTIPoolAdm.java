@@ -3,7 +3,6 @@
  * \brief The PTIPoolAdm Class
  * \package pti
  */
-
 package dbc.opensearch.components.pti;
 
 import dbc.opensearch.tools.FedoraHandler;
@@ -63,10 +62,12 @@ public class PTIPoolAdm {
      * Initializes the PTIPool with the given number of
      * threads. Initializes a Processqueue and starts the mainLoop for
      * the processing of data within the threads.
+     *
      * @param ptiPool the pool that spawns and handles pti threads
      * @param processqueue used to fetch new tasks from the processqueue
      * @param estimate used to update the estimate table in the database
      * @param compass used to index, the target and write the indexes 
+     *
      * @throws ConfigurationException If the PTIPool could not be correctly initialized
      * @throws ClassNotFoundException If the Processqueue could not load the database driver
      * @throws MalformedURLException Could not obtain compass configuration
@@ -99,6 +100,7 @@ public class PTIPoolAdm {
     /**
      * the mainLoop polls the processqueue and start threads when the queue pops a fedorahandle.   
      * the mainLoop also checks whether already active threads are finished.
+     *
      * @throws ClassNotFoundException if the Processqueue could not load the database driver
      * @throws SQLException if the processqueue could not retrieve information from the database
      * @throws RuntimeException if the started thread stop due to an exception
@@ -152,6 +154,7 @@ public class PTIPoolAdm {
      * Iterates through the activeThreads vector and remove all entries
      * where the associated thread is done. The entries are also
      * committed to the processqueue, which effectivly removes them
+     *
      * @throws ClassNotFoundException if the Processqueue could not load the database driver
      * @throws SQLException if the processqueue could not retrieve information from the database
      * @throws NoSuchElementException if the processqueue does not contain an element matching the queueid
@@ -212,6 +215,7 @@ public class PTIPoolAdm {
      * fetch and process data from the fedora repository. Puts thread
      * (futureTask, and queueid on activeThreads vector)
      * committed to the processqueue, which effectivly removes them
+     *
      * @throws ClassNotFoundException if the Processqueue could not load the database driver
      * @throws SQLException if the processqueue could not retrieve information from the database
      * @throws RuntimeException if the started thread stop due to an exception

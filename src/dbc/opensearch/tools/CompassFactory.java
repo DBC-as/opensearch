@@ -32,6 +32,7 @@ public class CompassFactory{
     /**
      * The getCompass method returns a reference to the Compass. If
      * none exist a new one is build and returned
+     *
      * @return the Compass
      */
     public Compass getCompass(){
