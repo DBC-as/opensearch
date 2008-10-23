@@ -34,6 +34,7 @@ import java.net.UnknownHostException;
 import javax.xml.rpc.ServiceException;
 
 /**
+ * \ingroup datadock
  * \brief The public interface for the OpenSearch DataDockService
  * DataDock, together with DataDockPool, is the primary accesspoint
  * for the delivery of material to be saved in the Fedora repository

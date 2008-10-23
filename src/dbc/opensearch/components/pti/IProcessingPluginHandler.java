@@ -3,6 +3,7 @@ package dbc.opensearch.components.pti.interfaces;
 import dbc.opensearch.components.datadock.*;
 
 /**
+ * \ingroup pti
  * 
  */
 public interface IProcessingPluginHandler {

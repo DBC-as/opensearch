@@ -7,7 +7,8 @@ import java.lang.reflect.InvocationTargetException;
 
 
 /**
- * The PrivateAccessor class is used for testing purposes. It
+ * \ingroup tools
+ * \brief The PrivateAccessor class is used for testing purposes. It
  * implements 2 methods that can give you access to private members of
  * a class for testing purposes.
  */

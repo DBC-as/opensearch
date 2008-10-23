@@ -9,7 +9,10 @@ import org.apache.log4j.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import java.net.MalformedURLException;
 
-
+/**
+ * \ingroup tools
+ * \brief The factory spawns fedoraHandlers
+ */
 
 public class FedoraClientFactory {
     

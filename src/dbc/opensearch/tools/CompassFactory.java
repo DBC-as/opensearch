@@ -15,7 +15,8 @@ import java.net.URL;
 import java.io.File;
 
 /**
- * Compass factory. The role of this class is to build and hold one
+ * \ingroup tools
+ * \brief Compass factory. The role of this class is to build and hold one
  * Compass, and spawn references to it.
  */
 public class CompassFactory{

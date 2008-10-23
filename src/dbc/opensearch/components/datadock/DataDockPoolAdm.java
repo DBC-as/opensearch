@@ -26,7 +26,8 @@ import java.util.concurrent.ExecutionException;
 
 
 /**
- * This class administrates the start up of DataDockPool, giving it
+ * \ingroup datadock
+ * \brief This class administrates the start up of DataDockPool, giving it
  * CargoContainers to process and it maintains an array of documenttitles
  * and the related FutureTasks that will contain estinmates
  *

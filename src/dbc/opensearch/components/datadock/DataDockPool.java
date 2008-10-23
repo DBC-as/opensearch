@@ -10,7 +10,10 @@ import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-
+/**
+ * \ingroup datadock
+ * \brief The pool controls the datadock threads
+ */
 public class DataDockPool {
 
     //private boolean initialised; /** tells whether the pool is initialised */

@@ -33,7 +33,10 @@ import java.io.IOException;
 import org.compass.core.converter.ConversionException;
 
 import org.compass.core.Compass;
-
+/**
+ * \ingroup pti
+ * \brief Handles the pti threads
+ */
 public class PTIPoolAdm {
 
     Logger log = Logger.getLogger("PTIPoolAdm");

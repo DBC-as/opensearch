@@ -31,6 +31,7 @@ import javax.xml.rpc.ServiceException;
 
 
 /**
+ * \ingroup pti
  * \brief PTIPool is a threadpool managing PTI threads. It has a
  * createAndJoin method for stating threads, and a private method
  * providing a compassSession

@@ -45,7 +45,8 @@ import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 
 /**
- * The FedoraHandler class handles connections and communication with
+ * \ingroup tools
+ * \brief The FedoraHandler class handles connections and communication with
  * the fedora repository.
  */
 public class FedoraHandler implements Constants{

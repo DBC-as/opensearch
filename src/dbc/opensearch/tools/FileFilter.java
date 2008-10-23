@@ -3,7 +3,8 @@ package  dbc.opensearch.tools;
 import java.io.File;
 import java.io.FilenameFilter;
 /**
- *Filter to remove directories and .files
+ * \ingroup tools
+ * \brief Filter to remove directories and .files
  */
 public class FileFilter implements FilenameFilter{
     

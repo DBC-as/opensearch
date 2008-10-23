@@ -12,6 +12,7 @@ import java.lang.ClassNotFoundException;
 import org.apache.commons.configuration.ConfigurationException;
 
 /**
+ * \ingroup tools
  * \brief The Estimate class handles all communication to the statisticDB table
  */
 public class Estimate extends DBConnection {

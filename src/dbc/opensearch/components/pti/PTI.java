@@ -28,7 +28,8 @@ import org.apache.log4j.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 
 /**
- * /brief the PTI class is responsible for getting an dataobject from the
+ * \ingroup pti
+ * \brief the PTI class is responsible for getting an dataobject from the
  * fedora repository, and index it with compass afterwards. If this
  * was succesfull the estimate values are updated
  */

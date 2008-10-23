@@ -7,7 +7,10 @@ import dbc.opensearch.tools.Processqueue;
 import dbc.opensearch.tools.FedoraClientFactory;
 import dbc.opensearch.tools.FedoraHandler;
 import fedora.client.FedoraClient;
-
+/**
+ * \ingroup datadock
+ * \brief The main class of the datadock component.
+ */
 class DataDockPoolAdmMain {
 
     Logger log = Logger.getLogger( "DataDockPoolAdmMain" );

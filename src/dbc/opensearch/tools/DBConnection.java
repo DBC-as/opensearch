@@ -17,7 +17,8 @@ import java.net.URL;
 import java.lang.ClassNotFoundException;
 
 /**
- * /brief Handles the connection to the database. Database parameters is
+ * \ingroup tools
+ * \brief Handles the connection to the database. Database parameters is
  * obtained by the xml configurator reading them from disk, and a the
  * associated driver is setup in the constructor, and after that a
  * connection can be estabished

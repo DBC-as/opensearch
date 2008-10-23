@@ -1,7 +1,8 @@
 /** \file */
 package dbc.opensearch.components.datadock;
 /**
- * Enum to control the possible values of mimetypes that we can
+ * \ingroup datadock
+ * \brief Enum to control the possible values of mimetypes that we can
  * handle. This is a subset of the official mimetypes as listed in
  * /etc/mime.types. 
  */

@@ -1,7 +1,8 @@
 package dbc.opensearch.components.datadock;
 import java.util.Date;
 /**
- * 
+ * \ingroup datadock
+ * \brief Holds the metadata for cargo
  */
 public class CargoObjectInfo {
 

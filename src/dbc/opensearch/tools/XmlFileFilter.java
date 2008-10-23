@@ -3,7 +3,8 @@ package  dbc.opensearch.tools;
 import java.io.File;
 import java.io.FilenameFilter;
 /**
- *Filter extract .xml files
+ * \ingroup tools
+ * \brief Filter extract .xml files
  */
 public class XmlFileFilter implements FilenameFilter{
     

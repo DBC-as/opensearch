@@ -17,6 +17,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import java.util.Vector;
 
 /**
+ * \ingroup tools
  * \brief The Processqueue class handles all communication to the processqueue
  */
 public class Processqueue extends DBConnection {

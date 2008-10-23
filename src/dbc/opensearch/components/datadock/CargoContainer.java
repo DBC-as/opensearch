@@ -21,7 +21,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 /**
- * CargoContainer is a datastructure used throughout OpenSearch for
+ * \ingroup datadock
+ * brief CargoContainer is a datastructure used throughout OpenSearch for
  * carrying the informations submitted for indexing. CargoContainer
  * Handles the verification of the submitted datatypes as well as
  * adding additional information used by the OpenSearch components
