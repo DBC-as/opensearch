@@ -86,6 +86,37 @@ public class PTIPoolAdmTest {
          */
         expect( mockProcessqueue.deActivate() ).andReturn( 2 );
         // call to startThreads
+        expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( "Exception!!!" ) );
+        /**3 execution
+         */ 
+        
+        replay( mockProcessqueue );
+        
+        
+        try{
+        ptiPoolAdm.mainLoop();
+        }catch( Exception e ) {
+            Assert.fail( "unexpected exception" );
+                }
+
+        /**4 verify
+         */        
+        verify( mockProcessqueue );
+        
+    }
+
+    /**
+     * Tests the startThreads method when there are elements on the queue
+     */
+    @Test public void startThreadsTest()throws Exception{ 
+       
+        /**1 setup: most done in setUp()
+         */
+        
+        /**2 expectations
+         */
+        expect( mockProcessqueue.deActivate() ).andReturn( 2 );
+        // call to startThreads
         expect( mockProcessqueue.pop() ).andReturn( queueTriple1 );
         expect( mockPTIPool.createAndJoinThread( isA( String.class), isA(String.class), isA(Estimate.class), isA(Compass.class) ) ).andReturn( mockFuture );
         expect( mockProcessqueue.pop() ).andReturn( queueTriple2 );
@@ -118,15 +149,7 @@ public class PTIPoolAdmTest {
          */        
         verify( mockFuture );
         verify( mockProcessqueue );
-        verify( mockPTIPool );       
+        verify( mockPTIPool );      
     }
 
-    /**
-     * Tests the startThreads method when there are elements on the queue
-     */
-    @Test public void startThreadsTest()throws Exception{
-    }
-
-
-    @Test public void createAndJoinThreadTest(){}    
 }
