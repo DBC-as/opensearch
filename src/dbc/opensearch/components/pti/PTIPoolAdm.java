@@ -117,7 +117,8 @@ public class PTIPoolAdm {
             if( System.currentTimeMillis() > stamp+sleepInMilliSec ){                
                 startThreads();
                 stamp = System.currentTimeMillis();
-            }            
+            }  
+            //System.out.print( String.format( "Number of elements in activeThreads: '%s'",activeThreads.size() ) );
             checkThreads();
             
         }
@@ -135,6 +136,7 @@ public class PTIPoolAdm {
                 }
             }
         }
+        log.debug( "Finished the mainLoop method" );
     }
     
     /**
@@ -154,47 +156,49 @@ public class PTIPoolAdm {
         int queueID;
         FutureTask future;
         Vector removeableThreads = new Vector();
+        
+        while( activeThreads.size() > 0 ){
         iter = activeThreads.iterator();
-
-        while( iter.hasNext() ){
-
-            vectorPair = ( Pair ) iter.next();
-            future = Tuple.get1(vectorPair);
-            queueID = Tuple.get2(vectorPair);
-
-            if( future.isDone() ){// this thread is done or stopped with and exception
-                try{
-                    Long processtime = (Long) future.get();
-                }
-                catch(ExecutionException ee){
-                    // getting exception from thread
-                    Throwable cause = ee.getCause();
-                    
-                    RuntimeException re = new RuntimeException(cause);
-                    
-                    if( cause.getClass() == ConversionException.class ) {
-
-                        log.debug( String.format( "Element to be removed with queueID: '%s'",queueID ) );  
-                        log.error("An element on the processqueue does not match its promised format and can therefore not be indexed. The Validation of the elements being pushed to the queue is flawed! It was removed from the processqueue and execution of other elements continue");
-                    }else{
-                        log.fatal( String.format( " %s caused under execution with message %s associated with queueid '%s' in the processqueue", cause.getClass(), cause.getMessage(), queueID ) );
-                        throw re;
-                    }
-                }
+            while( iter.hasNext() ){
                 
-                processqueue.commit( queueID );
-                removeableThreads.add( vectorPair );
-                log.info( String.format( "Job done, committed to queue, queueID = %s", queueID ) );
+                vectorPair = ( Pair ) iter.next();
+                future = Tuple.get1(vectorPair);
+                queueID = Tuple.get2(vectorPair);
+                
+                if( future.isDone() ){// this thread is done or stopped with and exception
+                    try{
+                        Long processtime = (Long) future.get();
+                    }
+                    catch(ExecutionException ee){
+                        // getting exception from thread
+                        Throwable cause = ee.getCause();
+                        
+                        RuntimeException re = new RuntimeException(cause);
+                        
+                        if( cause.getClass() == ConversionException.class ) {
+                            
+                            log.debug( String.format( "Element to be removed with queueID: '%s'",queueID ) );  
+                            log.error("An element on the processqueue does not match its promised format and can therefore not be indexed. The Validation of the elements being pushed to the queue is flawed! It was removed from the processqueue and execution of other elements continue");
+                        }else{
+                            log.fatal( String.format( " %s caused under execution with message %s associated with queueid '%s' in the processqueue", cause.getClass(), cause.getMessage(), queueID ) );
+                            throw re;
+                        }
+                    }
+                    
+                    processqueue.commit( queueID );
+                    removeableThreads.add( vectorPair );
+                    log.info( String.format( "Job done, committed to queue, queueID = %s", queueID ) );
+                }
             }
-        }
-
-        // remove threads that have returned, from activeThreads
-        iter = removeableThreads.iterator();
-        while( iter.hasNext() ){
-            activeThreads.remove( iter.next() );
-        }        
+            
+            // remove threads that have returned, from activeThreads
+            iter = removeableThreads.iterator();
+            while( iter.hasNext() ){
+                activeThreads.remove( iter.next() );
+            }       
+        } 
     }
-
+    
     /** pop processqueue until its empty, and starts threads which
      * fetch and process data from the fedora repository. Puts thread
      * (futureTask, and queueid on activeThreads vector)

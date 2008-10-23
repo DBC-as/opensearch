@@ -40,6 +40,9 @@ public class PTIPoolAdmTest {
     Compass mockCompass;
     FutureTask mockFuture;
     Pair mockPair;
+    Integer testInteger = 1;
+    Triple< String, Integer, String > queueTriple1;
+    Triple< String, Integer, String > queueTriple2;
 
     @Before public void setUp(){
         
@@ -49,12 +52,16 @@ public class PTIPoolAdmTest {
         mockCompass = createMock( Compass.class );
         mockPair = createMock( Pair.class );
         mockFuture = createMock( FutureTask.class );
-
+        queueTriple1 = Triple.from( "testFedoraHandle", testInteger, "testItemID" );
+        queueTriple2 = Triple.from( "testFedoraHandle", testInteger, "testItemID" );
+ 
+        
         try{
             ptiPoolAdm = new PTIPoolAdm( mockPTIPool, mockProcessqueue, mockEstimate, mockCompass );
         }
         catch(Exception e){
             fail( String.format( "Caught Error, Should not have been thrown ", e.getMessage() ) ); 
+
         }
     }
     @After public void tearDown(){
@@ -64,6 +71,7 @@ public class PTIPoolAdmTest {
         reset( mockCompass );
         reset( mockFuture );
         reset( mockPair );
+        reset( mockPTIPool );
     }
 
     /**
@@ -78,12 +86,28 @@ public class PTIPoolAdmTest {
          */
         expect( mockProcessqueue.deActivate() ).andReturn( 2 );
         // call to startThreads
+        expect( mockProcessqueue.pop() ).andReturn( queueTriple1 );
+        expect( mockPTIPool.createAndJoinThread( isA( String.class), isA(String.class), isA(Estimate.class), isA(Compass.class) ) ).andReturn( mockFuture );
+        expect( mockProcessqueue.pop() ).andReturn( queueTriple2 );
+        expect( mockPTIPool.createAndJoinThread( isA( String.class), isA(String.class), isA(Estimate.class), isA(Compass.class) ) ).andReturn( mockFuture );
         expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( "Exception!!!" ) );
-        
+        //call to checkThreads
+        expect( mockFuture.isDone() ).andReturn( false );
+        expect( mockFuture.isDone() ).andReturn( true );
+        expect( mockFuture.get() ).andReturn( 1l );
+        mockProcessqueue.commit( testInteger );
+        expect( mockFuture.isDone() ).andReturn( true );
+        expect( mockFuture.get() ).andReturn( 1l );
+        mockProcessqueue.commit( testInteger );
+        // out of checkThreads
 
-        replay( mockProcessqueue );
+       
         /**3 execution
-         */
+         */ 
+        replay( mockFuture );
+        replay( mockProcessqueue );
+        replay( mockPTIPool );
+        
         try{
         ptiPoolAdm.mainLoop();
         }catch( Exception e ) {
@@ -92,10 +116,15 @@ public class PTIPoolAdmTest {
 
         /**4 verify
          */        
+        verify( mockFuture );
         verify( mockProcessqueue );
-       
+        verify( mockPTIPool );       
     }
-    @Test public void checkThreadsNonEmptyActiveThreadsTest()throws Exception{
+
+    /**
+     * Tests the startThreads method when there are elements on the queue
+     */
+    @Test public void startThreadsTest()throws Exception{
     }
 
 
