@@ -42,8 +42,8 @@ public class Processqueue extends DBConnection {
 
     /**
      * Push an fedorahandle to the processqueue
-     * @params fedorahandle: a fedorahandle, i.e. a pointer to a document in the opensearch repository.
-     * @params itemID: an  itemID, identifying the dataobject, later used for indexing purposes
+     * @param fedorahandle a fedorahandle, i.e. a pointer to a document in the opensearch repository.
+     * @param itemID an  itemID, identifying the dataobject, later used for indexing purposes
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */

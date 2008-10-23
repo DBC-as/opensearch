@@ -107,9 +107,7 @@ public class FedoraHandler implements Constants{
      * \brief Submits the datastream to fedora repository 
      * \todo: what are these parameters?
      * @param cargo the cargocontainer with the data 
-     * @param pidNS 
-     * @param itemId
-     * @param label
+     * @param label the identifier for the data - used to construct the FOXML
      * @throws RemoteException error in communiction with fedora
      * @throws XMLStreamException an error occured during xml document creation
      * @throws IOException something went wrong initializing the fedora client
@@ -151,10 +149,10 @@ public class FedoraHandler implements Constants{
      * \brief constructs a foxml stream from the parameters
      * \todo: what are these parameters?
      * @param cargo the cargocontainer with the data 
-     * @param pidNS, the namespace aka the submitter 
-     * @param itemId, a unique identifier for the namespace
-     * @param label, ?
-     * @returns a byte array contaning the foxml string
+     * @param nextPid the next valid pid
+     * @param itemId a unique identifier for the namespace
+     * @param label the identifier for the data - used to construct the FOXML
+     * @returns byte array contaning the foxml string
      * @throws IOException something went wrong initializing the fedora client
      * @throws XMLStreamException an error occured during xml document creation
      */
