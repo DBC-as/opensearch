@@ -30,9 +30,12 @@ import dbc.opensearch.tools.PrivateAccessor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;
+import org.compass.core.converter.ConversionException;
+import java.util.concurrent.ExecutionException;
 
 public class PTIPoolAdmTest {
-
+    
+    boolean gotException;
     PTIPoolAdm ptiPoolAdm;
     PTIPool mockPTIPool;
     Processqueue mockProcessqueue;
@@ -43,9 +46,11 @@ public class PTIPoolAdmTest {
     Integer testInteger = 1;
     Triple< String, Integer, String > queueTriple1;
     Triple< String, Integer, String > queueTriple2;
+    String exceptionString = "exception!!!";
 
     @Before public void setUp(){
         
+        gotException = false;
         mockPTIPool = createMock( PTIPool.class );
         mockProcessqueue = createMock( Processqueue.class );
         mockEstimate = createMock( Estimate.class );
@@ -86,7 +91,7 @@ public class PTIPoolAdmTest {
          */
         expect( mockProcessqueue.deActivate() ).andReturn( 2 );
         // call to startThreads
-        expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( "Exception!!!" ) );
+        expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( exceptionString ) );
         /**3 execution
          */ 
         
@@ -121,7 +126,7 @@ public class PTIPoolAdmTest {
         expect( mockPTIPool.createAndJoinThread( isA( String.class), isA(String.class), isA(Estimate.class), isA(Compass.class) ) ).andReturn( mockFuture );
         expect( mockProcessqueue.pop() ).andReturn( queueTriple2 );
         expect( mockPTIPool.createAndJoinThread( isA( String.class), isA(String.class), isA(Estimate.class), isA(Compass.class) ) ).andReturn( mockFuture );
-        expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( "Exception!!!" ) );
+        expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( exceptionString ) );
         //call to checkThreads
         expect( mockFuture.isDone() ).andReturn( false );
         expect( mockFuture.isDone() ).andReturn( true );
@@ -151,5 +156,89 @@ public class PTIPoolAdmTest {
         verify( mockProcessqueue );
         verify( mockPTIPool );      
     }
+    
+  @Test public void checkThreadsExecutionExceptionTest()throws Exception{
+      
+        /**1 setup: most done in setUp()
+         */
+      RuntimeException re = new RuntimeException( exceptionString );
+      ExecutionException ee = new ExecutionException( re );
+        /**2 expectations
+         */
+        expect( mockProcessqueue.deActivate() ).andReturn( 2 );
+        // call to startThreads 
+        expect( mockProcessqueue.pop() ).andReturn( queueTriple1 );
+        expect( mockPTIPool.createAndJoinThread( isA( String.class), isA(String.class), isA(Estimate.class), isA(Compass.class) ) ).andReturn( mockFuture );
+        expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( exceptionString ) ); 
+        //checkThreads
+        expect( mockFuture.isDone() ).andReturn( true );
+        expect( mockFuture.get() ).andThrow( ee ); 
+        mockProcessqueue.commit( testInteger );
+        
+        /**3 execution
+         */ 
+        
+        replay( mockProcessqueue );
+        replay( mockFuture );
+        replay( mockPTIPool );
+        
+        try{
+        ptiPoolAdm.mainLoop();
+        }catch( Exception e ) {
+            gotException = true;
+            assertTrue( e.getClass() == re.getClass() );
+            assertTrue( e.getCause().getMessage().equals( exceptionString ) );
+                }
+        assertTrue( gotException );
 
+        /**4 verify
+         */        
+        verify( mockProcessqueue );
+        verify( mockFuture );
+        verify( mockPTIPool );
+        
+    } 
+
+    @Test public void checkThreadsConversionExceptionTest()throws Exception{
+      
+        /**1 setup: most done in setUp()
+         */
+      ConversionException ce = new ConversionException( exceptionString );
+      ExecutionException ee = new ExecutionException( ce );
+        /**2 expectations
+         */
+        expect( mockProcessqueue.deActivate() ).andReturn( 2 );
+        // call to startThreads 
+        expect( mockProcessqueue.pop() ).andReturn( queueTriple1 );
+        expect( mockPTIPool.createAndJoinThread( isA( String.class), isA(String.class), isA(Estimate.class), isA(Compass.class) ) ).andReturn( mockFuture );
+        expect( mockProcessqueue.pop() ).andThrow( new NoSuchElementException( exceptionString ) ); 
+        //checkThreads
+        expect( mockFuture.isDone() ).andReturn( true );
+        expect( mockFuture.get() ).andThrow( ee );
+        mockProcessqueue.commit( testInteger );
+        
+        /**3 execution
+         */ 
+        
+        replay( mockProcessqueue );
+        replay( mockFuture );
+        replay( mockPTIPool );
+        
+        try{
+        ptiPoolAdm.mainLoop();
+        }catch( Exception e ) {
+            gotException = true;
+            assertTrue( e.getClass() == RuntimeException.class );
+            assertTrue( e.getCause().getClass() == ce.getClass() );
+            assertTrue( e.getCause().getMessage().equals( exceptionString ) );
+                }
+        //assertTrue( gotException );
+
+        /**4 verify
+         */        
+        verify( mockProcessqueue );
+        verify( mockFuture );
+        verify( mockPTIPool );
+        
+    }
 }
