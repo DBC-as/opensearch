@@ -14,31 +14,6 @@ import dbc.opensearch.tools.FedoraHandler;
 import dbc.opensearch.tools.FedoraClientFactory;
 import dbc.opensearch.tools.CompassFactory;
 import fedora.client.FedoraClient;
-/**
- * \defgroup components Components
- * \brief The components of opensearch
- * \defgroup tools Tools
- * \brief The tools classes for facilitating the componentents and testing.
- * 
- * \defgroup datadock Datadock
- * \ingroup components 
- * \brief The datadock recieves incoming data and stores it in the repository.
- * \defgroup pti PTI
- * \ingroup components 
- * \brief The PTI component validates and indexes the newly arrived data.
- *
- *
- *
- * \mainpage
- * \section Overview
- * \section Components
- * \subsection Datadock
- * \subsection PTI
- * \section Tools
- * \subsection Fedorahandler
- * \subsection Processqueue
- * \subsection Estimate
- */
 
 /**
  * \ingroup pti
