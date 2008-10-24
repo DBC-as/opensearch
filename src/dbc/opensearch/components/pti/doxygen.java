@@ -7,14 +7,14 @@
  * \defgroup components Components
  * \brief The components of opensearch
  * \defgroup tools Tools
- * \brief The tools classes for facilitating the component's and testing.
+ * \brief The tools classes for facilitating the components and testing.
  * 
  * \defgroup datadock DataDock
  * \ingroup components 
  * \brief The datadock receives incoming data and stores it in the repository.
  * \defgroup pti PTI
  * \ingroup components 
- * \brief The PTI component validates and indexes the newly arrived data.
+ * \brief The PTI component validates, processes and indexes the data referenced in the processqueue.
  *
  */
 
@@ -25,34 +25,35 @@
  * - Receiving and storing data.\n    
  *   This is done in the DataDock component. 
  *   The first responsibility of this component is to receive data, and validate
- *   the necessary meta data needed for later indexing.\n
+ *   the necessary metadata needed for later indexing.\n
+ *   After validation, the recieved data is stored in an internal format (a DataDock.CargoContainer).
  *   Secondly the component must store the data in the fedora repository, 
  *   alert the pti component of the new task, and lastly return an estimate 
  *   of the time before the data object is effectively searchable.
  *   \see DataDock  
  * - Indexing data.\n
  *   This is done in the PTI component. 
- *   When alerted of a new data object to index this component retrieves a copy 
- *   of the data from the repository and make it ready for indexing. Through
- *   Compass the data gets indexed and saved in the database and after wards the 
+ *   When alerted of a new data object to index, this component retrieves a copy 
+ *   of the data from the repository and prepares it for indexing. Through the
+ *   Compass framework the data gets indexed and saved in the database. When this process is finished, the 
  *   estimate table in the database gets updated.
  *   \see PTI  
  * - Facilitate search of indexed data.\n 
- *   Currently under construction.
+ *   Not yet implemented
  *
  * \section Components
  *
  * \subsection DataDock
  * The DataDock can roughly be split into these parts:
  * - Receive data.\n
- *   This part is somewhat hard coded and only supports faktalink xml files. 
+ *   This part is somewhat hardcoded and currently only supports faktalink xml files. 
  *   Data is read from files in a directory given to the DataDock main method.
  *   The information needed for indexing which is mimetype, language, submitter 
  *   and format is also given to the main method. These arguments are validated, 
  *   and a CargoContainer with the data and meta data is constructed.
  * \see DataDockPoolAdmMain, DataDockPoolAdm, DataDockPool, CargoContainer 
  * - Store data in repository.\n
- *   When a CargoContainer is constructed the  DataDockPool spawns a DataDock thread.
+ *   When a CargoContainer is constructed the DataDockPool spawns a DataDock thread.
  *   The DataDock thread stores the data in the repository through a FedoraHandler.
  *   \see DataDockPool, DataDock, FedoraHandler
  * - Alert the PTI Component of a new data object
@@ -81,7 +82,7 @@
  *   \see PTIPool, PTI, Compass
  * - Indexing and Storing of data.\n
  *   The Indexing and storing of the indexes is done through a CompassSession. It stores 
- *   the indexes in the oracle database.
+ *   the indexes in an oracle database.
  *   \see PTI, Compass
  * - Update Estimate for this mimetype.\n
  *   After the indexes are stored in the database the data object is searchable. The 
@@ -91,7 +92,7 @@
  *   \see PTI, Estimate
  *
  * \subsection Lantern
- * As of now this is only facilitated by Solaar.
+ * Functionality of this module is not yet implemented, a prototype of the funtionality is available through Solr.
  *
  * \section Tools
  * Here follows a description of the tools used to facilitate the components.
@@ -125,7 +126,7 @@
  * \see Estimate
  * 
  * \subsection xsd2xsem
- * xsd2xsem is a python script used to generate a XSEM mapping for for all xml documents 
+ * xsd2xsem is a python script used to generate XSEM mappings for for all xml documents 
  * validated by the given xsd file.
  *
  * \section Executables
