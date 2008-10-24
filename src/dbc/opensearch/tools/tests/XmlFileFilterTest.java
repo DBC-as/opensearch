@@ -15,7 +15,9 @@ import java.io.IOException;
 public class XmlFileFilterTest {
 
     XmlFileFilter xff;
-    static String dir = ".shouldnotbeaccepted"; 
+    static String acceptedName = "test.xml";
+    static String dir = ".shouldnotbeaccepted";
+    static File acceptedFile = null;
     static File dummy = null;
 
     /**
@@ -25,6 +27,7 @@ public class XmlFileFilterTest {
     @Before public void SetUp() {
         dummy = new File( dir );
         dummy.mkdir();
+        acceptedFile = new File( acceptedName );
         xff = new XmlFileFilter();
     }
 
@@ -33,7 +36,8 @@ public class XmlFileFilterTest {
      */
     @After public void TearDown() {
         try{
-            (new File( dir )).delete();
+            dummy.delete();
+            acceptedFile.delete();
         }catch( Exception e ){}
     }
 
@@ -41,14 +45,15 @@ public class XmlFileFilterTest {
      * Files with .xml suffix should be accepted
      */
     @Test public void testXmlNameAccepted() {
-        assertTrue( xff.accept( dummy, "test.xml" ) );
+
+        assertTrue( xff.accept( acceptedFile, acceptedName ) );
     }
 
     /**
      * Files without .xml suffix should not be accepted
      */
     @Test public void testNoXmlSuffixNotAccepted(){
-        assertFalse( xff.accept( dummy, "noxmlsuffix" ) );
+        assertFalse( xff.accept( acceptedFile, dir ) );
     }
 
     /**
@@ -56,8 +61,7 @@ public class XmlFileFilterTest {
      */
     @Test public void testDirsNotAccepted()
     {
-        new File( dummy, dir).mkdir();
-        assertFalse( xff.accept( dummy, dir ) );
+        assertFalse( xff.accept( dummy, acceptedName ) );
     }
 
     /**

@@ -33,7 +33,7 @@ public class FileFilterTest {
      */
     @After public void TearDown() {
         try{
-            (new File( dir )).delete();
+            dummy.delete();
         }catch( Exception e ){}
     }
 
@@ -56,7 +56,7 @@ public class FileFilterTest {
      */
     @Test public void testDirsNotAccepted()
     {
-        new File( dummy, dir).mkdir();
+        //new File( dummy, dir).mkdir();
         assertFalse( ff.accept( dummy, dir ) );
     }
 

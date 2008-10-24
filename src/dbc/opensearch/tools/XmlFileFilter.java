@@ -25,12 +25,10 @@ public class XmlFileFilter implements FilenameFilter{
      * @throws NullPointerException if the dir- or filename is null
      */
     public boolean accept(File dir, String name) throws NullPointerException{
-        if( !name.endsWith( ".xml" ) ){
-            return false;
-        }else if( new File( dir, name ).isDirectory() ){
-            return false;
-        }else{
+         if( !dir.isDirectory() && name.endsWith( ".xml" ) ){
             return true;
+        }else {
+            return false;
         }
     }
 }
