@@ -161,8 +161,8 @@ public class PTIPoolAdmTest {
       
         /**1 setup: most done in setUp()
          */
-      RuntimeException re = new RuntimeException( exceptionString );
-      ExecutionException ee = new ExecutionException( re );
+      IllegalArgumentException iae = new IllegalArgumentException( exceptionString );
+      ExecutionException ee = new ExecutionException( iae );
         /**2 expectations
          */
         expect( mockProcessqueue.deActivate() ).andReturn( 2 );
@@ -173,8 +173,7 @@ public class PTIPoolAdmTest {
         //checkThreads
         expect( mockFuture.isDone() ).andReturn( true );
         expect( mockFuture.get() ).andThrow( ee ); 
-        mockProcessqueue.commit( testInteger );
-        
+                
         /**3 execution
          */ 
         
@@ -186,7 +185,8 @@ public class PTIPoolAdmTest {
         ptiPoolAdm.mainLoop();
         }catch( Exception e ) {
             gotException = true;
-            assertTrue( e.getClass() == re.getClass() );
+            assertTrue( e.getClass() == RuntimeException.class );
+            assertTrue( e.getCause().getClass() == iae.getClass() );
             assertTrue( e.getCause().getMessage().equals( exceptionString ) );
                 }
         assertTrue( gotException );
@@ -227,12 +227,7 @@ public class PTIPoolAdmTest {
         try{
         ptiPoolAdm.mainLoop();
         }catch( Exception e ) {
-            gotException = true;
-            assertTrue( e.getClass() == RuntimeException.class );
-            assertTrue( e.getCause().getClass() == ce.getClass() );
-            assertTrue( e.getCause().getMessage().equals( exceptionString ) );
                 }
-        //assertTrue( gotException );
 
         /**4 verify
          */        
