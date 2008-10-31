@@ -1,3 +1,12 @@
+#!/usr/bin/python 
+# -*- coding: utf-8 -*-
+
+"""
+Used to test the import lines in java files.
+The first argument is the directory from where to call
+the compile command to build the application.
+Second argument is the file or directory of files to test
+"""
 import os
 import os.path
 import string
@@ -11,10 +20,10 @@ def analyze_files( file_lst ):
     
     import_lines = 0
 
-    for file in file_lst:
-        if not os.path.isfile( file ):
-            print 'Couldnt find file :"'+file+'"'
-        for line in open(file,'r'):
+    for java_file in file_lst:
+        if not os.path.isfile( java_file ):
+            print 'Couldnt find file :"'+java_file+'"'
+        for line in open(java_file, 'r'):
             if line[0:6]  == 'import':
                 import_lines += 1
     return import_lines
@@ -27,9 +36,10 @@ def compile_build( compile_command, builddir ):
     Compiles the project
     """
     
-    cur_dir = os.getcwd();
+    cur_dir = os.getcwd()
 
-    compile_str = 'cd %s && %s && cd %s' % ( builddir, compile_command , cur_dir )
+    compile_str = 'cd %s && %s && cd %s' % \
+                  ( builddir, compile_command , cur_dir )
     #print compile_str
     stdin, stdout, stderr = os.popen3( compile_str )
     out = stdout.read()
@@ -38,7 +48,7 @@ def compile_build( compile_command, builddir ):
     elif out.rfind( 'BUILD SUCCESSFUL' ) > 0:
         return True
 
-def verify_imports( compile_command, builddir, file ):
+def verify_imports( compile_command, builddir, java_file ):
     """
     Verifies the import statements in the argument file.  For each
     import statement the statement is commented out, and we try to
@@ -49,9 +59,9 @@ def verify_imports( compile_command, builddir, file ):
 
     imports_not_used = []
 
-    if not os.path.isfile( file ):
-        print 'Couldnt find file :"'+file+'"'
-    file_handle = open(file)
+    if not os.path.isfile( java_file ):
+        print 'Couldnt find file :"'+java_file+'"'
+    file_handle = open(java_file)
     original_file = file_handle.readlines()
     org_file_str = string.join( original_file, '' )
     file_handle.close()
@@ -61,7 +71,7 @@ def verify_imports( compile_command, builddir, file ):
 
     for i, line in enumerate ( original_file ):
         if line[0:6]  == 'import':
-            imports.append( i );
+            imports.append( i )
             
             if line[:-1][-2:] == '*;':
                 wildcards.append( [i, line[:-1] ] )
@@ -75,7 +85,7 @@ def verify_imports( compile_command, builddir, file ):
         test_file[importline] = '//'+test_file[importline]
         test_file_str = string.join( test_file, '' )
 
-        file_handle = open( file, 'w' )
+        file_handle = open( java_file, 'w' )
         file_handle.write( test_file_str )
         file_handle.close()
 
@@ -85,7 +95,7 @@ def verify_imports( compile_command, builddir, file ):
             imports_not_used.append( [ importline, org_line[:-1] ] )
     
     # re-establish original file
-    file_handle = open( file, 'w' )
+    file_handle = open( java_file, 'w' )
     file_handle.write( org_file_str )
     file_handle.close()
     
@@ -96,11 +106,15 @@ def get_input():
     Get input from user.
     """
     def ask():
+        """
+        Print message for response
+        """
         resp = raw_input( 'continue?[Y/n]' )
         return resp
     
     answer = ask()
-    while answer != 'y' and answer != 'n' and answer != 'Y' and answer != 'N' and answer != '':
+    while answer != 'y' and answer != 'n' and answer\
+              != 'Y' and answer != 'N' and answer != '':
         #print answer
         answer = ask()
 
@@ -114,15 +128,18 @@ def create_file_list( directory ):
     Descend recursively down through a directory and all find java
     source files, and return them in a list.
     """
-    file_list=[]
+    file_list = []
     
-    def f( arg,d,flst):
-        for fl in flst:
-            tmp_lst = fl.split( '.' )
+    def path_func( arg, folder, flst):
+        """
+        function called for each file or folder in the folder hirearchy
+        """
+        for entry in flst:
+            tmp_lst = entry.split( '.' )
             if len( tmp_lst ) >= 2 and tmp_lst[-1] == 'java':
                 
-                file_list.append( os.path.abspath( d + '/' + fl ) )
-    os.path.walk( directory , f, [])
+                file_list.append( os.path.abspath( folder + '/' + entry ) )
+    os.path.walk( directory , path_func, [])
     
     return file_list
 
@@ -136,7 +153,6 @@ def usage(compile_command):
     The first argument is the directory from where to call %s
     to build the application.
     Second argument is the file or directory of files to test
-
     """ % compile_command
 
 def main( arg_lst ):
@@ -204,25 +220,29 @@ def main( arg_lst ):
     ### analyze files
     before = time.time()
 
-    for file in file_list:
-        print '------------------------------------------------------------------------------------------------------------------------'
-        print 'Examining %s' % file
-        print '------------------------------------------------------------------------------------------------------------------------'
+    for java_file in file_list:
+        print '-------------------------------------------------------------\
+        -----------------------------------------------------------'
+        print 'Examining %s' % java_file
+        print '-------------------------------------------------------------\
+        -----------------------------------------------------------'
         
-        wildcards, not_used = verify_imports(compile_command, build_directory, file )
+        wildcards, not_used = \
+                   verify_imports(compile_command, build_directory, java_file )
 
         if len( wildcards ) > 0:
             print '\n  Found the following wildcard imports:'
-            for w in wildcards:
-                print '  %d  %s' % ( w[0], w[1] )
+            for wildcard in wildcards:
+                print '  %d  %s' % ( wildcard[0], wildcard[1] )
         if len( not_used ) > 0:
             print '\n  Project can compile without the following import lines:'
-            for n in not_used:
-                print '  %d  %s' % ( n[0], n[1] )
+            for useless in not_used:
+                print '  %d  %s' % ( useless[0], useless[1] )
     build = after = time.time()
     build_time = after - before
 
-    print '========================================================================================================================'
+    print '______________________________\
+    ______________________________'
     print ' time: %d seconds' % build_time
 
 
