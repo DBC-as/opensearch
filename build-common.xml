@@ -17,7 +17,7 @@
   <property name="datadock.dir"   value="${components.dir}/datadock"/>
   <property name="config.dir"     value="${base.dir}/config"/>
   <property name="instrumented.dir"    value="${build.dir}/instrumeted-classes"/>
-  
+  <property name="report.dir"     value="${doc.dir}/coverage-report"/>
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant*.jar"/>
@@ -42,8 +42,7 @@
 
 
   <!-- Cobertura - this is not working yet-->
-  <property name="cobertura.dir" value="${lib.dir}"/>
-  
+  <property name="cobertura.dir" value="${lib.dir}"/>  
   <path id="cobertura.classpath">
     <fileset dir="${cobertura.dir}">
       <include name="cobertura.jar" />
@@ -156,10 +155,11 @@
   </target>
 
   <target name="test" description="Run unit" >
-    <junit fork="yes" printsummary="no" haltonerror="false" haltonfailure="false">
+    <junit fork="yes" forkmode="once" printsummary="no" haltonerror="false" haltonfailure="false">
 
       <classpath location="${instrumented.dir}" />
 	  <classpath location="${classes.dir}" />
+      <classpath refid="cobertura.classpath" />
 	  
       <formatter type="plain" usefile="no"/>
       <classpath refid="classpath"/>
@@ -180,7 +180,7 @@
 		Generate an XML file containing the coverage data using
 		the "srcdir" attribute.
 	  -->
-	<cobertura-report srcdir="${src.dir}" destdir="${base.dir}" format="xml" />
+	<cobertura-report srcdir="${src.dir}" destdir="${report.dir}" format="xml" />
   </target>
   
   <target name="alternate-coverage-report">
@@ -188,7 +188,7 @@
 		Generate a series of HTML files containing the coverage
 		data in a user-readable form using nested source filesets.
 	  -->
-	<cobertura-report destdir="${base.dir}">
+	<cobertura-report destdir="${report.dir}">
 	  <fileset dir="${src.dir}">
 		<include name="**/*.java"/>
 	  </fileset>
