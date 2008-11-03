@@ -57,5 +57,22 @@
         </antcall>
     </target>
 
-    
+    <target name="instrument" description="build instrumented classes">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="instrument"/>
+        </antcall>
+    </target>
+
+
+    <target name="coverage-report" description="coverage report">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="coverage-report"/>
+        </antcall>
+    </target>
+
+  <target name="alternate-coverage-report" description="alternate coverage report">
+    <antcall target="depend.all">
+      <param name="dependency.target" value="alternate-coverage-report"/>
+    </antcall>
+  </target>
 </project>

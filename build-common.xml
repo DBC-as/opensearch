@@ -16,6 +16,8 @@
   <property name="components.dir" value="${opensearch.dir}/components"/>
   <property name="datadock.dir"   value="${components.dir}/datadock"/>
   <property name="config.dir"     value="${base.dir}/config"/>
+  <property name="instrumented.dir"    value="${build.dir}/instrumeted-classes"/>
+  
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant*.jar"/>
@@ -36,6 +38,57 @@
     <map from="${antlibpath}}" to="${alp}"/>
   </pathconvert>
   <!-- end debugging section -->
+
+
+
+  <!-- Cobertura - this is not working yet-->
+  <property name="cobertura.dir" value="${lib.dir}"/>
+  
+  <path id="cobertura.classpath">
+    <fileset dir="${cobertura.dir}">
+      <include name="cobertura.jar" />
+      <include name="*.jar" />
+    </fileset>
+  </path>
+ 
+  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+  
+  <target name="instrument" depends="compile-tests">
+	
+
+    <!-- Capture the path as a delimited property using the refid attribute -->
+	<property name="myclasspath" refid="classpath"/>
+	<!-- Emit the property to the ant console -->
+	<echo message="Classpath = ${myclasspath}"/>
+    
+    <!--
+		Remove the coverage data file and any old instrumentation.
+	  -->
+	<delete file="cobertura.ser"/>
+	<delete dir="${instrumented.dir}" />
+    
+	<cobertura-instrument todir="${instrumented.dir}">
+	  
+      <!--
+		  The following line causes instrument to ignore any
+		  source line containing a reference to log4j, for the
+		  purposes of coverage reporting.
+		-->
+      <ignore regex="org.apache.log4j.*" />
+	  
+	  <fileset dir="${classes.dir}">
+		<!--
+			Instrument all the application classes, but
+			don't instrument the test classes.
+		  -->
+		<include name="**/*.class" />
+		<exclude name="**/*Test.class" />
+	  </fileset>
+	</cobertura-instrument>
+  </target>
+  <!-- Coberrtura - this is not working yet-->
+
+
 
   <target name="clean" description="Deletes files created during the build">
     <delete dir="${build.dir}"/>
@@ -102,17 +155,47 @@
     <doxygen configFilename="${base.dir}/Doxyfile" />
   </target>
 
-  <target name="test" description="Run unit tests" depends="compile-tests" >
-    <junit printsummary="no" haltonerror="true" haltonfailure="true">
+  <target name="test" description="Run unit" >
+    <junit fork="yes" printsummary="no" haltonerror="false" haltonfailure="false">
+
+      <classpath location="${instrumented.dir}" />
+	  <classpath location="${classes.dir}" />
+	  
       <formatter type="plain" usefile="no"/>
       <classpath refid="classpath"/>
-
 
       <batchtest fork="yes">
         <fileset dir="${src.dir}" includes="**/tests/*Test.java"/>
       </batchtest>
     </junit>
   </target>
+
+  
+  <target name="coverage-check">
+	<cobertura-check branchrate="34" totallinerate="100" />
+  </target>
+
+  <target name="coverage-report">
+	<!--
+		Generate an XML file containing the coverage data using
+		the "srcdir" attribute.
+	  -->
+	<cobertura-report srcdir="${src.dir}" destdir="${base.dir}" format="xml" />
+  </target>
+  
+  <target name="alternate-coverage-report">
+	<!--
+		Generate a series of HTML files containing the coverage
+		data in a user-readable form using nested source filesets.
+	  -->
+	<cobertura-report destdir="${base.dir}">
+	  <fileset dir="${src.dir}">
+		<include name="**/*.java"/>
+	  </fileset>
+	</cobertura-report>
+  </target>
+
+
 
 
   <target name="update" description="updates the sources to HEAD">
