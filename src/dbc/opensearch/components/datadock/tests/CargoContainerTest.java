@@ -9,7 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import dbc.opensearch.components.datadock.*;
+//import dbc.opensearch.components.datadock.*;
+import dbc.opensearch.components.datadock.CargoContainer;
 
 /**
  * 
