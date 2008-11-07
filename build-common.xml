@@ -154,7 +154,7 @@
     <doxygen configFilename="${base.dir}/Doxyfile" />
   </target>
 
-  <target name="test" description="Run unit" >
+  <target name="test" description="Run unittests" depends="compile-tests">
     <junit fork="yes" forkmode="once" printsummary="no" haltonerror="false" haltonfailure="false">
 
       <classpath location="${instrumented.dir}" />
