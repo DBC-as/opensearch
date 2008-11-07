@@ -221,11 +221,9 @@ def main( arg_lst ):
     before = time.time()
 
     for java_file in file_list:
-        print '-------------------------------------------------------------\
-        -----------------------------------------------------------'
+        print "-"*(11+len(java_file))
         print 'Examining %s' % java_file
-        print '-------------------------------------------------------------\
-        -----------------------------------------------------------'
+        print "-"*(11+len(java_file))
         
         wildcards, not_used = \
                    verify_imports(compile_command, build_directory, java_file )
@@ -235,14 +233,13 @@ def main( arg_lst ):
             for wildcard in wildcards:
                 print '  %d  %s' % ( wildcard[0], wildcard[1] )
         if len( not_used ) > 0:
-            print '\n  Project can compile without the following import lines:'
+            print '\n  The file \'%s\' can compile without the following import lines:'%( java_file )
             for useless in not_used:
                 print '  %d  %s' % ( useless[0], useless[1] )
     build = after = time.time()
     build_time = after - before
 
-    print '______________________________\
-    ______________________________'
+    print "-"*(17+len(str(build_time)))
     print ' time: %d seconds' % build_time
 
 
