@@ -1,5 +1,20 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
+# -*- mode: python -*-
+"""Python module for the Xsd2XSEM generator
+
+Functionality:
+  - Given an xsd, generates the corrosponding XML document instance
+
+To do:
+  - XSEM generation
+  - Better command line flag parsing/handling
+"""
+
+__author__ = 'Steen Manniche <stm@dbc.dk>'
+__date__ = 'Thu Oct 23 11:12:15 2008'
+__version__ = '$Revision:$'
+
 
 import os, sys
 from xml.dom import minidom
@@ -25,7 +40,7 @@ class XSEMGenerator( object ):
     """Class for generating XSEM mapping files from an xsd
     """
 
-    def __init__( self, file_name, debug ):
+    def __init__( self, file_contents, flag ):
         """
         Arguments:
         """
@@ -85,18 +100,24 @@ class XSEMGenerator( object ):
 
         self.xsd_types = self.xsd_datatypes+self.xsd_derived_datatypes
 
+        if flag == "debug":
+            pdb.set_trace()
+        elif flag == "verbose":
+            loglevel = logging.DEBUG
+        else:
+            loglevel = logging.NOTSET
 
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=loglevel,
                     format='%(asctime)s %(levelname)s %(message)s',
-#                     filename='xsd2xsem.debug',
-#                     filemode='w'
+                    filename='xsd2xsem.debug',
+                    filemode='w'
                             )
         logging.getLogger('')
 
-        if debug: pdb.set_trace()
+        
         self.node = None
-
-        self.xsd = minidom.parse( file_name )
+        
+        self.xsd = minidom.parseString( file_contents )
 
         self.xsd2xml_instance( self.xsd,
                                [ "xsd:element",
@@ -188,14 +209,14 @@ class XSEMGenerator( object ):
                 if child.getAttribute( 'type' ) not in self.xsd_types:
                     self.remember_type.update( { 'node' : self.elem } )
                     self.remember_type.update( { 'type' : child.getAttribute( 'type' ) } )
-                    logging.debug( "node %s with type %s has siblings in the instance doc"% ( child.getAttribute( 'name' ), child.getAttribute( 'type' ) ) )
+                    logging.debug( "node %s with type %s has children in the instance doc"% ( child.getAttribute( 'name' ), child.getAttribute( 'type' ) ) )
                     # if we got our hands on a new type, we start
                     # from the root again, but we're looking for a
                     # distinct node this time. We need to find a
                     # complexType or simpleType, where the
                     # .getAttribute( 'name' ) == self.remember_type['node'].getAttribute( 'type' ).
                     self.find_node_from_name( self.xsd, child.getAttribute( 'type' ) )
-                    logging.debug( "found node %s from which to search for siblings of %s"%( self.node.getAttribute( 'name' ), self.elem.tagName ) )
+                    logging.debug( "found node %s from which to search for children of %s"%( self.node.getAttribute( 'name' ), self.elem.tagName ) )
                     self.xsd2xml_instance( self.node, node_list, sieve )
 
         #filter out unneccesary node types:
@@ -272,14 +293,61 @@ class XSEMGenerator( object ):
                 yield cn
         return
 
+def _usage():
+    return """
+    Usage:
+    xsd2xsem xsdfile [-d|-v]
+    
+    xsdfile is the xsdfile to make an xsem file from
+    -d for turning on the python debugger (you do not want to use this)
+    -v for writing debug information to a file, xsd2xsem.debug
+    
+    Output is written stdout
+    
+    """
+
 
 if __name__ == '__main__':
     import sys
+    from optparse import OptionParser
+    parser = OptionParser(_usage(), version="")
+    
+    parser.add_option("-d", "--debug", action="store_const", dest="debug", default=False,  
+                      help="Turns on the python debugger (pdb)." )
+
+    parser.add_option("-v", "--verbose", action="store_const", dest="verbose", default=False,
+                      help="Turns on verbosity. Debugging info written to a file" )
+
+    parser.add_option("-f", "--infile", type="string", dest="infile", action="store",
+                      help="The xsd to process" )
+
+    (options, args) = parser.parse_args()
+
+    if options.infile is not None:
+        infilecontents = open( options.infile, "r" ).read()
+    else:
+        parser.error( "an input file must be specified" )
+
+    if options.debug and options.verbose:
+        parser.error( "cannot combine debug mode with verbose mode" )
+
+    flag = options.debug or options.verbose
+
+    print "flag = %s"%flag
+            
+    c = XSEMGenerator( infilecontents, flag)
+
+
     if len(sys.argv) == 3:
         if sys.argv[2] == '-d':
-            c = XSEMGenerator( sys.argv[1], True )
+            c = XSEMGenerator( sys.argv[1], flag )
+    if len(sys.argv) == 3:
+        if sys.argv[2] == '-v':
+            c = XSEMGenerator( sys.argv[1], flag )
+    if len(sys.argv) < 2:
+        print _usage()
     else:
-        c = XSEMGenerator( sys.argv[1], False )
+        c = XSEMGenerator( sys.argv[1], "" )
 #     c.read_xsd( c.xml_tree.documentElement )
 
        
@@ -320,13 +388,4 @@ if __name__ == '__main__':
 </xsd:schema>
     """
 
-    verification_xml = """<?xml version='1.0' encoding='UTF-8'?>
-<a>
-  <b>
-    <c>
-      <e name='alias' setting=''/>
-    </c>
-    <a>test streng</a>
-  </b>
-</a>
-    """
+    verification_xml = """<?xml version='1.0' encoding='UTF-8'?><a><b><c><e name='alias' setting=''/></c><a>test streng</a></b></a>"""
