@@ -2,7 +2,7 @@ package dbc.opensearch.components.pti.tests;
 /** \brief UnitTest for PTIPoolAdm class */
 
 import dbc.opensearch.components.pti.PTIPoolAdm;
-import dbc.opensearch.components.pti.PTIPool;;
+import dbc.opensearch.components.pti.PTIPool;
 import dbc.opensearch.tools.Processqueue;
 import dbc.opensearch.tools.Estimate;
 
