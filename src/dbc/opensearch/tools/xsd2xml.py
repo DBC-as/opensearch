@@ -7,7 +7,7 @@ Functionality:
   - Given an xsd, generates the corrosponding XML document instance
 
 To do:
-  - XSEM generation
+  - Namespace handling 
 
   the element definition is guaranteed to have a name, E.g.
   
@@ -50,7 +50,7 @@ __version__ = '$Revision:$'
 from xml.dom import minidom
 from xml.dom import Node
 # from pprint import pprint
-import logging
+import logging as log
 #elementtree has a flaky import history:
 try:
     import ElementTree as ET
@@ -168,16 +168,16 @@ class XMLInstantiator( object ):
             import pdb
             pdb.set_trace()
         elif flag == "verbose":
-            loglevel = logging.DEBUG
+            loglevel = log.DEBUG
         else:
-            loglevel = logging.NOTSET
+            loglevel = log.NOTSET
 
-        logging.basicConfig(level=loglevel,
+        log.basicConfig(level=loglevel,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    filename='xsd2xml.debug',
-                    filemode='w'
+                        #filename='xsd2xml.debug',
+                        #filemode='w'
                             )
-        logging.getLogger('')
+        log.getLogger('')
 
         # automatic parsing of the input file, this will throw if
         # something goes wrong or is wrong with the xsd
@@ -186,8 +186,14 @@ class XMLInstantiator( object ):
         if self.xsd.getroot().tag.split('}')[1] != "schema":
             raise ValueError, "the imported files contents does not seem to be an XML Schema document"
 
+        #get the global namespace
+        self.ns = self.xsd.getroot().attrib.get( 'targetNamespace' )
 
-
+        #please note that namespace prefixes are semantically
+        #irrellevant. This is just for the 'human-readability' of the
+        #generated output
+        ET._namespace_map[ self.ns ] = 'foxml'
+        
     def build_xml_instance( self, node_tree, sieve ):
         """Given an xsd, this method builds an XML Document
         Instance and saves it to the self.parent. It also
@@ -207,6 +213,7 @@ class XMLInstantiator( object ):
         for element in node_tree.getiterator():
             # remove the namespace
             element_tag = element.tag.split('}')[1]
+            log.debug( "Got element %s"%( element_tag ) )
             if element_tag in sieve:
                 #get name and type from attribs note: type (and
                 #name) can be null after assignment, use for
@@ -214,23 +221,33 @@ class XMLInstantiator( object ):
                 el_name, el_type = element.get( 'name' ), element.get( 'type' )
                 #print element_tag, el_name, el_type
                 if element_tag == "element":
+                    log.debug( "xsd:element name=%s type=%s"%( el_name, el_type ) )
                     #local cache of the new instance element
                     #in elements, name is never None
-                    elem = ET.Element( el_name )
+                    log.debug( "Creating new element, name = %s"%( el_name ) )
+                    element_name = "{%s}%s"% ( self.ns, el_name )
+                    elem = ET.Element( element_name )
                     #this is the special case:
                     if self.parent is None:
                         #there was no root element, creating it.
                         self.parent = elem
                         self.root = self.parent
+#                         if self.ns is not None:
+#                             self.root.attrib['xmlns:foxml'] = self.ns
+
+                        log.debug( "%s is root of the instance tree" %( elem ) )
                     else:
                         self.parent.append( elem )
+                        log.debug( "Appending %s to the parent list" %( elem ) )
                         #print "element %s has children: %s"%(self.parent, self.parent._children)
                     #if type is not None, then element has
                     #children in the instance model
                     if el_type is not None:
+                        log.debug( "parent map contains { %s : %s }"%( el_type, elem ) )
                         self.parent_map.update( { el_type: elem } )
 
                 elif element_tag == "attribute":
+                    log.debug( "xsd:attribute name=%s type=%s"%( el_name, el_type ) )
 
                     if el_type in self.attr_defaults.keys():
                         #we have a default value
@@ -240,9 +257,53 @@ class XMLInstantiator( object ):
                         self.parent.set( el_name, "" )
 
                 elif element_tag == "complexType":
+                    log.debug( "xsd:complexType name=%s type=%s"%( el_name, el_type ) )
                     if el_name is not None:
                         #setting a new parent
-                        self.parent = self.parent_map[ el_name ]
+                        log.debug( "Setting new parent = %s"%( el_name ) )
+                        try:
+                            self.parent = self.parent_map[ el_name ]
+                        except KeyError, ke:
+                            error_string = "Key %s was not in the parent_map:\n%s\nKeyError: '%s'" %( el_name, self.parent_map, ke.message )
+                            sys.exit( error_string )
+                elif element_tag == "complexContent":
+                    pass
+                elif element_tag == "extension":
+                    # treating:
+                    # ...
+                    # <xsd:complexType>
+                    #     <xsd:complexContent>
+                    #         <xsd:extension base="digitalObjectType"/>
+                    #     </xsd:complexContent>
+                    # </xsd:complexType>
+                    # ...
+
+                    el_base = element.get( "base" )
+                    log.debug( "xsd:%s 'type'=%s"%( element_tag, el_base ) )
+
+                    # this is a special (and somewhat complex case) of
+                    # creating complexTypes (oh, the irony...); by
+                    # using an xsd:extension, in a xsd:complexContent,
+                    # one is allowed to obfuscate the purpose of
+                    # referencing an element in a complexType. This is
+                    # (in the instance model) equivalent to:
+                    # ...
+                    # <xsd:complexType>
+                    #     <xsd:sequence>
+                    #         <xsd:element name="compass" type="compassType"/>
+                    #     </xsd:sequence>
+                    # </xsd:complexType>
+                    # ...
+                    # Where the element name is disreguarded for the
+                    # purposes of comparisons.
+                    #if type is not None, then element has
+                    #children in the instance model
+                    if el_base is not None:
+                        log.debug( "parent map contains { %s : %s }"%( el_base, elem ) )
+                        self.parent_map.update( { el_base: elem } )
+                    
+                    
+
             else:
                 pass
 
@@ -283,7 +344,7 @@ class XMLInstantiator( object ):
 if __name__ == '__main__':
     import sys
     from optparse import OptionParser
-    parser = OptionParser("xsd2xml -f xsdfile [-d|-v|-h]", version="")
+    parser = OptionParser("xsd2xml -f xsdfile [-d|-v|-h]",)
     
     parser.add_option("-d", "--debug", action="store_true", 
                       dest="debug", default=False,  
@@ -295,6 +356,9 @@ if __name__ == '__main__':
 
     parser.add_option("-f", "--infile", type="string", dest="infile", action="store",
                       help="The xsd to process" )
+
+    parser.add_option("-o", "--outfile", type="string", dest="outfile", action="store",
+                      help="If given, the outfile will have the xml instance written to it." )
 
     (options, args) = parser.parse_args()
 
@@ -317,11 +381,17 @@ if __name__ == '__main__':
     c.build_xml_instance( c.xsd,
                           [ "element",
                             "attribute",
-                            "complexType"
+                            "complexType",
+                            "complexContent",
+                            "extension"
                             ]
                           )
-    xml_instance = ET.tostring( c.root, encoding="utf-8")
+    xml_instance = ET.tostring( c.root, encoding="UTF-8")
 
+    if options.outfile is not None:
+        o = open( options.outfile, 'w' )
+        o.write( xml_instance )
+        o.close()
     
     # get xpaths, currently only supported with the xml.dom package:
     dom_tree = minidom.parseString( xml_instance )
