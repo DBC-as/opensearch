@@ -8,14 +8,14 @@
      <!-- <connection> -->
      <!--     <jdbc dialect="org.apache.lucene.store.jdbc.dialect.OracleDialect"> -->
      <!--         <dataSourceProvider> -->
-     <!--             <driverManager url="jdbc:oracle:thin:stm/stm@tora1.dbc.dk:1521" username="stm" password="stm" -->
+     <!--             <driverManager url="jdbc:oracle:thin:shm/shm@tora1.dbc.dk:1521" username="shm" password="shm" -->
      <!--                            driverClass="oracle.jdbc.driver.OracleDriver" /> -->
      <!--         </dataSourceProvider> -->
      <!--     </jdbc> -->
      <!-- </connection> -->
 
      <connection>
-       <file path="admin/test-index"/>
+       <file path="indexes"/>
      </connection>
 
      <transaction 
