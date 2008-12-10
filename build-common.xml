@@ -2,22 +2,23 @@
 <project name="build-common" >
   <import file="dependencies.xml"/>
 
-  <property name="base.dir"       value="${dependencies.basedir}"/>
+  <property name="base.dir"         value="${dependencies.basedir}"/>
 
-  <property name="lib.dir"        value="${base.dir}/lib"/>
-  <property name="src.dir"        value="${base.dir}/src"/>
-  <property name="build.dir"      value="${base.dir}/build"/>
-  <property name="dist.dir"       value="${base.dir}/dist"/>
-  <property name="classes.dir"    value="${build.dir}/classes"/>
+  <property name="lib.dir"          value="${base.dir}/lib"/>
+  <property name="src.dir"          value="${base.dir}/src"/>
+  <property name="build.dir"        value="${base.dir}/build"/>
+  <property name="dist.dir"         value="${base.dir}/dist"/>
+  <property name="classes.dir"      value="${build.dir}/classes"/>
   <!-- please note that the "docs" value is hardcoded in the Doxyfile -->
-  <property name="doc.dir"        value="${base.dir}/docs"/>
-  <property name="api.dir"        value="${doc.dir}/api"/>
-  <property name="opensearch.dir" value="${src.dir}/dbc/opensearch"/>
-  <property name="components.dir" value="${opensearch.dir}/components"/>
-  <property name="datadock.dir"   value="${components.dir}/datadock"/>
-  <property name="config.dir"     value="${base.dir}/config"/>
-  <property name="instrumented.dir"    value="${build.dir}/instrumeted-classes"/>
-  <property name="report.dir"     value="${doc.dir}/coverage-report"/>
+  <property name="doc.dir"          value="${base.dir}/docs"/>
+  <property name="api.dir"          value="${doc.dir}/api"/>
+  <property name="opensearch.dir"   value="${src.dir}/dbc/opensearch"/>
+  <property name="components.dir"   value="${opensearch.dir}/components"/>
+  <property name="datadock.dir"     value="${components.dir}/datadock"/>
+  <property name="config.dir"       value="${base.dir}/config"/>
+  <property name="xsd.dir"          value="${src.dir}/xsd"/>
+  <property name="instrumented.dir" value="${build.dir}/instrumeted-classes"/>
+  <property name="report.dir"       value="${doc.dir}/coverage-report"/>
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant*.jar"/>
@@ -39,55 +40,9 @@
   </pathconvert>
   <!-- end debugging section -->
 
-
-
-  <!-- Cobertura - this is not working yet-->
-  <property name="cobertura.dir" value="${lib.dir}"/>  
-  <path id="cobertura.classpath">
-    <fileset dir="${cobertura.dir}">
-      <include name="cobertura.jar" />
-      <include name="*.jar" />
-    </fileset>
-  </path>
- 
-  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
-  
-  <target name="instrument" depends="compile-tests">
-	
-
-    <!-- Capture the path as a delimited property using the refid attribute -->
-	<property name="myclasspath" refid="classpath"/>
-	<!-- Emit the property to the ant console -->
-	<echo message="Classpath = ${myclasspath}"/>
-    
-    <!--
-		Remove the coverage data file and any old instrumentation.
-	  -->
-	<delete file="cobertura.ser"/>
-	<delete dir="${instrumented.dir}" />
-    
-	<cobertura-instrument todir="${instrumented.dir}">
-	  
-      <!--
-		  The following line causes instrument to ignore any
-		  source line containing a reference to log4j, for the
-		  purposes of coverage reporting.
-		-->
-      <ignore regex="org.apache.log4j.*" />
-	  
-	  <fileset dir="${classes.dir}">
-		<!--
-			Instrument all the application classes, but
-			don't instrument the test classes.
-		  -->
-		<include name="**/*.class" />
-		<exclude name="**/*Test.class" />
-	  </fileset>
-	</cobertura-instrument>
-  </target>
-  <!-- Coberrtura - this is not working yet-->
-
-
+  <!-- ===================================================================== -->
+  <!-- TARGETS -->
+  <!-- ===================================================================== -->
 
   <target name="clean" description="Deletes files created during the build">
     <delete dir="${build.dir}"/>
@@ -96,13 +51,8 @@
     <delete file="${base.dir}/doxygen-warnings"/>
   </target>
 
-  <target name="test-target">
-    <echo>
-      ant classpath=${cp}
-      Basedir=${base.dir}
-      lib.dir=${lib.dir}
-      ant libs=${alp}
-    </echo>
+  <target name="clean-xsd" description="Deletes generated xsd classes">
+    <delete dir="${opensearch.dir}/xsd"/>
   </target>
 
   <target name="compile" description="Compiles source code" depends="clean">
@@ -125,42 +75,17 @@
     </javac>
   </target>
 
-  
-
-  <!-- <target name="dist" depends="compile" description="Creates distributable"> -->
-  <!--   <echo message="${ant.project.name} - build-common.dist"/> -->
-  <!-- </target> -->
-
-  <!-- <target name="clean.dependencies" -->
-  <!--         description="Deletes files created during the build (includes dependencies)"> -->
-  <!--   <antcall target="depend.${ant.project.name}"> -->
-  <!--     <param name="dependency.target" value="clean"/> -->
-  <!--   </antcall> -->
-  <!-- </target> -->
-
-  <!-- <target name="dist.dependencies" -->
-  <!--         description="Creates distributable (includes dependencies)"> -->
-  <!--   <antcall target="depend.${ant.project.name}"> -->
-  <!--     <param name="dependency.target" value="dist"/> -->
-  <!--   </antcall> -->
-  <!-- </target> -->
-
-  <target name="doc" description="generates documentation for the files found in ${src.dir}">
-    <taskdef
-       name="doxygen"
-       classname="org.doxygen.tools.DoxygenTask"
-       classpath="${alp}" />
-
-    <doxygen configFilename="${base.dir}/Doxyfile" />
-  </target>
-
   <target name="test" description="Run unittests" depends="compile-tests">
-    <junit fork="yes" forkmode="once" printsummary="no" haltonerror="false" haltonfailure="false">
+    <junit fork="yes"
+           forkmode="once"
+           printsummary="no"
+           haltonerror="false"
+           haltonfailure="false">
 
       <classpath location="${instrumented.dir}" />
-	  <classpath location="${classes.dir}" />
+      <classpath location="${classes.dir}" />
       <classpath refid="cobertura.classpath" />
-	  
+
       <formatter type="plain" usefile="no"/>
       <classpath refid="classpath"/>
 
@@ -170,33 +95,116 @@
     </junit>
   </target>
 
-  
+  <target name="doc" description="generates documentation for ${src.dir}">
+    <taskdef
+        name="doxygen"
+        classname="org.doxygen.tools.DoxygenTask"
+        classpath="${alp}" />
+
+    <doxygen configFilename="${base.dir}/Doxyfile" />
+  </target>
+
+  <target name="xsd-classes" 
+          description="Generate Java source files from the Schemas found in ${xsd.dir}."
+          depends="clean-xsd">
+
+    <taskdef name="castor-srcgen"
+             classname="org.castor.anttask.CastorCodeGenTask"
+             classpathref="classpath" />
+
+    <castor-srcgen todir="${src.dir}/"
+                   package="dbc.opensearch.xsd"
+                   types="j2"
+                   warnings="true" >
+      <fileset dir="${xsd.dir}">
+        <include name="*.xsd"/>
+      </fileset>
+    </castor-srcgen>
+
+  </target>
+
+  <target name="test-target">
+    <echo>
+      ant classpath=${cp}
+      Basedir=${base.dir}
+      lib.dir=${lib.dir}
+      ant libs=${alp}
+    </echo>
+  </target>
+
+  <!-- ===================================================================== -->
+  <!-- Experimental targets -->
+  <!-- ===================================================================== -->
+
+  <!-- Cobertura - this is not working yet-->
+  <property name="cobertura.dir" value="${lib.dir}"/>
+  <path id="cobertura.classpath">
+    <fileset dir="${cobertura.dir}">
+      <include name="cobertura.jar" />
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+  <target name="instrument" depends="compile-tests">
+
+
+    <!-- Capture the path as a delimited property using the refid attribute -->
+    <property name="myclasspath" refid="classpath"/>
+    <!-- Emit the property to the ant console -->
+    <echo message="Classpath = ${myclasspath}"/>
+
+    <!--
+        Remove the coverage data file and any old instrumentation.
+    -->
+    <delete file="cobertura.ser"/>
+    <delete dir="${instrumented.dir}" />
+
+    <cobertura-instrument todir="${instrumented.dir}">
+
+      <!--
+          The following line causes instrument to ignore any
+          source line containing a reference to log4j, for the
+          purposes of coverage reporting.
+      -->
+      <ignore regex="org.apache.log4j.*" />
+
+      <fileset dir="${classes.dir}">
+        <!--
+            Instrument all the application classes, but
+            don't instrument the test classes.
+        -->
+        <include name="**/*.class" />
+        <exclude name="**/*Test.class" />
+      </fileset>
+    </cobertura-instrument>
+  </target>
+  <!-- Cobertura - this is not working yet-->
+
   <target name="coverage-check">
-	<cobertura-check branchrate="34" totallinerate="100" />
+    <cobertura-check branchrate="34" totallinerate="100" />
   </target>
 
   <target name="coverage-report">
-	<!--
-		Generate an XML file containing the coverage data using
-		the "srcdir" attribute.
-	  -->
-	<cobertura-report srcdir="${src.dir}" destdir="${report.dir}" format="xml" />
+    <!--
+        Generate an XML file containing the coverage data using
+        the "srcdir" attribute.
+    -->
+    <cobertura-report srcdir="${src.dir}" destdir="${report.dir}" format="xml" />
   </target>
-  
+
   <target name="alternate-coverage-report">
-	<!--
-		Generate a series of HTML files containing the coverage
-		data in a user-readable form using nested source filesets.
-	  -->
-	<cobertura-report destdir="${report.dir}">
-	  <fileset dir="${src.dir}">
-		<include name="**/*.java"/>
-	  </fileset>
-	</cobertura-report>
+    <!--
+        Generate a series of HTML files containing the coverage
+        data in a user-readable form using nested source filesets.
+    -->
+    <cobertura-report destdir="${report.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.java"/>
+      </fileset>
+    </cobertura-report>
   </target>
-
-
-
 
   <target name="update" description="updates the sources to HEAD">
     <typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="${alp}" />
@@ -207,23 +215,5 @@
     </svn>
     <echo message="${base.dir} updated to ${revision.max}"/>
   </target>
-
-  <target name="usage">
-    <echo>Buildfile for OpenSearch
-      Available targets:
-      build:         Builds and performs unittests. Output is in ${build.dir}
-      test:          Performs unittests
-      !   examples:      Builds and tests the example files. Output is in the 'examples/build' folder
-      !   test_examples: Performs unittests on the examples
-      clean:         Removes the build, dist folders and any cruft generated in builds
-      dist:          builds, tests and packages the core files into a jar. Output is in the 'dist' folder
-      checkout:      checks out the sources from the subversion repository
-      !   build_clean:   cleans build folders, checks out source, builds, unittests and output to ${build.dir}
-      doc:           generates the doxygen documentation
-      all:           clean, checkout, build, unittest, jar. Output is in ${dist.dir}
-      usage:         This message
-    </echo>
-  </target>
-
 
 </project>

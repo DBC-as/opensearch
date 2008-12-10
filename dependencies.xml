@@ -9,6 +9,13 @@
     </target>
 
     <!-- ================================================================== -->
+    <target name="depend.opensearch">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch"
+             target="${dependency.target}" 
+             inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================== -->
     <target name="depend.components">
         <ant dir="${dependencies.basedir}/src/dbc/opensearch/components"
              target="${dependency.target}" 
@@ -16,8 +23,8 @@
     </target>
 
     <!-- ================================================================== -->
-    <target name="depend.opensearch">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch"
+    <target name="depend.xsd">
+        <ant dir="${dependencies.basedir}/src/dbc/opensearch/xsd"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>

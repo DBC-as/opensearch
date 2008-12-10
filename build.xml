@@ -2,21 +2,15 @@
 <project name="opensearch.all" default="usage">
     <import file="dependencies.xml"/>
 
-    <target name="test-target" description="Test target">
-      <antcall target="depend.all">
-        <param name="dependency.target" value="test-target"/>
-      </antcall>
-    </target>
-
-    <target name="usage" description="usage options">
-      <antcall target="depend.all">
-        <param name="dependency.target" value="usage"/>
-      </antcall>
-    </target>
-
     <target name="clean" description="Deletes build files">
         <antcall target="depend.all">
             <param name="dependency.target" value="clean"/>
+        </antcall>
+    </target>
+
+    <target name="clean-xsd" description="Deletes generated files">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="clean-xsd"/>
         </antcall>
     </target>
 
@@ -26,15 +20,15 @@
         </antcall>
     </target>
 
-    <target name="compile-tests" description="Compiles source code">
+    <target name="compile-tests" description="Builds tests">
         <antcall target="depend.all">
             <param name="dependency.target" value="compile-tests"/>
         </antcall>
     </target>
 
-    <target name="dist" description="Creates distributable">
+    <target name="test" description="Run unit tests">
         <antcall target="depend.all">
-            <param name="dependency.target" value="dist"/>
+            <param name="dependency.target" value="test"/>
         </antcall>
     </target>
 
@@ -44,6 +38,25 @@
         </antcall>
     </target>
 
+    <target name="xsd-classes" description="Generates classes from XSD files">
+      <antcall target="depend.all">
+        <param name="dependency.target" value="xsd-classes"/>
+      </antcall>
+    </target>
+
+    <target name="test-target" description="Prints classpath information">
+      <antcall target="depend.all">
+        <param name="dependency.target" value="test-target"/>
+      </antcall>
+    </target>
+
+    <target name="dist" description="Creates distributable">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="dist"/>
+        </antcall>
+    </target>
+
+
     <target name="update" description="Creates api documentation">
         <antcall target="depend.all">
             <param name="dependency.target" value="update"/>
@@ -51,12 +64,6 @@
     </target>
 
     
-    <target name="test" description="Run unit tests">
-        <antcall target="depend.all">
-            <param name="dependency.target" value="test"/>
-        </antcall>
-    </target>
-
     <target name="instrument" description="build instrumented classes">
         <antcall target="depend.all">
             <param name="dependency.target" value="instrument"/>

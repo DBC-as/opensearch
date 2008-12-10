@@ -1,6 +1,6 @@
 /**
  * \file XmlFileFilter.java
- * \brief The XmlFileFilter class
+ * \brief FilenameFilter class implementation that filters xml files
  * \package tools
  */
 package  dbc.opensearch.tools;
