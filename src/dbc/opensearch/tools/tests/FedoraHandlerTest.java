@@ -6,23 +6,19 @@ import dbc.opensearch.components.datadock.CargoContainer;
 
 import org.junit.*;
 import static org.junit.Assert.*;
-//import static org.easymock.EasyMock.*;
 import static org.easymock.classextension.EasyMock.*;
 
 import org.apache.axis.types.NonNegativeInteger;
 
 import fedora.client.FedoraClient;
-import fedora.common.Constants;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.DatastreamDef;
 import fedora.server.types.gen.MIMETypedStream;
 
 import org.apache.log4j.Logger;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 
 import java.net.MalformedURLException;
 import javax.xml.rpc.ServiceException;
@@ -55,12 +51,13 @@ public class FedoraHandlerTest {
     DatastreamDef[] datastreams;
     
     /**
-     * Before each test we construct the needed mockobjects 
+     * Before each test we construct the needed mock objects 
      * the FedoraClient to pas to the FedoraHandler
      * The FedoraAPIA and M to call methods on
      * The CargoContainer to get data from 
      */
-    @Before public void Setup()throws ServiceException, UnsupportedEncodingException, IOException {
+    @Before public void Setup() throws ServiceException, UnsupportedEncodingException, IOException 
+    {
         mockFedoraClient = createMock( FedoraClient.class );
         mockFedoraAPIA = createMock( FedoraAPIA.class );
         mockFedoraAPIM = createMock( FedoraAPIM.class );
@@ -77,21 +74,22 @@ public class FedoraHandlerTest {
         expect( mockFedoraClient.getAPIM() ).andReturn( mockFedoraAPIM );
     }
     
+    
     /**
      * After each test the mock are reset
      */
-
-    @After public void TearDown(){
+    @After public void TearDown()
+    {
         reset( mockFedoraClient );
         reset( mockFedoraAPIA );
         reset( mockFedoraAPIM );
         reset( mockCargoContainer );
-        reset( mockDatastreamDef );
-                
+        reset( mockDatastreamDef );                
     }
     
-    @Test public void constructorTest() throws ConfigurationException, IOException, MalformedURLException, ServiceException { 
-         
+    
+    @Test public void constructorTest() throws ConfigurationException, IOException, MalformedURLException, ServiceException 
+    {         
         /**1 setting up the needed mocks 
          * Is done in setup()
          */
@@ -109,17 +107,16 @@ public class FedoraHandlerTest {
         
         
         /**4 check if it happened as expected */  
-        verify( mockFedoraClient );
-        
+        verify( mockFedoraClient );        
     }
+    
     
     /***
      * Tests the basic functionality og the submitdatastream
      * Since it calls the constructFoxml method, that method is also tested
-     */
-    
-    @Test public void submitDatastreamTest()throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException {
-        
+     */    
+    @Test public void submitDatastreamTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException, MarshalException, ValidationException
+    {        
         /**1 Setting up the needed mocks
          * Done in setup()
          */
@@ -150,8 +147,7 @@ public class FedoraHandlerTest {
         /**4 check if it happened as expected */  
         verify( mockFedoraClient );
         verify( mockFedoraAPIM );
-        verify( mockCargoContainer );
-        
+        verify( mockCargoContainer );        
     }
     
     
@@ -159,8 +155,8 @@ public class FedoraHandlerTest {
      * Test that submitDatastream throws the correct exception when its call to
      * apim.ingest returns a wrong pid
      */
-    @Test public void submitDatastreamIngestReturnsWrongPidTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException {
-        
+    @Test public void submitDatastreamIngestReturnsWrongPidTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException 
+    {        
         /**1 Setting up the needed mocks
          * done in setup()
          */
@@ -186,9 +182,12 @@ public class FedoraHandlerTest {
         
         /** do the stuff */ 
         FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
-        try{
+        try
+        {
             returnPid = fh.submitDatastream( mockCargoContainer, "mockLabel" );
-        }catch( Exception ise ){
+        }
+        catch( Exception ise )
+        {
             assertTrue( ise.getClass() == IllegalStateException.class );
         }
         
@@ -196,13 +195,14 @@ public class FedoraHandlerTest {
         verify( mockFedoraClient );
         verify( mockFedoraAPIM ); 
         verify( mockCargoContainer );
-
-    }      
+    }
+    
+    
     /**
      * Tests the basic functionality of the getDataStream method 
      */
-    @Test public void getDatastreamTest() throws RemoteException, ConfigurationException, UnknownHostException, ServiceException, IOException {
-
+    @Test public void getDatastreamTest() throws RemoteException, ConfigurationException, UnknownHostException, ServiceException, IOException 
+    {
        /**1 Setting up the needed mocks
         * partly done in setup()
         */
@@ -239,16 +239,17 @@ public class FedoraHandlerTest {
         verify( mockFedoraAPIA ); 
         verify( mockDatastreamDef );
         verify( mockMIMETypedStream );
- 
-   }
+    }
+    
 
     /**
      * Tests that the getDatastream method throws an IllegalStateException
      * when there is nothing that matches the given itemId
      */
-    @Test public void getDatastreamNoMatchingStream() throws IOException, RemoteException, ConfigurationException, ServiceException {
-     /**1 Setting up the needed mocks
-        * partly done in setup()
+    @Test public void getDatastreamNoMatchingStream() throws IOException, RemoteException, ConfigurationException, ServiceException 
+    {
+       /** 1 Setting up the needed mocks
+        *  partly done in setup()
         */
        String getDatastreamTestString = "Testing basic info flow"; 
        String testPid = "test:Pid";;
@@ -270,9 +271,12 @@ public class FedoraHandlerTest {
                
         /** do the stuff */ 
         FedoraHandler fh = new FedoraHandler( mockFedoraClient ); 
-        try{
-        cargo = fh.getDatastream( testPid, testItemId );
-        }catch( IllegalStateException ise ){
+        try
+        {
+        	cargo = fh.getDatastream( testPid, testItemId );
+        }
+        catch( IllegalStateException ise )
+        {
             assertTrue( ise.getMessage().equals( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", testItemId, testPid ) ) );
             exceptionThrown = true;
         }
@@ -283,5 +287,4 @@ public class FedoraHandlerTest {
         verify( mockFedoraAPIA ); 
         verify( mockDatastreamDef );
     }
-
 }
