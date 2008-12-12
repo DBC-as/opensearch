@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 
 import java.net.URL;
 import javax.xml.stream.XMLStreamException;
@@ -114,7 +116,7 @@ public class DataDock implements Callable<Float>{
      * @throws IOException if the FedoraHandler could not read data from the CargoContainer
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dbc.opensearch.tools.Estimate
      */
-    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException {
+    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, ValidationException , MarshalException {
         log.debug( String.format( "Entering call" ) );
         Float processEstimate = 0f;
 //    String fedoraHandle = null;
@@ -158,9 +160,13 @@ public class DataDock implements Callable<Float>{
      * @throws IOException if the FedoraHandler could not read data from the CargoContainer
      * @throws ClassNotFoundException if the database could not be initialised 
      * in the Estimation class \see dbc.opensearch.tools.Estimate 
+     * @throws NullPointerException 
+     * @throws IllegalStateException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
 
-    private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException{
+    private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, MarshalException, ValidationException, IllegalStateException, NullPointerException{
         log.debug( String.format( "Entering doProcessing" ) );
         Float processEstimate = 0f;
         String fedoraHandle = null;
@@ -186,8 +192,12 @@ public class DataDock implements Callable<Float>{
      * @throws RemoteException if the datastream could not be ingested into the fedora base
      * @throws XMLStreamException if the foxml could not be constructed in the FedoraHandler \see dbc.opensearch.tools.FedoraHandler
      * @throws IOException if the FedoraHandler could not read data from the CargoContainer
+     * @throws NullPointerException 
+     * @throws IllegalStateException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, MalformedURLException, UnknownHostException, ServiceException{
+    private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, MalformedURLException, UnknownHostException, ServiceException, MarshalException, ValidationException, IllegalStateException, NullPointerException{
         log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
 

@@ -5,49 +5,49 @@
  */
 package dbc.opensearch.tools;
 
-import dbc.opensearch.components.datadock.CargoContainer;
-
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.NoSuchElementException;
+
+import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLOutputFactory;
 
 import org.apache.axis.encoding.Base64;
 import org.apache.axis.types.NonNegativeInteger;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.ValidationException;
 
+import dbc.opensearch.components.datadock.CargoContainer;
+import dbc.opensearch.xsd.ContentDigest;
+import dbc.opensearch.xsd.Datastream;
+import dbc.opensearch.xsd.DatastreamVersion;
+import dbc.opensearch.xsd.DatastreamVersionTypeChoice;
+import dbc.opensearch.xsd.DigitalObject;
+import dbc.opensearch.xsd.ObjectProperties;
+import dbc.opensearch.xsd.Property;
+import dbc.opensearch.xsd.PropertyType;
+import dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
+import dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
+import dbc.opensearch.xsd.types.PropertyTypeNAMEType;
+import dbc.opensearch.xsd.types.StateType;
 import fedora.client.FedoraClient;
 import fedora.common.Constants;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.DatastreamDef;
 import fedora.server.types.gen.MIMETypedStream;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.QName;
-
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-
-import java.net.URL;
-
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import javax.xml.rpc.ServiceException;
-import java.io.IOException;
 
 /**
  * \ingroup tools
@@ -121,8 +121,11 @@ public class FedoraHandler implements Constants{
      * @throws XMLStreamException an error occured during xml document creation
      * @throws IOException something went wrong initializing the fedora client
      * @throws IllegalStateException pid mismatch when trying to write to fedora
+     * @throws NullPointerException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    public String submitDatastream( CargoContainer cargo, String label )throws RemoteException, XMLStreamException, IOException, IllegalStateException {
+    public String submitDatastream( CargoContainer cargo, String label )throws RemoteException, XMLStreamException, IOException, IllegalStateException, MarshalException, ValidationException, NullPointerException {
         log.debug( String.format( "submitDatastream(cargo, %s) called", label ) );
         
         DatastreamDef dDef = null;
@@ -167,89 +170,21 @@ public class FedoraHandler implements Constants{
      *
      * @throws IOException something went wrong initializing the fedora client
      * @throws XMLStreamException an error occured during xml document creation
+     * @throws NullPointerException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    private byte[] constructFoxml( CargoContainer cargo, String nextPid, String itemId, String label ) throws IOException, XMLStreamException {
+    private byte[] constructFoxml( CargoContainer cargo, String nextPid, String itemId, String label ) throws IOException, XMLStreamException, MarshalException, ValidationException, NullPointerException 
+    {
         log.debug( String.format( "constructFoxml(cargo, %s, %s, %s) called", nextPid, itemId, label ) );
     
         log.debug( "Starting constructing xml" );
 
-        String itemId_version = itemId+".0";
-        Document document = DocumentHelper.createDocument();
-        // Generate root element
-        QName root_qn = QName.get( "digitalObject", "foxml", "info:fedora/fedora-system:def/foxml#" );
-        Element root = document.addElement( root_qn );
-        root.addAttribute( "xmlns:xsi",          "http://www.w3.org/2001/XMLSchema-instance" );
-        root.addAttribute( "xsi:scheamLocation", "info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd");
-        root.addAttribute( "PID",                nextPid );
-        root.addAttribute( "VERSION",            "1.1");
+        byte[] ret = FedoraTools.constructFoxml(cargo, nextPid, itemId, label);
+        return ret;
+    }    
 
-        // Generate objectProperties node
-        Element objproperties = root.addElement( "foxml:objectProperties" );
-
-        // Generate property nodes
-
-        // State
-        Element property = objproperties.addElement( "foxml:property" );
-        property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#state" );
-        property.addAttribute( "VALUE", "Active" );
-
-        // label - Description of the digital object. We would like
-        // the title of the document as this label, but we would
-        // rather not parse the data for a title, so what to do?
-        /** \todo: bug 7873 for the label field: http://bugs.dbc.dk/show_bug.cgi?id=7873 */        
-        property = objproperties.addElement( "foxml:property" );
-        property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#label" );
-        property.addAttribute( "VALUE", label );
-
-        // OwnerID - fedoraUser
-        property = objproperties.addElement( "foxml:property" );
-        property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#ownerId" );
-        property.addAttribute( "VALUE", user );
-
-        // createdDate
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
-        String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
-
-        property = objproperties.addElement( "foxml:property" );
-        property.addAttribute( "NAME", "info:fedora/fedora-system:def/model#createdDate" );
-        property.addAttribute( "VALUE", timeNow );
-
-        // lastModifiedDate
-        property = objproperties.addElement( "foxml:property" );
-        property.addAttribute( "NAME", "info:fedora/fedora-system:def/view#lastModifiedDate" );
-        property.addAttribute( "VALUE", timeNow );
-
-
-        // datastreamElement
-        /** \todo: CONTROL_GROUP should be configurable in some way */
-        /** \todo: VERSIONABLE should be configurable in some way */
-        property = root.addElement( "foxml:datastream" );
-        property.addAttribute( "CONTROL_GROUP", "M" );
-        property.addAttribute( "ID", itemId );
-        property.addAttribute( "STATE", "A" ); 
-        property.addAttribute( "VERSIONABLE", "false" );
-
-        // datastreamVersionElement
-        property = property.addElement( "foxml:datastreamVersion" );
-        property.addAttribute( "CREATED", String.format( "%s", timeNow ) );
-        property.addAttribute( "ID", itemId_version );
-
-        // label for the dissaminator - should describe type of data
-        // contained in the dissaminator ie. a string
-        // containingitemID+mimetype
-        property.addAttribute( "LABEL", String.format("%s [%s]",itemId, cargo.getMimeType()) );
-        property.addAttribute( "MIMETYPE", cargo.getMimeType() );
-        property.addAttribute( "SIZE", String.format( "%s", cargo.getStreamLength() ) );
-        property = property.addElement( "foxml:binaryContent" );
-        property.addText( Base64.encode( cargo.getDataBytes() ) );
-
-        log.debug( "Finished constructing xml" );
-
-        /** \todo: This constructing business would be a lot better with xml serialization. Mainly in terms of 1:characters types, 2: boilerplate statements, 3: portability/managability and 4: type safety */
-       
-        return document.asXML().getBytes( "UTF-8" );
-    }
-
+    
     /**
      * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
      * \todo: what are these parameters?
