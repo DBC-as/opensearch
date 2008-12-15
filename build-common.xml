@@ -55,7 +55,7 @@
     <delete dir="${opensearch.dir}/xsd"/>
   </target>
 
-  <target name="compile" description="Compiles source code" depends="clean">
+  <target name="compile" description="Compiles source code" depends="clean, xsd-classes">
     <mkdir dir="${classes.dir}"/>
     <echo>
       Building from ${basedir},
