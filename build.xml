@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="opensearch.all" default="usage">
+<project name="opensearch.all" default="compile">
     <import file="dependencies.xml"/>
 
     <target name="clean" description="Deletes build files">
@@ -64,22 +64,39 @@
     </target>
 
     
-    <target name="instrument" description="build instrumented classes">
+    <target name="coverage-instrument" description="build instrumented classes">
         <antcall target="depend.all">
-            <param name="dependency.target" value="instrument"/>
+            <param name="dependency.target" value="coverage-instrument"/>
         </antcall>
     </target>
 
-
-    <target name="coverage-report" description="coverage report">
+    <target name="coverage-test" description="performs coverage test">
         <antcall target="depend.all">
-            <param name="dependency.target" value="coverage-report"/>
+            <param name="dependency.target" value="coverage-test"/>
         </antcall>
     </target>
 
-  <target name="alternate-coverage-report" description="alternate coverage report">
-    <antcall target="depend.all">
-      <param name="dependency.target" value="alternate-coverage-report"/>
-    </antcall>
-  </target>
+    <target name="coverage-report-html" description="Making a html coverage report">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="coverage-report-html"/>
+        </antcall>
+    </target>
+
+    <target name="coverage-report-xml" description="Making an xml coverage report">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="coverage-report-xml"/>
+        </antcall>
+    </target>
+
+    <target name="coverage-reports" description="Making an xml and a htmlcoverage report">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="coverage-reports"/>
+        </antcall>
+    </target>
+
+    <target name="coverage-check" description="Checks the coverage test">
+        <antcall target="depend.all">
+            <param name="dependency.target" value="coverage-check"/>
+        </antcall>
+    </target>
 </project>
