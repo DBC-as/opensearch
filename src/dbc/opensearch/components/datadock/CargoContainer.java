@@ -69,37 +69,46 @@ public class CargoContainer {
      * @throws java.io.IOException if the stream is corrupted
      * @throws IllegalArgumentException if arguments are illformed.
      */
-    public CargoContainer( InputStream data, String mime, String lang, String submitter, String format ) throws IOException, IllegalArgumentException, NullPointerException{
-
+    public CargoContainer( InputStream data, String mime, String lang, String submitter, String format ) throws IOException, IllegalArgumentException, NullPointerException
+    {
         log.debug( String.format( "Entering CargoContainer constructor" ) );
         // 05: get the stream into the object
-        if( data.available() > 0 ){
+        if( data.available() > 0 )
+        {
             this.data = new BufferedInputStream( data );
-        }else{
+        }
+        else
+        {
             log.fatal( String.format( "No data in inputstream, refusing to construct empty CargoContainer" ) );
             throw new NullPointerException( "Refusing to construct a cargocontainer without cargo" );
         }
+        
         log.debug( String.format( "Saved data" ) );
 
         // 10: check mimetype
         CargoMimeType CMT = null;
         log.debug( String.format( "checking mimetype: %s", mime ) );
-        for (CargoMimeType cmt : CargoMimeType.values() ){
-            if( mime.equals( cmt.getMimeType() ) ){
+        for (CargoMimeType cmt : CargoMimeType.values() )
+        {
+            if( mime.equals( cmt.getMimeType() ) )
+            {
                 log.debug( String.format( "Identified mimetype %s", mime ) );
                 CMT = cmt;
             }
         }
-        if( CMT == null ){
+        if( CMT == null )
+        {
             throw new IllegalArgumentException( String.format( "no mimetype goes by the name of %s", mime ) );
         }
 
         // 30: check language
         /** \todo: How to specify allowed languages? enums? db? */
-        if( !checkLanguage( lang ) ){
+        if( !checkLanguage( lang ) )
+        {
             log.fatal( String.format( "Language '%s' not in list of allowed languages", lang ) );
             throw new IllegalArgumentException( String.format( "%s is not in the languagelist", lang ) );
         }
+        
         log.debug( String.format( "Identified language %s", lang ) );
 
         // 33: check format
@@ -109,7 +118,8 @@ public class CargoContainer {
 
         // 35: check submitter (credentials checking)
         /** \todo: need better checking of values (perhaps using enums?) before constructing */
-        if( !checkSubmitter( submitter ) ){
+        if( !checkSubmitter( submitter ) )
+        {
             log.fatal( String.format( "Submitter '%s' not in list of allowed submitters", submitter ) );
             throw new IllegalArgumentException( String.format( "%s is not in the submitterlist", submitter ) );
         }
@@ -164,7 +174,8 @@ public class CargoContainer {
      */
     public CargoContainer(InputStream data, String dublinCore, String submitter, String format) throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException{
         // read data
-        if( data.available() > 0 ){
+        if( data.available() > 0 )
+        {
             this.data = new BufferedInputStream( data );
         }
         

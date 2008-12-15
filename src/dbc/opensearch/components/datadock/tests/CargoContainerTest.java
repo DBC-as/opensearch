@@ -20,12 +20,16 @@ public class CargoContainerTest {
     CargoContainer cargo;
     String teststring;
 
-    @Before public void SetUp()throws UnsupportedEncodingException{
+    @Before public void SetUp()throws UnsupportedEncodingException
+    {
         teststring = "æøå";
         InputStream data = new ByteArrayInputStream( teststring.getBytes( "UTF-8" ) );
-        try{
+        try
+        {
             cargo = new CargoContainer( data, "text/xml", "dk", "stm", "faktalink" );
-        } catch ( IOException ioe ){
+        } 
+        catch ( IOException ioe )
+        {
             System.out.println( ioe.toString() );
         }
     }
@@ -33,14 +37,16 @@ public class CargoContainerTest {
     /**
      * 
      */
-    @Test public void testStreamSizeInContainer() {
+    @Test public void testStreamSizeInContainer() 
+    {
         //utf-8 uses two bytes per danish letter
         int expectedLength = 6;
         assertTrue( expectedLength == cargo.getStreamLength() );
     }
 
     @Test(expected = NullPointerException.class) 
-    public void testStreamCannotBeEmpty()throws IOException{
+    public void testStreamCannotBeEmpty() throws IOException
+    {
         InputStream is = new ByteArrayInputStream( new byte[0] );
         CargoContainer co = null;
         co = new CargoContainer( is, "", "", "", "" );

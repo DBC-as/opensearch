@@ -82,7 +82,8 @@ public class FedoraHandler implements Constants{
      * @throws ServiceException something went wrong initializing the fedora client
      * @throws IOException something went wrong initializing the fedora client
      */
-    public FedoraHandler( FedoraClient client ) throws ConfigurationException,/* MalformedURLException,*/ UnknownHostException, ServiceException, IOException {
+    public FedoraHandler( FedoraClient client ) throws ConfigurationException,/* MalformedURLException,*/ UnknownHostException, ServiceException, IOException 
+    {
         log.debug( "Fedorahandler constructor");
         this.client = client;
        
@@ -125,7 +126,8 @@ public class FedoraHandler implements Constants{
      * @throws ValidationException 
      * @throws MarshalException 
      */
-    public String submitDatastream( CargoContainer cargo, String label )throws RemoteException, XMLStreamException, IOException, IllegalStateException, MarshalException, ValidationException, NullPointerException {
+    public String submitDatastream( CargoContainer cargo, String label )throws RemoteException, XMLStreamException, IOException, IllegalStateException, MarshalException, ValidationException, NullPointerException 
+    {
         log.debug( String.format( "submitDatastream(cargo, %s) called", label ) );
         
         DatastreamDef dDef = null;
@@ -143,7 +145,7 @@ public class FedoraHandler implements Constants{
         itemId = cargo.getFormat();
 
         log.debug( String.format( "Constructing foxml with pid=%s, itemId=%s and label=%s", nextPid, itemId, label ) );
-        foxml = constructFoxml( cargo, nextPid, itemId, label );
+        foxml = FedoraTools.constructFoxml( cargo, nextPid, itemId, label );
         log.debug( "FOXML constructed, ready for ingesting" );
 
         pid = apim.ingest( foxml, FOXML1_1.uri, "Ingesting "+label );
@@ -157,34 +159,7 @@ public class FedoraHandler implements Constants{
         return pid;
     }
     
-    /**
-     * Constructs a foxml stream from the parameters
-     * \todo: what are these parameters?
-     *
-     * @param cargo the cargocontainer with the data 
-     * @param nextPid the next valid pid
-     * @param itemId a unique identifier for the namespace
-     * @param label the identifier for the data - used to construct the FOXML
-     *
-     * @returns byte array contaning the foxml string
-     *
-     * @throws IOException something went wrong initializing the fedora client
-     * @throws XMLStreamException an error occured during xml document creation
-     * @throws NullPointerException 
-     * @throws ValidationException 
-     * @throws MarshalException 
-     */
-    private byte[] constructFoxml( CargoContainer cargo, String nextPid, String itemId, String label ) throws IOException, XMLStreamException, MarshalException, ValidationException, NullPointerException 
-    {
-        log.debug( String.format( "constructFoxml(cargo, %s, %s, %s) called", nextPid, itemId, label ) );
-    
-        log.debug( "Starting constructing xml" );
-
-        byte[] ret = FedoraTools.constructFoxml(cargo, nextPid, itemId, label);
-        return ret;
-    }    
-
-    
+       
     /**
      * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
      * \todo: what are these parameters?
@@ -199,6 +174,7 @@ public class FedoraHandler implements Constants{
     public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException{
         throw new NotImplementedException( "RegEx matching on pids not yet implemented" );
     }
+    
     
     /**
      * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
@@ -233,11 +209,12 @@ public class FedoraHandler implements Constants{
         
         log.debug( String.format( "Iterating datastreams" ) );
         
-        for ( DatastreamDef def : datastreams ){
+        for ( DatastreamDef def : datastreams )
+        {
             log.debug( String.format( "Got DatastreamDef with id=%s", def.getID() ) );
             
-            if( def.getID().equals( itemId ) ){
-                
+            if( def.getID().equals( itemId ) )
+            {                
                 log.debug( String.format( "trying to retrieve datastream with pid='%s' and itemId_version='%s'", pid, itemId ) );
                 ds = apia.getDatastreamDissemination( pid, itemId, null );
                 // pid and def.getID() are equal, why give them both?
@@ -263,7 +240,9 @@ public class FedoraHandler implements Constants{
                                             itemId );
             }
         }
-        if( cargo == null ){
+        
+        if( cargo == null )
+        {
             throw new IllegalStateException( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", itemId, pid ) );
         }
 
@@ -277,7 +256,8 @@ public class FedoraHandler implements Constants{
     } 
 
     /** \todo: what is this? */
-    private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state ){
+    private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state )
+    {
         /**
          * For future reference (mostly because the Fedora API is unclear on this):
          * addDatastream resides in fedora.server.management.Management.java
@@ -311,7 +291,6 @@ public class FedoraHandler implements Constants{
         //                    null,
         //                    "Adding Datastream labelled"+label);
 
-    }
-  
+    }  
 }
 

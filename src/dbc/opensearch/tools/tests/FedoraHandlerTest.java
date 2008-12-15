@@ -112,7 +112,7 @@ public class FedoraHandlerTest {
     
     
     /***
-     * Tests the basic functionality og the submitdatastream
+     * Tests the basic functionality and the submitdatastream
      * Since it calls the constructFoxml method, that method is also tested
      */    
     @Test public void submitDatastreamTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException, MarshalException, ValidationException
@@ -131,6 +131,7 @@ public class FedoraHandlerTest {
         expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
         expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
         expect( mockCargoContainer.getStreamLength() ).andReturn( 6 );
+        expect( mockCargoContainer.getDataBytes() ).andReturn( data );
         expect( mockCargoContainer.getDataBytes() ).andReturn( data );
         // out of constructFoxml
         expect( mockFedoraAPIM.ingest( isA( byte[].class ), isA( String.class ), isA( String.class ) ) ).andReturn( "test:1" );
@@ -172,6 +173,8 @@ public class FedoraHandlerTest {
         expect( mockCargoContainer.getMimeType() ).andReturn( "text/xml" );
         expect( mockCargoContainer.getStreamLength() ).andReturn( 6 );
         expect( mockCargoContainer.getDataBytes() ).andReturn( data );
+        expect( mockCargoContainer.getDataBytes() ).andReturn( data );
+        
         // out of constructFoxml
         expect( mockFedoraAPIM.ingest( isA( byte[].class ), isA( String.class ), isA( String.class ) ) ).andReturn( "wrongpid" );
         

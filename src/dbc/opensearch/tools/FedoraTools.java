@@ -106,8 +106,8 @@ public class FedoraTools
                 
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter( out );
-        Marshaller m2 = new Marshaller(outW);
-        m2.marshal ( dot );
+        Marshaller m = new Marshaller(outW); // IOException
+        m.marshal ( dot ); // throws MarshallException, ValidationException
         
         byte[] ret = out.toByteArray();        
         return ret;
