@@ -4,11 +4,26 @@ package dbc.opensearch.tools.tests;
 import dbc.opensearch.tools.FedoraHandler;
 import dbc.opensearch.components.datadock.CargoContainer;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.rmi.RemoteException;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.rpc.ServiceException;
+
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.easymock.classextension.EasyMock.*;
 
 import org.apache.axis.types.NonNegativeInteger;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 
 import fedora.client.FedoraClient;
 import fedora.server.access.FedoraAPIA;
@@ -16,18 +31,6 @@ import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.DatastreamDef;
 import fedora.server.types.gen.MIMETypedStream;
 
-import org.apache.log4j.Logger;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-
-import java.net.MalformedURLException;
-import javax.xml.rpc.ServiceException;
-import java.io.IOException;
-import org.apache.commons.configuration.ConfigurationException;
-import java.rmi.RemoteException;
-import java.net.UnknownHostException;  
-import javax.xml.stream.XMLStreamException;
-import java.io.UnsupportedEncodingException;
 
 public class FedoraHandlerTest {
     
@@ -115,7 +118,7 @@ public class FedoraHandlerTest {
      * Tests the basic functionality and the submitdatastream
      * Since it calls the constructFoxml method, that method is also tested
      */    
-    @Test public void submitDatastreamTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException, MarshalException, ValidationException
+    @Test public void submitDatastreamTest() throws ServiceException, RemoteException, ConfigurationException, UnknownHostException, IOException, XMLStreamException, MarshalException, ValidationException, ParseException
     {        
         /**1 Setting up the needed mocks
          * Done in setup()

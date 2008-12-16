@@ -64,17 +64,22 @@ public class CargoContainerTest {
     //     assertFalse( cargo.checkSubmitter( "NonExistantSubmitter" ) );
     // }
 
-    @Test public void testGetByteArrayPreservesUTF8()throws IOException, UnsupportedEncodingException{
+    @Test public void testGetByteArrayPreservesUTF8()throws IOException, UnsupportedEncodingException
+    {
         byte[] sixBytes = cargo.getDataBytes();
         assertTrue( teststring.equals( new String( sixBytes, "UTF-8" ) ) );
     }
+    
 
-    @Test public void testgetDataBAOSPreservesUTF8()throws IOException, UnsupportedEncodingException{
+    @Test public void testgetDataBAOSPreservesUTF8()throws IOException, UnsupportedEncodingException
+    {
         ByteArrayOutputStream baos = cargo.getDataBAOS();
         assertTrue( teststring.equals( baos.toString( "UTF-8" ) ) );
     }
 
-    @Test public void testGetMimetype(){
+    
+    @Test public void testGetMimetype()
+    {
         assertTrue( "text/xml".equals( cargo.getMimeType()) );
     }
 

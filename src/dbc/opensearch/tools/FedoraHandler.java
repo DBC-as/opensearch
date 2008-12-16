@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -126,7 +127,7 @@ public class FedoraHandler implements Constants{
      * @throws ValidationException 
      * @throws MarshalException 
      */
-    public String submitDatastream( CargoContainer cargo, String label )throws RemoteException, XMLStreamException, IOException, IllegalStateException, MarshalException, ValidationException, NullPointerException 
+    public String submitDatastream( CargoContainer cargo, String label ) throws RemoteException, XMLStreamException, IOException, IllegalStateException, MarshalException, ValidationException, NullPointerException, ParseException 
     {
         log.debug( String.format( "submitDatastream(cargo, %s) called", label ) );
         
@@ -171,7 +172,8 @@ public class FedoraHandler implements Constants{
      *
      * @throws NotImplementedException
      */    
-    public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException{
+    public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException
+    {
         throw new NotImplementedException( "RegEx matching on pids not yet implemented" );
     }
     
@@ -190,9 +192,9 @@ public class FedoraHandler implements Constants{
      * @throws RemoteException error in communiction with fedora
      * @throws IllegalStateException pid mismatch when trying to write to fedora
      */    
-    public CargoContainer getDatastream( String pid, String itemId ) throws IOException, NoSuchElementException, RemoteException, IllegalStateException{
+    public CargoContainer getDatastream( String pid, String itemId ) throws IOException, NoSuchElementException, RemoteException, IllegalStateException
+    {
         log.debug( String.format( "getDatastream( pid=%s, itemId=%s ) called", pid, itemId ) );
-
        
         String pidNS = pid.substring( 0, pid.indexOf( ":" ));
        
@@ -255,6 +257,7 @@ public class FedoraHandler implements Constants{
         return cargo;
     } 
 
+    
     /** \todo: what is this? */
     private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state )
     {
@@ -290,7 +293,6 @@ public class FedoraHandler implements Constants{
         //                    null,
         //                    null,
         //                    "Adding Datastream labelled"+label);
-
     }  
 }
 

@@ -2,6 +2,7 @@ package dbc.opensearch.tools;
 
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -28,7 +29,14 @@ import dbc.opensearch.xsd.types.StateType;
 
 public class FedoraTools
 {
-	public static byte[] constructFoxml( CargoContainer cargo, String nextPid, String itemId, String label ) throws IOException, MarshalException, ValidationException
+    public static byte[] constructFoxml ( CargoContainer cargo, String nextPid, String itemId, String label ) throws IOException, MarshalException, ValidationException, ParseException
+    {
+        Date now = new Date( System.currentTimeMillis() );
+        return constructFoxml ( cargo, nextPid, itemId, label, now );
+    }
+
+
+    public static byte[] constructFoxml( CargoContainer cargo, String nextPid, String itemId, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException
 	{		
 		ObjectProperties op = new ObjectProperties();
 	    
@@ -46,7 +54,7 @@ public class FedoraTools
         
         // createdDate
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
-        Date now = new Date( System.currentTimeMillis() );
+        //Date now = new Date( System.currentTimeMillis() );
         String timeNow = dateFormat.format( now );
         Property pCreatedDate = new Property();
         pCreatedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE );
@@ -70,7 +78,8 @@ public class FedoraTools
         String itemId_version = itemId + ".0";  
         
         DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
-        dataStreamVersionElement.setCREATED( now );
+        Date now2 = dateFormat.parse(timeNow);
+        dataStreamVersionElement.setCREATED( now2 );
         dataStreamVersionElement.setID( itemId_version );   
         
         DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
