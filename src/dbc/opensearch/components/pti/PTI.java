@@ -10,18 +10,24 @@ import dbc.opensearch.tools.Estimate;
 import dbc.opensearch.tools.FedoraHandler;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
 import org.compass.core.Compass;
+import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
+import org.compass.core.Resource;
+import org.compass.core.impl.DefaultCompassSession;
+
+import org.compass.core.lucene.LuceneProperty;
+import org.compass.core.marshall.MarshallingStrategy;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
 import org.compass.core.xml.javax.NodeAliasedXmlObject;
-import org.compass.core.CompassException;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -30,6 +36,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Field;
 import org.apache.commons.configuration.ConfigurationException;
 
 /**
@@ -43,6 +50,7 @@ public class PTI implements Callable<Long>{
     Logger log = Logger.getLogger("PTI");
 
     private FedoraHandler fh;
+    //    private DefaultCompassSession session;
     private CompassSession session;
     private CargoContainer cc;
     private Date finishTime;
@@ -71,6 +79,7 @@ public class PTI implements Callable<Long>{
         }
         this.fh = fh;        
 
+        //        this.session = ( DefaultCompassSession )session;
         this.session = session;
         this.fedoraHandle = fedoraHandle;
         datastreamItemID = itemID;
@@ -157,6 +166,24 @@ public class PTI implements Callable<Long>{
 
         log.debug( "Saving aliased xml object to the index" );
         session.save( xmlObject );
+
+        String alias = xmlObject.getAlias();
+
+        log.debug( String.format( "Preparing for insertion of fedora handle '%s' into the index with alias %s", fedoraHandle, alias ) );
+
+        Resource xmlObj2 = session.loadResource( alias, xmlObject );
+
+        // \todo do we need to remove the xmlObject from the index?
+        log.debug( String.format( "Deleting old xml object" ) );
+        session.delete( xmlObject );
+
+        log.debug( String.format( "Setting field fedoraHandle='%s'", fedoraHandle ) );
+
+        LuceneProperty fedoraField = new LuceneProperty( new Field( "fedora_uri", new StringReader( fedoraHandle ) ) );
+        xmlObj2.addProperty( fedoraField );
+
+        session.save( xmlObj2 );
+
         log.debug( "Committing index on transaction" );
         trans.commit();
         

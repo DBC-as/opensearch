@@ -101,6 +101,7 @@ public class FedoraToolsTest
         // 2. Compile the schema. 
         // Here the schema is loaded from a java.io.File, but you could use 
         // a java.net.URL or a javax.xml.transform.Source instead.
+        // \todo: this test will break if the ant script is not invoked at top level. Paths should not be specified like this.
         File schemaLocation = new File("src/xsd/foxml1-1.xsd");
         Schema schema = factory.newSchema(schemaLocation);
     

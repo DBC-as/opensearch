@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
+import org.compass.core.Resource;
 import org.compass.core.CompassTransaction;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
@@ -45,7 +46,7 @@ public class PTITest {
     
     CompassSession mockCompassSession;
     CompassTransaction mockCompassTransaction;
-
+    Resource mockResource;
     FedoraHandler mockFedoraHandler; 
     Estimate mockEstimate;
     AliasedXmlObject mockAliasedXmlObject;
@@ -61,6 +62,7 @@ public class PTITest {
     @Before public void Setup(){
         
         mockCompassSession = createMock( CompassSession.class );
+        mockResource = createMock( Resource.class );
         mockCompassTransaction = createMock( CompassTransaction.class );
         mockFedoraHandler = createMock( FedoraHandler.class );
         mockEstimate = createMock( Estimate.class );
@@ -109,7 +111,14 @@ public class PTITest {
         expect( mockCompassSession.beginTransaction() ).andReturn( mockCompassTransaction );
 
         mockCompassSession.save( isA( AliasedXmlObject.class ) );
-        mockCompassTransaction.commit();         
+
+        expect( mockAliasedXmlObject.getAlias() ).andReturn( isA( String.class ) );
+
+        expect( mockCompassSession.loadResource( test_format, isA( Dom4jAliasedXmlObject.class ) ) ).andReturn( mockResource );
+
+        mockCompassSession.save( isA( Resource.class ) );
+
+        mockCompassTransaction.commit();
         mockCompassSession.close();
         
         expect( mockDate.getTime() ).andReturn( p_time );
