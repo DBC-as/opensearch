@@ -32,7 +32,7 @@
     </antcall>
   </target>
 
-  <target name="test-single" description="Run a single unittest using\nant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single">
+  <target name="test-single" description="Run a single unittest using ant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single">
     <antcall target="depend.all">
       <param name="dependency.target" value="test-single"/>
     </antcall>

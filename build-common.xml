@@ -96,7 +96,7 @@
     </junit>
   </target>
 
-  <target name="test-single" description="Run a single unittest using\nant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single">
+  <target name="test-single" description="Run a single unittest using\nant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single" depends="compile-tests">
       <junit fork="yes"
              forkmode="once"
              printsummary="no"
