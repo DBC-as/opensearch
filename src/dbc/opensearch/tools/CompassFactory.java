@@ -49,13 +49,13 @@ public class CompassFactory{
      */
     private void buildCompass(){
         log.debug("Entering CompassFactory.buildCompass");
+        log.debug( "Setting up the Compass object" ); 
 
-        log.debug( "Setting up the Compass object" );
- 
         log.debug( "Obtaining configuration parameters." );
         CompassConfiguration conf = new CompassConfiguration();
         URL cfg = getClass().getResource("/compass.cfg.xml");
         URL cpm = getClass().getResource("/xml.cpm.xml");
+
         log.debug( String.format( "Compass configuration=%s", cfg.getFile() ) );
         log.debug( String.format( "XSEM mappings file   =%s", cpm.getFile() ) );
         File cpmFile = new File( cpm.getFile() );

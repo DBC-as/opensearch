@@ -40,7 +40,7 @@ public class Processqueue extends DBConnection {
     }
 
     /**
-     * Push an fedorahandle to the processqueue
+     * Pushes a fedorahandle to the processqueue
      *
      * @param fedorahandle a fedorahandle, i.e. a pointer to a document in the opensearch repository.
      * @param itemID an  itemID, identifying the dataobject, later used for indexing purposes
