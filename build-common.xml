@@ -52,7 +52,7 @@
     <delete file="${base.dir}/doxygen-warnings"/>
   </target>
 
-  <target name="clean-xsd" description="Deletes generated xsd classes">
+  <target name="clean-all" description="Deletes all but svn tracked files (this primarliy targets the generated files in the xsd folder)" depends="clean">
     <delete dir="${opensearch.dir}/xsd"/>
   </target>
 
@@ -122,7 +122,7 @@
 
   <target name="xsd-classes" 
           description="Generate Java source files from the Schemas found in ${xsd.dir}."
-          depends="clean-xsd">
+          depends="clean-all">
 
     <taskdef name="castor-srcgen"
              classname="org.castor.anttask.CastorCodeGenTask"

@@ -8,9 +8,9 @@
     </antcall>
   </target>
 
-  <target name="clean-xsd" description="Deletes generated files">
+  <target name="clean-all" description="Deletes all but svn tracked files (this primarliy targets the generated files in the xsd folder)" depends="clean">
     <antcall target="depend.all">
-      <param name="dependency.target" value="clean-xsd"/>
+      <param name="dependency.target" value="clean-all"/>
     </antcall>
   </target>
 
