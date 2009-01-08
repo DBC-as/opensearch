@@ -12,7 +12,7 @@
   <!-- please note that the "docs" value is hardcoded in the Doxyfile -->
   <property name="doc.dir"          value="${base.dir}/docs"/>
   <property name="api.dir"          value="${doc.dir}/api"/>
-  <property name="opensearch.dir"   value="${src.dir}/dbc/opensearch"/>
+  <property name="opensearch.dir"   value="${src.dir}/dk/dbc/opensearch"/>
   <property name="components.dir"   value="${opensearch.dir}/components"/>
   <property name="datadock.dir"     value="${components.dir}/datadock"/>
   <property name="config.dir"       value="${base.dir}/config"/>
@@ -52,7 +52,7 @@
     <delete file="${base.dir}/doxygen-warnings"/>
   </target>
 
-  <target name="clean-all" description="Deletes all but svn tracked files (this primarliy targets the generated files in the xsd folder)" depends="clean">
+  <target name="clean-all" description="Deletes all but svn tracked files (this primarily targets the generated files in the xsd folder)" depends="clean">
     <delete dir="${opensearch.dir}/xsd"/>
   </target>
 
