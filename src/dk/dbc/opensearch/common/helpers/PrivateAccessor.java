@@ -3,7 +3,7 @@
  * \brief The PrivateAccessor class
  * \package tools
  */
-package dbc.opensearch.tools;
+package dk.dbc.opensearch.tools;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

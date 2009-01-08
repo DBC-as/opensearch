@@ -3,7 +3,7 @@
  * \brief The FedoraClientFactory class
  * \package tools
  */
-package dbc.opensearch.tools;
+package dk.dbc.opensearch.tools;
 
 import fedora.client.FedoraClient;
 

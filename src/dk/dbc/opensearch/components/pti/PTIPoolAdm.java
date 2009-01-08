@@ -3,11 +3,11 @@
  * \brief The PTIPoolAdm Class
  * \package pti
  */
-package dbc.opensearch.components.pti;
+package dk.dbc.opensearch.components.pti;
 
-import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.tools.Processqueue;
-import dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.tools.Estimate;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.log4j.Logger;

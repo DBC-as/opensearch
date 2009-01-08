@@ -1,12 +1,12 @@
-package dbc.opensearch.components.datadock.tests;
+package dk.dbc.opensearch.components.datadock.tests;
 /** \brief UnitTest for DataDockPool */
 
-import dbc.opensearch.components.datadock.DataDockPool;
+import dk.dbc.opensearch.components.datadock.DataDockPool;
 
-import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.Processqueue;
-import dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
 
 import org.junit.*;
 import static org.junit.Assert.*;

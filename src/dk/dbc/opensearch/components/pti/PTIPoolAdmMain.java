@@ -3,16 +3,16 @@
  * \brief The PTIPoolAdmMain Class
  * \package pti
  */
-package dbc.opensearch.components.pti;
+package dk.dbc.opensearch.components.pti;
 
 import org.compass.core.Compass;
 import org.apache.log4j.Logger;
 
-import dbc.opensearch.tools.Processqueue;
-import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.tools.FedoraClientFactory;
-import dbc.opensearch.tools.CompassFactory;
+import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.tools.FedoraClientFactory;
+import dk.dbc.opensearch.tools.CompassFactory;
 import fedora.client.FedoraClient;
 
 /**

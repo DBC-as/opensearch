@@ -4,15 +4,15 @@
  * \package datadock
  */
 
-package dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.components.datadock;
 
-import dbc.opensearch.tools.FileFilter;
-import dbc.opensearch.tools.XmlFileFilter;
+import dk.dbc.opensearch.tools.FileFilter;
+import dk.dbc.opensearch.tools.XmlFileFilter;
 
-import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.Processqueue;
 
-import dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.tools.FedoraHandler;
 
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;

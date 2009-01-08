@@ -1,12 +1,12 @@
-package dbc.opensearch.components.pti.tests;
+package dk.dbc.opensearch.components.pti.tests;
 /** \brief UnitTest for PTI class */
 
-import dbc.opensearch.components.pti.PTI;
+import dk.dbc.opensearch.components.pti.PTI;
 
-import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.Processqueue;
-import dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -17,7 +17,7 @@ import static org.easymock.classextension.EasyMock.*;
 import java.util.concurrent.*;
 import java.util.Date;
 
-import dbc.opensearch.tools.PrivateAccessor;
+import dk.dbc.opensearch.tools.PrivateAccessor;
 
 import org.apache.log4j.Logger;
 

@@ -3,11 +3,11 @@
  * \brief The DataDockPool class
  * \package datadock
  */
-package dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.components.datadock;
 
-import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.Processqueue;
-import dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.tools.FedoraHandler;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;

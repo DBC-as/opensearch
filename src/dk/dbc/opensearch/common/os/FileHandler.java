@@ -4,7 +4,7 @@
  * \package tools;
  */
 
-package dbc.opensearch.tools;
+package dk.dbc.opensearch.tools;
 
 import org.apache.log4j.Logger;
 import java.util.Vector;
@@ -13,8 +13,8 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
-import dbc.opensearch.tools.FileFilter;
-import dbc.opensearch.tools.XmlFileFilter;
+import dk.dbc.opensearch.tools.FileFilter;
+import dk.dbc.opensearch.tools.XmlFileFilter;
 import java.lang.IllegalArgumentException; 
 import java.lang.NullPointerException;
 

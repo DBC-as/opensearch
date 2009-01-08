@@ -135,11 +135,11 @@
  * - DataDockPoolAdmMain\n
  *   starts The DataDock.\n
  *   example of usage:\n
- *   java -Dsubmitter="dbc" -Dfilepath="testdir/*.xml" -Dformat="faktalink" -Dmimetype="text/xml" -Dlang="" -cp `bin/run` dbc.opensearch.components.datadock.DataDockPoolAdm  
+ *   java -Dsubmitter="dbc" -Dfilepath="testdir/*.xml" -Dformat="faktalink" -Dmimetype="text/xml" -Dlang="" -cp `bin/run` dk.dbc.opensearch.components.datadock.DataDockPoolAdm  
  * - PTIPoolAdmMain\n
  *   starts the PTI.\n
  *   example of usage:\n
- *   java -cp `bin/run` dbc.opensearch.components.pti.PTIPoolAdmMain
+ *   java -cp `bin/run` dk.dbc.opensearch.components.pti.PTIPoolAdmMain
  *
  * \section Configuration
  * The configuration files are located in the 'opensearch/trunk/config' directory.

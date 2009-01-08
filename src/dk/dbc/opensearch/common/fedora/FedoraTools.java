@@ -1,4 +1,4 @@
-package dbc.opensearch.tools;
+package dk.dbc.opensearch.tools;
 
 
 import java.io.IOException;
@@ -11,20 +11,20 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
-import dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
 
-import dbc.opensearch.xsd.ObjectProperties;
-import dbc.opensearch.xsd.Property;
-import dbc.opensearch.xsd.PropertyType;
-import dbc.opensearch.xsd.ContentDigest;
-import dbc.opensearch.xsd.Datastream;
-import dbc.opensearch.xsd.DatastreamVersion;
-import dbc.opensearch.xsd.DatastreamVersionTypeChoice;
-import dbc.opensearch.xsd.DigitalObject;
-import dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
-import dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
-import dbc.opensearch.xsd.types.PropertyTypeNAMEType;
-import dbc.opensearch.xsd.types.StateType;
+import dk.dbc.opensearch.xsd.ObjectProperties;
+import dk.dbc.opensearch.xsd.Property;
+import dk.dbc.opensearch.xsd.PropertyType;
+import dk.dbc.opensearch.xsd.ContentDigest;
+import dk.dbc.opensearch.xsd.Datastream;
+import dk.dbc.opensearch.xsd.DatastreamVersion;
+import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
+import dk.dbc.opensearch.xsd.DigitalObject;
+import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
+import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
+import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
+import dk.dbc.opensearch.xsd.types.StateType;
 
 
 public class FedoraTools

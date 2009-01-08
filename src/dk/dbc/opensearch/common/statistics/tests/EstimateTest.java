@@ -1,6 +1,6 @@
-package dbc.opensearch.tools.tests;
+package dk.dbc.opensearch.tools.tests;
 
-import dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.Estimate;
 
 import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
 import com.mockrunner.jdbc.StatementResultSetHandler;

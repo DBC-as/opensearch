@@ -3,7 +3,7 @@
  * \brief The DBConnection class
  * \package tools
  */
-package dbc.opensearch.tools;
+package dk.dbc.opensearch.tools;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

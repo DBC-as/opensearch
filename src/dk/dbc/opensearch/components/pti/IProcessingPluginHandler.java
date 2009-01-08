@@ -4,11 +4,11 @@
  * \package pti.interfaces
  */
 
-package dbc.opensearch.components.pti;
+package dk.dbc.opensearch.components.pti;
 
-import dbc.opensearch.components.datadock.CargoMimeType;
-import dbc.opensearch.components.datadock.CargoContainer;
-import dbc.opensearch.components.datadock.CargoObjectInfo;
+import dk.dbc.opensearch.components.datadock.CargoMimeType;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.components.datadock.CargoObjectInfo;
 
 /**
  * \ingroup pti

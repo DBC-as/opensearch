@@ -4,11 +4,11 @@
  * \package pti
  */
 
-package dbc.opensearch.components.pti;
+package dk.dbc.opensearch.components.pti;
 
-import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.tools.FedoraClientFactory;
-import dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.tools.FedoraClientFactory;
+import dk.dbc.opensearch.tools.Estimate;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;

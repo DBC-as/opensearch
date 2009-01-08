@@ -3,7 +3,7 @@
  * \brief The Estimate class
  * \package tools
  */
-package dbc.opensearch.tools;
+package dk.dbc.opensearch.tools;
 
 import org.apache.log4j.Logger;
 

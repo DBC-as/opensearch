@@ -1,10 +1,10 @@
-package dbc.opensearch.tools.tests;
+package dk.dbc.opensearch.tools.tests;
 /** \brief UnitTest for FileFilter */
 
 import static org.junit.Assert.*;
 import org.junit.*;
 
-import dbc.opensearch.tools.FileFilter;
+import dk.dbc.opensearch.tools.FileFilter;
 
 import java.io.File;
 import java.io.IOException;

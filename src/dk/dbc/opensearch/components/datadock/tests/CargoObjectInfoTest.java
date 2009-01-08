@@ -1,9 +1,9 @@
-package dbc.opensearch.components.datadock.tests;
+package dk.dbc.opensearch.components.datadock.tests;
 
 import static org.junit.Assert.*;
 import org.junit.*;
 import java.io.UnsupportedEncodingException;
-import dbc.opensearch.components.datadock.*;
+import dk.dbc.opensearch.components.datadock.*;
 
 public class CargoObjectInfoTest{
 

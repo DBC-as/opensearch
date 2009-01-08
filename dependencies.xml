@@ -10,58 +10,43 @@
 
     <!-- ================================================================== -->
     <target name="depend.opensearch">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch"
+        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
 
     <!-- ================================================================== -->
     <target name="depend.components">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components"
-             target="${dependency.target}" 
-             inheritAll="false"/>
-    </target>
-
-    <!-- ================================================================== -->
-    <target name="depend.xsd">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch/xsd"
+        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
 
     <!-- ================================================================== -->
     <target name="depend.datadock">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/datadock"
-             target="${dependency.target}" 
-             inheritAll="false"/>
-    </target>
-
-    <!-- ================================================================== -->
-    <target name="depend.pti" 
-            depends="depend.datadock, depend.processqueue">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/pti"
-             target="${dependency.datadock}" 
-             inheritAll="false"/>
-    </target>
-
-    <!-- ================================================================== -->
-    <target name="depend.processqueue"
-            depends="depend.datadock">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/processqueue"
+        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/datadock"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
 
     <!-- ================================================================== -->
     <target name="depend.lantern">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch/components/lantern"
+        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/lantern"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
 
     <!-- ================================================================== -->
-    <target name="depend.tools">
-        <ant dir="${dependencies.basedir}/src/dbc/opensearch/tools"
+    <target name="depend.pti" 
+            depends="depend.datadock">
+        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/pti"
+             target="${dependency.datadock}" 
+             inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================== -->
+    <target name="depend.xsd">
+        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/xsd"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>

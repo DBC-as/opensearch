@@ -4,7 +4,7 @@
  * \package tests;
  */
 
-package dbc.opensearch.tools.tests;
+package dk.dbc.opensearch.tools.tests;
 
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -13,9 +13,9 @@ import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Vector;
-import dbc.opensearch.tools.FileHandler;
-import dbc.opensearch.tools.FileFilter;
-import dbc.opensearch.tools.XmlFileFilter;
+import dk.dbc.opensearch.tools.FileHandler;
+import dk.dbc.opensearch.tools.FileFilter;
+import dk.dbc.opensearch.tools.XmlFileFilter;
 
 
 /** \brief UnitTest for FileHandler **/

@@ -1,15 +1,15 @@
-package dbc.opensearch.components.datadock.tests;
+package dk.dbc.opensearch.components.datadock.tests;
 /**\brief UnitTest for the DataDock */
 import static org.junit.Assert.*;
 import org.junit.*;
 import static org.easymock.classextension.EasyMock.*;
 
-import dbc.opensearch.components.datadock.DataDock;
+import dk.dbc.opensearch.components.datadock.DataDock;
 
-import dbc.opensearch.components.datadock.CargoContainer;
-import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.Processqueue;
-import dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.tools.FedoraHandler;
 
 public class DataDockTest{
     

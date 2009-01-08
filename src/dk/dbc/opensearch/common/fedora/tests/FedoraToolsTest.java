@@ -1,4 +1,4 @@
-package dbc.opensearch.tools.tests;
+package dk.dbc.opensearch.tools.tests;
 
 
 import java.io.ByteArrayInputStream;
@@ -16,9 +16,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import dbc.opensearch.tools.FedoraTools;
+import dk.dbc.opensearch.tools.FedoraTools;
 
-import dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
 
 import org.junit.*;
 

@@ -3,7 +3,7 @@
  * \brief The CargoContainer class
  * \package datadock
  */
-package dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.components.datadock;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -54,10 +54,10 @@ public class CargoContainer {
      * Constructor for the CargoContainer class. Creates an instance
      * based on a string representation of the data to be submitted
      * into the OpenSearch repository and indexing mechanism
-     * (dbc.opensearch.components.pti) and associated metadata in a
+     * (dk.dbc.opensearch.components.pti) and associated metadata in a
      * CargoMetadata container
      *
-     * \see dbc.opensearch.components.pti
+     * \see dk.dbc.opensearch.components.pti
      *
      * @param data: The incoming data represented as a
      * ByteArrayInputStream (or any stream that have a count method )

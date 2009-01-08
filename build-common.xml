@@ -129,7 +129,7 @@
              classpathref="classpath" />
 
     <castor-srcgen todir="${src.dir}/"
-                   package="dbc.opensearch.xsd"
+                   package="dk.dbc.opensearch.xsd"
                    types="j2"
                    warnings="true" >
       <fileset dir="${xsd.dir}">

@@ -1,7 +1,7 @@
-package dbc.opensearch.components.datadock.tests;
+package dk.dbc.opensearch.components.datadock.tests;
 /** \brief UnitTest for CargoMimeType */
 
-import dbc.opensearch.components.datadock.CargoMimeType;
+import dk.dbc.opensearch.components.datadock.CargoMimeType;
 
 import static org.junit.Assert.*;
 import org.junit.*;

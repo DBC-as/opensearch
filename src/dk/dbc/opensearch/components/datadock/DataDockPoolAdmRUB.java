@@ -1,4 +1,4 @@
-package dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.components.datadock;
 
 import java.io.InputStream;
 import java.io.File;

@@ -3,11 +3,11 @@
  * \brief The PTI Class
  * \package pti
  */
-package dbc.opensearch.components.pti;
+package dk.dbc.opensearch.components.pti;
 
-import dbc.opensearch.components.datadock.CargoContainer;
-import dbc.opensearch.tools.Estimate;
-import dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.tools.FedoraHandler;
 
 import java.io.IOException;
 import java.io.StringReader;

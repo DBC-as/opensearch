@@ -1,8 +1,8 @@
-package dbc.opensearch.tools.tests;
+package dk.dbc.opensearch.tools.tests;
 /** \brief UnitTest for FedoraHandler */
 
-import dbc.opensearch.tools.FedoraHandler;
-import dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.components.datadock.CargoContainer;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
