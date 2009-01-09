@@ -3,8 +3,7 @@
  * \brief The FedoraHandler class
  * \package tools
  */
-package dk.dbc.opensearch.tools;
-
+package dk.dbc.opensearch.common.fedora;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

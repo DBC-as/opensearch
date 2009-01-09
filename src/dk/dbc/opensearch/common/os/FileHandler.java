@@ -4,8 +4,7 @@
  * \package tools;
  */
 
-package dk.dbc.opensearch.tools;
-
+package dk.dbc.opensearch.common.os;
 import org.apache.log4j.Logger;
 import java.util.Vector;
 import java.io.InputStream;

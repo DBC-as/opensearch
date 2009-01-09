@@ -1,5 +1,4 @@
-package dk.dbc.opensearch.tools.tests;
-
+package dk.dbc.opensearch.common.fedora.tests;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

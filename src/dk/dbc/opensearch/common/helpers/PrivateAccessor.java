@@ -3,8 +3,7 @@
  * \brief The PrivateAccessor class
  * \package tools
  */
-package dk.dbc.opensearch.tools;
-
+package dk.dbc.opensearch.common.helpers;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import junit.framework.Assert;

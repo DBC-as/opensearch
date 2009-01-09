@@ -4,8 +4,7 @@
  * \package tests;
  */
 
-package dk.dbc.opensearch.tools.tests;
-
+package dk.dbc.opensearch.common.os.tests;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.File;

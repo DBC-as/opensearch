@@ -1,5 +1,4 @@
-package dk.dbc.opensearch.tools.tests;
-
+package dk.dbc.opensearch.common.db.tests;
 import dk.dbc.opensearch.tools.Processqueue;
 import dk.dbc.opensearch.tools.PrivateAccessor;
 

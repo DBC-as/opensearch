@@ -3,7 +3,7 @@
  * \brief The CompassFactory class
  * \package tools
  */
-package dk.dbc.opensearch.tools;
+package dk.dbc.opensearch.common.compass;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;

@@ -1,5 +1,4 @@
-package dk.dbc.opensearch.tools.tests;
-/** \brief UnitTest for FileFilter */
+package dk.dbc.opensearch.common.os.tests;/** \brief UnitTest for FileFilter */
 
 import static org.junit.Assert.*;
 import org.junit.*;

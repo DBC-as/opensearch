@@ -1,5 +1,4 @@
-package dk.dbc.opensearch.tools;
-
+package dk.dbc.opensearch.common.fedora;
 
 import java.io.IOException;
 import java.text.ParseException;

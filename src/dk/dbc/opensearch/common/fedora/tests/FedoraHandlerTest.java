@@ -1,5 +1,4 @@
-package dk.dbc.opensearch.tools.tests;
-/** \brief UnitTest for FedoraHandler */
+package dk.dbc.opensearch.common.fedora.tests;/** \brief UnitTest for FedoraHandler */
 
 import dk.dbc.opensearch.tools.FedoraHandler;
 import dk.dbc.opensearch.components.datadock.CargoContainer;
