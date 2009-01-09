@@ -8,6 +8,9 @@ import re
 from optparse import OptionParser
 from optparse import OptionGroup
 
+_import_list   = []
+_files_checked = 0
+
 def get_root_folder( current_wd, src="src" ):
     """
     Given the current work directory, ascend until we reach 'src' or
@@ -18,7 +21,7 @@ def get_root_folder( current_wd, src="src" ):
     'd/e'
     >>> get_root_folder( '/a/b/test/d/e', 'test' )
     'd/e'
-    >>> get_root_folder( '/src/' )
+    >>> get_root_folder( '/src/', 'src' )
     ''
     >>> get_root_folder( '/a/b' )
     Traceback (most recent call last):
@@ -41,32 +44,31 @@ def get_java_files( path ):
     javafiles found within the path
     """
     for root, dirs, files in os.walk( path ):
-#         print "root: %s"%(root)
-#         print "dirs: %s"%(dirs)
         if '.svn' in dirs:
-            dirs.remove('.svn') 
-
+            dirs.remove( '.svn' ) 
+        elif 'CVS' in dirs:
+            dirs.remove( 'CVS' )
         for fil in files:
             if( '.' in fil and fil.split( '.' )[1] == 'java' ):
                 yield root+os.path.sep+fil
             
 def check_package_name( javafile, package, reallydoit=False, do_backups=True ):
     """ Given a (java)file and a packagename, this method opens the
-    corrosponding file and checks if the package name looks right
+    corresponding file and checks if the package name looks right
     """
-
+    global _files_checked
     ofo = open( javafile, 'r' )
     java_stmt = ofo.readlines()
     ofo.close()
     new_java_stmt = []
 
-    rxstr = r"""^(?:package) (?P<package>(?:\w+)(?:\.(?:\w+))*);$"""
+    rxstr = r"""^(?:package) (?P<package>(?:\w+)(?:\.(?:\w+))*);"""
     compile_obj = re.compile( rxstr )
     for line in java_stmt:
         if compile_obj.search( line ) is not None:
             found_pkg = compile_obj.match( line ).group( 'package' )
             if found_pkg == package:
-                print ".",
+                _files_checked = _files_checked + 1
             else:
                 print "\n%s"%( javafile )
                 print "%s does not look right, it should be %s"%( line, package )
@@ -100,10 +102,12 @@ def _test( verbosity=False ):
     doctest.testmod( verbose=verbosity )
 
 def main( arguments, options):
-    #'/home/stm/entwicklung/dbc/OpenSearch/svn/'
-
     for i in get_java_files( options.src ):
+        _import_list.append( os.path.split( get_root_folder( i ) )[0].replace( '/', '.' )+'.'+os.path.split( os.path.abspath(i))[1].split( '.' )[0] )
         check_package_name( i, os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ), options.reallydoit, options.backup )
+
+    #print _import_list
+    print "Files checked = %s"% ( _files_checked )
 
 if __name__ == '__main__':
 
