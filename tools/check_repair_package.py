@@ -50,7 +50,7 @@ def get_java_files( path ):
             if( '.' in fil and fil.split( '.' )[1] == 'java' ):
                 yield root+os.path.sep+fil
             
-def check_package_name( javafile, package ):
+def check_package_name( javafile, package, reallydoit=False, do_backups=True ):
     """ Given a (java)file and a packagename, this method opens the
     corrosponding file and checks if the package name looks right
     """
@@ -59,7 +59,6 @@ def check_package_name( javafile, package ):
     java_stmt = ofo.readlines()
     ofo.close()
     new_java_stmt = []
-
 
     rxstr = r"""^(?:package) (?P<package>(?:\w+)(?:\.(?:\w+))*);$"""
     compile_obj = re.compile( rxstr )
@@ -72,20 +71,29 @@ def check_package_name( javafile, package ):
                 print "\n%s"%( javafile )
                 print "%s does not look right, it should be %s"%( line, package )
                 print "should i do something about it?"
-                inp = raw_input( "y/n" )
-                if inp == "y":
+                if reallydoit:
+                    print "just doing it"
                     line = "package %s;"%( package )
                     print "line is now \n%s"%( line )
+                else:
+                    inp = raw_input( "y/n" )
+                    if inp == "y" :
+                        line = "package %s;"%( package )
+                        print "line is now \n%s"%( line )
                     
         new_java_stmt.append( line )
 
     if new_java_stmt != java_stmt:
-        print "writing new file %s"%(javafile)
-        fo = open( javafile, 'w' )
-        for line in new_java_stmt:
-            fo.writeline( line )
+        print "writing new file %s\nbacking up the old one in %s"%( javafile, os.path.abspath( os.path.curdir )+os.path.sep+javafile+'_bak')
 
+        fo = open( javafile, 'w' )
+        fo.writelines( new_java_stmt )
         fo.close()
+
+        if do_backups:
+            fo = open( os.path.abspath( os.path.curdir )+os.path.sep+javafile+"_bak", 'w' )
+            fo.writelines( java_stmt )
+            fo.close()
         
 def _test( verbosity=False ):
     import doctest
@@ -94,10 +102,8 @@ def _test( verbosity=False ):
 def main( arguments, options):
     #'/home/stm/entwicklung/dbc/OpenSearch/svn/'
 
-    print arguments
-    print options
     for i in get_java_files( options.src ):
-        check_package_name( i, os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ) )
+        check_package_name( i, os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ), options.reallydoit, options.backup )
 
 if __name__ == '__main__':
 
@@ -109,6 +115,11 @@ if __name__ == '__main__':
                        default=False, help="runs doctests on the program")
     parser.add_option( "-v", "--verbosetest", dest="vtest", action="store_true", 
                        default=False, help="runs doctests on the program and prints status of each test")
+    parser.add_option( "--yestoall", dest="reallydoit", action="store_true", 
+                       default=False, help="only use this option if you're absolute sure you know what I do. I try to backup everything. But given my authors mental capabilities, there every reason to expect fuckups")
+    parser.add_option( "--dont_do_backups", dest="backup", action="store_true", 
+                       default=False, help="If this is set, don't backup of changes")
+
     parser.add_option( "-s", "--source", 
                        type="string", action="store", dest="src",
                        help="The path to the source folder of the java files to check")
@@ -117,7 +128,9 @@ if __name__ == '__main__':
 
     if options.vtest or options.test:
         sys.exit( _test( options.vtest ) )
-      
-    main( args, options )
 
+    if options.src is not None:
+        main( args, options )
 
+    else:
+        sys.exit( parser.print_help() )
