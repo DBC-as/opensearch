@@ -74,7 +74,7 @@ public class PTITest {
         mockBis = createMock( BufferedInputStream.class );
     }
     
-    @Test public void ContructorTest(){
+    @Test public void ConstructorTest(){
         try{
             pti = new PTI( mockCompassSession, "test_fedoraHandle", "test_itemID", mockFedoraHandler, mockEstimate);
         }catch(Exception e){
@@ -115,6 +115,8 @@ public class PTITest {
         expect( mockAliasedXmlObject.getAlias() ).andReturn( isA( String.class ) );
 
         expect( mockCompassSession.loadResource( test_format, isA( Dom4jAliasedXmlObject.class ) ) ).andReturn( mockResource );
+
+        mockCompassSession.delete( isA(AliasedXmlObject.class ) );
 
         mockCompassSession.save( isA( Resource.class ) );
 
