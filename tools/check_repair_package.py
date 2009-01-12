@@ -8,8 +8,73 @@ import re
 from optparse import OptionParser
 from optparse import OptionGroup
 
-_import_list   = []
+"""
+The aim of this module is to check and repair the package names and
+imports of files that have been moved from their original
+placement. The program expects files to be located correpondingly to
+their package names. E.g. a java file with the package declaration
+
+package com.example.component.db;
+
+should reside in (a relative path ending with):
+
+src/com/example/component/db/NameOfJavaFile.java
+
+Furthermore, the program tries to fix broken imports. It does this by
+building a list of types and then checking the imports against this
+list. The program tries a depth (packagelevels-1) for qualifying the
+types. To illustrate:
+given a typelist
+{ 'TypeA' : [ 'com.examples.components', 'com.example', 'com.other'],
+  'TypeB' : ...
+}
+
+and the file being checked has a package space of
+
+com.example.components
+
+with an import of
+
+com.example.components.types.TypeA;
+
+the user should recive an interactive query on:
+
+1: com.example.components.TypeA
+2: com.example.TypeA
+3: com.other.TypeA
+
+However, when the choice is not unequivocal, the program ask the user
+interactively.
+
+"""
+
 _files_checked = 0
+
+class ImportDict( dict ):
+    """ ImportDict extends the builtin dict with the method `insert`,
+    with the special feature, that the values are stored in a list.
+    `insert` takes a key/value pair and does one of the following:
+    
+    if the key is not in the dict:
+        inserts the key/value, with value being a list with one item
+
+    if the key is in the dict and the value is already associated with the key
+        the insertion is dropped silently
+
+    if the key is in the dict but the value is not associated with it
+        the value is appended to the list of values associated with the key
+
+    """
+
+    def insert( self, key, value ):
+        if not self.has_key( key ):
+            super( ImportDict, self ).__setitem__( key, [ value ] )
+        elif self.has_key( key ) and ( value in self.get( key ) ):
+            pass
+        else:
+            values = self.get( key )
+            values.append( value )
+            super( ImportDict, self ).__setitem__( key, values )
 
 def get_root_folder( current_wd, src="src" ):
     """
@@ -52,62 +117,226 @@ def get_java_files( path ):
             if( '.' in fil and fil.split( '.' )[1] == 'java' ):
                 yield root+os.path.sep+fil
             
-def check_package_name( javafile, package, reallydoit=False, do_backups=True ):
+def check_and_fix_package_name( java_stmt, package, reallydoit=False ):
     """ Given a (java)file and a packagename, this method opens the
-    corresponding file and checks if the package name looks right
+    corresponding file and checks if the package name looks right.
+
+    If the package has changed, the method returns the changed java
+    file as a list ready to be written to a file using
+    file.writelines()
     """
     global _files_checked
-    ofo = open( javafile, 'r' )
-    java_stmt = ofo.readlines()
-    ofo.close()
     new_java_stmt = []
+    
+    _files_checked = _files_checked + 1
 
     rxstr = r"""^(?:package) (?P<package>(?:\w+)(?:\.(?:\w+))*);"""
     compile_obj = re.compile( rxstr )
     for line in java_stmt:
         if compile_obj.search( line ) is not None:
             found_pkg = compile_obj.match( line ).group( 'package' )
-            if found_pkg == package:
-                _files_checked = _files_checked + 1
-            else:
-                print "\n%s"%( javafile )
+
+            if found_pkg != package:
                 print "%s does not look right, it should be %s"%( line, package )
                 print "should i do something about it?"
                 if reallydoit:
-                    print "just doing it"
                     line = "package %s;"%( package )
-                    print "line is now \n%s"%( line )
                 else:
-                    inp = raw_input( "y/n" )
+                    inp = raw_input( "y/n\n" )
                     if inp == "y" :
-                        line = "package %s;"%( package )
-                        print "line is now \n%s"%( line )
+                        if package == '.':
+                            #this is the default package and implies no package declaration:
+                            line = ''
+                        else:
+                            line = "package %s;"%( package )
                     
         new_java_stmt.append( line )
 
     if new_java_stmt != java_stmt:
-        print "writing new file %s\nbacking up the old one in %s"%( javafile, os.path.abspath( os.path.curdir )+os.path.sep+javafile+'_bak')
+        return new_java_stmt
+    else:
+        return None
 
-        fo = open( javafile, 'w' )
-        fo.writelines( new_java_stmt )
-        fo.close()
+def check_and_fix_imports( java_stmt, imports_dict ):
+    """given a list of strings (aka lines in a java file) containing a
+    java statement and an imports dict, this function checks the
+    imports used in the statement and tries to remedy any imports the
+    looks conspicuous.
 
-        if do_backups:
-            fo = open( os.path.abspath( os.path.curdir )+os.path.sep+javafile+"_bak", 'w' )
-            fo.writelines( java_stmt )
-            fo.close()
-        
+    This could probably be much faster just using one string and regex
+    substitution, but it would also be a lot less readable and speed
+    is not an issue here.
+    
+    """
+    global _files_checked
+    _files_checked = _files_checked + 1
+
+    # The following regular expression does not handle star imports (
+    # java.io.* ), which we regard as an aborration anyway. It also
+    # doesn't handle imports from the default namespace, and neither
+    # should you.
+    rxstr = r"""(?:import (?P<import>(?:\w+)(?:\.(?P<type>(?:\w+)))+);)"""
+    compile_obj = re.compile( rxstr )
+    
+    #print "using imports dict %s"%(imports_dict)
+
+    for line in java_stmt:
+        if compile_obj.match( line ) is not None:
+            found_imp = compile_obj.match( line ).group( 'import' )
+
+            print "found imports: %s"%(found_imp)
+            jtype = found_imp.rpartition( '.' )[2]
+            #print "type is %s"%(jtype)
+            if jtype in imports_dict:
+
+                packages = imports_dict.get( jtype )
+                if len( packages ) == 1:
+                    #there is only one type to consider, and this is it
+                    print "%s matches import from the namespace %s"%( found_imp, packages[0] )
+                else:
+                    #there is more than one namespace containing the type name
+                    for namespace in packages:
+                        print "namespace: %s"%( namespace )
+
+            else:
+                print "-----"
+                print "%s could not be directly matched. Could it be:"%(jtype)
+                get_import_candidates( found_imp, imports_dict, qualification_ns )
+
+
+def get_import_candidates( import_statement, imports_dict, qualification_ns="" ):
+    """
+    `import_statement` is the name of the qualified type from the java
+    import (eg. 'org.types.TypeA') 
+
+    `imports_dict` is the ImportDict instance containing the
+    recognised types given with options.src from the commandline
+    options
+    
+    `qualification_ns` defaults to the empty namespace, ie. the
+    default packages. It specifies the granularity of the
+    search. E.g. if the q_ns is 'org', then only types whose
+    package-namespace starts with 'org' are considered as candidates.
+
+    >>> get_import_candidates( 'org.types.TypeA', { 'TypeA': [ 'org.types' ] } )
+    >>> get_import_candidates( 'org.types.TypeA', { 'TypeA': [ 'org.types' ] }, 'org' )
+    'org.types.TypeA'
+    >>> get_import_candidates( 'org.types.TypeA', { 'TypeA': [ 'org.types' ] }, 'com' )
+    >>>
+    >>> get_import_candidates( 'org.TypeB', { 'TypeB': [ 'org' ] }, 'org' )
+    'org.TypeB'
+    >>> get_import_candidates( 'org.components.types.TypeA', { 'TypeA': [ 'org.components', 'org.types' ] }, 'org' )
+    ['org.components.TypeA', 'org.types.TypeA']
+    """
+    if qualification_ns == "":
+        return None
+
+    package, dot, jtype = import_statement.rpartition( '.' )
+    
+    hierarchy = package.split( '.' )
+    ns_hierar = qualification_ns.split( '.' )
+    pack_list = imports_dict.get( jtype )
+
+#     print "hierarchy %s (%s)"%( hierarchy, len(hierarchy) )
+#     print "ns_hierar %s (%s)"%( ns_hierar, len(ns_hierar) )
+#     print "pack_list %s (%s)"%( pack_list, len(pack_list) )
+
+    # if there's not a toplevel match, there will never be one
+    if ns_hierar[0] != hierarchy[0]:
+        return None
+
+    if len( pack_list ) == 1:
+        #just return the type
+        return pack_list[0]+dot+jtype
+    else:
+        # return the types that match the level in ns_hierarchy
+        return_list = []
+
+        for ns in pack_list:
+            if ns.startswith( qualification_ns ):
+                return_list.append( ns+dot+jtype )
+
+        if len(return_list) == 1:
+            return return_list[0]
+        else:
+            return return_list
+
+def get_import_dict( java_file_list ):
+    import_dict = ImportDict()
+    
+    for i in java_file_list:
+#         print "key to insert %s"%(os.path.split( os.path.abspath( i ) ) [1].split( '.' )[0])
+#         print get_root_folder( i ).split( '.' )[0].replace( '/', '.' )
+#         print os.path.split( get_root_folder( i ) )[0].replace( '/', '.' )
+
+        import_dict.insert( os.path.split( os.path.abspath( i ) ) [1].split( '.' )[0], \
+                            os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ) )
+    return import_dict
+
+def get_import_list( java_file_list ):
+    """DEPRECATED"""
+    import_list = []    
+
+    for i in java_file_list:
+        import_list.append( os.path.split( get_root_folder( i ) )[0].replace( '/', '.' )+ \
+                            '.'+ \
+                            os.path.split( os.path.abspath( i ) ) [1].split( '.' )[0] )
+    return import_list
+
+def get_package_list( java_file_list ):
+    package_list = []
+    for i in java_file_list:
+        package_list.append( os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ) )
+    return set(package_list)
+
+
+def main( arguments, options):
+
+    if options.check_packages:
+        pkgs = get_package_list( get_java_files( options.src ) )
+
+        # the following loop checks and fixes wrong package names in the
+        # path given through options.src
+        for i in get_java_files( options.src ):
+
+            ofo = open( i, 'r' )
+            java_stmt = ofo.readlines()
+            ofo.close()
+
+            new_java_stmt = check_and_fix_package_name( java_stmt , \
+                             os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ), \
+                             options.reallydoit )
+
+            if new_java_stmt is not None:
+                print "writing new file %s\nbacking up the old one in %s" \
+                    %( i, os.path.abspath( os.path.curdir )+os.path.sep+i+'_bak')
+
+                fo = open( i, 'w' )
+                fo.writelines( new_java_stmt )
+                fo.close()
+
+                if not options.no_backup:
+                    fo = open( os.path.abspath( os.path.curdir )+os.path.sep+i+"_bak", 'w' )
+                    fo.writelines( java_stmt )
+                    fo.close()
+
+    if options.check_imports:
+        imps = get_import_dict( get_java_files( options.src ) )
+        print "checking imports"
+
+        for i in get_java_files( options.src ):
+            ofo = open( i, 'r' )
+            java_stmt = ofo.readlines()
+            ofo.close()
+
+            new_java_stmt = check_and_fix_imports( java_stmt , \
+                                                   imps )
+
+    print "Files checked = %s"% ( _files_checked )
+
 def _test( verbosity=False ):
     import doctest
     doctest.testmod( verbose=verbosity )
-
-def main( arguments, options):
-    for i in get_java_files( options.src ):
-        _import_list.append( os.path.split( get_root_folder( i ) )[0].replace( '/', '.' )+'.'+os.path.split( os.path.abspath(i))[1].split( '.' )[0] )
-        check_package_name( i, os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ), options.reallydoit, options.backup )
-
-    #print _import_list
-    print "Files checked = %s"% ( _files_checked )
 
 if __name__ == '__main__':
 
@@ -119,9 +348,14 @@ if __name__ == '__main__':
                        default=False, help="runs doctests on the program")
     parser.add_option( "-v", "--verbosetest", dest="vtest", action="store_true", 
                        default=False, help="runs doctests on the program and prints status of each test")
+    parser.add_option( "-i", "--check_imports", dest="check_imports", action="store_true", 
+                       default=False, help="Check imports in files in src")
+    parser.add_option( "-p", "--check_packages", dest="check_packages", action="store_true", 
+                       default=False, help="Check package names in files in src")
+
     parser.add_option( "--yestoall", dest="reallydoit", action="store_true", 
                        default=False, help="only use this option if you're absolute sure you know what I do. I try to backup everything. But given my authors mental capabilities, there every reason to expect fuckups")
-    parser.add_option( "--dont_do_backups", dest="backup", action="store_true", 
+    parser.add_option( "--dont_do_backups", dest="no_backup", action="store_true", 
                        default=False, help="If this is set, don't backup of changes")
 
     parser.add_option( "-s", "--source", 
