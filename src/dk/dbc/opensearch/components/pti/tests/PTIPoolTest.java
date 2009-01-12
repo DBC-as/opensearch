@@ -2,7 +2,7 @@ package dk.dbc.opensearch.components.pti.tests;
 /** \brief UnitTest for PTIPool class */
 
 import dk.dbc.opensearch.components.pti.PTIPool;
-import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
 import java.util.concurrent.Executors;
 
@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 import static org.easymock.classextension.EasyMock.*;
 
-import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.common.statistics.Estimate;
 
 
 import org.apache.log4j.Logger;

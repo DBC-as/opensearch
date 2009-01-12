@@ -1,5 +1,5 @@
 package dk.dbc.opensearch.common.statistics.tests;
-import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.common.statistics.Estimate;
 
 import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
 import com.mockrunner.jdbc.StatementResultSetHandler;

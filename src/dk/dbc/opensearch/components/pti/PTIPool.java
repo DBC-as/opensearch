@@ -6,9 +6,9 @@
 
 package dk.dbc.opensearch.components.pti;
 
-import dk.dbc.opensearch.tools.FedoraHandler;
-import dk.dbc.opensearch.tools.FedoraClientFactory;
-import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
+import dk.dbc.opensearch.common.statistics.Estimate;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;

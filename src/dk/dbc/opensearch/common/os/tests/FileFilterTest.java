@@ -3,7 +3,7 @@ package dk.dbc.opensearch.common.os.tests;/** \brief UnitTest for FileFilter */
 import static org.junit.Assert.*;
 import org.junit.*;
 
-import dk.dbc.opensearch.tools.FileFilter;
+import dk.dbc.opensearch.common.os.FileFilter;
 
 import java.io.File;
 import java.io.IOException;

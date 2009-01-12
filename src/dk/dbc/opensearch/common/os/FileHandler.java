@@ -12,8 +12,6 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
-import dk.dbc.opensearch.tools.FileFilter;
-import dk.dbc.opensearch.tools.XmlFileFilter;
 import java.lang.IllegalArgumentException; 
 import java.lang.NullPointerException;
 

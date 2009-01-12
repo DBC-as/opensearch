@@ -3,8 +3,8 @@ package dk.dbc.opensearch.components.pti.tests;
 
 import dk.dbc.opensearch.components.pti.PTIPoolAdm;
 import dk.dbc.opensearch.components.pti.PTIPool;
-import dk.dbc.opensearch.tools.Processqueue;
-import dk.dbc.opensearch.tools.Estimate;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.statistics.Estimate;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -26,7 +26,7 @@ import com.mallardsoft.tuple.Triple;
 import java.util.Vector;
 import java.util.Iterator;
 
-import dk.dbc.opensearch.tools.PrivateAccessor;
+import dk.dbc.opensearch.common.helpers.PrivateAccessor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;

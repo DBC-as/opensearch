@@ -15,6 +15,8 @@ import java.util.NoSuchElementException;
 import java.lang.ClassNotFoundException;
 import org.apache.commons.configuration.ConfigurationException;
 
+import dk.dbc.opensearch.common.db.DBConnection;
+
 /**
  * \ingroup tools
  * \brief The Estimate class handles all communication to the statisticDB table

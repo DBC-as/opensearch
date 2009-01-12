@@ -12,9 +12,9 @@ import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Vector;
-import dk.dbc.opensearch.tools.FileHandler;
-import dk.dbc.opensearch.tools.FileFilter;
-import dk.dbc.opensearch.tools.XmlFileFilter;
+import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.os.FileFilter;
+import dk.dbc.opensearch.common.os.XmlFileFilter;
 
 
 /** \brief UnitTest for FileHandler **/

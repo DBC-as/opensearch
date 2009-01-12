@@ -5,9 +5,9 @@ import dk.dbc.opensearch.components.datadock.DataDockPoolAdm;
 import dk.dbc.opensearch.components.datadock.DataDockPool;
 import dk.dbc.opensearch.components.datadock.CargoContainer;
 
-import dk.dbc.opensearch.tools.FedoraHandler;
-import dk.dbc.opensearch.tools.Estimate;
-import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.db.Processqueue;
 //import dk.dbc.opensearch.tools.PrivateAccessor;
 
 

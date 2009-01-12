@@ -1,6 +1,6 @@
 package dk.dbc.opensearch.common.db.tests;
-import dk.dbc.opensearch.tools.Processqueue;
-import dk.dbc.opensearch.tools.PrivateAccessor;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.helpers.PrivateAccessor;
 
 
 import com.mockrunner.jdbc.*;

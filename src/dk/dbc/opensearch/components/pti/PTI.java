@@ -6,8 +6,8 @@
 package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.components.datadock.CargoContainer;
-import dk.dbc.opensearch.tools.Estimate;
-import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
 import java.io.IOException;
 import java.io.StringReader;

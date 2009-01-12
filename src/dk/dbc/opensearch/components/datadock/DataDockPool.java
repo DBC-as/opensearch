@@ -5,9 +5,9 @@
  */
 package dk.dbc.opensearch.components.datadock;
 
-import dk.dbc.opensearch.tools.Estimate;
-import dk.dbc.opensearch.tools.Processqueue;
-import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;

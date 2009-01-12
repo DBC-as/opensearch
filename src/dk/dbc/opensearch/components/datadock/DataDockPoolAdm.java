@@ -6,13 +6,13 @@
 
 package dk.dbc.opensearch.components.datadock;
 
-import dk.dbc.opensearch.tools.FileFilter;
-import dk.dbc.opensearch.tools.XmlFileFilter;
+import dk.dbc.opensearch.common.os.FileFilter;
+import dk.dbc.opensearch.common.os.XmlFileFilter;
 
-import dk.dbc.opensearch.tools.Estimate;
-import dk.dbc.opensearch.tools.Processqueue;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.db.Processqueue;
 
-import dk.dbc.opensearch.tools.FedoraHandler;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;

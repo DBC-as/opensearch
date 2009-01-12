@@ -8,11 +8,11 @@ package dk.dbc.opensearch.components.pti;
 import org.compass.core.Compass;
 import org.apache.log4j.Logger;
 
-import dk.dbc.opensearch.tools.Processqueue;
-import dk.dbc.opensearch.tools.Estimate;
-import dk.dbc.opensearch.tools.FedoraHandler;
-import dk.dbc.opensearch.tools.FedoraClientFactory;
-import dk.dbc.opensearch.tools.CompassFactory;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
+import dk.dbc.opensearch.common.compass.CompassFactory;
 import fedora.client.FedoraClient;
 
 /**

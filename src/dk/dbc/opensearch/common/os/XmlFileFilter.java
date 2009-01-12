@@ -3,7 +3,7 @@
  * \brief FilenameFilter class implementation that filters xml files
  * \package tools
  */
-package  dk.dbc.opensearch.tools;
+package  dk.dbc.opensearch.common.os;
 
 import java.io.File;
 import java.io.FilenameFilter;
