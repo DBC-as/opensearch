@@ -193,9 +193,14 @@ def check_and_fix_imports( java_stmt, imports_dict ):
 
             log.debug( "found imports: %s"%(found_imp) )
             package, dot, jtype = found_imp.rpartition( '.' )
+            log.debug( "package=%s, jtype=%s"%( package, jtype ) )
             #print "type is %s"%(jtype)
             log.debug( "found possible namespaces: %s"%( imports_dict.get( jtype ) ) )
-            if jtype in imports_dict and len( imports_dict.get( jtype ) ) == 1:
+            if imports_dict.get( jtype ) is None:
+                log.debug( "There are no package namespaces for %s"%( jtype ) )
+                pass
+
+            elif jtype in imports_dict and len( imports_dict.get( jtype ) ) == 1:
 
                 packages = imports_dict.get( jtype )
                 if len( packages ) == 1:
@@ -207,12 +212,12 @@ def check_and_fix_imports( java_stmt, imports_dict ):
                     #there is more than one namespace containing the type name
                     for namespace in packages:
                         log.debug( "namespace: %s"%( namespace ) )
+
             elif package in imports_dict.get( jtype ):
                 log.debug( "import is %s"%( package+dot+jtype ) )
 
 
             else:
-
                 print "%s could not be directly matched."%(jtype)
                 qns = raw_input( "Please give me a namespace to check against\n" )
                 implst = get_import_candidates( found_imp, imports_dict, qns )
