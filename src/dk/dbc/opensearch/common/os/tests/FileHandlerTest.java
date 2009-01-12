@@ -4,7 +4,7 @@
  * \package tests;
  */
 
-package dbc.opensearch.tools.tests;
+package dk.dbc.opensearch.common.os.tests;
 
 
 import org.junit.*;
