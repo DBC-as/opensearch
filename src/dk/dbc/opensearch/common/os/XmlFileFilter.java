@@ -1,9 +1,10 @@
 /**
  * \file XmlFileFilter.java
- * \brief FilenameFilter class implementation that filters xml files
- * \package tools
+ * \brief The XmlFileFilter class
+ * \package os;
  */
-package  dk.dbc.opensearch.common.os;
+
+package dk.dbc.opensearch.common.os;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -25,7 +26,7 @@ public class XmlFileFilter implements FilenameFilter{
      * @throws NullPointerException if the dir- or filename is null
      */
     public boolean accept(File dir, String name) throws NullPointerException{
-         if( !dir.isDirectory() && name.endsWith( ".xml" ) ){
+        if( ! (new File( name ) ).isDirectory() && name.endsWith( ".xml" ) ){
             return true;
         }else {
             return false;

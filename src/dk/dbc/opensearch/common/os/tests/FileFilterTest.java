@@ -1,4 +1,10 @@
-package dk.dbc.opensearch.common.os.tests;/** \brief UnitTest for FileFilter */
+/**
+ * \file FileFilterTest.java
+ * \brief The FileFilterTest class
+ * \package tests;
+ */
+
+package dk.dbc.opensearch.common.os.tests;
 
 import static org.junit.Assert.*;
 import org.junit.*;
