@@ -133,28 +133,7 @@ public class FileHandlerTest {
         replay( mockFileNameFilter1 );
         testCase = FileHandler.getFileList( testDir, fnf1, false );
         verify( mockFileNameFilter1 );
-        
-        System.out.println( '0'+testCase.get( 0 )+' '+testDir+"/test.xml" );
-        System.out.println( '1'+testCase.get( 1 )+' '+testDir+"/test.java" );
-
-
-        boolean validate = false;
-        if( testDir+"/test.xml" == testCase.get( 0 ) &&
-            testDir+"/test.java" == testCase.get( 1 ) ) {
-            validate = true;
-            //fail( "Couldnt find the right files" );
-        }
-        if( testDir+"/test.xml" == testCase.get( 0 ) &&
-            testDir+"/test.java" == testCase.get( 1 ) ) {
-            validate = true;
-            //fail( "Couldnt find the right files" );
-        }
-        if(! validate ){
-            fail( "Couldnt find the right files" );
-        }
-
-        //assertEquals( testDir+"/test.xml", testCase.get( 0 ) );        
-        //assertEquals( testDir+"/test.java", testCase.get( 1 ) );        
+                
     }
     
     @Test public void testGetFileListCase2() throws IOException {
@@ -177,8 +156,6 @@ public class FileHandlerTest {
                 
         verify( mockFileNameFilter1 );
         verify( mockFileNameFilter2 );
-
-        //assertEquals( testDir+"/test.xml", testCase.get( 0 ) );        
     }
 
     @Test public void testGetFileListCase3() throws IOException {
@@ -198,11 +175,6 @@ public class FileHandlerTest {
         testCase = FileHandler.getFileList( testDir, fnf1, true );
        
         verify( mockFileNameFilter1 );
-        
-        //assertEquals( testDir+"/test.xml", testCase.get( 0 ) );        
-        //assertEquals( testDir+"/test.java", testCase.get( 1 ) );
-        //assertEquals( testDir+"/descend_dir/test.xml", testCase.get( 2 ) );        
-        //assertEquals( testDir+"/descend_dir/test.java", testCase.get( 3 ) );                 
     }
 
     @Test public void testGetFileListCase4() throws IOException {
@@ -229,10 +201,7 @@ public class FileHandlerTest {
         testCase = FileHandler.getFileList( testDir, fnf2, true );
                 
         verify( mockFileNameFilter1 );
-        verify( mockFileNameFilter2 );
-
-        //assertEquals( testDir+"/test.xml", testCase.get( 0 ) );
-        //assertEquals( testDir+"/descend_dir/test.xml", testCase.get( 1 ) );        
+        verify( mockFileNameFilter2 );     
     }
 
 
