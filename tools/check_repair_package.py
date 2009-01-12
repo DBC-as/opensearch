@@ -8,6 +8,13 @@ import re
 from optparse import OptionParser
 from optparse import OptionGroup
 
+import logging as log
+
+log.basicConfig( level = log.DEBUG,
+                format = '%(asctime)s %(levelname)s %(message)s' )
+log.getLogger( '' )
+
+
 """
 The aim of this module is to check and repair the package names and
 imports of files that have been moved from their original
@@ -148,7 +155,7 @@ def check_and_fix_package_name( java_stmt, package, reallydoit=False ):
                             #this is the default package and implies no package declaration:
                             line = ''
                         else:
-                            line = "package %s;"%( package )
+                            line = "package %s;\n"%( package )
                     
         new_java_stmt.append( line )
 
@@ -171,6 +178,8 @@ def check_and_fix_imports( java_stmt, imports_dict ):
     global _files_checked
     _files_checked = _files_checked + 1
 
+    new_java_stmt = []
+
     # The following regular expression does not handle star imports (
     # java.io.* ), which we regard as an aborration anyway. It also
     # doesn't handle imports from the default namespace, and neither
@@ -178,31 +187,66 @@ def check_and_fix_imports( java_stmt, imports_dict ):
     rxstr = r"""(?:import (?P<import>(?:\w+)(?:\.(?P<type>(?:\w+)))+);)"""
     compile_obj = re.compile( rxstr )
     
-    #print "using imports dict %s"%(imports_dict)
-
     for line in java_stmt:
         if compile_obj.match( line ) is not None:
             found_imp = compile_obj.match( line ).group( 'import' )
 
-            print "found imports: %s"%(found_imp)
-            jtype = found_imp.rpartition( '.' )[2]
+            log.debug( "found imports: %s"%(found_imp) )
+            package, dot, jtype = found_imp.rpartition( '.' )
             #print "type is %s"%(jtype)
-            if jtype in imports_dict:
+            log.debug( "found possible namespaces: %s"%( imports_dict.get( jtype ) ) )
+            if jtype in imports_dict and len( imports_dict.get( jtype ) ) == 1:
 
                 packages = imports_dict.get( jtype )
                 if len( packages ) == 1:
                     #there is only one type to consider, and this is it
-                    print "%s matches import from the namespace %s"%( found_imp, packages[0] )
+                    log.debug( "%s matches import from the namespace %s"%( found_imp, packages[0] ) )
+                if package in packages:
+                    log.debug( "%s matches import from the namespace %s"%( found_imp, package ) )
                 else:
                     #there is more than one namespace containing the type name
                     for namespace in packages:
-                        print "namespace: %s"%( namespace )
+                        log.debug( "namespace: %s"%( namespace ) )
+            elif package in imports_dict.get( jtype ):
+                log.debug( "import is %s"%( package+dot+jtype ) )
+
 
             else:
-                print "-----"
-                print "%s could not be directly matched. Could it be:"%(jtype)
-                get_import_candidates( found_imp, imports_dict, qualification_ns )
 
+                print "%s could not be directly matched."%(jtype)
+                qns = raw_input( "Please give me a namespace to check against\n" )
+                implst = get_import_candidates( found_imp, imports_dict, qns )
+
+                print "found import candidates:"
+
+                if implst is None:
+                    pass
+                else:
+
+                    for no, imp in enumerate( implst ):
+                        print "%s: %s"%(no, imp)
+
+                    choice = raw_input( "please enter choice or q for none: ")
+                    if choice == "q":
+                        pass
+                    else:
+                        new_imp = ""
+                        try:
+                            new_imp = implst[int(choice)]
+                        except TypeError:
+                            log.error( "satans, TypeError" )
+                        except IndexError:
+                            log.error( "satans, IndexError" )
+
+                        print "you choosed %s"%( new_imp )
+                        line = "import %s;\n"%( new_imp )
+
+        new_java_stmt.append( line )
+
+    if new_java_stmt != java_stmt:
+        return new_java_stmt
+    else:
+        return None
 
 def get_import_candidates( import_statement, imports_dict, qualification_ns="" ):
     """
@@ -220,11 +264,11 @@ def get_import_candidates( import_statement, imports_dict, qualification_ns="" )
 
     >>> get_import_candidates( 'org.types.TypeA', { 'TypeA': [ 'org.types' ] } )
     >>> get_import_candidates( 'org.types.TypeA', { 'TypeA': [ 'org.types' ] }, 'org' )
-    'org.types.TypeA'
+    ['org.types.TypeA']
     >>> get_import_candidates( 'org.types.TypeA', { 'TypeA': [ 'org.types' ] }, 'com' )
     >>>
     >>> get_import_candidates( 'org.TypeB', { 'TypeB': [ 'org' ] }, 'org' )
-    'org.TypeB'
+    ['org.TypeB']
     >>> get_import_candidates( 'org.components.types.TypeA', { 'TypeA': [ 'org.components', 'org.types' ] }, 'org' )
     ['org.components.TypeA', 'org.types.TypeA']
     """
@@ -237,9 +281,9 @@ def get_import_candidates( import_statement, imports_dict, qualification_ns="" )
     ns_hierar = qualification_ns.split( '.' )
     pack_list = imports_dict.get( jtype )
 
-#     print "hierarchy %s (%s)"%( hierarchy, len(hierarchy) )
-#     print "ns_hierar %s (%s)"%( ns_hierar, len(ns_hierar) )
-#     print "pack_list %s (%s)"%( pack_list, len(pack_list) )
+    log.debug( "hierarchy %s (%s)"%( hierarchy, len(hierarchy) ) )
+    log.debug( "ns_hierar %s (%s)"%( ns_hierar, len(ns_hierar) ) )
+    log.debug( "pack_list %s"%( pack_list) )
 
     # if there's not a toplevel match, there will never be one
     if ns_hierar[0] != hierarchy[0]:
@@ -247,7 +291,8 @@ def get_import_candidates( import_statement, imports_dict, qualification_ns="" )
 
     if len( pack_list ) == 1:
         #just return the type
-        return pack_list[0]+dot+jtype
+        log.debug( "returning pack_list[0]+dot+jtype=%s"%( [ pack_list[0]+dot+jtype ] ) )
+        return [ pack_list[0]+dot+jtype ]
     else:
         # return the types that match the level in ns_hierarchy
         return_list = []
@@ -257,18 +302,16 @@ def get_import_candidates( import_statement, imports_dict, qualification_ns="" )
                 return_list.append( ns+dot+jtype )
 
         if len(return_list) == 1:
-            return return_list[0]
+            log.debug( "returning return_list[0]=%s"%( [ return_list[0] ] ) ) 
+            return [ return_list[0] ]
         else:
+            log.debug( "returning return_list=%s"%( return_list ) )
             return return_list
 
 def get_import_dict( java_file_list ):
     import_dict = ImportDict()
     
     for i in java_file_list:
-#         print "key to insert %s"%(os.path.split( os.path.abspath( i ) ) [1].split( '.' )[0])
-#         print get_root_folder( i ).split( '.' )[0].replace( '/', '.' )
-#         print os.path.split( get_root_folder( i ) )[0].replace( '/', '.' )
-
         import_dict.insert( os.path.split( os.path.abspath( i ) ) [1].split( '.' )[0], \
                             os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ) )
     return import_dict
@@ -331,6 +374,19 @@ def main( arguments, options):
 
             new_java_stmt = check_and_fix_imports( java_stmt , \
                                                    imps )
+
+            if new_java_stmt is not None:
+                print "writing new file %s\nbacking up the old one in %s" \
+                    %( i, os.path.abspath( os.path.curdir )+os.path.sep+i+'_bak')
+
+                fo = open( i, 'w' )
+                fo.writelines( new_java_stmt )
+                fo.close()
+
+                if not options.no_backup:
+                    fo = open( os.path.abspath( os.path.curdir )+os.path.sep+i+"_bak", 'w' )
+                    fo.writelines( java_stmt )
+                    fo.close()
 
     print "Files checked = %s"% ( _files_checked )
 
