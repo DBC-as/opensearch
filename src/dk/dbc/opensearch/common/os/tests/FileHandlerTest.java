@@ -133,6 +133,25 @@ public class FileHandlerTest {
         replay( mockFileNameFilter1 );
         testCase = FileHandler.getFileList( testDir, fnf1, false );
         verify( mockFileNameFilter1 );
+        
+        System.out.println( '0'+testCase.get( 0 )+' '+testDir+"/test.xml" );
+        System.out.println( '1'+testCase.get( 1 )+' '+testDir+"/test.java" );
+
+
+        boolean validate = false;
+        if( testDir+"/test.xml" == testCase.get( 0 ) &&
+            testDir+"/test.java" == testCase.get( 1 ) ) {
+            validate = true;
+            //fail( "Couldnt find the right files" );
+        }
+        if( testDir+"/test.xml" == testCase.get( 0 ) &&
+            testDir+"/test.java" == testCase.get( 1 ) ) {
+            validate = true;
+            //fail( "Couldnt find the right files" );
+        }
+        if(! validate ){
+            fail( "Couldnt find the right files" );
+        }
 
         //assertEquals( testDir+"/test.xml", testCase.get( 0 ) );        
         //assertEquals( testDir+"/test.java", testCase.get( 1 ) );        
