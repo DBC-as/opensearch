@@ -174,8 +174,8 @@ class XMLInstantiator( object ):
 
         log.basicConfig(level=loglevel,
                     format='%(asctime)s %(levelname)s %(message)s',
-                        #filename='xsd2xml.debug',
-                        #filemode='w'
+                        filename='xsd2xml.debug',
+                        filemode='w'
                             )
         log.getLogger('')
 
@@ -340,6 +340,21 @@ class XMLInstantiator( object ):
         else:
             return '/' + step
 
+    def doc_order_iter( self, node ):
+        """
+        Iterates over each node in document order,
+        returning each in turn
+        """
+        #Document order returns the current node,
+        #then each of its children in turn
+        yield node
+        for child in node.childNodes:
+            #Create a generator for each child,
+            #Over which to iterate
+            for cn in c.doc_order_iter(child):
+                yield cn
+        return
+
 
 if __name__ == '__main__':
     import sys
@@ -360,6 +375,11 @@ if __name__ == '__main__':
     parser.add_option("-o", "--outfile", type="string", dest="outfile", action="store",
                       help="If given, the outfile will have the xml instance written to it." )
 
+    parser.add_option("-x", "--xpath", action="store_true", 
+                      dest="xpath", default=False,  
+                      help="writes all possible xpaths from the xml instance that can be constructed on basis of the xsd" )
+
+    
     (options, args) = parser.parse_args()
 
     if options.infile is not None:
@@ -392,10 +412,23 @@ if __name__ == '__main__':
         o = open( options.outfile, 'w' )
         o.write( xml_instance )
         o.close()
-    
-    # get xpaths, currently only supported with the xml.dom package:
-    dom_tree = minidom.parseString( xml_instance )
-    
+
+    if options.xpath:
+
+        # get xpaths, currently only supported with the xml.dom package:
+        dom_tree = minidom.parseString( xml_instance )
+
+        nodes = dom_tree.documentElement
+
+        for node in c.doc_order_iter( dom_tree ):
+            print c.get_xpath( node )
+
+#         for e in nodes.childNodes:
+#             print e
+
+
+        
+
     #later, I would like to make some tests, the following should cover my case
 
     test_xsd = """<?xml version="1.0" encoding="UTF-8"?>
