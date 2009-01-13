@@ -187,6 +187,8 @@ def check_and_fix_imports( java_stmt, imports_dict ):
     rxstr = r"""(?:import (?P<import>(?:\w+)(?:\.(?P<type>(?:\w+)))+);)"""
     compile_obj = re.compile( rxstr )
     
+    #log.debug( "Types in dict: imports_dict.keys()=%s"%( imports_dict.keys() ) )
+    
     for line in java_stmt:
         if compile_obj.match( line ) is not None:
             found_imp = compile_obj.match( line ).group( 'import' )
@@ -196,13 +198,38 @@ def check_and_fix_imports( java_stmt, imports_dict ):
             log.debug( "package=%s, jtype=%s"%( package, jtype ) )
             #print "type is %s"%(jtype)
             log.debug( "found possible namespaces: %s"%( imports_dict.get( jtype ) ) )
+
             if imports_dict.get( jtype ) is None:
                 log.debug( "There are no package namespaces for %s"%( jtype ) )
                 pass
 
-            elif jtype in imports_dict and len( imports_dict.get( jtype ) ) == 1:
-
+            elif jtype in imports_dict and len( imports_dict.get( jtype ) ) == 1 and package != imports_dict.get( jtype )[0] :
                 packages = imports_dict.get( jtype )
+
+                log.debug( " package=%s, imports_dict.get(jtype)=%s"%( package, imports_dict.get(jtype) ) )
+
+                impl = get_import_candidates( found_imp, imports_dict, package )
+                if impl is None:
+                    pass
+                else:
+                    for no, imp in enumerate( impl ):
+                        print "%s: %s"%(no, imp)
+
+                    choice = raw_input( "please enter choice or q for none: ")
+                    if choice == "q":
+                        pass
+                    else:
+                        new_imp = ""
+                        try:
+                            new_imp = impl[int(choice)]
+                        except TypeError:
+                            log.error( "satans, TypeError" )
+                        except IndexError:
+                            log.error( "satans, IndexError" )
+
+                        print "you choosed %s"%( new_imp )
+                        line = "import %s;\n"%( new_imp )
+
                 if len( packages ) == 1:
                     #there is only one type to consider, and this is it
                     log.debug( "%s matches import from the namespace %s"%( found_imp, packages[0] ) )
@@ -286,10 +313,10 @@ def get_import_candidates( import_statement, imports_dict, qualification_ns="" )
     ns_hierar = qualification_ns.split( '.' )
     pack_list = imports_dict.get( jtype )
 
-    log.debug( "hierarchy %s (%s)"%( hierarchy, len(hierarchy) ) )
-    log.debug( "ns_hierar %s (%s)"%( ns_hierar, len(ns_hierar) ) )
-    log.debug( "pack_list %s"%( pack_list) )
-
+    #log.debug( "hierarchy %s (%s)"%( hierarchy, len(hierarchy) ) )
+    #log.debug( "ns_hierar %s (%s)"%( ns_hierar, len(ns_hierar) ) )
+    #log.debug( "pack_list %s"%( pack_list) )
+    
     # if there's not a toplevel match, there will never be one
     if ns_hierar[0] != hierarchy[0]:
         return None
@@ -371,7 +398,7 @@ def main( arguments, options):
     if options.check_imports:
         imps = get_import_dict( get_java_files( options.src ) )
         print "checking imports"
-
+        
         for i in get_java_files( options.src ):
             ofo = open( i, 'r' )
             java_stmt = ofo.readlines()
