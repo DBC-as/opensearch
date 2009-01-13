@@ -60,7 +60,7 @@ public class XmlFileFilterTest {
      */
     @Test public void testDirsNotAccepted()
     {
-        assertFalse( xff.accept( dummy, acceptedName ) );
+        assertFalse( xff.accept( dummy, dir ) );
     }
 
     /**
