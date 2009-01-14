@@ -114,7 +114,8 @@
       <!-- <classpath refid="cobertura.classpath" /> -->
 
       <formatter type="plain" usefile="no"/>
-      <formatter type="xml" usefile="yes"/>
+      <!-- uncomment the line below when this should be use with a cruisecontrol build server-->
+      <!--formatter type="xml" usefile="yes"/-->
       <classpath refid="classpath"/>
 
       <!--batchtest fork="yes">
