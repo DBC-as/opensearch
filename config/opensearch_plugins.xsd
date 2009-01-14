@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="info:opensearch.dbc.dk#"
+            xmlns="info:opensearch.dbc.dk#"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
@@ -8,8 +9,10 @@
     <xsd:annotation>
       <xsd:documentation>Root element for the plugin collection</xsd:documentation>
     </xsd:annotation>
-    <xsd:complexType>
-      <xsd:element name="plugin" type="pluginType"/>
+    <xsd:complexType>        
+      <xsd:sequence>
+        <xsd:element name="plugin" type="pluginType"/>
+      </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
