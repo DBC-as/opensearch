@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 /**
- * This Unittest is not completely atomic as it is now - it depends on FileFilter and xmlFileFilter
+ * 
  */
 public class FileHandlerTest {
 

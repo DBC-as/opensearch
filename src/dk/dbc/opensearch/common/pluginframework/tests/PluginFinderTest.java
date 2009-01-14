@@ -1,5 +1,5 @@
 /**
- * \file PluginFinderTest.java 
+ * \file PluginFinderTest.java
  * \brief UnitTest for PluginFinder
  * \package tests
  */
@@ -33,7 +33,7 @@ public class PluginFinderTest {
     PluginFinder pluginFinder;
     FileHandler mockFH;
     File mockFile;
-    Vector <String> mockVector = null;
+    Vector <String> testVector;
     Iterator mockIterator;
     DocumentBuilder mockDocBuilder;
     Document mockDocument;
@@ -44,17 +44,23 @@ public class PluginFinderTest {
     @Before public void setUp() {
         mockFH = createMock( FileHandler.class );
         mockFile = createMock( File.class );
-        mockVector = createMock( Vector.class );
         mockIterator = createMock( Iterator.class );
         mockDocBuilder = createMock( DocumentBuilder.class );
         mockDocument = createMock( Document.class );
         mockElement = createMock( Element.class);
+        testVector = new Vector();
     }
 
     /**
      *
      */
     @After public void tearDown() {
+        reset( mockFH );
+        reset( mockFile );
+        reset( mockIterator );
+        reset( mockDocBuilder );
+        reset( mockDocument );
+        reset( mockElement );
 
     }
 
@@ -70,47 +76,45 @@ public class PluginFinderTest {
          *
          */
         String path = "";
-
+        String test1 = "test1";
+        String test2 = "test2";
+        testVector.add( test1 );
+        testVector.add( test2 );
         /** 2 expectations
          *
          */
         //in the updatePluginClassMap method
-        expect( mockFH.getFileList( isA( String.class ), isA( FilenameFilter[].class ), true ) ).andReturn( mockVector );
-        expect( mockVector.iterator() ).andReturn( mockIterator );
+        
+        expect( mockFH.getFileList( isA( String.class ), isA( FilenameFilter[].class ), isA( boolean.class ) ) ).andReturn( testVector );
+        //expect( mockVector.iterator() ).andReturn( mockIterator );
 
         //we say there are 2 elements in the vector
-        expect( mockVector.size() ).andReturn( 2 );
+        //expect( mockVector.size() ).andReturn( 2 );
         //parsing of element 1
-        expect( mockIterator.hasNext() ).andReturn( true );
-        expect( mockIterator.next() ).andReturn( "testString" );
+        //expect( mockIterator.hasNext() ).andReturn( true );
+        //expect( mockIterator.next() ).andReturn( "testString" );
         expect( mockFH.getFile( isA( String.class ) ) ).andReturn( mockFile );
         expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getTagName() ).andReturn( "unitTestString" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" ).times( 4 );
         expect( mockElement.getTagName() ).andReturn( "plugin" );
         //parsing of element 2
-        expect( mockIterator.hasNext() ).andReturn( true );
-        expect( mockIterator.next() ).andReturn( "testString" );
+        //expect( mockIterator.hasNext() ).andReturn( true );
+        //expect( mockIterator.next() ).andReturn( "testString" );
         expect( mockFH.getFile( isA( String.class ) ) ).andReturn( mockFile );
         expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getTagName() ).andReturn( "unitTestString" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" ).times( 4 );
         expect( mockElement.getTagName() ).andReturn( "plugin" );
-        expect( mockIterator.hasNext() ).andReturn( false );
+        //expect( mockIterator.hasNext() ).andReturn( false );
         //out of the while and done
         /** 3 replay
          *
          */
         replay( mockFH );
-        replay( mockVector );
+        //replay( mockVector );
         replay( mockIterator );
         replay( mockDocBuilder );
         replay( mockDocument );
@@ -122,9 +126,9 @@ public class PluginFinderTest {
 
         /**  4 check if it happened as expected
          *
-         */ 
+         */
         verify( mockFH );
-        verify( mockVector );
+        //        verify( mockVector );
         verify( mockIterator );
         verify( mockDocBuilder );
         verify( mockDocument );
