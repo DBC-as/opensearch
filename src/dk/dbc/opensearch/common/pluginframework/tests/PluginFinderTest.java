@@ -70,6 +70,7 @@ public class PluginFinderTest {
      * tested indirectly, since it is called in the constructor
      * So there is no seperate test for that methods general functionality.
      */
+    @Ignore
     @Test public void constructorTest() throws SAXException, IOException, NullPointerException {
 
         /** 1 setup
