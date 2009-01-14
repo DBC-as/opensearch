@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="info:opensearch.dbc.dk#"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+  <xsd:element name="plugins">
+    <xsd:annotation>
+      <xsd:documentation>Root element for the plugin collection</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:element name="plugin" type="pluginType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="pluginType">
+
+    <xsd:attribute name="name" use="required" type="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>
+          Name of the plugin. There are no restrictions on the
+          formation of the name, and what is written in this attribute
+          should have no computational consequences.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="classname" use="required" type="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>
+          Contains the qualified name of the plugin
+          class. E.g. org.company.component.PluginType
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+
+    <xsd:attribute name="submitter" use="required" type="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>
+          Submitter must be registered with the authentification
+          mechanisms for the opensearch motor. The submitter string is
+          used not only to identify who submitted the material, but
+          also for authentification and owner id's in the digital
+          repository.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="format" use="required" type="xsd:string">
+      <xsd:annotation>
+        <xsd:documentation>
+          Format is a specification of what the target format for the
+          plugin should be. If the format is formatted in xml, a
+          validation should be tried, as the indexing process is
+          dependant on well-formed and validating input xml.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="task" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          Possible tasks for a given plugin: 
+          
+          - index: relates to indexing. Plugins of this type handles
+          the process from indexable input format to the handing over
+          of indexed data
+
+          - transformation: The plugins handles transformation of a
+          given input format into an indexable object/format
+
+          - annotation: The plugin handles metadata or supplimentary
+          data annotation to the indexable object
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="index"/>
+          <xsd:enumeration value="transformation"/>
+          <xsd:enumeration value="annotation"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+  </xsd:complexType>
+</xsd:schema>
