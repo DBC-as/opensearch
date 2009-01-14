@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="build-common" >
   <import file="dependencies.xml"/>
-  
+
   <property name="base.dir"         value="${dependencies.basedir}"/>
 
   <property name="lib.dir"          value="${base.dir}/lib"/>
@@ -37,7 +37,7 @@
   <pathconvert targetos="unix" property="cp" refid="classpath">
     <map from="${classpath}" to="${cp}"/>
   </pathconvert>
-	
+
   <pathconvert targetos="unix" property="alp" refid="antlibpath">
     <map from="${antlibpath}}" to="${alp}"/>
   </pathconvert>
@@ -47,104 +47,106 @@
   <!-- TARGETS -->
   <!-- ===================================================================== -->
 
-  <target name="toplevel.clean" 
-  	      description="Deletes files created during the build">
-  	<delete dir="${build.dir}"/>
+  <target name="toplevel.clean"
+          description="Deletes files created during the build">
+    <delete dir="${build.dir}"/>
     <delete dir="${dist.dir}"/>
     <delete dir="${api.dir}"/>
     <delete dir="${report.dir}"/>
     <delete file="${base.dir}/doxygen-warnings"/>
-  	<mkdir dir="${classes.dir}"/>  	    
+    <mkdir dir="${classes.dir}"/>
   </target>
-	
+
   <!--target name="opensearch.all">
-  	<antcall target="toplevel.compile">
-	  <param name="dependency.target" value="toplevel.compile"/>
-	</antcall>
-  </target-->
-	  
-  <target name="toplevel.clean-all" 
-  	      description="Deletes all but svn tracked files (this primarily targets the generated files in the xsd folder)"
+      <antcall target="toplevel.compile">
+      <param name="dependency.target" value="toplevel.compile"/>
+      </antcall>
+      </target-->
+
+  <target name="toplevel.clean-all"
+          description="Deletes all but svn tracked files (this primarily targets the generated files in the xsd folder)"
           depends="toplevel.clean">
-  	<delete dir="${opensearch.dir}/xsd"/>
+    <delete dir="${opensearch.dir}/xsd"/>
   </target>
 
   <target name="toplevel.compile" description="Compiles source code">
-	<echo>
+    <mkdir dir="${classes.dir}"/>
+    <echo>
       Building from ${basedir},
       building project ${ant.project.name},
       and putting it all into ${classes.dir}
     </echo>
-  	<javac srcdir="${basedir}" destdir="${classes.dir}" excludes="**/tests/*" debug="on">
+    <javac srcdir="${basedir}" destdir="${classes.dir}" excludes="**/tests/*" debug="on">
       <classpath refid="classpath"/>
       <!-- <compilerarg value="-Xlint"/> -->
-    </javac> 
+    </javac>
   </target>
-		
-  <target name="toplevel.compile-tests" description="builds the tests for the component" 
-  	      depends="toplevel.compile">
-  	    <echo>
-  	      Building from ${basedir},
-  	      building project ${ant.project.name},
-  	      and putting it all into ${classes.dir}
-  	    </echo>
-  	    <javac srcdir="${basedir}" destdir="${classes.dir}" includes="**/tests/*" debug="on">
+
+  <target name="toplevel.compile-tests" description="builds the tests for the component"
+          depends="toplevel.compile">
+    <echo>
+      Building from ${basedir},
+      building project ${ant.project.name},
+      and putting it all into ${classes.dir}
+    </echo>
+    <javac srcdir="${basedir}" destdir="${classes.dir}" includes="**/tests/*" debug="on">
       <classpath refid="classpath"/>
     </javac>
   </target>
 
-  <target name="toplevel.test" 
-  	      description="Run unittests" 
-  	      depends="toplevel.compile-tests">
-  	<echo>
-  	    basedir:               ${basedir}/tests
-        classes.dir:           ${classes.dir}
-  		dk/dbc/opensearch/${ant.project.name}/tests/
-  	</echo>
-  	  	
-  	<junit fork="yes"
+  <target name="toplevel.test"
+          description="Run unittests"
+          depends="toplevel.compile-tests">
+    <echo>
+      basedir:               ${basedir}/tests
+      classes.dir:           ${classes.dir}
+      dk/dbc/opensearch/${ant.project.name}/tests/
+    </echo>
+
+    <junit fork="yes"
+           forkmode="once"
+           printsummary="withOutAndErr"
+           haltonerror="false"
+           haltonfailure="false">
+
+      <!-- <classpath location="${instrumented.dir}" /> -->
+      <classpath location="${classes.dir}" />
+      <!-- <classpath refid="cobertura.classpath" /> -->
+
+      <formatter type="plain" usefile="no"/>
+      <formatter type="xml" usefile="yes"/>
+      <classpath refid="classpath"/>
+
+      <!--batchtest fork="yes">
+          <fileset dir="${src.dir}/dk/dbc/opensearch/common/statistics/" includes="tests/*Test.java"/>
+          </batchtest-->
+      <batchtest todir="${basedir}">
+        <fileset dir="${classes.dir}" >
+          <include name="**/tests/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="toplevel.test-single"
+          description="Run a single unittest using\nant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single"
+          depends="toplevel.compile-tests">
+    <echo>
+      basedir  = ${basedir}
+      base.dir = ${base.dir}
+    </echo>
+    <junit fork="yes"
            forkmode="once"
            printsummary="no"
            haltonerror="false"
            haltonfailure="false">
 
-<!-- <classpath location="${instrumented.dir}" /> -->
       <classpath location="${classes.dir}" />
-<!-- <classpath refid="cobertura.classpath" /> -->
-    	
+
       <formatter type="plain" usefile="no"/>
       <classpath refid="classpath"/>
-
-      <!--batchtest fork="yes">
-        <fileset dir="${src.dir}/dk/dbc/opensearch/common/statistics/" includes="tests/*Test.java"/>
-      </batchtest-->
-  	  <batchtest todir="${basedir}">  	  	
-  	    <fileset dir="${classes.dir}" >            
-          <include name="**/tests/*Test.class"/>
-  	    </fileset>
-  	  </batchtest>
+      <test name="${test}"/>
     </junit>
-  </target>
-
-  <target name="toplevel.test-single" 
-  	      description="Run a single unittest using\nant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single" 
-  	      depends="toplevel.compile-tests">
-    <echo>
-       basedir  = ${basedir}
-       base.dir = ${base.dir}
-    </echo>
-      <junit fork="yes"
-             forkmode="once"
-             printsummary="no"
-             haltonerror="false"
-             haltonfailure="false">
-
-        <classpath location="${classes.dir}" />
-
-        <formatter type="plain" usefile="no"/>
-        <classpath refid="classpath"/>
-        <test name="${test}"/>
-      </junit>
   </target>
 
   <target name="doc" description="generates documentation for ${src.dir}">
@@ -171,12 +173,12 @@
     </castor-srcgen>
 
   </target>
-	
-  <target name="toplevel.compile-xsd" description="compiles xsd" 
-	      depends="toplevel.xsd-classes">
-  	<javac srcdir="${src.dir}" destdir="${classes.dir}">
-	  <classpath refid="classpath"/>
-	</javac>
+
+  <target name="toplevel.compile-xsd" description="compiles xsd"
+          depends="toplevel.xsd-classes">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}">
+      <classpath refid="classpath"/>
+    </javac>
   </target>
 
   <target name="test-target">
@@ -192,21 +194,21 @@
 
   <!-- Setting up the path -->
   <property name="cobertura.dir" value="${lib.dir}"/>
-	
+
   <path id="cobertura.classpath">
     <fileset dir="${cobertura.dir}">
       <include name="cobertura.jar" />
       <include name="*.jar" />
     </fileset>
-  </path> 
-  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" /> 
-  
+  </path>
+  <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
   <!--   The instrument target - building instrumented code -->
   <target name="coverage-instrument" depends="toplevel.compile-tests">
-    
+
     <!-- Capture the path as a delimited property using the refid attribute -->
     <property name="myclasspath" refid="classpath"/>
- 
+
     <!-- Remove the coverage data file and any old instrumentation. -->
     <delete dir="${instrumented.dir}" />
 
@@ -231,13 +233,13 @@
 
   <!-- Cobertura - this is not working yet-->
 
-<!--   <target name="coverage-check"> -->
-<!--     <cobertura-check branchrate="34" totallinerate="100" /> -->
-<!--   </target> -->
+  <!--   <target name="coverage-check"> -->
+  <!--     <cobertura-check branchrate="34" totallinerate="100" /> -->
+  <!--   </target> -->
 
   <target name="coverage-test" depends="coverage-instrument">
     <mkdir dir="${report.dir}" />
-    
+
     <junit fork="yes"
            forkmode="once"
            printsummary="no"
@@ -246,17 +248,17 @@
            dir="${instrumented.dir}"
            >
       <!-- Setting up the classpath -->
-      <classpath location="${instrumented.dir}" /> 
+      <classpath location="${instrumented.dir}" />
       <classpath location="${classes.dir}" />
       <classpath refid="cobertura.classpath" />
-      
+
       <!-- Performing the test -->
       <batchtest fork="yes">
         <fileset dir="${src.dir}" includes="**/tests/*Test.java"/>
       </batchtest>
-    </junit>    
+    </junit>
   </target>
-  
+
   <target name="coverage-report-html" depends="coverage-test">
     <cobertura-report destdir="${report.dir}/html" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
@@ -264,7 +266,7 @@
       </fileset>
     </cobertura-report>
   </target>
-  
+
   <target name="coverage-report-xml" depends="coverage-test">
     <cobertura-report format="xml" destdir="${report.dir}/xml" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
@@ -272,13 +274,13 @@
       </fileset>
     </cobertura-report>
   </target>
-  
+
   <target name="coverage-check" depends="coverage-test">
     <cobertura-check branchrate="34" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" >
       <!--  Vi skal have fundet nogle fornuftige værdier her   -->
       <!--       <regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/> -->
       <!--       <regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/> -->
-    </cobertura-check>   
+    </cobertura-check>
   </target>
 
   <target name="coverage-reports" depends="coverage-test, coverage-report-html, coverage-report-xml" />

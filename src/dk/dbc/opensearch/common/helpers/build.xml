@@ -1,0 +1,4 @@
+<project name="opensearch.common.fedora" default="usage">
+  <!--Time-stamp: <2009-01-14 15:07:51 stm> -->
+  <import file="../../../../../../build.xml"/>
+</project>

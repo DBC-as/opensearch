@@ -1,0 +1,4 @@
+<project name="opensearch.common.types" default="usage">
+  <!--Time-stamp: <2009-01-14 15:09:09 stm> -->
+  <import file="../../../../../../build.xml"/>
+</project>
