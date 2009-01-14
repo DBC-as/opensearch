@@ -430,7 +430,7 @@ if __name__ == '__main__':
 
     usage = """%prog -h | [-t] [-s|--source sourcefolder]"""
 
-    parser = OptionParser( usage=usage )
+    parser = OptionParser( )
 
     parser.add_option( "-t", "--test", dest="test", action="store_true", 
                        default=False, help="runs doctests on the program")
@@ -450,6 +450,8 @@ if __name__ == '__main__':
                        type="string", action="store", dest="src",
                        help="The path to the source folder of the java files to check")
 
+    parser.set_usage( parser.print_help())
+
     (options, args) = parser.parse_args()
 
     if options.vtest or options.test:
@@ -457,6 +459,9 @@ if __name__ == '__main__':
 
     if options.src is not None:
         main( args, options )
+
+    if not options.check_imports or options.check_packages:
+        parser.error( "please specify either a check on imports or packages using -i or -p" )
 
     else:
         sys.exit( parser.print_help() )
