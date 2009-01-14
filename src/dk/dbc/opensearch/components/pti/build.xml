@@ -1,4 +1,4 @@
-<project name="opensearch.pti" default="usage">
+<project name="opensearch.components.pti">
   <!--Time-stamp: <2008-09-18 22:59:41 stm> -->
-  <import file="../../../../../build-common.xml"/>
+  <import file="../../../../../../build.xml"/>
 </project>

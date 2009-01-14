@@ -6,6 +6,7 @@
 package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 

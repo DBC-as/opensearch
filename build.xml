@@ -1,107 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="opensearch.all" default="compile">
   <import file="dependencies.xml"/>
-
+  <import file="build-common.xml" />
+	
   <target name="clean" description="Deletes build files">
-    <antcall target="depend.all">
-      <param name="dependency.target" value="clean"/>
+  	<antcall target="toplevel.clean">
+      <param name="dependency.target" value="toplevel.clean"/>
     </antcall>
   </target>
 
-  <target name="clean-all" description="Deletes all but svn tracked files (this primarliy targets the generated files in the xsd folder)" depends="clean">
-    <antcall target="depend.all">
+  <target name="clean-all" description="Deletes all but svn tracked files (this primarliy targets the generated files in the xsd folder)">
+  	<antcall target="opensearch.all">
       <param name="dependency.target" value="clean-all"/>
     </antcall>
   </target>
 
   <target name="compile" description="Compiles source code">
-    <antcall target="depend.all">
-      <param name="dependency.target" value="compile"/>
+  	<echo>${ant.project.name}</echo>
+  	<!--antcall target="toplevel.xsd-classes"/-->
+  	<antcall target="${ant.project.name}">
+      <param name="dependency.target" value="toplevel.compile"/>
     </antcall>
   </target>
 
+  <!--target name="opensearch">
+	<antcall target="toplevel.compile">
+	  <param name="dependency.target" value="toplevel.compile" />
+	</antcall>
+  </target--> 
+		  
   <target name="compile-tests" description="Builds tests">
-    <antcall target="depend.all">
-      <param name="dependency.target" value="compile-tests"/>
+    <antcall target="${ant.project.name}">
+      <param name="dependency.target" value="toplevel.compile-tests"/>
     </antcall>
   </target>
 
-  <target name="test" description="Run unit tests">
-    <antcall target="depend.all">
-      <param name="dependency.target" value="test"/>
+  <target name="test" 
+  	      description="Run unit tests">
+  	<antcall target="${ant.project.name}">
+      <param name="dependency.target" value="toplevel.test"/>
     </antcall>
   </target>
 
   <target name="test-single" description="Run a single unittest using ant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single">
-    <antcall target="depend.all">
+    <antcall target="toplevel.test-single">
       <param name="dependency.target" value="test-single"/>
     </antcall>
   </target>
 
   <target name="doc" description="Creates api documentation">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="doc"/>
     </antcall>
   </target>
 
-  <target name="xsd-classes" description="Generates classes from XSD files">
-    <antcall target="depend.all">
+  <target name="build.xsd-classes" description="Generates classes from XSD files">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="xsd-classes"/>
     </antcall>
   </target>
 
   <target name="test-target" description="Prints classpath information">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="test-target"/>
     </antcall>
   </target>
 
   <target name="dist" description="Creates distributable">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="dist"/>
     </antcall>
   </target>
 
 
   <target name="update" description="Creates api documentation">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="update"/>
     </antcall>
   </target>
 
 
   <target name="coverage-instrument" description="build instrumented classes">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="coverage-instrument"/>
     </antcall>
   </target>
 
   <target name="coverage-test" description="performs coverage test">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="coverage-test"/>
     </antcall>
   </target>
 
   <target name="coverage-report-html" description="Making a html coverage report">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="coverage-report-html"/>
     </antcall>
   </target>
 
   <target name="coverage-report-xml" description="Making an xml coverage report">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="coverage-report-xml"/>
     </antcall>
   </target>
 
   <target name="coverage-reports" description="Making an xml and a htmlcoverage report">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="coverage-reports"/>
     </antcall>
   </target>
 
   <target name="coverage-check" description="Checks the coverage test">
-    <antcall target="depend.all">
+    <antcall target="opensearch.all">
       <param name="dependency.target" value="coverage-check"/>
     </antcall>
   </target>

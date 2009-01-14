@@ -1,4 +1,4 @@
-<project name="opensearch.datadock" default="usage">
+<project name="opensearch.components.datadock" default="usage">
   <!--Time-stamp: <2008-09-18 22:59:17 stm> -->
-  <import file="../../../../../build-common.xml"/>
+  <import file="../../../../../../build.xml"/>
 </project>

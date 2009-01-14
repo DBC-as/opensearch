@@ -6,9 +6,9 @@
 
 package dk.dbc.opensearch.components.pti;
 
-import dk.dbc.opensearch.components.datadock.CargoMimeType;
-import dk.dbc.opensearch.components.datadock.CargoContainer;
-import dk.dbc.opensearch.components.datadock.CargoObjectInfo;
+import dk.dbc.opensearch.common.types.CargoMimeType;
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObjectInfo;
 
 /**
  * \ingroup pti

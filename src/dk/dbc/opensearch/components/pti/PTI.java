@@ -5,7 +5,7 @@
  */
 package dk.dbc.opensearch.components.pti;
 
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 

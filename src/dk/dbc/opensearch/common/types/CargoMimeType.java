@@ -3,7 +3,7 @@
  * \brief The CargoMimetype enum
  * \package datadock
  */
-package dk.dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.common.types;
 
 /**
  * \ingroup datadock

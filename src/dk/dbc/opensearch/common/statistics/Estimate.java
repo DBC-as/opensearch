@@ -4,6 +4,9 @@
  * \package tools
  */
 package dk.dbc.opensearch.common.statistics;
+
+import dk.dbc.opensearch.common.db.DBConnection;
+
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
@@ -14,8 +17,6 @@ import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.lang.ClassNotFoundException;
 import org.apache.commons.configuration.ConfigurationException;
-
-import dk.dbc.opensearch.common.db.DBConnection;
 
 /**
  * \ingroup tools
@@ -31,7 +32,8 @@ public class Estimate extends DBConnection {
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public Estimate() throws ConfigurationException, ClassNotFoundException {
+    public Estimate() throws ConfigurationException, ClassNotFoundException 
+    {
         log.debug( "Estimate Constructor" );
     }
 
@@ -49,7 +51,8 @@ public class Estimate extends DBConnection {
      * @throws NoSuchElementException if the mimetype is not known
 
      */
-    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException {
+    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException 
+    {
         log.debug( String.format( "estimate.getEstimate(mimeType=%s, length=%s) called", mimeType, length ) );
         Connection con;
         con = establishConnection();
@@ -85,18 +88,23 @@ public class Estimate extends DBConnection {
                 }
             }
             log.debug( String.format( "processtime=%s dataamount=%s, averagetime=%s", p, d, average_time ) );
-        }catch(NullPointerException npe){
+        }
+        catch(NullPointerException npe)
+        {
             log.debug( "got nullpointer exception" );
             npe.printStackTrace();
         }
-        finally{
+        finally
+        {
             stmt.close();
             con.close();
         }
+        
         log.info( String.format( "Obtained average processing time=%s",average_time) );
         return average_time;
     }
 
+    
     /**
      * updateEstimate updates the entry in statisticDB that matches the given mimetype, with the length and time.
      *
@@ -107,7 +115,8 @@ public class Estimate extends DBConnection {
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public void updateEstimate( String mimeType, long length, long time ) throws SQLException, ClassNotFoundException{
+    public void updateEstimate( String mimeType, long length, long time ) throws SQLException, ClassNotFoundException
+    {
         log.debug( String.format( "UpdateEstimate(mimeType = %s, length = %s, time = %s) called", mimeType, length, time ) );
         Connection con;
         con = establishConnection();
@@ -119,18 +128,23 @@ public class Estimate extends DBConnection {
         log.debug( String.format( "query database with %s ", sqlQuery ) );
 
         int rowsUpdated = 0;        
-        try{      
+        try
+        {      
             stmt = con.createStatement();
             rowsUpdated = stmt.executeUpdate( sqlQuery );
-            if( rowsUpdated == 0 ) {
+            if( rowsUpdated == 0 ) 
+            {
                 throw new NoSuchElementException( "The mimetype does not match a known mimetype, couldn't update." ); 
             }
+            
             con.commit();
         }
-        finally{
+        finally
+        {
             stmt.close();
             con.close();
         }
+        
         log.info( "estimate Updated" );
     }
 }

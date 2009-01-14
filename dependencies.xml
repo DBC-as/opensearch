@@ -1,55 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- define component/project dependencies in this file -->
-<project name="dependencies" default="depend.all">
-    <dirname property="dependencies.basedir" file="${ant.file.dependencies}"/>
+<project name="dependencies" default="opensearch.all">
+	<dirname property="dependencies.basedir" file="${ant.file.dependencies}"/>
 
-    <!-- ================================================================== -->
-    <target name="depend.all" 
-            depends="depend.opensearch">
-    </target>
+	<!-- ================================================================== -->
+	<target name="default.clean-all">
+      <antcall target="toplevel.clean-all"/>
+	</target>
 
-    <!-- ================================================================== -->
-    <target name="depend.opensearch">
+	<target name="opensearch">
+	    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
+		     target="${dependency.target}"
+		     inheritAll="false" />
+	</target>
+	
+	<!-- ================================================================== -->
+	<target name="opensearch.all" depends="opensearch.opensearch">
+	</target>
+    
+	<!-- ================================================================== -->
+    <target name="opensearch.opensearch" >
         <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
 
     <!-- ================================================================== -->
-    <target name="depend.components">
+    <target name="opensearch.components"
+    	    depends="opensearch.common">
         <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
+	
+	<target name="xsd-classes">
+		<antcall target="default.clean-all"/>
+        <antcall target="toplevel.compile-xsd" />
+	</target>
 
     <!-- ================================================================== -->
-    <target name="depend.datadock">
+    <target name="opensearch.common" 
+    	    depends="opensearch.common.statistics">
+    	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common"
+             target="${dependency.target}" 
+             inheritAll="false"/>
+    </target>
+	
+	<!-- ================================================================== -->
+	<target name="opensearch.common.db" >
+	    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/db"
+	         target="${dependency.target}"
+	         inheritAll="false"/>
+	</target>	    
+	
+	<!-- ================================================================== -->
+	<target name="opensearch.common.fedora">
+        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/fedora"
+		     target="${dependency.target}"
+		     inheritAll="false" />
+	</target>
+	
+	<!-- ================================================================== -->
+	<target name="opensearch.common.helpers">
+	    <!--antcall target="default.clean-all"/-->
+	    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/helpers"
+	         target="${dependency.target}" 
+	         inheritAll="false"/>
+	</target>
+	
+	<!-- ================================================================== -->
+	<target name="opensearch.common.os">
+	    <!--antcall target="default.clean-all"/-->
+	    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/os"
+	         target="${dependency.target}" 
+	         inheritAll="false"/>
+	</target>	    
+	    
+	<!-- ================================================================== -->
+	<target name="opensearch.common.statistics" >
+		<antcall target="xsd-classes"/>
+		<antcall target="opensearch.common.db">
+		      <param name="dependency.target" value="toplevel.compile"/>
+		    </antcall>
+	    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/statistics"
+	         target="${dependency.target}" 
+	         inheritAll="false"/>
+	</target>
+	
+	<!-- ================================================================== -->
+	<target name="opensearch.common.types">
+	    <antcall target="default.clean-all"/>
+	    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/types"
+	         target="${dependency.target}" 
+	         inheritAll="false"/>
+	</target>
+
+	<!-- ================================================================== -->
+    <target name="opensearch.components.datadock" depends="opensearch.common.db">
         <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/datadock"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
 
-    <!-- ================================================================== -->
-    <target name="depend.lantern">
+	<!-- ================================================================== -->
+    <target name="opensearch.components.lantern">
         <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/lantern"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
 
     <!-- ================================================================== -->
-    <target name="depend.pti" 
-            depends="depend.datadock">
+    <target name="opensearch.components.pti" depends="opensearch.components.datadock">
         <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/pti"
-             target="${dependency.datadock}" 
-             inheritAll="false"/>
-    </target>
-
-    <!-- ================================================================== -->
-    <target name="depend.xsd">
-        <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/xsd"
              target="${dependency.target}" 
              inheritAll="false"/>
     </target>
-
-
+    
 </project>

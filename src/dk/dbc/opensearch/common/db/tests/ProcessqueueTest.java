@@ -1,37 +1,20 @@
 package dk.dbc.opensearch.common.db.tests;
-import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.helpers.PrivateAccessor;
 
+import dk.dbc.opensearch.common.db.Processqueue;
+//import dk.dbc.opensearch.common.helpers.PrivateAccessor;
 
 import com.mockrunner.jdbc.*;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockResultSet;
-import com.mockrunner.mock.jdbc.MockStatement;
-
 import com.mockrunner.jdbc.CallableStatementResultSetHandler;
-
-import static org.easymock.classextension.EasyMock.*;
-
-import java.lang.reflect.Method;
-
-import junit.framework.TestCase;
-import java.lang.reflect.InvocationTargetException;
-
-
-import java.sql.CallableStatement;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
-import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Triple;
-
 
 
 public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
@@ -61,7 +44,7 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         statementHandler.prepareGlobalResultSet( result );
 
         try{
-            Triple<String, Integer, String> triple = processqueue.pop();
+            //Triple<String, Integer, String> triple = processqueue.pop();
             fail("Should have gotten NoSuchElementException - returned zero rows removed from processqueue table");
         }
         catch(NoSuchElementException nse){
@@ -72,11 +55,11 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         verifyConnectionClosed();
     }
 
-    public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException, IllegalAccessException, InvocationTargetException {
+    /*public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException, IllegalAccessException, InvocationTargetException {
         
         String fedorahandle = "test_handle_1";
         int queueid = 1;
-        String processing = "N";
+        //String processing = "N";
         String itemid = "item_1";
 
         Triple<String, Integer, String> triple = null;
@@ -94,7 +77,7 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         assertEquals(queueid , (int )Tuple.get2(triple) );
         assertEquals(itemid , Tuple.get3(triple) );        
         verifyAllStatementsClosed();
-    }
+    }*/
 
 
     public void testPopFromProcessqueueWithNoActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {

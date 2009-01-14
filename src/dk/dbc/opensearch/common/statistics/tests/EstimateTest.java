@@ -1,26 +1,28 @@
 package dk.dbc.opensearch.common.statistics.tests;
+
 import dk.dbc.opensearch.common.statistics.Estimate;
 
 import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
 import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockResultSet;
-import com.mockrunner.mock.jdbc.MockStatement;
-
 import org.apache.commons.configuration.ConfigurationException;
+
 import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 
-public class EstimateTest extends BasicJDBCTestCaseAdapter {
-    
+public class EstimateTest extends BasicJDBCTestCaseAdapter 
+{    
     MockConnection connection;
     StatementResultSetHandler statementHandler;
     Estimate estimate;
     MockResultSet result;
 
-    protected void setUp() throws Exception {
+    
+    protected void setUp() throws Exception 
+    {
         super.setUp();
         connection = getJDBCMockObjectFactory().getMockConnection();
         statementHandler = connection.getStatementResultSetHandler();
@@ -28,10 +30,9 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter {
         estimate = new Estimate();
     }
     
-
     
-    public void testValidgetEstimate() throws ConfigurationException, ClassNotFoundException, SQLException {
-    
+    public void testValidgetEstimate() throws ConfigurationException, ClassNotFoundException, SQLException 
+    {    
         int processtime = 25;
         int dataamount = 10;
         long length = 5;
@@ -50,16 +51,19 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter {
         verifySQLStatementExecuted( sql_query );       
         verifyAllStatementsClosed();
         verifyConnectionClosed();
-
     }
-    public void testInvalidgetEstimate() throws ConfigurationException, ClassNotFoundException, SQLException {
-        
+    
+    
+    public void testInvalidgetEstimate() throws ConfigurationException, ClassNotFoundException, SQLException 
+    {        
         String mimetype = "notype";
-        try{
-            float returnval = estimate.getEstimate( mimetype, 3 );
+        try
+        {
+            //float returnval = estimate.getEstimate( mimetype, 3 );
             fail("Should have gotten NoSuchElementException - returned zero rows updated from statisticsDB table");
         }
-        catch(NoSuchElementException nse){
+        catch(NoSuchElementException nse)
+        {
             // Expected - intentional
         }
         
@@ -69,8 +73,9 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter {
         verifyConnectionClosed();                
     }
 
-    public void testValidupdateEstimate() throws ConfigurationException, ClassNotFoundException, SQLException {
-        
+    
+    public void testValidupdateEstimate() throws ConfigurationException, ClassNotFoundException, SQLException 
+    {        
         int processtime = 25;
         long length = 5;
         String mimetype = "text/xml";
@@ -87,8 +92,9 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter {
         verifyConnectionClosed();                       
     }
     
-    public void testInvalidupdateEstimate() throws ConfigurationException, ClassNotFoundException, SQLException {
-
+    
+    public void testInvalidupdateEstimate() throws ConfigurationException, ClassNotFoundException, SQLException 
+    {
         int processtime = 25;
         long length = 5;
         String mimetype = "notype";

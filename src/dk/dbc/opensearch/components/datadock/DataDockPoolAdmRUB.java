@@ -1,5 +1,6 @@
 package dk.dbc.opensearch.components.datadock;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileReader;

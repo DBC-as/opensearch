@@ -3,7 +3,7 @@
  * \brief The CargoContainer class
  * \package datadock
  */
-package dk.dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.common.types;
 
 import java.io.InputStream;
 import java.io.IOException;

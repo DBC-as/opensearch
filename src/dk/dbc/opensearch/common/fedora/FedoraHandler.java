@@ -4,6 +4,7 @@
  * \package tools
  */
 package dk.dbc.opensearch.common.fedora;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +30,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.xsd.ContentDigest;
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
@@ -54,7 +55,7 @@ import fedora.server.types.gen.MIMETypedStream;
  * \brief The FedoraHandler class handles connections and communication with
  * the fedora repository.
  */
-public class FedoraHandler implements Constants{
+public class FedoraHandler implements Constants {
     /*
     private static String host = "";
     private static String port = "";

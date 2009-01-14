@@ -10,7 +10,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import dk.dbc.opensearch.xsd.ObjectProperties;
 import dk.dbc.opensearch.xsd.Property;

@@ -4,6 +4,7 @@
  * \package tools
  */
 package dk.dbc.opensearch.common.db;
+
 import org.apache.log4j.Logger;
 
 import com.mallardsoft.tuple.Tuple;
@@ -93,19 +94,22 @@ public class Processqueue extends DBConnection {
         con = establishConnection();
 
         // preparing call of stored procedure
-        CallableStatement cs=null;
-        ResultSet rs=null;           
+        CallableStatement cs = null;
+        ResultSet rs = null;           
         Triple returntriple = null;
-        try{
+        try
+        {
             cs = getStatement(con);
             returntriple = getValues(cs);
             con.commit();
         }
-        finally{
+        finally
+        {
             // Close database connection
             cs.close();
             con.close();
         }
+        
         return returntriple;
     }
     

@@ -17,7 +17,7 @@ import javax.xml.validation.Validator;
 
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import org.junit.*;
 
@@ -77,7 +77,7 @@ public class FedoraToolsTest
     	return ret;
     }
     
-    @Test public void testConstructFoxml_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException
+    @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException
     {
     	cargo = constructCargo( "æøå" );
         
@@ -91,7 +91,7 @@ public class FedoraToolsTest
     }
     
     
-    @Test public void testConstructFoxmlValidation() throws SAXException, IOException, MarshalException, ValidationException, ParseException
+    /*@Test public void testConstructFoxmlValidation() throws SAXException, IOException, MarshalException, ValidationException, ParseException
     {
    	 	// 1. Lookup a factory for the W3C XML Schema language
     	// http://www.ibm.com/developerworks/xml/library/x-javaxmlvalidapi.html
@@ -126,5 +126,5 @@ public class FedoraToolsTest
         }  
         
         assertTrue( valid );
-    }
+    }*/
 }

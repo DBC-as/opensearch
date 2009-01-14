@@ -1,9 +1,11 @@
-package dk.dbc.opensearch.components.datadock.tests;
+package dk.dbc.opensearch.common.types.tests;
 
 import static org.junit.Assert.*;
 import org.junit.*;
 import java.io.UnsupportedEncodingException;
-import dk.dbc.opensearch.components.datadock.*;
+import dk.dbc.opensearch.common.types.CargoMimeType;
+import dk.dbc.opensearch.common.types.CargoObjectInfo;;
+
 
 public class CargoObjectInfoTest{
 

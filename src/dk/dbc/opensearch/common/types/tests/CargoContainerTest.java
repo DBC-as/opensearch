@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.components.datadock.tests;
+package dk.dbc.opensearch.common.types.tests;
 /** \brief UnitTest for CargoContainerT **/
 
 import static org.junit.Assert.*;
@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 //import dk.dbc.opensearch.components.datadock.*;
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 /**
  * 

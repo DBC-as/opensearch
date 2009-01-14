@@ -1,4 +1,4 @@
-<project name="opensearch.Components" default="usage">
+<project name="opensearch.components" default="usage">
   <!--Time-stamp: <2008-09-18 22:59:01 stm> -->
-  <import file="../../../../build-common.xml"/>
+  <import file="../../../../../build.xml"/>
 </project>

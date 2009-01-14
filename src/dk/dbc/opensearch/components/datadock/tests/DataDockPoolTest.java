@@ -6,7 +6,7 @@ import dk.dbc.opensearch.components.datadock.DataDockPool;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import org.junit.*;
 import static org.junit.Assert.*;

@@ -1,7 +1,7 @@
 package dk.dbc.opensearch.common.fedora.tests;/** \brief UnitTest for FedoraHandler */
 
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

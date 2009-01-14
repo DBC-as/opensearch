@@ -3,7 +3,7 @@ package dk.dbc.opensearch.components.datadock.tests;
 
 import dk.dbc.opensearch.components.datadock.DataDockPoolAdm;
 import dk.dbc.opensearch.components.datadock.DataDockPool;
-import dk.dbc.opensearch.components.datadock.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
