@@ -15,6 +15,8 @@ import dk.dbc.opensearch.common.db.Processqueue;
 
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
+
 import java.util.concurrent.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.log4j.Logger;

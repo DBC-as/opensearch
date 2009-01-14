@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.FileInputStream;
 import org.apache.log4j.Logger;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
+
 public class DataDockPoolAdmRUB {
 
     static Logger log = Logger.getLogger("DataDockPoolAdmRUB");

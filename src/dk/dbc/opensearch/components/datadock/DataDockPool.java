@@ -9,6 +9,7 @@ import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
