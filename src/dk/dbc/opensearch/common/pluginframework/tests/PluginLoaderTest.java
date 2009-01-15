@@ -22,6 +22,10 @@ import java.lang.IllegalAccessException;
  */
 public class PluginLoaderTest {
 
+    public static void main(String[] args){
+        org.junit.runner.JUnitCore.main("dk.dbc.opensearch.common.pluginframework.tests.PluginLoaderTest");
+        }
+
     FileHandler fh;
     ClassLoader pcl;
     PluginLoader pl;
