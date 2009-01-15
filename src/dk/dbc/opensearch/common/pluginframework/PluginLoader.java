@@ -1,6 +1,6 @@
 package dk.dbc.opensearch.common.pluginframework;
 
-//import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.os.FileHandler;
 import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,17 +17,17 @@ public class PluginLoader {
 
     static Logger log = Logger.getLogger( "PluginLoader" );
     String pluginPathName = "classes/dk/dbc/opensearch/plugins";
-    //FileHandler fileHandler;
+    FileHandler fileHandler;
     ClassLoader cl;
 
 
     /**
      *
      */
-    public PluginLoader( ClassLoader cl /*, FileHandler fileHandler*/ ) {
+    public PluginLoader( ClassLoader cl, FileHandler fileHandler ) {
 
         this.cl = cl;
-        //        this.fileHandler = fileHandler;
+        this.fileHandler = fileHandler;
     }
 
     /**
@@ -37,11 +37,11 @@ public class PluginLoader {
      */
     public IPluggable loadPlugin( String pluginName )throws FileNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException{
 
-        /*File pluginPath = fileHandler.getFile( pluginPathName );
+        File pluginPath = fileHandler.getFile( pluginPathName );
         if( !pluginPath.exists() ){
             throw new FileNotFoundException( String.format( "plugin directory %s could not be found", pluginPath.getAbsolutePath() ) );
         }
-        */
+        
 
         String fullPluginClassName = pluginName;
         //loading the class

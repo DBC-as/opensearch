@@ -13,7 +13,7 @@ for i in `ls ${MYPATH}/../lib/*.jar`
 do
   THE_CLASSPATH=${THE_CLASSPATH}:${i}
 done
-THE_CLASSPATH=${THE_CLASSPATH}:${MYPATH}/../build/classes:${MYPATH}/../config:.
+THE_CLASSPATH=${THE_CLASSPATH}:${JAVA_HOME}/lib/tools.jar:${MYPATH}/../build/classes:${MYPATH}/../config:.
 
 echo ${THE_CLASSPATH}
 #-----------------#

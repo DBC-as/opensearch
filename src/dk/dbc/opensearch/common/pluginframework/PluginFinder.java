@@ -11,7 +11,7 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-//import org.w3c.dom.NodeList;
+import org.w3c.dom.NodeList;
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
@@ -155,15 +155,19 @@ public class PluginFinder {
                 log.debug("could format");
                 Element xmlRoot = pluginDocument.getDocumentElement();
                 log.debug( "xmlRoot tagname: " + xmlRoot.getTagName() );
+                // 37: get the plugin element
+                NodeList pluginNodeList = xmlRoot.getElementsByTagName( "plugin" );
 
+                Element pluginElement = (Element) pluginNodeList.item( 0 );
                 //40: pull out the values
-                submitterName = xmlRoot.getAttribute( "submitter" );
-                formatName = xmlRoot.getAttribute( "format" );
-                taskName = xmlRoot.getAttribute( "task" );
-                className = xmlRoot.getAttribute( "class" );
+
+                submitterName = pluginElement.getAttribute( "submitter" );
+                formatName = pluginElement.getAttribute( "format" );
+                taskName = pluginElement.getAttribute( "task" );
+                className = pluginElement.getAttribute( "classname" );
 
                 //45: verify that we got string form the xml file
-                if( xmlRoot.getTagName() == "plugin" && submitterName != null && formatName != null && taskName != null && className != null ){
+                if( xmlRoot.getTagName() == "plugins" && submitterName != null && formatName != null && taskName != null && className != null ){
                     //50: build the the key
                     key = submitterName + formatName + taskName;
 

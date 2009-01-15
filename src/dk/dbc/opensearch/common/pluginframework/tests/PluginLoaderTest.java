@@ -4,11 +4,14 @@ package dk.dbc.opensearch.common.pluginframework.tests;
 import dk.dbc.opensearch.common.pluginframework.PluginLoader;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginClassLoader;
+import dk.dbc.opensearch.common.os.FileHandler;
 
 import static org.junit.Assert.*;
 import org.junit.*;
 import static org.easymock.classextension.EasyMock.*;
 import mockit.Mockit;
+
+import java.io.File;
 
 import java.lang.InstantiationException;
 import java.lang.ClassNotFoundException;
@@ -19,32 +22,46 @@ import java.lang.IllegalAccessException;
  */
 public class PluginLoaderTest {
 
+    FileHandler fh;
     ClassLoader pcl;
     PluginLoader pl;
     PluginClassLoader mockPCL;
     Boolean noException;
-    Class replaceClass;
+    //Class replaceClass;
     IPluggable mockIPluggable;
     IPluggable testIPlug;
-    /*
-    public final class ReplacementClass{
+    String testClassString;
+    File mockFile;    
+
+    public final class ReplaceClass{
         public Object newInstance(){
             return mockIPluggable;
         }
     }
-    */
+    public class ReplaceFileHandler{
+        public File getFile( String name ){
+            return mockFile;
+        }
+    }
+    
     /**
      *
      */
     @Before public void SetUp()throws Exception {
 
-      
+        testClassString = "dk.dbc.opensearch.common.pluginframework.IPluggable";
         noException = true;
+
         mockPCL = createMock( PluginClassLoader.class );
-        pcl = new PluginClassLoader();
-        //  replaceClass = pcl.loadClass( "dk.dbc.opensearch.common.pluginframework.IPluggable" );
-        mockIPluggable = createMock( IPluggable.class );
-        //Mockit.redefineMethods( Class.class, ReplacementClass.class);
+        mockFile = createMock( File.class );
+        //mockIPluggable = createMock( IPluggable.class );
+       
+        Mockit.redefineMethods( FileHandler.class, ReplaceFileHandler.class );
+        fh = new FileHandler();
+        //Is it nessecary to use a classloader to get a Class object?
+        //pcl = new PluginClassLoader();
+        //Mockit.redefineMethods( Class.class, ReplaceClass.class );
+        //replaceClass = pcl.loadClass( testClassString );    
     }
 
     /**
@@ -52,7 +69,7 @@ public class PluginLoaderTest {
      */
     @After public void TearDown() {
         pl = null;
-        //Mockit.restoreAllOriginalDefinitions();
+        Mockit.restoreAllOriginalDefinitions();
     }
 
     /**
@@ -60,7 +77,7 @@ public class PluginLoaderTest {
      */
     @Test public void constructorTest() {
         try{
-            pl = new PluginLoader( mockPCL );
+            pl = new PluginLoader( pcl, fh );
         }catch( Exception e){
             noException = false;
         }
@@ -72,12 +89,8 @@ public class PluginLoaderTest {
     @Ignore
     @Test public void loadPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException {
         
-        
-      
-        
-        String testClassString = "dk.dbc.opensearch.common.pluginframework.IPluggable";
         try{
-        pl = new PluginLoader( pcl );        
+            pl = new PluginLoader( pcl, fh );        
         testIPlug = pl.loadPlugin( testClassString );
         }catch( Exception e){
             noException = false;
