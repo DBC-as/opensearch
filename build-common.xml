@@ -182,7 +182,7 @@
     </javac>
   </target>
 
-  <target name="test-target">
+  <target name="toplevel.test-target">
     <echo>
       ant classpath=${cp}
       Basedir=${base.dir}

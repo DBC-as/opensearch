@@ -61,7 +61,7 @@
   </target>
 
   <target name="test-target" description="Prints classpath information">
-    <antcall target="opensearch.all">
+  	<antcall target="toplevel.test-target">
       <param name="dependency.target" value="test-target"/>
     </antcall>
   </target>
