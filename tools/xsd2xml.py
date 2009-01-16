@@ -9,6 +9,12 @@ Functionality:
 To do:
   - Namespace handling 
 
+  - As the input is evaluated in a line oriented stateless way, the
+    top-level element needs to be found before any references to
+    it. E.g. I any attributes are declared before the toplevel element
+    definition is registered, the attribute declaration is ignored.
+
+
   the element definition is guaranteed to have a name, E.g.
   
   <xsd:element name="c">                     <-- We are here
@@ -69,7 +75,7 @@ class XMLInstantiator( object ):
     """Class that generates an XML Document instance given an XML Schema
     """
 
-    def __init__( self, filename, flag ):
+    def __init__( self, filename, flag, namespace ):
         """
 
         Arguments:
@@ -79,6 +85,9 @@ class XMLInstantiator( object ):
 
         - `flag`: indicating whether either verbosity, debug-mode or
           just plain program execution should be the purpose
+          
+        - `namespace`: Namespace of the XML Schema. Should be given as
+          a string without delimeters (such as ':')
         
         """
 
@@ -98,67 +107,82 @@ class XMLInstantiator( object ):
         #complexType-type declarations
         self.parent_map = {}
 
+        #namespace for the XML Schema. I'm pretty sure that there is a
+        #better way of handling this... The script should read the
+        #namespace on parsing and qualify the datatypes with it.
+
         #primary xsd datatypes
-        self.xsd_datatypes =[
-            'xsd:string',
-            'xsd:boolean',
-            'xsd:decimal',
-            'xsd:float',
-            'xsd:double',
-            'xsd:duration',
-            'xsd:dateTime',
-            'xsd:time',
-            'xsd:date',
-            'xsd:gYearMonth',
-            'xsd:gYear',
-            'xsd:gMonthDay',
-            'xsd:gDay',
-            'xsd:gMonth',
-            'xsd:hexBinary',
-            'xsd:base64Binary',
-            'xsd:anyURI',
-            'xsd:QName',
-            'xsd:NOTATION']
+        xsd_datatypes =[
+            ':string',
+            ':boolean',
+            ':decimal',
+            ':float',
+            ':double',
+            ':duration',
+            ':dateTime',
+            ':time',
+            ':date',
+            ':gYearMonth',
+            ':gYear',
+            ':gMonthDay',
+            ':gDay',
+            ':gMonth',
+            ':hexBinary',
+            ':base64Binary',
+            ':anyURI',
+            ':QName',
+            ':NOTATION']
+
+        self.xsd_datatypes = [ namespace+t for t in xsd_datatypes ]
 
         #and, if it should be needed, the derived datatypes
-        self.xsd_derived_datatypes = [
-            'xsd:normalizedString',
-            'xsd:token',
-            'xsd:language',
-            'xsd:NMTOKEN',
-            'xsd:NMTOKENS',
-            'xsd:Name',
-            'xsd:NCName',
-            'xsd:ID',
-            'xsd:IDREF',
-            'xsd:IDREFS',
-            'xsd:ENTITY',
-            'xsd:ENTITIES',
-            'xsd:integer',
-            'xsd:nonPositiveInteger',
-            'xsd:negativeInteger',
-            'xsd:long',
-            'xsd:int',
-            'xsd:short',
-            'xsd:byte',
-            'xsd:nonNegativeInteger',
-            'xsd:unsignedLong',
-            'xsd:unsignedInt',
-            'xsd:unsignedShort',
-            'xsd:unsignedByte',
-            'xsd:positiveInteger']
+        xsd_derived_datatypes = [
+            ':normalizedString',
+            ':token',
+            ':language',
+            ':NMTOKEN',
+            ':NMTOKENS',
+            ':Name',
+            ':NCName',
+            ':ID',
+            ':IDREF',
+            ':IDREFS',
+            ':ENTITY',
+            ':ENTITIES',
+            ':integer',
+            ':nonPositiveInteger',
+            ':negativeInteger',
+            ':long',
+            ':int',
+            ':short',
+            ':byte',
+            ':nonNegativeInteger',
+            ':unsignedLong',
+            ':unsignedInt',
+            ':unsignedShort',
+            ':unsignedByte',
+            ':positiveInteger']
+        
+        self.xsd_derived_datatypes = [ namespace+t for t in xsd_derived_datatypes ]
 
         # when setting attributes, we 'help' a bit by setting default
         # values
-        self.attr_defaults = {
-            'booleanType': 'true',
-            'xsd:string' : '',
-            'xsd:integer': '0',
-            'xsd:boolean': 'true',
-            'xsd:decimal': '0.0',
-            'xsd:float'  : '0.0',
-            'xsd:double' : '0.0'
+        attr_defaults = {
+            ':string' : '',
+            ':integer': '0',
+            ':boolean': 'true',
+            ':decimal': '0.0',
+            ':float'  : '0.0',
+            ':double' : '0.0'
             }
+
+        for k in attr_defaults.keys():
+            k1 = namespace+k
+            attr_defaults.update( k1=attr_defaults[k] ) 
+        
+        attr_defaults[ 'booleanType' ] = 'true'
+
+        self.attr_defaults = attr_defaults
 
         # convenience concatenation
         self.xsd_types = self.xsd_datatypes+self.xsd_derived_datatypes
@@ -219,8 +243,14 @@ class XMLInstantiator( object ):
                 #name) can be null after assignment, use for
                 #checking
                 el_name, el_type = element.get( 'name' ), element.get( 'type' )
+
+                if element.get( 'name' ) is None and element.get( 'ref' ):
+                    log.debug( "Schema uses ref: instead of names in element declarations, this operation"+\
+                               "is unfortunately not currently supported, and the element will be ignored"+\
+                               "in order to avoid corruption of the internal representation. " )
+                    
                 #print element_tag, el_name, el_type
-                if element_tag == "element":
+                elif element_tag == "element":
                     log.debug( "xsd:element name=%s type=%s"%( el_name, el_type ) )
                     #local cache of the new instance element
                     #in elements, name is never None
@@ -229,7 +259,7 @@ class XMLInstantiator( object ):
                     elem = ET.Element( element_name )
                     #this is the special case:
                     if self.parent is None:
-                        #there was no root element, creating it.
+                        log.debug( "There was no root element, creating it. root=%s"%( elem ) )
                         self.parent = elem
                         self.root = self.parent
 #                         if self.ns is not None:
@@ -249,11 +279,16 @@ class XMLInstantiator( object ):
                 elif element_tag == "attribute":
                     log.debug( "xsd:attribute name=%s type=%s"%( el_name, el_type ) )
 
-                    if el_type in self.attr_defaults.keys():
+                    if el_name is None and el_type is None:
+                        log.debug( "Attribute does not declare itself in a supported way. Attribute element attributes are: %s", element.keys() )
+                        log.debug( "Could it be that no root element has been encountered? root=%s", self.root )
+                        pass
+                        
+                    if el_type in self.attr_defaults.keys() and self.root is not None:
                         #we have a default value
                         self.parent.set( el_name, 
                                          self.attr_defaults.get( el_type ) )
-                    else:
+                    elif self.root is not None:
                         self.parent.set( el_name, "" )
 
                 elif element_tag == "complexType":
@@ -267,6 +302,7 @@ class XMLInstantiator( object ):
                             error_string = "Key %s was not in the parent_map:\n%s\nKeyError: '%s'" %( el_name, self.parent_map, ke.message )
                             sys.exit( error_string )
                 elif element_tag == "complexContent":
+                    log.debug( "%s is not supported"%( element_tag ) )
                     pass
                 elif element_tag == "extension":
                     # treating:
@@ -302,7 +338,9 @@ class XMLInstantiator( object ):
                         log.debug( "parent map contains { %s : %s }"%( el_base, elem ) )
                         self.parent_map.update( { el_base: elem } )
                     
-                    
+#                 else:
+#                     #beware of the break in "elif element_tag == 'attribute' --> if el_name is None ...": it ends down here
+#                     pass
 
             else:
                 pass
@@ -372,6 +410,9 @@ if __name__ == '__main__':
     parser.add_option("-f", "--infile", type="string", dest="infile", action="store",
                       help="The xsd to process" )
 
+    parser.add_option("-n", "--namespace", type="string", dest="namespace", action="store",
+                      help="The namespace of the XML Schema (defaults to xsd)" )
+
     parser.add_option("-o", "--outfile", type="string", dest="outfile", action="store",
                       help="If given, the outfile will have the xml instance written to it." )
 
@@ -397,7 +438,12 @@ if __name__ == '__main__':
     elif options.verbose:
         flag = "verbose"
 
-    c = XMLInstantiator( infile, flag )
+    if options.namespace:
+        ns = options.namespace
+    else:
+        ns = "xsd"
+
+    c = XMLInstantiator( infile, flag, ns )
     c.build_xml_instance( c.xsd,
                           [ "element",
                             "attribute",
