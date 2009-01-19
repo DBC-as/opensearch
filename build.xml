@@ -81,37 +81,37 @@
 
 
   <target name="coverage-instrument" description="build instrumented classes">
-    <antcall target="opensearch.all">
+    <antcall target="toplevel.coverage-instrument">
       <param name="dependency.target" value="coverage-instrument"/>
     </antcall>
   </target>
 
   <target name="coverage-test" description="performs coverage test">
-    <antcall target="opensearch.all">
+    <antcall target="toplevel.coverage-test">
       <param name="dependency.target" value="coverage-test"/>
     </antcall>
   </target>
 
   <target name="coverage-report-html" description="Making a html coverage report">
-    <antcall target="opensearch.all">
+    <antcall target="toplevel.coverage-report-html">
       <param name="dependency.target" value="coverage-report-html"/>
     </antcall>
   </target>
 
   <target name="coverage-report-xml" description="Making an xml coverage report">
-    <antcall target="opensearch.all">
+    <antcall target="toplevel.coverage-report-xml">
       <param name="dependency.target" value="coverage-report-xml"/>
     </antcall>
   </target>
 
   <target name="coverage-reports" description="Making an xml and a htmlcoverage report">
-    <antcall target="opensearch.all">
+    <antcall target="toplevel.coverage-reports">
       <param name="dependency.target" value="coverage-reports"/>
     </antcall>
   </target>
 
   <target name="coverage-check" description="Checks the coverage test">
-    <antcall target="opensearch.all">
+    <antcall target="toplevel.coverage-check">
       <param name="dependency.target" value="coverage-check"/>
     </antcall>
   </target>

@@ -206,7 +206,7 @@
   <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
   <!--   The instrument target - building instrumented code -->
-  <target name="coverage-instrument" depends="toplevel.compile-tests">
+  <target name="toplevel.coverage-instrument" depends="toplevel.compile-tests">
 
     <!-- Capture the path as a delimited property using the refid attribute -->
     <property name="myclasspath" refid="classpath"/>
@@ -239,7 +239,7 @@
   <!--     <cobertura-check branchrate="34" totallinerate="100" /> -->
   <!--   </target> -->
 
-  <target name="coverage-test" depends="coverage-instrument">
+  <target name="toplevel.coverage-test" depends="toplevel.coverage-instrument">
     <mkdir dir="${report.dir}" />
 
     <junit fork="yes"
@@ -261,7 +261,7 @@
     </junit>
   </target>
 
-  <target name="coverage-report-html" depends="coverage-test">
+  <target name="toplevel.coverage-report-html" depends="toplevel.coverage-test">
     <cobertura-report destdir="${report.dir}/html" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
@@ -269,7 +269,7 @@
     </cobertura-report>
   </target>
 
-  <target name="coverage-report-xml" depends="coverage-test">
+  <target name="toplevel.coverage-report-xml" depends="toplevel.coverage-test">
     <cobertura-report format="xml" destdir="${report.dir}/xml" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
@@ -277,7 +277,7 @@
     </cobertura-report>
   </target>
 
-  <target name="coverage-check" depends="coverage-test">
+  <target name="toplevel.coverage-check" depends="toplevel.coverage-test">
     <cobertura-check branchrate="34" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" >
       <!--  Vi skal have fundet nogle fornuftige værdier her   -->
       <!--       <regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/> -->
@@ -285,7 +285,7 @@
     </cobertura-check>
   </target>
 
-  <target name="coverage-reports" depends="coverage-test, coverage-report-html, coverage-report-xml" />
+  <target name="toplevel.coverage-reports" depends="toplevel.coverage-test, toplevel.coverage-report-html, toplevel.coverage-report-xml" />
 
   <!-- ===================================================================== -->
   <!-- Experimental targets -->
