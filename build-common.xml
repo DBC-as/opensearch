@@ -108,6 +108,7 @@
            printsummary="withOutAndErr"
            haltonerror="false"
            haltonfailure="false">
+      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
 
       <!-- <classpath location="${instrumented.dir}" /> -->
       <classpath location="${classes.dir}" />
@@ -141,7 +142,7 @@
            printsummary="no"
            haltonerror="false"
            haltonfailure="false">
-
+      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
       <classpath location="${classes.dir}" />
 
       <formatter type="plain" usefile="no"/>
