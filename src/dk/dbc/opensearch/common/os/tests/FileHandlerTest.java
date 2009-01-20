@@ -38,21 +38,30 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 /**
- * 
+ *
  */
 public class FileHandlerTest {
+    File testdir;
+    File file1;
+    File file2;
+    File file3;
+    File file4;
+    File file5;
+    File file6;
+    File file7;
 
     FilenameFilter mockFileNameFilter1;
     FilenameFilter mockFileNameFilter2;
-    
+
     FilenameFilter[] fnf1 = new FilenameFilter[1];
     FilenameFilter[] fnf2 = new FilenameFilter[2];
 
-    String testDir = "";
+
+    String testdirName = "";
     Vector<String> testCase;
-     /**
-      * 
-      */     
+    /**
+     *
+     */
 
     @Before public void setUp(){
 
@@ -61,55 +70,54 @@ public class FileHandlerTest {
     @After public void tearDown(){}
 
     private void setUpGetFileList() throws IOException {
-               
-    /**
-     * Making the follwing directory structure to facilitate the test of the filehandler:
-     * 
-     * test-dir
-     * |--opensearch-unittest[int]
-     *    |--test.xml
-     *    |--test.java
-     *    |--.test.xml
-     *    `--descenddir
-     *       |--test.xml
-     *       |--test.java
-     *       |--.test.xml
-     *       
-     * Where test-dir is the directory retrieved from the java file getTmpFile method.
-     */
-        
+
+        /**
+         * Making the follwing directory structure to facilitate the test of the filehandler:
+         *
+         * test-dir
+         * |--opensearch-unittest[int]
+         *    |--test.xml
+         *    |--test.java
+         *    |--.test.xml
+         *    `--descenddir
+         *       |--test.xml
+         *       |--test.java
+         *       |--.test.xml
+         *
+         * Where test-dir is the directory retrieved from the java file getTmpFile method.
+         */
+
         File tmp = File.createTempFile("opensearch-unittest","" );
-        System.out.println( tmp.getAbsolutePath() );
-        testDir = tmp.getAbsolutePath();
+        testdirName = tmp.getAbsolutePath();
         tmp.delete();
-        File tmpdir = new File( testDir );
-        tmpdir.mkdir();
-        tmpdir.deleteOnExit();
-        File file1 = new File( tmpdir+"/test.xml");
+        testdir = new File( testdirName );
+        testdir.mkdir();
+        testdir.deleteOnExit();
+        file1 = new File( testdir+"/test.xml");
         file1.createNewFile();
         file1.deleteOnExit();
-        File file2 = new File( tmpdir+"/test.java");
+        file2 = new File( testdir+"/test.java");
         file2.createNewFile();
         file2.deleteOnExit();
-        File file3 = new File( tmpdir+"/.test.xml");
+        file3 = new File( testdir+"/.test.xml");
         file3.createNewFile();
         file3.deleteOnExit();
-        File file4 = new File( tmpdir+"/descend_dir");
+        file4 = new File( testdir+"/descend_dir");
         file4.mkdir();
         file4.deleteOnExit();
-        File file5 = new File( tmpdir+"/descend_dir/test.xml");
+        file5 = new File( testdir+"/descend_dir/test.xml");
         file5.createNewFile();
         file5.deleteOnExit();
-        File file6 = new File( tmpdir+"/descend_dir/test.java");
+        file6 = new File( testdir+"/descend_dir/test.java");
         file6.createNewFile();
         file6.deleteOnExit();
-        File file7 = new File( tmpdir+"/descend_dir/.test.xml");
+        file7 = new File( testdir+"/descend_dir/.test.xml");
         file7.createNewFile();
         file7.deleteOnExit();
-        
+
         mockFileNameFilter1 = createMock( FilenameFilter.class );
         mockFileNameFilter2 = createMock( FilenameFilter.class );
-        
+
         fnf1[0] = mockFileNameFilter1;
         fnf2[0] = mockFileNameFilter1;
         fnf2[1] = mockFileNameFilter2;
@@ -123,85 +131,119 @@ public class FileHandlerTest {
     @Test public void testGetFileListCase1() throws IOException {
         //case1:descend false, 1 filter
 
-        setUpGetFileList();        
-        
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-                
+        setUpGetFileList();
+
+        expect( mockFileNameFilter1.accept( testdir, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, "test.java" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, ".test.xml" ) ).andReturn( false );
+        expect( mockFileNameFilter1.accept( testdir, "descend_dir" ) ).andReturn( false );
+
         replay( mockFileNameFilter1 );
-        testCase = FileHandler.getFileList( testDir, fnf1, false );
+        testCase = FileHandler.getFileList( testdirName, fnf1, false );
         verify( mockFileNameFilter1 );
-                
+
+        if( testCase.indexOf( file1.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file1.getAbsolutePath() ) );
+        }
+        if( testCase.indexOf( file2.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file2.getAbsolutePath() ) );
+        }
+
+
     }
-    
+
     @Test public void testGetFileListCase2() throws IOException {
         //case1:descend false, more than 1 filter
 
-        setUpGetFileList();        
-        
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        
-        expect( mockFileNameFilter2.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter2.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-                
+        setUpGetFileList();
+        expect( mockFileNameFilter1.accept( testdir, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, "test.java" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, ".test.xml" ) ).andReturn( false );
+        expect( mockFileNameFilter1.accept( testdir, "descend_dir" ) ).andReturn( false );
+
+        expect( mockFileNameFilter2.accept( testdir, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter2.accept( testdir, "test.java" ) ).andReturn( false );
+
         replay( mockFileNameFilter1 );
         replay( mockFileNameFilter2 );
 
-        testCase = FileHandler.getFileList( testDir, fnf2, false );
-                
+        testCase = FileHandler.getFileList( testdirName, fnf2, false );
+
         verify( mockFileNameFilter1 );
         verify( mockFileNameFilter2 );
+
+        if( testCase.indexOf( file1.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file1.getAbsolutePath() ) );
+        }
     }
 
     @Test public void testGetFileListCase3() throws IOException {
         //case3:descend true, 1 filter
-        
+
         setUpGetFileList();
-        
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        
+
+        expect( mockFileNameFilter1.accept( testdir, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, "test.java" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, ".test.xml" ) ).andReturn( false );
+        expect( mockFileNameFilter1.accept( testdir, "descend_dir" ) ).andReturn( false );
+        expect( mockFileNameFilter1.accept( file4, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( file4, "test.java" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( file4, ".test.xml" ) ).andReturn( false );
+
         replay( mockFileNameFilter1 );
-        testCase = FileHandler.getFileList( testDir, fnf1, true );
-       
+        testCase = FileHandler.getFileList( testdirName, fnf1, true );
+
         verify( mockFileNameFilter1 );
+
+        if( testCase.indexOf( file1.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file1.getAbsolutePath() ) );
+        }
+        if( testCase.indexOf( file2.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file2.getAbsolutePath() ) );
+        }
+        if( testCase.indexOf( file5.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file1.getAbsolutePath() ) );
+        }
+        if( testCase.indexOf( file6.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file2.getAbsolutePath() ) );
+        }
+
     }
 
     @Test public void testGetFileListCase4() throws IOException {
         //case4:descend true, more than 1 filter
 
-        setUpGetFileList();        
-        
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );        
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter1.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
+        setUpGetFileList();
 
-        expect( mockFileNameFilter2.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter2.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-        expect( mockFileNameFilter2.accept( isA( File.class ), isA( String.class ) ) ).andReturn( true );
-        expect( mockFileNameFilter2.accept( isA( File.class ), isA( String.class ) ) ).andReturn( false );
-                
+        expect( mockFileNameFilter1.accept( testdir, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, "test.java" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( testdir, ".test.xml" ) ).andReturn( false );
+        expect( mockFileNameFilter1.accept( testdir, "descend_dir" ) ).andReturn( false );
+        expect( mockFileNameFilter1.accept( file4, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( file4, "test.java" ) ).andReturn( true );
+        expect( mockFileNameFilter1.accept( file4, ".test.xml" ) ).andReturn( false );
+
+        expect( mockFileNameFilter2.accept( testdir, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter2.accept( testdir, "test.java" ) ).andReturn( false );
+        expect( mockFileNameFilter2.accept( file4, "test.xml" ) ).andReturn( true );
+        expect( mockFileNameFilter2.accept( file4, "test.java" ) ).andReturn( false );
+
+
         replay( mockFileNameFilter1 );
         replay( mockFileNameFilter2 );
 
-        testCase = FileHandler.getFileList( testDir, fnf2, true );
-                
+        testCase = FileHandler.getFileList( testdirName, fnf2, true );
+
         verify( mockFileNameFilter1 );
-        verify( mockFileNameFilter2 );     
+        verify( mockFileNameFilter2 );
+
+        if( testCase.indexOf( file1.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file1.getAbsolutePath() ) );
+        }
+        if( testCase.indexOf( file5.getAbsolutePath() ) < 0 ){
+            fail( String.format( "file='%s' should be returned", file1.getAbsolutePath() ) );
+        }
+
     }
 
 
@@ -209,11 +251,11 @@ public class FileHandlerTest {
 
         String teststr = "THIS IS A TEST";
 
-        
 
-        File tmp = File.createTempFile("opensearch-unittest","" );   
+
+        File tmp = File.createTempFile("opensearch-unittest","" );
         tmp.deleteOnExit();
-        
+
         FileWriter  fstream = new FileWriter( tmp );
         BufferedWriter out = new BufferedWriter( fstream );
         out.write( teststr );
@@ -224,21 +266,21 @@ public class FileHandlerTest {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
-        
+
         String line = null;
         while ( ( line = reader.readLine() ) != null ){
             sb.append( line );
         }
         is.close();
 
-        assertEquals( sb.toString(), teststr );        
+        assertEquals( sb.toString(), teststr );
     }
-    
+
     @Test public void testGetFile() throws IOException {
-        File tmp = File.createTempFile("opensearch-unittest","" );   
+        File tmp = File.createTempFile("opensearch-unittest","" );
         tmp.deleteOnExit();
         String tmpname = tmp.getAbsolutePath();
-        
+
         File get = FileHandler.getFile( tmpname );
         assertTrue( get.exists() );
     }
