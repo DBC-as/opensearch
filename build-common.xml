@@ -150,7 +150,7 @@
     </echo>
     <junit fork="yes"
            forkmode="once"
-           printsummary="no"
+           printsummary="on"
            haltonerror="false"
            haltonfailure="false">
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
@@ -220,7 +220,7 @@
   <target name="toplevel.coverage-instrument" depends="toplevel.compile-tests">
 
     <!-- Capture the path as a delimited property using the refid attribute -->
-    <property name="myclasspath" refid="classpath"/>
+<!--     <property name="myclasspath" refid="classpath"/> -->
 
     <!-- Remove the coverage data file and any old instrumentation. -->
     <delete dir="${instrumented.dir}" />
@@ -260,9 +260,13 @@
            haltonfailure="false"
            dir="${instrumented.dir}"
            >
+      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
+      <formatter type="xml"/>
+
       <!-- Setting up the classpath -->
       <classpath location="${instrumented.dir}" />
       <classpath location="${classes.dir}" />
+      <classpath location="${config.dir}" />
       <classpath refid="cobertura.classpath" />
 
       <!-- Performing the test -->
