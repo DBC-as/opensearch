@@ -93,16 +93,20 @@
       <classpath refid="classpath"/>
     </javac>
   </target>
+	
+  <target name="toplevel.suite" description="Run test suite" depends="toplevel.compile-tests">
+  	<echo>${dependency.target}</echo>
+  	<echo>${suite.name}</echo>
+  	<junit>
+  	  <classpath refid="classpath" />
+  	  <formatter type="brief" usefile="false" />
+  	  <test name="${suite.name}" />
+  	  <!--test name="dk.dbc.opensearch.common.fedora.tests.FedoraTestSuite" /-->
+  	  <!--test name="${suite.path}" /-->
+  	</junit>
+  </target>
 
-  <target name="toplevel.test"
-          description="Run unittests"
-          depends="toplevel.compile-tests">
-    <echo>
-      basedir:               ${basedir}/tests
-      classes.dir:           ${classes.dir}
-      dk/dbc/opensearch/${ant.project.name}/tests/
-    </echo>
-
+  <target name="toplevel.test" description="Run unittests" depends="toplevel.compile-tests">
     <junit fork="yes"
            forkmode="once"
            printsummary="withOutAndErr"

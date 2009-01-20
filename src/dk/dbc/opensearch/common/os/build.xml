@@ -1,4 +1,11 @@
-<project name="opensearch.common.os" default="usage">
+<project name="opensearch.common.os" default="suite">
   <!--Time-stamp: <2009-01-14 15:08:10 stm> -->
   <import file="../../../../../../build.xml"/>
+	
+  <target name="suite" description="Compiles and runs test suite">
+	<antcall target="testsuite">
+	  <param name="suite.name" value="dk.dbc.opensearch.common.os.tests.OSTestSuite" />
+	  <param name="dependency.target" value="toplevel.suite" />
+	</antcall>
+  </target>
 </project>

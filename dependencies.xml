@@ -26,8 +26,7 @@
   </target>
 
   <!-- ================================================================== -->
-  <target name="opensearch.components"
-          depends="opensearch.common">
+  <target name="opensearch.components" depends="opensearch.common">
     <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components"
          target="${dependency.target}"
          inheritAll="false"/>
