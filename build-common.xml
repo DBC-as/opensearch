@@ -97,8 +97,15 @@
   <target name="toplevel.suite" description="Run test suite" depends="toplevel.compile-tests">
   	<echo>${dependency.target}</echo>
   	<echo>${suite.name}</echo>
-  	<junit>
-  	  <classpath refid="classpath" />
+  	<junit fork="yes"
+           forkmode="once"
+           printsummary="withOutAndErr"
+           haltonerror="false"
+           haltonfailure="false">
+  		
+  	  <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
+  	  <classpath refid="classpath" /> 		
+  	  
   	  <formatter type="brief" usefile="false" />
   	  <test name="${suite.name}" />
   	  <!--test name="dk.dbc.opensearch.common.fedora.tests.FedoraTestSuite" /-->
