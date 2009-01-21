@@ -1,34 +1,35 @@
 CREATE TABLE processqueue(
-  queueid INTEGER PRIMARY KEY,
-  fedorahandle VARCHAR(100),
-  itemID VARCHAR(100),
-  processing CHAR(1) CHECK (processing IN ( 'Y', 'N' ))
+       queueID INTEGER PRIMARY KEY,
+       fedorahandle VARCHAR(100),
+       itemID VARCHAR(100),
+       processing CHAR(1) CHECK (processing IN ( 'Y', 'N' ))
 );
 
-CREATE SEQUENCE processqueue_seq
-  MAXVALUE 1000000000
-  NOCYCLE;
+CREATE SEQUENCE processqueue_sequence
+       MAXVALUE 1000000000
+       NO CYCLE;
 
-CREATE OR REPLACE 
-PROCEDURE proc_prod(fedorahandle OUT VARCHAR, queueid OUT INTEGER, processing OUT VARCHAR, itemID OUT VARCHAR)
-IS
-  CURSOR proc_cur 
-  IS 
-    SELECT fedorahandle,queueid,processing,itemID
-    FROM processqueue 
-    WHERE queueid = ( SELECT MIN(queueid)
-                      FROM processqueue 
-                      WHERE processing = 'N' )
-                      FOR UPDATE OF processing;
-BEGIN
-  OPEN proc_cur;
-  IF proc_cur%ISOPEN THEN
-    FETCH proc_cur into fedorahandle,queueid,processing,itemID;
-    IF proc_cur%FOUND THEN
-      UPDATE processqueue
-      SET processing = 'Y'
-      WHERE CURRENT OF proc_cur;
-    END IF;
-  END IF;
-END;
-/
+CREATE OR REPLACE FUNCTION processqueue_pop_post () RETURNS processqueue AS $$
+       DECLARE
+                rowvar processqueue%ROWTYPE;
+                cursor_post refcursor;
+       BEGIN
+                OPEN cursor_post  FOR SELECT *
+                                               FROM processqueue
+                                               WHERE queueID = ( SELECT MIN(queueid)
+                                               FROM processqueue
+                                               WHERE processing = 'N' )
+                                               FOR UPDATE OF processqueue;
+
+                FETCH cursor_post INTO rowvar;
+                
+                IF NOT FOUND THEN
+                       RETURN rowvar;
+                END IF;
+                
+                UPDATE processqueue
+                SET processing = 'Y'
+                WHERE CURRENT OF cursor_post;
+                RETURN rowvar;
+       END;
+$$ LANGUAGE plpgsql;

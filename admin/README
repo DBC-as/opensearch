@@ -1,0 +1,1 @@
+run like: psql -d opensearchTest -f init.sql
