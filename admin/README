@@ -1,1 +1,1 @@
-run like: psql -d opensearchTest -f init.sql
+run like: psql -d opensearchtest -f init.sql
