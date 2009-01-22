@@ -264,13 +264,13 @@
 
     <junit fork="yes"
            forkmode="once"
-           printsummary="yes"
+           printsummary="off"
            haltonerror="false"
            haltonfailure="false"
            dir="${instrumented.dir}"
            >
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
-      <formatter type="xml"/>
+
 
       <!-- Setting up the classpath -->
       <classpath location="${instrumented.dir}" />
