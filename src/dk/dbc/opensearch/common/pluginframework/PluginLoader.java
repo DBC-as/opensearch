@@ -44,9 +44,12 @@ public class PluginLoader {
         try{
         loadedClass = cl.loadClass( fullPluginClassName );
         }catch( ClassNotFoundException cnfe ){
-            log.fatal(String.format( "the class %s is not found, an xml plugin file is invalid " ) );
+            log.fatal(String.format( "the class %s is not found, an xml plugin file is invalid ", pluginName ) );
             throw new IllegalArgumentException( String.format( " class %s not found! ", pluginName ));
-        }
+        }catch( IllegalArgumentException iae ){
+             throw new IllegalArgumentException( String.format( " class %s not found! ", pluginName ));
+}
+        
         IPluggable thePlugin = ( IPluggable ) loadedClass.newInstance();
 
         return thePlugin;
