@@ -16,18 +16,17 @@ import java.lang.IllegalAccessException;
 public class PluginLoader {
 
     static Logger log = Logger.getLogger( "PluginLoader" );
-    String pluginPathName = "classes/dk/dbc/opensearch/plugins";
-    FileHandler fileHandler;
+    String pluginSubPathName = "build/classes/dk/dbc/opensearch/plugins/";
+    //String packageName = "dk.dbc.opensearch.plugins"
     ClassLoader cl;
 
 
     /**
      *
      */
-    public PluginLoader( ClassLoader cl, FileHandler fileHandler ) {
+    public PluginLoader( ClassLoader cl/*, FileHandler fileHandler*/ ) {
 
         this.cl = cl;
-        this.fileHandler = fileHandler;
     }
 
     /**
@@ -35,19 +34,19 @@ public class PluginLoader {
      * plugin on the classpath and loads the plugin
      * @param pluginName the name of the plugin
      */
-    public IPluggable loadPlugin( String pluginName )throws FileNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException{
+    public IPluggable loadPlugin( String pluginName )throws FileNotFoundException,/* ClassNotFoundException,*/ InstantiationException, IllegalAccessException{
 
-        File pluginPath = fileHandler.getFile( pluginPathName );
-        if( !pluginPath.exists() ){
-            throw new FileNotFoundException( String.format( "plugin directory %s could not be found", pluginPath.getAbsolutePath() ) );
-        }
-        
 
         String fullPluginClassName = pluginName;
+        Class loadedClass = null;
         //loading the class
         log.debug( String.format( "The plugin class name: %s" ,fullPluginClassName) );
-        Class loadedClass = cl.loadClass( fullPluginClassName );
-
+        try{
+        loadedClass = cl.loadClass( fullPluginClassName );
+        }catch( ClassNotFoundException cnfe ){
+            log.fatal(String.format( "the class %s is not found, an xml plugin file is invalid " ) );
+            throw new IllegalArgumentException( String.format( " class %s not found! ", pluginName ));
+        }
         IPluggable thePlugin = ( IPluggable ) loadedClass.newInstance();
 
         return thePlugin;
