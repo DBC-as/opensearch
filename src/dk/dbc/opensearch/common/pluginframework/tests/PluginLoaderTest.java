@@ -20,60 +20,70 @@ import java.lang.IllegalAccessException;
 /**
  *
  */
-public class PluginLoaderTest {
+public class PluginLoaderTest{
 
-    public static void main(String[] args){
-        org.junit.runner.JUnitCore.main("dk.dbc.opensearch.common.pluginframework.tests.PluginLoaderTest");
-        }
 
-    FileHandler fh;
+    //FileHandler fh;
     ClassLoader pcl;
     PluginLoader pl;
-    PluginClassLoader mockPCL;
+    //    PluginClassLoader mockPCL;
     Boolean noException;
-    //Class replaceClass;
-    IPluggable mockIPluggable;
+    //static Class mockitClass = null;
     IPluggable testIPlug;
     String testClassString;
-    File mockFile;    
+    static File mockFile;
 
-    public final class ReplaceClass{
-        public Object newInstance(){
-            return mockIPluggable;
+    /**
+     *  class that implements the IPluggable interface
+     *
+    public class ReplacePlug implements IPluggable{
+        public ReplacePlug(){}
+        public void init(){}
+        public String getPluginTask(){
+            return "testTask";
         }
+        public String getPluginSubmitter(){
+            return "testSubmitter";
+        }
+        public String getPluginFormat(){
+            return "testFormat";
+        } 
+        
     }
-    public class ReplaceFileHandler{
-        public File getFile( String name ){
+    //ReplacePlug RPPlug;
+    */
+    /**
+     * class that replaces the functionality of the FileHandler class
+     *
+     */
+    public static class ReplaceFileHandler{
+        public static File getFile( String path ){
             return mockFile;
         }
     }
-    
     /**
      *
      */
     @Before public void SetUp()throws Exception {
 
-        testClassString = "dk.dbc.opensearch.common.pluginframework.IPluggable";
+        testClassString = "dk.dbc.opensearch.common.pluginframework.tests.TestPlugin";
         noException = true;
-
-        mockPCL = createMock( PluginClassLoader.class );
-        mockFile = createMock( File.class );
+        //mockFile = createMock( File.class );
+        //  mockPCL = createMock( PluginClassLoader.class );
         //mockIPluggable = createMock( IPluggable.class );
-       
-        Mockit.redefineMethods( FileHandler.class, ReplaceFileHandler.class );
-        fh = new FileHandler();
-        //Is it nessecary to use a classloader to get a Class object?
-        //pcl = new PluginClassLoader();
-        //Mockit.redefineMethods( Class.class, ReplaceClass.class );
-        //replaceClass = pcl.loadClass( testClassString );    
-    }
+        //RPPlug = new RePlacePlug;
+        //    Mockit.redefineMethods( Class.class, ReplaceClass.class );
+        //Mockit.redefineMethods( FileHandler.class, ReplaceFileHandler.class );
 
+        pcl = new PluginClassLoader();
+    }
     /**
      *
      */
     @After public void TearDown() {
         pl = null;
-        Mockit.restoreAllOriginalDefinitions();
+        //  reset( mockPCL );
+        //Mockit.restoreAllOriginalDefinitions();
     }
 
     /**
@@ -81,7 +91,7 @@ public class PluginLoaderTest {
      */
     @Test public void constructorTest() {
         try{
-            pl = new PluginLoader( pcl, fh );
+            pl = new PluginLoader( pcl );
         }catch( Exception e){
             noException = false;
         }
@@ -90,18 +100,22 @@ public class PluginLoaderTest {
     /**
      *
      */
-    @Ignore
+
     @Test public void loadPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException {
-        
+
+        // expect( mockPCL.loadClass( isA( String.class ) ) ).andReturn( dk.dbc.opensearch.common.pluginframework.tests.PluginLoaderTest$ReplacePlug );
+
+        //replay( mockPCL );
         try{
-            pl = new PluginLoader( pcl, fh );        
-        testIPlug = pl.loadPlugin( testClassString );
+            pl = new PluginLoader( pcl );
+            testIPlug = pl.loadPlugin( testClassString );
         }catch( Exception e){
             noException = false;
             e.printStackTrace();
         }
         assertTrue( noException );
 
+        //verify ( mockPCL );
 
     }
 }
