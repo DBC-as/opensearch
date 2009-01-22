@@ -71,20 +71,6 @@
     </antcall>
   </target>
 
-  <target name="dist" description="Creates distributable">
-    <antcall target="opensearch.all">
-      <param name="dependency.target" value="dist"/>
-    </antcall>
-  </target>
-
-
-  <target name="update" description="Creates api documentation">
-    <antcall target="opensearch.all">
-      <param name="dependency.target" value="update"/>
-    </antcall>
-  </target>
-
-
   <target name="coverage-instrument" description="build instrumented classes">
     <antcall target="toplevel.coverage-instrument">
       <param name="dependency.target" value="coverage-instrument"/>

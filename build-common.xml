@@ -45,6 +45,9 @@
 
   <!-- ===================================================================== -->
   <!-- TARGETS -->
+	
+  <!-- target names are prefixed with 'toplevel.' to avoid circularity due to import of file
+       build-common.xml in build.xml -->
   <!-- ===================================================================== -->
 
   <target name="toplevel.clean"
