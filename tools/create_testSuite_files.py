@@ -30,8 +30,6 @@ def createTestSuiteFileText( dir, className, testNames ):
     fileTxt += '@RunWith(Suite.class)' + doubleNL
     fileTxt += '@Suite.SuiteClasses(' + '\n    {\n'
 
-    """    for test in testNames:        
-        fileTxt += '\t' + test + '.class,\n'"""
     while len(testNames) > 1:
         fileTxt += '\t\t' + testNames.pop() + '.class,\n'
         
@@ -49,14 +47,20 @@ def createTestSuiteFileText( dir, className, testNames ):
 
 def match( ptr, dir, names ):
     tests = list()
-
     fileTxt = str()
+
+    # Consider only /tests folders
     if fnmatch.fnmatch( dir, '*tests' ):
         for name in names:
-            if name.endswith( ptr ):
+            if name.endswith( ptr ): 
+                # Names for suite classes
                 tests.append( name.replace( '.java', '' ) )
+
+        # Create suite classes if '*Test.java' (ptr) files exist
         if len( tests ) > 0:
             projectName = str()
+
+            # Process 'tests' folders
             if dir.endswith('/tests'):
                 projectName = dir.replace( '/tests', '' ).split('/').pop()
                 className = projectName.upper() + 'TestSuite'
@@ -66,12 +70,14 @@ def match( ptr, dir, names ):
     
     
 sourceDir = os.getcwd()
-if sourceDir.endswith( 'tools'):
+#if sourceDir.endswith( 'tools'):
+if os.path.basename(sourceDir) == 'tools':
      sourceDir = '../src/dk/dbc/opensearch'
      os.path.walk(sourceDir, match, 'Test.java')
+     print 'Suite files successfully created!'
 else:
     print '<ERROR>'
-    print 'Curr Dir should be ./.../opensearch/tools'
+    print 'Current directory should be ~/.../opensearch/trunk/tools'
 
 
 
