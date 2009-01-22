@@ -21,9 +21,11 @@
   <property name="xsd.dir"          value="${src.dir}/xsd"/>
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
+  <property name="testresults.dir"  value="${base.dir}/test-results"/>
+
 
   <path id="classpath">
-    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant*.jar"/>
+    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
     <pathelement location="${classes.dir}" />
     <pathelement location="${config.dir}" />
   </path>
@@ -57,7 +59,7 @@
     <delete dir="${api.dir}"/>
     <delete dir="${report.dir}"/>
     <delete file="${base.dir}/doxygen-warnings"/>
-    <mkdir dir="${classes.dir}"/>
+    <delete dir="${testresults.dir}"/>
   </target>
 
   <!--target name="opensearch.all">
@@ -117,6 +119,7 @@
   </target>
 
   <target name="toplevel.test" description="Run unittests" depends="toplevel.compile-tests">
+    <mkdir dir="${testresults.dir}"/>
     <junit fork="yes"
            forkmode="once"
            printsummary="withOutAndErr"
@@ -130,13 +133,13 @@
 
       <formatter type="plain" usefile="no"/>
       <!-- uncomment the line below when this should be use with a cruisecontrol build server-->
-      <!--formatter type="xml" usefile="yes"/-->
+      <formatter type="xml" usefile="yes"/>
       <classpath refid="classpath"/>
 
       <!--batchtest fork="yes">
           <fileset dir="${src.dir}/dk/dbc/opensearch/common/statistics/" includes="tests/*Test.java"/>
           </batchtest-->
-      <batchtest todir="${basedir}">
+      <batchtest todir="${testresults.dir}">
         <fileset dir="${classes.dir}" >
           <include name="**/tests/*Test.class"/>
         </fileset>
@@ -192,6 +195,8 @@
 
   <target name="toplevel.compile-xsd" description="compiles xsd"
           depends="toplevel.xsd-classes">
+    <mkdir dir="${classes.dir}"/>
+
     <javac srcdir="${src.dir}" destdir="${classes.dir}">
       <classpath refid="classpath"/>
     </javac>
@@ -215,6 +220,7 @@
     <fileset dir="${cobertura.dir}">
       <include name="cobertura.jar" />
       <include name="*.jar" />
+      <exclude name="ant.jar" />
     </fileset>
   </path>
   <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
@@ -258,7 +264,7 @@
 
     <junit fork="yes"
            forkmode="once"
-           printsummary="no"
+           printsummary="yes"
            haltonerror="false"
            haltonfailure="false"
            dir="${instrumented.dir}"
@@ -271,6 +277,8 @@
       <classpath location="${classes.dir}" />
       <classpath location="${config.dir}" />
       <classpath refid="cobertura.classpath" />
+
+      <formatter type="xml" usefile="yes"/>
 
       <!-- Performing the test -->
       <batchtest fork="yes">
