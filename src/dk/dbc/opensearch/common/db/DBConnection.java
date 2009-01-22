@@ -8,14 +8,10 @@ package dk.dbc.opensearch.common.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
 import org.apache.log4j.Logger;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
-
 import java.net.URL;
-
 import java.lang.ClassNotFoundException;
 
 /**
@@ -34,6 +30,7 @@ public class DBConnection{
     private static String url = "";
     private static String userID = "";
     private static String passwd = "";
+    XMLConfiguration config = null;
 
     static Logger log = Logger.getLogger("DBConnection");
 
@@ -44,13 +41,13 @@ public class DBConnection{
      * @throws ConfigurationException
      * @throws ClassNotFoundException
      */
+
     public DBConnection() throws ConfigurationException, ClassNotFoundException {
         log.debug( "DBConnection constructor");
    
         log.debug( "Obtain config paramaters");
         
         URL cfgURL = getClass().getResource("/config.xml");
-        XMLConfiguration config = null;
         
         config = new XMLConfiguration( cfgURL );
         
@@ -59,8 +56,7 @@ public class DBConnection{
         userID = config.getString( "database.userID" );
         passwd = config.getString( "database.passwd" );
 
-        Class.forName(driver);
-        
+        Class.forName( driver );        
         log.debug( String.format( "driver: %s, url: %s, userID: %s",driver, url, userID) );
     }
 
@@ -69,15 +65,13 @@ public class DBConnection{
      *
      * @throws SQLException
      */
-    protected static Connection establishConnection() throws SQLException {
+    public static Connection getConnection() throws SQLException {
         log.debug( "Establishing connection." );
 
         Connection con = null;
         con = DriverManager.getConnection(url, userID, passwd);        
         
         log.debug( "Got connection." );
-
         return con;
     }
-
 }

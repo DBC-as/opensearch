@@ -1,7 +1,6 @@
 package dk.dbc.opensearch.common.db.tests;
 
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.common.helpers.PrivateAccessor;
 
 import com.mockrunner.jdbc.*;
 import com.mockrunner.mock.jdbc.MockConnection;
@@ -15,7 +14,7 @@ import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 import com.mallardsoft.tuple.Triple;
-
+import com.mallardsoft.tuple.Tuple;
 
 public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
 
@@ -25,83 +24,101 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
     
     Processqueue processqueue;
 
-    private CallableStatementResultSetHandler callableStatementHandler;
-
     protected void setUp() throws Exception {
 
         super.setUp();
         connection = getJDBCMockObjectFactory().getMockConnection();
-        callableStatementHandler = connection.getCallableStatementResultSetHandler();   
         statementHandler = connection.getStatementResultSetHandler();
         result = statementHandler.createResultSet();
         processqueue = new Processqueue();
     }
 
-    //    private void TestEstablishConneciton(){}
-
     public  void testPopFromEmptyProcessqueue() throws ConfigurationException, ClassNotFoundException, SQLException {
-
+        
+        String sql_query = "SELECT * from processqueue_pop_post()";
+ 
         statementHandler.prepareGlobalResultSet( result );
 
         try{
-            //Triple<String, Integer, String> triple = processqueue.pop();
+            Triple<String, Integer, String> triple = processqueue.pop();
             fail("Should have gotten NoSuchElementException - returned zero rows removed from processqueue table");
         }
         catch(NoSuchElementException nse){
             // Expected - intentional
         }
+        verifySQLStatementExecuted( sql_query );
         verifyNotCommitted();
         verifyAllStatementsClosed();
         verifyConnectionClosed();
     }
 
-    /*public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException, IllegalAccessException, InvocationTargetException {
+    public void testPopFromProcessqueueWithNoHandle() throws ConfigurationException, ClassNotFoundException, SQLException {
         
-        String fedorahandle = "test_handle_1";
+        String fedorahandle = null;
         int queueid = 1;
-        //String processing = "N";
         String itemid = "item_1";
+        String sql_query = "SELECT * from processqueue_pop_post()";
+
+        result.addColumn("fedorahandle", new String[] { fedorahandle });
+        result.addColumn("itemID", new String[] { itemid });
+        result.addColumn("queueID", new Integer[] { queueid });
+        statementHandler.prepareGlobalResultSet( result );
 
         Triple<String, Integer, String> triple = null;
-
-        CallableStatement mockCallableStatement = createMock( CallableStatement.class );
-        
-        expect( mockCallableStatement.getString( 1 ) ).andReturn( fedorahandle ).times(2);
-        expect( mockCallableStatement.getInt( 2 ) ).andReturn( queueid ) ;
-        expect( mockCallableStatement.getString( 4 ) ).andReturn( itemid );
-        replay( mockCallableStatement );
-
-        triple = (Triple) PrivateAccessor.invokePrivateMethod( processqueue, "getValues", mockCallableStatement );
-        
-        assertEquals(fedorahandle , Tuple.get1(triple) );
-        assertEquals(queueid , (int )Tuple.get2(triple) );
-        assertEquals(itemid , Tuple.get3(triple) );        
-        verifyAllStatementsClosed();
-    }*/
-
-
-    public void testPopFromProcessqueueWithNoActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {
+       
         try{
-            Triple<String, Integer, String> triple = processqueue.pop();
+            triple = processqueue.pop();
+            fail("Should have gotten NoSuchElementException - returned zero rows removed from processqueue table");
         }
         catch(NoSuchElementException nse){
             // Expected - intentional
         }
+        
+        verifySQLStatementExecuted( sql_query );
         verifyNotCommitted();
-        verifyCallableStatementClosed("call proc_prod");
+        //assertEquals(fedorahandle , Tuple.get1(triple) );
+        //assertEquals(queueid , (int )Tuple.get2(triple) );
+        //assertEquals(itemid , Tuple.get3(triple) );
+        
         verifyAllStatementsClosed();
-        verifyConnectionClosed();
+    }
+
+
+
+
+    public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {
+        
+        String fedorahandle = "test_handle_1";
+        int queueid = 1;
+        String itemid = "item_1";
+        String sql_query = "SELECT * from processqueue_pop_post()";
+
+        result.addColumn("fedorahandle", new String[] { fedorahandle });
+        result.addColumn("itemID", new String[] { itemid });
+        result.addColumn("queueID", new Integer[] { queueid });
+        statementHandler.prepareGlobalResultSet( result );
+
+        Triple<String, Integer, String> triple = null;
+        triple = processqueue.pop();
+        
+        verifySQLStatementExecuted( sql_query );
+        verifyCommitted();
+        assertEquals(fedorahandle , Tuple.get1(triple) );
+        assertEquals(queueid , (int )Tuple.get2(triple) );
+        assertEquals(itemid , Tuple.get3(triple) );
+        
+        verifyAllStatementsClosed();
     }
     
-
     public void testPushToProcessqueue() throws ConfigurationException, ClassNotFoundException, SQLException {
-
+        
         String testFedoraHandle = "testFedoraHandle";
         String testItemID = "testItemID";
         processqueue.push( testFedoraHandle, testItemID );
+        
+        String sql_query = (  String.format( "INSERT INTO processqueue( queueid, fedorahandle, itemID, processing ) "+
+                                             "VALUES( nextval( 'processqueue_sequence' ) ,'%s','%s','N' )", testFedoraHandle, testItemID ) );
 
-        String sql_query = (  String.format( "INSERT INTO processqueue(queueid, fedorahandle, itemID, processing) "+
-                                             "VALUES(processqueue_seq.nextval ,'%s','%s','N')", testFedoraHandle, testItemID ) );
         verifySQLStatementExecuted( sql_query );
         verifyCommitted();
         verifyAllStatementsClosed();
@@ -140,6 +157,7 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         verifyConnectionClosed();
     }
 
+
     public void testRollbackWithValidQueueID() throws ConfigurationException, ClassNotFoundException, SQLException{
 
         statementHandler.prepareGlobalUpdateCount( 1 );
@@ -173,5 +191,17 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         verifyConnectionClosed();
     }
 
-    private void TestDeActivate(){}
+    public void testDeActivate()throws ClassNotFoundException, SQLException {
+        
+        statementHandler.prepareGlobalUpdateCount( 2 );
+
+        processqueue.deActivate();
+        
+        String sql_query = "UPDATE processqueue SET processing = 'N' WHERE processing = 'Y'";
+       
+        verifySQLStatementExecuted( sql_query );
+        verifyNotCommitted();
+        verifyAllStatementsClosed();
+        verifyConnectionClosed();
+    }
 }
