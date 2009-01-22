@@ -31,6 +31,49 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter
     }
     
     
+    public void testDataAmountIsZero() throws ConfigurationException, ClassNotFoundException, SQLException 
+    {    
+        int processtime = 10;
+        int dataamount = 0;
+        long length = 5;
+        String mimetype = "text/xml";
+
+        float average_time = 0l;
+
+        result.addColumn("processtime", new Integer[] { processtime });
+        result.addColumn("dataamount", new Integer[] { dataamount });
+        statementHandler.prepareGlobalResultSet( result );
+        
+        float returnval = estimate.getEstimate( mimetype, length );
+        assertTrue( average_time == returnval );
+
+        String sql_query = String.format( "SELECT processtime, dataamount FROM statistics WHERE mimetype = '%s'", mimetype );
+        verifySQLStatementExecuted( sql_query );       
+        verifyAllStatementsClosed();
+        verifyConnectionClosed();
+    }
+    public void testProcessTimeIsZero() throws ConfigurationException, ClassNotFoundException, SQLException 
+    {    
+        int processtime = 0;
+        int dataamount = 10;
+        long length = 5;
+        String mimetype = "text/xml";
+
+        float average_time = 0l;
+
+        result.addColumn("processtime", new Integer[] { processtime });
+        result.addColumn("dataamount", new Integer[] { dataamount });
+        statementHandler.prepareGlobalResultSet( result );
+        
+        float returnval = estimate.getEstimate( mimetype, length );
+        assertTrue( average_time == returnval );
+
+        String sql_query = String.format( "SELECT processtime, dataamount FROM statistics WHERE mimetype = '%s'", mimetype );
+        verifySQLStatementExecuted( sql_query );       
+        verifyAllStatementsClosed();
+        verifyConnectionClosed();
+    }
+
     public void testValidgetEstimate() throws ConfigurationException, ClassNotFoundException, SQLException 
     {    
         int processtime = 25;
@@ -47,7 +90,7 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter
         float returnval = estimate.getEstimate( mimetype, length );
         assertTrue( average_time == returnval );
 
-        String sql_query = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimetype );
+        String sql_query = String.format( "SELECT processtime, dataamount FROM statistics WHERE mimetype = '%s'", mimetype );
         verifySQLStatementExecuted( sql_query );       
         verifyAllStatementsClosed();
         verifyConnectionClosed();
@@ -59,7 +102,7 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter
         String mimetype = "notype";
         try
         {
-            //float returnval = estimate.getEstimate( mimetype, 3 );
+            float returnval = estimate.getEstimate( mimetype, 3 );
             fail("Should have gotten NoSuchElementException - returned zero rows updated from statisticsDB table");
         }
         catch(NoSuchElementException nse)
@@ -67,7 +110,7 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter
             // Expected - intentional
         }
         
-        String sql_query = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimetype );
+        String sql_query = String.format( "SELECT processtime, dataamount FROM statistics WHERE mimetype = '%s'", mimetype );
         verifySQLStatementExecuted( sql_query );       
         verifyAllStatementsClosed();
         verifyConnectionClosed();                
@@ -83,7 +126,7 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter
 
         estimate.updateEstimate( mimetype, length, processtime );
 
-        String sql_query = String.format( "UPDATE statisticDB "+
+        String sql_query = String.format( "UPDATE statistics "+
                                           "SET processtime = processtime+%s, dataamount = dataamount+%s "+
                                           "WHERE mimetype = '%s'", processtime, length, mimetype);
         verifySQLStatementExecuted( sql_query );       
@@ -108,7 +151,7 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter
             // Expected - intentional
         }
         
-        String sql_query = String.format( "UPDATE statisticDB "+
+        String sql_query = String.format( "UPDATE statistics "+
                                           "SET processtime = processtime+%s, dataamount = dataamount+%s "+
                                           "WHERE mimetype = '%s'", processtime, length, mimetype);
         verifySQLStatementExecuted( sql_query );       

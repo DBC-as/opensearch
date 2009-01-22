@@ -20,12 +20,12 @@ import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * \ingroup tools
- * \brief The Estimate class handles all communication to the statisticDB table
+ * \brief The Estimate class handles all communication to the statistics table
  */
-public class Estimate extends DBConnection {
+public class Estimate {
 
     Logger log = Logger.getLogger("Estimate");
-
+    DBConnection DBconnection = null;
     /**
      * Constructor
      *
@@ -35,11 +35,12 @@ public class Estimate extends DBConnection {
     public Estimate() throws ConfigurationException, ClassNotFoundException 
     {
         log.debug( "Estimate Constructor" );
+        DBconnection = new DBConnection();
     }
 
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     /**
-     * \brief getEstimate retrieves estimate from statisticDB table.
+     * \brief getEstimate retrieves estimate from statistics table.
      *
      * @param mimeType The mimeType of the element were trying to estimate processtime for
      * @param length length in bytes of the element were trying to estimate processtime for
@@ -51,16 +52,15 @@ public class Estimate extends DBConnection {
      * @throws NoSuchElementException if the mimetype is not known
 
      */
-    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException 
-    {
+    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException, NullPointerException{
         log.debug( String.format( "estimate.getEstimate(mimeType=%s, length=%s) called", mimeType, length ) );
-        Connection con;
-        con = establishConnection();
 
+        Connection con = DBConnection.getConnection();
+     
         float average_time = 0f;
         ResultSet rs = null;
         Statement stmt = null;
-        String sqlQuery = String.format( "SELECT processtime, dataamount FROM statisticDB WHERE mimetype = '%s'", mimeType );
+        String sqlQuery = String.format( "SELECT processtime, dataamount FROM statistics WHERE mimetype = '%s'", mimeType );
         log.debug( String.format( "query database with %s ", sqlQuery ) );
 
         try{
@@ -89,13 +89,7 @@ public class Estimate extends DBConnection {
             }
             log.debug( String.format( "processtime=%s dataamount=%s, averagetime=%s", p, d, average_time ) );
         }
-        catch(NullPointerException npe)
-        {
-            log.debug( "got nullpointer exception" );
-            npe.printStackTrace();
-        }
-        finally
-        {
+        finally{
             stmt.close();
             con.close();
         }
@@ -106,7 +100,7 @@ public class Estimate extends DBConnection {
 
     
     /**
-     * updateEstimate updates the entry in statisticDB that matches the given mimetype, with the length and time.
+     * updateEstimate updates the entry in statistics that matches the given mimetype, with the length and time.
      *
      * @param mimeType is the mimetype of the processed object 
      * @param length is the length in bytes of the processed object 
@@ -118,11 +112,12 @@ public class Estimate extends DBConnection {
     public void updateEstimate( String mimeType, long length, long time ) throws SQLException, ClassNotFoundException
     {
         log.debug( String.format( "UpdateEstimate(mimeType = %s, length = %s, time = %s) called", mimeType, length, time ) );
-        Connection con;
-        con = establishConnection();
+
+        Connection con = DBConnection.getConnection();
+
  
         Statement stmt = null;
-        String sqlQuery = String.format( "UPDATE statisticDB "+
+        String sqlQuery = String.format( "UPDATE statistics "+
                                          "SET processtime = processtime+%s, dataamount = dataamount+%s "+
                                          "WHERE mimetype = '%s'", time, length, mimeType);
         log.debug( String.format( "query database with %s ", sqlQuery ) );
