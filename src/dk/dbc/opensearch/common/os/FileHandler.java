@@ -27,8 +27,8 @@ public class FileHandler {
     /**
      * The empty FileHandler constructor
      */
-    public FileHandler(){} 
-
+    //private FileHandler(){} 
+    public FileHandler(){}
 
     /**
      * @param path: The path to the file

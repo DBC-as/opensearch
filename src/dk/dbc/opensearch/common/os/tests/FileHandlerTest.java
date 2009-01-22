@@ -125,9 +125,23 @@ public class FileHandlerTest {
         testCase = new Vector();
     }
 
-    public void tearDownGetFileList() throws IOException {
+    public void tearDownGetFileList() throws IOException {}
 
+
+    @Test public void testGetFileListNotDirectory() throws IOException {
+
+        setUpGetFileList();
+        
+        try{
+            testCase = FileHandler.getFileList( file1.getAbsolutePath(), fnf1, false );
+            fail("Should have gotten IllegalArgumentException - Supplied no direcotry for method");
+        }
+        catch(IllegalArgumentException iae){
+            // Expected - intentional
+        }
     }
+    
+    
     @Test public void testGetFileListCase1() throws IOException {
         //case1:descend false, 1 filter
 
@@ -151,6 +165,8 @@ public class FileHandlerTest {
 
 
     }
+
+
 
     @Test public void testGetFileListCase2() throws IOException {
         //case1:descend false, more than 1 filter
@@ -274,6 +290,20 @@ public class FileHandlerTest {
         is.close();
 
         assertEquals( sb.toString(), teststr );
+    }
+
+    @Test public void testReadFileWithNoFile() throws IOException {
+
+
+        setUpGetFileList();
+
+        try{
+            InputStream is = FileHandler.readFile( testdir.getAbsolutePath() );
+            fail("Should have gotten FileNotFoundException - Did not supply valid filename");
+        }
+        catch(FileNotFoundException iae){
+            // Expected - intentional
+        }
     }
 
     @Test public void testGetFile() throws IOException {
