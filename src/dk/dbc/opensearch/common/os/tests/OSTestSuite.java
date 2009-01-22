@@ -1,23 +1,20 @@
 package dk.dbc.opensearch.common.os.tests;
 
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 
 @RunWith(Suite.class)
 
 @Suite.SuiteClasses(
     {
-        FileFilterTest.class,
-        FileHandlerTest.class,
-        XmlFileFilterTest.class
+		FileHandlerTest.class,
+		FileHandlerStaticCallTest.class,
+		XmlFileFilterTest.class,
+		FileFilterTest.class
     }
 )
-
-public class OSTestSuite  
+public class OSTestSuite
 {
-    // Leave class empty!
+	// Leave class empty!
 }

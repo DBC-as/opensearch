@@ -1,4 +1,11 @@
-<project name="opensearch.common.statistics" default="usage">
+<project name="opensearch.common.statistics" default="suite">
   <!--Time-stamp: <2009-01-14 15:08:59 stm> -->
   <import file="../../../../../../build.xml"/>
+
+  <target name="suite" description="Compiles and runs test suite">
+    <antcall target="testsuite">
+      <param name="suite.name" value="dk.dbc.opensearch.common.pluginframework.tests.STATISTICSTestSuite" />
+      <param name="dependency.target" value="toplevel.suite" />
+    </antcall>
+  </target>
 </project>

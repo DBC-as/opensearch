@@ -4,7 +4,7 @@
 	
   <target name="suite" description="Compiles and runs test suite">
   	<antcall target="testsuite">
-  	  <param name="suite.name" value="dk.dbc.opensearch.common.fedora.tests.FedoraTestSuite" />
+  	  <param name="suite.name" value="dk.dbc.opensearch.common.fedora.tests.FEDORATestSuite" />
   	  <param name="dependency.target" value="toplevel.suite" />
   	</antcall>
   </target>
