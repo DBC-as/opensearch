@@ -228,9 +228,6 @@
   <!--   The instrument target - building instrumented code -->
   <target name="toplevel.coverage-instrument" depends="toplevel.compile-tests">
 
-    <!-- Capture the path as a delimited property using the refid attribute -->
-<!--     <property name="myclasspath" refid="classpath"/> -->
-
     <!-- Remove the coverage data file and any old instrumentation. -->
     <delete dir="${instrumented.dir}" />
 
@@ -252,12 +249,6 @@
       </fileset>
     </cobertura-instrument>
   </target>
-
-  <!-- Cobertura - this is not working yet-->
-
-  <!--   <target name="coverage-check"> -->
-  <!--     <cobertura-check branchrate="34" totallinerate="100" /> -->
-  <!--   </target> -->
 
   <target name="toplevel.coverage-test" depends="toplevel.coverage-instrument">
     <mkdir dir="${report.dir}" />
@@ -287,7 +278,7 @@
   </target>
 
   <target name="toplevel.coverage-report-html" depends="toplevel.coverage-test">
-    <cobertura-report destdir="${report.dir}/html" datafile="${instrumented.dir}/cobertura.ser">
+    <cobertura-report destdir="${testresults.dir}/cobertura/html" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
       </fileset>
