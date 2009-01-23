@@ -30,7 +30,7 @@ public class PluginLoader {
 
     /**
      * Given a qualified class name of the plugin, this method locates the
-     * plugin on the classpath and loads the plugin
+     * plugin on the classpath and loads and returns the plugin
      * @param pluginName the class name of the wanted plugin
      * @return the loaded plugin
      */

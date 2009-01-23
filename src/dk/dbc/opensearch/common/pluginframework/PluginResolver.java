@@ -10,14 +10,14 @@ import java.lang.IllegalAccessException;
 /**
  * 
  */
-public class PluginFramework {
+public class PluginResolver {
     private PluginFinder PFinder;
     private PluginLoader PLoader;
 
   /**
    * 
    */
-    public PluginFramework( DocumentBuilder docBuilder, ClassLoader pluginClassLoader )throws NullPointerException, FileNotFoundException {
+    public PluginResolver( DocumentBuilder docBuilder, ClassLoader pluginClassLoader )throws NullPointerException, FileNotFoundException {
         PFinder = new PluginFinder( docBuilder );
         PLoader = new PluginLoader( pluginClassLoader );
     
