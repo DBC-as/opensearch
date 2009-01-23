@@ -122,7 +122,7 @@ public class DataDockPoolAdmTest {
     * privateStart method that invokes the readFiles, createFutureTaskList and 
     * 
     */
-    @Test public void privateStartTest() throws  ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException, InterruptedException, ExecutionException {
+    @Ignore @Test public void privateStartTest() throws  ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException, InterruptedException, ExecutionException {
         
         /**1 setting up the needed mocks 
          * Is done in setup()
@@ -236,7 +236,7 @@ public class DataDockPoolAdmTest {
      * on a FutureTask throws an ExecutionException and that this is a 
      * RuntimeException
      */
-    @Test public void getMethodExecutionException() throws InterruptedException, ConfigurationException, ExecutionException, ClassNotFoundException, MalformedURLException, ServiceException, IOException, UnknownHostException {
+    @Ignore @Test public void getMethodExecutionException() throws InterruptedException, ConfigurationException, ExecutionException, ClassNotFoundException, MalformedURLException, ServiceException, IOException, UnknownHostException {
  
         /**1 setting up the needed mocks 
          * Is done in setup()
