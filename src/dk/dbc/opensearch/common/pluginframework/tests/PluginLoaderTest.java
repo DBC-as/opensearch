@@ -12,6 +12,7 @@ import static org.easymock.classextension.EasyMock.*;
 import mockit.Mockit;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 import java.lang.InstantiationException;
 import java.lang.ClassNotFoundException;
@@ -67,16 +68,21 @@ public class PluginLoaderTest{
      * Tests the loadPlugin method by giving the class string
      * to the test class TestPlugin
      */
-    @Test public void loadPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException {
-
+    @Test public void getPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException {
+        Method method;
+        Class[] argClasses = new Class[]{ String.class };
+        Object[] args = new Object[]{ testClassString };
         try{
             pl = new PluginLoader( pcl );
-            testIPlug = pl.loadPlugin( testClassString );
+            method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
+            method.setAccessible( true );
+            testIPlug = ( IPluggable ) method.invoke( pl, args );
+           
         }catch( Exception e){
             noException = false;
         }
         assertTrue( noException );
-        assertTrue( testIPlug.getClass().getName() == testClassString );
+        assertTrue( testIPlug.getClass().getName().equals( testClassString ) );
 
     }
 
@@ -85,13 +91,18 @@ public class PluginLoaderTest{
      * when given a noexisting class name.
      */
     @Test public void invalidClassNameTest(){
-
+        Method method;
+        Class[] argClasses = new Class[]{ String.class };
+        Object[] args = new Object[]{ invalidClassString };
         try{
             pl = new PluginLoader( pcl );
-            testIPlug = pl.loadPlugin( invalidClassString );
+            method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
+            method.setAccessible( true );
+            testIPlug = ( IPluggable ) method.invoke( pl, args );
+           
         }catch( Exception e){
-            if( e.getClass() == IllegalArgumentException.class ){
-                illegalArgument = e.getMessage().equals( String.format( " class %s not found! ", invalidClassString ) );
+            if( e.getCause().getClass() == IllegalArgumentException.class ){
+                illegalArgument = e.getCause().getMessage().equals( String.format( " class %s not found! ", invalidClassString ) );
             }
         }
         assertTrue( illegalArgument );
