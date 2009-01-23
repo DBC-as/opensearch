@@ -5,7 +5,7 @@
  */
 package dk.dbc.opensearch.common.pluginframework;
 
-import dk.dbc.opensearch.common.os.XmlFileFilter;
+import dk.dbc.opensearch.common.os.PluginFileFilter;
 import dk.dbc.opensearch.common.os.FileHandler;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,8 +21,8 @@ import java.util.Vector;
 import java.util.Iterator;
 
 import java.io.FileNotFoundException;
-import java.lang.IllegalArgumentException;
-import java.lang.ClassNotFoundException;
+//import java.lang.IllegalArgumentException;
+//import java.lang.ClassNotFoundException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import java.io.IOException;
@@ -42,15 +42,13 @@ public class PluginFinder {
      */
 
     private Map classNameMap;
-    private String path;
-    private FileHandler fileHandler;
+    private String path = "build/classes/dk/dbc/opensearch/plugins";
     private DocumentBuilder docBuilder;
-
+   
     /**
      * builds the map containing the keys and related plugin classes
      * The keys are made from the task, format and datasource, the value is the
      * class of the plugin that can solve the specified task
-     * @param fileHandler: A FileHander object
      * @param path: the directory to look for the xml files describing the plugins
      * @param docBuilder: the DocumentBuilder used for parsing the xml files
      * @throws IllegalArgumentException when there is no directory or no files in it
@@ -60,18 +58,16 @@ public class PluginFinder {
      * \Todo: should we hardcode the path?
      */
 
-    public PluginFinder( String path, FileHandler fileHandler, DocumentBuilder docBuilder ) throws /*IllegalArgumentException,*/  NullPointerException {
+    public PluginFinder( DocumentBuilder docBuilder ) throws FileNotFoundException, NullPointerException {
 
-        this.fileHandler = fileHandler;
         this.docBuilder = docBuilder;
-        // no need to use dependency injection for this internal HasMmap.
         classNameMap = new HashMap();
         //10: verify that the path is valid
-        this.path = path;
+        //this.path = path;
         // File pluginDirPath = fileHandler.getFile( path );
 
         // call updatePluginClassMap
-        updatePluginClassMap();
+        updatePluginClassNameMap();
     }
     /**
      * Finds the right plugin class for the specified operation
@@ -84,27 +80,28 @@ public class PluginFinder {
      * \Todo: Is it the right Exception to throw and the parameters right?
      **/
 
-    public String getPluginClass( String task, String format, String submitter ) throws ClassNotFoundException{
-        String key = submitter + format + task;
-        String className = "";
+    protected String getPluginClassName( String key ){
+       
+        String className = null;
 
         //10: search through the map
         className = (String) classNameMap.get( key );
+        
         //20: if there is no hit, raise exception
         if( className == null ){
-            throw new ClassNotFoundException( "No value for key: " + key );
+            throw new IllegalArgumentException( "No value for key: " + key );
         }
         //30: return classname
         return className;
     }
 
     /**
-     * updates the pluginClassMap
-     * @throws IllegalArgumentException if their are no pluginxml files
+     * creates/updates the pluginClassMap
+     * @throws FileNotFoundException if their are no pluginxml files
      * in the path specified in the constructor
-     * \Todo: Is that the right exception to throw?
+     * 
      */
-    public void updatePluginClassMap() throws  NullPointerException/*, SAXException*/ {
+    private void updatePluginClassNameMap() throws FileNotFoundException{
         String key;
         String pluginName = null;;
         String submitterName;
@@ -122,8 +119,8 @@ public class PluginFinder {
         //File pluginDirPath = fileHandler.getFile( path );
 
         //20: get the plugin xml files in the pluginDirPath
-        FilenameFilter[] filter = { new XmlFileFilter() };
-        Vector <String> xmlPluginFileNames = fileHandler.getFileList( path, filter, true );
+        FilenameFilter[] filterList = { new PluginFileFilter() };
+        Vector <String> xmlPluginFileNames = FileHandler.getFileList( path, filterList, true );
         pluginNameIter = xmlPluginFileNames.iterator();
         log.debug( "size of xmlPluginFileNames: " + xmlPluginFileNames.size() );
 
@@ -139,7 +136,7 @@ public class PluginFinder {
 
             try{
                 pluginName = (String)pluginNameIter.next();
-                pluginFile = fileHandler.getFile( pluginName );
+                pluginFile = FileHandler.getFile( pluginName );
                 pluginDocument = docBuilder.parse( pluginFile );
             }catch( SAXException saxe ){
                 couldFormat = false;//dont try to do further work on this file
@@ -181,7 +178,11 @@ public class PluginFinder {
                 log.error( String.format( "Pluginxml file: '%s' is invalid", pluginName ));
             }
         }
+        if ( classNameMap.size() < 1 ){
+            throw new FileNotFoundException( String.format( "No plugin description files at %s ", path  ) );
+        }
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
+    
     }
 
 }
