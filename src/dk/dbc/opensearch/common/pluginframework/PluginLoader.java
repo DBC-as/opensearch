@@ -34,7 +34,7 @@ public class PluginLoader {
      * @param pluginName the class name of the wanted plugin
      * @return the loaded plugin
      */
-    protected IPluggable getPlugin( String pluginName )throws FileNotFoundException, InstantiationException, IllegalAccessException{
+    IPluggable getPlugin( String pluginName )throws FileNotFoundException, InstantiationException, IllegalAccessException{
 
 
         String fullPluginClassName = pluginName;

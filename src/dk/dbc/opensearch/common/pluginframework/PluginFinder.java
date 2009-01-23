@@ -62,11 +62,9 @@ public class PluginFinder {
 
         this.docBuilder = docBuilder;
         classNameMap = new HashMap();
-        //10: verify that the path is valid
-        //this.path = path;
-        // File pluginDirPath = fileHandler.getFile( path );
+       
 
-        // call updatePluginClassMap
+        // call updatePluginClassNameMap to generate the map
         updatePluginClassNameMap();
     }
     /**
@@ -80,7 +78,7 @@ public class PluginFinder {
      * \Todo: Is it the right Exception to throw and the parameters right?
      **/
 
-    protected String getPluginClassName( String key ){
+    String getPluginClassName( String key ){
        
         String className = null;
 
@@ -164,7 +162,7 @@ public class PluginFinder {
                 className = pluginElement.getAttribute( "classname" );
 
                 //45: verify that we got string form the xml file
-                if( xmlRoot.getTagName() == "plugins" && submitterName != null && formatName != null && taskName != null && className != null ){
+                if( xmlRoot.getTagName().equals( "plugins" ) && submitterName != null && formatName != null && taskName != null && className != null ){
                     //50: build the the key
                     key = submitterName + formatName + taskName;
 

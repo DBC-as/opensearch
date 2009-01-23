@@ -13,6 +13,7 @@ import dk.dbc.opensearch.common.os.XmlFileFilter;
 import static org.junit.Assert.*;
 import org.junit.*;
 import static org.easymock.classextension.EasyMock.*;
+import mockit.Mockit;
 
 import java.io.FilenameFilter;
 import java.util.Vector;
@@ -30,37 +31,58 @@ import java.io.IOException;
  *
  */
 public class PluginFinderTest {
+
+    static File mockFile = createMock( File.class );
+    static Vector<String> mockVector = createMock( Vector.class );
+
     PluginFinder pluginFinder;
     FileHandler mockFH;
-    File mockFile;
-    Vector <String> testVector;
+
+
     Iterator mockIterator;
     DocumentBuilder mockDocBuilder;
     Document mockDocument;
     Element mockElement;
+    NodeList mockNodeList;
+
+    public static class MockFileHandler{
+
+        public static File getFile( String path ){
+            return mockFile;
+        }
+        public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ){
+            return mockVector;
+        }
+    }
+
+
     /**
      *
      */
     @Before public void setUp() {
-        mockFH = createMock( FileHandler.class );
-        mockFile = createMock( File.class );
+
         mockIterator = createMock( Iterator.class );
         mockDocBuilder = createMock( DocumentBuilder.class );
         mockDocument = createMock( Document.class );
         mockElement = createMock( Element.class);
-        testVector = new Vector();
+        mockVector = createMock( Vector.class );
+        mockNodeList = createMock( NodeList.class );
+
+        Mockit.redefineMethods( FileHandler.class, MockFileHandler.class );
     }
 
     /**
      *
      */
     @After public void tearDown() {
-        reset( mockFH );
+
         reset( mockFile );
         reset( mockIterator );
         reset( mockDocBuilder );
         reset( mockDocument );
         reset( mockElement );
+        reset( mockVector );
+        reset( mockNodeList );
 
     }
 
@@ -70,77 +92,72 @@ public class PluginFinderTest {
      * tested indirectly, since it is called in the constructor
      * So there is no seperate test for that methods general functionality.
      */
-    @Ignore
     @Test public void constructorTest() throws SAXException, IOException, NullPointerException {
 
         /** 1 setup
          *
          */
-        String path = "";
-        String test1 = "test1";
-        String test2 = "test2";
-        testVector.add( test1 );
-        testVector.add( test2 );
+        String hestString = "hest";
+
         /** 2 expectations
          *
          */
-        //in the updatePluginClassMap method
-        
-        expect( mockFH.getFileList( isA( String.class ), isA( FilenameFilter[].class ), isA( boolean.class ) ) ).andReturn( testVector );
-        //expect( mockVector.iterator() ).andReturn( mockIterator );
+        //in the updatePluginClassNameMap method
+        expect( mockVector.iterator() ).andReturn( mockIterator );
+        expect( mockVector.size() ).andReturn( 2 );
+        //entering while
+        expect( mockIterator.hasNext() ).andReturn( true );
+        expect( mockIterator.next() ).andReturn( hestString );
+        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
+        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
+        expect( mockElement.getTagName() ).andReturn( "plugins" );
+        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( hestString ).times( 4 ) ;
+        expect( mockElement.getTagName() ).andReturn( "plugins" );
+        expect( mockIterator.hasNext() ).andReturn( true );
+        //in while again
+        expect( mockIterator.next() ).andReturn( hestString );
+        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
+        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
+        expect( mockElement.getTagName() ).andReturn( "plugins" );
+        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( hestString ).times( 4 ) ;
+        expect( mockElement.getTagName() ).andReturn( "plugins" );
+        expect( mockIterator.hasNext() ).andReturn( false );
 
-        //we say there are 2 elements in the vector
-        //expect( mockVector.size() ).andReturn( 2 );
-        //parsing of element 1
-        //expect( mockIterator.hasNext() ).andReturn( true );
-        //expect( mockIterator.next() ).andReturn( "testString" );
-        expect( mockFH.getFile( isA( String.class ) ) ).andReturn( mockFile );
-        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
-        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getTagName() ).andReturn( "unitTestString" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" ).times( 4 );
-        expect( mockElement.getTagName() ).andReturn( "plugin" );
-        //parsing of element 2
-        //expect( mockIterator.hasNext() ).andReturn( true );
-        //expect( mockIterator.next() ).andReturn( "testString" );
-        expect( mockFH.getFile( isA( String.class ) ) ).andReturn( mockFile );
-        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
-        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getTagName() ).andReturn( "unitTestString" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn("unitTest" ).times( 4 );
-        expect( mockElement.getTagName() ).andReturn( "plugin" );
-        //expect( mockIterator.hasNext() ).andReturn( false );
-        //out of the while and done
         /** 3 replay
          *
          */
-        replay( mockFH );
-        //replay( mockVector );
+        replay( mockVector );
         replay( mockIterator );
         replay( mockDocBuilder );
         replay( mockDocument );
         replay( mockElement );
+        replay( mockNodeList );
         replay( mockFile );
 
         /** do stuff */
         pluginFinder = new PluginFinder( mockDocBuilder );
 
         /**  4 check if it happened as expected
-         *
+         * verify
          */
-        verify( mockFH );
-        //        verify( mockVector );
+        verify( mockVector );
         verify( mockIterator );
         verify( mockDocBuilder );
         verify( mockDocument );
         verify( mockElement );
+        verify( mockNodeList );
         verify( mockFile );
     }
 
     /**
      *
      */
-    @Test public void getPluginClassTest() {
+    @Ignore
+        @Test public void getPluginClassNameTest() {
 
     }
 }
