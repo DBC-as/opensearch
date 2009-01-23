@@ -20,9 +20,8 @@
   <property name="config.dir"       value="${base.dir}/config"/>
   <property name="xsd.dir"          value="${src.dir}/xsd"/>
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
-  <property name="report.dir"       value="${doc.dir}/coverage-report"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
-
+  <property name="report.dir"       value="${doc.dir}/coverage-report"/>
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
@@ -211,6 +210,7 @@
     </echo>
   </target>
 
+  <!-- ============================ -->
   <!-- Cobertura code coverage tool -->
 
   <!-- Setting up the path -->
@@ -271,7 +271,6 @@
            >
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
 
-
       <!-- Setting up the classpath -->
       <classpath location="${instrumented.dir}" />
       <classpath location="${classes.dir}" />
@@ -281,7 +280,7 @@
       <formatter type="xml" usefile="yes"/>
 
       <!-- Performing the test -->
-      <batchtest fork="yes">
+      <batchtest fork="yes" todir="${testresults.dir}">
         <fileset dir="${src.dir}" includes="**/tests/*Test.java"/>
       </batchtest>
     </junit>
@@ -296,7 +295,7 @@
   </target>
 
   <target name="toplevel.coverage-report-xml" depends="toplevel.coverage-test">
-    <cobertura-report format="xml" destdir="${report.dir}/xml" datafile="${instrumented.dir}/cobertura.ser">
+    <cobertura-report format="xml" destdir="${testresults.dir}/cobertura/xml" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
       </fileset>
