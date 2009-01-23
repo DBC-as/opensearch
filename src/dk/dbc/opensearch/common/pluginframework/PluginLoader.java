@@ -17,24 +17,24 @@ public class PluginLoader {
 
     static Logger log = Logger.getLogger( "PluginLoader" );
     String pluginSubPathName = "build/classes/dk/dbc/opensearch/plugins/";
-    //String packageName = "dk.dbc.opensearch.plugins"
     ClassLoader cl;
 
 
     /**
      * \todo: This should really be a singleton? Or maybe even a static class? Ref. bug 8113
      */
-    public PluginLoader( ClassLoader cl/*, FileHandler fileHandler*/ ) {
+    public PluginLoader( ClassLoader cl ) {
 
         this.cl = cl;
     }
 
     /**
-     * Given a qualified name of the plugin, this method locates the
+     * Given a qualified class name of the plugin, this method locates the
      * plugin on the classpath and loads the plugin
-     * @param pluginName the name of the plugin
+     * @param pluginName the class name of the wanted plugin
+     * @return the loaded plugin
      */
-    public IPluggable loadPlugin( String pluginName )throws FileNotFoundException,/* ClassNotFoundException,*/ InstantiationException, IllegalAccessException{
+    protected IPluggable getPlugin( String pluginName )throws FileNotFoundException, InstantiationException, IllegalAccessException{
 
 
         String fullPluginClassName = pluginName;
