@@ -18,7 +18,7 @@ import java.lang.NullPointerException;
 
 /**
  * /brief Class to handle file operations.
- * The class is used to wrap file operations so that classes using files can be unittestet.
+ * The class is used to wrap file operations so that classes using files can be unittested.
  */
 public class FileHandler {
 
@@ -26,6 +26,8 @@ public class FileHandler {
 
     /**
      * The empty FileHandler constructor
+     *
+     * \todo: what's the point of the constructor here?
      */
     //private FileHandler(){} 
     public FileHandler(){}
@@ -49,7 +51,8 @@ public class FileHandler {
 
     public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ) 
         throws IllegalArgumentException{
-        
+
+        /** \todo: what happens if the fileFilters is null? Or the path?**/
         log.debug( String.format( "getFileList( path=%s, filefilters[%s], descend=%s ) called", path, fileFilters.length, descend ) );
        
         log.debug( "Check if path exists" );        

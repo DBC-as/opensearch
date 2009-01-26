@@ -18,7 +18,7 @@
   <property name="components.dir"   value="${opensearch.dir}/components"/>
   <property name="datadock.dir"     value="${components.dir}/datadock"/>
   <property name="config.dir"       value="${base.dir}/config"/>
-  <property name="xsd.dir"          value="${src.dir}/xsd"/>
+  <property name="xsd.dir"          value="${base.dir}/xsd"/>
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>

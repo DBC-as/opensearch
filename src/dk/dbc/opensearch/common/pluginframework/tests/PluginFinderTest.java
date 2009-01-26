@@ -139,7 +139,7 @@ public class PluginFinderTest {
         replay( mockFile );
 
         /** do stuff */
-        pluginFinder = new PluginFinder( mockDocBuilder );
+        pluginFinder = new PluginFinder( mockDocBuilder, "" );
 
         /**  4 check if it happened as expected
          * verify

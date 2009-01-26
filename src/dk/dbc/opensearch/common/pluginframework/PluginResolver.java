@@ -35,7 +35,10 @@ public class PluginResolver implements IPluginResolver {
         }catch( ParserConfigurationException pce ){
         }
         pluginClassLoader = new PluginClassLoader();
-        PFinder = new PluginFinder( docBuilder );
+        /** \todo: beware: hardcoded value **/
+        String path = "build/classes/dk/dbc/opensearch/plugins";
+
+        PFinder = new PluginFinder( docBuilder, path );
         PLoader = new PluginLoader( pluginClassLoader );
 
     }
