@@ -26,10 +26,12 @@ public class PluginLoader
 
 
     /**
-     * \todo: This should really be a singleton? Or maybe even a static class? Ref. bug 8113
+     * 
      */
+
     public PluginLoader( ClassLoader cl ) 
     {
+
         this.cl = cl;
     }
 

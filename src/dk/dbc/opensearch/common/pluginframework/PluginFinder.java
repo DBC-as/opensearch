@@ -57,8 +57,14 @@ public class PluginFinder {
      * @throws ParserConfigurationException
      *
      * \Todo: should we hardcode the path?
+
+     */
+
+
+
     public PluginFinder( DocumentBuilder docBuilder ) throws FileNotFoundException, NullPointerException 
     {
+
         this.docBuilder = docBuilder;
         classNameMap = new HashMap();
        
@@ -73,13 +79,16 @@ public class PluginFinder {
      * @param task
      * @param format
      * @param submitter
-     * @throws ClassNotFoundException no plugin was found for the
+     * @throws FileNotFoundException no plugin was found for the
      * given submitter, format and task
      * @return the name of the plugin class
      * \Todo: Is it the right Exception to throw and the parameters right?
      **/
-    String getPluginClassName( String key )
-    {
+
+
+    String getPluginClassName( String key ) throws FileNotFoundException{
+       
+
         String className = null;
 
         //10: search through the map
@@ -88,7 +97,7 @@ public class PluginFinder {
         //20: if there is no hit, raise exception
         if( className == null )
         {
-            throw new IllegalArgumentException( "No value for key: " + key );
+            throw new FileNotFoundException( "No value for key: " + key );
         }
         
         //30: return classname
