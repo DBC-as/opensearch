@@ -1,8 +1,10 @@
 package dk.dbc.opensearch.common.pluginframework;
 
+import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import java.io.FileNotFoundException;
 import java.lang.InstantiationException;
-import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+
 import java.lang.IllegalAccessException;
 
 public interface IPluginResolver
@@ -20,7 +22,7 @@ public interface IPluginResolver
      * FileNotFoundException covers?  
      * @throws IllegalAccessException 
      */
-    IPluggable getPlugin ( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException;
+    IPluggable getPlugin ( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException;
 
     
     /**

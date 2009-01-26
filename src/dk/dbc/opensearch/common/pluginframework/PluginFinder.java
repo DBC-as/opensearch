@@ -8,6 +8,7 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.os.PluginFileFilter;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 
 import com.mallardsoft.tuple.Pair;
 
@@ -55,10 +56,11 @@ public class PluginFinder
      * @throws IllegalArgumentException when there is no directory or no files in it
      * @throws FileNotFoundException
      * @throws ParserConfigurationException
+     * @throws PluginResolverException
      *
      * \todo: should we hardcode the path?
      */
-    public PluginFinder( DocumentBuilder docBuilder, String path ) throws FileNotFoundException, NullPointerException, TasksNotValidatedException 
+    public PluginFinder( DocumentBuilder docBuilder, String path ) throws FileNotFoundException, NullPointerException, PluginResolverException 
     {
         this.docBuilder = docBuilder;
         classNameMap = new HashMap();       
@@ -104,7 +106,7 @@ public class PluginFinder
      * in the path specified in the constructor
      * 
      */
-    private void updatePluginClassNameMap( String path ) throws TasksNotValidatedException ,FileNotFoundException
+    private void updatePluginClassNameMap( String path ) throws PluginResolverException ,FileNotFoundException
     {
         String pluginName = null;;
         Document pluginDocument = null;
@@ -209,12 +211,10 @@ public class PluginFinder
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );    
         /**
          * the vector containing exceptions is larger than 0 throw it in 
-         * a TasksNotValidatedException
-         * \Todo: Shouldnt we use other exception for this? It has nothing to do with
-         * validating tasks.
+         * a PluginResolverException
          */
         if( failedPlugins.size() < 0 ){
-            throw new TasksNotValidatedException( failedPlugins, "Plugins could not be loaded");
+            throw new PluginResolverException( failedPlugins, "Plugins could not be loaded");
         }
     }
 

@@ -1,18 +1,17 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 import java.util.Vector;
-import com.mallardsoft.tuple.Tuple;
-import com.mallardsoft.tuple.Pair;
+
 /**
  * 
  */
 public class TasksNotValidatedException extends Exception {
-    Vector<Pair<Throwable, String>> exceptionVector;
+    Vector<String> exceptionVector;
     String message;
   /**
    * 
    */
-    public TasksNotValidatedException( Vector<Pair<Throwable, String>> exceptoinVector, String message) {
+    public TasksNotValidatedException( Vector<String> exceptoinVector, String message) {
       this.exceptionVector = exceptionVector;
       this.message = message;
   }
@@ -20,7 +19,7 @@ public class TasksNotValidatedException extends Exception {
         return message;
     }
 
-    public Vector<Pair<Throwable, String>> getExceptionVector(){
+    public Vector<String> getExceptionVector(){
         return exceptionVector;
     }
 }

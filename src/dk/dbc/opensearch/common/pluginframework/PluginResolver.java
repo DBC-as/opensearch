@@ -1,6 +1,7 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Pair;
@@ -33,19 +34,19 @@ public class PluginResolver implements IPluginResolver
     /**
      *
      */
-    PluginResolver()throws NullPointerException, FileNotFoundException, TasksNotValidatedException {
+    PluginResolver()throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException {
         docBuilderFactory = DocumentBuilderFactory.newInstance();
         /**
          * \Todo: What to do with exceptions?
          */
-        try
-        {
+        // try
+        // {
             docBuilder = docBuilderFactory.newDocumentBuilder();
-        }
-        catch( ParserConfigurationException pce )
-        {
+            //}
+            //catch( ParserConfigurationException pce )
+            //{
         	// do nothing???
-        }
+            //}
         
         pluginClassLoader = new PluginClassLoader();
         /** \todo: beware: hardcoded value **/
@@ -67,14 +68,12 @@ public class PluginResolver implements IPluginResolver
     
     public boolean validateArgs( String submitter, String format, String[] taskList )throws TasksNotValidatedException
     {
-        String message = ""; //what should we say here?
-        Pair<Throwable, String> infoPair;
-        Vector<Pair<Throwable, String>> exceptionVector = null;
+        String message = String.format( "No plugins for submitter %s format %s for the tasks specified in the vector", submitter, format );
+        Vector<String> taskNameVector = null;
         boolean allFound = true;
         String pluginClassName = "";
-        String notFound = "";
+        
         //for each string in taskList
-
         for( int x = 0; x < taskList.length; x++){
 
             String key = submitter + format + taskList[x];
@@ -85,10 +84,9 @@ public class PluginResolver implements IPluginResolver
             }
             catch( FileNotFoundException fnfe )
             {
-                notFound = String.format( "no plugin found for submitter: %s, format: %s task %s ", submitter, format, taskList[x] );
-                infoPair = Tuple.from( (Throwable)fnfe, notFound );
+
                 //build the exceptionVector
-                exceptionVector.add( infoPair );
+                taskNameVector.add( taskList[x] );
                 allFound = false;
             }
         }
@@ -99,7 +97,7 @@ public class PluginResolver implements IPluginResolver
         }
         else
         {
-            throw new TasksNotValidatedException( exceptionVector, message );
+            throw new TasksNotValidatedException( taskNameVector, message );
         }
     }
     
