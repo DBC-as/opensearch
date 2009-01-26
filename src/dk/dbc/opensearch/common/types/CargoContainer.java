@@ -152,8 +152,7 @@ public class CargoContainer {
         // 50: construct CargoObjectInfo object
         coi = new CargoObjectInfo( CMT, lang, submitter, format, contentLength );
         
-        log.debug( String.format( "All Checks passed, CargoContainer constructed with values %s, %s, %s, %s", this.getStreamLength(), this.getMimeType(), lang, this.getSubmitter() ) );
-        
+        log.debug( String.format( "All Checks passed, CargoContainer constructed with values %s, %s, %s, %s", this.getStreamLength(), this.getMimeType(), lang, this.getSubmitter() ) );        
     }
     
     
@@ -172,7 +171,8 @@ public class CargoContainer {
      * @throws java.io.IOException if the stream is corrupted
      * @throws IllegalArgumentException if arguments are illformed.
      */
-    public CargoContainer(InputStream data, String dublinCore, String submitter, String format) throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException{
+    public CargoContainer( InputStream data, String dublinCore, String submitter, String format) throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException
+    {
         // read data
         if( data.available() > 0 )
         {
@@ -184,8 +184,6 @@ public class CargoContainer {
         // 10: isolate and validate used dublin core fields
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = db.parse(new InputSource(new StringReader( dublinCore )));
-
-
 
         NodeList langCand = doc.getElementsByTagName( "dc:language" );
         String language = null;

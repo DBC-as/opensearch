@@ -121,5 +121,12 @@
          target="${dependency.target}"
          inheritAll="false"/>
   </target>
+	
+  <!-- ================================================================== -->
+  <target name="opensearch.plugins" depends="opensearch.common.pluginframework">
+  	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/plugins"
+  	     target="${dependency.target}"
+  	     inheritAll="false" />
+  </target>
 
 </project>

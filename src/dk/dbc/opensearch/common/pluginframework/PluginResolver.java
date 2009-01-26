@@ -1,23 +1,27 @@
 package dk.dbc.opensearch.common.pluginframework;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import org.apache.log4j.Logger;
-import java.util.Vector;
+import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+
 import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Pair;
+
+import java.util.Vector;
 
 import java.lang.IllegalArgumentException;
 import java.io.FileNotFoundException;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
 import javax.xml.parsers.ParserConfigurationException;
-import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+
+import org.apache.log4j.Logger;
+
 /**
  *
  */
-public class PluginResolver implements IPluginResolver {
-
+public class PluginResolver implements IPluginResolver 
+{
     static Logger log = Logger.getLogger( "PluginResolver" );
 
     PluginFinder PFinder;
@@ -25,6 +29,7 @@ public class PluginResolver implements IPluginResolver {
     ClassLoader pluginClassLoader;
     DocumentBuilderFactory docBuilderFactory;
     DocumentBuilder docBuilder;
+    
     /**
      *
      */
@@ -33,26 +38,35 @@ public class PluginResolver implements IPluginResolver {
         /**
          * \Todo: What to do with exceptions?
          */
-        try{
+        try
+        {
             docBuilder = docBuilderFactory.newDocumentBuilder();
-        }catch( ParserConfigurationException pce ){
         }
+        catch( ParserConfigurationException pce )
+        {
+        	// do nothing???
+        }
+        
         pluginClassLoader = new PluginClassLoader();
         /** \todo: beware: hardcoded value **/
         String path = "build/classes/dk/dbc/opensearch/plugins";
 
         PFinder = new PluginFinder( docBuilder, path );
         PLoader = new PluginLoader( pluginClassLoader );
-
     }
-    public IPluggable getPlugin( String submitter, String format, String task )throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+    
+    
+    public IPluggable getPlugin( String submitter, String format, String task )throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException
+    {
         String key = submitter + format + task;
         String pluginClassName = PFinder.getPluginClassName( key );
 
         return PLoader.getPlugin( pluginClassName );
     }
-    public boolean validateArgs( String submitter, String format, String[] taskList )throws TasksNotValidatedException{
-
+    
+    
+    public boolean validateArgs( String submitter, String format, String[] taskList )throws TasksNotValidatedException
+    {
         String message = ""; //what should we say here?
         Pair<Throwable, String> infoPair;
         Vector<Pair> exceptionVector = null;
@@ -65,9 +79,12 @@ public class PluginResolver implements IPluginResolver {
 
             String key = submitter + format + taskList[x];
 
-            try{
+            try
+            {
                 pluginClassName = PFinder.getPluginClassName( key );
-            }catch( FileNotFoundException fnfe ){
+            }
+            catch( FileNotFoundException fnfe )
+            {
                 notFound = String.format( "no plugin found for submitter: %s, format: %s task %s ", submitter, format, taskList[x] );
                 infoPair = Tuple.from( (Throwable)fnfe, notFound );
                 //build the exceptionVector
@@ -75,13 +92,20 @@ public class PluginResolver implements IPluginResolver {
                 allFound = false;
             }
         }
-        if( allFound ){
+        
+        if( allFound )
+        {
             return true;
-        }else{
+        }
+        else
+        {
             throw new TasksNotValidatedException( exceptionVector, message );
         }
     }
-    public void clearPluginRegistration(){
+    
+    
+    public void clearPluginRegistration()
+    {
         //clear the classNameMap in PluginFinder
     }
 }
