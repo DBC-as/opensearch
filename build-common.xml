@@ -123,7 +123,7 @@
            forkmode="once"
            printsummary="withOutAndErr"
            haltonerror="false"
-           haltonfailure="false">
+           haltonfailure="true">
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
 
       <!-- <classpath location="${instrumented.dir}" /> -->
@@ -157,7 +157,7 @@
            forkmode="once"
            printsummary="on"
            haltonerror="false"
-           haltonfailure="true">
+           haltonfailure="false">
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
       <classpath location="${classes.dir}" />
 
