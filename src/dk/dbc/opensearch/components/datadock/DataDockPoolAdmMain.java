@@ -30,10 +30,10 @@ class DataDockPoolAdmMain {
      * The main method of the DataDock.
      * Initializes used classes and starts recieving
      */
-    public final static void main( String[] args ){
-        
-       
-        try{ 
+    public final static void main( String[] args )
+    {      
+        try
+        { 
             // Construct the dependencies for the DataDockPoolAdm
             Processqueue processqueue = new Processqueue();
             Estimate estimate = new Estimate();
@@ -48,18 +48,17 @@ class DataDockPoolAdmMain {
             String lang = System.getProperty("lang");
             String submitter = System.getProperty("submitter");
             String format = System.getProperty("format");
-            String filepath = System.getProperty("filepath");
-            
+            String filepath = System.getProperty("filepath");            
             
             // start the DataDockPoolAdm        
             DDPA.start( mimetype, lang, submitter, format, filepath );  
-
-        }catch(Exception e){
+        }
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
+        
         System.out.print( "\n Progam is done \n" );
         System.exit(1);
-        
     }
-
 }

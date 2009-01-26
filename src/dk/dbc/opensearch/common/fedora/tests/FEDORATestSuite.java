@@ -5,7 +5,7 @@
  *       create_test_suite_files.py       *
  ******************************************/
 
-package dk.dbc.opensearch.common.os.tests;
+package dk.dbc.opensearch.common.fedora.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -14,13 +14,11 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
     {
-        FileFilterTest.class,
-        XmlFileFilterTest.class,
-        FileHandlerStaticCallTest.class,
-        FileHandlerTest.class
+        FedoraHandlerTest.class,
+        FedoraToolsTest.class
     }
 )
-public class OSTestSuite 
+public class FEDORATestSuite 
 {
     // Leave class empty!
 }

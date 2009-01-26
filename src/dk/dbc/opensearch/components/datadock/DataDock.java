@@ -60,7 +60,8 @@ import org.exolab.castor.xml.ValidationException;
  * process of fedora storing, data processing, indexing and
  * search-capabilities
  */
-public class DataDock implements Callable<Float>{
+public class DataDock implements Callable<Float>
+{
     private CargoContainer cc;
     private Processqueue queue;
     private XMLConfiguration config;
@@ -86,8 +87,9 @@ public class DataDock implements Callable<Float>{
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      */
-    public DataDock( CargoContainer cargo, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException {
-        log.debug( String.format( "Entering DataDock Constructor" ) );
+    public DataDock( CargoContainer cargo, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException 
+    {
+    	log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
         queue = processqueue;
         fh = fedoraHandler;
@@ -96,6 +98,7 @@ public class DataDock implements Callable<Float>{
         log.debug( String.format( "DataDock Construction finished" ) );
     }
 
+    
     /**
      * call is the thread entry method on the DataDock. Call operates
      * on the DataDock object, and all data critical for its success
@@ -138,6 +141,7 @@ public class DataDock implements Callable<Float>{
         return processEstimate;
     }
 
+    
     /**
      * doProcessing is the main method for the DataDock. Call operates
      * on the DataDock object, and all data critical for its success
@@ -166,7 +170,6 @@ public class DataDock implements Callable<Float>{
      * @throws ValidationException 
      * @throws MarshalException 
      */
-
     private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, MarshalException, ValidationException, IllegalStateException, NullPointerException, ParseException
     {
         log.debug( String.format( "Entering doProcessing" ) );
@@ -186,6 +189,7 @@ public class DataDock implements Callable<Float>{
         return processEstimate;
     }
 
+    
     /**
      * fedoraStoreData is an internal method for storing data given
      * with the initialization of the DataDock into a fedora base.
@@ -199,7 +203,8 @@ public class DataDock implements Callable<Float>{
      * @throws ValidationException 
      * @throws MarshalException 
      */
-    private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, MalformedURLException, ParseException, UnknownHostException, ServiceException, MarshalException, ValidationException, IllegalStateException, NullPointerException{
+    private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, MalformedURLException, ParseException, UnknownHostException, ServiceException, MarshalException, ValidationException, IllegalStateException, NullPointerException
+    {
         log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
 

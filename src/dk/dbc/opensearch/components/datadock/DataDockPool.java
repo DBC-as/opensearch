@@ -23,8 +23,8 @@ import org.apache.log4j.Logger;
  * \ingroup datadock
  * \brief The pool controls the datadock threads
  */
-public class DataDockPool {
-
+public class DataDockPool 
+{
     //private boolean initialised; /** tells whether the pool is initialised */
     private ExecutorService threadExecutor; /** The threadpool */
     private Estimate estimate;
@@ -45,15 +45,17 @@ public class DataDockPool {
      *
      * @throws IllegalArgumentException if the threadpool is tried initialized with no threads
      */
-   public DataDockPool( int numberOfThreads, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws IllegalArgumentException{
-        
+   public DataDockPool( int numberOfThreads, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws IllegalArgumentException
+   {        
         this.estimate = estimate;
         this.processqueue = processqueue;
         this.fedoraHandler = fedoraHandler;
         
-        if ( numberOfThreads <= 0 ){
+        if ( numberOfThreads <= 0 )
+        {
             throw new IllegalArgumentException( "refusing to construct empty pool" );
-        }        
+        }
+        
         threadExecutor = Executors.newFixedThreadPool(numberOfThreads);
     }
     
@@ -73,7 +75,8 @@ public class DataDockPool {
      * @throws ConfigurationException if the DataDock could not be initialized
      * @throws ClassNotFoundException if the database could not be initialised
      */
-    public FutureTask createAndJoinThread( CargoContainer cc )throws IllegalArgumentException, ConfigurationException, ClassNotFoundException{
+    public FutureTask createAndJoinThread( CargoContainer cc ) throws IllegalArgumentException, ConfigurationException, ClassNotFoundException
+    {
         log.info( String.format( "Creating the FutureTask with a DataDock" ) );
         FutureTask future = new FutureTask(new DataDock(cc, estimate, processqueue, fedoraHandler ));
         

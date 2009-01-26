@@ -5,7 +5,7 @@
  *       create_test_suite_files.py       *
  ******************************************/
 
-package dk.dbc.opensearch.common.os.tests;
+package dk.dbc.opensearch.components.pti.tests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -14,13 +14,12 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
     {
-        FileFilterTest.class,
-        XmlFileFilterTest.class,
-        FileHandlerStaticCallTest.class,
-        FileHandlerTest.class
+        PTITest.class,
+        PTIPoolAdmTest.class,
+        PTIPoolTest.class
     }
 )
-public class OSTestSuite 
+public class PTITestSuite 
 {
     // Leave class empty!
 }

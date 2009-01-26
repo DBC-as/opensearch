@@ -5,7 +5,7 @@ public interface IPluggable
     /**
      * Initializes the plugin
      */
-    void init();
+    public void init();
 
     /**
      * following methods return information about the plugin for
@@ -13,10 +13,9 @@ public interface IPluggable
      * 
      * \Todo Decide what information is needed for building the key 
      */
-    String getPluginTask();
+    public String getPluginTask();
 
-    String getPluginFormat();
+    public String getPluginFormat();
 
-    String getPluginSubmitter();
-
+    public String getPluginSubmitter();
 }
