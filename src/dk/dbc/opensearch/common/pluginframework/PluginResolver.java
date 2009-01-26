@@ -33,7 +33,7 @@ public class PluginResolver implements IPluginResolver
     /**
      *
      */
-    PluginResolver()throws NullPointerException, FileNotFoundException {
+    PluginResolver()throws NullPointerException, FileNotFoundException, TasksNotValidatedException {
         docBuilderFactory = DocumentBuilderFactory.newInstance();
         /**
          * \Todo: What to do with exceptions?
@@ -69,7 +69,7 @@ public class PluginResolver implements IPluginResolver
     {
         String message = ""; //what should we say here?
         Pair<Throwable, String> infoPair;
-        Vector<Pair> exceptionVector = null;
+        Vector<Pair<Throwable, String>> exceptionVector = null;
         boolean allFound = true;
         String pluginClassName = "";
         String notFound = "";

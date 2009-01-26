@@ -9,6 +9,7 @@ package dk.dbc.opensearch.common.pluginframework.tests;
 import dk.dbc.opensearch.common.pluginframework.PluginFinder;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.XmlFileFilter;
+import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
 
 import static org.junit.Assert.*;
 import org.junit.*;
@@ -92,7 +93,7 @@ public class PluginFinderTest {
      * tested indirectly, since it is called in the constructor
      * So there is no seperate test for that methods general functionality.
      */
-    @Test public void constructorTest() throws SAXException, IOException, NullPointerException {
+    @Test public void constructorTest() throws TasksNotValidatedException, SAXException, IOException, NullPointerException {
 
         /** 1 setup
          *

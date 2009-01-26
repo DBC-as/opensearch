@@ -30,8 +30,8 @@ public interface IPluginResolver
      * @param format, the format to search for plugins for
      * @param taskList the tasks to find plugins for
      * @return validateArgs when the plugins are present
-     * @throws NotValidatedException when not all the needed plugins are found, the
-     * Exception contains info about which plugins lacks 
+     * @throws TasksNotValidatedException when not all the needed plugins are found, the
+     * Exception contains info about which plugins 
      */
     boolean validateArgs( String submitter, String format, String[] taskList )throws TasksNotValidatedException;
     

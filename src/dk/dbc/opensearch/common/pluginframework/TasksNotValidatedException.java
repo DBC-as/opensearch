@@ -7,12 +7,12 @@ import com.mallardsoft.tuple.Pair;
  * 
  */
 public class TasksNotValidatedException extends Exception {
-    Vector<Pair> exceptionVector;
+    Vector<Pair<Throwable, String>> exceptionVector;
     String message;
   /**
    * 
    */
-    public TasksNotValidatedException( Vector<Pair> exceptoinVector, String message) {
+    public TasksNotValidatedException( Vector<Pair<Throwable, String>> exceptoinVector, String message) {
       this.exceptionVector = exceptionVector;
       this.message = message;
   }
@@ -20,7 +20,7 @@ public class TasksNotValidatedException extends Exception {
         return message;
     }
 
-    public Vector<Pair> getExceptionVector(){
+    public Vector<Pair<Throwable, String>> getExceptionVector(){
         return exceptionVector;
     }
 }

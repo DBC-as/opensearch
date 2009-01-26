@@ -7,6 +7,7 @@ package dk.dbc.opensearch.common.pluginframework;
 
 import dk.dbc.opensearch.common.os.PluginFileFilter;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
 
 import com.mallardsoft.tuple.Pair;
 
@@ -57,7 +58,7 @@ public class PluginFinder
      *
      * \todo: should we hardcode the path?
      */
-    public PluginFinder( DocumentBuilder docBuilder, String path ) throws FileNotFoundException, NullPointerException 
+    public PluginFinder( DocumentBuilder docBuilder, String path ) throws FileNotFoundException, NullPointerException, TasksNotValidatedException 
     {
         this.docBuilder = docBuilder;
         classNameMap = new HashMap();       
@@ -103,7 +104,7 @@ public class PluginFinder
      * in the path specified in the constructor
      * 
      */
-    private void updatePluginClassNameMap( String path ) throws FileNotFoundException
+    private void updatePluginClassNameMap( String path ) throws TasksNotValidatedException ,FileNotFoundException
     {
         String pluginName = null;;
         Document pluginDocument = null;
@@ -196,7 +197,7 @@ public class PluginFinder
             else
             {
                 log.error( String.format( "Pluginxml file: '%s' is invalid", pluginName ));
-                //                throw new TasksNotValidatedException( failedPlugins, "Plugins could not be loaded" );
+
             }
         }//end .hasNext
 
@@ -206,6 +207,15 @@ public class PluginFinder
         }
 
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );    
+        /**
+         * the vector containing exceptions is larger than 0 throw it in 
+         * a TasksNotValidatedException
+         * \Todo: Shouldnt we use other exception for this? It has nothing to do with
+         * validating tasks.
+         */
+        if( failedPlugins.size() < 0 ){
+            throw new TasksNotValidatedException( failedPlugins, "Plugins could not be loaded");
+        }
     }
 
 }
