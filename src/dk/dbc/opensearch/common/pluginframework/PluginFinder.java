@@ -209,7 +209,6 @@ public class PluginFinder
 
         if ( classNameMap.size() < 1 )
             {
-                // throw new FileNotFoundException( String.format( "No plugin description files at %s ", path  ) );
                 failedPlugins.add( new Pair( (Throwable) new FileNotFoundException( String.format( "No plugin description files at %s ", path ) ),"no pluginregistration files found" ) );
             }
 
