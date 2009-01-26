@@ -196,7 +196,7 @@
           depends="toplevel.xsd-classes">
     <mkdir dir="${classes.dir}"/>
 
-    <javac srcdir="${src.dir}" destdir="${classes.dir}">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/*">
       <classpath refid="classpath"/>
     </javac>
   </target>
