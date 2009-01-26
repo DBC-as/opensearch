@@ -46,7 +46,7 @@ public class PluginFinder
 
     private Map< String, String > classNameMap;
     private DocumentBuilder docBuilder;
-      
+    String path; 
     /**
      * builds the map containing the keys and related plugin classes
      * The keys are made from the task, format and datasource, the value is the
@@ -62,6 +62,7 @@ public class PluginFinder
      */
     public PluginFinder( DocumentBuilder docBuilder, String path ) throws FileNotFoundException, NullPointerException, PluginResolverException 
     {
+        this.path = path;
         this.docBuilder = docBuilder;
         classNameMap = new HashMap();       
 
@@ -82,10 +83,13 @@ public class PluginFinder
      **/
 
 
-    String getPluginClassName( String key ) throws FileNotFoundException
+    String getPluginClassName( String key ) throws PluginResolverException, FileNotFoundException
     {
         String className = null;
-
+        // 5: check the map is not null
+        if( classNameMap.size() < 1 ){
+            updatePluginClassNameMap( path );
+        }
         //10: search through the map
         className = (String) classNameMap.get( key );
         

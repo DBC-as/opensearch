@@ -1,5 +1,7 @@
 package dk.dbc.opensearch.common.pluginframework;
 
+import java.util.Vector;
+
 import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import java.io.FileNotFoundException;
@@ -31,11 +33,12 @@ public interface IPluginResolver
      * @param submitter, the submitter to search for plugins for
      * @param format, the format to search for plugins for
      * @param taskList the tasks to find plugins for
-     * @return validateArgs when the plugins are present
-     * @throws TasksNotValidatedException when not all the needed plugins are found, the
-     * Exception contains info about which plugins 
+     * @return Vector<String> with the names of tasks that could not be validated. 
+     * If the Vector == null, plugins were found for all the tasks 
+     * @throws PluginResolverException, when there are exceptions from the 
+     * framework concerning the registrations of plugins
      */
-    boolean validateArgs( String submitter, String format, String[] taskList )throws TasksNotValidatedException;
+    Vector<String> validateArgs( String submitter, String format, String[] taskList )throws PluginResolverException;
     
     
     /**

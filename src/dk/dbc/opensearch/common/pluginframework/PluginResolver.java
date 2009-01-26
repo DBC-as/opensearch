@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 /**
  *
  */
-public class PluginResolver implements IPluginResolver 
+public class PluginResolver implements IPluginResolver
 {
     static Logger log = Logger.getLogger( "PluginResolver" );
 
@@ -30,7 +30,7 @@ public class PluginResolver implements IPluginResolver
     ClassLoader pluginClassLoader;
     DocumentBuilderFactory docBuilderFactory;
     DocumentBuilder docBuilder;
-    
+
     /**
      *
      */
@@ -41,13 +41,13 @@ public class PluginResolver implements IPluginResolver
          */
         // try
         // {
-            docBuilder = docBuilderFactory.newDocumentBuilder();
-            //}
-            //catch( ParserConfigurationException pce )
-            //{
-        	// do nothing???
-            //}
-        
+        docBuilder = docBuilderFactory.newDocumentBuilder();
+        //}
+        //catch( ParserConfigurationException pce )
+        //{
+        // do nothing???
+        //}
+
         pluginClassLoader = new PluginClassLoader();
         /** \todo: beware: hardcoded value **/
         String path = "build/classes/dk/dbc/opensearch/plugins";
@@ -55,53 +55,42 @@ public class PluginResolver implements IPluginResolver
         PFinder = new PluginFinder( docBuilder, path );
         PLoader = new PluginLoader( pluginClassLoader );
     }
-    
-    
-    public IPluggable getPlugin( String submitter, String format, String task )throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException
+
+
+    public IPluggable getPlugin( String submitter, String format, String task )throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException
     {
         String key = submitter + format + task;
         String pluginClassName = PFinder.getPluginClassName( key );
 
         return PLoader.getPlugin( pluginClassName );
     }
-    
-    
-    public boolean validateArgs( String submitter, String format, String[] taskList )throws TasksNotValidatedException
+
+
+    public Vector<String> validateArgs( String submitter, String format, String[] taskList )throws PluginResolverException
     {
-        String message = String.format( "No plugins for submitter %s format %s for the tasks specified in the vector", submitter, format );
-        Vector<String> taskNameVector = null;
-        boolean allFound = true;
+        Vector<String> pluginNotFoundVector = null;
         String pluginClassName = "";
-        
+
         //for each string in taskList
         for( int x = 0; x < taskList.length; x++){
 
             String key = submitter + format + taskList[x];
 
             try
-            {
-                pluginClassName = PFinder.getPluginClassName( key );
-            }
+                {
+                    pluginClassName = PFinder.getPluginClassName( key );
+                }
             catch( FileNotFoundException fnfe )
-            {
+                {
+                    //build the Vector for the tasks there are no plugins for
+                    pluginNotFoundVector.add( taskList[x] );
+                }
+        }
+        return pluginNotFoundVector;
 
-                //build the exceptionVector
-                taskNameVector.add( taskList[x] );
-                allFound = false;
-            }
-        }
-        
-        if( allFound )
-        {
-            return true;
-        }
-        else
-        {
-            throw new TasksNotValidatedException( taskNameVector, message );
-        }
     }
-    
-    
+
+
     public void clearPluginRegistration()
     {
         //clear the classNameMap in PluginFinder
