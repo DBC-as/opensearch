@@ -2,7 +2,7 @@ package dk.dbc.opensearch.common.pluginframework;
 
 import java.io.FileNotFoundException;
 import java.lang.InstantiationException;
-import dk.dbc.opensearch.common.pluginframework.NotValidatedException;
+import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
 
 public interface IPluginResolver{
     /**
@@ -17,7 +17,7 @@ public interface IPluginResolver{
      * \Todo: Should we throw different exceptions for the 2 cases 
      * FileNotFoundException covers?  
      */
-    IPluggable getPlugin throws FileNotFoundException, InstantiationException( String submitter, String format, String task );
+    IPluggable getPlugin ( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, ClassCastException;
 
     /**
      * validates whether plugins for the tasks specified for the submitter and 
@@ -29,7 +29,7 @@ public interface IPluginResolver{
      * @throws NotValidatedException when not all the needed plugins are found, the
      * Exception contains info about which plugins lacks 
      */
-    boolean validateArgs throws NotValidatedException( String submitter, String format, String[] taskList );
+    boolean validateArgs( String submitter, String format, String[] taskList )throws TasksNotValidatedException;
     /**
      * clears the registrations of plugins and forces an update next time 
      * plugin information is needed
