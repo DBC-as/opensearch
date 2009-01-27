@@ -1,21 +1,13 @@
 package dk.dbc.opensearch.common.pluginframework;
 
+/**
+ * This interface represents the base point for all plugins. The only
+ * method supported by the interface is the identification of the
+ * plugin via the pluginid
+ */
 public interface IPluggable
 {
-    /**
-     * Initializes the plugin
-     */
-    public void init();
 
-    /**
-     * following methods return information about the plugin for
-     * the building of the key in the map containing the plugins
-     * 
-     * \Todo Decide what information is needed for building the key 
-     */
-    public String getPluginTask();
+    String getPluginID();
 
-    public String getPluginFormat();
-
-    public String getPluginSubmitter();
 }
