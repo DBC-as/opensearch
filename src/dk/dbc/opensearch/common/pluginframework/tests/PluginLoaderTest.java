@@ -88,6 +88,7 @@ public class PluginLoaderTest{
      * when given a not-existing class name. The exception is wrapped in an
      * InvocationTargetException
      */
+    @Ignore( "Semifinished testmethod. Remove me when I work properly" )
     @Test public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException{
         Method method;
         Class[] argClasses = new Class[]{ String.class };
