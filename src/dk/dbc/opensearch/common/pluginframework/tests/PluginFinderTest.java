@@ -10,6 +10,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginFinder;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.XmlFileFilter;
 import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 
 import static org.junit.Assert.*;
 import org.junit.*;
@@ -77,13 +78,14 @@ public class PluginFinderTest {
      */
     @After public void tearDown() {
 
-        reset( mockFile );
         reset( mockIterator );
         reset( mockDocBuilder );
         reset( mockDocument );
         reset( mockElement );
         reset( mockVector );
         reset( mockNodeList );
+        reset( mockFile );
+
 
     }
 
@@ -93,7 +95,7 @@ public class PluginFinderTest {
      * tested indirectly, since it is called in the constructor
      * So there is no seperate test for that methods general functionality.
      */
-    @Test public void constructorTest() throws TasksNotValidatedException, SAXException, IOException, NullPointerException {
+    @Test public void constructorTest() throws TasksNotValidatedException, SAXException, IOException, NullPointerException, PluginResolverException {
 
         /** 1 setup
          *
@@ -105,13 +107,13 @@ public class PluginFinderTest {
          */
         //in the updatePluginClassNameMap method
         expect( mockVector.iterator() ).andReturn( mockIterator );
-        expect( mockVector.size() ).andReturn( 2 );
+        // value doesn't matter, this call is logging
+        expect( mockVector.size() ).andReturn( 0 );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( hestString );
         expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( hestString ).times( 4 ) ;
@@ -121,7 +123,6 @@ public class PluginFinderTest {
         expect( mockIterator.next() ).andReturn( hestString );
         expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( hestString ).times( 4 ) ;

@@ -105,30 +105,33 @@ public class PluginFinder
 
 
     /**
-     * creates/updates the pluginClassMap
-     * @throws FileNotFoundException if their are no pluginxml files
-     * in the path specified in the constructor
-     *
+     * Creates/updates the pluginClassMap
+     * @throws FileNotFoundException if there are no pluginxml files on the given path
+     * @throws PluginResolverException if one or more of the found plugins could not be loaded
+     * 
+     * creates or updates the classname map with the names of the plugins found
+     * on and loaded from the given path
      */
     private void updatePluginClassNameMap( String path ) throws PluginResolverException ,FileNotFoundException
     {
-        String pluginName = null;;
-        Document pluginDocument = null;
-        File pluginFile;
         Iterator pluginNameIter = null;
 
-        //10: create the map
+        log.debug( String.format( "Clearing map with %s members", classNameMap.size() ) );
         classNameMap.clear();
 
-        //File pluginDirPath = fileHandler.getFile( path );
-
-        //20: get the plugin xml files in the pluginDirPath
+        log.debug( String.format( "Getting file list from %s", path ) );
         FilenameFilter[] filterList = { new PluginFileFilter() };
         Vector<String> xmlPluginFileNames = FileHandler.getFileList( path, filterList, true );
+        log.debug( String.format( "Number of found plugins: %s ", xmlPluginFileNames.size() ) );
+
         Vector<Pair<Throwable, String>> failedPlugins = new Vector<Pair<Throwable, String>>();
+        if ( filterList.length < 1 )
+            {
+                throw new FileNotFoundException( String.format( "No plugin description files at %s ", path ) );
+            }
 
         pluginNameIter = xmlPluginFileNames.iterator();
-        log.debug( String.format( "size of xmlPluginFileNames: ", xmlPluginFileNames.size() ) );
+
         //30: for each pull task, format, datasource and class out of them and build
         // the key and put it into the map with the class as value
         while( pluginNameIter.hasNext() )
@@ -139,11 +142,15 @@ public class PluginFinder
                 String className = null;
                 String taskName = null;
                 String key = null;
-                //35: get the xml file as a DOM object
+                String pluginName = null;;
+                File pluginFile = null;
+                Document pluginDocument = null;
+
                 try
                     {
                         pluginName = (String)pluginNameIter.next();
                         pluginFile = FileHandler.getFile( pluginName );
+                        log.debug( String.format( "Building DOM object from file %s", pluginName ) );
                         pluginDocument = docBuilder.parse( pluginFile );
                         couldFormat = true;
                     }
@@ -170,9 +177,9 @@ public class PluginFinder
 
                 if( couldFormat )
                     {
-                        log.debug("could format");
+
                         Element xmlRoot = pluginDocument.getDocumentElement();
-                        log.debug( "xmlRoot tagname: " + xmlRoot.getTagName() );
+
                         // 37: get the plugin element
                         NodeList pluginNodeList = xmlRoot.getElementsByTagName( "plugin" );
 
@@ -184,6 +191,8 @@ public class PluginFinder
                         formatName = pluginElement.getAttribute( "format" );
                         taskName = pluginElement.getAttribute( "task" );
                         className = pluginElement.getAttribute( "classname" );
+
+                        log.debug( String.format( "Found plugins with classname=%s, used for task: %s, format: %s from submitter:%s", className, taskName, formatName, submitterName ) );
 
                         //45: verify that we got string form the xml file
                         if( xmlRoot.getTagName().equals( "plugins" ) && submitterName != null && formatName != null && taskName != null && className != null )
@@ -198,24 +207,24 @@ public class PluginFinder
                         else
                             {
                                 log.error( String.format( "Pluginxml file: '%s' is invalid", pluginName ));
+                                failedPlugins.add( new Pair( new SAXException( "pluginxml file failed to validate" ), pluginName ) );
                             }
                     }
-                
             }//end .hasNext
 
-        if ( classNameMap.size() < 1 )
-            {
-                failedPlugins.add( new Pair( (Throwable) new FileNotFoundException( String.format( "No plugin description files at %s ", path ) ),"no pluginregistration files found" ) );
-            }
-
-        log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
         /**
          * the vector containing exceptions is larger than 0 throw it in
          * a PluginResolverException
          */
-        if( failedPlugins.size() < 0 ){
+        if( failedPlugins.size() > 0 ){
             throw new PluginResolverException( failedPlugins, "Exceptions on the plugins");
         }
+
+        if ( classNameMap.size() == 0 ){
+            throw new PluginResolverException( String.format( "%s seems to be a valid path with plugins in it, but no plugins were loaded. I'm at my wits end and cannot give a better explanation.", path ) );
+        }
+        
+        log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
     }
 
 }

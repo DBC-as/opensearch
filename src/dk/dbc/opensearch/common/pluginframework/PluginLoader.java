@@ -11,7 +11,6 @@ import java.lang.ClassNotFoundException;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
 
-
 /**
  * PluginLoader
  */
@@ -42,15 +41,8 @@ public class PluginLoader
      * @param pluginName the class name of the wanted plugin
      * @return the loaded plugin
      */
-    IPluggable getPlugin( String pluginName ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException
+    IPluggable getPlugin( String pluginName ) throws InstantiationException, IllegalAccessException, ClassNotFoundException
     {
-        //why check if it exists and throw an exception? The same will happen when it is loaded?
-        File pluginPath = fileHandler.getFile( pluginPathName );
-        if( !pluginPath.exists() )
-        {
-            throw new FileNotFoundException( String.format( "plugin directory %s could not be found", pluginPath.getAbsolutePath() ) );
-        }        
-
         // What' the point of this assignment? Its a leftover from refactoring
         String fullPluginClassName = pluginName;
         Class loadedClass = null;

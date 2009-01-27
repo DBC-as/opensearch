@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.lang.InstantiationException;
 import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  *
@@ -68,20 +69,16 @@ public class PluginLoaderTest{
      * Tests the loadPlugin method by giving the class string
      * to the test class TestPlugin
      */
-    @Test public void getPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException {
+    @Test public void getPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Method method;
         Class[] argClasses = new Class[]{ String.class };
         Object[] args = new Object[]{ testClassString };
-        try{
-            pl = new PluginLoader( pcl );
-            method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
-            method.setAccessible( true );
-            testIPlug = ( IPluggable ) method.invoke( pl, args );
+            
+        pl = new PluginLoader( pcl );
+        method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
+        method.setAccessible( true );
+        testIPlug = ( IPluggable ) method.invoke( pl, args );
            
-        }catch( Exception e){
-            noException = false;
-        }
-        assertTrue( noException );
         assertTrue( testIPlug.getClass().getName().equals( testClassString ) );
 
     }
@@ -90,21 +87,20 @@ public class PluginLoaderTest{
      * Tests that the PluginLoader.loadPlugin throws an IllegalArgumentException
      * when given a noexisting class name.
      */
-    @Test public void invalidClassNameTest(){
+    @Test( expected=InvocationTargetException.class ) public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException{
         Method method;
         Class[] argClasses = new Class[]{ String.class };
         Object[] args = new Object[]{ invalidClassString };
-        try{
+        // try{
             pl = new PluginLoader( pcl );
             method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
             method.setAccessible( true );
             testIPlug = ( IPluggable ) method.invoke( pl, args );
            
-        }catch( Exception e){
-            if( e.getCause().getClass() == IllegalArgumentException.class ){
-                illegalArgument = e.getCause().getMessage().equals( String.format( " class %s not found! ", invalidClassString ) );
-            }
-        }
-        assertTrue( illegalArgument );
+        // }catch( Exception e){
+        //     if( e.getCause().getClass() == IllegalArgumentException.class ){
+        //         illegalArgument = e.getCause().getMessage().equals( String.format( " class %s not found! ", invalidClassString ) );
+        //     }
+        // }
     }
 }
