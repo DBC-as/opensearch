@@ -36,6 +36,7 @@ public class PluginResolver implements IPluginResolver
      */
     PluginResolver()throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException {
         docBuilderFactory = DocumentBuilderFactory.newInstance();
+   
         /**
          * \Todo: What to do with exceptions?
          */

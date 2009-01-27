@@ -1,7 +1,7 @@
 /**
  * \file PluginFinder.java
  * \brief the class that handles the pluginclassmap
- * \package opensearch
+ * \package pluginframework
  */
 package dk.dbc.opensearch.common.pluginframework;
 
@@ -200,11 +200,7 @@ public class PluginFinder
                                 log.error( String.format( "Pluginxml file: '%s' is invalid", pluginName ));
                             }
                     }
-                else
-                    {
-                        log.error( String.format( "Pluginxml file: '%s' is invalid", pluginName ));
-
-                    }
+                
             }//end .hasNext
 
         if ( classNameMap.size() < 1 )
