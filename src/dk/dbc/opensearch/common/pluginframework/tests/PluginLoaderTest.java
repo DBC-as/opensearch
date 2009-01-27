@@ -73,34 +73,35 @@ public class PluginLoaderTest{
         Method method;
         Class[] argClasses = new Class[]{ String.class };
         Object[] args = new Object[]{ testClassString };
-            
+
         pl = new PluginLoader( pcl );
         method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
         method.setAccessible( true );
         testIPlug = ( IPluggable ) method.invoke( pl, args );
-           
+
         assertTrue( testIPlug.getClass().getName().equals( testClassString ) );
 
     }
 
     /**
      * Tests that the PluginLoader.loadPlugin throws an IllegalArgumentException
-     * when given a noexisting class name.
+     * when given a not-existing class name. The exception is wrapped in an
+     * InvocationTargetException
      */
-    @Test( expected=InvocationTargetException.class ) public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException{
+    @Test public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException{
         Method method;
         Class[] argClasses = new Class[]{ String.class };
         Object[] args = new Object[]{ invalidClassString };
-        // try{
+        try{
             pl = new PluginLoader( pcl );
             method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
             method.setAccessible( true );
             testIPlug = ( IPluggable ) method.invoke( pl, args );
-           
-        // }catch( Exception e){
-        //     if( e.getCause().getClass() == IllegalArgumentException.class ){
-        //         illegalArgument = e.getCause().getMessage().equals( String.format( " class %s not found! ", invalidClassString ) );
-        //     }
-        // }
+
+        }catch( InvocationTargetException ite){
+            illegalArgument = ( ( ite.getCause().getClass() == IllegalArgumentException.class ) && ( ite.getCause().getMessage().equals( String.format( " class %s not found! ", invalidClassString ) ) ) );
+        }
+        //needs to do it this way...
+        assertTrue( illegalArgument );
     }
 }
