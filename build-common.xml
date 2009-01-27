@@ -73,7 +73,7 @@
     <delete dir="${opensearch.dir}/xsd"/>
   </target>
 
-  <target name="toplevel.compile" description="Compiles source code">
+  <target name="toplevel.compile" description="Compiles source code" depends="toplevel.xsd-classes">
     <mkdir dir="${classes.dir}"/>
     <echo>
       Building from ${basedir},
@@ -87,7 +87,7 @@
   </target>
 
   <target name="toplevel.compile-tests" description="builds the tests for the component"
-          depends="toplevel.compile">
+          depends="toplevel.clean-all, toplevel.compile">
     <echo>
       Building from ${basedir},
       building project ${ant.project.name},
@@ -246,11 +246,12 @@
         -->
         <include name="**/*.class" />
         <exclude name="**/*Test.class" />
+        <exclude name="**/xsd/**/*.class" />
       </fileset>
     </cobertura-instrument>
   </target>
 
-  <target name="toplevel.coverage-test" depends="toplevel.coverage-instrument">
+  <target name="toplevel.coverage-test" depends="toplevel.coverage-instrument, toplevel.test">
     <mkdir dir="${report.dir}" />
 
     <junit fork="yes"
