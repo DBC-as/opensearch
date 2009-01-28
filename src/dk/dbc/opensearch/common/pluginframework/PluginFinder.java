@@ -226,5 +226,12 @@ public class PluginFinder
         
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
     }
+    /**
+     * method for clearing the classNameMap, to force rebuild on next invocation 
+     * of the getPluginClassName method
+     */
+    void clearClassNameMap(){
+        classNameMap.clear();
+    }
 
 }
