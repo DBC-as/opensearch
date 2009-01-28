@@ -11,8 +11,8 @@ import java.util.Date;
  * \ingroup datadock
  * \brief Holds the metadata for cargo
  */
-public class CargoObjectInfo {
-
+public class CargoObjectInfo 
+{
     private CargoMimeType mimeType;/**< \see CargoMimeType */
 
     /** \todo: the language of the submitted data determines which analyzer
@@ -35,6 +35,7 @@ public class CargoObjectInfo {
     private int contentLength;
     private Date timestamp; /**< used to make statistics and estimates regarding the processtime of the dataobject */
   
+    
     /**
      * Constructs a CargoObjectInfo instance that acts as a container
      * for the metadata associated with a given CargoContainers data
@@ -46,8 +47,8 @@ public class CargoObjectInfo {
      * @param format The dataobjects format
      * @param contentLength the dataobjects contentlength
      */
-    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format, int contentLength ) {
-
+    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format, int contentLength ) 
+    {
         this.mimeType = mimeType;
 
         this.language = lang;
@@ -59,7 +60,6 @@ public class CargoObjectInfo {
         this.contentLength = contentLength;
         
         this.timestamp = new Date();
-
     }
 
 
@@ -68,43 +68,52 @@ public class CargoObjectInfo {
      *
      * @returns the length of the data-stream
      */
-    int getContentLength(){
+    int getContentLength()
+    {
         return contentLength;
     }
+    
     
     /**
      * Returns this CargoContainers timestamp
      *
      * @returns the timestamp of the CargoContainer
      */
-    long getTimestamp(){
+    long getTimestamp()
+    {
         return timestamp.getTime();
     }
 
+    
     /**
      * Returns the mimetype
      *
      * @returns the mimetype of the data as a string
      */
-    String getMimeType(){
+    String getMimeType()
+    {
         return mimeType.getMimeType();
     }
 
+    
     /**
      * Returns the name of the submitter
      *
      * @return submitter as string
      */
-    public String getSubmitter(){
+    public String getSubmitter()
+    {
         return submitter;
     }
  
+    
     /**
      * Returns the format
      *
      * @return format as string
      */
-    public String getFormat(){
+    public String getFormat()
+    {
         return format;
     }
 }

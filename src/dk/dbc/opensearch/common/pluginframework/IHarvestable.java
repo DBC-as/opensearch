@@ -1,5 +1,7 @@
 package dk.dbc.opensearch.common.pluginframework;
 
+import java.io.FileNotFoundException;
+
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 /**
@@ -19,6 +21,13 @@ public interface IHarvestable extends IPluggable
      */
     String getSubmitter();
 
+    
+    /**
+     * 
+     */
+    void setSubmitter();
+    
+    
     /**
      * Convenience method that returns the format of the submitted
      * material.
@@ -27,6 +36,12 @@ public interface IHarvestable extends IPluggable
      */
     String getFormat();
 
+    
+    /**
+     * 
+     */
+    void setFormat();
+    
 
     /**
      * This method does the body of work and returns a CargoContainer
@@ -37,7 +52,5 @@ public interface IHarvestable extends IPluggable
      * @throws NoSuchFieldException 
      * @returns the input data as a cargocontainer 
      */
-    CargoContainer getCargoContainer();
-
-  
+    CargoContainer getCargoContainer() throws FileNotFoundException;  
 }

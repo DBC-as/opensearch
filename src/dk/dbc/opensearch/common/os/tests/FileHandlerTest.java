@@ -14,7 +14,7 @@ import static org.easymock.classextension.EasyMock.*;
 
 
 import java.io.InputStream;
-import java.io.FileInputStream;
+//import java.io.FileInputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
@@ -27,20 +27,19 @@ import java.io.IOException;
 import java.util.Vector;
 
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.os.FileFilter;
-import dk.dbc.opensearch.common.os.XmlFileFilter;
+//import dk.dbc.opensearch.common.os.FileFilter;
+//import dk.dbc.opensearch.common.os.XmlFileFilter;
 
 
 /** \brief UnitTest for FileHandler **/
-
-
-import static org.junit.Assert.*;
-import org.junit.*;
+//import static org.junit.Assert.*;
+//import org.junit.*;
 
 /**
  *
  */
-public class FileHandlerTest {
+public class FileHandlerTest 
+{
     File testdir;
     File file1;
     File file2;
@@ -128,11 +127,13 @@ public class FileHandlerTest {
     public void tearDownGetFileList() throws IOException {}
 
 
-    @Test public void testGetFileListNotDirectory() throws IOException {
-
+    @Test 
+    public void testGetFileListNotDirectory() throws IOException 
+    {
         setUpGetFileList();
         
-        try{
+        try
+        {
             testCase = FileHandler.getFileList( file1.getAbsolutePath(), fnf1, false );
             fail("Should have gotten IllegalArgumentException - Supplied no direcotry for method");
         }
@@ -142,9 +143,10 @@ public class FileHandlerTest {
     }
     
     
-    @Test public void testGetFileListCase1() throws IOException {
+    @Test 
+    public void testGetFileListCase1() throws IOException 
+    {
         //case1:descend false, 1 filter
-
         setUpGetFileList();
 
         expect( mockFileNameFilter1.accept( testdir, "test.xml" ) ).andReturn( true );
@@ -162,13 +164,12 @@ public class FileHandlerTest {
         if( testCase.indexOf( file2.getAbsolutePath() ) < 0 ){
             fail( String.format( "file='%s' should be returned", file2.getAbsolutePath() ) );
         }
-
-
     }
 
 
-
-    @Test public void testGetFileListCase2() throws IOException {
+    @Test 
+    public void testGetFileListCase2() throws IOException 
+    {
         //case1:descend false, more than 1 filter
 
         setUpGetFileList();
@@ -193,7 +194,10 @@ public class FileHandlerTest {
         }
     }
 
-    @Test public void testGetFileListCase3() throws IOException {
+    
+    @Test 
+    public void testGetFileListCase3() throws IOException 
+    {
         //case3:descend true, 1 filter
 
         setUpGetFileList();
@@ -223,10 +227,12 @@ public class FileHandlerTest {
         if( testCase.indexOf( file6.getAbsolutePath() ) < 0 ){
             fail( String.format( "file='%s' should be returned", file2.getAbsolutePath() ) );
         }
-
     }
 
-    @Test public void testGetFileListCase4() throws IOException {
+    
+    @Test 
+    public void testGetFileListCase4() throws IOException 
+    {
         //case4:descend true, more than 1 filter
 
         setUpGetFileList();
@@ -263,11 +269,10 @@ public class FileHandlerTest {
     }
 
 
-    @Test public void testReadFile() throws IOException {
-
+    @Test 
+    public void testReadFile() throws IOException 
+    {
         String teststr = "THIS IS A TEST";
-
-
 
         File tmp = File.createTempFile("opensearch-unittest","" );
         tmp.deleteOnExit();
@@ -287,27 +292,34 @@ public class FileHandlerTest {
         while ( ( line = reader.readLine() ) != null ){
             sb.append( line );
         }
+        
         is.close();
 
         assertEquals( sb.toString(), teststr );
     }
 
-    @Test public void testReadFileWithNoFile() throws IOException {
-
-
+    
+    @Test 
+    public void testReadFileWithNoFile() throws IOException 
+    {
         setUpGetFileList();
 
-        try{
+        try
+        {
             InputStream is = FileHandler.readFile( testdir.getAbsolutePath() );
             fail("Should have gotten FileNotFoundException - Did not supply valid filename");
         }
-        catch(FileNotFoundException iae){
+        catch( FileNotFoundException iae )
+        {
             // Expected - intentional
         }
     }
 
-    @Test public void testGetFile() throws IOException {
-        File tmp = File.createTempFile("opensearch-unittest","" );
+    
+    @Test 
+    public void testGetFile() throws IOException 
+    {
+        File tmp = File.createTempFile( "opensearch-unittest", "" );
         tmp.deleteOnExit();
         String tmpname = tmp.getAbsolutePath();
 

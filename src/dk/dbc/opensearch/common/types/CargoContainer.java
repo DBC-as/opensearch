@@ -9,22 +9,21 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.BufferedInputStream;
+import java.io.IOException; 
+import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.InputSource;
-import java.io.StringReader;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import java.io.IOException; 
 
-import org.apache.log4j.Logger;
 /**
  * \ingroup datadock
  * \brief CargoContainer is a datastructure used throughout OpenSearch for
@@ -33,8 +32,8 @@ import org.apache.log4j.Logger;
  * adding additional information used by the OpenSearch components
  * when dealing with the data.
  */
-public class CargoContainer {
-    
+public class CargoContainer 
+{    
     private String dublinCoreMetadata = null;
 
     /** object to hold information about the data*/
@@ -48,8 +47,9 @@ public class CargoContainer {
     /** the length of the InputStream */
     private final int contentLength;
 
-    Logger log = Logger.getLogger("CargoContainer");
+    Logger log = Logger.getLogger( "CargoContainer" );
 
+    
     /**
      * Constructor for the CargoContainer class. Creates an instance
      * based on a string representation of the data to be submitted
@@ -233,12 +233,14 @@ public class CargoContainer {
        coi = new CargoObjectInfo( CMT, language, submitter, format, contentLength );
     }
 
+    
     /**
      * Checks the validity if the submitter
      *
      * @returns true if name is found in submitter-list, false otherwise
      */
-    public boolean checkSubmitter( String name ) throws IllegalArgumentException{
+    public boolean checkSubmitter( String name ) throws IllegalArgumentException
+    {
         /** \todo: FIXME: Hardcoded values for allowed submitters */
         return true;
     }
@@ -248,38 +250,50 @@ public class CargoContainer {
      *
      * @returns true if mimetype is allowed in OpenSearch, false otherwise
      */
-    public boolean checkMimeType( String mimetype ){
+    public boolean checkMimeType( String mimetype )
+    {
         CargoMimeType CMT = null;
         log.debug( "checking mimetype" );
-        for (CargoMimeType cmt : CargoMimeType.values() ){
-            if( mimetype.equals( cmt.getMimeType() ) ){
+        for (CargoMimeType cmt : CargoMimeType.values() )
+        {
+            if( mimetype.equals( cmt.getMimeType() ) )
+            {
                 CMT = cmt;
             }
         }
-        if( CMT == null ){
+        
+        if( CMT == null )
+        {
             return false;
         }
+        
         return true;
 
     }
+    
+    
     /**
      * Checks the validity if the language
      *
      *@returns true if language is allowed in Opensearch, false otherwise
      */
-    public boolean checkLanguage(String lang){
+    public boolean checkLanguage(String lang)
+    {
         return true;
     }
 
+    
     /**
      * Gets the data from the container
      *
      * @returns the data of the container-object as an BufferedInputStream
      */
-    public BufferedInputStream getData(){
+    public BufferedInputStream getData()
+    {
         return this.data;
     }
 
+    
     /**
      * Get the InputStream returned as a byte array
      *
@@ -288,8 +302,8 @@ public class CargoContainer {
      * @throws IOException if the CargoContainer data could not be written to the byte[]
      * @throws NullPointerException if the pointer to the internal representation was corrupted
      */
-    public byte[] getDataBytes() throws IOException, NullPointerException{
-
+    public byte[] getDataBytes() throws IOException, NullPointerException
+    {
         log.info( String.format( "Constructing byte[] with length %s", this.contentLength ) );
 
         byte[] ba = new byte[ this.contentLength ];
@@ -306,14 +320,17 @@ public class CargoContainer {
             //     throw new IOException( ioe );
             // }catch( NullPointerException npe){
             //     log.fatal( String.format( "Tried to read data from empty pointer. Data in pointer was %s", npe.toString() ) );
-        }finally{
+        }
+        finally
+        {
             in.reset();
         }
+        
         log.debug( String.format( "Returning bytearray" ) );
         return bos.toByteArray();
-
     }
 
+    
     /**
      * Get the InputStream returned as a bytearrayoutputstream
      *
@@ -322,8 +339,8 @@ public class CargoContainer {
      * @throws IOException if the data could not be written to the ByteArrayOutputStream
      * @throws NullPointerException if the pointer to the internal representation was corrupted
      */
-    public ByteArrayOutputStream getDataBAOS() throws IOException, NullPointerException{
-
+    public ByteArrayOutputStream getDataBAOS() throws IOException, NullPointerException
+    {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         BufferedInputStream in = getData();
 

@@ -2,7 +2,6 @@ package dk.dbc.opensearch.common.pluginframework;
 
 import java.util.Vector;
 
-import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import java.io.FileNotFoundException;
 import java.lang.InstantiationException;

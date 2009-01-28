@@ -20,8 +20,8 @@ import java.lang.NullPointerException;
  * /brief Class to handle file operations.
  * The class is used to wrap file operations so that classes using files can be unittested.
  */
-public class FileHandler {
-
+public class FileHandler 
+{
     static Logger log = Logger.getLogger( "FileHandler" );
 
     /**
@@ -29,14 +29,15 @@ public class FileHandler {
      *
      * \todo: what's the point of the constructor here?
      */
-    //private FileHandler(){} 
-    public FileHandler(){}
+    public FileHandler() { }
 
+    
     /**
      * @param path: The path to the file
      * @throws NullPointerException if the path is not valid
      */
-    public static File getFile( String path )throws NullPointerException{
+    public static File getFile( String path )throws NullPointerException
+    {
         return new File( path );
     }
     
@@ -48,15 +49,15 @@ public class FileHandler {
      * @returns A string vector, with the matching filenames
      * @throws IllegalArgumentException if the path does not exist.
      */
-
     public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ) 
-        throws IllegalArgumentException{
-
+        throws IllegalArgumentException
+    {
         /** \todo: what happens if the fileFilters is null? Or the path?**/
         log.debug( String.format( "getFileList( path=%s, filefilters[%s], descend=%s ) called", path, fileFilters.length, descend ) );
        
         log.debug( "Check if path exists" );        
-        if(! new File ( path ).isDirectory() ){
+        if( ! new File ( path ).isDirectory() )
+        {
             throw new IllegalArgumentException( String.format( "Path: '%s' does not exist, or is not a directory", path ) );    
         }
         
@@ -65,41 +66,48 @@ public class FileHandler {
         File dir = new File ( path );
         File[] files = dir.listFiles();
         
-        for( File f: files ){
+        for( File f: files )
+        {
             log.debug( String.format( "Validating: '%s'", f.getAbsolutePath() ) );
             boolean validate = true;
-            for( FilenameFilter fnf: fileFilters ){
-                if(! fnf.accept(dir, f.getName() ) ){
+            for( FilenameFilter fnf: fileFilters )
+            {
+                if(! fnf.accept(dir, f.getName() ) )
+                {
                     validate = false;
                     break;
                 }
             }
             
-            if( validate ){                
+            if( validate )
+            {                
                 log.debug( String.format( "Validated: '%s'", f.getAbsolutePath() ) );
                 fileNames.add( f.getAbsolutePath() );
             }
-            if( descend && f.isDirectory() ){
+            if( descend && f.isDirectory() )
+            {
                 log.debug( String.format( "Descending into: '%s'", f.getAbsolutePath() ) );
                 fileNames.addAll( getFileList( f.getAbsolutePath(), fileFilters, descend ) );
             }
-
         }
-
+        
         return fileNames;
     }
 
+    
     /**
      * Reads a file from disk
      * @param file The path to the file that should be read
      * @returns an inputstream with the file content
      * @throws FileNotFoundException if the file does not exist
      */
-    public static InputStream readFile( String file )throws FileNotFoundException{
+    public static InputStream readFile( String file ) throws FileNotFoundException
+    {
         InputStream is = null;
 
         File f = new File( file );
-        if(! new File ( file ).isFile() ){
+        if(! new File ( file ).isFile() )
+        {
             throw new FileNotFoundException( String.format( "Error - '%s' is not a file", file ) );       
         }
         

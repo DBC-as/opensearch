@@ -73,7 +73,8 @@
     <delete dir="${opensearch.dir}/xsd"/>
   </target>
 
-  <target name="toplevel.compile" description="Compiles source code" depends="toplevel.xsd-classes">
+  <target name="toplevel.compile" description="Compiles source code" > 
+  	<!-- depends="toplevel.xsd-classes" -->
     <mkdir dir="${classes.dir}"/>
     <echo>
       Building from ${basedir},
