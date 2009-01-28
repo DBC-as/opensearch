@@ -76,7 +76,7 @@ public class FedoraToolsTest
     	
     	return ret;
     }
-    @Ignore
+
     @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException
     {
     	cargo = constructCargo( "æøå" );
