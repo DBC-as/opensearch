@@ -88,7 +88,6 @@ public class PluginLoaderTest{
      * when given a not-existing class name. The exception is wrapped in an
      * InvocationTargetException
      */
-    @Ignore( "Semifinished testmethod. Remove me when I work properly" )
     @Test public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException{
         Method method;
         Class[] argClasses = new Class[]{ String.class };
@@ -100,7 +99,7 @@ public class PluginLoaderTest{
             testIPlug = ( IPluggable ) method.invoke( pl, args );
 
         }catch( InvocationTargetException ite){
-            illegalArgument = ( ( ite.getCause().getClass() == IllegalArgumentException.class ) && ( ite.getCause().getMessage().equals( String.format( " class %s not found! ", invalidClassString ) ) ) );
+            illegalArgument = ( ite.getCause().getClass() == ClassNotFoundException.class ); 
         }
         //needs to do it this way...
         assertTrue( illegalArgument );

@@ -41,15 +41,14 @@ public class PluginLoader
      * @param pluginName the class name of the wanted plugin
      * @return the loaded plugin
      */
-    IPluggable getPlugin( String pluginName ) throws InstantiationException, IllegalAccessException, ClassNotFoundException
+    IPluggable getPlugin( String pluginClassName ) throws InstantiationException, IllegalAccessException, ClassNotFoundException
     {
-        // What' the point of this assignment? Its a leftover from refactoring
-        String fullPluginClassName = pluginName;
+        
         Class loadedClass = null;
         //loading the class
-        log.debug( String.format( "The plugin class name: %s", fullPluginClassName) );
+        log.debug( String.format( "The plugin class name: %s", pluginClassName) );
        
-        loadedClass = cl.loadClass( fullPluginClassName );
+        loadedClass = cl.loadClass( pluginClassName );
        
         IPluggable thePlugin = ( IPluggable )loadedClass.newInstance();
 
