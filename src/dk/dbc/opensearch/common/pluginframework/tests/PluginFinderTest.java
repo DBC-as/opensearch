@@ -39,6 +39,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
+import com.mallardsoft.tuple.Pair;
+import com.mallardsoft.tuple.Tuple;
+
 /**
  *
  */
@@ -119,8 +122,7 @@ public class PluginFinderTest {
         //in the updatePluginClassNameMap method
 
         expect( mockVector.iterator() ).andReturn( mockIterator );
-        // value doesn't matter, this call is logging
-        expect( mockVector.size() ).andReturn( 0 );
+        expect( mockVector.size() ).andReturn( 0 ); //log call
         expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
@@ -198,6 +200,63 @@ public class PluginFinderTest {
         verify( mockVector );
 
     }
+    /**
+     * provokes the SAXexception that can be sent with the PluginResolverTest
+     * as a result of a parse that goes wrong.
+     */
+    @Test public void saxExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
+/** 1 setup
+         *
+         */
+        String testString = "test";
+        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Iterator expVecIter;
+        /** 2 expectations
+         *
+         */
+        //in the updatePluginClassNameMap method
+
+        expect( mockVector.iterator() ).andReturn( mockIterator );
+        expect( mockVector.size() ).andReturn( 0 ); //log call
+        expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        //entering while
+        expect( mockIterator.hasNext() ).andReturn( true );
+        expect( mockIterator.next() ).andReturn( testString );
+        expect( mockDocBuilder.parse( isA( File.class ) ) ).andThrow( new SAXException( testString ) );
+        expect( mockIterator.hasNext() ).andReturn( false );
+
+        /** 3 replay
+         *
+         */
+        replay( mockVector );
+        replay( mockIterator );
+        replay( mockDocBuilder );
+        //replay( mockDocument );
+        //replay( mockElement );
+        //replay( mockNodeList );
+        //replay( mockFile );
+
+        /** do stuff */
+        try{
+        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+        }catch( PluginResolverException pre ){
+            exceptionVector = pre.getExceptionVector();
+        }
+        expVecIter = exceptionVector.iterator();
+        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        
+        /**  4 check if it happened as expected
+         * verify
+         */
+        verify( mockVector );
+        verify( mockIterator );
+        verify( mockDocBuilder );
+        //verify( mockDocument );
+        //verify( mockElement );
+        //verify( mockNodeList );
+        //verify( mockFile );
+
+    }
 
     /**
      * test the happy path of the getPluginClassName method, where
@@ -238,8 +297,7 @@ public class PluginFinderTest {
 
         //in the updatePluginClassNameMap method again
         expect( mockVector.iterator() ).andReturn( mockIterator );
-        // value doesn't matter, this call is logging
-        expect( mockVector.size() ).andReturn( 0 );
+        expect( mockVector.size() ).andReturn( 0 );//log call
         expect( mockVector.size() ).andReturn( 2 );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
@@ -315,8 +373,7 @@ public class PluginFinderTest {
          */
         //in the updatePluginClassNameMap method
         expect( mockVector.iterator() ).andReturn( mockIterator );
-        // value doesn't matter, this call is logging
-        expect( mockVector.size() ).andReturn( 0 );
+        expect( mockVector.size() ).andReturn( 0 );// log call
         expect( mockVector.size() ).andReturn( 1 );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
@@ -369,4 +426,5 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
+   
 }
