@@ -20,6 +20,7 @@
 
   <!-- ================================================================== -->
   <target name="opensearch.opensearch" depends="xsd-classes">
+  	<echo>${dependency.target}</echo>
     <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
          target="${dependency.target}"
          inheritAll="false"/>

@@ -87,8 +87,8 @@
     </javac>
   </target>
 
-  <target name="toplevel.compile-tests" description="builds the tests for the component"
-          depends="toplevel.clean-all, toplevel.compile">
+  <target name="toplevel.compile-tests" description="builds the tests for the component" 
+          depends="toplevel.compile"> <!-- toplevel.clean-all, -->
     <echo>
       Building from ${basedir},
       building project ${ant.project.name},

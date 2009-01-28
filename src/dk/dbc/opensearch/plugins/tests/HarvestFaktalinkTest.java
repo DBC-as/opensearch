@@ -1,6 +1,8 @@
 package dk.dbc.opensearch.plugins.tests;
 
-import java.io.File;
+//import java.io.File;
+
+import org.junit.Test;
 
 
 public class HarvestFaktalinkTest

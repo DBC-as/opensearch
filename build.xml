@@ -29,6 +29,7 @@
   </target--> 
 		  
   <target name="compile-tests" description="Builds tests">
+  	<echo>${ant.project.name}</echo>
     <antcall target="${ant.project.name}">
       <param name="dependency.target" value="toplevel.compile-tests"/>
     </antcall>
