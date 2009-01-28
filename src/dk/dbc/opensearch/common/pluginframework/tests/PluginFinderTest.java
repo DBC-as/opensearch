@@ -117,9 +117,11 @@ public class PluginFinderTest {
          *
          */
         //in the updatePluginClassNameMap method
+
         expect( mockVector.iterator() ).andReturn( mockIterator );
         // value doesn't matter, this call is logging
         expect( mockVector.size() ).andReturn( 0 );
+        expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -167,6 +169,37 @@ public class PluginFinderTest {
     }
 
     /**
+     * Test the behaviour when there are no .plugin files to be found
+     */
+    @Test( expected = FileNotFoundException.class )
+        public void noPluginDescriptionFiles() throws SAXException, IOException, NullPointerException, PluginResolverException{
+        /** 1 setup
+         *
+         */
+        String testString = "test";
+
+        /** 2 expectations
+         *
+         */
+        //in the updatePluginClassNameMap method
+        expect( mockVector.size() ).andReturn( 0 ).times( 2 );
+
+        /** 3 replay
+         *
+         */
+        replay( mockVector );
+
+        /** do stuff */
+        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+
+        /**  4 check if it happened as expected
+         * verify
+         */
+        verify( mockVector );
+
+    }
+
+    /**
      * test the happy path of the getPluginClassName method, where
      * classNameMap  needs to be rebuild.
      */
@@ -181,9 +214,11 @@ public class PluginFinderTest {
          *
          */
         //in the updatePluginClassNameMap method
+
         expect( mockVector.iterator() ).andReturn( mockIterator );
         // value doesn't matter, this call is logging
         expect( mockVector.size() ).andReturn( 0 );
+        expect( mockVector.size() ).andReturn( 1 );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -196,14 +231,16 @@ public class PluginFinderTest {
         expect( mockIterator.hasNext() ).andReturn( false );
 
         /**
-         * has been cleared, the getPluginClassName forces the map
-         * classNameMap to be rebuild
-         * */
+         * classNameMap has been cleared, the getPluginClassName forces 
+         * it to be rebuild
+         */
+        //in the getPluginClassName method again
 
         //in the updatePluginClassNameMap method again
         expect( mockVector.iterator() ).andReturn( mockIterator );
         // value doesn't matter, this call is logging
         expect( mockVector.size() ).andReturn( 0 );
+        expect( mockVector.size() ).andReturn( 2 );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -239,16 +276,16 @@ public class PluginFinderTest {
 
 
         pluginFinder = new PluginFinder( mockDocBuilder, "" );
-       
-            method1 = pluginFinder.getClass().getDeclaredMethod( "clearClassNameMap", argClasses1 );
-            method2 = pluginFinder.getClass().getDeclaredMethod( "getPluginClassName", argClasses2 );
-            method1.setAccessible( true );
-            method2.setAccessible( true );
-            method1.invoke( pluginFinder );
-            assertTrue( testString.equals( method2.invoke( pluginFinder, args2 ) ) );
-            //pluginFinder.clearClassNameMap();
-            //assertTrue( testString.equals( pluginFinder.getPluginClassName( testString + testString + testString ) ) );
-        
+
+        method1 = pluginFinder.getClass().getDeclaredMethod( "clearClassNameMap", argClasses1 );
+        method2 = pluginFinder.getClass().getDeclaredMethod( "getPluginClassName", argClasses2 );
+        method1.setAccessible( true );
+        method2.setAccessible( true );
+        method1.invoke( pluginFinder );
+        assertTrue( testString.equals( method2.invoke( pluginFinder, args2 ) ) );
+        //pluginFinder.clearClassNameMap();
+        //assertTrue( testString.equals( pluginFinder.getPluginClassName( testString + testString + testString ) ) );
+
         /**  4 check if it happened as expected
          * verify
          */
@@ -280,6 +317,7 @@ public class PluginFinderTest {
         expect( mockVector.iterator() ).andReturn( mockIterator );
         // value doesn't matter, this call is logging
         expect( mockVector.size() ).andReturn( 0 );
+        expect( mockVector.size() ).andReturn( 1 );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );

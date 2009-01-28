@@ -125,7 +125,7 @@ public class PluginFinder
         log.debug( String.format( "Number of found plugins: %s ", xmlPluginFileNames.size() ) );
 
         Vector<Pair<Throwable, String>> failedPlugins = new Vector<Pair<Throwable, String>>();
-        if ( filterList.length < 1 )
+        if ( xmlPluginFileNames.size() < 1 )
             {
                 throw new FileNotFoundException( String.format( "No plugin description files at %s ", path ) );
             }
