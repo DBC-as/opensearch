@@ -10,4 +10,5 @@ public interface IPluggable
 
     String getPluginID();
 
+    String getTaskName();
 }

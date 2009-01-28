@@ -4,9 +4,15 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
 
 public class TestPlugin implements IPluggable{
 
+    private String pluginID;;
+
     public TestPlugin(){}
-    
+
     public String getPluginID(){
-        return "TestPluginID";
+        return pluginID;
     }
+    public String getTaskName(){
+        return "testtask";
+    }
+
 }

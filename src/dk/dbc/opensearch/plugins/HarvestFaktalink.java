@@ -63,7 +63,11 @@ public class HarvestFaktalink implements IHarvestable
     {
     	return createCargoContainerFromFile();
     }
-    
+
+    public String getTaskName(){
+        return "harvest";
+    }
+
 
     private CargoContainer createCargoContainerFromFile() throws FileNotFoundException
     {
