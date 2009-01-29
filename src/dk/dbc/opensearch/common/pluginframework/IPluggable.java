@@ -1,4 +1,6 @@
 package dk.dbc.opensearch.common.pluginframework;
+
+
 /**
  * This interface represents the base point for all plugins. It
  * defines two methods that are the common basis for all plugins that
@@ -33,7 +35,6 @@ package dk.dbc.opensearch.common.pluginframework;
  */
 public interface IPluggable
 {
-
     /**
      * getPluginID returns the - at object creation time given - id
      * for this plugin. pluginIDs identify plugins to the

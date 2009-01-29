@@ -31,8 +31,8 @@ import fedora.server.types.gen.DatastreamDef;
 import fedora.server.types.gen.MIMETypedStream;
 
 
-public class FedoraHandlerTest {
-    
+public class FedoraHandlerTest 
+{    
     Logger log = Logger.getLogger("FedoraHandlerTest");
     
     /**
@@ -58,7 +58,8 @@ public class FedoraHandlerTest {
      * The FedoraAPIA and M to call methods on
      * The CargoContainer to get data from 
      */
-    @Before public void Setup() throws ServiceException, UnsupportedEncodingException, IOException 
+    @Before 
+    public void Setup() throws ServiceException, UnsupportedEncodingException, IOException 
     {
         mockFedoraClient = createMock( FedoraClient.class );
         mockFedoraAPIA = createMock( FedoraAPIA.class );
