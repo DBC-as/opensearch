@@ -23,7 +23,8 @@ public interface IHarvestable extends IPluggable
      * @throws NullPointerException 
      * @throws IllegalArgumentException 
      * 
-     * @throws NoSuchFieldException 
+     * @throws FileNotFoundException if the file given to the plugin
+     * cannot be found on the filesystem
      * @returns the input data as a cargocontainer 
      */
     CargoContainer getCargoContainer() throws FileNotFoundException, IllegalArgumentException, NullPointerException, IOException;  
