@@ -201,8 +201,8 @@ public class PluginFinderTest {
 
     }
     /**
-     * provokes the SAXexception that can be sent with the PluginResolverTest
-     * as a result of a parse that goes wrong.
+     * Tests that the SAXException that can be caused by a parse is put unto the 
+     * PluginResolverException and that this is thrown 
      */
     @Test public void saxExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
 /** 1 setup
@@ -231,10 +231,6 @@ public class PluginFinderTest {
         replay( mockVector );
         replay( mockIterator );
         replay( mockDocBuilder );
-        //replay( mockDocument );
-        //replay( mockElement );
-        //replay( mockNodeList );
-        //replay( mockFile );
 
         /** do stuff */
         try{
@@ -251,13 +247,106 @@ public class PluginFinderTest {
         verify( mockVector );
         verify( mockIterator );
         verify( mockDocBuilder );
-        //verify( mockDocument );
-        //verify( mockElement );
-        //verify( mockNodeList );
-        //verify( mockFile );
 
     }
+/**
+     * tests that the IOException that can be caused by a parse is sent with the 
+     * PluginResolverException
+     */
+    @Test public void ioExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
+/** 1 setup
+         *
+         */
+        String testString = "test";
+        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Iterator expVecIter;
+        /** 2 expectations
+         *
+         */
+        //in the updatePluginClassNameMap method
 
+        expect( mockVector.iterator() ).andReturn( mockIterator );
+        expect( mockVector.size() ).andReturn( 0 ); //log call
+        expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        //entering while
+        expect( mockIterator.hasNext() ).andReturn( true );
+        expect( mockIterator.next() ).andReturn( testString );
+        expect( mockDocBuilder.parse( isA( File.class ) ) ).andThrow( new IOException( testString ) );
+        expect( mockIterator.hasNext() ).andReturn( false );
+
+        /** 3 replay
+         *
+         */
+        replay( mockVector );
+        replay( mockIterator );
+        replay( mockDocBuilder );
+       
+        /** do stuff */
+        try{
+        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+        }catch( PluginResolverException pre ){
+            exceptionVector = pre.getExceptionVector();
+        }
+        expVecIter = exceptionVector.iterator();
+        assertTrue( IOException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        
+        /**  4 check if it happened as expected
+         * verify
+         */
+        verify( mockVector );
+        verify( mockIterator );
+        verify( mockDocBuilder );
+       
+    }
+    /**
+     * tests that the NullPointerException that can be caused by a parse is put 
+     * into the PluginResolverException, and that this is thrown
+     */
+    @Test public void nullPointerExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
+/** 1 setup
+         *
+         */
+        String testString = "test";
+        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Iterator expVecIter;
+        /** 2 expectations
+         *
+         */
+        //in the updatePluginClassNameMap method
+
+        expect( mockVector.iterator() ).andReturn( mockIterator );
+        expect( mockVector.size() ).andReturn( 0 ); //log call
+        expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        //entering while
+        expect( mockIterator.hasNext() ).andReturn( true );
+        expect( mockIterator.next() ).andReturn( testString );
+        expect( mockDocBuilder.parse( isA( File.class ) ) ).andThrow( new NullPointerException( testString ) );
+        expect( mockIterator.hasNext() ).andReturn( false );
+
+        /** 3 replay
+         *
+         */
+        replay( mockVector );
+        replay( mockIterator );
+        replay( mockDocBuilder );
+       
+        /** do stuff */
+        try{
+        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+        }catch( PluginResolverException pre ){
+            exceptionVector = pre.getExceptionVector();
+        }
+        expVecIter = exceptionVector.iterator();
+        assertTrue( NullPointerException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        
+        /**  4 check if it happened as expected
+         * verify
+         */
+        verify( mockVector );
+        verify( mockIterator );
+        verify( mockDocBuilder );
+       
+    }
     /**
      * test the happy path of the getPluginClassName method, where
      * classNameMap  needs to be rebuild.
