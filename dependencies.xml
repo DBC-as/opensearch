@@ -20,8 +20,7 @@
 
   <!-- ================================================================== -->
   <target name="opensearch.opensearch" depends="xsd-classes">
-  	<echo>${dependency.target}</echo>
-    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
+  	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
          target="${dependency.target}"
          inheritAll="false"/>
   </target>
@@ -124,7 +123,10 @@
   </target>
 	
   <!-- ================================================================== -->
-  <target name="opensearch.plugins" depends="opensearch.common.pluginframework">
+  <target name="opensearch.plugins"> <!-- depends="opensearch.common.pluginframework"-->
+  	<antcall target="opensearch.common.pluginframework">
+  	  <param name="dependency.target" value="toplevel.compile" />
+  	</antcall>
   	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/plugins"
   	     target="${dependency.target}"
   	     inheritAll="false" />

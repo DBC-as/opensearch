@@ -100,8 +100,9 @@
   </target>
 	
   <target name="toplevel.suite" description="Run test suite" depends="toplevel.compile-tests">
-  	<echo>${dependency.target}</echo>
-  	<echo>${suite.name}</echo>
+  	<echo>
+      Running suite ${suite.name}
+  	</echo>
   	<junit fork="yes"
            forkmode="once"
            printsummary="withOutAndErr"
@@ -113,8 +114,6 @@
   	  
   	  <formatter type="brief" usefile="false" />
   	  <test name="${suite.name}" />
-  	  <!--test name="dk.dbc.opensearch.common.fedora.tests.FedoraTestSuite" /-->
-  	  <!--test name="${suite.path}" /-->
   	</junit>
   </target>
 
@@ -136,9 +135,6 @@
       <formatter type="xml" usefile="yes"/>
       <classpath refid="classpath"/>
 
-      <!--batchtest fork="yes">
-          <fileset dir="${src.dir}/dk/dbc/opensearch/common/statistics/" includes="tests/*Test.java"/>
-          </batchtest-->
       <batchtest todir="${testresults.dir}">
         <fileset dir="${classes.dir}" >
           <include name="**/tests/*Test.class"/>

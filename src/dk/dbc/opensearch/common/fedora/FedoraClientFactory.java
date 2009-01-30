@@ -4,6 +4,7 @@
  * \package tools
  */
 package dk.dbc.opensearch.common.fedora;
+
 import fedora.client.FedoraClient;
 
 import java.net.URL;

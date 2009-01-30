@@ -90,12 +90,14 @@ public class CargoContainer
         log.debug( String.format( "checking mimetype: %s", mime ) );
         for (CargoMimeType cmt : CargoMimeType.values() )
         {
-            if( mime.equals( cmt.getMimeType() ) )
+        	//System.out.println( "cmt: " + cmt.getMimeType() );System.out.println( "mime: " + mime );
+        	if( mime.equals( cmt.getMimeType() ) )        	
             {
                 log.debug( String.format( "Identified mimetype %s", mime ) );
                 CMT = cmt;
             }
         }
+        
         if( CMT == null )
         {
             throw new IllegalArgumentException( String.format( "no mimetype goes by the name of %s", mime ) );

@@ -1,8 +1,11 @@
-<project name="opensearch.plugins" default="usage">
+<project name="opensearch.plugins" default="suite">
   <!--Time-stamp: <2009-01-26 10:35:34 mro> -->
   <import file="../../../../../build.xml"/>
 	
-  <target name="usage">
-  	<echo>not implemented yet!</echo>
+  <target name="suite" description="Compiles and runs test suite">
+    <antcall target="testsuite">
+      <param name="suite.name" value="dk.dbc.opensearch.plugins.tests.PLUGINSTestSuite" />
+      <param name="dependency.target" value="toplevel.suite" />
+    </antcall>
   </target>
 </project>

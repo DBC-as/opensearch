@@ -8,46 +8,29 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.tools.PrivateAccessor;
 
+import java.io.*;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.ClassNotFoundException; 
+import java.lang.IllegalArgumentException;
+import java.lang.NoSuchMethodException;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;  
+import java.util.concurrent.*;
 
+import javax.xml.rpc.ServiceException;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
 import static org.junit.Assert.*;
-//import static org.easymock.EasyMock.*;
 import static org.easymock.classextension.EasyMock.*;
 
-import java.util.concurrent.*;
-import java.lang.reflect.Method;
-import java.io.*;
 
-// import org.apache.axis.types.NonNegativeInteger;
 
-// import fedora.client.FedoraClient;
-// import fedora.common.Constants;
-// import fedora.server.access.FedoraAPIA;
-// import fedora.server.management.FedoraAPIM;
-// import fedora.server.types.gen.DatastreamDef;
-// import fedora.server.types.gen.MIMETypedStream;
-
-// import java.io.InputStream;
-// import java.io.ByteArrayInputStream;
-// import java.io.ByteArrayOutputStream;
-
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import javax.xml.rpc.ServiceException;
-import java.io.IOException;
-import org.apache.commons.configuration.ConfigurationException;
-import java.lang.ClassNotFoundException; 
-// import java.rmi.RemoteException;
-import java.net.UnknownHostException;  
-import java.lang.IllegalArgumentException;
-// import javax.xml.stream.XMLStreamException;
-// import java.io.UnsupportedEncodingException;
-import java.lang.NoSuchMethodException;
-
-public class DataDockPoolAdmTest {
-    
+public class DataDockPoolAdmTest 
+{    
     /**
      * The (mock)objects we need for the most of the tests
      */
@@ -65,21 +48,23 @@ public class DataDockPoolAdmTest {
      * Before each test we construct the needed mockobjects 
      *  
      */
-    @Before public void Setup(){
+    @Before public void Setup()
+    {
         mockFedoraHandler = createMock( FedoraHandler.class );
         mockEstimate = createMock( Estimate.class );
         mockProcessqueue = createMock( Processqueue.class );
         mockCargoContainer = createMock( CargoContainer.class );
         mockFutureTask = createMock( FutureTask.class );
         mockDDP = createMock( DataDockPool.class );
-
     }
+    
     
     /**
      * After each test the mock are reset
      */
 
-    @After public void TearDown(){
+    @After public void TearDown()
+    {
         reset( mockFedoraHandler );
         reset( mockEstimate );
         reset( mockProcessqueue );
@@ -88,12 +73,13 @@ public class DataDockPoolAdmTest {
         reset( mockDDP );
                 
     }
+    
   
     /**
      * Tests the construction with the correct arguments
      */    
-    @Test public void constructorTest() throws ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException {
-         
+    @Test public void constructorTest() throws ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException 
+    {         
         /**1 setting up the needed mocks 
          * Is done in setup()
          */
@@ -113,8 +99,7 @@ public class DataDockPoolAdmTest {
         
         /**4 check if it happened as expected 
          * Nothing to check
-         */  
-                
+         */                
     }
 
     /**
@@ -122,8 +107,8 @@ public class DataDockPoolAdmTest {
     * privateStart method that invokes the readFiles, createFutureTaskList and 
     * 
     */
-    @Ignore @Test public void privateStartTest() throws  ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException, InterruptedException, ExecutionException {
-        
+    @Ignore @Test public void privateStartTest() throws  ClassNotFoundException, ConfigurationException, MalformedURLException, UnknownHostException, ServiceException, IOException, InterruptedException, ExecutionException 
+    {        
         /**1 setting up the needed mocks 
          * Is done in setup()
          */
@@ -151,18 +136,24 @@ public class DataDockPoolAdmTest {
         Method method;
         Class[] argClasses = new Class[]{ DataDockPool.class , String.class , String.class, String.class, String.class, String.class };
         Object[] args = new Object[]{ mockDDP, "text/xml", "dan", "dbc", "test", "testdir/datadockpooladmtestdir/" };
-        try{
+        try
+        {
             method = DDPA.getClass().getDeclaredMethod("privateStart", argClasses);
             method.setAccessible( true );
             method.invoke( DDPA, args);
-        }catch( IllegalAccessException iae ){
+        }
+        catch( IllegalAccessException iae )
+        {
             Assert.fail( String.format( "IllegalAccessException accessing privateStart" ) );
-        }catch( InvocationTargetException ite ){
-            
+        }
+        catch( InvocationTargetException ite )
+        {            
             //   assertTrue( ite.getTargetException().getClass() == IllegalArgumentException.class );
             //assertTrue( ite.getTargetException().getMessage().startsWith( "the filepath: 'notValid'" )  );
             Assert.fail( String.format( "privateStart threw an unexpected exception. the type is: '%s' ", ite.getTargetException().getClass() ) );
-        }catch( NoSuchMethodException nsme ){
+        }
+        catch( NoSuchMethodException nsme )
+        {
             Assert.fail( String.format( "No method called privateStart" ) );
         } 
         
@@ -196,17 +187,23 @@ public class DataDockPoolAdmTest {
         Method method;
         Class[] argClasses = new Class[]{ DataDockPool.class , String.class , String.class, String.class, String.class, String.class };
         Object[] args = new Object[]{ mockDDP, "text/xml", "dan", "dbc", "test", "notValid" };
-        try{
+        try
+        {
             method = DDPA.getClass().getDeclaredMethod("privateStart", argClasses);
             method.setAccessible( true );
             method.invoke( DDPA, args);
-        }catch( IllegalAccessException iae ){
+        }
+        catch( IllegalAccessException iae )
+        {
             Assert.fail( String.format( "IllegalAccessException accessing privateStart" ) );
-        }catch( InvocationTargetException ite ){
-            
+        }
+        catch( InvocationTargetException ite )
+        {            
             assertTrue( ite.getTargetException().getClass() == IllegalArgumentException.class );
             assertTrue( ite.getTargetException().getMessage().startsWith( "the filepath: 'notValid'" )  );
-        }catch( NoSuchMethodException nsme ){
+        }
+        catch( NoSuchMethodException nsme )
+        {
             Assert.fail( String.format( "No method called privateStart" ) );
         }            
         

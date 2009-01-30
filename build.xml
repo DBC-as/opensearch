@@ -29,14 +29,14 @@
   </target--> 
 		  
   <target name="compile-tests" description="Builds tests">
-  	<echo>${ant.project.name}</echo>
+  	<echo>build.xml -> compile-tests: ${ant.project.name}</echo>
     <antcall target="${ant.project.name}">
       <param name="dependency.target" value="toplevel.compile-tests"/>
     </antcall>
   </target>
 	
   <target name="testsuite" description="Run test suite" depends="xsd-classes">
-  	<echo>${ant.project.name}</echo>
+  	<echo>build.xml -> testsuite: ${ant.project.name}</echo>
   	<antcall target="${ant.project.name}">
   	  <param name="dependency.target" value="toplevel.suite" />
   	</antcall>
