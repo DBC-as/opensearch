@@ -23,7 +23,9 @@ public class HarvestFaktalink implements IHarvestable
     private String submitter;
     private String format;
 
-    public void init( PluginID pluginId, InputStream data ){
+    
+    public void init( PluginID pluginId, InputStream data )
+    {
         this.id = pluginId;
         this.data = data;
 
@@ -51,11 +53,7 @@ public class HarvestFaktalink implements IHarvestable
     private CargoContainer createCargoContainerFromFile() throws IllegalArgumentException, NullPointerException, IOException
     {
         String mimetype = "text/xml";
-        String lang = "lang";
-        // CargoContainer cc = null;
-
-        // File file = new File( this.path );
-        // InputStream data = new FileInputStream( file );
+        String lang = "DA";
 
         return new CargoContainer( data, mimetype, lang, submitter, format );
     }
