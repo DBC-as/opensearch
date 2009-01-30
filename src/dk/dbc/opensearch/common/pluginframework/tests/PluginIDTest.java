@@ -22,13 +22,11 @@ public class PluginIDTest {
 
         Assert.assertEquals( plugin1.getPluginID() , plugin2.getPluginID() );
     }
-    @Ignore
     @Test public void testDistinctHashValues(){
         PluginID plugin1 = new PluginID( "a", "b", "c" );
         PluginID plugin3 = new PluginID( "c", "b", "a" );
         Assert.assertTrue(  plugin1.getPluginID() != ( plugin3.getPluginID() ) );
     }
-    @Ignore
     @Test public void testRetrievalOfFields(){
 
         PluginID plugin1 = new PluginID( "a", "b", "c" );
