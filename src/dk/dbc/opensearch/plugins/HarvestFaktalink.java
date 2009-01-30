@@ -2,6 +2,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.PluginID;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,52 +16,48 @@ import org.apache.log4j.Logger;
 
 public class HarvestFaktalink implements IHarvestable
 {
-	Logger log = Logger.getLogger( "HarvestFaktalink" );
-	
-	private String id;
-	private String path;
-	private String submitter;
-	private String format;
-	
-	
-	public HarvestFaktalink( String pluginId, String path, String submitter, String format )
-	{	
-		this.id = pluginId;
-		this.path = path;
-		this.submitter = submitter;
-		this.format = format;
-	}
-	
-	
-	public String getPluginID()
-	{
-		return id;
-	}
-	
-	
+    Logger log = Logger.getLogger( "HarvestFaktalink" );
+
+    private PluginID id;
+    private InputStream data;
+    private String submitter;
+    private String format;
+
+    public void init( PluginID pluginId, InputStream data ){
+        this.id = pluginId;
+        this.data = data;
+
+        this.submitter = id.getPluginSubmitter();
+        this.format = id.getPluginFormat();
+    }
+
+    public PluginID getPluginID()
+    {
+        return id;
+    }
+
     public String getTaskName()
     {
-        return "harvest";
+        return id.getPluginTask();
     }
 
 
     public CargoContainer getCargoContainer() throws IllegalArgumentException, NullPointerException, IOException
     {
-    	return createCargoContainerFromFile();
+        return createCargoContainerFromFile();
     }
 
-    
+
     private CargoContainer createCargoContainerFromFile() throws IllegalArgumentException, NullPointerException, IOException
     {
-    	String mimetype = "text/xml";
-    	String lang = "lang";
-    	CargoContainer cc = null;
-    	
-    	File file = new File( this.path );
-    	InputStream data = new FileInputStream( file );
-    		
-    	cc = new CargoContainer( data, mimetype, lang, submitter, format );
-    	return cc;
+        String mimetype = "text/xml";
+        String lang = "lang";
+        // CargoContainer cc = null;
+
+        // File file = new File( this.path );
+        // InputStream data = new FileInputStream( file );
+
+        return new CargoContainer( data, mimetype, lang, submitter, format );
     }
 }
 

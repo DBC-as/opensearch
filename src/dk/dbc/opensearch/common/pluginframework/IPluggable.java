@@ -42,9 +42,10 @@ public interface IPluggable
      * on which task and format the plugin can handle and which
      * submitters the plugin is valid for.
      * 
-     * @returns a string containing the plugin id
+     * @returns a PluginID type containing the plugin id (the hashcode
+     * of the plugin identifiers)
      */
-    String getPluginID();
+    PluginID getPluginID();
 
     /**
      * getTaskName returns the - at compile time given - name of the
@@ -55,6 +56,5 @@ public interface IPluggable
      * 
      * @returns a string containing the task name
      */
-
     String getTaskName();
 }
