@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 public class HarvestFaktalink implements IHarvestable
 {
 	Logger log = Logger.getLogger( "HarvestFaktalink" );
-	String xmlFilePath = "faktalink_kanon.xml";
 	
 	private String id;
 	private String path;
