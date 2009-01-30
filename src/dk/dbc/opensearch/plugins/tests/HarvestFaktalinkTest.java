@@ -4,6 +4,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginID;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.plugins.HarvestFaktalink;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,7 +21,6 @@ import org.junit.Test;
 
 public class HarvestFaktalinkTest
 {
-	private String path = "faktalink.xml";
 	
 	//private HarvestFaktalink mockHarvestFaktaLink;
 	
@@ -47,8 +47,9 @@ public class HarvestFaktalinkTest
 		String task = "";
 			
 		PluginID pid = new PluginID( submitter, format, task );		
-		File file = new File( path );
-    	InputStream data = new FileInputStream( file );    	
+
+                String teststring = "æøå";
+                InputStream data = new ByteArrayInputStream( teststring.getBytes( ) );
 		HarvestFaktalink hfl = new HarvestFaktalink();
 		hfl.init( pid, data );
 		
@@ -68,8 +69,9 @@ public class HarvestFaktalinkTest
     @Test
     public void testCargoContainer() throws IllegalArgumentException, NullPointerException, IOException
     {
-    	File file = new File( path );
-    	InputStream data = new FileInputStream( file );
+
+        String teststring = "æøå";
+        InputStream data = new ByteArrayInputStream( teststring.getBytes( "UTF-8" ) );
     	
     	String submitter = "DBC";
     	String format = "text/xml";
