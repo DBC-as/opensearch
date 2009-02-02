@@ -73,13 +73,13 @@ public class PluginFinder
 
     /**
      * Finds the right plugin class for the specified operation
-     * @param task
-     * @param format
-     * @param submitter
+     * @param key
      * @throws FileNotFoundException no plugin was found for the
-     * given submitter, format and task
+     * given key representing submitter, format and task
+     * @throws PluginResolverException when there are expections from
+     * parsing and reading plugin xml files which are not nessecarily
+     * show stoppers. See the source to understand the use of it.
      * @return the name of the plugin class
-     * \Todo: Is it the right Exception to throw and the parameters right?
      **/
 
 
@@ -103,14 +103,13 @@ public class PluginFinder
         return className;
     }
 
-
     /**
-     * Creates/updates the pluginClassMap
-     * @throws FileNotFoundException if there are no pluginxml files on the given path
-     * @throws PluginResolverException if one or more of the found plugins could not be loaded
-     * 
      * creates or updates the classname map with the names of the plugins found
      * on and loaded from the given path
+     *
+     * @throws FileNotFoundException if there are no pluginxml files on the given path
+     * @throws PluginResolverException if one or more of the found plugins could not be loaded
+     *
      */
     private void updatePluginClassNameMap( String path ) throws PluginResolverException ,FileNotFoundException
     {
@@ -223,11 +222,11 @@ public class PluginFinder
         if ( classNameMap.size() == 0 ){
             throw new PluginResolverException( String.format( "%s seems to be a valid path with plugins in it, but no plugins were loaded. I'm at my wits end and cannot give a better explanation.", path ) );
         }
-        
+
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
     }
     /**
-     * method for clearing the classNameMap, to force rebuild on next invocation 
+     * method for clearing the classNameMap, to force rebuild on next invocation
      * of the getPluginClassName method
      */
     void clearClassNameMap(){

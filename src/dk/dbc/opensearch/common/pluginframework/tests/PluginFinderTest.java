@@ -201,11 +201,11 @@ public class PluginFinderTest {
 
     }
     /**
-     * Tests that the SAXException that can be caused by a parse is put unto the 
-     * PluginResolverException and that this is thrown 
+     * Tests that the SAXException that can be caused by a parse is put unto the
+     * PluginResolverException and that this is thrown
      */
     @Test public void saxExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
-/** 1 setup
+        /** 1 setup
          *
          */
         String testString = "test";
@@ -234,13 +234,13 @@ public class PluginFinderTest {
 
         /** do stuff */
         try{
-        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+            pluginFinder = new PluginFinder( mockDocBuilder, "" );
         }catch( PluginResolverException pre ){
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
         assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
-        
+
         /**  4 check if it happened as expected
          * verify
          */
@@ -249,12 +249,12 @@ public class PluginFinderTest {
         verify( mockDocBuilder );
 
     }
-/**
-     * tests that the IOException that can be caused by a parse is sent with the 
+    /**
+     * tests that the IOException that can be caused by a parse is sent with the
      * PluginResolverException
      */
     @Test public void ioExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
-/** 1 setup
+        /** 1 setup
          *
          */
         String testString = "test";
@@ -280,30 +280,30 @@ public class PluginFinderTest {
         replay( mockVector );
         replay( mockIterator );
         replay( mockDocBuilder );
-       
+
         /** do stuff */
         try{
-        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+            pluginFinder = new PluginFinder( mockDocBuilder, "" );
         }catch( PluginResolverException pre ){
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
         assertTrue( IOException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
-        
+
         /**  4 check if it happened as expected
          * verify
          */
         verify( mockVector );
         verify( mockIterator );
         verify( mockDocBuilder );
-       
+
     }
     /**
-     * tests that the NullPointerException that can be caused by a parse is put 
+     * tests that the NullPointerException that can be caused by a parse is put
      * into the PluginResolverException, and that this is thrown
      */
     @Test public void nullPointerExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
-/** 1 setup
+        /** 1 setup
          *
          */
         String testString = "test";
@@ -329,23 +329,96 @@ public class PluginFinderTest {
         replay( mockVector );
         replay( mockIterator );
         replay( mockDocBuilder );
-       
+
         /** do stuff */
         try{
-        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+            pluginFinder = new PluginFinder( mockDocBuilder, "" );
         }catch( PluginResolverException pre ){
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
         assertTrue( NullPointerException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
-        
+
         /**  4 check if it happened as expected
          * verify
          */
         verify( mockVector );
         verify( mockIterator );
         verify( mockDocBuilder );
-       
+
+    }
+    /**
+     * Test that if the plugin xml file doesnt have "plugins" as name of the
+     * root element or one of the four values extracted from the file are
+     * null a SAXException is put onto the PluginResolverException. We make this happen by returning null the fourth time the mockElement.getAttribute is called
+     */
+    @Test public void invalidFileFormatTest() throws SAXException, FileNotFoundException, IOException{
+        /** 1 setup
+         *
+         */
+        String testString = "test";
+        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Iterator expVecIter;
+        /** 2 expectations
+         *
+         */
+        //in the updatePluginClassNameMap method
+
+        expect( mockVector.iterator() ).andReturn( mockIterator );
+        expect( mockVector.size() ).andReturn( 0 ); //log call
+        expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        //entering while
+        expect( mockIterator.hasNext() ).andReturn( true );
+        expect( mockIterator.next() ).andReturn( testString );
+        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
+        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
+        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 3 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( null );
+
+        expect( mockElement.getTagName() ).andReturn( "plugins" );
+        expect( mockIterator.hasNext() ).andReturn( true );
+        //in while again
+        expect( mockIterator.next() ).andReturn( testString );
+        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
+        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
+        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getTagName() ).andReturn( "plugins" );
+        expect( mockIterator.hasNext() ).andReturn( false );
+
+        /** 3 replay
+         *
+         */
+        replay( mockVector );
+        replay( mockIterator );
+        replay( mockDocBuilder );
+        replay( mockDocument );
+        replay( mockElement );
+        replay( mockNodeList );
+        replay( mockFile );
+
+        /** do stuff */
+        try{
+            pluginFinder = new PluginFinder( mockDocBuilder, "" );
+        }catch( PluginResolverException pre){
+            exceptionVector = pre.getExceptionVector();
+        }
+        expVecIter = exceptionVector.iterator();
+        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+
+        /**  4 check if it happened as expected
+         * verify
+         */
+        verify( mockVector );
+        verify( mockIterator );
+        verify( mockDocBuilder );
+        verify( mockDocument );
+        verify( mockElement );
+        verify( mockNodeList );
+        verify( mockFile );
     }
     /**
      * test the happy path of the getPluginClassName method, where
@@ -379,7 +452,7 @@ public class PluginFinderTest {
         expect( mockIterator.hasNext() ).andReturn( false );
 
         /**
-         * classNameMap has been cleared, the getPluginClassName forces 
+         * classNameMap has been cleared, the getPluginClassName forces
          * it to be rebuild
          */
         //in the getPluginClassName method again
@@ -515,5 +588,5 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
-   
+
 }
