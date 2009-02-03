@@ -8,14 +8,23 @@ import java.lang.InstantiationException;
 
 import java.lang.IllegalAccessException;
 
+/**
+ * The pluginframework is accessed through this interface. 
+ * The framework can find plugins and load them runtime and it can 
+ * validate whether there exists pluigns to solve a number of tasks. 
+ * It cannot garantie that the plugins will still be there when 
+ * called ( someone could delete them from there folders ) the 
+ * IPluginResolver can also force an update on the knowledge of 
+ * available plugins through the clearPluginRegistration method, 
+ * if someone changed them while the system is running.   
+ */
+
 public interface IPluginResolver
 {
     /**
      * Finds and loads a plugin that can solve a specific task on an object 
-     * matching the format and submitter 
-     * @param submitter the submitter of the object
-     * @param format, the foramt of the object the plugin must work on
-     * @param task, the task to solve on the object
+     * matching the format and submitter through the PluginID object for the
+     * @param pluginID, the PluginID object for the wanted plugin
      * @throws FileNotFoundException when the wanted plugin cannot be found or 
      * there are no plugin registration files to be found. 
      * @throws InstantiationException when the plugin cannot be instantiated
