@@ -44,7 +44,7 @@ public class PluginFinder
      * The key for use in classNamePath: Concatination of submitter, format and task
      */
 
-    private Map< String, String > classNameMap;
+    private Map< Integer, String > classNameMap;
     private DocumentBuilder docBuilder;
     String path;
     /**
@@ -73,9 +73,10 @@ public class PluginFinder
 
     /**
      * Finds the right plugin class for the specified operation
-     * @param key
+     * @param key, the key to find the classname by
      * @throws FileNotFoundException no plugin was found for the
-     * given key representing submitter, format and task
+     * given key that is a hashcode made based on the concatinated 
+     * String submitter+format+task
      * @throws PluginResolverException when there are expections from
      * parsing and reading plugin xml files which are not nessecarily
      * show stoppers. See the source to understand the use of it.
@@ -83,7 +84,7 @@ public class PluginFinder
      **/
 
 
-    String getPluginClassName( String key ) throws PluginResolverException, FileNotFoundException
+    String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
     {
         String className = null;
         // 5: check the map is not null
@@ -96,7 +97,7 @@ public class PluginFinder
         //20: if there is no hit, raise exception
         if( className == null )
             {
-                throw new FileNotFoundException( "No value for key: " + key );
+                throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
             }
 
         //30: return classname
@@ -140,7 +141,8 @@ public class PluginFinder
                 String formatName = null;
                 String className = null;
                 String taskName = null;
-                String key = null;
+                String hashSubject = null;
+                int key = 0;
                 String pluginName = null;;
                 File pluginFile = null;
                 Document pluginDocument = null;
@@ -197,11 +199,12 @@ public class PluginFinder
                         if( xmlRoot.getTagName().equals( "plugins" ) && submitterName != null && formatName != null && taskName != null && className != null )
                             {
                                 //50: build the the key
-                                key = submitterName + formatName + taskName;
+                                hashSubject= submitterName + formatName + taskName;
+                                key = hashSubject.hashCode();
 
                                 //60: add the key and value to the map
                                 classNameMap.put( key, className );
-                                log.debug( String.format( "key: %s added to map", key ) );
+                                log.debug( String.format( "key: %s added to map with the value %s", key, className ) );
                             }
                         else
                             {

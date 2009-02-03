@@ -43,9 +43,9 @@ import com.mallardsoft.tuple.Pair;
 import com.mallardsoft.tuple.Tuple;
 
 /**
- * The class that test the PluginFinder. There are an if clause that cannot be tested, 
+ * The class that test the PluginFinder. There are an if clause that cannot be tested,
  * because it tests for a freak case that we hope never ever will happen, since
- * it would take that there are plugin files to be found, they are of valid format but 
+ * it would take that there are plugin files to be found, they are of valid format but
  * somehow none of them are registrered in the classNameMap
  */
 public class PluginFinderTest {
@@ -204,7 +204,7 @@ public class PluginFinderTest {
 
     }
     /**
-     * Tests that the SAXException that can be caused by a parse operation is 
+     * Tests that the SAXException that can be caused by a parse operation is
      * put unto the PluginResolverException and that this is thrown
      */
     @Test public void saxExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
@@ -350,12 +350,12 @@ public class PluginFinderTest {
         verify( mockDocBuilder );
 
     }/**
-     * Test that if the plugin xml file doesnt have "plugins" as name of the
-     * root element or one of the four values extracted from the file are
-     * null a SAXException is put onto the PluginResolverException. We make 
-     * this happen by returning null when the mockElement.getAttribute is called, 
-     * to get the submitter
-     */
+      * Test that if the plugin xml file doesnt have "plugins" as name of the
+      * root element or one of the four values extracted from the file are
+      * null a SAXException is put onto the PluginResolverException. We make
+      * this happen by returning null when the mockElement.getAttribute is called,
+      * to get the submitter
+      */
 
     @Test public void invalidFileFormatSubmitterTest() throws SAXException, FileNotFoundException, IOException{
         /** 1 setup
@@ -425,12 +425,12 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
-    
+
 
     /**
      * Test that if the plugin xml file doesnt have "plugins" as name of the
      * root element or one of the four values extracted from the file are
-     * null a SAXException is put onto the PluginResolverException. We make 
+     * null a SAXException is put onto the PluginResolverException. We make
      * this happen by returning another String than the expected "plugins"
      */
 
@@ -501,13 +501,13 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
-    
-    
+
+
     /**
      * Test that if the plugin xml file doesnt have "plugins" as name of the
      * root element or one of the four values extracted from the file are
-     * null a SAXException is put onto the PluginResolverException. We make 
-     * this happen by returning null when the mockElement.getAttribute is called, 
+     * null a SAXException is put onto the PluginResolverException. We make
+     * this happen by returning null when the mockElement.getAttribute is called,
      * to get the format
      */
 
@@ -580,12 +580,12 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
-    
+
     /**
      * Test that if the plugin xml file doesnt have "plugins" as name of the
      * root element or one of the four values extracted from the file are
-     * null a SAXException is put onto the PluginResolverException. We make 
-     * this happen by returning null when the mockElement.getAttribute is called, 
+     * null a SAXException is put onto the PluginResolverException. We make
+     * this happen by returning null when the mockElement.getAttribute is called,
      * to get the task
      */
 
@@ -661,8 +661,8 @@ public class PluginFinderTest {
     /**
      * Test that if the plugin xml file doesnt have "plugins" as name of the
      * root element or one of the four values extracted from the file are
-     * null a SAXException is put onto the PluginResolverException. We make 
-     * this happen by returning null when the mockElement.getAttribute is called, 
+     * null a SAXException is put onto the PluginResolverException. We make
+     * this happen by returning null when the mockElement.getAttribute is called,
      * to get the classname
      */
 
@@ -805,8 +805,8 @@ public class PluginFinderTest {
         Method method1;
         Method method2;
         Class[] argClasses1 = new Class[]{};
-        Class[] argClasses2 = new Class[]{ String.class };
-        Object[] args2 = new Object[]{ testString + testString + testString };
+        Class[] argClasses2 = new Class[]{ int.class };
+        Object[] args2 = new Object[]{ (testString + testString + testString).hashCode() };
 
 
         pluginFinder = new PluginFinder( mockDocBuilder, "" );
@@ -878,8 +878,8 @@ public class PluginFinderTest {
 
         /** do stuff */
         Method method;
-        Class[] argClasses = new Class[]{ String.class };
-        Object[] args = new Object[]{ testString };
+        Class[] argClasses = new Class[]{ int.class };
+        Object[] args = new Object[]{ testString.hashCode() };
 
         pluginFinder = new PluginFinder( mockDocBuilder, "" );
         try{
