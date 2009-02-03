@@ -9,7 +9,7 @@ package dk.dbc.opensearch.common.pluginframework.tests;
 import dk.dbc.opensearch.common.pluginframework.PluginFinder;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.XmlFileFilter;
-//import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
+import dk.dbc.opensearch.common.types.ThrownInfo;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 
 import static org.junit.Assert.*;
@@ -39,8 +39,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
-import com.mallardsoft.tuple.Pair;
-import com.mallardsoft.tuple.Tuple;
 
 /**
  * The class that test the PluginFinder. There are an if clause that cannot be tested,
@@ -212,7 +210,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -242,7 +240,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( SAXException.class == ( ( (ThrownInfo) expVecIter.next() ).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify
@@ -261,7 +259,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -291,7 +289,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( IOException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( IOException.class == ( ( (ThrownInfo)expVecIter.next() ).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify
@@ -310,7 +308,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -340,7 +338,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( NullPointerException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( NullPointerException.class == ( ( ( ThrownInfo ) expVecIter.next() ).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify
@@ -362,7 +360,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -412,7 +410,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( SAXException.class == ( ( (ThrownInfo)expVecIter.next() ).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify
@@ -439,7 +437,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -488,7 +486,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( SAXException.class == ( ( (ThrownInfo)expVecIter.next() ).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify
@@ -516,7 +514,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -567,7 +565,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( SAXException.class == ( ( (ThrownInfo) expVecIter.next() ).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify
@@ -594,7 +592,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -645,7 +643,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( SAXException.class == ( ( ( ThrownInfo ) expVecIter.next()).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify
@@ -671,7 +669,7 @@ public class PluginFinderTest {
          *
          */
         String testString = "test";
-        Vector< Pair< Throwable, String > > exceptionVector = null;
+        Vector<ThrownInfo> exceptionVector = null;
         Iterator expVecIter;
         /** 2 expectations
          *
@@ -721,7 +719,7 @@ public class PluginFinderTest {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( Tuple.get1( ( Pair< Throwable, String > ) expVecIter.next() ).getClass() ) );
+        assertTrue( SAXException.class == ( ( (ThrownInfo) expVecIter.next() ).getThrowable().getClass() ) );
 
         /**  4 check if it happened as expected
          * verify

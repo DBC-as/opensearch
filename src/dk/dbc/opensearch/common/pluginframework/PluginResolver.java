@@ -104,5 +104,6 @@ public class PluginResolver implements IPluginResolver
     public void clearPluginRegistration()
     {
         //clear the classNameMap in PluginFinder
+        PFinder.clearClassNameMap();
     }
 }
