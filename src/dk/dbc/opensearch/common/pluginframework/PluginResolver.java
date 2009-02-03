@@ -5,8 +5,8 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.os.FileHandler;
 //import dk.dbc.opensearch.common.pluginframework.PluginSchemaFactory;
 
-import com.mallardsoft.tuple.Tuple;
-import com.mallardsoft.tuple.Pair;
+//import com.mallardsoft.tuple.Tuple;
+//import com.mallardsoft.tuple.Pair;
 
 import java.util.Vector;
 
@@ -43,7 +43,7 @@ public class PluginResolver implements IPluginResolver
     /**
      *
      */
-    PluginResolver()throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException/*, SAXException*/ {
+    public PluginResolver()throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException/*, SAXException*/ {
 
    
        

@@ -41,7 +41,7 @@ import java.io.FileNotFoundException;
 
 
 /**
- * The class that test the PluginFinder. There are an if clause that cannot be tested,
+ * The class that test the PluginFinder. There is an if-clause that cannot be tested,
  * because it tests for a freak case that we hope never ever will happen, since
  * it would take that there are plugin files to be found, they are of valid format but
  * somehow none of them are registrered in the classNameMap
@@ -100,6 +100,7 @@ public class PluginFinderTest {
         reset( mockNodeList );
         reset( mockFile );
 
+        Mockit.restoreAllOriginalDefinitions();
 
     }
 
