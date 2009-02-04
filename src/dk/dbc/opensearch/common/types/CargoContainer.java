@@ -11,6 +11,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException; 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,6 +44,7 @@ public class CargoContainer
 
     /** holder for the data (InputStream supports estimations through .available()) */
     private BufferedInputStream data;
+    private HashMap< CargoObjectInfo, List<Byte> > data2;
 
     private long timestamp;
 
@@ -50,6 +54,59 @@ public class CargoContainer
     Logger log = Logger.getLogger( "CargoContainer" );
 
     
+    public CargoContainer( ArrayList< Pair< CargoObjectInfo, InputStream > > data ) throws IOException
+    {  
+    	//todo: delete
+    	contentLength = 0;
+    	
+    	for ( Pair< CargoObjectInfo, InputStream > p : data )
+    	{    		
+    		CargoObjectInfo coi = p.getFirst();
+    		String mimetype = coi.getMimeType();
+    		if ( ! checkMimeType( mimetype ) ) {
+            	log.fatal( String.format( "no mimetype goes by the name of %s", mimetype ) );
+            	throw new IllegalArgumentException( String.format( "no mimetype goes by the name of %s", mimetype ) );
+    		}
+    		
+            /** \todo: How to specify allowed languages? enums? db? */
+    		String lang = coi.getLanguage();
+            if( ! checkLanguage( lang ) )
+            {
+                log.fatal( String.format( "Language '%s' not in list of allowed languages", lang ) );
+                throw new IllegalArgumentException( String.format( "%s is not in the languagelist", lang ) );
+            }
+            log.debug( String.format( "Identified language %s", lang ) );
+
+            String format = coi.getFormat();
+            /** \todo: how to identify allowed formats? */
+            log.debug( String.format( "Identified format %s", format ) );
+
+            String submitter = coi.getSubmitter();
+            /** \todo: need better checking of values (perhaps using enums?) before constructing */
+            if( !checkSubmitter( submitter ) )
+            {
+                log.fatal( String.format( "Submitter '%s' not in list of allowed submitters", submitter ) );
+                throw new IllegalArgumentException( String.format( "%s is not in the submitterlist", submitter ) );
+            }
+            log.debug( String.format( "Identified submitter %s", submitter ) );
+
+    		InputStream is = p.getSecond();
+    		List<Byte> tmp = new ArrayList<Byte>( readStream( is ) );
+    		data2.put( coi, tmp );
+    	}
+    }
+    
+    private List<Byte> readStream( InputStream is ) throws IOException{
+		ArrayList<Byte> al = new ArrayList<Byte>();
+    	
+		while( is.available() > 0 )
+		{
+			Byte dataByte = new Byte( (byte)is.read() );
+			al.add( dataByte ); 
+		}
+		return al;
+    }
+
     /**
      * Constructor for the CargoContainer class. Creates an instance
      * based on a string representation of the data to be submitted
@@ -101,6 +158,7 @@ public class CargoContainer
         if( CMT == null )
         {
             throw new IllegalArgumentException( String.format( "no mimetype goes by the name of %s", mime ) );
+            
         }
 
         // 30: check language
@@ -266,7 +324,7 @@ public class CargoContainer
         
         if( CMT == null )
         {
-            return false;
+        	return false;
         }
         
         return true;
@@ -368,8 +426,13 @@ public class CargoContainer
      *
      * @returns the length of the data-stream
      */
-    public int getStreamLength() {
-        return contentLength;
+    public int getContentLength( CargoObjectInfo key ) {
+        return this.data2.get( key ).size();
+    }
+    
+    public int getStreamLength()
+    {
+    	return contentLength;
     }
 
     /**

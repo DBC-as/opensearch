@@ -6,7 +6,7 @@
 package dk.dbc.opensearch.common.types;
 
 import java.util.Date;
-
+import dk.dbc.opensearch.common.types.CargoMimeType;
 /**
  * \ingroup datadock
  * \brief Holds the metadata for cargo
@@ -116,4 +116,12 @@ public class CargoObjectInfo
     {
         return format;
     }
+
+
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
 }
