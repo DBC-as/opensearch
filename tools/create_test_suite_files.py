@@ -86,11 +86,20 @@ def match( ptr, fldr, names ):
                 write_text_to_file( fldr, className, fileTxt )
     
     
+def call_walk( srcDir ):
+    os.path.walk( srcDir, match, 'Test.java' )
+    print 'Suite files successfully created!'
+
 sourceDir = os.getcwd()
+
 if os.path.basename( sourceDir ) == 'tools':
-     sourceDir = '../src/dk/dbc/opensearch'
-     os.path.walk( sourceDir, match, 'Test.java' )
-     print 'Suite files successfully created!'
+    sourceDir = '../src/dk/dbc/opensearch'  
+    #print sourceDir
+    call_walk( sourceDir )
+elif os.path.basename( sourceDir ) == 'trunk':
+    sourceDir = 'src/dk/dbc/opensearch'
+    #print sourceDir
+    call_walk( sourceDir )
 else:
     print '<ERROR>'
     print 'Current directory should be ~/.../opensearch/trunk/tools'
