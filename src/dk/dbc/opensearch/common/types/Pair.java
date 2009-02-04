@@ -1,3 +1,5 @@
+package dk.dbc.opensearch.common.types;
+
 /**
  * InputPair
  */
