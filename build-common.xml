@@ -99,6 +99,14 @@
     </javac>
   </target>
 	
+  <target name="py_suite" >
+  	<exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
+  	  <arg line="create_test_suite_files.py"/>
+  	</exec>
+
+  </target>
+
+	
   <target name="toplevel.suite" description="Run test suite" depends="toplevel.compile-tests">
   	<echo>
       Running suite ${suite.name}
