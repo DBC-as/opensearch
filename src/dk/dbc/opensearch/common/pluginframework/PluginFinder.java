@@ -7,7 +7,6 @@ package dk.dbc.opensearch.common.pluginframework;
 
 import dk.dbc.opensearch.common.os.PluginFileFilter;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.ThrownInfo;
 
@@ -46,18 +45,17 @@ public class PluginFinder
     private Map< Integer, String > classNameMap;
     private DocumentBuilder docBuilder;
     String path;
+   
+
     /**
      * builds the map containing the keys and related plugin classes
      * The keys are made from the task, format and datasource, the value is the
      * class of the plugin that can solve the specified task
      * @param path: the directory to look for the xml files describing the plugins
      * @param docBuilder: the DocumentBuilder used for parsing the xml files
-     * @throws IllegalArgumentException when there is no directory or no files in it
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException when there are no plugin files at the path
      * @throws ParserConfigurationException
      * @throws PluginResolverException
-     *
-     * \todo: should we hardcode the path?
      */
     public PluginFinder( DocumentBuilder docBuilder, String path ) throws FileNotFoundException, NullPointerException, PluginResolverException
     {
