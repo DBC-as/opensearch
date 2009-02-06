@@ -87,7 +87,63 @@ public class FedoraToolsTest
         String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         		"<digitalObject xmlns=\"info:fedora/fedora-system:def/foxml#\" VERSION=\"1.1\"><objectProperties><property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"Active\"/><property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"label_1\"/><property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"user\"/><property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\"" + timeNow + "\"/><property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\"" + timeNow + "\"/></objectProperties><datastream ID=\"itemId_1\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\"><datastreamVersion ID=\"itemId_1.0\" LABEL=\"itemId_1 [text/xml]\" CREATED=\"" + timeNow + "+01:00\" MIMETYPE=\"itemId_1 [text/xml]\" SIZE=\"6\"><contentDigest DIGEST=\"w6bDuMOl\"/><binaryContent>w6bDuMOl</binaryContent></datastreamVersion></datastream></digitalObject>";
 
-        assertEquals( expected, bStr );
+        //assertEquals( expected, bStr );
+
+        
+        String expected1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<digitalObject xmlns=\"info:fedora/fedora-system:def/foxml#\" VERSION=\"1.1\">"+
+            "<objectProperties>"+
+            "<property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"Active\"/>"+
+            "<property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"label_1\"/>"+
+            "<property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"user\"/>"+
+            "<property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\"";
+
+        String expected2 = "\"/>"+
+            "<property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\"";
+
+        String expected3= "\"/>"+
+            "</objectProperties><datastream ID=\"itemId_1\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\">"+
+            "<datastreamVersion ID=\"itemId_1.0\" LABEL=\"itemId_1 [text/xml]\" CREATED=\"";
+
+        String expected4 = "+01:00\" MIMETYPE=\"itemId_1 [text/xml]\" SIZE=\"6\">"+
+            "<contentDigest DIGEST=\"w6bDuMOl\"/><binaryContent>w6bDuMOl</binaryContent>"+
+            "</datastreamVersion></datastream></digitalObject>";
+
+        String date1;
+        String date2;
+        String date3;
+
+        if ( bStr.indexOf( expected1 ) != 0 ){
+            fail( "Wrong return value from FedoraTools.constructFoxml. returned xml did not start with expected1" );
+        }
+        // remove expected1 substring from the string
+        bStr = bStr.substring( expected1.length(), bStr.length() );
+
+        if ( bStr.indexOf( expected2 ) == 0 || bStr.indexOf( expected2 ) == -1 ){
+            fail( "Wrong return value from FedoraTools.constructFoxml. returned xml started or couldnt find expected2" );
+        }
+        // isolate date1 and remove i from bStr
+        date1 = bStr.substring( 0, bStr.indexOf( expected2 ) );
+        bStr = bStr.substring( bStr.indexOf( expected2 ), bStr.length() );
+
+        if ( bStr.indexOf( expected3 ) == 0 || bStr.indexOf( expected3 ) == -1 ){
+            fail( "Wrong return value from FedoraTools.constructFoxml. returned xml started or couldnt find expected3" );
+        }
+        // isolate date2 and remove expected2 from bStr
+        bStr = bStr.substring( expected2.length(), bStr.length() );
+        date2 = bStr.substring( 0, bStr.indexOf( expected3 ) );
+        bStr = bStr.substring( bStr.indexOf( expected3 ), bStr.length() );
+
+        if ( bStr.indexOf( expected4 ) == 0 || bStr.indexOf( expected4 ) == -1 ){
+            fail( "Wrong return value from FedoraTools.constructFoxml. returned xml started or couldnt find expected4" );
+        }
+        // isolate date3 and remove expected3 from bStr
+        bStr = bStr.substring( expected3.length(), bStr.length() );
+        date3 = bStr.substring( 0, bStr.indexOf( expected4 ) );
+        bStr = bStr.substring( bStr.indexOf( expected4 ), bStr.length() );
+        assertEquals( expected4, bStr );
+
+
     }
     
     
