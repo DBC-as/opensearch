@@ -49,15 +49,15 @@ public class CargoContainer
     private long timestamp;
 
     /** the length of the InputStream */
-    private final int contentLength;
+    //private final int contentLength;
+    private int contentLength = 0;
 
     Logger log = Logger.getLogger( "CargoContainer" );
 
     
     public CargoContainer( ArrayList< Pair< CargoObjectInfo, InputStream > > data ) throws IOException
     {  
-    	//todo: delete
-    	contentLength = 0;
+    	data2 = new HashMap<CargoObjectInfo, List<Byte>>();
     	
     	for ( Pair< CargoObjectInfo, InputStream > p : data )
     	{    		
@@ -92,6 +92,7 @@ public class CargoContainer
 
     		InputStream is = p.getSecond();
     		List<Byte> tmp = new ArrayList<Byte>( readStream( is ) );
+    		
     		data2.put( coi, tmp );
     	}
     }

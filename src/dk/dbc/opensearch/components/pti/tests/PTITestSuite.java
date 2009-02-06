@@ -13,9 +13,9 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
     {
-        PTIPoolTest.class,
+        PTITest.class,
         PTIPoolAdmTest.class,
-        PTITest.class
+        PTIPoolTest.class
     }
 )
 public class PTITestSuite 

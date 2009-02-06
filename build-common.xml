@@ -107,7 +107,7 @@
   </target>
 
 	
-  <target name="toplevel.suite" description="Run test suite" depends="toplevel.compile-tests">
+  <target name="toplevel.suite" description="Run test suite" depends="toplevel.compile-tests, py_suite">
   	<echo>
       Running suite ${suite.name}
   	</echo>
@@ -125,7 +125,7 @@
   	</junit>
   </target>
 
-  <target name="toplevel.test" description="Run unittests" depends="toplevel.compile-tests">
+  <target name="toplevel.test" description="Run unittests" depends="toplevel.compile-tests, py_suite">
     <mkdir dir="${testresults.dir}"/>
     <junit fork="yes"
            forkmode="once"
