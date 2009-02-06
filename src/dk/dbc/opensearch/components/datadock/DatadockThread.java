@@ -10,6 +10,7 @@ import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DatadockJob;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,6 +37,12 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
 
 
 /**
@@ -60,7 +67,7 @@ import org.exolab.castor.xml.ValidationException;
  * process of fedora storing, data processing, indexing and
  * search-capabilities
  */
-public class DataDock implements Callable<Float>
+public class DatadockThread implements Callable<Float>
 {
     private CargoContainer cc;
     private Processqueue queue;
@@ -68,7 +75,7 @@ public class DataDock implements Callable<Float>
     //  private FedoraClientFactory fcf;
     private static volatile FedoraHandler fh;
    
-    private Logger log = Logger.getLogger("DataDock");
+    private Logger log = Logger.getLogger("DataDockThread");
 
     Estimate estimate;
 
@@ -87,8 +94,18 @@ public class DataDock implements Callable<Float>
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      */
-    public DataDock( CargoContainer cargo, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException 
-    {
+    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException {
+        log.debug( String.format( "Entering DataDock Constructor" ) );
+        CargoContainer cargo = null;
+
+        String mimetype = "text/xml";
+        String lang = "da";
+        
+        File f = new File( datadockJob.getPath().getRawPath() );
+        InputStream data = new FileInputStream( f );
+        cargo = new CargoContainer( data, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
+
+
     	log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
         queue = processqueue;
@@ -123,20 +140,20 @@ public class DataDock implements Callable<Float>
     {
         log.debug( String.format( "Entering call" ) );
         Float processEstimate = 0f;
-//    String fedoraHandle = null;
-
-//         log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) ); 
+        String fedoraHandle = null;
+        
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) ); 
       
-//         processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
       
-//         fedoraHandle = fedoraStoreData();
+        fedoraHandle = fedoraStoreData();
 
-//         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-//         queue.push( fedoraHandle, cc.getFormat() );
+        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+        queue.push( fedoraHandle, cc.getFormat() );
 
-//         log.debug( String.format( "data queued" ) );
+        log.debug( String.format( "data queued" ) );
 
-//         log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
+        log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
         processEstimate = doProcessing();
         return processEstimate;
     }
@@ -172,7 +189,7 @@ public class DataDock implements Callable<Float>
      */
     private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, MarshalException, ValidationException, IllegalStateException, NullPointerException, ParseException
     {
-        log.debug( String.format( "Entering doProcessing" ) );
+        log.debug( "Entering doProcessing" );
         Float processEstimate = 0f;
         String fedoraHandle = null;
 
@@ -188,8 +205,7 @@ public class DataDock implements Callable<Float>
         log.info( String.format( "Data queued ") );
         return processEstimate;
     }
-
-    
+   
     /**
      * fedoraStoreData is an internal method for storing data given
      * with the initialization of the DataDock into a fedora base.
