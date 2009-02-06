@@ -6,43 +6,36 @@
 
 package dk.dbc.opensearch.components.datadock;
 
+import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoMimeType;
+import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.Pair;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.net.URL;
 import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.rpc.ServiceException;
 
-import fedora.server.errors.ServerException;
-
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileInputStream;
 
 
 /**
@@ -71,14 +64,13 @@ public class DatadockThread implements Callable<Float>
 {
     private CargoContainer cc;
     private Processqueue queue;
-    private XMLConfiguration config;
-    //  private FedoraClientFactory fcf;
     private static volatile FedoraHandler fh;
    
     private Logger log = Logger.getLogger("DataDockThread");
 
     Estimate estimate;
 
+    
     /**
      * DataDock is initialized with a CargoContainer containing the
      * data to be 'docked' into to system
@@ -94,17 +86,19 @@ public class DatadockThread implements Callable<Float>
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      */
-    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException {
+    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException 
+    {
         log.debug( String.format( "Entering DataDock Constructor" ) );
         CargoContainer cargo = null;
 
-        String mimetype = "text/xml";
+        String mimetype = "TEXT_XML";
         String lang = "da";
         
         File f = new File( datadockJob.getPath().getRawPath() );
-        InputStream data = new FileInputStream( f );
-        cargo = new CargoContainer( data, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
-
+        cargo = createCargoContainerFromFile( f, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
+        
+        //InputStream data = new FileInputStream( f );
+        //cargo = new CargoContainer( data, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
 
     	log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
@@ -233,5 +227,25 @@ public class DatadockThread implements Callable<Float>
         log.debug( "Exiting DataDock.fedoraStoreData" );
         
         return fedoraHandle;
+    }
+    
+    
+    /**
+     * Creating CargoContainer from file.
+     * 
+     */
+    private CargoContainer createCargoContainerFromFile( File file, String mimetype, String lang, String submitter, String format ) throws IOException
+    {
+    	InputStream data = new FileInputStream( file );
+    	int contentLength = (int)file.length();
+    	    	
+    	CargoObjectInfo coi = new CargoObjectInfo( CargoMimeType.valueOf( mimetype ), lang, submitter, format, contentLength );
+    	Pair< CargoObjectInfo, InputStream > pair = new Pair< CargoObjectInfo, InputStream >(coi, data);
+    	
+    	ArrayList< Pair< CargoObjectInfo, InputStream > > al = new ArrayList< Pair< CargoObjectInfo, InputStream > >();
+    	al.add( pair);
+    	CargoContainer cc = new CargoContainer( al );
+    	
+    	return cc;
     }
 }

@@ -6,27 +6,26 @@
 
 package dk.dbc.opensearch.components.datadock;
 
-import dk.dbc.opensearch.common.os.FileHandler;
-import org.apache.log4j.Logger;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.SimpleLayout;
-
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
-
-import dk.dbc.opensearch.components.harvest.Harvester;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
+import dk.dbc.opensearch.components.harvest.Harvester;
 
 import fedora.client.FedoraClient;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Callable;
+
 import java.io.File;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+
+
 /**
  * The Main method of the datadock. It secures all necessary
  * resources for the program, starts the datadockManager and then
@@ -35,8 +34,8 @@ import java.io.File;
  * It also adds a shutdown hook to the JVM so orderly shutdown is
  * accompleshed when the process is killed.
  */
-public class DatadockMain {
-
+public class DatadockMain 
+{
     static Logger log = Logger.getLogger("DatadockMain");
     static protected boolean shutdownRequested = false;    
     static DatadockPool datadockPool = null;
@@ -44,59 +43,73 @@ public class DatadockMain {
 
     private static int pollTime = 1000; //POLL TIME
 
+    
     /**
      * The shutdown hook. This method is called when the program catch
      * the kill signal.
      */
-    static public void shutdown(){
+    static public void shutdown()
+    {
         shutdownRequested = true;
 
-        try{
+        try
+        {
             log.info("Shutting down.");
             datadockManager.shutdown();
-        }catch(InterruptedException e){
+        }
+        catch(InterruptedException e)
+        {
             log.error("Interrupted while waiting on main daemon thread to complete.");
         }
+        
         log.info("Exiting.");
     }
 
+    
     /**
      * Getter method for shutdown signal.
      */
-    static public boolean isShutdownRequested(){
+    static public boolean isShutdownRequested()
+    {
         return shutdownRequested;
     }
 
+    
     /**
      * Daemonizes the program, ie. disconnects from the console and
      * creates a pidfile.
      */
-    static public void daemonize(){
+    static public void daemonize()
+    {
         FileHandler.getFile( System.getProperty("daemon.pidfile") ).deleteOnExit();
         System.out.close();
         System.err.close();
     }
 
+    
     /**
      * Adds the shutdownhook.
      */
-    static protected void addDaemonShutdownHook(){
+    static protected void addDaemonShutdownHook()
+    {
         Runtime.getRuntime().addShutdownHook( new Thread() { public void run() { shutdown(); }});
     }
 
+    
     /**
      * The datadocks main method.  
      * Starts the datadock and starts the datadockManager.
      */
-    static public void main(String[] args){
+    static public void main(String[] args)
+    {
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
-        try{
+        
+        try
+        {
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender(startupAppender);
 
-
-            /** -------------------- setup and start the datadockmanager -------------------- **/
-            
+            /** -------------------- setup and start the datadockmanager -------------------- **/            
             log.info("Starting the datadock");
 
             // todo: skal lægges i konfigurationsfil
@@ -123,8 +136,7 @@ public class DatadockMain {
             log.debug( "Starting harvester" );
             // harvester;
             File harvestDirectory = new File( "/home/shm/opensearch/trunk/Harvest-pollTest/" );
-            Harvester harvester = new FileHarvest( harvestDirectory ); 
-            
+            Harvester harvester = new FileHarvest( harvestDirectory );            
             
             log.debug( "Starting the manager" );
             // Starting the manager
@@ -132,35 +144,43 @@ public class DatadockMain {
             datadockManager = new DatadockManager( datadockPool, harvester );
 
             /** --------------- setup and startup of the datadockmanager done ---------------- **/
-
             log.debug( "Daemonizing" );
+            
             daemonize();
             addDaemonShutdownHook();
-
-        }catch (Throwable e){
-            System.out.println("Startup failed."+e);
+        }
+        catch (Throwable e)
+        {
+            System.out.println("Startup failed." + e);
             log.fatal("Startup failed.",e);
-        }finally{
+        }
+        finally
+        {
             log.removeAppender(startupAppender);
         }
 
-        while(!isShutdownRequested()){
-            try{
+        while(!isShutdownRequested())
+        {
+            try
+            {            	
                 datadockManager.update();                
                 Thread.currentThread().sleep( pollTime );
             }
-            catch(InterruptedException ie){
+            catch(InterruptedException ie)
+            {
                 log.error("InterruptedException caught in mainloop: ");
                 log.error("  "+ie.getMessage() );
             }
-            catch(RuntimeException re){
-                log.error("RuntimeException caught in mainloop: "+ re);
-                log.error("  "+re.getCause().getMessage() );
+            catch(RuntimeException re)
+            {
+                log.error("RuntimeException caught in mainloop: " + re);
+                log.error("  " + re.getCause().getMessage() );
                 throw re;
             }
-            catch(Exception e){
-                log.error("Exception caught in mainloop: "+ e);
-                log.error("  "+e.getMessage() );
+            catch(Exception e)
+            {
+                log.error("Exception caught in mainloop: " + e);
+                log.error("  " + e.getMessage() );
             }
         }
     }

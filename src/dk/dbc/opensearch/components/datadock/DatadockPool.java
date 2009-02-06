@@ -6,28 +6,23 @@
 
 package dk.dbc.opensearch.components.datadock;
 
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.RejectedExecutionException;
-import java.net.URI;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.Callable;
-import org.apache.log4j.Logger;
-import java.util.Vector;
-
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
-import org.apache.commons.configuration.ConfigurationException;
-
-import java.lang.ClassNotFoundException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.ClassNotFoundException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.Vector;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -36,8 +31,8 @@ import java.io.IOException;
  * \brief The datadockPool manages the datadock threads and provides methods
  * to add and check running jobs
  */
-public class DatadockPool{
-
+public class DatadockPool
+{
     static Logger log = Logger.getLogger("DatadockPool");
     private Vector<FutureTask<DatadockThread>> jobs;
     private final ThreadPoolExecutor threadpool;
@@ -46,6 +41,7 @@ public class DatadockPool{
     private FedoraHandler fedoraHandler;
     private int shutDownPollTime;
 
+    
     /**
      * Constructs the the datadockPool instance
      *
@@ -54,7 +50,8 @@ public class DatadockPool{
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ){
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )
+    {
         log.debug( "Constructor( threadpool, estimat, processqueue, fedoraHandler ) called" );
 
         this.threadpool = threadpool;
@@ -67,6 +64,7 @@ public class DatadockPool{
         shutDownPollTime = 1000; // configuration file
     }
 
+    
     /**
      * submits a job to the threadpool for execution by a datadockThread.
      *
@@ -74,15 +72,19 @@ public class DatadockPool{
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      */
-    public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException{
+    public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException
+    {
         log.debug( String.format( "submit( path='%s', submitter='%s', format='%s' )",
                                   datadockJob.getPath().getRawPath(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
+    
         FutureTask future = getTask( datadockJob );
         threadpool.submit( future );
         jobs.add( future );
     }
 
-    public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException{
+    
+    public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException
+    {
         return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, fedoraHandler ) );
     }
 
@@ -96,48 +98,65 @@ public class DatadockPool{
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Vector<CompletedTask> checkJobs() throws InterruptedException {
+    public Vector<CompletedTask> checkJobs() throws InterruptedException 
+    {
         log.debug( "checkJobs() called" );
+    
         Vector<CompletedTask> finishedJobs = new Vector<CompletedTask>();
-        for( FutureTask job : jobs ){
-            if( job.isDone() ){
+        for( FutureTask job : jobs )        
+        {
+            if( job.isDone() )
+            {
                 //log.fatal( "Catched exception from job" );
-                try{
+                try
+                {
                     log.debug( "Checking job" );
+                    
                     Float f = (Float) job.get();
                     finishedJobs.add( new CompletedTask( job, f ) );                    
                 }
-                catch(ExecutionException ee){
-                    
-                    log.fatal( "Catched exception from job" );
+                catch( ExecutionException ee )
+                {                    
+                    log.fatal( "Exception caught from job" );
+                 
                     //jobs.remove( job );
                     // getting exception from thread
                     Throwable cause = ee.getCause();
-                    RuntimeException re = new RuntimeException(cause);
+                    RuntimeException re = new RuntimeException( cause );
+                    
                     log.error( String.format( "Exception Caught: '%s'\n'%s'" , re.getMessage(), re.getStackTrace() ) );
                     // throw re; //shouldnt throw just because thread throw
                 }
             }
         }
-        for( CompletedTask finishedJob : finishedJobs ){
+        
+        for( CompletedTask finishedJob : finishedJobs )
+        {
             jobs.remove( finishedJob.getFuture() );
         }
+        
         return finishedJobs;
     }
 
+    
     /**
      * Shuts down the datadockPool. it waits for all current jobs to
      * finish before exiting.
      *
      * @throws InterruptedException if the checkJobs or sleep call is interrupted (by kill or otherwise).
      */
-    public void shutdown() throws InterruptedException {
+    public void shutdown() throws InterruptedException 
+    {
         log.debug( "shutdown() called" );
+    
         boolean activeJobs = true;
-        while( activeJobs ){
+        while( activeJobs )
+        {
             activeJobs = false;
-            for( FutureTask job : jobs ){
-                if( ! job.isDone() ){
+            for( FutureTask job : jobs )
+            {
+                if( ! job.isDone() )
+                {
                     activeJobs = true;
                 }
             }

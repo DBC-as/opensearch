@@ -4,7 +4,7 @@
 
   <target name="suite" description="Compiles and runs test suite">
 	<antcall target="testsuite">
-	  <param name="suite.name" value="dk.dbc.opensearch.common.pluginframework.tests.DATADOCKTestSuite" />
+	  <param name="suite.name" value="dk.dbc.opensearch.components.datadock.tests.DATADOCKTestSuite" />
 	  <param name="dependency.target" value="toplevel.suite" />
 	</antcall>
   </target>

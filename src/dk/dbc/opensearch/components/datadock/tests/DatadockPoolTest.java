@@ -8,44 +8,47 @@ package dk.dbc.opensearch.components.datadock.tests;
 
 /** \brief UnitTest for DatadockPool **/
 
-import static org.junit.Assert.*;
-import org.junit.*;
-import junit.framework.TestCase;
-import mockit.Mockit;
-import mockit.Mock;
-import mockit.MockClass;
-import static org.easymock.classextension.EasyMock.*;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoMimeType;
+import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.components.datadock.DatadockThread;
+import dk.dbc.opensearch.components.datadock.DatadockPool;
 
+import junit.framework.TestCase;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.Throwable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.util.Vector;
-import java.lang.Throwable;
 import org.apache.commons.configuration.ConfigurationException;
+import static org.easymock.classextension.EasyMock.*;
+import static org.junit.Assert.*;
+import org.junit.*;
 
-import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.components.datadock.DatadockThread;
-import dk.dbc.opensearch.components.datadock.DatadockPool;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
-import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.types.CargoContainer;
+import mockit.Mock;
+import mockit.MockClass;
+import mockit.Mockit;
+
 
 /**
  *
  */
-public class DatadockPoolTest extends TestCase{
-
+public class DatadockPoolTest extends TestCase
+{
     /**
      * The (mock)objects we need for the most of the tests
      */
@@ -64,21 +67,27 @@ public class DatadockPoolTest extends TestCase{
 
     static FutureTask mockFuture = createMock( FutureTask.class );
 
+ 
     @MockClass( realClass = DatadockPool.class )
-        public static class MockDatadockPool{
-            @Mock(invocations = 1)
-                public static FutureTask getTask( DatadockJob datadockjob ){
-                return mockFuture;
-            }
+    public static class MockDatadockPool
+    {
+    	@Mock(invocations = 1)
+    	public static FutureTask getTask( DatadockJob datadockjob )
+    	{
+    		return mockFuture;
         }
+    }
 
-    @Test public void testConstructor(){
+    
+    @Test public void testConstructor()
+    {
         datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraHandler);
     }
 
-    @Test public void testSubmit() throws IOException, ConfigurationException, ClassNotFoundException{
 
-        Mockit.setUpMocks( MockDatadockPool.class );
+    @Test public void testSubmit() throws IOException, ConfigurationException, ClassNotFoundException
+    {
+    	Mockit.setUpMocks( MockDatadockPool.class );
 
         mockFedoraHandler = createMock( FedoraHandler.class );
         mockEstimate = createMock( Estimate.class );
@@ -106,7 +115,7 @@ public class DatadockPoolTest extends TestCase{
         //
         datadockPool.submit( datadockJob );
         //
-
+        
         verify( mockThreadPoolExecutor );
 
         reset( mockFedoraHandler );
@@ -119,9 +128,10 @@ public class DatadockPoolTest extends TestCase{
         Mockit.restoreAllOriginalDefinitions();
     }
 
-    @Test public void testSubmit2() throws IOException, ConfigurationException, ClassNotFoundException{
-        
-        mockFedoraHandler = createMock( FedoraHandler.class );
+    
+    @Test public void testSubmit2() throws IOException, ConfigurationException, ClassNotFoundException
+    {   
+    	mockFedoraHandler = createMock( FedoraHandler.class );
         mockEstimate = createMock( Estimate.class );
         mockProcessqueue = createMock( Processqueue.class );
         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
@@ -205,8 +215,8 @@ public class DatadockPoolTest extends TestCase{
     }
 
     
-    @Test public void testCheckJobs_isDoneTrue() throws Exception{
-
+    @Test public void testCheckJobs_isDoneTrue() throws Exception
+    {
         Mockit.setUpMocks( MockDatadockPool.class );
 
         mockFedoraHandler = createMock( FedoraHandler.class );
@@ -254,9 +264,11 @@ public class DatadockPoolTest extends TestCase{
 
         Mockit.restoreAllOriginalDefinitions();
     }
+    
 
-    @Test public void testCheckJobs_isDoneError() throws Exception{
-
+    @Test 
+    public void testCheckJobs_isDoneError() throws Exception
+    {
         Mockit.setUpMocks( MockDatadockPool.class );
 
         mockFedoraHandler = createMock( FedoraHandler.class );
@@ -305,8 +317,9 @@ public class DatadockPoolTest extends TestCase{
     }
 
 
-    @Test public void testShutdown() throws Exception{
-
+    @Test 
+    public void testShutdown() throws Exception
+    {
         Mockit.setUpMocks( MockDatadockPool.class );
 
         mockFedoraHandler = createMock( FedoraHandler.class );
