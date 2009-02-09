@@ -17,7 +17,7 @@ fi
 
 log_file=daemon.log
 
-java -Ddaemon.pidfile=datadockDaemon.pid -cp `bin/run` dk.dbc.opensearch.components.datadock2.DatadockMain <&- >${log_file} 2>&1 &
+java -Ddaemon.pidfile=datadockDaemon.pid -cp `bin/run` dk.dbc.opensearch.components.datadock.DatadockMain <&- >${log_file} 2>&1 &
 
 daemon_pid=$!
 sleep 1

@@ -107,13 +107,13 @@ public class DatadockPool
         {
             if( job.isDone() )
             {
+                Float f = -1f;
                 //log.fatal( "Catched exception from job" );
                 try
                 {
                     log.debug( "Checking job" );
                     
-                    Float f = (Float) job.get();
-                    finishedJobs.add( new CompletedTask( job, f ) );                    
+                    f = (Float) job.get();
                 }
                 catch( ExecutionException ee )
                 {                    
@@ -127,11 +127,14 @@ public class DatadockPool
                     log.error( String.format( "Exception Caught: '%s'\n'%s'" , re.getMessage(), re.getStackTrace() ) );
                     // throw re; //shouldnt throw just because thread throw
                 }
+                log.debug( "adding to finished jobs" );
+                finishedJobs.add( new CompletedTask( job, f ) );
             }
         }
         
         for( CompletedTask finishedJob : finishedJobs )
         {
+            log.debug( "Removing Job" );
             jobs.remove( finishedJob.getFuture() );
         }
         
