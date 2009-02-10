@@ -67,10 +67,10 @@ public class PluginResolver implements IPluginResolver
     }
 
 
-    public IPluggable getPlugin( PluginID pluginID )throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException
+    public IPluggable getPlugin( String submitter, String format, String task )throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException
     {
-        //String key = submitter + format + task;
-        String pluginClassName = PFinder.getPluginClassName( pluginID.getPluginID() );
+        int key = ( submitter + format + task ).hashCode();
+        String pluginClassName = PFinder.getPluginClassName( key );
 
         return PLoader.getPlugin( pluginClassName );
     }
@@ -78,7 +78,7 @@ public class PluginResolver implements IPluginResolver
 
     public Vector<String> validateArgs( String submitter, String format, String[] taskList )throws PluginResolverException
     {
-        Vector<String> pluginNotFoundVector = null;
+        Vector<String> pluginNotFoundVector = new Vector();
         String pluginClassName = "";
 
         //for each string in taskList

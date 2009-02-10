@@ -32,7 +32,7 @@ public interface IPluginResolver
      * FileNotFoundException covers?  
      * @throws IllegalAccessException 
      */
-    IPluggable getPlugin ( PluginID pluginID ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException;
+    IPluggable getPlugin ( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException;
 
     
     /**
