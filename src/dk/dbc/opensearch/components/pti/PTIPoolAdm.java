@@ -42,8 +42,8 @@ import org.compass.core.Compass;
  * \ingroup pti
  * \brief Handles the pti threads
  */
-public class PTIPoolAdm {
-
+public class PTIPoolAdm 
+{
     Logger log = Logger.getLogger("PTIPoolAdm");
 
     private Processqueue processqueue;
@@ -76,7 +76,8 @@ public class PTIPoolAdm {
      * @throws IOException Something went wrong initializing the fedora client
      * @throws SQLException The processqueue could not retrieve information from the database
      */
-    public PTIPoolAdm( PTIPool ptiPool, Processqueue processqueue, Estimate estimate, Compass compass )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, SQLException{
+    public PTIPoolAdm( PTIPool ptiPool, Processqueue processqueue, Estimate estimate, Compass compass )throws ConfigurationException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, SQLException
+    {
         log.debug( String.format( "Entering PTIPoolAdm" ) );
 
         /** /todo: where should sleepInMilliSec be set?? in a configuration file or what*/
@@ -88,15 +89,14 @@ public class PTIPoolAdm {
         //this.fedoraHandler = fedoraHandler;
         this.compass = compass;
 
-        activeThreads = new Vector();
-        
-        
+        activeThreads = new Vector();        
        //  log.debug( String.format( "Setting up the PTIPool with %s threads", numberOfThreads ) );
 //         PTIpool = new PTIPool( numberOfThreads, fedoraHandler);        
         
         // log.debug( "PTIPoolAdm is set up" );
     }
 
+    
     /**
      * the mainLoop polls the processqueue and start threads when the queue pops a fedorahandle.   
      * the mainLoop also checks whether already active threads are finished.
@@ -107,8 +107,8 @@ public class PTIPoolAdm {
      * @throws ConfigurationException if the PTIPool could not be correctly initialized
      * @throws InterruptedException is a thread exception
      */    
-    public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException{
-
+    public void mainLoop()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException, InterruptedException
+    {
         log.debug( "PTIPoolAdm mainloop" );
 
         log.debug( "Removing entries marked as active from the processqueue" );
@@ -122,33 +122,39 @@ public class PTIPoolAdm {
 
         /** /todo: we need a nicer way to do this than a while true loop. */
         
-        try{
-            
+        try
+        {            
             Thread.currentThread().sleep(2000);
-            if( System.currentTimeMillis() > stamp+sleepInMilliSec ){                
+            if( System.currentTimeMillis() > stamp+sleepInMilliSec )
+            {                
                 startThreads();
                 stamp = System.currentTimeMillis();
-            }  
+            }
+            
             //System.out.print( String.format( "Number of elements in activeThreads: '%s'",activeThreads.size() ) );
             checkThreads();
             
         }
-        catch(InterruptedException ie){
-            if( activeThreads.size() == 0 ){
-                log.debug( "There are no active threads... Shutting down" );
-                
+        catch(InterruptedException ie)
+        {
+            if( activeThreads.size() == 0 )
+            {
+                log.debug( "There are no active threads... Shutting down" );                
             }
-            else{
-                
-                while( activeThreads.size() > 0 ){
+            else
+            {                
+                while( activeThreads.size() > 0 )
+                {
                     log.debug( String.format( "There are %s active threads... finishing before shutdown", activeThreads.size() ) );
                     checkThreads();
                     Thread.currentThread().sleep(2000);
                 }
             }
         }
+        
         log.debug( "Finished the mainLoop method" );
     }
+    
     
     /**
      * Iterates through the activeThreads vector and remove all entries
@@ -161,7 +167,8 @@ public class PTIPoolAdm {
      * @throws InterruptedException is a thread exception
      * @throws RuntimeException if the started thread stop due to an exception
      */
-    private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, RuntimeException {
+    private void checkThreads()throws ClassNotFoundException, SQLException, NoSuchElementException, InterruptedException, RuntimeException 
+    {
         log.debug( "Entering PTIPoolAdm.checkThreads()" );
         
         Pair<FutureTask, Integer> vectorPair = null;
@@ -169,29 +176,35 @@ public class PTIPoolAdm {
         FutureTask future;
         Vector removeableThreads = new Vector();
         
-        while( activeThreads.size() > 0 ){
-        iter = activeThreads.iterator();
-            while( iter.hasNext() ){
-                
+        while( activeThreads.size() > 0 )
+        {
+        	iter = activeThreads.iterator();
+            while( iter.hasNext() )
+            {                
                 vectorPair = ( Pair ) iter.next();
                 future = Tuple.get1(vectorPair);
                 queueID = Tuple.get2(vectorPair);
                 
-                if( future.isDone() ){// this thread is done or stopped with and exception
-                    try{
+                if( future.isDone() )
+                {// this thread is done or stopped with and exception
+                    try
+                    {
                         Long processtime = (Long) future.get();
                     }
-                    catch(ExecutionException ee){
+                    catch(ExecutionException ee)
+                    {
                         // getting exception from thread
                         Throwable cause = ee.getCause();
                         
                         RuntimeException re = new RuntimeException(cause);
                         
-                        if( cause.getClass() == ConversionException.class ) {
-                            
+                        if( cause.getClass() == ConversionException.class ) 
+                        {                            
                             log.debug( String.format( "Element to be removed with queueID: '%s'",queueID ) );  
                             log.error("An element on the processqueue does not match its promised format and can therefore not be indexed. The Validation of the elements being pushed to the queue is flawed! It was removed from the processqueue and execution of other elements continue");
-                        }else{
+                        }
+                        else
+                        {
                             log.fatal( String.format( " %s caused under execution with message %s associated with queueid '%s' in the processqueue", cause.getClass(), cause.getMessage(), queueID ) );
                             throw re;
                         }
@@ -205,7 +218,8 @@ public class PTIPoolAdm {
             
             // remove threads that have returned, from activeThreads
             iter = removeableThreads.iterator();
-            while( iter.hasNext() ){
+            while( iter.hasNext() )
+            {
                 activeThreads.remove( iter.next() );
             }       
         } 
@@ -221,7 +235,8 @@ public class PTIPoolAdm {
      * @throws RuntimeException if the started thread stop due to an exception
      * @throws ConfigurationException if the PTIPool could not be correctly initialized
      */
-    private void startThreads()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException{
+    private void startThreads()throws ClassNotFoundException, SQLException, RuntimeException, ConfigurationException
+    {
         log.debug( "Entering PTIPoolAdm.startThreads()" );
 
         boolean fetchedLast = false;
@@ -232,17 +247,20 @@ public class PTIPoolAdm {
         int queueID;
         FutureTask future;
 
-        while( !fetchedLast ){
-
-            try{
+        while( !fetchedLast )
+        {
+            try
+            {
                 queueTriple = processqueue.pop();
             }
-            catch( NoSuchElementException nse ){
+            catch( NoSuchElementException nse )
+            {
                 log.debug( "processqueue is empty" );
                 fetchedLast = true;
             }
 
-            if( !fetchedLast ){
+            if( !fetchedLast )
+            {
                 log.debug( "Fetched element from processqueue" );
                 fedoraHandle = Tuple.get1(queueTriple);
                 queueID = Tuple.get2(queueTriple);

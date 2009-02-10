@@ -43,7 +43,8 @@ import org.apache.log4j.Logger;
  * The harvester only returns a job after the second consecutive time
  * it has been found and its filesize is unchanged.
  */
-public class FileHarvest implements Harvester{
+public class FileHarvest implements IHarvester
+{
     /**
      *
      */
@@ -61,9 +62,11 @@ public class FileHarvest implements Harvester{
      * 
      * @throws IllegalArgumentException if the patt given is not a directory.
      */
-    public FileHarvest( File path ) throws IllegalArgumentException {
+    public FileHarvest( File path ) throws IllegalArgumentException 
+    {
         log.debug( String.format( "Constructor( path='%s' )", path.getAbsolutePath() ) );
-        if ( ! path.isDirectory() ){
+        if ( ! path.isDirectory() )
+        {
             throw new IllegalArgumentException( String.format( "'%s' is not a directory !", path.getAbsolutePath() ) );
         }
         this.path = path;
@@ -73,15 +76,18 @@ public class FileHarvest implements Harvester{
         jobSet = new HashSet<File>();
     }
 
+    
     /**
      * Starts The datadock. It initializes vectors and add found jobs to the application vector.
      */
-    public void start(){
+    public void start()
+    {
         log.debug( "start() called" );
 
         initVectors();
         log.debug( "Vectors initialized" );
-        for( Pair<File, Long> job : findAllJobs() ){
+        for( Pair<File, Long> job : findAllJobs() )
+        {
             log.debug( String.format( "adding path='%s' to jobSet and jobApllications", Tuple.get1(job).getAbsolutePath() ) );
             jobSet.add( Tuple.get1(job) );
         }

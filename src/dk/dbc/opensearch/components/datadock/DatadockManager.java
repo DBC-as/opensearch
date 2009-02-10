@@ -8,7 +8,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.components.harvest.Harvester;
+import dk.dbc.opensearch.components.harvest.IHarvester;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,14 +29,14 @@ public class DatadockManager
     static Logger log = Logger.getLogger("DatadockManager");
 
     private DatadockPool pool= null;
-    private Harvester harvester = null;
+    private IHarvester harvester = null;
     private int rejectedSleepTime;
 
     
     /**
      * Constructs the the DatadockManager instance.
      */
-    public DatadockManager( DatadockPool pool, Harvester harvester )
+    public DatadockManager( DatadockPool pool, IHarvester harvester )
     {
         log.debug( "Constructor( pool, harvester ) called" );
 

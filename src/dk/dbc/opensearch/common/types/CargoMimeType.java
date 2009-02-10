@@ -17,17 +17,17 @@ public enum CargoMimeType
      * mimetypes defined here. Mimetypes from /etc/mime.types
      */
     TEXT_XML( "text/xml", "XML Document"),
-        APPLICATION_PDF( "application/pdf", "PDF Document" );
+    APPLICATION_PDF( "application/pdf", "PDF Document" );
 
     private final String mimetype;
     private final String description;
 
 
     CargoMimeType( String mimetype, String description )
-        {
-            this.mimetype    = mimetype;
-            this.description = description;
-        }
+    {
+        this.mimetype    = mimetype;
+        this.description = description;
+    }
 
 
     /**
@@ -52,7 +52,9 @@ public enum CargoMimeType
         return this.description;
     }
 
-    public static CargoMimeType getMimeFrom( String mime ){
+    
+    public static CargoMimeType getMimeFrom( String mime )
+    {
         CargoMimeType CMT = null;
         for (CargoMimeType cmt : CargoMimeType.values() )
         {
@@ -61,7 +63,7 @@ public enum CargoMimeType
                 CMT = cmt;
             }
         }
+        
         return CMT;
-
     }
 }

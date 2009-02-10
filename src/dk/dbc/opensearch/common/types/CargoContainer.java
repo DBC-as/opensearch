@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+
 /**
  * \ingroup datadock
  * \brief CargoContainer is a datastructure used throughout OpenSearch for
@@ -316,13 +317,15 @@ public class CargoContainer
     {
         CargoMimeType CMT = null;
         log.debug( "checking mimetype" );
-        for (CargoMimeType cmt : CargoMimeType.values() )
+        
+        CMT = CargoMimeType.getMimeFrom( mimetype );
+        /*for (CargoMimeType cmt : CargoMimeType.values() )
         {
             if( mimetype.equals( cmt.getMimeType() ) )
             {
                 CMT = cmt;
             }
-        }
+        }*/
         
         if( CMT == null )
         {

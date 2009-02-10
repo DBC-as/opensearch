@@ -8,8 +8,8 @@ package dk.dbc.opensearch.common.pluginframework;
 /**
  * PluginID
  */
-public class PluginID {
-
+public class PluginID 
+{
     private String submitter;
     private String format;
     private String task;
@@ -19,12 +19,14 @@ public class PluginID {
      * @param format Information on the format of the submitted material. 
      * @param task Information on the task that the plugin handles. This information is matched a String in the plugins 
      */
-    public PluginID( String submitter, String format, String task ) {
+    public PluginID( String submitter, String format, String task ) 
+    {
         this.submitter = submitter;
         this.format = format;
         this.task = task;
     }
 
+    
     /**
      * getPluginID returns a hashvalue based on the submitter, format
      * and task that the PluginID object is constructed with. Please
@@ -33,30 +35,39 @@ public class PluginID {
      * 
      * @returns an integer defining the hash value of the plugin.
      */
-    public int getPluginID(){
-        String hashSubject = submitter+format+task;
+    public int getPluginID()
+    {
+        String hashSubject = submitter + format + task;
         return hashSubject.hashCode();
     }
 
+    
     /**
      * @returns the value of the submitter associated with the
      * pluginid
      */
-    public String getPluginSubmitter(){
+    public String getPluginSubmitter()
+    {
         return submitter;
     }
+    
+    
     /**
      * @returns the value of the format associated with the
      * pluginid
      */
-    public String getPluginFormat(){
+    public String getPluginFormat()
+    {
         return format;
     }
+    
+    
     /**
      * @returns the value of the task associated with the
      * pluginid
      */
-    public String getPluginTask(){
+    public String getPluginTask()
+    {
         return task;
     }
 }

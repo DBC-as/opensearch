@@ -12,7 +12,7 @@ import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
-import dk.dbc.opensearch.components.harvest.Harvester;
+import dk.dbc.opensearch.components.harvest.IHarvester;
 
 import fedora.client.FedoraClient;
 
@@ -136,7 +136,7 @@ public class DatadockMain
             log.debug( "Starting harvester" );
             // harvester;
             File harvestDirectory = new File( "/home/shm/opensearch/trunk/Harvest-pollTest/" );
-            Harvester harvester = new FileHarvest( harvestDirectory );            
+            IHarvester harvester = new FileHarvest( harvestDirectory );            
             
             log.debug( "Starting the manager" );
             // Starting the manager

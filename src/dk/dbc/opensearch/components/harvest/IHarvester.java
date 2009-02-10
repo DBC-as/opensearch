@@ -20,7 +20,8 @@ import dk.dbc.opensearch.common.types.DatadockJob;
 import java.util.Vector;
 import java.net.URI;
 
-public interface Harvester{
+public interface IHarvester
+{
     /**
      * The start method. Called by the datadock just after
      * construction of the instance.

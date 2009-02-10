@@ -28,14 +28,15 @@ public class PTIPoolAdmMain {
     /**
      * The main class for the PTI component
      */
-    public final static void main(String[] args){
-    
+    public final static void main(String[] args)
+    {    
         FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
 
         CompassFactory compassFactory = new CompassFactory();
         int numberOfThreads = 10;
 
-        try{
+        try
+        {
             Compass compass = compassFactory.getCompass();
             FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
             FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );
@@ -45,19 +46,24 @@ public class PTIPoolAdmMain {
             PTIPool ptiPool = new PTIPool( numberOfThreads, fedoraHandler);  
            
             ptiPoolAdm = new PTIPoolAdm( ptiPool, processqueue, estimate, compass );
-
-        }catch(Exception e){
+        }
+        catch(Exception e)
+        {
             log.fatal( String.format( "Could not initialize the PTIPool" ) );
             System.out.println("caught error: "+e.getMessage() );
             e.printStackTrace();
-        }try{
+        }
+        
+        try
+        {
             ptiPoolAdm.mainLoop();
-        }catch( Exception ee ){
+            
+        }
+        catch( Exception ee )
+        {
             log.fatal( String.format( "Could not start the threads or a runtime error occured" ) );
             System.out.println("caught error: "+ee.getMessage() );
             ee.printStackTrace();
-
-        }
-        
+        }        
     }
 }

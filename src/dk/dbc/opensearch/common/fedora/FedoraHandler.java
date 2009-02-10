@@ -144,7 +144,8 @@ public class FedoraHandler implements Constants {
 
         CargoObjectInfo coi = null;
         List<Byte> cc_data = null;
-        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() ){
+        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() )
+        {
             cc_data = (ArrayList)content.getSecond();
             coi = content.getFirst();
         }
