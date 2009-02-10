@@ -9,7 +9,7 @@ package dk.dbc.opensearch.common.types;
  * \ingroup datadock
  * \brief Enum to control the possible values of mimetypes that we can
  * handle. This is a subset of the official mimetypes as listed in
- * /etc/mime.types. 
+ * /etc/mime.types.
  */
 public enum CargoMimeType
 {
@@ -17,19 +17,19 @@ public enum CargoMimeType
      * mimetypes defined here. Mimetypes from /etc/mime.types
      */
     TEXT_XML( "text/xml", "XML Document"),
-    APPLICATION_PDF( "application/pdf", "PDF Document" );
+        APPLICATION_PDF( "application/pdf", "PDF Document" );
 
     private final String mimetype;
     private final String description;
 
-    
-    CargoMimeType( String mimetype, String description )
-    {
-        this.mimetype    = mimetype;
-        this.description = description;
-    }
 
-    
+    CargoMimeType( String mimetype, String description )
+        {
+            this.mimetype    = mimetype;
+            this.description = description;
+        }
+
+
     /**
      * use instanceOfCargoMimeType.getMimeType() to get the (official)
      * name of the mimetype
@@ -41,7 +41,7 @@ public enum CargoMimeType
         return this.mimetype;
     }
 
-    
+
     /**
      * Returns The description of the mimetype.
      *
@@ -50,5 +50,18 @@ public enum CargoMimeType
     public String getDescription()
     {
         return this.description;
+    }
+
+    public static CargoMimeType getMimeFrom( String mime ){
+        CargoMimeType CMT = null;
+        for (CargoMimeType cmt : CargoMimeType.values() )
+        {
+            if( mime.equals( cmt.getMimeType() ) )
+            {
+                CMT = cmt;
+            }
+        }
+        return CMT;
+
     }
 }

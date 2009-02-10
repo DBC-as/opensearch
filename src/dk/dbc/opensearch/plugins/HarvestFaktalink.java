@@ -55,7 +55,10 @@ public class HarvestFaktalink implements IHarvestable
         String mimetype = "text/xml";
         String lang = "DA";
 
-        return new CargoContainer( data, mimetype, lang, submitter, format );
+        CargoContainer cc = new CargoContainer();
+        cc.add( format, submitter, lang, mimetype, data);
+        
+        return cc;
     }
 }
 

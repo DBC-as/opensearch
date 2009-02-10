@@ -28,26 +28,25 @@ public class CargoObjectInfo
 
     private String format;
 
-    /** contentlength is used in estimating the processing time of the
-     * data. Contentlength is provided by datadock-reception, by the count method on the stream 
-     * \todo streams are iterators, we need content-length before-hand
-     */
-    private int contentLength;
-    private Date timestamp; /**< used to make statistics and estimates regarding the processtime of the dataobject */
-  
-    
+    /** determines if the data associated with the CargoObjectInfo is indexable*/
+    private boolean indexable;
+
+    /** used to make statistics and estimates regarding the processtime of the dataobject */
+    private Date timestamp; 
+
     /**
      * Constructs a CargoObjectInfo instance that acts as a container
-     * for the metadata associated with a given CargoContainers data
-     * \todo: should this constructor throw? And on what occasions?
+     * for the metadata associated with a given CargoContainers
+     * data. This constructor defaults the indexability of the data to
+     * false
      *
-     * @param mimeType The dataobjects mimetype.
-     * @param lang The dataobjects language
-     * @param submitter The dataobjects submitter
-     * @param format The dataobjects format
-     * @param contentLength the dataobjects contentlength
+     * @param mimeType The mimetype of the data
+     * @param lang The language of the data
+     * @param submitter The submitter of the data
+     * @param format The format of the data
+     * @param indexable true if the material can be indexed, false otherwise
      */
-    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format, int contentLength ) 
+    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format, boolean indexable )
     {
         this.mimeType = mimeType;
 
@@ -57,40 +56,45 @@ public class CargoObjectInfo
         
         this.format = format;
 
-        this.contentLength = contentLength;
-        
+        this.indexable = indexable;
+
         this.timestamp = new Date();
-    }
-
-
+    } 
+    
+    
     /**
-     * Returns the length of the datastream in bytes
+     * Constructs a CargoObjectInfo instance that acts as a container
+     * for the metadata associated with a given CargoContainers
+     * data. This constructor defaults the indexability of the data to
+     * false
      *
-     * @returns the length of the data-stream
+     * @param mimeType The mimetype of the data
+     * @param lang The language of the data
+     * @param submitter The submitter of the data
+     * @param format The format of the data
      */
-    int getContentLength()
+    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format ) 
     {
-        return contentLength;
+        this( mimeType, lang, submitter, format, false );
     }
-    
-    
+
     /**
      * Returns this CargoContainers timestamp
      *
      * @returns the timestamp of the CargoContainer
      */
-    long getTimestamp()
+    public long getTimestamp()
     {
         return timestamp.getTime();
     }
-
+    
     
     /**
      * Returns the mimetype
      *
      * @returns the mimetype of the data as a string
      */
-    String getMimeType()
+    public String getMimeType()
     {
         return mimeType.getMimeType();
     }
@@ -99,7 +103,7 @@ public class CargoObjectInfo
     /**
      * Returns the name of the submitter
      *
-     * @return submitter as string
+     * @returns submitter as string
      */
     public String getSubmitter()
     {
@@ -110,7 +114,7 @@ public class CargoObjectInfo
     /**
      * Returns the format
      *
-     * @return format as string
+     * @returns format as string
      */
     public String getFormat()
     {
@@ -118,10 +122,18 @@ public class CargoObjectInfo
     }
 
 
-	/**
-	 * @return the language
-	 */
-	public String getLanguage() {
-		return language;
-	}
+    /**
+     * @returns an indication of the indexability of the data
+     * associated with the CargoObjectInfo object
+     */
+    public boolean isIndexable(){
+        return indexable;
+    }
+
+    /**
+     * @returns the language
+     */
+    public String getLanguage() {
+        return language;
+    }
 }

@@ -22,8 +22,6 @@ import javax.xml.parsers.DocumentBuilder;
 //import javax.xml.validation.Schema;
 //import org.xml.sax.SAXException;
 
-//import java.lang.reflect.Method;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -36,8 +34,8 @@ public class PluginResolver implements IPluginResolver
     //File schemaFile;
     //SchemaFactory schemaFactory; 
     //Schema validationSchema;
-    PluginFinder pFinder;
-    PluginLoader pLoader;
+    PluginFinder PFinder;
+    PluginLoader PLoader;
     ClassLoader pluginClassLoader;
     DocumentBuilderFactory docBuilderFactory;
     DocumentBuilder docBuilder;
@@ -64,28 +62,23 @@ public class PluginResolver implements IPluginResolver
  
         pluginClassLoader = new PluginClassLoader();
 
-        pFinder = new PluginFinder( docBuilder, path );
-        pLoader = new PluginLoader( pluginClassLoader );
+        PFinder = new PluginFinder( docBuilder, path );
+        PLoader = new PluginLoader( pluginClassLoader );
     }
 
 
     public IPluggable getPlugin( PluginID pluginID )throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException
     {
-        int key = pluginID.getPluginID();
-        //System.out.print(PFinder.getClass() +"\n");
-        //Method[] methods = PFinder.getClass().getDeclaredMethods();
-        //for(int x = 0; x < methods.length; x++){
-        //System.out.println( methods[x].getName() );
-        //}
-        String pluginClassName = pFinder.getPluginClassName( key );
+        //String key = submitter + format + task;
+        String pluginClassName = PFinder.getPluginClassName( pluginID.getPluginID() );
 
-        return pLoader.getPlugin( pluginClassName );
+        return PLoader.getPlugin( pluginClassName );
     }
 
 
     public Vector<String> validateArgs( String submitter, String format, String[] taskList )throws PluginResolverException
     {
-        Vector<String> pluginNotFoundVector = new Vector();
+        Vector<String> pluginNotFoundVector = null;
         String pluginClassName = "";
 
         //for each string in taskList
@@ -95,7 +88,7 @@ public class PluginResolver implements IPluginResolver
             int key = hashSubject.hashCode();
             try
                 {
-                    pluginClassName = pFinder.getPluginClassName( key );
+                    pluginClassName = PFinder.getPluginClassName( key );
                 }
             catch( FileNotFoundException fnfe )
                 {
@@ -111,6 +104,6 @@ public class PluginResolver implements IPluginResolver
     public void clearPluginRegistration()
     {
         //clear the classNameMap in PluginFinder
-        pFinder.clearClassNameMap();
+        PFinder.clearClassNameMap();
     }
 }

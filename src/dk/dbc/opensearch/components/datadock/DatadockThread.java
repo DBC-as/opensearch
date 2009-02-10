@@ -11,6 +11,7 @@ import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
@@ -136,9 +137,14 @@ public class DatadockThread implements Callable<Float>
         Float processEstimate = 0f;
         String fedoraHandle = null;
         
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) ); 
+        int contentLength = 0;
+        for ( CargoObject co : cc.getData() )
+        {
+        	contentLength += co.getContentLength();
+        }        
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) ); 
       
-        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+        processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
       
         fedoraHandle = fedoraStoreData();
 
@@ -187,8 +193,14 @@ public class DatadockThread implements Callable<Float>
         Float processEstimate = 0f;
         String fedoraHandle = null;
 
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), cc.getStreamLength() ) );        
-        processEstimate = estimate.getEstimate( cc.getMimeType(), cc.getStreamLength() );
+        int contentLength = 0;
+        for ( CargoObject co : cc.getData() )
+        {
+        	contentLength += co.getContentLength();
+        }        
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) );
+        processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
+        
         fedoraHandle = fedoraStoreData();
 
         log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
@@ -239,7 +251,7 @@ public class DatadockThread implements Callable<Float>
     	InputStream data = new FileInputStream( file );
     	int contentLength = (int)file.length();
     	    	
-    	CargoObjectInfo coi = new CargoObjectInfo( CargoMimeType.valueOf( mimetype ), lang, submitter, format, contentLength );
+    	CargoObjectInfo coi = new CargoObjectInfo( CargoMimeType.valueOf( mimetype ), lang, submitter, format, true );
     	Pair< CargoObjectInfo, InputStream > pair = new Pair< CargoObjectInfo, InputStream >(coi, data);
     	
     	ArrayList< Pair< CargoObjectInfo, InputStream > > al = new ArrayList< Pair< CargoObjectInfo, InputStream > >();

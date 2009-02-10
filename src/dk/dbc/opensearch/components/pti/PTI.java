@@ -6,14 +6,22 @@
 package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObjectInfo;
+import dk.dbc.opensearch.common.types.Pair;
+
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import org.compass.core.Compass;
@@ -130,28 +138,58 @@ public class PTI implements Callable<Long>{
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
      */    
-    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, NullPointerException {
         log.debug( "Entering PTI.call()" );
 
 
         // Constructing CargoConatiner
         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
         cc = fh.getDatastream( fedoraHandle, datastreamItemID );
-        log.debug( String.format( "CargoContainer.mimetype %s", cc.getMimeType() ) );
-        log.debug( String.format( "CargoContainer.submitter %s", cc.getSubmitter() ) );
-        log.debug( String.format( "CargoContainer.streamlength %s", cc.getStreamLength() ) );
 
         // Construct doc and Start Transaction
         log.debug( "Starting transaction on running CompassSession" );
         Document doc = null;
 
         log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
-        doc = saxReader.read( cc.getData() );
+
+        /** \todo: find the data in the cargocontainer that is
+         * scheduled for indexing. This should be done based on the
+         * rules found in the 'header' of the digital object, i.e. the
+         * datastream containing the rules XML Instance. Also, the
+         * rules xml should guarantee that there exists an XSEM
+         * mapping for the format. The following assumes only one such
+         * datastream in each cargocontainer, which may be sufficient
+         * for now, but this must be thought through on a larger
+         * scale.*/
+        
+        CargoObjectInfo tmp_coi, coi = null;
+        List<Byte> cc_data = null;
+        for ( Pair< CargoObjectInfo, List<Byte> > content : cc.getDataLists() ){
+            tmp_coi = content.getFirst();
+            if ( tmp_coi.isIndexable() )
+            {
+                cc_data = (ArrayList)content.getSecond();
+                coi = tmp_coi;
+            }
+        }
+        if ( cc_data == null )
+        {
+            throw new NullPointerException( "could not find indexable data in CargoContainer" );
+        }
+        /** \todo: please make up own mind of whether coi.getCargoLength or List<Byte>.size() should be used*/
+        int contentLength = cc_data.size();
+        byte[] cc_byte_data = new byte[ contentLength ];
+
+        System.arraycopy( cc_data, 0, cc_byte_data, 0, contentLength );
+
+        InputStream is = new ByteArrayInputStream( cc_byte_data );
+
+        doc = saxReader.read( is );
 
         // this log line is _very_ verbose, but useful in a tight situation
         // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
-        AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  cc.getFormat(), doc.getRootElement() );
+        AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  coi.getFormat(), doc.getRootElement() );
 
         log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
@@ -196,10 +234,9 @@ public class PTI implements Callable<Long>{
         
         long processtime = finishTime.getTime() - cc.getTimestamp();
         
+        estimate.updateEstimate( coi.getMimeType(), contentLength, processtime );
 
-        estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
-
-        log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
+        log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", coi.getMimeType(), contentLength, processtime ) );
 
         return processtime;
     }    

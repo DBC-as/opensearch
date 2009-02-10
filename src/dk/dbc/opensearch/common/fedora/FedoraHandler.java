@@ -16,6 +16,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
@@ -31,6 +33,9 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObjectInfo;
+import dk.dbc.opensearch.common.types.Pair;
+
 import dk.dbc.opensearch.xsd.ContentDigest;
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
@@ -136,14 +141,22 @@ public class FedoraHandler implements Constants {
         String nextPid     = null;
         String itemId      = null;
         byte[] foxml       = null;
-        String submitter = cargo.getSubmitter();
+
+        CargoObjectInfo coi = null;
+        List<Byte> cc_data = null;
+        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() ){
+            cc_data = (ArrayList)content.getSecond();
+            coi = content.getFirst();
+        }
+
+        String submitter = cargo.getSubmitter( coi );
         /** \todo: We need a pid-manager for getting lists of available pids for a given ns */
         log.debug( String.format( "Getting next pid for namespace %s", submitter ) );
         String pids[] = apim.getNextPID( new NonNegativeInteger( "1" ), submitter );
         nextPid = pids[0];
 
         log.debug( String.format( "Getting itemId for datastream" ) );
-        itemId = cargo.getFormat();
+        itemId = cargo.getFormat( coi );
 
         log.debug( String.format( "Constructing foxml with pid=%s, itemId=%s and label=%s", nextPid, itemId, label ) );
         foxml = FedoraTools.constructFoxml( cargo, nextPid, itemId, label );
@@ -235,11 +248,9 @@ public class FedoraHandler implements Constants {
                 /** \todo: need to get language dc:language */
                 String language = "";
 
-                cargo = new CargoContainer( inputStream,
-                                            def.getMIMEType(),
-                                            language,
-                                            pidNS,
-                                            itemId );
+                cargo = new CargoContainer();
+                cargo.add( itemId, pidNS, language, def.getMIMEType(), inputStream);
+                //cargo = new CargoContainer( inputStream, def.getMIMEType(),language,pidNS,itemId );
             }
         }
         
@@ -248,17 +259,11 @@ public class FedoraHandler implements Constants {
             throw new IllegalStateException( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", itemId, pid ) );
         }
 
-        log.debug( String.format( "Successfully retrieved datastream. CargoContainer has length %s", cargo.getStreamLength() ) );
-        log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getMimeType() ) );
-        log.debug( String.format( "CargoContainer.submitter=     %s", cargo.getSubmitter() ) );
-        log.debug( String.format( "CargoContainer.streamlength = %s", cargo.getStreamLength() ) );
-        
+        log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getItemsCount() ) );
         log.info( "Successfully retrieved datastream." );
         return cargo;
     } 
 
-    
-    /** \todo: what is this? */
     private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state )
     {
         /**

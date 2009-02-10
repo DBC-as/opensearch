@@ -7,7 +7,8 @@ package dk.dbc.opensearch.common.pluginframework;
 
 import dk.dbc.opensearch.common.types.ThrownInfo;
 import java.util.Vector;
-
+//import com.mallardsoft.tuple.Tuple;
+//import com.mallardsoft.tuple.Pair;
 
 /**
  * This class is a custom Exception for handling the many exceptions that can be 
