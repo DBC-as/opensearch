@@ -47,7 +47,7 @@ public class PluginFinder
     private DocumentBuilder docBuilder;
     String path;
 
-    public PluginFinder(){}
+    //public PluginFinder(){}
     /**
      * builds the map containing the keys and related plugin classes
      * The keys are made from the task, format and datasource, the value is the
