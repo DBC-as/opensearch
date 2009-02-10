@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import dk.dbc.opensearch.components.harvest.FileHarvest;
-import dk.dbc.opensearch.components.harvest.Harvester;
+import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.components.datadock.DatadockPool;
 import dk.dbc.opensearch.components.datadock.DatadockManager;
 import dk.dbc.opensearch.common.types.DatadockJob;
@@ -37,37 +37,43 @@ import java.util.Vector;
  */
 public class DatadockManagerTest {
 
-    Harvester mockHarvester;
+    IHarvester mockHarvester;
     DatadockPool mockDatadockPool;
     Vector<DatadockJob> mockJobs;
     DatadockJob mockDatadockJob;
     Vector<CompletedTask> mockFinJobs;
 
-    @Before public void Setup(){
+    @Before public void Setup()
+    {
         mockHarvester = createMock( FileHarvest.class );
         mockDatadockPool = createMock( DatadockPool.class );
         mockDatadockJob = createMock( DatadockJob.class );
         mockFinJobs = createMock( Vector.class );        
     }
 
-    @After public void tearDown(){
+    
+    @After public void tearDown()
+    {
         reset( mockHarvester);
         reset( mockDatadockPool );
         reset( mockDatadockJob );
         
         reset( mockFinJobs );
-
     }
 
-    @Test public void testConstructor() {
+    
+    @Test public void testConstructor() 
+    {
         mockHarvester.start();
         replay( mockHarvester );
         DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
         verify( mockHarvester );
     }
     
+    
     @Test public void testUpdate() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                          FileNotFoundException, IOException, URISyntaxException {
+                                          FileNotFoundException, IOException, URISyntaxException 
+    {
         
         Vector<DatadockJob> jobs = new Vector<DatadockJob>();
         jobs.add( mockDatadockJob );

@@ -1,5 +1,7 @@
 package dk.dbc.opensearch.common.pluginframework;
 
+import java.io.InputStream;
+
 
 /**
  * This interface represents the base point for all plugins. It
@@ -35,6 +37,15 @@ package dk.dbc.opensearch.common.pluginframework;
  */
 public interface IPluggable
 {
+	/**
+     * Initializes the plugin with the necessary information needed to
+     * perform the task at hand.
+     * @param pluginId The id given by the pluginframework, specifying  
+     * 
+     */
+    void init( PluginID pluginId, InputStream data );
+
+    
     /**
      * getPluginID returns the - at object creation time given - id
      * for this plugin. pluginIDs identify plugins to the
@@ -45,7 +56,7 @@ public interface IPluggable
      * @returns a PluginID type containing the plugin id (the hashcode
      * of the plugin identifiers)
      */
-    PluginID getPluginID();
+    //PluginID getPluginID();
 
     /**
      * getTaskName returns the - at compile time given - name of the
@@ -56,5 +67,5 @@ public interface IPluggable
      * 
      * @returns a string containing the task name
      */
-    String getTaskName();
+    //String getTaskName();
 }
