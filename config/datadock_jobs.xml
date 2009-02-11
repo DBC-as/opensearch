@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<job_list>
+  <job submitter="dbc" format="faktalink">
+    <task name="faktalinkharvester" position="0"/>
+    <task name="faktalinkannotator" position="1"/>
+    <task name="faktalinkstore"     position="2"/>
+  </job>
+
+  <job submitter="dbc" format="forfatterweb">
+    <task name="forfatterwebharvester" position="0"/>
+    <task name="forfatterwebannotator" position="1"/>
+    <task name="forfatterwebstore"     position="2"/>
+  </job>
+
+</job_list>
