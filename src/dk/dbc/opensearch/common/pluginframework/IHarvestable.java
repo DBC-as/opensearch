@@ -15,6 +15,8 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 public interface IHarvestable extends IPluggable
 {
+	void init( PluginID pluginId, InputStream data );
+	
     /**
      * This method does the body of work and returns a CargoContainer
      * when finished. If the action fails, the methods throws.
