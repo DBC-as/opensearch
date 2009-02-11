@@ -15,7 +15,8 @@ public class CargoObject
 	CargoObject( String mimetype, String language, String submitter, String format, InputStream data ) throws IOException
     {
     	CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );    	
-        CargoObjectInfo coi = new CargoObjectInfo( cmt, language, submitter, format );        
+        CargoObjectInfo coi = new CargoObjectInfo( cmt, language, submitter, format );   
+    
         List< Byte > list = readStream( data ); 
         
         pair = new Pair<CargoObjectInfo, List< Byte > >( coi, list );
@@ -44,15 +45,70 @@ public class CargoObject
     }
 
     
-    Pair< CargoObjectInfo, List< Byte > > getData()
+    public Pair< CargoObjectInfo, List< Byte > > getPair()
     {
     	return pair;
     }
     
     
-    // \todo: this is a dummy method. to be deleted
+    public boolean checkLanguage(String language )
+    {
+        return pair.getFirst().checkLanguage( language );
+    }
+
+    
+    public boolean validMimetype( String mimetype )
+    {
+    	return pair.getFirst().validMimetype( mimetype );
+    }
+    
+    
+    public boolean checkSubmitter( String name ) throws IllegalArgumentException
+    {
+        return this.checkSubmitter( name );
+    }
+    
+    
     public int getContentLength()
     {
-    	return -1;
+    	return pair.getSecond().size();
+    }
+    
+    
+    public String getFormat( CargoObjectInfo key )
+    {
+        return pair.getFirst().getFormat();
+    }
+    
+    
+    /**
+     * Returns the mimetype of the data associated with the underlying CargoObjectInfo 
+     *
+     * @returns the mimetype of the data as a string
+     */
+    public String getMimeType()
+    {
+        return pair.getFirst().getMimeType();
+    }    
+    
+    /**
+     * Returns the name of the submitter of the data associated with the underlying CargoObjectInfo 
+     *
+     * @returns the submitter as a string
+     */
+    public String getSubmitter()
+    {
+        return pair.getFirst().getSubmitter();
+    }
+    
+    
+    /**
+     * Returns this CargoObject CargoObjectInfo's timestamp
+     *
+     * @returns the timestamp of the underlying CargoObjectInfo
+     */
+    public long getTimestamp()
+    {
+        return pair.getFirst().getTimestamp();
     }
 }

@@ -6,5 +6,5 @@ import java.net.URI;
 
 public interface IPluggableDD
 {
-    void init( URI uri, String str, String str2 );
+    void init( URI uri, String submitter, String format );
 }

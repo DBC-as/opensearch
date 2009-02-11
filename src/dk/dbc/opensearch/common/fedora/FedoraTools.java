@@ -20,6 +20,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.Pair;
 
@@ -88,11 +89,13 @@ public class FedoraTools
         
         ArrayList<Datastream> dsArray = new ArrayList<Datastream>();
 
-        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() ){
+        //for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() )
+        for ( CargoObject co : cargo.getData() )
+        {
             // Set< Map.Entry< CargoObjectInfo, List< Byte > > > entry = 
             //     ( Set<Map.Entry< CargoObjectInfo, List< Byte > > > ) content.entrySet();
 
-            dsArray.add( constructDatastream( content, dateFormat, timeNow ) );
+            dsArray.add( constructDatastream( co, dateFormat, timeNow ) );
         }
 
         dot.setDatastream( (Datastream[]) dsArray.toArray() );
@@ -109,57 +112,57 @@ public class FedoraTools
     /**
      * constructDatastream creates a Datastream object on the basis of the information and data found in the Pair of CargoObjectInfo and List<Byte>. 
      */
-    private static Datastream constructDatastream( Pair< CargoObjectInfo, List< Byte > > map, SimpleDateFormat dateFormat, String timeNow ) throws java.text.ParseException, IOException
+    //private static Datastream constructDatastream( Pair< CargoObjectInfo, List< Byte > > map, SimpleDateFormat dateFormat, String timeNow ) throws java.text.ParseException, IOException
+    private static Datastream constructDatastream( CargoObject co, SimpleDateFormat dateFormat, String timeNow ) throws java.text.ParseException, IOException
     {
-
-        CargoObjectInfo coi = ( CargoObjectInfo ) map.getFirst();
-        List<Byte> dataBytes = ( List<Byte> ) map.getSecond();
-
-        int srcLen = dataBytes.size();
-        byte[] ba = new byte[ srcLen ];
-        System.arraycopy( dataBytes, 0, ba, 0, srcLen );
-
-        //datastreamElement
-        /** \todo: CONTROL_GROUP should be configurable in some way */
-        /** \todo: VERSIONABLE should be configurable in some way */
+//        CargoObjectInfo coi = ( CargoObjectInfo ) map.getFirst();
+//        List<Byte> dataBytes = ( List<Byte> ) map.getSecond();
+//    	
+//        int srcLen = dataBytes.size();
+//        byte[] ba = new byte[ srcLen ];
+//        System.arraycopy( dataBytes, 0, ba, 0, srcLen );
+//
+//        //datastreamElement
+//        /** \todo: CONTROL_GROUP should be configurable in some way */
+//        /** \todo: VERSIONABLE should be configurable in some way */
         Datastream dataStreamElement = new Datastream();
-        dataStreamElement.setCONTROL_GROUP( DatastreamTypeCONTROL_GROUPType.M );
-
-        dataStreamElement.setID( coi.getFormat() );
-        dataStreamElement.setSTATE( StateType.A );
-        dataStreamElement.setVERSIONABLE( false );
-        
-        // datastreamVersionElement
-        String itemId_version = coi.getFormat() + ".0";  
-        
-        DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
-
-        dataStreamVersionElement.setCREATED( dateFormat.parse( timeNow ) );
-
-        dataStreamVersionElement.setID( itemId_version );   
-        
-        DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
-        
-        ContentDigest binaryContent = new ContentDigest();
-
-        dVersTypeChoice.setBinaryContent( ba );
-        
-        dataStreamVersionElement.setDatastreamVersionTypeChoice( dVersTypeChoice );
-
-        String mimeLabel = String.format( "%s [%s]", coi.getFormat(), coi.getMimeType() );
-        dataStreamVersionElement.setLABEL( mimeLabel );
-        String mimeFormatted = String.format("%s [%s]", coi.getFormat(), coi.getMimeType() );
-        dataStreamVersionElement.setMIMETYPE( mimeFormatted );
-
-        long lengthFormatted = (long)srcLen;
-
-        dataStreamVersionElement.setSIZE( lengthFormatted );
-
-        binaryContent.setDIGEST( Base64.encode( ba ) );      
-
-        dataStreamVersionElement.setContentDigest( binaryContent );            
-        DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
-        dataStreamElement.setDatastreamVersion( dsvArray );
+//        dataStreamElement.setCONTROL_GROUP( DatastreamTypeCONTROL_GROUPType.M );
+//
+//        dataStreamElement.setID( coi.getFormat() );
+//        dataStreamElement.setSTATE( StateType.A );
+//        dataStreamElement.setVERSIONABLE( false );
+//        
+//        // datastreamVersionElement
+//        String itemId_version = coi.getFormat() + ".0";  
+//        
+//        DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
+//
+//        dataStreamVersionElement.setCREATED( dateFormat.parse( timeNow ) );
+//
+//        dataStreamVersionElement.setID( itemId_version );   
+//        
+//        DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
+//        
+//        ContentDigest binaryContent = new ContentDigest();
+//
+//        dVersTypeChoice.setBinaryContent( ba );
+//        
+//        dataStreamVersionElement.setDatastreamVersionTypeChoice( dVersTypeChoice );
+//
+//        String mimeLabel = String.format( "%s [%s]", coi.getFormat(), coi.getMimeType() );
+//        dataStreamVersionElement.setLABEL( mimeLabel );
+//        String mimeFormatted = String.format("%s [%s]", coi.getFormat(), coi.getMimeType() );
+//        dataStreamVersionElement.setMIMETYPE( mimeFormatted );
+//
+//        long lengthFormatted = (long)srcLen;
+//
+//        dataStreamVersionElement.setSIZE( lengthFormatted );
+//
+//        binaryContent.setDIGEST( Base64.encode( ba ) );      
+//
+//        dataStreamVersionElement.setContentDigest( binaryContent );            
+//        DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
+//        dataStreamElement.setDatastreamVersion( dsvArray );
 
         return dataStreamElement;
     }

@@ -98,10 +98,7 @@ public class DatadockThread implements Callable<Float>
         File f = new File( datadockJob.getPath().getRawPath() );
         cargo = createCargoContainerFromFile( f, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
         
-        //InputStream data = new FileInputStream( f );
-        //cargo = new CargoContainer( data, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
-
-    	log.debug( String.format( "Entering DataDock Constructor" ) );
+        log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
         queue = processqueue;
         fh = fedoraHandler;
@@ -142,14 +139,21 @@ public class DatadockThread implements Callable<Float>
         {
         	contentLength += co.getContentLength();
         }        
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) ); 
+        //log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) );
+        String mimetype = "to be got from CargoObject..."; 
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", mimetype, contentLength ) );
       
-        processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
+        /** \todo: Change getEstimate to mirror CargoContainer consisting of a list of CargoObject*/
+        //processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
+        processEstimate = estimate.getEstimate( "to be changed!!!", contentLength );
       
         fedoraHandle = fedoraStoreData();
 
-        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-        queue.push( fedoraHandle, cc.getFormat() );
+        String format = "to be got from a CargoObject object";
+        //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, format ) );
+        //queue.push( fedoraHandle, cc.getFormat() );
+        queue.push( fedoraHandle, format );
 
         log.debug( String.format( "data queued" ) );
 
@@ -197,14 +201,20 @@ public class DatadockThread implements Callable<Float>
         for ( CargoObject co : cc.getData() )
         {
         	contentLength += co.getContentLength();
-        }        
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) );
-        processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
+        } 
+        String mimetype = "to be got from CargoObject";
+        //log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) );
+        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", mimetype, contentLength ) );
+        //processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
+        processEstimate = estimate.getEstimate( mimetype, contentLength );
         
         fedoraHandle = fedoraStoreData();
 
-        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-        queue.push( fedoraHandle, cc.getFormat() );
+        String format = "to be godt from a CargoObject object";
+        //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+        //queue.push( fedoraHandle, cc.getFormat() );
+        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, format ) );
+        queue.push( fedoraHandle, format );
 
         log.debug( String.format( "data queued" ) );
 
@@ -246,17 +256,19 @@ public class DatadockThread implements Callable<Float>
      * Creating CargoContainer from file.
      * 
      */
-    private CargoContainer createCargoContainerFromFile( File file, String mimetype, String lang, String submitter, String format ) throws IOException
+    private CargoContainer createCargoContainerFromFile( File file, String mimetype, String language, String submitter, String format ) throws IOException
     {
     	InputStream data = new FileInputStream( file );
-    	int contentLength = (int)file.length();
+    	//int contentLength = (int)file.length();
     	    	
-    	CargoObjectInfo coi = new CargoObjectInfo( CargoMimeType.valueOf( mimetype ), lang, submitter, format, true );
-    	Pair< CargoObjectInfo, InputStream > pair = new Pair< CargoObjectInfo, InputStream >(coi, data);
+    	//CargoObjectInfo coi = new CargoObjectInfo( CargoMimeType.valueOf( mimetype ), lang, submitter, format, true );
+    	//Pair< CargoObjectInfo, InputStream > pair = new Pair< CargoObjectInfo, InputStream >(coi, data);
     	
-    	ArrayList< Pair< CargoObjectInfo, InputStream > > al = new ArrayList< Pair< CargoObjectInfo, InputStream > >();
-    	al.add( pair);
-    	CargoContainer cc = new CargoContainer( al );
+    	//ArrayList< Pair< CargoObjectInfo, InputStream > > al = new ArrayList< Pair< CargoObjectInfo, InputStream > >();
+    	//al.add( pair);
+    	//CargoContainer cc = new CargoContainer( al );
+    	CargoContainer cc = new CargoContainer();
+    	cc.add( format, submitter, language, mimetype, data );
     	
     	return cc;
     }

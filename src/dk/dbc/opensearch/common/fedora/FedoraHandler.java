@@ -60,7 +60,8 @@ import fedora.server.types.gen.MIMETypedStream;
  * \brief The FedoraHandler class handles connections and communication with
  * the fedora repository.
  */
-public class FedoraHandler implements Constants {
+public class FedoraHandler implements Constants 
+{
     /*
     private static String host = "";
     private static String port = "";
@@ -142,22 +143,23 @@ public class FedoraHandler implements Constants {
         String itemId      = null;
         byte[] foxml       = null;
 
-        CargoObjectInfo coi = null;
-        List<Byte> cc_data = null;
-        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() )
-        {
-            cc_data = (ArrayList)content.getSecond();
-            coi = content.getFirst();
-        }
+//        CargoObjectInfo coi = null;
+//        List<Byte> cc_data = null;
+//        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() )
+//        {
+//            cc_data = (ArrayList)content.getSecond();
+//            coi = content.getFirst();
+//        }
 
-        String submitter = cargo.getSubmitter( coi );
+        String submitter = "not to be found from cargo directly"; // cargo.getSubmitter( );
         /** \todo: We need a pid-manager for getting lists of available pids for a given ns */
         log.debug( String.format( "Getting next pid for namespace %s", submitter ) );
         String pids[] = apim.getNextPID( new NonNegativeInteger( "1" ), submitter );
         nextPid = pids[0];
 
         log.debug( String.format( "Getting itemId for datastream" ) );
-        itemId = cargo.getFormat( coi );
+        // \todo: format should not be found from cargo directly
+        itemId = "text/xml"; //cargo.getFormat( coi );
 
         log.debug( String.format( "Constructing foxml with pid=%s, itemId=%s and label=%s", nextPid, itemId, label ) );
         foxml = FedoraTools.constructFoxml( cargo, nextPid, itemId, label );
@@ -260,7 +262,7 @@ public class FedoraHandler implements Constants {
             throw new IllegalStateException( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", itemId, pid ) );
         }
 
-        log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getItemsCount() ) );
+        //log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getItemsCount() ) );
         log.info( "Successfully retrieved datastream." );
         return cargo;
     } 

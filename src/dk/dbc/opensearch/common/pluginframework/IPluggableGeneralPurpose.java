@@ -1,13 +1,14 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
-import dk.dbc.opensearch.common.types.CargoContainer;
+import java.io.IOException;
 
-import org.compass.core.CompassSession;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 
 public interface IPluggableGeneralPurpose extends IPluggable
 {
     void init( CargoContainer cargo );
+    
+    CargoContainer getCargoContainer() throws IOException;
 }

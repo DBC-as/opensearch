@@ -5,35 +5,42 @@
  */
 package dk.dbc.opensearch.common.types;
 
-import java.util.Date;
+
 import dk.dbc.opensearch.common.types.CargoMimeType;
+
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+
+
 /**
  * \ingroup datadock
  * \brief Holds the metadata for cargo
  */
 public class CargoObjectInfo 
 {
-    private CargoMimeType mimeType;/**< \see CargoMimeType */
+	Logger log = Logger.getLogger( CargoObjectInfo.class );
+	
+	private String format;
 
-    /** \todo: the language of the submitted data determines which analyzer
+	/** \todo: the language of the submitted data determines which analyzer
      * should be used in the indexing process, therefore we want full
      * control of allowed languages
      */
     private String language;
+
+    /** \see CargoMimeType */
+    private CargoMimeType mimeType;
 
     /** \todo submitter is primarily thought as an authentication
      * prerequisite, it will probably change in time
      */
     private String submitter;
 
-    private String format;
-
-    /** determines if the data associated with the CargoObjectInfo is indexable*/
-    private boolean indexable;
-
     /** used to make statistics and estimates regarding the processtime of the dataobject */
     private Date timestamp; 
 
+    
     /**
      * Constructs a CargoObjectInfo instance that acts as a container
      * for the metadata associated with a given CargoContainers
@@ -46,44 +53,56 @@ public class CargoObjectInfo
      * @param format The format of the data
      * @param indexable true if the material can be indexed, false otherwise
      */
-    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format, boolean indexable )
+    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format )
     {
-        this.mimeType = mimeType;
-
-        this.language = lang;
-
-        this.submitter = submitter;
-        
-        this.format = format;
-
-        this.indexable = indexable;
-
+    	this.format = format;
+    	this.language = lang;
+    	this.mimeType = mimeType;        
+        this.submitter = submitter;        
         this.timestamp = new Date();
     } 
     
     
     /**
-     * Constructs a CargoObjectInfo instance that acts as a container
-     * for the metadata associated with a given CargoContainers
-     * data. This constructor defaults the indexability of the data to
-     * false
+     * Checks the validity if the language
      *
-     * @param mimeType The mimetype of the data
-     * @param lang The language of the data
-     * @param submitter The submitter of the data
-     * @param format The format of the data
+     *@returns true if language is allowed in Opensearch, false otherwise
      */
-    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format ) 
+    boolean checkLanguage( String language )
     {
-        this( mimeType, lang, submitter, format, false );
+    	return true;
     }
 
+    
+    /**
+     * Checks the validity if the mimeType
+     *
+     * @returns true if mimetype is allowed in OpenSearch, false otherwise
+     */
+    public boolean validMimetype( String mimetype )
+    {
+    	return CargoMimeType.validMimetype( mimetype );
+    }
+    
+    
+    /**
+     * Checks the validity if the submitter
+     *
+     * @returns true if name is found in submitter-list, false otherwise
+     */
+    public boolean checkSubmitter( String name ) throws IllegalArgumentException
+    {
+        /** \todo: FIXME: Hardcoded values for allowed submitters */
+        return true;
+    }
+    
+    
     /**
      * Returns this CargoContainers timestamp
      *
      * @returns the timestamp of the CargoContainer
      */
-    public long getTimestamp()
+    long getTimestamp()
     {
         return timestamp.getTime();
     }
@@ -94,7 +113,7 @@ public class CargoObjectInfo
      *
      * @returns the mimetype of the data as a string
      */
-    public String getMimeType()
+    String getMimeType()
     {
         return mimeType.getMimeType();
     }
@@ -105,7 +124,7 @@ public class CargoObjectInfo
      *
      * @returns submitter as string
      */
-    public String getSubmitter()
+    String getSubmitter()
     {
         return submitter;
     }
@@ -116,24 +135,17 @@ public class CargoObjectInfo
      *
      * @returns format as string
      */
-    public String getFormat()
+    String getFormat()
     {
         return format;
     }
 
 
     /**
-     * @returns an indication of the indexability of the data
-     * associated with the CargoObjectInfo object
-     */
-    public boolean isIndexable(){
-        return indexable;
-    }
-
-    /**
      * @returns the language
      */
-    public String getLanguage() {
+    String getLanguage() 
+    {
         return language;
     }
 }

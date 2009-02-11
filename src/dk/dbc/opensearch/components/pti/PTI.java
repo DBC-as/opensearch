@@ -6,6 +6,7 @@
 package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.Pair;
 
@@ -53,8 +54,8 @@ import org.apache.commons.configuration.ConfigurationException;
  * fedora repository, and index it with compass afterwards. If this
  * was succesfull the estimate values are updated
  */
-public class PTI implements Callable<Long>{
-
+public class PTI implements Callable<Long>
+{
     Logger log = Logger.getLogger("PTI");
 
     private FedoraHandler fh;
@@ -67,6 +68,7 @@ public class PTI implements Callable<Long>{
     private Estimate estimate;
     private SAXReader saxReader;
 
+    
     /**
      * \brief Constructs the PTI instance with the given parameters
      *
@@ -79,12 +81,15 @@ public class PTI implements Callable<Long>{
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh, Estimate estimate ) throws ConfigurationException, ClassNotFoundException {
+    public PTI(CompassSession session, String fedoraHandle, String itemID, FedoraHandler fh, Estimate estimate ) throws ConfigurationException, ClassNotFoundException 
+    {
         log.debug( String.format( "PTI constructor(session, fedoraHandle=%s, itemID=%s, fh", fedoraHandle, itemID ) );
 
-        if( fh == null ){
+        if( fh == null )
+        {
             throw new NullPointerException( "FedoraHandler was null, aborting" );
         }
+        
         this.fh = fh;        
 
         //        this.session = ( DefaultCompassSession )session;
@@ -96,6 +101,7 @@ public class PTI implements Callable<Long>{
         saxReader = new SAXReader( false );
         finishTime = new Date();
     }
+    
     
     /**
      * call is the main function of the PTI class. It reads the data
@@ -112,7 +118,8 @@ public class PTI implements Callable<Long>{
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException 
+    {
         return call( saxReader, finishTime, fh, fedoraHandle, datastreamItemID );
     }
 
@@ -138,9 +145,9 @@ public class PTI implements Callable<Long>{
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
      */    
-    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, NullPointerException {
+    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, NullPointerException 
+    {
         log.debug( "Entering PTI.call()" );
-
 
         // Constructing CargoConatiner
         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
@@ -164,14 +171,14 @@ public class PTI implements Callable<Long>{
         
         CargoObjectInfo tmp_coi, coi = null;
         List<Byte> cc_data = null;
-        for ( Pair< CargoObjectInfo, List<Byte> > content : cc.getDataLists() ){
-            tmp_coi = content.getFirst();
-            if ( tmp_coi.isIndexable() )
-            {
-                cc_data = (ArrayList)content.getSecond();
-                coi = tmp_coi;
-            }
+        //for ( Pair< CargoObjectInfo, List<Byte> > content : cc.getDataLists() )
+        for ( CargoObject co : cc.getData() )
+        {
+        	Pair< CargoObjectInfo, List< Byte > > pair = co.getPair();
+        	coi = pair.getFirst();
+            cc_data = pair.getSecond();
         }
+        
         if ( cc_data == null )
         {
             throw new NullPointerException( "could not find indexable data in CargoContainer" );
@@ -189,7 +196,9 @@ public class PTI implements Callable<Long>{
         // this log line is _very_ verbose, but useful in a tight situation
         // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
-        AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  coi.getFormat(), doc.getRootElement() );
+        String format = "to be got from a CargoObject object";
+        //AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  coi.getFormat(), doc.getRootElement() );
+        AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  format, doc.getRootElement() );
 
         log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
@@ -232,11 +241,16 @@ public class PTI implements Callable<Long>{
 
         log.debug( "Obtain processtime, and writing to statisticDB table in database" );
         
-        long processtime = finishTime.getTime() - cc.getTimestamp();
+        long timestamp = 11111; /** \fixme: to be got from a CargoObject object */
+        //long processtime = finishTime.getTime() - cc.getTimestamp();
+        long processtime = finishTime.getTime() - timestamp;
         
-        estimate.updateEstimate( coi.getMimeType(), contentLength, processtime );
+        String mimetype = "to be got from a CargoObject object";
+        //estimate.updateEstimate( coi.getMimeType(), contentLength, processtime );
+        estimate.updateEstimate( mimetype, contentLength, processtime );
 
-        log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", coi.getMimeType(), contentLength, processtime ) );
+        //log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", coi.getMimeType(), contentLength, processtime ) );
+       log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", mimetype, contentLength, processtime ) );
 
         return processtime;
     }    
