@@ -52,6 +52,7 @@ public class CargoContainerTest {
         CargoContainer co = null;
         //co = new CargoContainer( is, "", "", "", "" );
         co = new CargoContainer();
+        co.add("","","","", is);
     }
 
     /** \todo: need real users and possibly a constructor-check instead of this */

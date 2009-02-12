@@ -15,6 +15,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.plugins.FaktalinkStore;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -147,18 +148,26 @@ public class DatadockThread implements Callable<Float>
         //processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
         processEstimate = estimate.getEstimate( "to be changed!!!", contentLength );
       
-        fedoraHandle = fedoraStoreData();
+        //fedoraHandle = fedoraStoreData();
 
         String format = "to be got from a CargoObject object";
         //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-        log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, format ) );
+        //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, format ) );
         //queue.push( fedoraHandle, cc.getFormat() );
         queue.push( fedoraHandle, format );
 
-        log.debug( String.format( "data queued" ) );
+        //log.debug( String.format( "data queued" ) );
 
-        log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
-        processEstimate = doProcessing();
+        
+        
+        //log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
+        //processEstimate = doProcessing();
+        
+        /** \todo: this is an example of how to _not_ call a plugin. But it will make this class work again*/
+        FaktalinkStore fls = new FaktalinkStore( );
+        fls.init( cc );
+
+        processEstimate = fls.storeData();
         return processEstimate;
     }
 
@@ -191,7 +200,9 @@ public class DatadockThread implements Callable<Float>
      * @throws ValidationException 
      * @throws MarshalException 
      */
-    private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, MarshalException, ValidationException, IllegalStateException, NullPointerException, ParseException
+
+    /*
+	private Float doProcessing() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, MarshalException, ValidationException, IllegalStateException, NullPointerException, ParseException
     {
         log.debug( "Entering doProcessing" );
         Float processEstimate = 0f;
@@ -221,7 +232,7 @@ public class DatadockThread implements Callable<Float>
         log.info( String.format( "Data queued ") );
         return processEstimate;
     }
-   
+   */
     /**
      * fedoraStoreData is an internal method for storing data given
      * with the initialization of the DataDock into a fedora base.
@@ -235,22 +246,18 @@ public class DatadockThread implements Callable<Float>
      * @throws ValidationException 
      * @throws MarshalException 
      */
+ /*
     private String fedoraStoreData() throws ConfigurationException, RemoteException, XMLStreamException, IOException, MalformedURLException, ParseException, UnknownHostException, ServiceException, MarshalException, ValidationException, IllegalStateException, NullPointerException
     {
         log.debug( "Entering DataDock.fedoraStoreData" );
         String fedoraHandle = "";
-
-        /** todo: give real applicable value to label. value should be given by cargo container*/
-        String label = "test";
-        
-        // submit data 
-        fedoraHandle = fh.submitDatastream( cc, label );
+        //fedoraHandle = fh.submitDatastream( cc );
         log.info( String.format( "Ingest succeded, returning pid=%s",fedoraHandle ) );
         log.debug( "Exiting DataDock.fedoraStoreData" );
         
         return fedoraHandle;
     }
-    
+ */   
     
     /**
      * Creating CargoContainer from file.

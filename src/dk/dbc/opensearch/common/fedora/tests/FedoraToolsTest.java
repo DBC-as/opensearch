@@ -83,7 +83,7 @@ public class FedoraToolsTest
     {
     	cargo = constructCargo( "æøå" );
         
-        byte[] b = FedoraTools.constructFoxml( cargo, "nextPid_1", "itemId_1", "label_1", now );
+        byte[] b = FedoraTools.constructFoxml( cargo, "nextPid_1", "itemId_1", now );
         String bStr = new String( b );
         
         String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

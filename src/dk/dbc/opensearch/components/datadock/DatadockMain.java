@@ -11,12 +11,17 @@ import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
 import fedora.client.FedoraClient;
 
 import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +29,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 
 
 /**
@@ -184,4 +194,33 @@ public class DatadockMain
             }
         }
     }
+    private HashMap< Pair< String, String >, List< String > > constructHashMap() throws DocumentException{
+    	HashMap< Pair< String, String >, List< String > > task_list = new HashMap< Pair< String, String >, List< String > >();
+        URL jobURL = getClass().getResource("/datadock_jobs.xml");
+        
+        Document doc = null;
+        SAXReader saxReader = new SAXReader();
+        doc = saxReader.read( jobURL );
+        
+        Element root = doc.getRootElement();
+
+        
+/*        for ( Iterator<Element> i = root.elementIterator(); i.hasNext(); )
+        {
+        	foreach job:
+        		Pair< String, String > key = new Pair< String, String >( "submitter", "format");
+        		List< String> values = new ArrayList< String >();
+        		
+        		foreach task:
+        			values.append( name )
+        			
+       			Element element = i.next();
+                element.getText();
+                task_list.put(, value)
+        }
+*/        
+        
+    	return task_list;
+    }
+    
 }

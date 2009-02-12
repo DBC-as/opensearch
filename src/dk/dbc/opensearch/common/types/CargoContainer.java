@@ -34,7 +34,7 @@ public class CargoContainer
     	this.data.add( co );    	
     }
 
-    
+
     public ArrayList< CargoObject > getData()
     {
     	return data;

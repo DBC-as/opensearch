@@ -12,6 +12,7 @@ import dk.dbc.opensearch.common.types.Pair;
 
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.plugins.FaktalinkRetriever;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -24,6 +25,8 @@ import java.util.NoSuchElementException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+
+import javax.xml.rpc.ServiceException;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassException;
@@ -120,7 +123,17 @@ public class PTI implements Callable<Long>
      */
     public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException 
     {
-        return call( saxReader, finishTime, fh, fedoraHandle, datastreamItemID );
+    	Long call = null;
+        try {
+			call = call( saxReader, finishTime, fh, fedoraHandle, datastreamItemID );
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return call;
     }
 
     /**
@@ -144,14 +157,18 @@ public class PTI implements Callable<Long>
      * @throws DocumentException Couldnt read the xml data from the cargocontainer
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws ServiceException 
      */    
-    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, NullPointerException 
+    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, NullPointerException, ServiceException 
     {
         log.debug( "Entering PTI.call()" );
 
         // Constructing CargoConatiner
         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
-        cc = fh.getDatastream( fedoraHandle, datastreamItemID );
+        
+        FaktalinkRetriever flr = new FaktalinkRetriever();
+        flr.getDatastream( fedoraHandle, datastreamItemID ); // throws ServiceException
+        //cc = fh.getDatastream( fedoraHandle, datastreamItemID );
 
         // Construct doc and Start Transaction
         log.debug( "Starting transaction on running CompassSession" );

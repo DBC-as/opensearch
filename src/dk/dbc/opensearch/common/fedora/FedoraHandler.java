@@ -91,7 +91,7 @@ public class FedoraHandler implements Constants
      */
     public FedoraHandler( FedoraClient client ) throws ConfigurationException,/* MalformedURLException,*/ UnknownHostException, ServiceException, IOException 
     {
-        log.debug( "Fedorahandler constructor");
+/*        log.debug( "Fedorahandler constructor");
         this.client = client;
        
         log.debug( "Obtain config parameters for the fedora user");
@@ -102,7 +102,7 @@ public class FedoraHandler implements Constants
         //host       = config.getString( "fedora.host" );
         //port       = config.getString( "fedora.port" );
         user       = config.getString( "fedora.user" );
-        /*
+        
         passphrase = config.getString( "fedora.passphrase" );
         fedoraUrl  = "http://" + host + ":" + port + "/fedora";
         
@@ -111,12 +111,12 @@ public class FedoraHandler implements Constants
         log.debug( "Constructing FedoraClient");
 
         FedoraClient client = new FedoraClient( fedoraUrl, user, passphrase );
-        */
+        
         
         apia = client.getAPIA();
         apim = client.getAPIM();
         log.debug( "Got the ClientAPIA and APIM");
-    }
+*/    }
 
     /**
      * Submits the datastream to fedora repository 
@@ -133,9 +133,9 @@ public class FedoraHandler implements Constants
      * @throws ValidationException 
      * @throws MarshalException 
      */
-    public String submitDatastream( CargoContainer cargo, String label ) throws RemoteException, XMLStreamException, IOException, IllegalStateException, MarshalException, ValidationException, NullPointerException, ParseException 
+/*    public String submitDatastream( CargoContainer cargo ) throws RemoteException, XMLStreamException, IOException, IllegalStateException, MarshalException, ValidationException, NullPointerException, ParseException 
     {
-        log.debug( String.format( "submitDatastream(cargo, %s) called", label ) );
+        log.debug( String.format( "Entering submitDatastream" ) );
         
         DatastreamDef dDef = null;
         String pid         = null;
@@ -143,16 +143,17 @@ public class FedoraHandler implements Constants
         String itemId      = null;
         byte[] foxml       = null;
 
-//        CargoObjectInfo coi = null;
-//        List<Byte> cc_data = null;
-//        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() )
-//        {
-//            cc_data = (ArrayList)content.getSecond();
-//            coi = content.getFirst();
-//        }
+        CargoObjectInfo coi = null;
+        List<Byte> cc_data = null;
+        for ( Pair< CargoObjectInfo, List<Byte> > content : cargo.getDataLists() )
+        {
+            coi = content.getFirst();
+            cc_data = (ArrayList<Byte>)content.getSecond();
+
+        
+        }
 
         String submitter = "not to be found from cargo directly"; // cargo.getSubmitter( );
-        /** \todo: We need a pid-manager for getting lists of available pids for a given ns */
         log.debug( String.format( "Getting next pid for namespace %s", submitter ) );
         String pids[] = apim.getNextPID( new NonNegativeInteger( "1" ), submitter );
         nextPid = pids[0];
@@ -161,11 +162,11 @@ public class FedoraHandler implements Constants
         // \todo: format should not be found from cargo directly
         itemId = "text/xml"; //cargo.getFormat( coi );
 
-        log.debug( String.format( "Constructing foxml with pid=%s, itemId=%s and label=%s", nextPid, itemId, label ) );
-        foxml = FedoraTools.constructFoxml( cargo, nextPid, itemId, label );
-        log.debug( "FOXML constructed, ready for ingesting" );
+        //log.debug( String.format( "Constructing foxml with pid=%s, itemId=%s and label=%s", nextPid, itemId, label ) );
+        foxml = FedoraTools.constructFoxml( cargo, nextPid, itemId, coi.getFormat());
+        //log.debug( "FOXML constructed, ready for ingesting" );
 
-        pid = apim.ingest( foxml, FOXML1_1.uri, "Ingesting "+label );
+        pid = apim.ingest( foxml, FOXML1_1.uri, "Ingesting "+coi.getFormat() );
 
         if( !pid.equals( nextPid ) ){
             log.fatal( String.format( "we expected pid=%s, but got pid=%s", nextPid, pid ) );
@@ -174,133 +175,6 @@ public class FedoraHandler implements Constants
 
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
         return pid;
-    }
-    
-       
-    /**
-     * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
-     * \todo: what are these parameters?
-     *
-     * @param pid 
-     * @param itemID
-     *
-     * @returns The cargocontainer constructed
-     *
-     * @throws NotImplementedException
-     */    
-    public CargoContainer getDatastream( java.util.regex.Pattern pid, java.util.regex.Pattern itemID ) throws NotImplementedException
-    {
-        throw new NotImplementedException( "RegEx matching on pids not yet implemented" );
-    }
-    
-    
-    /**
-     * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
-     * \todo: what are these parameters?
-     *
-     * @param pid 
-     * @param itemId
-     *
-     * @returns The cargocontainer constructed
-     *
-     * @throws IOException something went wrong initializing the fedora client
-     * @throws NoSuchElementException if there is no matching element on the queue to pop
-     * @throws RemoteException error in communiction with fedora
-     * @throws IllegalStateException pid mismatch when trying to write to fedora
-     */    
-    public CargoContainer getDatastream( String pid, String itemId ) throws IOException, NoSuchElementException, RemoteException, IllegalStateException
-    {
-        log.debug( String.format( "getDatastream( pid=%s, itemId=%s ) called", pid, itemId ) );
-       
-        String pidNS = pid.substring( 0, pid.indexOf( ":" ));
-       
-        /** \todo: very hardcoded value */
-        String itemId_version = itemId+".0";
-        
-        CargoContainer cargo = null;
-        DatastreamDef[] datastreams = null;
-        MIMETypedStream ds = null;
-
-        log.debug( String.format( "Retrieving datastream information for PID %s", pid ) );
-        
-        datastreams = this.apia.listDatastreams( pid, null );
-        
-        log.debug( String.format( "Iterating datastreams" ) );
-        
-        for ( DatastreamDef def : datastreams )
-        {
-            log.debug( String.format( "Got DatastreamDef with id=%s", def.getID() ) );
-            
-            if( def.getID().equals( itemId ) )
-            {                
-                log.debug( String.format( "trying to retrieve datastream with pid='%s' and itemId_version='%s'", pid, itemId ) );
-                ds = apia.getDatastreamDissemination( pid, itemId, null );
-                // pid and def.getID() are equal, why give them both?
- 
-                log.debug( String.format( "Making a bytearray of the datastream" ) );
-                byte[] datastr = ds.getStream();
-
-                log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
-                InputStream inputStream = new ByteArrayInputStream( datastr );
-
-                log.debug( String.format( "DataStream ID      =%s", itemId ) );
-                log.debug( String.format( "DataStream Label   =%s", def.getLabel() ) );
-                log.debug( String.format( "DataStream MIMEType=%s", def.getMIMEType() ) );
-
-                // dc:format holds mimetype as well
-                /** \todo: need to get language dc:language */
-                String language = "";
-
-                cargo = new CargoContainer();
-                cargo.add( itemId, pidNS, language, def.getMIMEType(), inputStream);
-                //cargo = new CargoContainer( inputStream, def.getMIMEType(),language,pidNS,itemId );
-            }
-        }
-        
-        if( cargo == null )
-        {
-            throw new IllegalStateException( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", itemId, pid ) );
-        }
-
-        //log.debug( String.format( "CargoContainer.mimetype =     %s", cargo.getItemsCount() ) );
-        log.info( "Successfully retrieved datastream." );
-        return cargo;
-    } 
-
-    private void addDatastreamToObject( CargoContainer cargo, String pid, String itemId, String label, char management, char state )
-    {
-        /**
-         * For future reference (mostly because the Fedora API is unclear on this):
-         * addDatastream resides in fedora.server.management.Management.java
-         * String pid is the combination namespace:identifier
-         * String dsId is the itemID of the datastream. Can be null and will in this case be autogenerated
-         * String[] altIDs is an array of alternative ids. Leaving this as null is not a problem.
-         * String label is the humanreadable label for the datastream
-         * boolean versionable true if fedora should version the data, false if it should overwrite
-         * String MIMEType Just that. Required
-         * String formatURI specify the data format through an uri instead of a mimetype
-         * String dsLocation specifies the location of the datastream. eg. through an url
-         * String controlGroup "X", "M", "R" or "E"
-         * String state Initial state of the datastream A, I or D (active, inactive or deleted)
-         * String checksumType
-         * String checksum
-         * String logMessage
-         *
-         */
-
-        // apim.addDatastream(pid,
-        //                    itemId,
-        //                    null,
-        //                    label,
-        //                    false,
-        //                    cargo.getMimeType(),
-        //                    null,
-        //                    cargo.getData(),
-        //                    management,
-        //                    state,
-        //                    null,
-        //                    null,
-        //                    "Adding Datastream labelled"+label);
-    }  
+    }*/
 }
 
