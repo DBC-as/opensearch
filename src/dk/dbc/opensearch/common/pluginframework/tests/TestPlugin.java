@@ -12,8 +12,7 @@ public class TestPlugin implements IPluggable
 
     public TestPlugin(){}
 
-    @Override
-	public void init(PluginID pluginId, InputStream data) 
+    public void init(PluginID pluginId, InputStream data) 
 	{
 		// TODO Auto-generated method stub		
 	}

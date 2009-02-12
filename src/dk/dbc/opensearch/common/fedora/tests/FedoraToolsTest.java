@@ -72,7 +72,8 @@ public class FedoraToolsTest
     private CargoContainer constructCargo( String testStr ) throws IllegalArgumentException, NullPointerException, IOException
     {
     	InputStream data = new ByteArrayInputStream( testStr.getBytes( "UTF-8" ) );    	
-    	CargoContainer ret = new CargoContainer( data, "text/xml", "dk", "stm", "faktalink" );
+    	//CargoContainer ret = new CargoContainer( data, "text/xml", "dk", "stm", "faktalink" );
+    	CargoContainer ret = new CargoContainer();
     	
     	return ret;
     }

@@ -36,9 +36,9 @@ import org.dom4j.io.SAXReader;
 
 import java.io.BufferedInputStream;
 
-public class PTITest {
-
-    Logger log = Logger.getLogger("PTITest");
+public class PTITest 
+{
+    Logger log = Logger.getLogger( PTITest.class );
         
     /**
      * The (mock)objects we need for the most of the tests
@@ -59,8 +59,10 @@ public class PTITest {
 
     BufferedInputStream mockBis;
 
-    @Before public void Setup(){
-        
+    
+    @Before 
+    public void Setup()
+    {        
         mockCompassSession = createMock( CompassSession.class );
         mockResource = createMock( Resource.class );
         mockCompassTransaction = createMock( CompassTransaction.class );
@@ -74,17 +76,24 @@ public class PTITest {
         mockBis = createMock( BufferedInputStream.class );
     }
     
-    @Test public void ConstructorTest(){
-        try{
+    @Test 
+    public void ConstructorTest()
+    {
+        try
+        {
             pti = new PTI( mockCompassSession, "test_fedoraHandle", "test_itemID", mockFedoraHandler, mockEstimate);
-        }catch(Exception e){
+        }
+        catch(Exception e)
+        {
             fail( String.format( "Caught Exception %s", e.getMessage() ) );
         }        
     }    
 
+    
     @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-    @Test public void callTest() throws Exception {
-            
+    @Test 
+    public void callTest() throws Exception 
+    {            
         pti = new PTI( mockCompassSession, "test_fedoraHandle", "test_itemID", mockFedoraHandler, mockEstimate);
 
         String test_fedoraHandle = "test_handle";
@@ -125,7 +134,7 @@ public class PTITest {
         mockCompassSession.close();
         
         expect( mockDate.getTime() ).andReturn( p_time );
-        expect( mockCargoContainer.getTimestamp() ).andReturn( p_length );
+        //expect( mockCargoContainer.getTimestamp() ).andReturn( p_length );
 
         mockEstimate.updateEstimate( cc_mimetype, cc_length, p_time - p_length );
         
