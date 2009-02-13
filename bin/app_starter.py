@@ -13,6 +13,8 @@ def main( app, action ):
     pid_location = os.getcwd()
     process      = ""
     q_name       = ""
+    new_pid      = ""
+    do_start     = False
     
     if app == "pti":
         pid_filename = "ptiDaemon.pid"
@@ -26,22 +28,32 @@ def main( app, action ):
 
     if ( get_pid( pid_file ) != "" ):
         pid = get_pid( pid_file )
-        print "stopping process with pid %s"%( pid )
         if action == "restart":
+            print "stopping process with pid %s"%( pid )
             stop_daemon( pid )
-            print "starting process"
-            start_daemon( q_name, pid_filename )
+            os.unlink( pid_filename )
+            do_start = True
         elif action == "stop":
+            print "stopping process with pid %s"%( pid )
             stop_daemon( pid )
+            os.unlink( pid_filename )
+        elif action == "start":
+            print "Only one %s instance is allowed to run at a time"% ( app )
     elif action == "start":
-        print "starting process"
-        start_daemon( q_name, pid_filename )
+        do_start = True
     elif action == "restart":
-        print "No running process, starting process"
-        start_daemon( q_name, pid_filename )
+        print "No running process"
+        do_start = True
     else:
         sys.exit( "Cannot stop nonrunning process" )
 
+    if do_start:
+        print "starting process"
+        proc, pid = start_daemon( q_name, pid_filename )
+        open( pid_filename, 'w' ).write( str( pid ) )
+        print "process started with pid=%s"%( pid )
+
+        
         
 def start_daemon( q_name, pid_filename ):
     """
@@ -58,13 +70,15 @@ def start_daemon( q_name, pid_filename ):
 
     cmd = ' '.join( cmd )
 
-    print "starting process %s"%( cmd )
     proc = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE )
-    print proc.communicate()
+    return ( proc, proc.pid )
 
 
 def stop_daemon( pid ):
-    os.kill( pid, "KILL" )
+    try:
+        os.kill( int( pid ), int( 15 ) )
+    except OSError:
+        print "could not kill process. removing the pid file"
 
 
 def get_pid( pid_file ):
