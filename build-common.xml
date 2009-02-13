@@ -19,10 +19,11 @@
   <property name="datadock.dir"     value="${components.dir}/datadock"/>
   <property name="config.dir"       value="${base.dir}/config"/>
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
+  <property name="xsd_2.dir"          value="${opensearch.dir}/xsd" />
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
-
+  
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
     <pathelement location="${classes.dir}" />
@@ -59,6 +60,7 @@
     <delete dir="${report.dir}"/>
     <delete file="${base.dir}/doxygen-warnings"/>
     <delete dir="${testresults.dir}"/>
+  	<delete dir="${xsd_2.dir}" />
   </target>
 
   <!--target name="opensearch.all">

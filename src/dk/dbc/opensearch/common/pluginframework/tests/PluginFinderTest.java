@@ -12,32 +12,29 @@ import dk.dbc.opensearch.common.os.XmlFileFilter;
 import dk.dbc.opensearch.common.types.ThrownInfo;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-import static org.easymock.classextension.EasyMock.*;
-import mockit.Mockit;
-
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.InstantiationException;
 import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.util.Vector;
 import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 
+import mockit.Mockit;
+
+import static org.easymock.classextension.EasyMock.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.FileNotFoundException;
 
 
 /**
@@ -46,27 +43,31 @@ import java.io.FileNotFoundException;
  * it would take that there are plugin files to be found, they are of valid format but
  * somehow none of them are registrered in the classNameMap
  */
-public class PluginFinderTest {
-
+public class PluginFinderTest 
+{
     static File mockFile = createMock( File.class );
-    static Vector<String> mockVector = createMock( Vector.class );
+    static Vector< String > mockVector = createMock( Vector.class );
 
     PluginFinder pluginFinder;
     FileHandler mockFH;
-
 
     Iterator mockIterator;
     DocumentBuilder mockDocBuilder;
     Document mockDocument;
     Element mockElement;
     NodeList mockNodeList;
+    
 
-    public static class MockFileHandler{
-
-        public static File getFile( String path ){
+    public static class MockFileHandler
+    {
+        public static File getFile( String path )
+        {
             return mockFile;
         }
-        public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ){
+        
+        
+        public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend )
+        {
             return mockVector;
         }
     }
@@ -75,8 +76,9 @@ public class PluginFinderTest {
     /**
      *
      */
-    @Before public void setUp() {
-
+    @Before 
+    public void setUp() 
+    {
         mockIterator = createMock( Iterator.class );
         mockDocBuilder = createMock( DocumentBuilder.class );
         mockDocument = createMock( Document.class );
@@ -87,11 +89,13 @@ public class PluginFinderTest {
         Mockit.redefineMethods( FileHandler.class, MockFileHandler.class );
     }
 
+    
     /**
      *
      */
-    @After public void tearDown() {
-
+    @After
+    public void tearDown() 
+    {
         reset( mockIterator );
         reset( mockDocBuilder );
         reset( mockDocument );
@@ -101,8 +105,8 @@ public class PluginFinderTest {
         reset( mockFile );
 
         Mockit.restoreAllOriginalDefinitions();
-
     }
+    
 
     /**
      * Test that the finder is constructed and that the classNameMap
@@ -111,8 +115,9 @@ public class PluginFinderTest {
      * So there is no seperate test for that methods general functionality.
      * Happy path.
      */
-    @Test public void constructorTest() throws SAXException, IOException, NullPointerException, PluginResolverException {
-
+    @Test
+    public void constructorTest() throws SAXException, IOException, NullPointerException, PluginResolverException 
+    {
         /** 1 setup
          *
          */
@@ -200,13 +205,16 @@ public class PluginFinderTest {
          * verify
          */
         verify( mockVector );
-
     }
+    
+    
     /**
      * Tests that the SAXException that can be caused by a parse operation is
      * put unto the PluginResolverException and that this is thrown
      */
-    @Test public void saxExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
+    @Test
+    public void saxExceptionParseTest() throws FileNotFoundException, SAXException, IOException 
+    {
         /** 1 setup
          *
          */
@@ -249,13 +257,16 @@ public class PluginFinderTest {
         verify( mockVector );
         verify( mockIterator );
         verify( mockDocBuilder );
-
     }
+    
+    
     /**
      * tests that the IOException that can be caused by a parse is sent with the
      * PluginResolverException
      */
-    @Test public void ioExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
+    @Test 
+    public void ioExceptionParseTest() throws FileNotFoundException, SAXException, IOException 
+    {
         /** 1 setup
          *
          */
@@ -298,13 +309,16 @@ public class PluginFinderTest {
         verify( mockVector );
         verify( mockIterator );
         verify( mockDocBuilder );
-
     }
+    
+    
     /**
      * tests that the NullPointerException that can be caused by a parse is put
      * into the PluginResolverException, and that this is thrown
      */
-    @Test public void nullPointerExceptionParseTest() throws FileNotFoundException, SAXException, IOException {
+    @Test 
+    public void nullPointerExceptionParseTest() throws FileNotFoundException, SAXException, IOException 
+    {
         /** 1 setup
          *
          */
@@ -348,15 +362,19 @@ public class PluginFinderTest {
         verify( mockIterator );
         verify( mockDocBuilder );
 
-    }/**
+    }
+    
+    
+    /**
       * Test that if the plugin xml file doesnt have "plugins" as name of the
       * root element or one of the four values extracted from the file are
       * null a SAXException is put onto the PluginResolverException. We make
       * this happen by returning null when the mockElement.getAttribute is called,
       * to get the submitter
       */
-
-    @Test public void invalidFileFormatSubmitterTest() throws SAXException, FileNotFoundException, IOException{
+    @Test 
+    public void invalidFileFormatSubmitterTest() throws SAXException, FileNotFoundException, IOException
+    {
         /** 1 setup
          *
          */
@@ -405,11 +423,15 @@ public class PluginFinderTest {
         replay( mockFile );
 
         /** do stuff */
-        try{
+        try
+        {
             pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        }catch( PluginResolverException pre){
+        }
+        catch( PluginResolverException pre)
+        {
             exceptionVector = pre.getExceptionVector();
         }
+        
         expVecIter = exceptionVector.iterator();
         assertTrue( SAXException.class == ( ( (ThrownInfo)expVecIter.next() ).getThrowable().getClass() ) );
 
@@ -432,8 +454,9 @@ public class PluginFinderTest {
      * null a SAXException is put onto the PluginResolverException. We make
      * this happen by returning another String than the expected "plugins"
      */
-
-    @Test public void invalidFileFormatPluginsTest() throws SAXException, FileNotFoundException, IOException{
+    @Test 
+    public void invalidFileFormatPluginsTest() throws SAXException, FileNotFoundException, IOException
+    {
         /** 1 setup
          *
          */
@@ -481,11 +504,15 @@ public class PluginFinderTest {
         replay( mockFile );
 
         /** do stuff */
-        try{
+        try
+        {
             pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        }catch( PluginResolverException pre){
+        }
+        catch( PluginResolverException pre)
+        {
             exceptionVector = pre.getExceptionVector();
         }
+        
         expVecIter = exceptionVector.iterator();
         assertTrue( SAXException.class == ( ( (ThrownInfo)expVecIter.next() ).getThrowable().getClass() ) );
 
@@ -509,8 +536,9 @@ public class PluginFinderTest {
      * this happen by returning null when the mockElement.getAttribute is called,
      * to get the format
      */
-
-    @Test public void invalidFileFormatFormatTest() throws SAXException, FileNotFoundException, IOException{
+    @Test 
+    public void invalidFileFormatFormatTest() throws SAXException, FileNotFoundException, IOException
+    {
         /** 1 setup
          *
          */
@@ -560,9 +588,12 @@ public class PluginFinderTest {
         replay( mockFile );
 
         /** do stuff */
-        try{
+        try
+        {
             pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        }catch( PluginResolverException pre){
+        }
+        catch( PluginResolverException pre)
+        {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
@@ -580,6 +611,7 @@ public class PluginFinderTest {
         verify( mockFile );
     }
 
+    
     /**
      * Test that if the plugin xml file doesnt have "plugins" as name of the
      * root element or one of the four values extracted from the file are
@@ -587,8 +619,9 @@ public class PluginFinderTest {
      * this happen by returning null when the mockElement.getAttribute is called,
      * to get the task
      */
-
-    @Test public void invalidFileFormatTaskTest() throws SAXException, FileNotFoundException, IOException{
+    @Test 
+    public void invalidFileFormatTaskTest() throws SAXException, FileNotFoundException, IOException
+    {
         /** 1 setup
          *
          */
@@ -638,9 +671,12 @@ public class PluginFinderTest {
         replay( mockFile );
 
         /** do stuff */
-        try{
+        try
+        {
             pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        }catch( PluginResolverException pre){
+        }
+        catch( PluginResolverException pre)
+        {
             exceptionVector = pre.getExceptionVector();
         }
         expVecIter = exceptionVector.iterator();
@@ -657,6 +693,8 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
+    
+    
     /**
      * Test that if the plugin xml file doesnt have "plugins" as name of the
      * root element or one of the four values extracted from the file are
@@ -665,7 +703,10 @@ public class PluginFinderTest {
      * to get the classname
      */
 
-    @Test public void invalidFileFormatClassnameTest() throws SAXException, FileNotFoundException, IOException{
+    
+    @Test 
+    public void invalidFileFormatClassnameTest() throws SAXException, FileNotFoundException, IOException
+    {
         /** 1 setup
          *
          */
@@ -714,11 +755,15 @@ public class PluginFinderTest {
         replay( mockFile );
 
         /** do stuff */
-        try{
+        try
+        {
             pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        }catch( PluginResolverException pre){
+        }
+        catch( PluginResolverException pre)
+        {
             exceptionVector = pre.getExceptionVector();
         }
+        
         expVecIter = exceptionVector.iterator();
         assertTrue( SAXException.class == ( ( (ThrownInfo) expVecIter.next() ).getThrowable().getClass() ) );
 
@@ -733,12 +778,15 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
+    
+    
     /**
      * test the happy path of the getPluginClassName method, where
      * classNameMap  needs to be rebuild.
      */
-    @Test public void getPluginClassNameTest() throws InvocationTargetException, IOException, PluginResolverException, SAXException, FileNotFoundException, NoSuchMethodException, IllegalAccessException {
-
+    @Test 
+    public void getPluginClassNameTest() throws InvocationTargetException, IOException, PluginResolverException, SAXException, FileNotFoundException, NoSuchMethodException, IllegalAccessException 
+    {
         /** 1 setup
          *
          */
@@ -787,8 +835,6 @@ public class PluginFinderTest {
 
         //back in the getPluginClassName method that should return testString
 
-
-
         /** 3 replay
          *
          */
@@ -806,7 +852,6 @@ public class PluginFinderTest {
         Class[] argClasses1 = new Class[]{};
         Class[] argClasses2 = new Class[]{ int.class };
         Object[] args2 = new Object[]{ (testString + testString + testString).hashCode() };
-
 
         pluginFinder = new PluginFinder( mockDocBuilder, "" );
 
@@ -829,15 +874,16 @@ public class PluginFinderTest {
         verify( mockElement );
         verify( mockNodeList );
         verify( mockFile );
-
     }
+    
+    
     /**
      * Tests the throwing of the FileNotFoundException when there is no
      * plugin classname corresponding to the key
      */
-
-    @Test public void noFileFoundExceptionTest () throws IOException, PluginResolverException, SAXException, FileNotFoundException, NoSuchMethodException, IllegalAccessException{
-
+    @Test 
+    public void noFileFoundExceptionTest () throws IOException, PluginResolverException, SAXException, FileNotFoundException, NoSuchMethodException, IllegalAccessException
+    {
         /** 1 setup
          *
          */
@@ -863,7 +909,6 @@ public class PluginFinderTest {
 
         //in the getPluginClassName method, that cant find a value for the key
 
-
         /** 3 replay
          *
          */
@@ -881,13 +926,17 @@ public class PluginFinderTest {
         Object[] args = new Object[]{ testString.hashCode() };
 
         pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        try{
+        try
+        {
             method = pluginFinder.getClass().getDeclaredMethod( "getPluginClassName", argClasses );
             method.setAccessible( true );
             method.invoke( pluginFinder, args );
-        }catch( InvocationTargetException ite ){
+        }
+        catch( InvocationTargetException ite )
+        {
             fileNotFound = ( ite.getCause().getClass() == FileNotFoundException.class );
         }
+        
         assertTrue( fileNotFound );
 
         /**  4 check if it happened as expected
@@ -901,5 +950,4 @@ public class PluginFinderTest {
         verify( mockNodeList );
         verify( mockFile );
     }
-
 }
