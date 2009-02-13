@@ -21,6 +21,7 @@ import org.apache.commons.configuration.ConfigurationException;
 
 import java.util.Vector;
 
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.db.DBConnection;
 /**
  * \ingroup tools
@@ -122,6 +123,40 @@ public class Processqueue {
         return returntriple;
     }
 
+    public Vector<Pair<String, Integer>> popAll() throws SQLException{
+        log.debug( "Entering Processqueue.popAll()" );
+        
+        Connection con = DBConnection.getConnection();
+        Statement stmt = null;
+        ResultSet rs = null;
+        
+        Vector<Pair<String, Integer>> jobs = new Vector<Pair<String, Integer>>();
+
+        try{
+            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+            rs = stmt.executeQuery("SELECT * from get_all_posts()");
+            
+            while( rs.next() ){
+                String fedoraHandle = rs.getString( "fedorahandle" );
+                String itemID = rs.getString( "itemID" );
+                int queueID = rs.getInt( "queueID" );
+
+                log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
+                
+                Pair<String, Integer> pair = new Pair( fedoraHandle, queueID );
+                jobs.add( pair );
+            }
+            con.commit();
+        }
+        finally{
+            // Close database connection
+            rs.close();
+            stmt.close();
+            con.close();
+        }
+        return jobs;
+    }
+
 
     /**
      * commits the pop to the queue. This operation removes the
@@ -194,9 +229,9 @@ public class Processqueue {
                 con.close();
             }
             log.info( String.format( "Element with queueID=%s is rolled back",queueID ) );
-        }
+    }
         
-        /**
+    /**
          * deactivate elements on the processqueue.  It finds all elements
          * on the processqueue which are marked as active and mark them as
          * inactive, ie. they are ready for indexing.
@@ -211,6 +246,7 @@ public class Processqueue {
             Connection con = DBConnection.getConnection();
             
             String sql_query = "UPDATE processqueue SET processing = 'N' WHERE processing = 'Y'";
+            
             Statement stmt = stmt = con.createStatement();
             int rowsUpdated = 0;
             try{

@@ -1,14 +1,10 @@
 /**
  * \file PTIPool.java
- * \brief The PTIPool Class
- * \package pti
+ * \brief The PTIPool class
+ * \package pti;
  */
 
 package dk.dbc.opensearch.components.pti;
-
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
-import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
-import dk.dbc.opensearch.common.statistics.Estimate;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
@@ -16,98 +12,176 @@ import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassConfigurationFactory;
 import org.compass.core.CompassException;
 
-import fedora.client.FedoraClient;
+import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.types.Pair;
 
-import java.net.URL;
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.NoSuchElementException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.*;
+import java.lang.ClassNotFoundException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.Vector;
 
-import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.log4j.Logger;
 import org.apache.commons.configuration.ConfigurationException;
-
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import javax.xml.rpc.ServiceException;
-
+import org.apache.log4j.Logger;
 
 /**
- * \ingroup pti
- * \brief PTIPool is a threadpool managing PTI threads. It has a
- * createAndJoin method for stating threads, and a private method
- * providing a compassSession
+ * \ingroup PTI
+ *
+ * \brief The PTIPool manages the pti threads and provides methods
+ * to add and check running jobs
  */
-public class PTIPool {
-
-    private ExecutorService threadExecutor; /**The threadpool */
-    //private static Compass theCompass;
-    
-    //private static FedoraHandler theFedoraHandler;
-    //private FedoraClientFactory fedoraClientFactory;
+public class PTIPool
+{
+    static Logger log = Logger.getLogger("PTIPool");
+    private Vector< Pair< FutureTask< PTIThread >, Integer > > jobs;
+    private final ThreadPoolExecutor threadpool;
+    private Estimate estimate;
+    private Processqueue processqueue;
     private FedoraHandler fedoraHandler;
-    Logger log = Logger.getLogger("PTIPool");
-
+    private Compass compass;
+    private int shutDownPollTime;
+    
     /**
-     * \brief Constructor initializes the threadpool 
+     * Constructs the the PTIPool instance
      *
-     * @param numberOfThreads The number of threads in the pool
-     * @param fedoraHandler The fedorahandler, which communicates with the fedora repository
-     *
-     * @throws ConfigurationException if the pool is instanciated with less than 1 thread 
-     * @throws MalformedURLException Could not obtain compass configuration
-     * @throws UnknownHostException error obtaining fedora configuration
-     * @throws ServiceException ServiceException something went wrong initializing the fedora client
-     * @throws IOException something went wrong initializing the fedora client
+     * @param threadpool The threadpool to submit jobs to
+     * @param estimate the estimation database handler
+     * @param processqueue the processqueue handler
+     * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( int numberOfThreads, FedoraHandler fedoraHandler ) throws IllegalArgumentException, MalformedURLException, UnknownHostException, ServiceException, IOException {
-        log.debug( String.format( "Entering PTIPool(NumberOfThreads=%s)", numberOfThreads ) );
-        
-        this.fedoraHandler = fedoraHandler;
+    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, FedoraHandler fedoraHandler, Compass compass )
+     {
+         log.debug( "Constructor( threadpool, estimate, fedoraHandler ) called" );
 
-        if ( numberOfThreads <= 0 ){
-            /** \todo Find suitable exception */
-            log.fatal( String.format( "Number of threads specified was 0 or less." ) );
-            throw new IllegalArgumentException( "Refusing to construct empty PTIPool" );
-        }
-        
-        log.debug( String.format( "Starting the threadPool" ) );
-        threadExecutor = Executors.newFixedThreadPool( numberOfThreads );
-      
-        log.info( "The PTIPool has been constructed" );
+         this.threadpool = threadpool;
+         this.estimate = estimate;
+         this.fedoraHandler = fedoraHandler;
+         this.compass = compass;
+
+         jobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
+
+         shutDownPollTime = 1000; // configuration file
+     }
+    
+    /**
+     * submits a job to the threadpool for execution by a PTIThread.
+     *
+     * @param fedoraHandle the handle to fedora repository
+     *
+     * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
+     */
+
+    public void submit( String fedoraHandle, Integer queueID ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException
+     {
+         log.debug( String.format( "submit( fedoraHandle='%s', queueID='%s' )", fedoraHandle, queueID ) );
+    
+        FutureTask future = getTask( fedoraHandle );
+        threadpool.submit( future );
+        Pair pair = new Pair< FutureTask< PTIThread >, Integer >( future, queueID );
+        jobs.add( pair );
+    }
+    
+    public  FutureTask getTask( String fedoraHandle ) throws ConfigurationException , ClassNotFoundException
+    {
+        log.debug( "GetTask called" );        
+        CompassSession session = null;
+        log.debug( "Getting CompassSession" );
+        session = compass.openSession();
+        return new FutureTask( new PTIThread( fedoraHandle, session, fedoraHandler, estimate ) );
     }
 
     /**
-     * createAndJoinThread takes a handle to the fedora base and and a Compass session.
-     * The it starts a PTI (callable) that extracts the data. the handle points to,
-     * from the fedora base, index it and store it. The return value is the handle,
-     * that the PTIPoolAdm uses for keeping track of which digitalobjects
-     * are in process
+     * Checks the jobs submitted for execution, and return the number
+     * of active jobs.
      *
-     * @throws ConfigurationException error reading the PTI configuration file
-     * @throws ClassNotFoundException if the databasedriver is not found
+     * if a Job throws an exception it is written to the log and the
+     * PTI continues.
+     *
+     * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public FutureTask createAndJoinThread (String fHandle, String itemID, Estimate estimate, Compass compass )throws ConfigurationException, ClassNotFoundException{
-        log.debug( String.format( "entering createAndJoinThreads( fhandle=%s, itemID=%s )", fHandle, itemID ) );
+    public Vector<CompletedTask> checkJobs() throws InterruptedException 
+    {
+        log.debug( "checkJobs() called" );
+    
+        Vector<CompletedTask> finishedJobs = new Vector<CompletedTask>();
+        for( Pair<FutureTask<PTIThread>, Integer> jobpair : jobs )        
+        {
+            FutureTask job = jobpair.getFirst();
+            Integer queueID = jobpair.getSecond();
+            if( job.isDone() )
+            {
+                Long l = null;
+                //log.fatal( "Catched exception from job" );
+                try
+                {
+                    log.debug( "Checking job" );
+                    
+                    l = (Long) job.get();
+                }
+                catch( ExecutionException ee )
+                {                    
+                    log.fatal( "Exception caught from job" );    
+                    // getting exception from thread
+                    Throwable cause = ee.getCause();
+                    RuntimeException re = new RuntimeException( cause );
+                    log.error( String.format( "Exception Caught: '%s'\n'%s'" , re.getMessage(), re.getStackTrace() ) );
+                    // throw re; //shouldnt throw just because thread throw
+                }
+                log.debug( String.format( "adding (queueID='%s') to finished jobs", queueID ) );
+                Pair pair = new Pair< Long, Integer >( l, queueID );
+                finishedJobs.add( new CompletedTask( job, pair ) );
+            }
+        }
         
-        CompassSession session = null;
-        FutureTask future = null;
+        for( CompletedTask finishedJob : finishedJobs )
+        {
+             log.debug( "Removing Job" );            
+             
+             Pair< Long, Integer > finishedpair = (Pair) finishedJob.getResult();
+             log.debug( String.format( "Removing Job queueID='%s'", finishedpair.getSecond() ) );
+             
+             Vector< Pair< FutureTask< PTIThread >, Integer > > removeableJobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
+             for( Pair< FutureTask< PTIThread >, Integer > job : jobs ){
+                Integer queueID = job.getSecond();
+                if( queueID.equals( finishedpair.getSecond() ) ){
+                    removeableJobs.add( job );
+                }
+             }
+             jobs.removeAll( removeableJobs );
+        }
         
-        log.debug( "Getting CompassSession" );
+        return finishedJobs;
+    }
 
-        session = compass.openSession();
-        
-        log.debug( "Constructing FutureTask on PTI" );
-        future = new FutureTask( new PTI( session, fHandle, itemID, fedoraHandler, estimate ));
-        
-        log.debug( String.format( "Submitting the FutureTask to the threads" ) );
-        threadExecutor.submit(future);
-        
-        log.debug( "FutureTask submitted" );
-        return future;
+    /**
+     * Shuts down the PTIPool. it waits for all current jobs to
+     * finish before exiting.
+     *
+     * @throws InterruptedException if the checkJobs or sleep call is interrupted (by kill or otherwise).
+     */
+
+    public void shutdown() throws InterruptedException 
+    {
+        log.debug( "shutdown() called" );    
+        boolean activeJobs = true;
+        while( activeJobs )
+        {
+            activeJobs = false;
+            for( Pair<FutureTask<PTIThread>, Integer> jobpair : jobs )
+            {
+                FutureTask job = jobpair.getFirst(); 
+                if( ! job.isDone() )
+                {
+                    activeJobs = true;
+                }
+            }
+        }
     }
 }

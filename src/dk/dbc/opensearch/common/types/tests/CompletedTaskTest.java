@@ -32,10 +32,11 @@ public class CompletedTaskTest {
         //FutureTask testFuture = new FutureTask( new FutureTest( 10f ) );
         float testResult = 10f;
         
-        CompletedTask completedTask = new CompletedTask( mockFutureTask, testResult );
-        
+        CompletedTask completedTask = new CompletedTask<Float>( mockFutureTask, testResult );
+ 
+        Float result = (Float) completedTask.getResult();
         assertEquals( completedTask.getFuture(), mockFutureTask );
-        assertEquals( completedTask.getResult(), testResult, 0f );
+        assertEquals( result , testResult, 0f );
 
         testResult = 30f;
         completedTask = new CompletedTask( mockFutureTask, testResult );
@@ -43,19 +44,8 @@ public class CompletedTaskTest {
         completedTask.setFuture( mockFutureTask );
         completedTask.setResult( testResult );
 
+        result = (Float) completedTask.getResult();
         assertEquals( completedTask.getFuture(), mockFutureTask );
-        assertEquals( completedTask.getResult(), testResult, 0f );
+        assertEquals( result, testResult, 0f );
     }
-
-//     private class FutureTest implements Callable<Float>{
-//         float res;
-//         FutureTest( float result ){
-//             res = result;
-//         }
-
-//         public Float call(){
-//             return res;
-//         }
-//     }
-    
 }

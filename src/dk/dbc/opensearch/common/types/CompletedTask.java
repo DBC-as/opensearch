@@ -13,10 +13,10 @@ import java.util.concurrent.FutureTask;
  * completed threadpooljob. it contains a futureTask representing the
  * job, and a float which is the return value of the job.
  */
-public class CompletedTask {
+public class CompletedTask<V> {
  
-    FutureTask future;
-    float result;
+    private FutureTask future;
+    private V result;
  
     /**
      * Constructor of the CompletedTask instance.
@@ -24,7 +24,7 @@ public class CompletedTask {
      * @param future the FutureTask of the completed task
      * @param result the result of the completed task
      */
-    public CompletedTask( FutureTask future, float result) {
+    public CompletedTask( FutureTask future, V result) {
         this.future = future;
         this.result = result;
     }
@@ -43,7 +43,7 @@ public class CompletedTask {
      * 
      * @return The result
      */
-    public float getResult(){
+    public V getResult(){
         return result;
     }
 
@@ -61,7 +61,7 @@ public class CompletedTask {
      * 
      * @param The result
      */
-    public void setResult( float result ){
+    public void setResult( V result ){
         this.result = result;
     }
 }
