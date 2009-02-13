@@ -53,7 +53,7 @@ public class CargoObjectInfo
      * @param format The format of the data
      * @param indexable true if the material can be indexed, false otherwise
      */
-    public CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format )
+    CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format )
     {
     	this.format = format;
     	this.language = lang;
@@ -70,7 +70,11 @@ public class CargoObjectInfo
      */
     boolean checkLanguage( String language )
     {
-    	return true;
+    	/** \todo: implement a proper check for valid languages */
+    	if ( language.toLowerCase().equals( "da" ) )
+    		return true;
+    	else
+    		return false;    		
     }
 
     
@@ -79,7 +83,7 @@ public class CargoObjectInfo
      *
      * @returns true if mimetype is allowed in OpenSearch, false otherwise
      */
-    public boolean validMimetype( String mimetype )
+    boolean validMimetype( String mimetype )
     {
     	return CargoMimeType.validMimetype( mimetype );
     }
@@ -90,10 +94,13 @@ public class CargoObjectInfo
      *
      * @returns true if name is found in submitter-list, false otherwise
      */
-    public boolean checkSubmitter( String name ) throws IllegalArgumentException
+    boolean checkSubmitter( String name ) throws IllegalArgumentException
     {
         /** \todo: FIXME: Hardcoded values for allowed submitters */
-        return true;
+    	if ( name.toLowerCase().equals( "dbc" ) )
+    		return true;
+    	else
+    		return false;
     }
     
     

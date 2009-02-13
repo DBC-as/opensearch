@@ -1,8 +1,13 @@
 package dk.dbc.opensearch.common.types.tests;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
-import dk.dbc.opensearch.common.types.CargoObjectInfo;;
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.CargoObjectInfo;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
@@ -13,28 +18,72 @@ public class CargoObjectInfoTest
 {
     CargoMimeType cmt;
     CargoObjectInfo coi;
-    String test_submitter = "test_submitter";
+    CargoContainer cc;
+    
+    String test_submitter = "DBC";
     String test_format = "test_format";
+    String test_lang = "DA";
 
     
-    @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-    @Before public void SetUp()throws UnsupportedEncodingException
+    @Before 
+    public void SetUp() throws UnsupportedEncodingException, IOException
     {
         cmt =  CargoMimeType.TEXT_XML;
-        //coi = new CargoObjectInfo( cmt, "test_lang", test_submitter,  test_format, 666 );
+        cc = new CargoContainer();
+        
+        String teststring = "æøå";
+        InputStream data = new ByteArrayInputStream( teststring.getBytes( ) );        
+    	
+        cc.add( test_format, test_submitter, test_lang, cmt.getMimeType(), data );    	
     }
     
     
-    @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-    @Test public void testCorrectnessOfgetSubmitter() 
+    @Test 
+    public void testCorrectnessOfgetFormat() 
     {
-        //assertTrue( test_submitter.equals( coi.getSubmitter() ) );       
+        for( CargoObject co : cc.getData() )
+        	assertTrue( test_format.equals( co.getFormat() ) );
+    	       
     }
     
     
-    @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-    @Test public void testCorrectnessOfgetFormat() 
+    @Test 
+    public void testCorrectnessOfgetSubmitter() 
+    {    	
+    	for( CargoObject co : cc.getData() )
+    		assertTrue( test_submitter.equals( co.getSubmitter() ) );
+    }
+    
+    
+    @Test 
+    public void testCorrectnessOfgetMimeType() 
     {
-        //assertTrue( test_format.equals( coi.getFormat() ) );       
+        for( CargoObject co : cc.getData() )
+        	assertTrue( cmt.getMimeType().equals( co.getMimeType() ) );
+    	       
+    }
+    
+    
+    @Test
+    public void testCheckSubmitter()
+    {
+    	for( CargoObject co : cc.getData() )
+    		assertTrue( co.checkSubmitter( test_submitter ) );
+    }
+    
+    
+    @Test
+    public void testCheckLanguage()
+    {
+    	for( CargoObject co : cc.getData() )
+    		assertTrue( co.checkLanguage( test_lang ) );
+    }
+    
+    
+    @Test
+    public void testValidMimetype()
+    {
+    	for( CargoObject co : cc.getData() )
+    		assertTrue( co.validMimetype( cmt.getMimeType() ) );
     }
 }

@@ -130,7 +130,8 @@ public class DatadockPoolTest extends TestCase
 
     
     @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-    @Test public void testSubmit2() throws IOException, ConfigurationException, ClassNotFoundException
+    @Test    
+    public void testSubmit2() throws IOException, ConfigurationException, ClassNotFoundException
     {   
     	mockFedoraHandler = createMock( FedoraHandler.class );
         mockEstimate = createMock( Estimate.class );
@@ -167,8 +168,9 @@ public class DatadockPoolTest extends TestCase
     }
 
     
-    @Test public void testCheckJobs_isDoneFalse() throws Exception{
-
+    @Test 
+    public void testCheckJobs_isDoneFalse() throws Exception
+    {
         Mockit.setUpMocks( MockDatadockPool.class );
 
         mockFedoraHandler = createMock( FedoraHandler.class );
@@ -216,7 +218,8 @@ public class DatadockPoolTest extends TestCase
     }
 
     
-    @Test public void testCheckJobs_isDoneTrue() throws Exception
+    @Test 
+    public void testCheckJobs_isDoneTrue() throws Exception
     {
         Mockit.setUpMocks( MockDatadockPool.class );
 

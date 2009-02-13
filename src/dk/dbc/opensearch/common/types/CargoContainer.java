@@ -1,7 +1,7 @@
 /**
  * \file CargoContainer.java
  * \brief The CargoContainer class
- * \package datadock
+ * \package common.types
  */
 package dk.dbc.opensearch.common.types;
 
@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * \ingroup types
+ * \ingroup common.types
  * \brief CargoContainer is a data structure used throughout OpenSearch for carrying information
  *  submitted for indexing. CargoContainer retains data in a private data structure consisting of 
  *  CargoObject objects. All verification and work with theses objects are done through the 
@@ -28,19 +28,49 @@ public class CargoContainer
     private ArrayList< CargoObject > data;
     
     
-    public void add( String format, String submitter, String language, String mimetype, InputStream data ) throws IOException
+    /**
+     * Constructor initializes internal representation of data, i.e., ArrayList of CargoObjects
+     */
+    public CargoContainer()
+    {
+    	this.data = new ArrayList< CargoObject >();
+    }
+    
+    
+    /**
+     * Add CargoObject to internal data representation.
+     * 
+     * @param format
+     * @param submitter
+     * @param language
+     * @param mimetype
+     * @param data
+     * @return TRUE if add operation finishes successfully.
+     * @throws IOException
+     */
+    public boolean add( String format, String submitter, String language, String mimetype, InputStream data ) throws IOException
     {
     	CargoObject co = new CargoObject( mimetype, language, submitter, format, data );    	
-    	this.data.add( co );    	
+    	return this.data.add( co );    	
     }
 
 
+    /**
+     * Getter for internal data, the validity of which is guaranteed by the Constructor.
+     * 
+     * @return ArrayList of CargoObjects.
+     */
     public ArrayList< CargoObject > getData()
     {
     	return data;
     }
     
     
+    /**
+     * Getter for size, i.e., No. of CargoObjects in internal data representation.
+     * 
+     * @return
+     */
     public int getItemsCount()
     {
     	return data.size();

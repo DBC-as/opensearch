@@ -52,13 +52,13 @@ public class HarvestFaktalinkTest
         PluginID pidRet = hfl.getPluginID();
         /** \todo: there is a discrepancy in this call and the method being called. Please check */
 //        boolean submitterRet = submitter.equals( pidRet.getPluginSubmitter() );
-  //      assertTrue( submitterRet );
+//        assertTrue( submitterRet );
 
- //       boolean formatRet = format.equals( pidRet.getPluginFormat() );
- //       assertTrue( formatRet );
+//        boolean formatRet = format.equals( pidRet.getPluginFormat() );
+//        assertTrue( formatRet );
 
- //       boolean taskRet = task.equals( pidRet.getPluginTask() );
- //       assertTrue( taskRet );
+//        boolean taskRet = task.equals( pidRet.getPluginTask() );
+//        assertTrue( taskRet );
     }
 
 
@@ -80,7 +80,7 @@ public class HarvestFaktalinkTest
         //hfl.init(pid, data);
 
         // CargoContainer cc = mockHarvestFaktaLink.getCargoContainer();
-        CargoContainer cc = hfl.getCargoContainer();
+        //CargoContainer cc = hfl.getCargoContainer();
 
         // the following methods are package private and not for casual consumption :)
         // boolean submitterChecked = cc.checkSubmitter( submitter );
