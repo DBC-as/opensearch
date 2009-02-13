@@ -29,7 +29,7 @@ public class FileHandler
      *
      * \todo: what's the point of the constructor here?
      */
-    public FileHandler() { }
+    private FileHandler() { }
 
     
     /**

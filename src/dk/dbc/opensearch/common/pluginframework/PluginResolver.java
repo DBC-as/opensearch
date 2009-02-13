@@ -31,39 +31,48 @@ public class PluginResolver implements IPluginResolver
 {
     static Logger log = Logger.getLogger( "PluginResolver" );
 
+    static String path;
+
+    /** \todo: beware another hardcoded value **/
+    //String schemaPath = "config/opensearch_plugins.xsd";
+
+    static DocumentBuilderFactory docBuilderFactory;
+    static DocumentBuilder docBuilder;
+    static ClassLoader pluginClassLoader;
+    static PluginFinder PFinder;
+    static PluginLoader PLoader;
+    static boolean constructed = false;
     //File schemaFile;
-    //SchemaFactory schemaFactory; 
+    //SchemaFactory schemaFactory;
     //Schema validationSchema;
-    PluginFinder PFinder;
-    PluginLoader PLoader;
-    ClassLoader pluginClassLoader;
-    DocumentBuilderFactory docBuilderFactory;
-    DocumentBuilder docBuilder;
+    //PluginFinder PFinder;
+    //PluginLoader PLoader;
+    //ClassLoader pluginClassLoader;
+    //DocumentBuilderFactory docBuilderFactory;
+    //DocumentBuilder docBuilder;
 
     /**
      *
      */
     public PluginResolver()throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException/*, SAXException*/ {
-
-   
-       
-        /** \todo: beware: hardcoded value **/
-        String path = "build/classes/dk/dbc/opensearch/plugins";
-
-        /** \todo: beware another hardcoded value **/
-        //String schemaPath = "config/opensearch_plugins.xsd";
-
-        //schemaFile = FileHandler.getFile( schemaPath );
-        //schemaFactory = PluginSchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
-        //validationSchema = schemaFactory.newSchema( schemaFile );
-        docBuilderFactory = DocumentBuilderFactory.newInstance();
-        //docBuilderFactory.setSchema( validationSchema );
-        docBuilder = docBuilderFactory.newDocumentBuilder();
- 
-        pluginClassLoader = new PluginClassLoader();
-
-        PFinder = new PluginFinder( docBuilder, path );
-        PLoader = new PluginLoader( pluginClassLoader );
+      
+        if( !constructed ){
+            /** \todo: beware: hardcoded value **/
+            path = "build/classes/dk/dbc/opensearch/plugins";
+            docBuilderFactory = DocumentBuilderFactory.newInstance();
+            docBuilder = docBuilderFactory.newDocumentBuilder();
+            pluginClassLoader = new PluginClassLoader();
+            PFinder = new PluginFinder( docBuilder, path );
+            PLoader = new PluginLoader( pluginClassLoader );
+            constructed = true; 
+            System.out.println( "constructing" );   
+            /** \todo: beware another hardcoded value**/
+            //String schemaPath = "config/opensearch_plugins.xsd";
+            //schemaFile = FileHandler.getFile( schemaPath );
+            //schemaFactory = PluginSchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
+            //validationSchema = schemaFactory.newSchema( schemaFile );
+            //docBuilderFactory.setSchema( validationSchema );
+        }
     }
 
 

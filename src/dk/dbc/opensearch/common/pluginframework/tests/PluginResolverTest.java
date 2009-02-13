@@ -119,6 +119,7 @@ public class PluginResolverTest {
     @Test public void pluginResolverConstructorTest() throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException{
 
         PR = new PluginResolver();
+        PluginResolver PR2 = new PluginResolver();
     }
     /**
      * tests the getPlugin method, not a lot to test... 
