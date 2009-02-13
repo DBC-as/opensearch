@@ -86,7 +86,17 @@ def match( ptr, fldr, names ):
                 write_text_to_file( fldr, className, fileTxt )
     
     
+def delete_suite_files( ptr, folder, names ):
+    if fnmatch.fnmatch( folder, '*tests' ):
+        for name in names:
+            if name.endswith( ptr ):
+                fileName = folder + '/' + name
+                os.remove( fileName )
+    
+
 def call_walk( srcDir ):
+    os.path.walk( srcDir, delete_suite_files, 'Suite.java' )
+    print 'Old suite files have been deleted'
     os.path.walk( srcDir, match, 'Test.java' )
     print 'Suite files successfully created!'
 
