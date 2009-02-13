@@ -59,7 +59,7 @@ def start_daemon( q_name, pid_filename ):
     """
     Starts the Application daemon
     """
-    runproc = subprocess.Popen( [ 'run' ], shell=True, stdout=subprocess.PIPE ) 
+    runproc = subprocess.Popen( [ './run' ], shell=True, stdout=subprocess.PIPE ) 
     cp = runproc.communicate()[ 0 ].strip( '\n' )
 
     cmd = [ 'java',
