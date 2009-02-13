@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# -*- mode: python -*-
+
+import os
+import sys
+import subprocess
+
+
+def main( app, action ):
+
+    pid_filename = ""
+    pid_location = os.getcwd()
+    process      = ""
+    q_name       = ""
+    
+    if app == "pti":
+        pid_filename = "ptiDaemon.pid"
+        q_name       = "dk.dbc.opensearch.components.pti.PTIMain"
+        
+    elif app == "datadock":
+        pid_filename = 'datadockDaemon.pid'
+        q_name       = "dk.dbc.opensearch.components.datadock.DatadockMain"
+    
+    pid_file = os.path.join( pid_location, pid_filename )
+
+    if ( get_pid( pid_file ) != "" ):
+        pid = get_pid( pid_file )
+        print "stopping process with pid %s"%( pid )
+        if action == "restart":
+            stop_daemon( pid )
+            print "starting process"
+            start_daemon( q_name, pid_filename )
+        elif action == "stop":
+            stop_daemon( pid )
+    elif action == "start":
+        print "starting process"
+        start_daemon( q_name, pid_filename )
+    elif action == "restart":
+        print "No running process, starting process"
+        start_daemon( q_name, pid_filename )
+    else:
+        sys.exit( "Cannot stop nonrunning process" )
+
+        
+def start_daemon( q_name, pid_filename ):
+    """
+    Starts the Application daemon
+    """
+    runproc = subprocess.Popen( [ 'run' ], shell=True, stdout=subprocess.PIPE ) 
+    cp = runproc.communicate()[ 0 ].strip( '\n' )
+
+    cmd = [ 'java',
+            '-Ddaemon.pidfile=%s'%( pid_filename ),
+            '-cp',
+            cp,
+            q_name ]
+
+    cmd = ' '.join( cmd )
+
+    print "starting process %s"%( cmd )
+    proc = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE )
+    print proc.communicate()
+
+
+def stop_daemon( pid ):
+    os.kill( pid, "KILL" )
+
+
+def get_pid( pid_file ):
+    """ Tries to locate the pid_file and returns the pid if the file can be read
+    """
+    if( os.path.exists( pid_file ) ):
+        pid = ""
+        try:
+            pid = open( pid_file ).read()
+        except IOError, ioe:
+            sys.exit( "Daemon seems to be running, "\
+                      "but I cannot read the pid file at %s: %s"\
+                      %( pid_file, ioe ) )
+        return pid
+    else:
+        return ""
+
+
+if __name__ == '__main__':
+    from optparse import OptionParser
+    parser = OptionParser( usage="%prog [options] start|stop|restart" )
+
+    parser.add_option( "-a", type="string", action="store", dest="app",
+                       help="Name of app to execute")
+    parser.add_option( "-l", dest="listapps", action="store_true",
+                       default=False, help="List available apps" )
+
+    (options, args) = parser.parse_args()
+
+    app_list = [ 'datadock', 'pti' ]
+
+    if options.listapps:
+        print "Available applications:\n"
+        print '\n'.join( app_list )
+        sys.exit()
+
+    if options.app not in app_list:
+        parser.print_help()
+        sys.exit( "Can only start one of: %s"%( ', '.join( app_list ) ) )
+
+    if len( args ) != 1:
+        sys.exit( parser.print_help() )
+
+    main( options.app, args[0] )
+
