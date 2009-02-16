@@ -4,7 +4,7 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 
-public interface IPluggablePTI extends IPluggable
+public interface IRepositoryRetrieve extends IPluggable
 {
     void init( String fedoraHandler );
     
