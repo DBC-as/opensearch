@@ -16,7 +16,7 @@ import org.exolab.castor.xml.ValidationException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
@@ -29,7 +29,7 @@ import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
  * base. The CargoContainers contents is stored in a DigitalObject
  * object and saved to the fedorabase
  */
-public class FaktalinkStore extends FedoraHandle implements IRepositoryStore 
+public class FaktalinkStore extends FedoraHandler implements IRepositoryStore 
 {
 	Logger log = Logger.getLogger( FaktalinkStore.class );
     
