@@ -3,6 +3,14 @@
  */
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamNames;
+
+import info.fedora.www.definitions._1._0.types.DatastreamDef;
+import info.fedora.www.definitions._1._0.types.MIMETypedStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,26 +21,21 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
 
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.pluginframework.IPluggable;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamNames;
-
-import info.fedora.www.definitions._1._0.types.DatastreamDef;
-import info.fedora.www.definitions._1._0.types.MIMETypedStream;
 
 /**
  * @author stm
  *
  */
-public class FaktalinkRetriever extends FedoraHandle implements IPluggable {
-
-	public FaktalinkRetriever() throws ServiceException {
+public class FaktalinkRetriever extends FedoraHandle implements IPluggable 
+{
+	Logger log = Logger.getLogger( this.getClass() );
+	
+	public FaktalinkRetriever() throws ServiceException 
+	{
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	Logger log = Logger.getLogger( this.getClass() );
 	
     /**
      * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
