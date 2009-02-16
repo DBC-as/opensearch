@@ -1,12 +1,12 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import java.io.IOException;
-
 import dk.dbc.opensearch.common.types.CargoContainer;
 
+import java.io.IOException;
 
-public interface IPluggableGeneralPurpose extends IPluggable
+
+public interface IAnnotate extends IPluggable
 {
     void init( CargoContainer cargo );
     

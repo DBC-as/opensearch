@@ -22,8 +22,8 @@ import java.lang.reflect.InvocationTargetException;
 /**
  *
  */
-public class PluginLoaderTest{
-
+public class PluginLoaderTest
+{
     ClassLoader pcl;
     PluginLoader pl;
     Boolean noException;
@@ -35,8 +35,8 @@ public class PluginLoaderTest{
     /**
      *
      */
-    @Before public void SetUp()throws Exception {
-
+    @Before public void SetUp()throws Exception 
+    {
         testClassString = "dk.dbc.opensearch.common.pluginframework.tests.TestPlugin";
         invalidClassString = "dk.dbc.opensearch.common.pluginframework.tests.NotExisting";
         noException = true;
@@ -45,31 +45,40 @@ public class PluginLoaderTest{
         pcl = new PluginClassLoader();
     }
 
+    
     /**
      *
      */
-    @After public void TearDown() {
+    @After public void TearDown() 
+    {
         pl = null;
-
     }
 
+    
     /**
      *
      */
-    @Test public void constructorTest() {
-        try{
+    @Test public void constructorTest() 
+    {
+        try
+        {
             pl = new PluginLoader( pcl );
-        }catch( Exception e){
+        }
+        catch( Exception e)
+        {
             noException = false;
         }
+     
         assertTrue( noException );
     }
 
+    
     /**
      * Tests the loadPlugin method by giving the class string
      * to the test class TestPlugin
      */
-    @Test public void getPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    @Test public void getPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException 
+    {
         Method method;
         Class[] argClasses = new Class[]{ String.class };
         Object[] args = new Object[]{ testClassString };
@@ -80,25 +89,28 @@ public class PluginLoaderTest{
         testIPlug = ( IPluggable ) method.invoke( pl, args );
 
         assertTrue( testIPlug.getClass().getName().equals( testClassString ) );
-
     }
 
+    
     /**
      * Tests that the PluginLoader.loadPlugin throws an IllegalArgumentException
      * when given a not-existing class name. The exception is wrapped in an
      * InvocationTargetException
      */
-    @Test public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException{
+    @Test public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException
+    {
         Method method;
         Class[] argClasses = new Class[]{ String.class };
         Object[] args = new Object[]{ invalidClassString };
-        try{
+        try
+        {
             pl = new PluginLoader( pcl );
             method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
             method.setAccessible( true );
             testIPlug = ( IPluggable ) method.invoke( pl, args );
-
-        }catch( InvocationTargetException ite){
+        }
+        catch( InvocationTargetException ite)
+        {
             illegalArgument = ( ite.getCause().getClass() == ClassNotFoundException.class ); 
         }
         //needs to do it this way...

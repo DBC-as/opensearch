@@ -3,7 +3,6 @@
  * \brief The PTIPool class
  * \package pti;
  */
-
 package dk.dbc.opensearch.components.pti;
 
 import org.compass.core.Compass;
@@ -70,6 +69,7 @@ public class PTIPool
          shutDownPollTime = 1000; // configuration file
      }
     
+    
     /**
      * submits a job to the threadpool for execution by a PTIThread.
      *
@@ -77,16 +77,16 @@ public class PTIPool
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      */
-
     public void submit( String fedoraHandle, Integer queueID ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException
-     {
-         log.debug( String.format( "submit( fedoraHandle='%s', queueID='%s' )", fedoraHandle, queueID ) );
+    {
+    	log.debug( String.format( "submit( fedoraHandle='%s', queueID='%s' )", fedoraHandle, queueID ) );
     
         FutureTask future = getTask( fedoraHandle );
         threadpool.submit( future );
         Pair pair = new Pair< FutureTask< PTIThread >, Integer >( future, queueID );
         jobs.add( pair );
     }
+    
     
     public  FutureTask getTask( String fedoraHandle ) throws ConfigurationException , ClassNotFoundException
     {
@@ -97,6 +97,7 @@ public class PTIPool
         return new FutureTask( new PTIThread( fedoraHandle, session, fedoraHandler, estimate ) );
     }
 
+    
     /**
      * Checks the jobs submitted for execution, and return the number
      * of active jobs.
@@ -148,25 +149,26 @@ public class PTIPool
              log.debug( String.format( "Removing Job queueID='%s'", finishedpair.getSecond() ) );
              
              Vector< Pair< FutureTask< PTIThread >, Integer > > removeableJobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
-             for( Pair< FutureTask< PTIThread >, Integer > job : jobs ){
+             for( Pair< FutureTask< PTIThread >, Integer > job : jobs )
+             {
                 Integer queueID = job.getSecond();
-                if( queueID.equals( finishedpair.getSecond() ) ){
+                if( queueID.equals( finishedpair.getSecond() ) )
                     removeableJobs.add( job );
-                }
              }
+             
              jobs.removeAll( removeableJobs );
         }
         
         return finishedJobs;
     }
 
+    
     /**
      * Shuts down the PTIPool. it waits for all current jobs to
      * finish before exiting.
      *
      * @throws InterruptedException if the checkJobs or sleep call is interrupted (by kill or otherwise).
      */
-
     public void shutdown() throws InterruptedException 
     {
         log.debug( "shutdown() called" );    
@@ -178,9 +180,7 @@ public class PTIPool
             {
                 FutureTask job = jobpair.getFirst(); 
                 if( ! job.isDone() )
-                {
                     activeJobs = true;
-                }
             }
         }
     }

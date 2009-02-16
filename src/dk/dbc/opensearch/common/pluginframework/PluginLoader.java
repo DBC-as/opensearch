@@ -30,7 +30,6 @@ public class PluginLoader
 
     public PluginLoader( ClassLoader cl ) 
     {
-
         this.cl = cl;
     }
 
@@ -42,8 +41,7 @@ public class PluginLoader
      * @return the loaded plugin
      */
     IPluggable getPlugin( String pluginClassName ) throws InstantiationException, IllegalAccessException, ClassNotFoundException
-    {
-        
+    {        
         Class loadedClass = null;
         //loading the class
         log.debug( String.format( "The plugin class name: %s", pluginClassName) );

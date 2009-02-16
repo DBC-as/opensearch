@@ -1,26 +1,20 @@
 package dk.dbc.opensearch.plugins.tests;
 
 import dk.dbc.opensearch.common.pluginframework.PluginID;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.plugins.HarvestFaktalink;
+import dk.dbc.opensearch.plugins.FaktalinkHarvester;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 
 import org.junit.*;
-import static org.junit.Assert.*;
+//import static org.junit.Assert.*;
 import org.junit.Test;
 
 
-public class HarvestFaktalinkTest
+public class FaktalinkHarvesterTest
 {
-    //private HarvestFaktalink mockHarvestFaktaLink;
-
-
     @Before
     public void SetUp()
     {
@@ -46,10 +40,9 @@ public class HarvestFaktalinkTest
 
         String teststring = "æøå";
         InputStream data = new ByteArrayInputStream( teststring.getBytes( ) );
-        HarvestFaktalink hfl = new HarvestFaktalink();
+        FaktalinkHarvester hfl = new FaktalinkHarvester();
         //hfl.init( pid, data );
 
-        PluginID pidRet = hfl.getPluginID();
         /** \todo: there is a discrepancy in this call and the method being called. Please check */
 //        boolean submitterRet = submitter.equals( pidRet.getPluginSubmitter() );
 //        assertTrue( submitterRet );
@@ -76,7 +69,7 @@ public class HarvestFaktalinkTest
 
         //mockHarvestFaktaLink = new HarvestFaktalink( "id", path, submitter, "format" );
         PluginID pid = new PluginID( submitter, format, task );
-        HarvestFaktalink hfl = new HarvestFaktalink();
+        FaktalinkHarvester hfl = new FaktalinkHarvester();
         //hfl.init(pid, data);
 
         // CargoContainer cc = mockHarvestFaktaLink.getCargoContainer();

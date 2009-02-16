@@ -90,7 +90,7 @@
   </target>
 
   <target name="toplevel.compile-tests" description="builds the tests for the component" 
-          depends="toplevel.compile"> <!-- toplevel.clean-all, -->
+          depends="py_suite, toplevel.compile"> <!-- toplevel.clean-all, -->
     <echo>
       Building from ${basedir},
       building project ${ant.project.name},
@@ -109,7 +109,7 @@
   </target>
 
 	
-  <target name="toplevel.suite" description="Run test suite" depends="toplevel.compile-tests, py_suite">
+  <target name="toplevel.suite" description="Run test suite" depends="py_suite, toplevel.compile-tests">
   	<echo>
       Running suite ${suite.name}
   	</echo>
@@ -127,7 +127,7 @@
   	</junit>
   </target>
 
-  <target name="toplevel.test" description="Run unittests" depends="toplevel.compile-tests, py_suite">
+  <target name="toplevel.test" description="Run unittests" depends="py_suite, toplevel.compile-tests">
     <mkdir dir="${testresults.dir}"/>
     <junit fork="yes"
            forkmode="once"

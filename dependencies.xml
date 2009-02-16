@@ -77,6 +77,8 @@
 
   <!-- ================================================================== -->
   <target name="opensearch.common.pluginframework">
+  	<antcall target="opensearch.common.types" />
+  	<antcall target="opensearch.common.os" />
   	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/pluginframework"
   	     target="${dependency.target}"
   	     inheritAll="false" />  	

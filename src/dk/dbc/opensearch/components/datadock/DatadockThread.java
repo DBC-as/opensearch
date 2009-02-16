@@ -270,15 +270,8 @@ public class DatadockThread implements Callable<Float>
      */
     private CargoContainer createCargoContainerFromFile( File file, String mimetype, String language, String submitter, String format ) throws IOException
     {
-    	InputStream data = new FileInputStream( file );
-    	//int contentLength = (int)file.length();
-    	    	
-    	//CargoObjectInfo coi = new CargoObjectInfo( CargoMimeType.valueOf( mimetype ), lang, submitter, format, true );
-    	//Pair< CargoObjectInfo, InputStream > pair = new Pair< CargoObjectInfo, InputStream >(coi, data);
+    	InputStream data = new FileInputStream( file );    	
     	
-    	//ArrayList< Pair< CargoObjectInfo, InputStream > > al = new ArrayList< Pair< CargoObjectInfo, InputStream > >();
-    	//al.add( pair);
-    	//CargoContainer cc = new CargoContainer( al );
     	CargoContainer cc = new CargoContainer();
     	cc.add( format, submitter, language, mimetype, data );
     	
