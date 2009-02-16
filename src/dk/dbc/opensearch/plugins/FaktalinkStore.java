@@ -19,7 +19,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 
-import org.apache.log4j.Logger;
 
 /**
  * @author stm
@@ -28,22 +27,27 @@ import org.apache.log4j.Logger;
  * base. The CargoContainers contents is stored in a DigitalObject
  * object and saved to the fedorabase
  */
-public class FaktalinkStore extends FedoraHandle implements IPluggable {
+public class FaktalinkStore extends FedoraHandle implements IPluggable 
+{
+	Logger log = Logger.getLogger( FaktalinkStore.class );
+    
+	private CargoContainer cargo;
 
-    public FaktalinkStore() throws ServiceException {
-		super();
-	}
-
-	Logger log = Logger.getLogger( "FaktaLinkStore" );
 	
-    private CargoContainer cargo;
-
+	public FaktalinkStore() throws ServiceException 
+    {
+		super();
+	}	
+	
+    
     /*
      * Initialises the plugin with a cargocontainer.
      */
-    public void init( CargoContainer cargo ) throws ServiceException {
+    public void init( CargoContainer cargo ) throws ServiceException 
+    {
         this.cargo = cargo;
     }
+    
 
     public float storeData( ) throws MarshalException, ValidationException, ServiceException, IOException, ParseException{
 

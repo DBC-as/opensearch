@@ -41,7 +41,7 @@ public interface IPluggable
      * @param pluginId The id given by the pluginframework, specifying  
      * 
      */
-//    void init( PluginID pluginId, InputStream data );
+	//public void init();
 
     
     /**
