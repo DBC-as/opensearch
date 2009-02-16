@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamNames;
 
 import info.fedora.www.definitions._1._0.types.DatastreamDef;
 import info.fedora.www.definitions._1._0.types.MIMETypedStream;
@@ -92,8 +93,9 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable {
                 String language = "";
 
                 cargo = new CargoContainer();
-                cargo.add( itemId, pidNS, language, def.getMIMEType(), inputStream);
-                //cargo = new CargoContainer( inputStream, def.getMIMEType(),language,pidNS,itemId );
+                
+                DataStreamNames dsn = DataStreamNames.OriginalData;
+                cargo.add( dsn, itemId, pidNS, language, def.getMIMEType(), inputStream);
             }
         }
         

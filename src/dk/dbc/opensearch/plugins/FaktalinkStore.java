@@ -52,7 +52,8 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 
     
     @Override
-	public String storeCargoContainer() throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException {
+	public String storeCargoContainer() throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
+	{
 		return this.storeCargo();
 	}
 
@@ -64,7 +65,7 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 
         String descriptive_label = String.format( "Faktalink" );
         
-        byte[] foxml = FedoraTools.constructFoxml(this.cargo, pids[0], descriptive_label );
+        byte[] foxml = FedoraTools.constructFoxml( this.cargo, pids[0], descriptive_label );
         
         String logm = String.format( "Faktalink inserted" );
         
@@ -73,7 +74,8 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
         /** \todo: We need a pid-manager for getting lists of available pids for a given ns 
          *  this whole getNextPID vs. ingest return type looks dubious. I fear it will break in a multithreaded environment
          */
-        if( ! pid.equals( pids[0] ) ){
+        if( ! pid.equals( pids[0] ) )
+        {
             log.fatal( String.format( "we expected pid=%s, but got pid=%s", pids[0], pid ) );
             throw new IllegalStateException( String.format( "expected pid=%s, but got pid=%s", pids[0], pid ) );
         }

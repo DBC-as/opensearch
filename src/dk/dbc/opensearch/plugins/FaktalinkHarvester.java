@@ -1,15 +1,15 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import org.apache.log4j.Logger;
-
 
 public class FaktalinkHarvester implements IHarvestable
 {
@@ -19,22 +19,17 @@ public class FaktalinkHarvester implements IHarvestable
     private String submitter;
     private String format;
     private String path;
-    private URI uri;
 
     
     @Override
-	public void init( URI uri, String submitter, String format )
+	public void init( DatadockJob job )
     {
-    	this.uri = uri;
-    	this.path = this.uri.getPath();
-		this.submitter = submitter;
-		this.format = format;
+    	this.path = job.getUri().getPath();
+		this.submitter = job.getSubmitter();
+		this.format = job.getFormat();
 	}
     
 
-    /**
-     * 
-     */
     public CargoContainer getCargoContainer() throws IOException
     {
         return createCargoContainerFromFile();
@@ -43,16 +38,18 @@ public class FaktalinkHarvester implements IHarvestable
 
     /**
      * 
-     * @return
-     * @throws IOException
+     * @return the CargoContainer from 
+     * @throws IOException if the data cannot be read
      */
     private CargoContainer createCargoContainerFromFile() throws IOException 
     {
+    	/** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "DA";
+        DataStreamNames dataStreamName = DataStreamNames.OriginalData;
         InputStream data = new FileInputStream( this.path );
         
-        cargo.add( this.format, this.submitter, lang, mimetype, data );
+        cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, data );
         
         return cargo;
     }

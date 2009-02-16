@@ -21,23 +21,26 @@ public class DatadockJobTest {
      * Testing the getters and setters of DatadockJob
      */
     
-    @Test public void testSettersAndGetters() {
-        
+    @Test 
+    public void testSettersAndGetters() 
+    {        
         String testSubmitter = "testSubmitter";
         String testFormat = "testFormat";
         URI testURI = null;
         
-
-        try{
+        try
+        {
             testURI = new URI( "testURI" );
-        }catch( URISyntaxException use ){
+        }
+        catch( URISyntaxException use )
+        {
             fail( "Catched URISyntaxException under construction of test uri."+use.getMessage() );
         }
         
         DatadockJob datadockJob = new DatadockJob( testURI, testSubmitter, testFormat);
         assertTrue( datadockJob.getSubmitter().equals( testSubmitter ) );
         assertTrue( datadockJob.getFormat().equals( testFormat ) );
-        assertTrue( datadockJob.getPath().equals( testURI ) );
+        assertTrue( datadockJob.getUri().equals( testURI ) );
         
         testSubmitter = "testSubmitter2";
         testFormat = "testFormat2";        
@@ -47,12 +50,12 @@ public class DatadockJobTest {
             fail( "Catched URISyntaxException under construction of test uri."+use.getMessage() );
         }
         
-        datadockJob.setPath( testURI );
+        datadockJob.setUri( testURI );
         datadockJob.setSubmitter( testSubmitter );
         datadockJob.setFormat( testFormat );
 
         assertTrue( datadockJob.getSubmitter().equals( testSubmitter ) );
         assertTrue( datadockJob.getFormat().equals( testFormat ) );
-        assertTrue( datadockJob.getPath().equals( testURI ) );
+        assertTrue( datadockJob.getUri().equals( testURI ) );
     }
 }

@@ -75,7 +75,7 @@ public class DatadockPool
     public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException
     {
         log.debug( String.format( "submit( path='%s', submitter='%s', format='%s' )",
-                                  datadockJob.getPath().getRawPath(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
+                                  datadockJob.getUri().getRawPath(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
     
         FutureTask future = getTask( datadockJob );
         threadpool.submit( future );

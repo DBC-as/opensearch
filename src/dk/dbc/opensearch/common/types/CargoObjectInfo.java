@@ -21,6 +21,11 @@ public class CargoObjectInfo
 {
 	Logger log = Logger.getLogger( CargoObjectInfo.class );
 	
+	/**
+	 * Property naming type of data stream.
+	 */
+	private DataStreamNames dataStreamName;
+	
 	private String format;
 
 	/** \todo: the language of the submitted data determines which analyzer
@@ -53,8 +58,9 @@ public class CargoObjectInfo
      * @param format The format of the data
      * @param indexable true if the material can be indexed, false otherwise
      */
-    CargoObjectInfo ( CargoMimeType mimeType, String lang, String submitter, String format )
+    CargoObjectInfo ( DataStreamNames dataStreamName, CargoMimeType mimeType, String lang, String submitter, String format )
     {
+    	this.dataStreamName = dataStreamName;
     	this.format = format;
     	this.language = lang;
     	this.mimeType = mimeType;        
@@ -154,5 +160,11 @@ public class CargoObjectInfo
     String getLanguage() 
     {
         return language;
+    }
+    
+    
+    String getDataStreamNameFrom( String name )
+    {
+    	return DataStreamNames.getDataStreamNameFrom( name ).name;
     }
 }

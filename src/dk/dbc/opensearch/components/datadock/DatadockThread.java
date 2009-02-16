@@ -13,6 +13,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
+import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.plugins.FaktalinkStore;
@@ -93,18 +94,14 @@ public class DatadockThread implements Callable<Float>
      */
     public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, List< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException 
     {
-
         this.jobMap = jobMap;
-        log.debug( String.format( "Entering DataDock Constructor" ) );
+        log.debug( String.format( "Entering DatadockThread Constructor" ) );
         CargoContainer cargo = null;
 
-        String mimetype = "TEXT_XML";
-        String lang = "da";
+       
+        //File f = new File( datadockJob.getPath().getRawPath() );
+        //cargo = createCargoContainerFromFile( dataStreamName, f, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
         
-        File f = new File( datadockJob.getPath().getRawPath() );
-        cargo = createCargoContainerFromFile( f, mimetype, lang, datadockJob.getSubmitter(), datadockJob.getFormat() );
-        
-        log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
         queue = processqueue;
         
@@ -268,13 +265,16 @@ public class DatadockThread implements Callable<Float>
      * Creating CargoContainer from file.
      * 
      */
-    private CargoContainer createCargoContainerFromFile( File file, String mimetype, String language, String submitter, String format ) throws IOException
+/*
+    private CargoContainer createCargoContainerFromFile( DataStreamNames dataStreamName, File file, String mimetype, String language, String submitter, String format ) throws IOException
     {
     	InputStream data = new FileInputStream( file );    	
     	
-    	CargoContainer cc = new CargoContainer();
-    	cc.add( format, submitter, language, mimetype, data );
+    	CargoContainer cc = new CargoContainer();    	
+    	cc.add( dataStreamName, format, submitter, language, mimetype, data );
     	
     	return cc;
     }
+    
+    */
 }

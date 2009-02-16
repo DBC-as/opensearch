@@ -39,16 +39,22 @@ public class CargoObject
 	 * @param data
 	 * @throws IOException
 	 */
-	CargoObject( String mimetype, String language, String submitter, String format, InputStream data ) throws IOException
+	CargoObject( DataStreamNames dataStreamName, String mimetype, String language, String submitter, String format, InputStream data ) throws IOException
     {
-    	CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );    	
-        CargoObjectInfo coi = new CargoObjectInfo( cmt, language, submitter, format );   
+		CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );    	
+        CargoObjectInfo coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format );   
     
         List< Byte > list = readStream( data ); 
         
         pair = new Pair<CargoObjectInfo, List< Byte > >( coi, list );
     }
-    
+	
+	
+	public String getDataStreamName( String name )
+	{
+		return this.pair.getFirst().getDataStreamNameFrom( name );
+	}
+
 
     /**
      * Helper method that reads all the bytes from the submitted
@@ -168,4 +174,4 @@ public class CargoObject
 
 		return b_data;
 	}
-	}
+}

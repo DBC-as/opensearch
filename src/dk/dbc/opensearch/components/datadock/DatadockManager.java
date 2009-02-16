@@ -67,11 +67,11 @@ public class DatadockManager
                      pool.submit( job );
                      submitted = true;
              
-                     log.debug( String.format( "submitted job: '%s'",job.getPath().getRawPath() ) );
+                     log.debug( String.format( "submitted job: '%s'",job.getUri().getRawPath() ) );
                  }
                  catch( RejectedExecutionException re )
                  {
-                     log.debug( String.format( "job: '%s' rejected, trying again",job.getPath().getRawPath() ) );
+                     log.debug( String.format( "job: '%s' rejected, trying again",job.getUri().getRawPath() ) );
                      Thread.currentThread().sleep( rejectedSleepTime );
                  }
             }

@@ -40,8 +40,8 @@ public class FedoraTools {
 	}
 
 	public static byte[] constructFoxml(CargoContainer cargo, String nextPid,
-			String label, Date now) throws IOException, MarshalException,
-			ValidationException, ParseException {
+			                            String label, Date now) throws IOException, MarshalException,
+			                                                           ValidationException, ParseException {
 		ObjectProperties op = new ObjectProperties();
 
 		Property pState = new Property();
@@ -50,34 +50,28 @@ public class FedoraTools {
 		pState.setVALUE("Active");
 
 		Property pLabel = new Property();
-		pLabel
-				.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
+		pLabel.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
 		pLabel.setVALUE(label);
 
 		PropertyType pOwner = new Property();
-		pOwner
-				.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+		pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
 		pOwner.setVALUE("user");
 
 		// createdDate
-		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"yyyy-MM-dd'T'HH:mm:ss.S");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
 		// Date now = new Date( System.currentTimeMillis() );
 		String timeNow = dateFormat.format(now);
 		Property pCreatedDate = new Property();
-		pCreatedDate
-				.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
+		pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
 		pCreatedDate.setVALUE(timeNow);
 
 		// lastModifiedDate
 		Property pLastModifiedDate = new Property();
-		pLastModifiedDate
-				.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
+		pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
 		pLastModifiedDate.setVALUE(timeNow);
 
-		Property[] props = new Property[] { (Property) pState,
-				(Property) pLabel, (Property) pOwner, (Property) pCreatedDate,
-				(Property) pLastModifiedDate };
+		Property[] props = new Property[] { (Property) pState, (Property) pLabel, (Property) pOwner, 
+				                            (Property) pCreatedDate, (Property) pLastModifiedDate };
 		op.setProperty(props);
 
 		DigitalObject dot = new DigitalObject();
@@ -86,7 +80,8 @@ public class FedoraTools {
 
 		ArrayList<Datastream> dsArray = new ArrayList<Datastream>();
 
-		for (CargoObject co : cargo.getData()) {
+		for (CargoObject co : cargo.getData())
+        {
 			dsArray.add(constructDatastream(co, dateFormat, timeNow));
 		}
 
@@ -107,10 +102,8 @@ public class FedoraTools {
 	 * 
 	 * @return A datastream suitable for ingestion into the DigitalObject
 	 */
-	private static Datastream constructDatastream(CargoObject co,
-			SimpleDateFormat dateFormat, String timeNow)
-			throws java.text.ParseException, IOException {
-
+	private static Datastream constructDatastream(CargoObject co, SimpleDateFormat dateFormat, String timeNow) throws java.text.ParseException, IOException 
+	{
 		// CargoObjectInfo coi = ( CargoObjectInfo ) co.getFirst();
 		// List<Byte> dataBytes = ( List<Byte> ) co.getSecond();
 
@@ -129,32 +122,33 @@ public class FedoraTools {
 
 		/** \todo: is this an adequate check? */
 		DatastreamTypeCONTROL_GROUPType controlGroup = null;
-		if (co.getMimeType() == "text/xml") {
+		if (co.getMimeType() == "text/xml") 
 			controlGroup = DatastreamTypeCONTROL_GROUPType.X;
-		} else {
+		else 
 			controlGroup = DatastreamTypeCONTROL_GROUPType.M;
-		}
 
 		// datastreamElement
 		/** \todo: CONTROL_GROUP should be configurable in some way */
 		Datastream dataStreamElement = new Datastream();
 
-		dataStreamElement.setCONTROL_GROUP(controlGroup);
+		dataStreamElement.setCONTROL_GROUP( controlGroup );
 
-		dataStreamElement.setID(co.getFormat());
+		//dataStreamElement.setID( co.getFormat() );
+		/** \todo: consider how to obtain the correct name from which the DataStreamName type is retrieved */
+		dataStreamElement.setID( co.getDataStreamName( "test" ) );
 		/**
 		 * \todo: State type defaults to active. Client should interact with
 		 * datastream after this method if it wants something else
 		 */
-		dataStreamElement.setSTATE(StateType.A);
-		dataStreamElement.setVERSIONABLE(versionable);
+		dataStreamElement.setSTATE( StateType.A );
+		dataStreamElement.setVERSIONABLE( versionable );
 
 		// datastreamVersionElement
 		String itemId_version = co.getFormat() + ".0";
 
 		DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
 
-		dataStreamVersionElement.setCREATED(dateFormat.parse(timeNow));
+		dataStreamVersionElement.setCREATED(dateFormat.parse( timeNow ) );
 
 		dataStreamVersionElement.setID(itemId_version);
 
@@ -164,25 +158,22 @@ public class FedoraTools {
 
 		dVersTypeChoice.setBinaryContent(ba);
 
-		dataStreamVersionElement
-				.setDatastreamVersionTypeChoice(dVersTypeChoice);
+		dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
 
-		String mimeLabel = String.format("%s [%s]", co.getFormat(), co
-				.getMimeType());
+		String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
 		dataStreamVersionElement.setLABEL(mimeLabel);
-		String mimeFormatted = String.format("%s [%s]", co.getFormat(), co
-				.getMimeType());
-		dataStreamVersionElement.setMIMETYPE(mimeFormatted);
+		String mimeFormatted = String.format("%s [%s]", co.getFormat(), co.getMimeType());
+		dataStreamVersionElement.setMIMETYPE( mimeFormatted );
 
 		long lengthFormatted = (long) srcLen;
 
-		dataStreamVersionElement.setSIZE(lengthFormatted);
+		dataStreamVersionElement.setSIZE( lengthFormatted );
 
-		binaryContent.setDIGEST(Base64.encode(ba));
+		binaryContent.setDIGEST( Base64.encode( ba ) );
 
-		dataStreamVersionElement.setContentDigest(binaryContent);
+		dataStreamVersionElement.setContentDigest( binaryContent );
 		DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
-		dataStreamElement.setDatastreamVersion(dsvArray);
+		dataStreamElement.setDatastreamVersion( dsvArray );
 
 		return dataStreamElement;
 	}

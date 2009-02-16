@@ -85,7 +85,7 @@ public class DatadockManagerTest {
 
         mockDatadockPool.submit( mockDatadockJob );
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
-        expect( mockDatadockJob.getPath() ).andReturn( testURI );
+        expect( mockDatadockJob.getUri() ).andReturn( testURI );
         
         
         replay( mockHarvester );
@@ -119,7 +119,7 @@ public class DatadockManagerTest {
         mockDatadockPool.submit( mockDatadockJob );
 
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
-        expect( mockDatadockJob.getPath() ).andReturn( testURI ).times(2);
+        expect( mockDatadockJob.getUri() ).andReturn( testURI ).times(2);
         
         replay( mockHarvester );
         replay( mockDatadockPool );

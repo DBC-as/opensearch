@@ -127,7 +127,7 @@ public class FileHarvest implements IHarvester
                                                            Tuple.get1(job).getParentFile().getParentFile().getName(),
                                                            Tuple.get1(job).getParentFile().getName() );
                 log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'",
-                                          datadockJob.getPath().getRawPath(),
+                                          datadockJob.getUri().getRawPath(),
                                           datadockJob.getSubmitter(),
                                           datadockJob.getFormat() ) );
                 newJobs.add( datadockJob );

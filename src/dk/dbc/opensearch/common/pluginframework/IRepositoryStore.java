@@ -17,7 +17,8 @@ import dk.dbc.opensearch.common.types.CargoContainer;
  * @author mro
  *
  */
-public interface IRepositoryStore extends IPluggable {
+public interface IRepositoryStore extends IPluggable 
+{
 	void init( CargoContainer cargo ) throws ServiceException;
 	
 	String storeCargoContainer() throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException;

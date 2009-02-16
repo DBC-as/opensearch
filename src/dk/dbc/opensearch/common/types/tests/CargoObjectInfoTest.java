@@ -4,6 +4,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
+import dk.dbc.opensearch.common.types.DataStreamNames;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,9 +33,20 @@ public class CargoObjectInfoTest
         cc = new CargoContainer();
         
         String teststring = "æøå";
-        InputStream data = new ByteArrayInputStream( teststring.getBytes( ) );        
-    	
-        cc.add( test_format, test_submitter, test_lang, cmt.getMimeType(), data );    	
+        InputStream data = new ByteArrayInputStream( teststring.getBytes( ) );
+    	DataStreamNames dataStreamName = DataStreamNames.OriginalData;
+        cc.add( dataStreamName, test_format, test_submitter, test_lang, cmt.getMimeType(), data );    	
+    }
+    
+    
+    @Test
+    public void testGetDataStreamName()
+    {
+    	for ( CargoObject co : cc.getData() )
+    	{
+    		String od = co.getDataStreamName( "originalData" );
+    		assertEquals( "originalData", od );
+    	}
     }
     
     

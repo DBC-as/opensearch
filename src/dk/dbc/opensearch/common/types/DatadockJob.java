@@ -10,12 +10,12 @@ import java.net.URI;
 import org.apache.log4j.Logger;
 /**
  * The purpose of the datadockJob is to hold the information about a
- * job for the datadock. it provides get and set method
+ * job for the datadock. it provides get and set methods
  */
 public class DatadockJob {
     
     Logger log = Logger.getLogger("DatadockJob");
-    private URI path;
+    private URI uri;
     private String submitter;
     private String format;
 
@@ -26,20 +26,20 @@ public class DatadockJob {
      * @param submitter The submitter of the Job
      * @param format The format of the Job
      */
-    public DatadockJob( URI path, String submitter, String format) {
-        log.debug( String.format( "Constructor( path='%s', submitter='%s', format='%s' ) called", 
-                                  path.getRawPath(), submitter, format ) );
-        this.path = path;
+    public DatadockJob( URI uri, String submitter, String format) {
+        log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s' ) called", 
+                                  uri.getRawPath(), submitter, format ) );
+        this.uri = uri;
         this.submitter = submitter;
         this.format = format;
     }
     
     /**
-     * Gets the path
-     * @return The path 
+     * Gets the uri object from the job
+     * @return The URI of the job
      */
-    public URI getPath(){
-        return path;
+    public URI getUri(){
+        return uri;
     }
     
     /**
@@ -62,9 +62,9 @@ public class DatadockJob {
      * Sets the path
      * @param The path 
      */
-    public void setPath( URI path){
-        log.debug( String.format( "setPath( path='%s' ) called", path.getRawPath() ) ); 
-           this.path = path;
+    public void setUri( URI uri ){
+        log.debug( String.format( "setUri( uri='%s' ) called", uri.getRawPath() ) ); 
+           this.uri = uri;
     }
     
     /**

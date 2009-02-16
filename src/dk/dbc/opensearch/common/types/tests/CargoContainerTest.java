@@ -4,7 +4,10 @@ package dk.dbc.opensearch.common.types.tests;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
+import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.types.Pair;
+import fedora.common.policy.DatastreamNamespace;
+import fedora.server.types.gen.Datastream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -30,13 +33,14 @@ public class CargoContainerTest
 	private String mimetype;
 	private String submitter;
 	private InputStream data;
-	
+	private DataStreamNames dsn;
 	String teststring;
     
 
     @Before 
     public void SetUp() throws UnsupportedEncodingException
     {
+    	dsn = DataStreamNames.getDataStreamNameFrom( "originalData" );
     	format = "forfatterweb";
     	language = "DA";
     	mimetype = "text/xml";
@@ -55,7 +59,11 @@ public class CargoContainerTest
     @Test
     public void testAdd() throws IOException
     {
-    	assertTrue( cargo.add( format, submitter, language, mimetype, data ) );
+    	CargoContainer cargo = new CargoContainer();
+    	assertEquals( 0, (long)cargo.getData().size() );
+    	
+    	cargo.add( dsn, format, submitter, language, mimetype, data );
+    	assertEquals( 1, (long)cargo.getData().size() );
     }
     
 
@@ -65,7 +73,7 @@ public class CargoContainerTest
      */
     @Test public void testStreamSizeInContainer() throws IOException 
     {
-    	cargo.add( format, submitter, language, mimetype, data );
+    	cargo.add( dsn, format, submitter, language, mimetype, data );
     	
         //UTF-8 uses two bytes per Danish letter
         int expectedLength = teststring.length() * 2;
@@ -83,7 +91,7 @@ public class CargoContainerTest
     {
         InputStream is = new ByteArrayInputStream( new byte[0] );
         CargoContainer cc = new CargoContainer();
-        cc.add( format, submitter, language, mimetype, is );
+        cc.add( dsn, format, submitter, language, mimetype, is );
         
         CargoObject co = cc.getData().get( 0 );
         Pair< CargoObjectInfo, List< Byte > > pair = co.getPair();
@@ -96,7 +104,7 @@ public class CargoContainerTest
     
     @Test public void testGetByteArrayPreservesUTF8() throws IOException, UnsupportedEncodingException
     {
-    	cargo.add( format, submitter, language, mimetype, data );
+    	cargo.add( dsn, format, submitter, language, mimetype, data );
     	
     	ArrayList< CargoObject > aList = cargo.getData();
         List< Byte > listB = aList.get( 0 ).getPair().getSecond();
@@ -125,10 +133,10 @@ public class CargoContainerTest
     	String str4 = "abc";
     	InputStream data4 = new ByteArrayInputStream( str4.getBytes() );
     	
-    	cc.add( format, submitter, language, mimetype, data1);
-    	cc.add( format, submitter, language, mimetype, data2);
-    	cc.add( format, submitter, language, mimetype, data3);
-    	cc.add( format, submitter, language, mimetype, data4);
+    	cc.add( dsn, format, submitter, language, mimetype, data1);
+    	cc.add( dsn, format, submitter, language, mimetype, data2);
+    	cc.add( dsn, format, submitter, language, mimetype, data3);
+    	cc.add( dsn, format, submitter, language, mimetype, data4);
     	
     	int expectedCount = 4;
     	int actualCount = cc.getItemsCount();
