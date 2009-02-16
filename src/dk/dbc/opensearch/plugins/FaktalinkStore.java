@@ -18,6 +18,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 
 
 /**
@@ -27,7 +28,7 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
  * base. The CargoContainers contents is stored in a DigitalObject
  * object and saved to the fedorabase
  */
-public class FaktalinkStore extends FedoraHandle implements IPluggable 
+public class FaktalinkStore extends FedoraHandle implements IRepositoryStore 
 {
 	Logger log = Logger.getLogger( FaktalinkStore.class );
     
@@ -47,18 +48,13 @@ public class FaktalinkStore extends FedoraHandle implements IPluggable
     {
         this.cargo = cargo;
     }
+
     
+    @Override
+	public String storeCargoContainer() throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException {
+		return this.storeCargo();
+	}
 
-    public float storeData( ) throws MarshalException, ValidationException, ServiceException, IOException, ParseException{
-
-    	String pid = this.storeCargo();
-
-    	this.putPidOnQueue( pid );
-    	
-    	return 0;
-
-
-    }
 
     private String storeCargo( )throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
     {
@@ -86,9 +82,5 @@ public class FaktalinkStore extends FedoraHandle implements IPluggable
         return pid;
     }
 
-    private void putPidOnQueue( String pid ){
-
-
-    }
 
 }
