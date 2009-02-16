@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
-
+import dk.dbc.opensearch.common.types.Pair;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -32,6 +32,7 @@ public class DatadockManager
     private IHarvester harvester = null;
     private int rejectedSleepTime;
 
+
     
     /**
      * Constructs the the DatadockManager instance.
@@ -43,6 +44,7 @@ public class DatadockManager
         this.pool = pool;
         this.harvester = harvester;
         harvester.start();
+
         
         rejectedSleepTime = 3000; // configurationfile        
     }

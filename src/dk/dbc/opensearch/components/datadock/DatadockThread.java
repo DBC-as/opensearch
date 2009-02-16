@@ -7,7 +7,7 @@
 package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
+
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
@@ -16,7 +16,8 @@ import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.plugins.FaktalinkStore;
-
+import java.util.List;
+import dk.dbc.opensearch.common.types.Pair;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,6 +31,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
+
+import java.util.HashMap;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.rpc.ServiceException;
@@ -66,8 +69,8 @@ public class DatadockThread implements Callable<Float>
 {
     private CargoContainer cc;
     private Processqueue queue;
-    private static volatile FedoraHandler fh;
-   
+    private HashMap< Pair< String, String >, List< String > > jobMap;
+    
     private Logger log = Logger.getLogger("DataDockThread");
 
     Estimate estimate;
@@ -88,8 +91,10 @@ public class DatadockThread implements Callable<Float>
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      */
-    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException 
+    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, List< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException 
     {
+
+        this.jobMap = jobMap;
         log.debug( String.format( "Entering DataDock Constructor" ) );
         CargoContainer cargo = null;
 
@@ -102,7 +107,6 @@ public class DatadockThread implements Callable<Float>
         log.debug( String.format( "Entering DataDock Constructor" ) );
         cc = cargo;
         queue = processqueue;
-        fh = fedoraHandler;
         
         this.estimate = estimate;
         log.debug( String.format( "DataDock Construction finished" ) );
@@ -131,44 +135,45 @@ public class DatadockThread implements Callable<Float>
      */
     public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, ValidationException , MarshalException, ParseException 
     {
-        log.debug( String.format( "Entering call" ) );
-        Float processEstimate = 0f;
-        String fedoraHandle = null;
+//         log.debug( String.format( "Entering call" ) );
+//         Float processEstimate = 0f;
+//         String fedoraHandle = null;
         
-        int contentLength = 0;
-        for ( CargoObject co : cc.getData() )
-        {
-        	contentLength += co.getContentLength();
-        }        
-        //log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) );
-        String mimetype = "to be got from CargoObject..."; 
-        log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", mimetype, contentLength ) );
+//         int contentLength = 0;
+//         for ( CargoObject co : cc.getData() )
+//         {
+//         	contentLength += co.getContentLength();
+//         }        
+//         //log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", cc.getMimeType(), contentLength ) );
+//         String mimetype = "to be got from CargoObject..."; 
+//         log.debug( String.format( "Getting estimation for a combination of mimetype '%s' and data length '%s'", mimetype, contentLength ) );
       
-        /** \todo: Change getEstimate to mirror CargoContainer consisting of a list of CargoObject*/
-        //processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
-        processEstimate = estimate.getEstimate( "to be changed!!!", contentLength );
+//         /** \todo: Change getEstimate to mirror CargoContainer consisting of a list of CargoObject*/
+//         //processEstimate = estimate.getEstimate( cc.getMimeType(), contentLength );
+//         processEstimate = estimate.getEstimate( "to be changed!!!", contentLength );
       
-        //fedoraHandle = fedoraStoreData();
+//         //fedoraHandle = fedoraStoreData();
 
-        String format = "to be got from a CargoObject object";
-        //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
-        //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, format ) );
-        //queue.push( fedoraHandle, cc.getFormat() );
-        queue.push( fedoraHandle, format );
+//         String format = "to be got from a CargoObject object";
+//         //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, cc.getFormat() ) );
+//         //log.debug( String.format( "Queueing handle %s with itemId %s", fedoraHandle, format ) );
+//         //queue.push( fedoraHandle, cc.getFormat() );
+//         queue.push( fedoraHandle, format );
 
-        //log.debug( String.format( "data queued" ) );
+//         //log.debug( String.format( "data queued" ) );
 
         
         
-        //log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
-        //processEstimate = doProcessing();
+//         //log.info( String.format( "Data queued. Returning estimate = %s", processEstimate ) );
+//         //processEstimate = doProcessing();
         
-        /** \todo: this is an example of how to _not_ call a plugin. But it will make this class work again*/
-        FaktalinkStore fls = new FaktalinkStore( );
-        fls.init( cc );
+//         /** \todo: this is an example of how to _not_ call a plugin. But it will make this class work again*/
+//         FaktalinkStore fls = new FaktalinkStore( );
+//         fls.init( cc );
 
-        processEstimate = fls.storeData();
-        return processEstimate;
+//         processEstimate = fls.storeData();
+//         return processEstimate;
+        return null;
     }
 
     

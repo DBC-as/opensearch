@@ -11,7 +11,7 @@ import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
-
+import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
@@ -20,7 +20,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.Vector;
-
+import java.util.HashMap;
+import dk.dbc.opensearch.common.types.Pair;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -38,10 +39,9 @@ public class DatadockPool
     private final ThreadPoolExecutor threadpool;
     private Estimate estimate;
     private Processqueue processqueue;
-    private FedoraHandler fedoraHandler;
     private int shutDownPollTime;
+    private HashMap< Pair< String, String >, List< String > > jobMap;
 
-    
     /**
      * Constructs the the datadockPool instance
      *
@@ -50,14 +50,14 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, FedoraHandler fedoraHandler )
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, List< String > > jobMap )
     {
         log.debug( "Constructor( threadpool, estimat, processqueue, fedoraHandler ) called" );
 
         this.threadpool = threadpool;
         this.estimate = estimate;
         this.processqueue = processqueue;
-        this.fedoraHandler = fedoraHandler;
+        this.jobMap = jobMap;
 
         jobs = new Vector<FutureTask<DatadockThread>>();
 
@@ -85,7 +85,7 @@ public class DatadockPool
     
     public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException
     {
-        return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, fedoraHandler ) );
+        return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, jobMap ) );
     }
 
 

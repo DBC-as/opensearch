@@ -7,15 +7,13 @@
 package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
-import fedora.client.FedoraClient;
+
 
 import java.io.File;
 import java.net.URL;
@@ -132,16 +130,19 @@ public class DatadockMain
             // DB access
             Estimate estimate = new Estimate();
             Processqueue processqueue = new Processqueue();               
+            
             // Fedora access
-            FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
-            FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
-            FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );      
+            //            FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
+            //            FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
+            //            FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );      
+            // Job hashmapper
+            HashMap< Pair< String, String >, List< String > > jobMap = null;
 
             log.debug( "Starting datadockPool" );
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraHandler );
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, jobMap );
 
             log.debug( "Starting harvester" );
             // harvester;
