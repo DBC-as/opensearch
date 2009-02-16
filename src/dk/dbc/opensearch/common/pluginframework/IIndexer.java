@@ -6,7 +6,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import org.compass.core.CompassSession;
 
 
-public interface IPluggablePTISession extends IPluggable
+public interface IIndexer extends IPluggable
 {
     void init( CargoContainer cargo, CompassSession session );
     
