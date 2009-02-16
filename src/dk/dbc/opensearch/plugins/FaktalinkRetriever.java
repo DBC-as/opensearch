@@ -13,6 +13,7 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
 
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
