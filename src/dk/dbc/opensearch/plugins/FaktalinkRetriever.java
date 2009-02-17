@@ -3,7 +3,7 @@
  */
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamNames;
@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
  * @author stm
  *
  */
-public class FaktalinkRetriever extends FedoraHandler implements IPluggable 
+public class FaktalinkRetriever extends FedoraHandle implements IPluggable 
 {
 	Logger log = Logger.getLogger( "FaktalinkRetriver" );
 	
