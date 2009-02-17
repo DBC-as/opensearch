@@ -60,7 +60,12 @@
     <delete dir="${report.dir}"/>
     <delete file="${base.dir}/doxygen-warnings"/>
     <delete dir="${testresults.dir}"/>
-  	<delete dir="${xsd_2.dir}" />
+    <delete dir="${xsd_2.dir}" />
+
+    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
+      <arg line="create_test_suite_files.py clean"/>
+    </exec>
+
   </target>
 
   <!--target name="opensearch.all">
@@ -103,7 +108,7 @@
 	
   <target name="py_suite" >
   	<exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
-  	  <arg line="create_test_suite_files.py"/>
+  	  <arg line="create_test_suite_files.py make"/>
   	</exec>
 
   </target>

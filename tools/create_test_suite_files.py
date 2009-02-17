@@ -94,25 +94,45 @@ def delete_suite_files( ptr, folder, names ):
                 os.remove( fileName )
     
 
-def call_walk( srcDir ):
+def call_walk_clean( srcDir ):
     os.path.walk( srcDir, delete_suite_files, 'Suite.java' )
     print 'Old suite files have been deleted'
+
+
+def call_walk_make( srcDir ):
     os.path.walk( srcDir, match, 'Test.java' )
     print 'Suite files successfully created!'
 
-sourceDir = os.getcwd()
 
-if os.path.basename( sourceDir ) == 'tools':
-    sourceDir = '../src/dk/dbc/opensearch'  
-    #print sourceDir
-    call_walk( sourceDir )
-elif os.path.basename( sourceDir ) == 'trunk':
-    sourceDir = 'src/dk/dbc/opensearch'
-    #print sourceDir
-    call_walk( sourceDir )
-else:
-    print '<ERROR>'
-    print 'Current directory should be ~/.../opensearch/trunk/tools'
+def main( arg_lst):
+    
+    sourceDir = os.getcwd()
+    
+    if os.path.basename( sourceDir ) == 'tools':
+        sourceDir = '../src/dk/dbc/opensearch'  
+        #print sourceDir
+        
+    elif os.path.basename( sourceDir ) == 'trunk':
+        sourceDir = 'src/dk/dbc/opensearch'
+        #print sourceDir
+    else:
+        print '<ERROR>'
+        print 'Current directory should be ~/.../opensearch/trunk/tools'
+        sys.exit(2);
 
+    if len(arg_lst) == 0: # default 
+        call_walk_clean( sourceDir )
+        call_walk_make( sourceDir )
+        
+    elif arg_lst[0] == 'clean':
+        call_walk_clean( sourceDir )
 
+    elif arg_lst[0] == 'make':
+        call_walk_make( sourceDir )
+    else:    
+        print '<ERROR>'
+        print 'Dont know how to handle argument ', arg_lst[0]
+        sys.exit(2);
 
+if __name__ == "__main__":
+    main( sys.argv[1:])
