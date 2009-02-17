@@ -10,6 +10,8 @@ import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
+import javax.xml.rpc.ServiceException;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
@@ -50,7 +52,7 @@ public class DatadockManager
     }
 
     
-    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException
+    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException
     {
         log.debug( "update() called" );
         

@@ -12,7 +12,7 @@ import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
-
+import dk.dbc.opensearch.common.fedora.PIDManager;
 
 
 import java.io.File;
@@ -132,6 +132,7 @@ public class DatadockMain
             Processqueue processqueue = new Processqueue();               
             
             // Fedora access
+            PIDManager PIDmanager = new PIDManager();
             //            FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
             //            FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
             //            FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );      
@@ -142,7 +143,7 @@ public class DatadockMain
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, jobMap );
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
 
             log.debug( "Starting harvester" );
             // harvester;

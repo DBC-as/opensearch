@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import java.util.concurrent.RejectedExecutionException;
 
+import javax.xml.rpc.ServiceException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -72,7 +73,7 @@ public class DatadockManagerTest {
     
     
     @Test public void testUpdate() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                          FileNotFoundException, IOException, URISyntaxException 
+                                          FileNotFoundException, IOException, URISyntaxException, ServiceException
     {
         
         Vector<DatadockJob> jobs = new Vector<DatadockJob>();
@@ -104,7 +105,7 @@ public class DatadockManagerTest {
 
     
     @Test public void testUpdate_reject() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                                 FileNotFoundException, IOException, URISyntaxException {
+                                                 FileNotFoundException, IOException, URISyntaxException, ServiceException {
         
         Vector<DatadockJob> jobs = new Vector<DatadockJob>();
         jobs.add( mockDatadockJob );

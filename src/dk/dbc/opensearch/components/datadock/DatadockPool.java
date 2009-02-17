@@ -11,6 +11,9 @@ import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
+
+import dk.dbc.opensearch.common.fedora.PIDManager;
+
 import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,6 +26,7 @@ import java.util.Vector;
 import java.util.HashMap;
 import dk.dbc.opensearch.common.types.Pair;
 import org.apache.commons.configuration.ConfigurationException;
+import javax.xml.rpc.ServiceException;
 import org.apache.log4j.Logger;
 
 
@@ -41,7 +45,7 @@ public class DatadockPool
     private Processqueue processqueue;
     private int shutDownPollTime;
     private HashMap< Pair< String, String >, List< String > > jobMap;
-
+    private PIDManager PIDmanager;
     /**
      * Constructs the the datadockPool instance
      *
@@ -50,13 +54,15 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, List< String > > jobMap )
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, PIDManager PIDmanager, 
+                         HashMap< Pair< String, String >, List< String > > jobMap )
     {
         log.debug( "Constructor( threadpool, estimat, processqueue, fedoraHandler ) called" );
 
         this.threadpool = threadpool;
         this.estimate = estimate;
         this.processqueue = processqueue;
+        this.PIDmanager = PIDmanager;
         this.jobMap = jobMap;
 
         jobs = new Vector<FutureTask<DatadockThread>>();
@@ -72,11 +78,14 @@ public class DatadockPool
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      */
-    public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException
+    public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException
     {
         log.debug( String.format( "submit( path='%s', submitter='%s', format='%s' )",
                                   datadockJob.getUri().getRawPath(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
-    
+
+        // Get fedoraPID for job and adding it to the datadockJob.
+        datadockJob.setPID( PIDmanager.getNextPID( datadockJob.getSubmitter() ) );
+        
         FutureTask future = getTask( datadockJob );
         threadpool.submit( future );
         jobs.add( future );
