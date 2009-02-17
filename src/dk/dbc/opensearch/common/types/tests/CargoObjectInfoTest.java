@@ -44,8 +44,7 @@ public class CargoObjectInfoTest
     {
     	for ( CargoObject co : cc.getData() )
     	{
-    		String od = co.getDataStreamName( "originalData" );
-    		assertEquals( "originalData", od );
+    		assertEquals( DataStreamNames.OriginalData, co.getDataStreamName( ) );
     	}
     }
     

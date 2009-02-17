@@ -45,8 +45,7 @@ public class FedoraTools {
 		ObjectProperties op = new ObjectProperties();
 
 		Property pState = new Property();
-		pState
-				.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
+		pState.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
 		pState.setVALUE("Active");
 
 		Property pLabel = new Property();
@@ -55,11 +54,11 @@ public class FedoraTools {
 
 		PropertyType pOwner = new Property();
 		pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
-		pOwner.setVALUE("user");
+		/** \todo: set correct value for owner of the Digital Object*/
+		pOwner.setVALUE( "user" );
 
 		// createdDate
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
-		// Date now = new Date( System.currentTimeMillis() );
 		String timeNow = dateFormat.format(now);
 		Property pCreatedDate = new Property();
 		pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
@@ -104,13 +103,8 @@ public class FedoraTools {
 	 */
 	private static Datastream constructDatastream(CargoObject co, SimpleDateFormat dateFormat, String timeNow) throws java.text.ParseException, IOException 
 	{
-		// CargoObjectInfo coi = ( CargoObjectInfo ) co.getFirst();
-		// List<Byte> dataBytes = ( List<Byte> ) co.getSecond();
-
 		int srcLen = co.getContentLength();
 		byte[] ba = co.getBytes();
-
-		// System.arraycopy( dataBytes, 0, ba, 0, srcLen );
 
 		/** \todo: VERSIONABLE should be configurable in some way */
 		boolean versionable = false;
@@ -128,14 +122,14 @@ public class FedoraTools {
 			controlGroup = DatastreamTypeCONTROL_GROUPType.M;
 
 		// datastreamElement
-		/** \todo: CONTROL_GROUP should be configurable in some way */
 		Datastream dataStreamElement = new Datastream();
 
+		/** \todo: CONTROL_GROUP should be configurable in some way */
 		dataStreamElement.setCONTROL_GROUP( controlGroup );
 
 		//dataStreamElement.setID( co.getFormat() );
-		/** \todo: consider how to obtain the correct name from which the DataStreamName type is retrieved */
-		dataStreamElement.setID( co.getDataStreamName( "test" ) );
+		//dataStreamElement.setID( co.getDataStreamName( "test" ) );
+		dataStreamElement.setID( co.getDataStreamName().getName() );
 		/**
 		 * \todo: State type defaults to active. Client should interact with
 		 * datastream after this method if it wants something else

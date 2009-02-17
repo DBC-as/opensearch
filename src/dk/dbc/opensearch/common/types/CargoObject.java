@@ -49,12 +49,15 @@ public class CargoObject
         pair = new Pair<CargoObjectInfo, List< Byte > >( coi, list );
     }
 	
+	public DataStreamNames getDataStreamName(){
+		return this.pair.getFirst().getDataStreamName();
+	}
 	
-	public String getDataStreamName( String name )
+/*	public String getDataStreamName( String name )
 	{
 		return this.pair.getFirst().getDataStreamNameFrom( name );
 	}
-
+*/
 
     /**
      * Helper method that reads all the bytes from the submitted

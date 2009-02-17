@@ -18,7 +18,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
-import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 
 
@@ -73,6 +72,7 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 
         /** \todo: We need a pid-manager for getting lists of available pids for a given ns 
          *  this whole getNextPID vs. ingest return type looks dubious. I fear it will break in a multithreaded environment
+         *  see bug #8435
          */
         if( ! pid.equals( pids[0] ) )
         {

@@ -162,9 +162,12 @@ public class CargoObjectInfo
         return language;
     }
     
-    
-    String getDataStreamNameFrom( String name )
-    {
-    	return DataStreamNames.getDataStreamNameFrom( name ).name;
+    DataStreamNames getDataStreamName(){
+    	return dataStreamName;    	
     }
+    
+//    String getDataStreamNameFrom( String name )
+//    {
+//    	return DataStreamNames.getDataStreamNameFrom( name ).name;
+//    }
 }
