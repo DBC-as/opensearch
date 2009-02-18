@@ -62,8 +62,8 @@ public class DatadockManagerTest {
         reset( mockFinJobs );
     }
 
-    
-    @Test public void testConstructor() 
+   
+    @Test public void testConstructor() throws ConfigurationException 
     {
         mockHarvester.start();
         replay( mockHarvester );
@@ -71,9 +71,9 @@ public class DatadockManagerTest {
         verify( mockHarvester );
     }
     
-    
+   
     @Test public void testUpdate() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                          FileNotFoundException, IOException, URISyntaxException, ServiceException
+                                          FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException
     {
         
         Vector<DatadockJob> jobs = new Vector<DatadockJob>();
@@ -134,7 +134,7 @@ public class DatadockManagerTest {
         verify( mockDatadockJob );
     }
     
-    @Test public void testShutdown() throws InterruptedException{
+    @Test public void testShutdown() throws InterruptedException, ConfigurationException{
         mockHarvester.start();
         mockHarvester.shutdown();
         mockDatadockPool.shutdown();

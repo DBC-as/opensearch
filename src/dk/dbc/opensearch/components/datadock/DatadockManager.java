@@ -22,6 +22,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
+import org.apache.commons.configuration.XMLConfiguration;
+
+import java.net.URL;
+
 /**
  * \brief the DataDockManager manages the startup, running and
  * closedown of the associated harvester and threadpool
@@ -34,12 +38,13 @@ public class DatadockManager
     private IHarvester harvester = null;
     private int rejectedSleepTime;
 
-
+    XMLConfiguration config = null;
     
     /**
      * Constructs the the DatadockManager instance.
      */
-    public DatadockManager( DatadockPool pool, IHarvester harvester )
+    public DatadockManager( DatadockPool pool, IHarvester harvester ) throws ConfigurationException
+
     {
         log.debug( "Constructor( pool, harvester ) called" );
 
@@ -47,8 +52,9 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
 
-        
-        rejectedSleepTime = 3000; // configurationfile        
+        URL cfgURL = getClass().getResource("/config.xml");        
+        config = new XMLConfiguration( cfgURL );
+        rejectedSleepTime = config.getInt( "datadock.rejected-sleep-time" );
     }
 
     

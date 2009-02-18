@@ -1,16 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <opensearch-definition>
   <database>
-    <driver>oracle.jdbc.driver.OracleDriver</driver>
-    <url>dbc:oracle:thin:stm/stm@tora1.dbc.dk:1521</url>
-    <userID>stm</userID>
-    <passwd>stm</passwd>
+    <driver>org.postgresql.Driver</driver>
+    <url>jdbc:postgresql:opensearch</url>
+    <userID>shm</userID>
+    <passwd>shm</passwd>
   </database> 
   <fedora>
-    <host>sempu.dbc.dk</host>
+    <host>localhost</host>
     <port>8080</port>
     <user>fedoraAdmin</user>
-    <passphrase>fedora_1</passphrase>
+    <passphrase>fedoraAdmin</passphrase>
   </fedora>
+  <datadock>
+    <main-poll-time>1000</main-poll-time>
+    <rejected-sleep-time>3000</rejected-sleep-time>
+    <shutdown-poll-time>1000</shutdown-poll-time>
+    <queuesize>20</queuesize>
+    <corepoolsize>3</corepoolsize>
+    <maxpoolsize>6</maxpoolsize>
+    <keepalivetime>10</keepalivetime>
+  </datadock>
+  <pti>
+    <main-poll-time>1000</main-poll-time>
+    <rejected-sleep-time>3000</rejected-sleep-time>
+    <shutdown-poll-time>1000</shutdown-poll-time>
+    <queuesize>20</queuesize>
+    <corepoolsize>3</corepoolsize>
+    <maxpoolsize>6</maxpoolsize>
+    <keepalivetime>10</keepalivetime>
+  </pti>
+  <harvester>
+    <folder>/home/shm/opensearch/trunk/Harvest-pollTest/</folder>
+  </harvester>
 </opensearch-definition>
 

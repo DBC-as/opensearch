@@ -29,6 +29,9 @@ import org.apache.commons.configuration.ConfigurationException;
 import javax.xml.rpc.ServiceException;
 import org.apache.log4j.Logger;
 
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+import java.net.URL;
 
 /**
  * \ingroup datadock
@@ -46,6 +49,9 @@ public class DatadockPool
     private int shutDownPollTime;
     private HashMap< Pair< String, String >, List< String > > jobMap;
     private PIDManager PIDmanager;
+
+    XMLConfiguration config = null;
+
     /**
      * Constructs the the datadockPool instance
      *
@@ -55,7 +61,7 @@ public class DatadockPool
      * @param fedoraHandler the fedora repository handler
      */
     public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, PIDManager PIDmanager, 
-                         HashMap< Pair< String, String >, List< String > > jobMap )
+                         HashMap< Pair< String, String >, List< String > > jobMap )throws ConfigurationException
     {
         log.debug( "Constructor( threadpool, estimat, processqueue, fedoraHandler ) called" );
 
@@ -67,7 +73,9 @@ public class DatadockPool
 
         jobs = new Vector<FutureTask<DatadockThread>>();
 
-        shutDownPollTime = 1000; // configuration file
+        URL cfgURL = getClass().getResource("/config.xml");
+        config = new XMLConfiguration( cfgURL );
+        shutDownPollTime = config.getInt( "datadock.shutdown-poll-time" );
     }
 
     

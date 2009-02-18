@@ -21,6 +21,9 @@ import java.sql.SQLException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
+import org.apache.commons.configuration.XMLConfiguration;
+import java.net.URL;
+
 
 /**
  * \brief the PTIManager manages the startup, running and
@@ -35,16 +38,23 @@ public class PTIManager
 
     private int rejectedSleepTime;
 
+    XMLConfiguration config = null;
+
     /**
      * Constructs the the PTIManager instance.
      */
-    public PTIManager( PTIPool pool, Processqueue processqueue ) throws ClassNotFoundException, SQLException
+    public PTIManager( PTIPool pool, Processqueue processqueue ) throws ClassNotFoundException, SQLException, ConfigurationException
     {
         log.debug( "Constructor( pool ) called" );
 
         this.processqueue = processqueue;
         this.pool = pool;
-        rejectedSleepTime = 3000; // configurationfile
+
+        
+
+        URL cfgURL = getClass().getResource("/config.xml");        
+        config = new XMLConfiguration( cfgURL );
+        rejectedSleepTime = config.getInt( "pti.rejected-sleep-time" );
     
         log.debug( "Removing entries marked as active from the processqueue" );
         int removed = processqueue.deActivate();

@@ -30,6 +30,11 @@ import java.util.Vector;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
+
+import org.apache.commons.configuration.XMLConfiguration;
+import java.net.URL;
+
+
 /**
  * \ingroup PTI
  *
@@ -46,6 +51,8 @@ public class PTIPool
     private FedoraHandler fedoraHandler;
     private Compass compass;
     private int shutDownPollTime;
+
+    XMLConfiguration config = null;
     
     /**
      * Constructs the the PTIPool instance
@@ -55,7 +62,7 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, FedoraHandler fedoraHandler, Compass compass )
+    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, FedoraHandler fedoraHandler, Compass compass ) throws ConfigurationException
      {
          log.debug( "Constructor( threadpool, estimate, fedoraHandler ) called" );
 
@@ -66,7 +73,11 @@ public class PTIPool
 
          jobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
 
-         shutDownPollTime = 1000; // configuration file
+         
+        URL cfgURL = getClass().getResource("/config.xml");
+        config = new XMLConfiguration( cfgURL );
+        shutDownPollTime = config.getInt( "pti.shutdown-poll-time" );
+
      }
     
     

@@ -33,6 +33,8 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 
 /**
  * The Main method of the datadock. It secures all necessary
@@ -49,8 +51,28 @@ public class DatadockMain
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
 
-    private static int pollTime = 1000; //POLL TIME
+    
+    static XMLConfiguration config = null;
+    static int queueSize;
+    static int corePoolSize;
+    static int maxPoolSize;
+    static long keepAliveTime;
+    static int pollTime;
+    static URL cfgURL;
+    static String harvestDir;
 
+    public DatadockMain() throws ConfigurationException{
+                    
+            cfgURL = getClass().getResource("/config.xml");
+            config = new XMLConfiguration( cfgURL );
+            
+            pollTime = config.getInt( "datadock.main-poll-time" );
+            queueSize = config.getInt( "datadock.queuesize" );
+            corePoolSize = config.getInt( "datadock.corepoolsize" );
+            maxPoolSize = config.getInt( "datadock.maxpoolsize" );
+            keepAliveTime = config.getInt( "datadock.keepalivetime" );
+            harvestDir = config.getString( "harvester.folder" );
+    }
     
     /**
      * The shutdown hook. This method is called when the program catch
@@ -120,12 +142,9 @@ public class DatadockMain
             /** -------------------- setup and start the datadockmanager -------------------- **/            
             log.info("Starting the datadock");
 
-            // todo: skal lægges i konfigurationsfil
-            int queueSize = 10;
-            int corePoolSize = 2;
-            int maxPoolSize = 5;
-            long keepAliveTime = 10;
 
+
+            
             log.debug( "initializing resources" );
             // DB access
             Estimate estimate = new Estimate();
@@ -147,7 +166,7 @@ public class DatadockMain
 
             log.debug( "Starting harvester" );
             // harvester;
-            File harvestDirectory = new File( "/home/shm/opensearch/trunk/Harvest-pollTest/" );
+            File harvestDirectory = new File( harvestDir );
             IHarvester harvester = new FileHarvest( harvestDirectory );            
             
             log.debug( "Starting the manager" );
