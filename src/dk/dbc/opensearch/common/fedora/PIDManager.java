@@ -65,7 +65,7 @@ public class PIDManager {
         user       = config.getString( "fedora.user" );
         passphrase = config.getString( "fedora.passphrase" );
     
-        numPIDs = new NonNegativeInteger( "10" ); // \todo: put in  configuration   
+        numPIDs = new NonNegativeInteger( config.getString( "pidmanager.num-of-pids-to-retrieve" ) );
         pidMap = new HashMap <String, Vector< String > >();
     }
 

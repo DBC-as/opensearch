@@ -33,5 +33,9 @@
   <harvester>
     <folder>/home/shm/opensearch/trunk/Harvest-pollTest/</folder>
   </harvester>
+  <pidmanager>
+    <num-of-pids-to-retrieve>10</num-of-pids-to-retrieve>
+  </pidmanager>
+
 </opensearch-definition>
 
