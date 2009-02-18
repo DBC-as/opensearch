@@ -22,6 +22,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import org.apache.commons.configuration.ConfigurationException;
+import java.net.URL;
 
 /**
  *
@@ -31,10 +33,6 @@ public class JobMapCreator
     static Logger log = Logger.getLogger( JobMapCreator.class );
  
     private HashMap< Pair< String, String >, ArrayList<String> > jobMap;
-
-    /** \todo: Beware hardcoded values */
-    private String datadockJobsPath = "../config/datadock_jobs.xml";
-    private String ptiJobsPath = "../config/pti_jobs.xml";
     
     private File jobFile;
     private Document jobDocument;
@@ -74,6 +72,15 @@ public class JobMapCreator
      */
     public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException 
     {
+
+         URL datadockJobURL = getClass().getResource( "/datadock_jobs.xml" );        
+         log.debug( String.format( "DatadockJob path:'%s'", datadockJobURL.getPath() ) );
+        
+         URL ptiJobURL = getClass().getResource( "/pti_jobs.xml" );
+         log.debug( String.format( "PTIJob path:'%s'", ptiJobURL.getPath() ) );
+
+
+
         docBuildFact = DocumentBuilderFactory.newInstance();
         docBuilder = docBuildFact.newDocumentBuilder();
 
@@ -81,11 +88,11 @@ public class JobMapCreator
 
         if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain") )
         {
-            jobFile = FileHandler.getFile( datadockJobsPath );
+            jobFile = FileHandler.getFile( datadockJobURL.getPath() );
         }
         else
         {
-            jobFile = FileHandler.getFile( ptiJobsPath );
+            jobFile = FileHandler.getFile( ptiJobURL.getPath() );
         }
 
         jobDocument = docBuilder.parse( jobFile );
