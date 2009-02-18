@@ -79,9 +79,11 @@
       </xsd:annotation>
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="harvest"/>
+          <xsd:enumeration value="annotate"/>
+          <xsd:enumeration value="store"/>
           <xsd:enumeration value="index"/>
-          <xsd:enumeration value="transformation"/>
-          <xsd:enumeration value="annotation"/>
+          <xsd:enumeration value="retrieve"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>

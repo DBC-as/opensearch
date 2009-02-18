@@ -2,6 +2,8 @@
 <project name="build-common" >
   <import file="dependencies.xml"/>
 
+  <property name="dist.jar"         value="OpenSearch" />
+	
   <property name="base.dir"         value="${dependencies.basedir}"/>
 
   <property name="lib.dir"          value="${base.dir}/lib"/>
@@ -79,6 +81,19 @@
           depends="toplevel.clean">
     <delete dir="${opensearch.dir}/xsd"/>
   </target>
+	
+  <target name="toplevel.dist" depends="toplevel.compile"
+	      description="generate the distribution" >
+	<!-- Create the distribution directory -->
+	<mkdir dir="${dist.dir}/lib"/>
+
+    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
+    <jar jarfile="${dist.dir}/lib/${dist.jar}.jar" basedir="${classes.dir}"/>
+  	  <manifest>
+  	    <attribute name="${dist.jar}" value="dk.dbc.opensearch.datadock.DatadockMain" />
+      </manifest>
+  </target>
+
 
   <target name="toplevel.compile" description="Compiles source code" > 
   	<!-- depends="toplevel.xsd-classes" -->

@@ -3,7 +3,7 @@
 <job_list>
   <job submitter="dbc" format="faktalink">
     <task name="faktalinkharvester" position="0"/>
-    <task name="faktalinkannotator" position="1"/>
+    <task name="docbookannotate" position="1"/>
     <task name="faktalinkstore"     position="2"/>
   </job>
 

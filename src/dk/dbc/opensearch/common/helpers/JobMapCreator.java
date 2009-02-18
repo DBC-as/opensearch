@@ -4,14 +4,9 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,24 +16,26 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import org.apache.log4j.Logger;
 
 /**
  *
  */
-public class JobMapCreator {
-
-    static Logger log = Logger.getLogger( "JobMapCreator" );
+public class JobMapCreator 
+{
+    static Logger log = Logger.getLogger( JobMapCreator.class );
+ 
     private HashMap< Pair< String, String >, ArrayList<String> > jobMap;
-    //    private HashMap< Pair< String, String >, List<String> > DDJobMap;
-    // \Todo: Beware hardcoded values
+
+    /** \todo: Beware hardcoded values */
     private String datadockJobsPath = "../config/datadock_jobs.xml";
     private String ptiJobsPath = "../config/pti_jobs.xml";
+    
     private File jobFile;
     private Document jobDocument;
 
@@ -49,14 +46,18 @@ public class JobMapCreator {
      * a little helper for comparing the int thats is second member in Pairs
      * used in making the list with the tasks sorted due to posistion
      */
-    class secondComparator implements Comparator{
-
-        public int compare( Object x, Object y ){
-
-            if( ((Pair<String, Integer>)x).getSecond() < ((Pair<String, Integer>)y).getSecond() ){
+    class secondComparator implements Comparator< Pair< String, Integer > >
+    {
+        public int compare( Pair< String, Integer > x, Pair< String, Integer > y )
+        {
+            if( ((Pair< String, Integer >)x).getSecond() < ((Pair< String, Integer >)y).getSecond() )
+            {
                 return -4;
-            }else{
-                if( ((Pair<String, Integer>)x).getSecond() == ((Pair<String, Integer>)y).getSecond() ){
+            }
+            else
+            {
+                if( ((Pair<String, Integer>)x).getSecond() == ((Pair<String, Integer>)y).getSecond() )
+                {
                     return 0;
                 }
             }
@@ -65,21 +66,25 @@ public class JobMapCreator {
 
     }
 
+    
     secondComparator secComp = new secondComparator();
 
     /**
      *
      */
-    public JobMapCreator( Class classType )throws ParserConfigurationException, SAXException, IOException {
-
+    public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException 
+    {
         docBuildFact = DocumentBuilderFactory.newInstance();
         docBuilder = docBuildFact.newDocumentBuilder();
 
-        jobMap = new HashMap();
+        jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
 
-        if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain") ){
+        if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain") )
+        {
             jobFile = FileHandler.getFile( datadockJobsPath );
-        }else{
+        }
+        else
+        {
             jobFile = FileHandler.getFile( ptiJobsPath );
         }
 
@@ -94,20 +99,20 @@ public class JobMapCreator {
 
         String submitter;
         String format;
-        ArrayList<String> sortedTaskList = new ArrayList();
-        List< Pair< String, Integer > > taskAndPriority = new ArrayList();
+        ArrayList<String> sortedTaskList = new ArrayList< String >();
+        List< Pair< String, Integer > > taskAndPriority = new ArrayList< Pair< String, Integer > >();
         Element jobElement;
         NodeList taskList;
         int taskListLength;
         Element taskElement;
-        Pair taskPriPair;
+        //Pair taskPriPair;
         String task;
         int position;
         int listLength = jobNodeList.getLength();
 
         // 30: For each node read the task name and position
-        for( int x = 0; x < listLength ; x++ ){
-
+        for( int x = 0; x < listLength ; x++ )
+        {
             jobElement = (Element)jobNodeList.item( x );
 
             submitter = jobElement.getAttribute( "submitter" );
@@ -119,16 +124,14 @@ public class JobMapCreator {
             taskAndPriority.clear();
 
             // 35: get the tasks in a List
-            for( int y = 0; y < taskListLength; y++ ){
-
+            for( int y = 0; y < taskListLength; y++ )
+            {
                 taskElement = (Element)taskList.item( y );
                 //get the name and position of the task element
                 task = (String)taskElement.getAttribute( "name" );
                 position = Integer.decode(taskElement.getAttribute( "position" ) );
 
-
-
-                taskAndPriority.add( new Pair( task, position ) );
+                taskAndPriority.add( new Pair< String, Integer >( task, position ) );
             }
 
             // 40: sort the tasks based on the position (order)
@@ -136,18 +139,20 @@ public class JobMapCreator {
 
             // 50: put it in a List
             sortedTaskList.clear();
-            for( int z = 0; z < taskListLength; z++ ){
+            for( int z = 0; z < taskListLength; z++ )
+            {
                 task = ( (Pair< String, Integer >)taskAndPriority.get( z ) ).getFirst();
                 sortedTaskList.add( task );
             }
+            
             // 60: Put it into the map with  <submitter, format> as key and List as value
 
-            jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList(sortedTaskList) );
+            jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >(sortedTaskList) );
         }
     }
 
-    public HashMap< Pair< String, String >, ArrayList< String > > getMap(){
-
+    public HashMap< Pair< String, String >, ArrayList< String > > getMap()
+    {
         return jobMap;
     }
 }

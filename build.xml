@@ -21,6 +21,12 @@
       <param name="dependency.target" value="toplevel.compile"/>
     </antcall>
   </target>
+	
+  <target name="dist" description="Generate distribution jar">
+	<antcall target="${ant.project.name}">
+	  <param name="dependency.target" value="toplevel.dist" />
+    </antcall>
+  </target>
 
   <!--target name="opensearch">
 	<antcall target="toplevel.compile">
