@@ -32,7 +32,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.stream.XMLStreamException;
@@ -70,7 +70,7 @@ public class DatadockThread implements Callable<Float>
 {
     private CargoContainer cc;
     private Processqueue queue;
-    private HashMap< Pair< String, String >, List< String > > jobMap;
+    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
     
     private Logger log = Logger.getLogger("DataDockThread");
 
@@ -92,7 +92,7 @@ public class DatadockThread implements Callable<Float>
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      */
-    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, List< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException 
+    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException 
     {
         this.jobMap = jobMap;
         log.debug( String.format( "Entering DatadockThread Constructor" ) );

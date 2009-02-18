@@ -28,6 +28,7 @@ import dk.dbc.opensearch.common.types.Pair;
 import org.apache.commons.configuration.ConfigurationException;
 import javax.xml.rpc.ServiceException;
 import org.apache.log4j.Logger;
+import java.util.ArrayList;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -47,7 +48,7 @@ public class DatadockPool
     private Estimate estimate;
     private Processqueue processqueue;
     private int shutDownPollTime;
-    private HashMap< Pair< String, String >, List< String > > jobMap;
+    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
     private PIDManager PIDmanager;
 
     XMLConfiguration config = null;
@@ -61,7 +62,7 @@ public class DatadockPool
      * @param fedoraHandler the fedora repository handler
      */
     public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, PIDManager PIDmanager, 
-                         HashMap< Pair< String, String >, List< String > > jobMap )throws ConfigurationException
+                         HashMap< Pair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
     {
         log.debug( "Constructor( threadpool, estimat, processqueue, fedoraHandler ) called" );
 

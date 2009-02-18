@@ -46,7 +46,7 @@ public class JobMapCreator {
     DocumentBuilder docBuilder;
 
     /**
-     * a little helper for comparing the int thats is second memeber in Pairs
+     * a little helper for comparing the int thats is second member in Pairs
      * used in making the list with the tasks sorted due to posistion
      */
     class secondComparator implements Comparator{

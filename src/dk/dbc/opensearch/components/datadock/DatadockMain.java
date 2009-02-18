@@ -13,7 +13,11 @@ import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.common.fedora.PIDManager;
-
+import dk.dbc.opensearch.common.helpers.JobMapCreator;
+import java.util.ArrayList;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import java.io.IOException;
 
 import java.io.File;
 import java.net.URL;
@@ -60,8 +64,11 @@ public class DatadockMain
     static int pollTime;
     static URL cfgURL;
     static String harvestDir;
+    static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    
 
-    public DatadockMain() throws ConfigurationException{
+    public DatadockMain() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    {
                     
             cfgURL = getClass().getResource("/config.xml");
             config = new XMLConfiguration( cfgURL );
@@ -72,6 +79,11 @@ public class DatadockMain
             maxPoolSize = config.getInt( "datadock.maxpoolsize" );
             keepAliveTime = config.getInt( "datadock.keepalivetime" );
             harvestDir = config.getString( "harvester.folder" );
+            
+            // Jobmap
+            JobMapCreator jobMapCreator = new JobMapCreator( this.getClass() );
+            jobMap = jobMapCreator.getMap();
+
     }
     
     /**
@@ -141,11 +153,11 @@ public class DatadockMain
 
             /** -------------------- setup and start the datadockmanager -------------------- **/            
             log.info("Starting the datadock");
-
-
-
             
             log.debug( "initializing resources" );
+            
+
+
             // DB access
             Estimate estimate = new Estimate();
             Processqueue processqueue = new Processqueue();               
@@ -156,8 +168,7 @@ public class DatadockMain
             //            FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
             //            FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );      
             // Job hashmapper
-            HashMap< Pair< String, String >, List< String > > jobMap = null;
-
+            
             log.debug( "Starting datadockPool" );
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
