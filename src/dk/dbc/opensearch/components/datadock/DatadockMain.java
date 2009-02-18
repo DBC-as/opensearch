@@ -84,6 +84,8 @@ public class DatadockMain
             JobMapCreator jobMapCreator = new JobMapCreator( this.getClass() );
             jobMap = jobMapCreator.getMap();
 
+            log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
+
     }
     
     /**
@@ -148,6 +150,7 @@ public class DatadockMain
         
         try
         {
+            DatadockMain datadockmain = new DatadockMain();
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender(startupAppender);
 
@@ -156,8 +159,6 @@ public class DatadockMain
             
             log.debug( "initializing resources" );
             
-
-
             // DB access
             Estimate estimate = new Estimate();
             Processqueue processqueue = new Processqueue();               
@@ -171,8 +172,9 @@ public class DatadockMain
             
             log.debug( "Starting datadockPool" );
             // datadockpool
-            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
+            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
+
             datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
 
             log.debug( "Starting harvester" );

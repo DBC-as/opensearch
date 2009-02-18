@@ -37,8 +37,8 @@ public class JobMapCreator {
     private HashMap< Pair< String, String >, ArrayList<String> > jobMap;
     //    private HashMap< Pair< String, String >, List<String> > DDJobMap;
     // \Todo: Beware hardcoded values
-    private String datadockJobsPath = "config/datadock_jobs.xml";
-    private String ptiJobsPath = "/config/pti_jobs.xml";
+    private String datadockJobsPath = "../config/datadock_jobs.xml";
+    private String ptiJobsPath = "../config/pti_jobs.xml";
     private File jobFile;
     private Document jobDocument;
 

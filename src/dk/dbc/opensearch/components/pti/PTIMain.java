@@ -125,6 +125,7 @@ public class PTIMain
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         try{
+            PTIMain ptimain = new PTIMain();
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender(startupAppender);
 
