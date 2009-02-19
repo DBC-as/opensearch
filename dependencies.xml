@@ -103,7 +103,7 @@
 
   <!-- ================================================================== -->
   <target name="opensearch.components.datadock" >
-  	<antcall target="opensearch.common.db">
+  	<antcall target="opensearch.common.db" >
   	  <param name="dependency.target" value="toplevel.compile"/>
   	</antcall>  	    
   	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/datadock"
