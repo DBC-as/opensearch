@@ -26,7 +26,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import java.net.URL;
 
 /**
- *
+ * Reads the jobmap file into the hashmap
  */
 public class JobMapCreator 
 {
@@ -68,10 +68,14 @@ public class JobMapCreator
     secondComparator secComp = new secondComparator();
 
     /**
-     *
+     * Constructor for the jobmap. Depending on nthe argument it
+     * either reads the datadock or pti jobmap file
      */
     public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException 
     {
+
+        log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
+
     	URL datadockJobURL = getClass().getResource( "/datadock_jobs.xml" );   
         log.debug( String.format( "DatadockJob path: '%s'", datadockJobURL.getPath() ) );
         
@@ -92,6 +96,7 @@ public class JobMapCreator
             jobFile = FileHandler.getFile( ptiJobURL.getPath() );
         }
 
+        log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
         jobDocument = docBuilder.parse( jobFile );
 
         //build the jobMap
@@ -157,6 +162,7 @@ public class JobMapCreator
 
     public HashMap< Pair< String, String >, ArrayList< String > > getMap()
     {
+        log.debug( "GetMap() called" );
         return jobMap;
     }
 }
