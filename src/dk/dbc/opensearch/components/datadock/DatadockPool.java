@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
 import java.net.URL;
 
 /**
@@ -43,7 +42,7 @@ import java.net.URL;
 public class DatadockPool
 {
     static Logger log = Logger.getLogger("DatadockPool");
-    private Vector<FutureTask<DatadockThread>> jobs;
+    private Vector< FutureTask > jobs;
     private final ThreadPoolExecutor threadpool;
     private Estimate estimate;
     private Processqueue processqueue;
@@ -72,7 +71,7 @@ public class DatadockPool
         this.PIDmanager = PIDmanager;
         this.jobMap = jobMap;
 
-        jobs = new Vector<FutureTask<DatadockThread>>();
+        jobs = new Vector< FutureTask >();
 
         URL cfgURL = getClass().getResource("/config.xml");
         config = new XMLConfiguration( cfgURL );
@@ -116,11 +115,11 @@ public class DatadockPool
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Vector<CompletedTask> checkJobs() throws InterruptedException 
+    public Vector< CompletedTask > checkJobs() throws InterruptedException 
     {
         log.debug( "checkJobs() called" );
     
-        Vector<CompletedTask> finishedJobs = new Vector<CompletedTask>();
+        Vector< CompletedTask > finishedJobs = new Vector< CompletedTask >();
         for( FutureTask job : jobs )        
         {
             if( job.isDone() )

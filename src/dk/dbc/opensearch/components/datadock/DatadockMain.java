@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -34,7 +33,6 @@ import org.apache.log4j.SimpleLayout;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -54,7 +52,6 @@ public class DatadockMain
     static protected boolean shutdownRequested = false;    
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
-
     
     static XMLConfiguration config = null;
     static int queueSize;
@@ -64,28 +61,26 @@ public class DatadockMain
     static int pollTime;
     static URL cfgURL;
     static String harvestDir;
-    static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    public static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
     
 
     public DatadockMain() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
-    {
-                    
-            cfgURL = getClass().getResource("/config.xml");
-            config = new XMLConfiguration( cfgURL );
-            
-            pollTime = config.getInt( "datadock.main-poll-time" );
-            queueSize = config.getInt( "datadock.queuesize" );
-            corePoolSize = config.getInt( "datadock.corepoolsize" );
-            maxPoolSize = config.getInt( "datadock.maxpoolsize" );
-            keepAliveTime = config.getInt( "datadock.keepalivetime" );
-            harvestDir = config.getString( "harvester.folder" );
-            
-            // Jobmap
-            JobMapCreator jobMapCreator = new JobMapCreator( this.getClass() );
-            jobMap = jobMapCreator.getMap();
+    {                    
+        cfgURL = getClass().getResource("/config.xml");
+        config = new XMLConfiguration( cfgURL );
+        
+        pollTime = config.getInt( "datadock.main-poll-time" );
+        queueSize = config.getInt( "datadock.queuesize" );
+        corePoolSize = config.getInt( "datadock.corepoolsize" );
+        maxPoolSize = config.getInt( "datadock.maxpoolsize" );
+        keepAliveTime = config.getInt( "datadock.keepalivetime" );
+        harvestDir = config.getString( "harvester.folder" );
+        
+        // Jobmap
+        JobMapCreator jobMapCreator = new JobMapCreator( this.getClass() );
+        jobMap = jobMapCreator.getMap();
 
-            log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
-
+        log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
     }
     
     /**

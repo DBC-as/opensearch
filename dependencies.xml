@@ -61,7 +61,6 @@
 
   <!-- ================================================================== -->
   <target name="opensearch.common.helpers">
-    <!--antcall target="default.clean-all"/-->
     <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/helpers"
          target="${dependency.target}"
          inheritAll="false"/>
@@ -69,7 +68,6 @@
 
   <!-- ================================================================== -->
   <target name="opensearch.common.os">
-    <!--antcall target="default.clean-all"/-->
     <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/os"
          target="${dependency.target}"
          inheritAll="false"/>
@@ -104,8 +102,11 @@
   </target>
 
   <!-- ================================================================== -->
-  <target name="opensearch.components.datadock" depends="opensearch.common.db">
-    <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/datadock"
+  <target name="opensearch.components.datadock" >
+  	<antcall target="opensearch.common.db">
+  	  <param name="dependency.target" value="toplevel.compile"/>
+  	</antcall>  	    
+  	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/components/datadock"
          target="${dependency.target}"
          inheritAll="false"/>
   </target>

@@ -72,14 +72,11 @@ public class JobMapCreator
      */
     public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException 
     {
-
-         URL datadockJobURL = getClass().getResource( "/datadock_jobs.xml" );        
-         log.debug( String.format( "DatadockJob path:'%s'", datadockJobURL.getPath() ) );
+    	URL datadockJobURL = getClass().getResource( "/datadock_jobs.xml" );   
+        log.debug( String.format( "DatadockJob path: '%s'", datadockJobURL.getPath() ) );
         
-         URL ptiJobURL = getClass().getResource( "/pti_jobs.xml" );
-         log.debug( String.format( "PTIJob path:'%s'", ptiJobURL.getPath() ) );
-
-
+        URL ptiJobURL = getClass().getResource( "/pti_jobs.xml" );
+        log.debug( String.format( "PTIJob path: '%s'", ptiJobURL.getPath() ) );
 
         docBuildFact = DocumentBuilderFactory.newInstance();
         docBuilder = docBuildFact.newDocumentBuilder();
