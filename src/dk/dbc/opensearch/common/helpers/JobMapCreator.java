@@ -74,6 +74,11 @@ public class JobMapCreator
     public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException 
     {
 
+
+        /**
+         * \Todo :Not sure i can mock the URL class..
+         */
+
         log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
 
     	URL datadockJobURL = getClass().getResource( "/datadock_jobs.xml" );   
