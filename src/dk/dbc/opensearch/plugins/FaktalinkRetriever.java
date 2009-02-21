@@ -84,8 +84,8 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
                 log.debug( String.format( "Making a bytearray of the datastream" ) );
                 byte[] datastr = ds.getStream();
 
-                log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
-                InputStream inputStream = new ByteArrayInputStream( datastr );
+                // log.debug( String.format( "Preparing the datastream for the CargoContainer" ) );
+                // InputStream inputStream = new ByteArrayInputStream( datastr );
 
                 log.debug( String.format( "DataStream ID      =%s", itemId ) );
                 log.debug( String.format( "DataStream Label   =%s", def.getLabel() ) );
@@ -98,7 +98,7 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
                 cargo = new CargoContainer();
                 
                 DataStreamNames dsn = DataStreamNames.OriginalData;
-                cargo.add( dsn, itemId, pidNS, language, def.getMIMEType(), inputStream);
+                cargo.add( dsn, itemId, pidNS, language, def.getMIMEType(), datastr );
             }
         }
         

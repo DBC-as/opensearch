@@ -6,6 +6,9 @@ import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.os.StreamHandler;
+
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,8 +51,10 @@ public class FaktalinkHarvester implements IHarvestable
         String lang = "DA";
         DataStreamNames dataStreamName = DataStreamNames.OriginalData;
         InputStream data =  FileHandler.readFile( path );
-        
-        cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, data );
+
+        byte [] bdata = StreamHandler.bytesFromInputStream( data, 0 );
+
+        cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, bdata );
         
         return cargo;
     }

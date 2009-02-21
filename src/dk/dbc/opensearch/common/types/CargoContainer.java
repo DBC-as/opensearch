@@ -48,7 +48,7 @@ public class CargoContainer
      * @return TRUE if add operation finishes successfully.
      * @throws IOException
      */
-    public void add( DataStreamNames dataStreamName, String format, String submitter, String language, String mimetype, InputStream data ) throws IOException
+    public void add( DataStreamNames dataStreamName, String format, String submitter, String language, String mimetype, byte[] data ) throws IOException
     {
     	CargoObject co = new CargoObject( dataStreamName, mimetype, language, submitter, format, data );
     	this.data.add( co );    	

@@ -33,7 +33,8 @@ public class CargoObjectInfoTest
         cc = new CargoContainer();
         
         String teststring = "æøå";
-        InputStream data = new ByteArrayInputStream( teststring.getBytes( ) );
+        //InputStream data = new ByteArrayInputStream( teststring.getBytes( ) );
+        byte[] data = teststring.getBytes( "UTF-8" );
     	DataStreamNames dataStreamName = DataStreamNames.OriginalData;
         cc.add( dataStreamName, test_format, test_submitter, test_lang, cmt.getMimeType(), data );    	
     }

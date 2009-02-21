@@ -20,6 +20,7 @@ import java.io.FilenameFilter;
 import dk.dbc.opensearch.common.os.PdfFileFilter;
 import dk.dbc.opensearch.common.os.XmlFileFilter;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.os.StreamHandler;
 
 import java.util.Vector;
 
@@ -69,14 +70,14 @@ public class RUBHarvester implements IHarvestable{
         FilenameFilter[] pdfFilter = { new PdfFileFilter() };
         String pdfFilePath = FileHandler.getFileList( path, pdfFilter, false ).remove(0);
         log.debug( String.format( "pdf filepath='%s'", pdfFilePath ) );
-        InputStream pdfData = FileHandler.readFile( pdfFilePath );
+        byte[] pdfData = StreamHandler.bytesFromInputStream( FileHandler.readFile( pdfFilePath ), 0 );
         cargoContainer.add( DataStreamNames.OriginalData, format, submitter, lang, mimetype, pdfData );
         
         // read and add xml to cargoContainer
         FilenameFilter[] xmlFilter = { new XmlFileFilter() };
         String xmlFilePath = FileHandler.getFileList( path, xmlFilter, false ).remove(0);
         log.debug( String.format( "xml filepath='%s'", xmlFilePath ) );
-        InputStream xmlData = FileHandler.readFile( xmlFilePath ); 
+        byte[] xmlData = StreamHandler.bytesFromInputStream( FileHandler.readFile( xmlFilePath ), 0 ); 
         cargoContainer.add( DataStreamNames.DublinCoreData, format, submitter, lang, mimetype, xmlData );
 
         return cargoContainer; 
