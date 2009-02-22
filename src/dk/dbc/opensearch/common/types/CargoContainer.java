@@ -8,7 +8,6 @@ package dk.dbc.opensearch.common.types;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.io.ByteArrayOutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -55,51 +54,6 @@ public class CargoContainer
     	this.data.add( co );    	
     }
 
-    /**
-     * Add CargoObject to internal data representation.
-     * 
-     * @param format
-     * @param submitter
-     * @param language
-     * @param mimetype
-     * @param data     
-     * @return TRUE if add operation finishes successfully.
-     * @throws IOException
-     */
-    public void add( DataStreamNames dataStreamName, String format, String submitter, String language, String mimetype, InputStream data ) throws IOException
-    {
-    	CargoObject co = new CargoObject( dataStreamName, mimetype, language, submitter, format, getBytes( data, 1024*16 ) );
-    	this.data.add( co );    	
-    }
-
-    /**
-     * Makes a byte array out of a inputStream
-     */
-    private byte[] getBytes( InputStream in, int chunkSize ) throws IOException
-    {
-        if( chunkSize < 1 ){
-            chunkSize = 1024;
-        }
-
-        int bytesRead;
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] b = new byte[chunkSize];
-
-        try {
-
-            while( ( bytesRead = in.read( b, 0, chunkSize ) ) > 0 ){
-                baos.write( b, 0, bytesRead );
-            }
-
-            byte[] result = baos.toByteArray();
-            return result;
-        }
-        finally {
-            baos.close();
-        }
-
-    }
 
     /**
      * Getter for internal data, the validity of which is guaranteed by the Constructor.
