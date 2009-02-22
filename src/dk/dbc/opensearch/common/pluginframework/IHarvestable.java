@@ -22,5 +22,5 @@ public interface IHarvestable extends IPluggable
 	 * @return the CargoContainer that results from the plugin activity 
 	 * @throws IOException if the URI provided by the DatadockJob from the init call could not be read 
 	 */
-	public CargoContainer getCargoContainer() throws IOException;
+	public CargoContainer getCargoContainer() throws Exception;
 }
