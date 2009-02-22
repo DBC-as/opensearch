@@ -101,7 +101,7 @@ public class FileHandler
      * @returns an inputstream with the file content
      * @throws FileNotFoundException if the file does not exist
      */
-    public static InputStream readFile( String file ) throws FileNotFoundException
+    public static FileInputStream readFile( String file ) throws FileNotFoundException
     {
         InputStream is = null;
 
@@ -111,7 +111,7 @@ public class FileHandler
             throw new FileNotFoundException( String.format( "Error - '%s' is not a file", file ) );       
         }
         
-        InputStream data = new FileInputStream( file );
+        FileInputStream data = new FileInputStream( file );
         return data;
     }
 }
