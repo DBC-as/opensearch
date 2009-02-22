@@ -45,7 +45,7 @@ public class FedoraHandlerTest
     DatastreamDef mockDatastreamDef;
     MIMETypedStream mockMIMETypedStream;
 
-    FedoraHandler fh;
+    //    FedoraHandler fh;
     String[] pids;
     String testString;
     String returnPid;
@@ -106,7 +106,7 @@ public class FedoraHandlerTest
         
 
         /** do the stuff */
-        fh = new FedoraHandler(mockFedoraClient); 
+        //fh = new FedoraHandler(mockFedoraClient); 
         
         
         /**4 check if it happened as expected */  
@@ -146,7 +146,7 @@ public class FedoraHandlerTest
         replay( mockCargoContainer );
 
         /** do the stuff */ 
-        fh = new FedoraHandler(mockFedoraClient); 
+        //fh = new FedoraHandler(mockFedoraClient); 
         
         /** \todo: fixme: fix this test after plugins are implemented*/
         //returnPid = fh.submitDatastream( mockCargoContainer );
@@ -191,7 +191,7 @@ public class FedoraHandlerTest
         replay( mockCargoContainer );
         
         /** do the stuff */ 
-        FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
+        //FedoraHandler fh = new FedoraHandler(mockFedoraClient); 
 
         /** \todo: fixme: fix this test after plugins are implemented*/
         /*
@@ -285,7 +285,7 @@ public class FedoraHandlerTest
         replay( mockDatastreamDef );
                
         /** do the stuff */ 
-        FedoraHandler fh = new FedoraHandler( mockFedoraClient ); 
+        //FedoraHandler fh = new FedoraHandler( mockFedoraClient ); 
         /** \todo: fixme: fix this test after plugins are implemented*/
         /*
         try

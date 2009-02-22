@@ -92,7 +92,7 @@ public class DatadockThread implements Callable<Float>
         CargoContainer cargo = null;
         
         // 10 Get plugin sequence from jobMap -> List
-        
+
         // 20 Get plugins from PluginResolver
         
         // 30 Call plugins in correct sequence using x parameters

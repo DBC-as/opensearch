@@ -6,15 +6,15 @@
 
 package dk.dbc.opensearch.components.pti;
 
-import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
+//import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
+//import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 
 import dk.dbc.opensearch.common.compass.CompassFactory;
 
 import org.compass.core.Compass;
-import fedora.client.FedoraClient;
+//import fedora.client.FedoraClient;
 
 import java.io.File;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -137,9 +137,9 @@ public class PTIMain
             Estimate estimate = new Estimate();
             Processqueue processqueue = new Processqueue();
 
-            FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
-            FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
-            FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );
+            //FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
+            //FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
+            //FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );
 
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
@@ -148,7 +148,8 @@ public class PTIMain
             // PTIpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, fedoraHandler, compass );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, //fedoraHandler, 
+                                           compass );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 

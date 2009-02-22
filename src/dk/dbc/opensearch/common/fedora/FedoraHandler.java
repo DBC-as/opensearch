@@ -89,8 +89,8 @@ public class FedoraHandler implements Constants
      * @throws ServiceException something went wrong initializing the fedora client
      * @throws IOException something went wrong initializing the fedora client
      */
-    public FedoraHandler( FedoraClient client ) throws ConfigurationException,/* MalformedURLException,*/ UnknownHostException, ServiceException, IOException 
-    {
+    // public FedoraHandler( FedoraClient client ) throws ConfigurationException,/* MalformedURLException,*/ UnknownHostException, ServiceException, IOException 
+    // {
 /*        log.debug( "Fedorahandler constructor");
         this.client = client;
        
@@ -116,7 +116,7 @@ public class FedoraHandler implements Constants
         apia = client.getAPIA();
         apim = client.getAPIM();
         log.debug( "Got the ClientAPIA and APIM");
-*/    }
+*/   // }
 
     /**
      * Submits the datastream to fedora repository 

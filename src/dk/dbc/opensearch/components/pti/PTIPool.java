@@ -15,7 +15,7 @@ import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
+//import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
@@ -48,7 +48,7 @@ public class PTIPool
     private final ThreadPoolExecutor threadpool;
     private Estimate estimate;
     private Processqueue processqueue;
-    private FedoraHandler fedoraHandler;
+    //    private FedoraHandler fedoraHandler;
     private Compass compass;
     private int shutDownPollTime;
 
@@ -62,13 +62,14 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, FedoraHandler fedoraHandler, Compass compass ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, //FedoraHandler fedoraHandler, 
+                    Compass compass ) throws ConfigurationException
      {
-         log.debug( "Constructor( threadpool, estimate, fedoraHandler ) called" );
+         log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
          this.threadpool = threadpool;
          this.estimate = estimate;
-         this.fedoraHandler = fedoraHandler;
+         //this.fedoraHandler = fedoraHandler;
          this.compass = compass;
 
          jobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
@@ -105,7 +106,8 @@ public class PTIPool
         CompassSession session = null;
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
-        return new FutureTask( new PTIThread( fedoraHandle, session, fedoraHandler, estimate ) );
+        return new FutureTask( new PTIThread( fedoraHandle, session, //fedoraHandler, 
+                                              estimate ) );
     }
 
     

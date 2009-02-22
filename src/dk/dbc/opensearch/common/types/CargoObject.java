@@ -57,39 +57,6 @@ public class CargoObject
         }
     */
 
-    /**
-     * Helper method that reads all the bytes from the submitted
-     * InputStream into a List<Byte> datatype
-     *
-     * @param is the InputStream containing the bytestream
-     * @returns a List<Byte> containing the bytearray
-     * @throws IOException if the stream could not be read or was
-     * closed during reading
-     */
-    // private List<Byte> readStream( InputStream is ) throws IOException
-    // {
-    //     ArrayList<Byte> al = new ArrayList<Byte>();
-
-    //     while( is.available() > 0 )
-    //     {
-    //         Byte dataByte = new Byte( (byte)is.read() );
-    //         al.add( dataByte );
-    //     }
-
-    //     return al;
-    // }
-
-
-    /**
-     * \todo: is this method needed at all?
-     * @return
-     */
-    public Pair< CargoObjectInfo, byte[] > getPair()
-    {
-        return pair;
-    }
-
-
     public boolean checkLanguage( String language )
     {
         return pair.getFirst().checkLanguage( language );
@@ -161,23 +128,4 @@ public class CargoObject
     {
         return pair.getSecond();
     }
-
-    /**
-     * This methods converts the internal representation into a native type
-     *
-     * @return an array of bytes containing the contents of the underlying data
-     *         container
-     */
-    // public byte[] getBytes()
-    // {
-    //     int bsize = pair.getSecond().size();
-
-    //     Byte[] bData = pair.getSecond().toArray(new Byte[bsize]);
-    //     byte[] b_data = new byte[bsize];
-    //     for (int i = 0; i < bData.length; i++) {
-    //         b_data[i] = bData[i];
-    //     }
-
-    //     return b_data;
-    // }
 }

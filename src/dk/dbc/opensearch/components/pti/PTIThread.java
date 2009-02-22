@@ -49,7 +49,7 @@ public class PTIThread implements Callable<Long>{
 
     Logger log = Logger.getLogger("PTIThread");
 
-    private FedoraHandler fh;
+    //private FedoraHandler fh;
     //    private DefaultCompassSession session;
     private CompassSession session;
     private CargoContainer cc;
@@ -71,7 +71,8 @@ public class PTIThread implements Callable<Long>{
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public PTIThread(String fedoraHandle, CompassSession session, FedoraHandler fh, Estimate estimate ) throws ConfigurationException, ClassNotFoundException {
+    public PTIThread(String fedoraHandle, CompassSession session, //FedoraHandler fh, 
+                     Estimate estimate ) throws ConfigurationException, ClassNotFoundException {
         log.debug( String.format( "constructor(session, fedoraHandle=%s )", fedoraHandle ) );
 
 //         if( fh == null ){
@@ -138,7 +139,8 @@ public class PTIThread implements Callable<Long>{
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
      */    
-    public Long call( SAXReader saxReader, Date finishTime, FedoraHandler fh, String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+    public Long call( SAXReader saxReader, Date finishTime, //FedoraHandler fh, 
+                      String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
 //         log.debug( "Entering PTI.call()" );
 
 

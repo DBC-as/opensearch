@@ -1,3 +1,4 @@
+
 package dk.dbc.opensearch.common.types.tests;
 /** \brief UnitTest for CargoContainerT **/
 
@@ -92,14 +93,12 @@ public class CargoContainerTest
         public void testStreamCannotBeEmpty() throws IOException
     {
 
-        //InputStream is = new ByteArrayInputStream( new byte[0] );
         byte[] is = new byte[0];
         CargoContainer cc = new CargoContainer();
         cc.add( dsn, format, submitter, language, mimetype, is );
 
         CargoObject co = cc.getData().get( 0 );
-        Pair< CargoObjectInfo, byte[] > pair = co.getPair();
-        byte[] list = pair.getSecond();
+        byte[] list = co.getBytes();
 
         if( list.length == 0)
             throw new NullPointerException();
@@ -111,7 +110,7 @@ public class CargoContainerTest
         cargo.add( dsn, format, submitter, language, mimetype, data );
 
         ArrayList< CargoObject > aList = cargo.getData();
-        byte[] listB = aList.get( 0 ).getPair().getSecond();
+        byte[] listB = aList.get( 0 ).getBytes();
         byte[] sixBytes = new byte[6];
         for( int i = 0; i < listB.length; i++ )
             sixBytes[i] = listB[i];
@@ -126,19 +125,15 @@ public class CargoContainerTest
         CargoContainer cc = new CargoContainer();
 
         String str1 = "abc";
-        // InputStream data1 = new ByteArrayInputStream( str1.getBytes() );
         byte[] data1 = str1.getBytes();
 
         String str2 = "abc";
-        //InputStream data2 = new ByteArrayInputStream( str2.getBytes() );
         byte[] data2 = str2.getBytes();
 
         String str3 = "abc";
-        //InputStream data3 = new ByteArrayInputStream( str3.getBytes() );
         byte[] data3 = str3.getBytes();
 
         String str4 = "abc";
-        //InputStream data4 = new ByteArrayInputStream( str4.getBytes() );
         byte[] data4 = str4.getBytes();
 
         cc.add( dsn, format, submitter, language, mimetype, data1);
