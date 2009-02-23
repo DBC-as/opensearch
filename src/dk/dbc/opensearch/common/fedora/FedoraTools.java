@@ -76,6 +76,8 @@ public class FedoraTools {
 		DigitalObject dot = new DigitalObject();
 		dot.setObjectProperties(op);
 		dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
+                 dot.setPID( nextPid ); //
+
 
 		ArrayList<Datastream> dsArray = new ArrayList<Datastream>();
 
@@ -83,8 +85,10 @@ public class FedoraTools {
         {
 			dsArray.add(constructDatastream(co, dateFormat, timeNow));
 		}
-
-		dot.setDatastream((Datastream[]) dsArray.toArray());
+                
+                Datastream[] ds =new Datastream[dsArray.size()];
+                dsArray.toArray( ds );
+                dot.setDatastream( ds );
 
 		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
 		java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
@@ -138,7 +142,7 @@ public class FedoraTools {
 		dataStreamElement.setVERSIONABLE( versionable );
 
 		// datastreamVersionElement
-		String itemId_version = co.getFormat() + ".0";
+		String itemId_version = co.getDataStreamName().getName() + ".0";
 
 		DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
 
