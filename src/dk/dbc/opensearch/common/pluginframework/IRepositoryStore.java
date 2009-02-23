@@ -20,5 +20,5 @@ import dk.dbc.opensearch.common.types.DatadockJob;
  */
 public interface IRepositoryStore extends IPluggable 
 {
-    String storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws Exception;
+    String storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException;
 }

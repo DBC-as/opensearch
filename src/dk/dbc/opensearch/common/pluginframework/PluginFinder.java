@@ -56,7 +56,7 @@ public class PluginFinder
      * @param path: the directory to look for the xml files describing the plugins
      * @param docBuilder: the DocumentBuilder used for parsing the xml files
      * @throws IllegalArgumentException when there is no directory or no files in it
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException when the upDateClassMapMethod cant find the files
      * @throws ParserConfigurationException
      * @throws PluginResolverException
      *
@@ -84,7 +84,7 @@ public class PluginFinder
      * show stoppers. See the source to understand the use of it.
      * @return the name of the plugin class
      **/
-    String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
+    String getPluginClassName( int key ) throws FileNotFoundException, PluginResolverException
     {
     	//printClassNameMap();
         String className = null;

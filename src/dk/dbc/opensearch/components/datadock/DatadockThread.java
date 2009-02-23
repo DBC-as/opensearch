@@ -67,8 +67,8 @@ import org.xml.sax.SAXException;
  */
 public class DatadockThread implements Callable<Float>
 {
-	private Logger log = Logger.getLogger( DatadockThread.class );
-	
+    private Logger log = Logger.getLogger( DatadockThread.class );
+
     private CargoContainer cc;
     private Processqueue queue;
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
@@ -78,8 +78,8 @@ public class DatadockThread implements Callable<Float>
     private String submitter;
     private String format;
     private ArrayList< String > list;
-    
-    
+
+
     /**
      * DataDock is initialized with a DatadockJob containing information
      * about the data to be 'docked' into to system
@@ -94,30 +94,30 @@ public class DatadockThread implements Callable<Float>
      *
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
-     * @throws ParserConfigurationException 
-     * @throws PluginResolverException 
-     * @throws NullPointerException 
-     * @throws SAXException 
+     * @throws ParserConfigurationException
+     * @throws PluginResolverException
+     * @throws NullPointerException
+     * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException 
-    {
-    	log.debug( String.format( "Entering DatadockThread Constructor" ) );
-    	
-        this.jobMap = jobMap;
-        this.datadockJob = datadockJob;
-        
-        // Each pair identifies a plugin by p1:submitter and p2:format    	
-        submitter = datadockJob.getSubmitter();
-        format = datadockJob.getFormat();        
-        list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
-        
-        queue = processqueue;
-        
-        this.estimate = estimate;
-        log.debug( String.format( "DataDock Construction finished" ) );
-    }
+    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+        {
+            log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
-    
+            this.jobMap = jobMap;
+            this.datadockJob = datadockJob;
+
+            // Each pair identifies a plugin by p1:submitter and p2:format
+            submitter = datadockJob.getSubmitter();
+            format = datadockJob.getFormat();
+            list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
+
+            queue = processqueue;
+
+            this.estimate = estimate;
+            log.debug( String.format( "DataDock Construction finished" ) );
+        }
+
+
     /**
      * call is the thread entry method on the DataDock. Call operates
      * on the DataDock object, and all data critical for its success
@@ -129,60 +129,62 @@ public class DatadockThread implements Callable<Float>
      * \see dk.dbc.opensearch.tools.Estimation
      *
      * @returns an estimate on the completion-time of indexing and fedora submission
-     *
-     * @throws SQLException if the estimate could not be retrieved from the database
-     * @throws NoSuchElementException if the mimetype is unknown to the estimate method. \see dk.dbc.opensearch.tools.Estimation.getEstimate(String, long)
-     * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
-     * @throws RemoteException if the datastream could not be ingested into the fedora base
-     * @throws XMLStreamException if the foxml could not be constructed in the FedoraHandler \see dk.dbc.opensearch.tools.FedoraHandler
+     * @throws PluginResolverException if the PluginResolver encountered problems, see dk.dbc.opensearch.common.pluginframework.PluginResolverException and dk.dbc.opensearch.common.pluginframework.PluginResolver
+     * @throws FileNotFoundException if the PluginResolver.getPlugin cant find the file its searcing for 
      * @throws IOException if the FedoraHandler could not read data from the CargoContainer
-     * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
+     * @throws ParserConfigurationException if the PluginResolver or CargoContainer has troubles with the DocumentBuilder and DocumentBuilderFactory
+     * @throws InstantationException if the PluginResolver cant instantiate a plugin
+     * @throws IllegalAccessException if the PluginResolver cant access the desired plugin
+     * @throws ClassNotFoundException if the PluginResolver cant find the desired plugin class 
+     * @throws SAXException when the a harvest or an annotate plugin have problems with the data
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IllegalStateException
+     * @throws ServiceException
+     * @throws IOException
+     * @throws ParseException
      */
-    public Float call() throws Exception  
+    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException
     {
-    	try
-    	{
-	    	// Must be implemented due to class implementing Callable< Float > interface.
-	    	// Method is to be extended when we connect to 'Posthuset'
-	    	// Validate plugins
-			PluginResolver pluginResolver = new PluginResolver();
-			Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-			
-			if( ! missingPlugins.isEmpty() )
-			{		
-				System.out.println( " kill thread" );
-				// kill thread/throw meaningful exception/log message
-			}
-			else
-			{
-				CargoContainer cc = null;
-			
-				for( String task : list)
-	    		{	
-					IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-					switch ( plugin.getTaskName() )
-					{	
-						case HARVEST:
-							IHarvestable harvestPlugin = (IHarvestable)plugin; 
-							cc = harvestPlugin.getCargoContainer( datadockJob );
-							break;
-						case ANNOTATE:
-							IAnnotate annotatePlugin = (IAnnotate)plugin;
-							cc = annotatePlugin.getCargoContainer( cc );
-							break;
-						case STORE:
-							IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-							repositoryStore.storeCargoContainer( cc, this.datadockJob );
-					}
-	    		}
-			}
-    	}
-    	catch ( Exception ex )
-    	{
-    		log.error( ex.getStackTrace() );
-    		throw ex;
-    	}
-    	
+        
+                // Must be implemented due to class implementing Callable< Float > interface.
+                // Method is to be extended when we connect to 'Posthuset'
+                // Validate plugins
+                PluginResolver pluginResolver = new PluginResolver();
+                Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+
+                if( ! missingPlugins.isEmpty() )
+                    {
+                        System.out.println( " kill thread" );
+                        // kill thread/throw meaningful exception/log message
+                    }
+                else
+                    {
+                        CargoContainer cc = null;
+
+                        for( String task : list)
+                            {
+                                IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+                                switch ( plugin.getTaskName() )
+                                    {
+                                    case HARVEST:
+                                        IHarvestable harvestPlugin = (IHarvestable)plugin;
+                                        cc = harvestPlugin.getCargoContainer( datadockJob );
+                                        //make estimate
+
+                                        break;
+                                    case ANNOTATE:
+                                        IAnnotate annotatePlugin = (IAnnotate)plugin;
+                                        cc = annotatePlugin.getCargoContainer( cc );
+                                        break;
+                                    case STORE:
+                                        IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+                                        repositoryStore.storeCargoContainer( cc, this.datadockJob );
+                                    }
+                            }
+                    }
+           
+
         return null;
     }
 }
