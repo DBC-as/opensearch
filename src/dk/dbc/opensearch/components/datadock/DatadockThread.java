@@ -94,7 +94,7 @@ public class DatadockThread implements Callable<Float>
     public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException 
     {
         this.jobMap = jobMap;
-        PluginFileReader pmc = new PluginFileReader();
+        //PluginFileReader pmc = new PluginFileReader();
         
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
         CargoContainer cargo = null;
@@ -117,7 +117,7 @@ public class DatadockThread implements Callable<Float>
     			{
     				//plugins.add( str );
     				//HashMap< String, String > pluginAtts = 
-    				pmc.readPluginFile( pluginName );
+    				//pmc.readPluginFile( pluginName );
     				//Iterator
     				System.out.println( "plugin name No.: " + i + ": " + pluginName );
     				

@@ -73,7 +73,6 @@ public class JobMapCreator
      */
     public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException 
     {
-
         /**
          * \Todo :Not sure i can mock the URL class..
          */
@@ -86,11 +85,6 @@ public class JobMapCreator
         URL ptiJobURL = getClass().getResource( "/pti_jobs.xml" );
         log.debug( String.format( "PTIJob path: '%s'", ptiJobURL.getPath() ) );
 
-        docBuildFact = DocumentBuilderFactory.newInstance();
-        docBuilder = docBuildFact.newDocumentBuilder();
-
-        jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
-
         if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain") )
         {
             jobFile = FileHandler.getFile( datadockJobURL.getPath() );
@@ -101,10 +95,18 @@ public class JobMapCreator
         }
 
         log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
+        
+        readJobFile( jobFile );
+    }
+
+    
+    private void readJobFile( File jobFile ) throws ParserConfigurationException, SAXException, IOException
+    {
+    	docBuildFact = DocumentBuilderFactory.newInstance();
+        docBuilder = docBuildFact.newDocumentBuilder();        
         jobDocument = docBuilder.parse( jobFile );
 
         //build the jobMap
-        // 10: get the rootelement of the doc
         Element xmlRoot = jobDocument.getDocumentElement();
 
         // 20: Get the NodeList
@@ -123,6 +125,8 @@ public class JobMapCreator
         int position;
         int listLength = jobNodeList.getLength();
 
+        jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
+        
         // 30: For each node read the task name and position
         for( int x = 0; x < listLength ; x++ )
         {
@@ -159,11 +163,9 @@ public class JobMapCreator
             }
             
             // 60: Put it into the map with  <submitter, format> as key and List as value
-
             jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedTaskList) );
         }
     }
-
     
     public HashMap< Pair< String, String >, ArrayList< String > > getMap()
     {

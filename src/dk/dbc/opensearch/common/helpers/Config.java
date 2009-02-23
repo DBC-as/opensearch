@@ -23,25 +23,4 @@ public class Config
 			e.printStackTrace();
 		}
 	}
-	
-	
-	/**************************
-	 * config.xml -> database *
-	 **************************/	
-	public static int getDatabasePollTime()
-	{
-		System.out.println("polltime");
-		return Database.pollTime;
-	}
-	
-	
-	private static class Database 
-	{
-		static int pollTime = config.getInt( "datadock.main-poll-time" );
-		static int queueSize = config.getInt( "datadock.queuesize" );
-		static int corePoolSize = config.getInt( "datadock.corepoolsize" );
-		static int maxPoolSize = config.getInt( "datadock.maxpoolsize" );
-		static int keepAliveTime = config.getInt( "datadock.keepalivetime" );
-		static String harvestDir = config.getString( "harvester.folder" );        
-	}
 }

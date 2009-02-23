@@ -10,6 +10,9 @@ package dk.dbc.opensearch.common.helpers;
  */
 public class HarvesterConfig extends Config
 {
+	/* ******************
+	 * HARVESTER FOLDER *
+	 * ******************/
 	private String getFolder()
 	{
 		String ret = config.getString( "harvester.folder" );

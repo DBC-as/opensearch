@@ -14,6 +14,9 @@ import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.Config;
+import dk.dbc.opensearch.common.helpers.DataBaseConfig;
+import dk.dbc.opensearch.common.helpers.DatadockConfig;
+import dk.dbc.opensearch.common.helpers.HarvesterConfig;
 import dk.dbc.opensearch.common.helpers.JobMapCreator;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
@@ -71,13 +74,12 @@ public class DatadockMain
         cfgURL = getClass().getResource("/config.xml");
         config = new XMLConfiguration( cfgURL );
         
-        //pollTime = config.getInt( "datadock.main-poll-time" );
-        //pollTime = Config.getDatabasePollTime();
-        queueSize = config.getInt( "datadock.queuesize" );
-        corePoolSize = config.getInt( "datadock.corepoolsize" );
-        maxPoolSize = config.getInt( "datadock.maxpoolsize" );
-        keepAliveTime = config.getInt( "datadock.keepalivetime" );
-        harvestDir = config.getString( "harvester.folder" );
+        pollTime = DatadockConfig.getDatadockMainPollTime();
+        queueSize = DatadockConfig.getDatadockQueueSize();
+        corePoolSize = DatadockConfig.getDatadockCorePoolSize();
+        maxPoolSize = DatadockConfig.getDatadockMaxPoolSize();
+        keepAliveTime = DatadockConfig.getDatadockKeepAliveTime();
+        harvestDir = HarvesterConfig.getHarvesterFolder();
         
         // Jobmap
         JobMapCreator jobMapCreator = new JobMapCreator( this.getClass() );
@@ -85,6 +87,7 @@ public class DatadockMain
 
         log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
     }
+    
     
     /**
      * The shutdown hook. This method is called when the program catch
