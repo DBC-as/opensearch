@@ -81,16 +81,16 @@ public class DatadockThread implements Callable<Float>
     
     
     /**
-     * DataDock is initialized with a CargoContainer containing the
-     * data to be 'docked' into to system
+     * DataDock is initialized with a DatadockJob containing information
+     * about the data to be 'docked' into to system
      *
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.DBConnection
      *
-     * @param cargo The cargo to be processed
+     * @param datadockJob the information about the data to be docked
      * @param estimate the estimation database handler
      * @param processqueue the processqueue handler
-     * @param fedoraHandler the fedora repository handler
+     * @param jobMap information about the tasks that should be solved by the pluginframework
      *
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler

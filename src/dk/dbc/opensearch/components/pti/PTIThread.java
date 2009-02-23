@@ -5,14 +5,21 @@
  */
 package dk.dbc.opensearch.components.pti;
 
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
+//import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.NoSuchElementException;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
@@ -41,9 +48,9 @@ import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * \ingroup pti
- * \brief the PTIYhread class is responsible for getting an dataobject from the
+ * \brief the PTIThread class is responsible for getting a dataobject from the
  * fedora repository, and index it with compass afterwards. If this
- * was succesfull the estimate values are updated
+ * was succesfull the estimate values will be updated
  */
 public class PTIThread implements Callable<Long>{
 
