@@ -27,6 +27,7 @@ public class FaktalinkHarvester implements IHarvestable
     
     public CargoContainer getCargoContainer( DatadockJob job ) throws IOException
     {
+        cargo = new CargoContainer();
     	this.path = job.getUri().getPath();
     	this.submitter = job.getSubmitter();
     	this.format = job.getFormat();
@@ -56,7 +57,6 @@ public class FaktalinkHarvester implements IHarvestable
         
         return cargo;
     }
-    
     
     public PluginType getTaskName()
     {
