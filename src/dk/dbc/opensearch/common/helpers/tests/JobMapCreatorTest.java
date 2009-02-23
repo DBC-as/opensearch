@@ -150,7 +150,7 @@ public class JobMapCreatorTest {
         /**
          * Do stuff
          */
-        jmc = new JobMapCreator( DatadockMain.class );
+        jmc = new JobMapCreator();
 
         /**
          * Verify

@@ -2,15 +2,19 @@ package dk.dbc.opensearch.common.helpers;
 
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
-
+import dk.dbc.opensearch.common.helpers.SecondComparator;
 import java.io.File;
 import java.io.IOException;
+
+import java.net.URL;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collections;
+
+import java.lang.IllegalArgumentException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -23,7 +27,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import java.net.URL;
 
 /**
  * Reads the jobmap file into the hashmap
@@ -32,91 +35,99 @@ public class JobMapCreator
 {
     static Logger log = Logger.getLogger( JobMapCreator.class );
 
-    private HashMap< Pair< String, String >, ArrayList<String> > jobMap;
-
-    private File jobFile;
-    private Document jobDocument;
-
-    DocumentBuilderFactory docBuildFact;
-    DocumentBuilder docBuilder;
-
     /**
      * a little helper for comparing the int thats is second member in Pairs
      * used in making the list with the tasks sorted due to posistion
      */
-    class secondComparator implements Comparator< Pair< String, Integer > >
-    {
-        public int compare( Pair< String, Integer > x, Pair< String, Integer > y )
-        {
-            if( ((Pair< String, Integer >)x).getSecond() < ((Pair< String, Integer >)y).getSecond() )
-                {
-                    return -4;
-                }
-            else
-                {
-                    if( ((Pair<String, Integer>)x).getSecond() == ((Pair<String, Integer>)y).getSecond() )
-                        {
-                            return 0;
-                        }
-                }
-            return 4;
-        }
+//     class secondComparator implements Comparator< Pair< String, Integer > >
+//     {
+//         public int compare( Pair< String, Integer > x, Pair< String, Integer > y )
+//         {
+//             if( ((Pair< String, Integer >)x).getSecond() < ((Pair< String, Integer >)y).getSecond() )
+//                 {
+//                     return -4;
+//                 }
+//             else
+//                 {
+//                     if( ((Pair<String, Integer>)x).getSecond() == ((Pair<String, Integer>)y).getSecond() )
+//                         {
+//                             return 0;
+//                         }
+//                 }
+//             return 4;
+//         }
 
-    }
+//     }
+    
 
 
-    secondComparator secComp = new secondComparator();
 
     /**
-     * Constructor for the jobmap. Depending on nthe argument it
-     * either reads the datadock or pti jobmap file
+     * default constructor \Todo : Is it nessecary?
      */
-    public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException
-    {
-        /**
-         * \Todo :Not sure i can mock the URL class..
-         */
+    public JobMapCreator() {}
 
-        log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
+    /**
+     * Retrives the map of lists of tasks for all registrated pairs of submitter, format.
+     * @param classType the class of the calling object, either DatadockMain or PTIMain
+     * @returns the map containing a list of tasks for each pair of submitter, format
+     * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
+     * \Todo: Make the method static when we are not using URL, getClass and getResource...
+     */
 
-        URL datadockJobURL = getClass().getResource( "/datadock_jobs.xml" );
-        log.debug( String.format( "DatadockJob path: '%s'", datadockJobURL.getPath() ) );
+    public HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType )throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 
-        URL ptiJobURL = getClass().getResource( "/pti_jobs.xml" );
-        log.debug( String.format( "PTIJob path: '%s'", ptiJobURL.getPath() ) );
+        log.debug( "GetMap() called" );
 
-        if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain") )
-            {
-                jobFile = FileHandler.getFile( datadockJobURL.getPath() );
-            }
-        else /** \todo: I suggest: else if ( classType...equals( "dk...pti.PTIMain") followed by else throw new Exception( "should never happen" )*/
-            {
-                jobFile = FileHandler.getFile( ptiJobURL.getPath() );
-            }
-
-        log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
-
-        readJobFile( jobFile );
-    }
-
-
-    private void readJobFile( File jobFile ) throws ParserConfigurationException, SAXException, IOException
-    {
-
-        String submitter = "";
-        String format = "";
-        ArrayList<String> sortedTaskList = new ArrayList< String >();
-        List< Pair< String, Integer > > taskAndPriority = new ArrayList< Pair< String, Integer > >();
+        HashMap< Pair< String, String >, ArrayList<String> > jobMap;
+        File jobFile;
+        Document jobDocument;
+        DocumentBuilder docBuilder;
+        DocumentBuilderFactory docBuilderFact;
         Element jobElement;
         NodeList taskList;
         int taskListLength;
         Element taskElement;
         String task;
         int position;
+        SecondComparator secComp = new SecondComparator();    
+        String submitter = "";
+        String format = "";
 
-        docBuildFact = DocumentBuilderFactory.newInstance();
-        docBuilder = docBuildFact.newDocumentBuilder();
+        ArrayList<String> sortedTaskList = new ArrayList< String >();
+        List< Pair< String, Integer > > taskAndPriority = new ArrayList< Pair< String, Integer > >();
 
+        /**
+         * \Todo :Not sure i can mock the URL class..
+         */
+
+        log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
+
+        if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain" ) ){
+
+            URL datadockJobURL = getClass().getResource( "/datadock_jobs.xml" );
+            log.debug( String.format( "DatadockJob path: '%s'", datadockJobURL.getPath() ) );
+            jobFile = FileHandler.getFile( datadockJobURL.getPath() );
+
+        }else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
+            {
+
+                URL ptiJobURL = getClass().getResource( "/pti_jobs.xml" );
+                log.debug( String.format( "PTIJob path: '%s'", ptiJobURL.getPath() ) );
+
+                jobFile = FileHandler.getFile( ptiJobURL.getPath() );
+
+
+            }else{
+            log.error( "wrong class given to JobMapCreator.getMap method" );
+            throw new IllegalArgumentException( String.format( "unknown class given to the JobMapCreator.getMap method, the class given: %s", classType.getName() ) );
+          
+        }
+
+        log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
+
+        docBuilderFact = DocumentBuilderFactory.newInstance();
+        docBuilder = docBuilderFact.newDocumentBuilder();
 
         jobDocument = docBuilder.parse( jobFile );
 
@@ -171,14 +182,7 @@ public class JobMapCreator
 
         // Put job into the map with <submitter, format> as key and List as value
         jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedTaskList) );
-    }
 
-
-
-
-    public HashMap< Pair< String, String >, ArrayList< String > > getMap()
-    {
-        log.debug( "GetMap() called" );
         return jobMap;
     }
 }
