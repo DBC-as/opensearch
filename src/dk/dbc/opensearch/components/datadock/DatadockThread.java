@@ -7,7 +7,6 @@
 package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.helpers.PluginFileReader;
 
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
