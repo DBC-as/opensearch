@@ -113,4 +113,11 @@
       <param name="dependency.target" value="coverage-check"/>
     </antcall>
   </target>
+
+  <target name="fedora_soap" description="Generates the fedora soap stubs">
+    <antcall target="toplevel.fedora_soap">
+      <param name="dependency.target" value="toplevel.fedora_soap"/>
+    </antcall>
+
+  </target>
 </project>

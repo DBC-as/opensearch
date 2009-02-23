@@ -37,6 +37,11 @@
     <antcall target="toplevel.compile-xsd" />
   </target>
 
+  <target name="fedora_soap">
+    <antcall target="default.clean-all"/>
+    <antcall target="toplevel.fedora_soap" />
+  </target>
+
   <!-- ================================================================== -->
   <target name="opensearch.common"
           depends="opensearch.common.statistics">

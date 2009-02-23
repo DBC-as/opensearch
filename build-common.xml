@@ -26,6 +26,9 @@
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
+  <property name="fedora_apim.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-M"/>
+  <property name="fedora_apia.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-A"/>
+
   
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
@@ -232,6 +235,34 @@
       <classpath refid="classpath"/>
     </javac>
   </target>
+
+  <target name="toplevel.fedora_soap" description="Generates Fedora SOAP stubs">
+    <taskdef resource="axis-tasks.properties"
+             classpathref="classpath" />
+    <axis-wsdl2java
+        output="${src.dir}"
+        testcase="true"
+        verbose="true"
+        url="${fedora_apia.url}" >
+      <mapping
+          namespace="http://axis.apache.org/ns/interop"
+          package="info" />
+    </axis-wsdl2java>
+    <axis-wsdl2java
+        output="${src.dir}"
+        testcase="true"
+        verbose="true"
+        url="${fedora_apim.url}" >
+      <mapping
+          namespace="http://axis.apache.org/ns/interop"
+          package="info" />
+    </axis-wsdl2java>
+
+
+    
+
+  </target>
+
 
   <target name="toplevel.test-target">
     <echo>
