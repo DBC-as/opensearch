@@ -8,7 +8,6 @@ import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.os.StreamHandler;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,8 +28,8 @@ public class FaktalinkHarvester implements IHarvestable
     public CargoContainer getCargoContainer( DatadockJob job ) throws IOException
     {
     	this.path = job.getUri().getPath();
-	this.submitter = job.getSubmitter();
-	this.format = job.getFormat();
+    	this.submitter = job.getSubmitter();
+    	this.format = job.getFormat();
 		
         return createCargoContainerFromFile();
     }
@@ -43,6 +42,8 @@ public class FaktalinkHarvester implements IHarvestable
      */
     private CargoContainer createCargoContainerFromFile() throws IOException 
     {
+    	cargo = new CargoContainer();
+    	
     	/** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "DA";
@@ -50,7 +51,7 @@ public class FaktalinkHarvester implements IHarvestable
         InputStream data = FileHandler.readFile( this.path );
 
         byte [] bdata = StreamHandler.bytesFromInputStream( data, 0 );
-
+        
         cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, bdata );
         
         return cargo;

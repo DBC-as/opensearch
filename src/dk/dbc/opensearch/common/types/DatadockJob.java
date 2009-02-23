@@ -42,6 +42,7 @@ public class DatadockJob
         PID = "";
     }
     
+    
     /**
      * Constructor. initializes the DatadockJob
      * 
@@ -50,7 +51,8 @@ public class DatadockJob
      * @param format The format of the Job
      * @param PID the fedoraPID for the job
      */
-    public DatadockJob( URI uri, String submitter, String format, String PID) {
+    public DatadockJob( URI uri, String submitter, String format, String PID ) 
+    {
         log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s', PID='%s' ) called", 
                                   uri.getRawPath(), submitter, format, PID ) );
         this.uri = uri;
@@ -59,13 +61,16 @@ public class DatadockJob
         this.PID = PID;
     }
     
+    
     /**
      * Gets the uri object from the job
      * @return The URI of the job
      */
-    public URI getUri(){
+    public URI getUri()
+    {
         return uri;
     }
+    
     
     /**
      * Gets the submitter
@@ -75,21 +80,26 @@ public class DatadockJob
         return submitter;
     }
     
+    
     /**
      * Gets the format
      * @return The format
      */
-    public String getFormat(){
+    public String getFormat()
+    {
         return format;
     }
 
+    
     /**
      * Gets the PID from the job
      * @return The PID of the job
      */
-    public String getPID(){
+    public String getPID()
+    {
         return PID;
     }
+    
     
     /**
      * Sets the path
@@ -100,6 +110,7 @@ public class DatadockJob
         log.debug( String.format( "setUri( uri='%s' ) called", uri.getRawPath() ) ); 
            this.uri = uri;
     }
+    
     
     /**
      * Sets the submitter

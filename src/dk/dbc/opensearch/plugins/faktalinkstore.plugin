@@ -6,6 +6,6 @@
           classname="dk.dbc.opensearch.plugins.FaktalinkStore" 
           submitter="dbc" 
           format="faktalink" 
-          task="store" />
+          task="faktalinkstore" />
     
 </plugins>

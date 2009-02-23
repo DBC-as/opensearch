@@ -102,6 +102,17 @@ public class JobMapCreator
     
     private void readJobFile( File jobFile ) throws ParserConfigurationException, SAXException, IOException
     {
+    	String submitter;
+        String format;
+        ArrayList<String> sortedTaskList = new ArrayList< String >();
+        List< Pair< String, Integer > > taskAndPriority = new ArrayList< Pair< String, Integer > >();
+        Element jobElement;
+        NodeList taskList;
+        int taskListLength;
+        Element taskElement;
+        String task;
+        int position;
+        
     	docBuildFact = DocumentBuilderFactory.newInstance();
         docBuilder = docBuildFact.newDocumentBuilder();        
 
@@ -112,18 +123,6 @@ public class JobMapCreator
 
         // 20: Get the NodeList
         NodeList jobNodeList = xmlRoot.getElementsByTagName( "job" );
-
-        String submitter;
-        String format;
-        ArrayList<String> sortedTaskList = new ArrayList< String >();
-        List< Pair< String, Integer > > taskAndPriority = new ArrayList< Pair< String, Integer > >();
-        Element jobElement;
-        NodeList taskList;
-        int taskListLength;
-        Element taskElement;
-        //Pair taskPriPair;
-        String task;
-        int position;
         int listLength = jobNodeList.getLength();
 
         jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
@@ -163,10 +162,11 @@ public class JobMapCreator
                 sortedTaskList.add( task );
             }
             
-            // 60: Put it into the map with  <submitter, format> as key and List as value
+            // Put job into the map with <submitter, format> as key and List as value
             jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedTaskList) );
         }
     }
+    
     
     public HashMap< Pair< String, String >, ArrayList< String > > getMap()
     {

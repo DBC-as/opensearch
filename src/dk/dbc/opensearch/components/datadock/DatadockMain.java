@@ -71,8 +71,8 @@ public class DatadockMain
 
     public DatadockMain() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {                    
-        cfgURL = getClass().getResource("/config.xml");
-        config = new XMLConfiguration( cfgURL );
+//        cfgURL = getClass().getResource("/config.xml");
+//        config = new XMLConfiguration( cfgURL );
         
         pollTime = DatadockConfig.getDatadockMainPollTime();
         queueSize = DatadockConfig.getDatadockQueueSize();
@@ -126,7 +126,7 @@ public class DatadockMain
      */
     static public void daemonize()
     {
-        FileHandler.getFile( System.getProperty("daemon.pidfile") ).deleteOnExit();
+        FileHandler.getFile( System.getProperty( "daemon.pidfile" ) ).deleteOnExit();
         System.out.close();
         System.err.close();
     }

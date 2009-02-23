@@ -1,12 +1,10 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -23,7 +21,7 @@ import dk.dbc.opensearch.common.helpers.FileSystemConfig;
  */
 public class PluginResolver implements IPluginResolver
 {
-    static Logger log = Logger.getLogger( "PluginResolver" );
+    static Logger log = Logger.getLogger( PluginResolver.class );
 
     static String path;
 
@@ -43,21 +41,13 @@ public class PluginResolver implements IPluginResolver
     {      
         if( ! constructed )
         {
-            /** \todo: beware: hardcoded value **/
-            //path = "build/classes/dk/dbc/opensearch/plugins";
-        	
-        	docBuilderFactory = DocumentBuilderFactory.newInstance();
+            docBuilderFactory = DocumentBuilderFactory.newInstance();
             docBuilder = docBuilderFactory.newDocumentBuilder();
             
             pluginClassLoader = new PluginClassLoader();
             PLoader = new PluginLoader( pluginClassLoader );
             path = FileSystemConfig.getFileSystemTrunkPath() + "src/dk/dbc/opensearch/plugins";
-            //path = "src/dk/dbc/opensearch/plugins";
-
-            //System.out.println( "path: " + path );
             
-            URL url = getClass().getResource( "/datadock_jobs.xml" );
-            //System.out.println("url: " + url.getPath());
             PFinder = new PluginFinder( docBuilder, path );
             
             constructed = true;            
@@ -67,13 +57,10 @@ public class PluginResolver implements IPluginResolver
 
     public IPluggable getPlugin( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException
     {  
-    	System.out.println( "test" );
-        long key = ( submitter + format + task ).hashCode();
-        System.out.println( "key: " + key );
-        System.out.println( submitter + " " + format + " " + task );
+    	int key = ( submitter + format + task ).hashCode();
         String pluginClassName = PFinder.getPluginClassName( key );
-        System.out.println( "after" );
-        PFinder.printClassNameMap();
+        
+        //PFinder.printClassNameMap();
 
         return PLoader.getPlugin( pluginClassName );
     }
@@ -101,7 +88,6 @@ public class PluginResolver implements IPluginResolver
         }
         
         return pluginNotFoundVector;
-
     }
 
 

@@ -3,8 +3,14 @@
  */
 package dk.dbc.opensearch.plugins;
 
-import java.io.IOException;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.FedoraTools;
+import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
+
+import java.io.IOException;
 import java.text.ParseException;
 
 import javax.xml.rpc.ServiceException;
@@ -14,14 +20,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DatadockJob;
-
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.FedoraTools;
-import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
-import dk.dbc.opensearch.common.pluginframework.PluginType;
-
 
 /**
  * @author stm
@@ -56,6 +55,7 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
     	this.cc = cc;
     	
         NonNegativeInteger nni = new NonNegativeInteger( "1" );
+        
         String[] pids = super.fem.getNextPID( nni, "" );
 
         String descriptive_label = String.format( "Faktalink" );

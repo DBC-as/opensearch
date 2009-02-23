@@ -41,6 +41,7 @@ public class FileHandler
         return new File( path );
     }
     
+    
     /**
      * Retrieves a list of filenames from the given path, if they conforms to the filefilter
      * @param path The path of the directory to retrieve filenames from
@@ -49,8 +50,7 @@ public class FileHandler
      * @returns A string vector, with the matching filenames
      * @throws IllegalArgumentException if the path does not exist.
      */
-    public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ) 
-        throws IllegalArgumentException
+    public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ) throws IllegalArgumentException
     {
         /** \todo: what happens if the fileFilters is null? Or the path?**/
         log.debug( String.format( "getFileList( path=%s, filefilters[%s], descend=%s ) called", path, fileFilters.length, descend ) );
@@ -103,10 +103,7 @@ public class FileHandler
      */
     public static FileInputStream readFile( String file ) throws FileNotFoundException
     {
-//        InputStream is = null;
-//
-//        File f = new File( file );
-        if(! new File ( file ).isFile() )
+    	if(! new File ( file ).isFile() )
             throw new FileNotFoundException( String.format( "Error - '%s' is not a file", file ) );
         
         FileInputStream data = new FileInputStream( file );

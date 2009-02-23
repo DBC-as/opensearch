@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -65,7 +66,7 @@ public class PluginFinder
     {
         this.path = path;
         this.docBuilder = docBuilder;
-        classNameMap = new HashMap<Integer, String>();
+        classNameMap = new HashMap< Integer, String >();
 
         // call updatePluginClassNameMap to generate the map
         updatePluginClassNameMap( path );
@@ -83,8 +84,9 @@ public class PluginFinder
      * show stoppers. See the source to understand the use of it.
      * @return the name of the plugin class
      **/
-    String getPluginClassName( long key ) throws PluginResolverException, FileNotFoundException
+    String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
     {
+    	//printClassNameMap();
         String className = null;
         
         // 5: check the map is not null
@@ -92,15 +94,15 @@ public class PluginFinder
             updatePluginClassNameMap( path );
         
         //10: search through the map
+        //System.out.println( classNameMap.size() );
         className = (String) classNameMap.get( key );
-
+        //System.out.println( className );
         //20: if there is no hit, raise exception
         if( className == null )
         {
         	throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
         }
-
-        //30: return classname
+        
         return className;
     }
     
@@ -108,11 +110,14 @@ public class PluginFinder
     void printClassNameMap()
     {
     	System.out.println( "print" );
-    	Collection c = (Collection) classNameMap.values();
+    	java.util.Collection< String > c = (java.util.Collection< String >) classNameMap.values();
     	Iterator< String > iter = c.iterator();
-    	while ( iter.hasNext() )
+    	
+    	Set< Integer> keySet = classNameMap.keySet();
+    	for( Integer i : keySet )
     	{
-    		System.out.println( iter.next().toString() );
+    		System.out.println( "key: " + i );
+    		System.out.println( "value: " + iter.next().toString() );
     	}
     }
     
@@ -127,7 +132,7 @@ public class PluginFinder
      */
     private void updatePluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException
     {
-    	System.out.println( "path: " + path );
+    	//System.out.println( "path: " + path );
         Iterator pluginNameIter = null;
 
         log.debug( String.format( "Clearing map with %s members", classNameMap.size() ) );
@@ -137,7 +142,6 @@ public class PluginFinder
         FilenameFilter[] filterList = { new PluginFileFilter() };
         
         Vector<String> xmlPluginFileNames = FileHandler.getFileList( path, filterList, true );     
-        System.out.println( "PluginFinder size: " + xmlPluginFileNames.size() );
         log.debug( String.format( "Number of found plugins: %s ", xmlPluginFileNames.size() ) );
 
         Vector<ThrownInfo> failedPlugins = new Vector<ThrownInfo>();
@@ -215,8 +219,8 @@ public class PluginFinder
         			//hashSubject= submitterName + formatName + taskName;
         			//key = hashSubject.hashCode();
         			key = ( submitterName + formatName + taskName ).hashCode();
-        			System.out.println( submitterName + " " + formatName + " " + taskName );
-        			System.out.println( "PluginFinder key: " + key );
+        			//System.out.println( key );
+        			//System.out.println( submitterName + " " + formatName + " " + taskName );
         				
         			//60: add the key and value to the map
         			classNameMap.put( key, className );

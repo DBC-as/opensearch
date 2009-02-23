@@ -62,7 +62,7 @@ public class PluginResolverTest
             System.out.print(" hep finder \n");
         }
         */
-        public String getPluginClassName( long key ) throws PluginResolverException, FileNotFoundException
+        public String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
         {
             if (key == ( "testSubmitter"+"testFormat"+"throwException" ).hashCode())
             {

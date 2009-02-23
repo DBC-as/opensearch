@@ -1,11 +1,8 @@
 package dk.dbc.opensearch.common.pluginframework;
 
-import dk.dbc.opensearch.common.os.FileHandler;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.lang.Class;
 import java.lang.ClassNotFoundException;
 import java.lang.InstantiationException;
@@ -16,18 +13,17 @@ import java.lang.IllegalAccessException;
  */
 public class PluginLoader 
 {
-    static Logger log = Logger.getLogger( "PluginLoader" );
-    // \TODO: is this the way to give the path?
-    String pluginPathName = "classes/dk/dbc/opensearch/plugins";
-    FileHandler fileHandler;
-    String pluginSubPathName = "build/classes/dk/dbc/opensearch/plugins/";
+    static Logger log = Logger.getLogger( PluginLoader.class );
+    
+    //String pluginPathName = FileSystemConfig.getFileSystemPluginsPath(); // "classes/dk/dbc/opensearch/plugins";
+    //FileHandler fileHandler;
+    //String pluginSubPathName = "build/classes/dk/dbc/opensearch/plugins/";
     ClassLoader cl;
 
 
     /**
      * 
      */
-
     public PluginLoader( ClassLoader cl ) 
     {
         this.cl = cl;

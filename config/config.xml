@@ -38,6 +38,8 @@
   </pidmanager>
   <filesystem>
     <trunk>/home/mro/projects/opensearch/trunk</trunk>
+    <plugins>/home/mro/projects/opensearch/trunk/build/classes/dk/dbc/opensearch/plugins</plugins>
   </filesystem>
 </opensearch-definition>
+
 

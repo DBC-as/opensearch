@@ -8,6 +8,10 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
 
+import dk.dbc.opensearch.common.pluginframework.IAnnotate;
+import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
@@ -25,6 +29,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.ArrayList;
 import javax.xml.stream.XMLStreamException;
@@ -62,14 +67,18 @@ import org.xml.sax.SAXException;
  */
 public class DatadockThread implements Callable<Float>
 {
+	private Logger log = Logger.getLogger( DatadockThread.class );
+	
     private CargoContainer cc;
     private Processqueue queue;
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+
+    private Estimate estimate;
+    private DatadockJob datadockJob;
+    private String submitter;
+    private String format;
+    private ArrayList< String > list;
     
-    private Logger log = Logger.getLogger("DataDockThread");
-
-    Estimate estimate;
-
     
     /**
      * DataDock is initialized with a CargoContainer containing the
@@ -92,47 +101,16 @@ public class DatadockThread implements Callable<Float>
      */
     public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException 
     {
+    	log.debug( String.format( "Entering DatadockThread Constructor" ) );
+    	
         this.jobMap = jobMap;
-        //PluginFileReader pmc = new PluginFileReader();
+        this.datadockJob = datadockJob;
         
-        log.debug( String.format( "Entering DatadockThread Constructor" ) );
-        CargoContainer cargo = null;
+        // Each pair identifies a plugin by p1:submitter and p2:format    	
+        submitter = datadockJob.getSubmitter();
+        format = datadockJob.getFormat();        
+        list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
         
-        // Get plugin sequence from jobMap
-        Set< Pair< String, String > > keysSet = jobMap.keySet();
-    	
-        // Loop through plugins: Each pair identifies a plugin by p1:submitter and p2:format
-    	for( Pair< String, String > pair : keysSet )
-    	{
-    		String submitter = pair.getFirst();
-    		String format = pair.getSecond();
-    		
-    		ArrayList< String > plugins = new ArrayList< String >();
-    		if( jobMap.containsKey( pair ) )
-    		{
-    			ArrayList< String > list = jobMap.get( pair );
-    			int i = 1;
-    			for( String pluginName : list)
-    			{
-    				//plugins.add( str );
-    				//HashMap< String, String > pluginAtts = 
-    				//pmc.readPluginFile( pluginName );
-    				//Iterator
-    				System.out.println( "plugin name No.: " + i + ": " + pluginName );
-    				
-    			}
-    		}
-    	}
-    	
-    	
-        PluginResolver resolver = new PluginResolver(); 
-        //IPluggable plugin = resolver.getPlugin( submitter , format, task );
-        
-        // 30 Call plugins in correct sequence using x parameters
-        
-        // 40 FaktalinkStore is last plugin. Get float from Estimate and store in estimate
-        
-        cc = cargo;
         queue = processqueue;
         
         this.estimate = estimate;
@@ -160,10 +138,50 @@ public class DatadockThread implements Callable<Float>
      * @throws IOException if the FedoraHandler could not read data from the CargoContainer
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      */
-    public Float call() throws SQLException, NoSuchElementException, ConfigurationException, RemoteException, XMLStreamException, IOException, ClassNotFoundException, MalformedURLException, UnknownHostException, ServiceException, IOException, ValidationException , MarshalException, ParseException 
+    public Float call() throws Exception  
     {
-    	// Must be implemented due to class implementing Callable< Float > interface.
-    	// Method is to be extended when we connect to 'Posthuset'
+    	try
+    	{
+	    	// Must be implemented due to class implementing Callable< Float > interface.
+	    	// Method is to be extended when we connect to 'Posthuset'
+	    	// Validate plugins
+			PluginResolver pluginResolver = new PluginResolver();
+			Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+			
+			if( ! missingPlugins.isEmpty() )
+			{		
+				System.out.println( " kill thread" );
+				// kill thread/throw meaningful exception/log message
+			}
+			else
+			{
+				CargoContainer cc = null;
+			
+				for( String task : list)
+	    		{	
+					IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+					switch ( plugin.getTaskName() )
+					{	
+						case HARVEST:
+							IHarvestable harvestPlugin = (IHarvestable)plugin; 
+							cc = harvestPlugin.getCargoContainer( datadockJob );
+							break;
+						case ANNOTATE:
+							IAnnotate annotatePlugin = (IAnnotate)plugin;
+							cc = annotatePlugin.getCargoContainer( cc );
+							break;
+						case STORE:
+							IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+							repositoryStore.storeCargoContainer( cc, this.datadockJob );
+					}
+	    		}
+			}
+    	}
+    	catch ( Exception ex )
+    	{
+    		log.error( ex.getStackTrace() );
+    		throw ex;
+    	}
     	
         return null;
     }

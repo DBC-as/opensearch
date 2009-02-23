@@ -8,7 +8,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 
 public class Config 
 {	
-	URL cfgURL = getClass().getResource( "/config.xml" );
+	URL cfgURL = getClass().getResource( "/config.xml" );	
 	static XMLConfiguration config;
     
 	protected Config()
@@ -19,7 +19,6 @@ public class Config
 		} 
 		catch (ConfigurationException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

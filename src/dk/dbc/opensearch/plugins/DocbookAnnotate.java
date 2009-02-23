@@ -8,6 +8,7 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.net.InetAddress;
@@ -64,14 +65,14 @@ import org.w3c.dom.NodeList;
 /**
  *
  */
-public class DocbookAnnotate 
+public class DocbookAnnotate implements IAnnotate
 {
-    static Logger log = Logger.getLogger("FaktalinkAnnotate");
+    static Logger log = Logger.getLogger( DocbookAnnotate.class );
     
-    private CargoContainer cargo;
-    
+    private CargoContainer cargo;    
     private PluginType pluginType = PluginType.ANNOTATE;
 
+    
     /**
      *
      */
@@ -81,28 +82,25 @@ public class DocbookAnnotate
     }
 
 
-    public void init( CargoContainer cargo ){
-        this.cargo = cargo;
-    }
-
-    public CargoContainer getCargoContainer()throws ParserConfigurationException, SAXException, IOException
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws IOException, ParserConfigurationException, SAXException
     {
+        this.cargo = cargo;
 
         // 10: retrive docbook xml from CargoContainer
-        CargoObject co = cargo.getFirstCargoObject( DataStreamNames.OriginalData );
-        byte[] b = co.getBytes();
-
-        ByteArrayInputStream bis = new ByteArrayInputStream( b );
-        
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();     
-        Document document = builder.parse( bis );
-        
-        NodeList doc_art = document.getElementsByTagName( "docbook:article" );
-        System.out.println(doc_art.getLength());
-        NodeList doc_title = ( (Element) doc_art.item( 0 ) ).getElementsByTagName( "docbook:title" );
-        System.out.println(doc_title.getLength());
-        printNode( doc_art.item(0), "  ");
+//        CargoObject co = cargo.getFirstCargoObject( DataStreamNames.OriginalData );
+//        byte[] b = co.getBytes();
+//
+//        ByteArrayInputStream bis = new ByteArrayInputStream( b );
+//        
+//        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder builder = factory.newDocumentBuilder();     
+//        Document document = builder.parse( bis );
+//        
+//        NodeList doc_art = document.getElementsByTagName( "docbook:article" );
+//        System.out.println(doc_art.getLength());
+//        NodeList doc_title = ( (Element) doc_art.item( 0 ) ).getElementsByTagName( "docbook:title" );
+//        System.out.println(doc_title.getLength());
+//        printNode( doc_art.item(0), "  ");
         // 20: isolate submitter (serverChoice)  from CargoObjectInfo
         // String serverChoice = "";
         
@@ -128,8 +126,7 @@ public class DocbookAnnotate
         // 80: overwrite the docbookXML in the cargoContainer with the new XML
         // 90: return it
 
-        return null;
-    
+        return cargo;    
     }
 
 
@@ -207,11 +204,13 @@ public class DocbookAnnotate
      *  
      *  @throws IOException if we got a connection error.
      */
-    public String httpGet( String URLstr ) throws IOException{
+    public String httpGet( String URLstr ) throws IOException
+    {
         URL url = new URL( URLstr );
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-        if (conn.getResponseCode() != 200) {
+        if (conn.getResponseCode() != 200) 
+        {
             throw new IOException(conn.getResponseMessage());
         }
         
@@ -219,9 +218,11 @@ public class DocbookAnnotate
         BufferedReader rd = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
         StringBuilder sb = new StringBuilder();
         String line;
-        while ( ( line = rd.readLine() ) != null ) {
+        while ( ( line = rd.readLine() ) != null ) 
+        {
             sb.append( line );
         }
+        
         rd.close();
         
         conn.disconnect();

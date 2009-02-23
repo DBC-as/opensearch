@@ -14,6 +14,7 @@ import org.apache.axis.client.Stub;
 import org.apache.axis.client.Call;
 
 import info.fedora.www.definitions._1._0.api.FedoraAPIA;
+import info.fedora.www.definitions._1._0.api.FedoraAPIAService;
 import info.fedora.www.definitions._1._0.api.FedoraAPIAServiceLocator;
 import info.fedora.www.definitions._1._0.api.FedoraAPIM;
 import info.fedora.www.definitions._1._0.api.FedoraAPIMServiceLocator;
@@ -31,13 +32,15 @@ public abstract class FedoraHandle {
 	protected FedoraAPIM fem;
 	protected FedoraAPIA fea;
 
+	
 	/**
 	 * The constructor handles the initiation of the connection with the
 	 * fedora base
 	 * 
 	 * @throws ServiceException
 	 */
-	public FedoraHandle() throws ServiceException {
+	public FedoraHandle() throws ServiceException 
+	{
         /**
          * If needed by the fedora base, we can construct/get credentials here.
                    
