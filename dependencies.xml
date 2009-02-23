@@ -19,7 +19,7 @@
   </target>
 
   <!-- ================================================================== -->
-  <target name="opensearch.opensearch" depends="xsd-classes">
+  <target name="opensearch.opensearch" depends="fedora-soap, xsd-classes">
   	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
          target="${dependency.target}"
          inheritAll="false"/>
@@ -33,12 +33,10 @@
   </target>
 
   <target name="xsd-classes">
-    <antcall target="default.clean-all"/>
     <antcall target="toplevel.compile-xsd" />
   </target>
 
-  <target name="fedora_soap">
-    <antcall target="default.clean-all"/>
+  <target name="fedora-soap">
     <antcall target="toplevel.fedora_soap" />
   </target>
 

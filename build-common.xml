@@ -22,7 +22,7 @@
   <property name="config.dir"       value="${base.dir}/config"/>
   <property name="plugins.dir"      value="${opensearch.dir}/plugins" />
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
-  <property name="xsd_2.dir"        value="${opensearch.dir}/xsd" />
+  <property name="xsd_gen.dir"        value="${opensearch.dir}/xsd" />
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
@@ -67,7 +67,8 @@
     <delete dir="${report.dir}"/>
     <delete file="${base.dir}/doxygen-warnings"/>
     <delete dir="${testresults.dir}"/>
-    <delete dir="${xsd_2.dir}" />
+    <delete dir="${xsd_gen.dir}" />
+    <delete dir="${src.dir}/info"/>
 
     <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
       <arg line="create_test_suite_files.py clean"/>
@@ -84,7 +85,6 @@
   <target name="toplevel.clean-all"
           description="Deletes all but svn tracked files (this primarily targets the generated files in the xsd folder)"
           depends="toplevel.clean">
-    <delete dir="${opensearch.dir}/xsd"/>
   </target>
 	
   <target name="toplevel.dist" depends="toplevel.compile"
@@ -215,6 +215,8 @@
     <taskdef name="castor-srcgen"
              classname="org.castor.anttask.CastorCodeGenTask"
              classpathref="classpath" />
+
+    <delete dir="${xsd_gen.dir}"/>
 
     <castor-srcgen todir="${src.dir}/"
                    package="dk.dbc.opensearch.xsd"
