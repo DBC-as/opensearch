@@ -7,12 +7,13 @@
 package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.helpers.PluginFileReader;
 
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.plugins.FaktalinkStore;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
@@ -23,17 +24,19 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.ArrayList;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -83,17 +86,48 @@ public class DatadockThread implements Callable<Float>
      *
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
+     * @throws ParserConfigurationException 
+     * @throws PluginResolverException 
+     * @throws NullPointerException 
+     * @throws SAXException 
      */
-    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException 
+    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException 
     {
         this.jobMap = jobMap;
+        PluginFileReader pmc = new PluginFileReader();
         
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
         CargoContainer cargo = null;
         
-        // 10 Get plugin sequence from jobMap -> List
-
-        // 20 Get plugins from PluginResolver
+        // Get plugin sequence from jobMap
+        Set< Pair< String, String > > keysSet = jobMap.keySet();
+    	
+        // Loop through plugins: Each pair identifies a plugin by p1:submitter and p2:format
+    	for( Pair< String, String > pair : keysSet )
+    	{
+    		String submitter = pair.getFirst();
+    		String format = pair.getSecond();
+    		
+    		ArrayList< String > plugins = new ArrayList< String >();
+    		if( jobMap.containsKey( pair ) )
+    		{
+    			ArrayList< String > list = jobMap.get( pair );
+    			int i = 1;
+    			for( String pluginName : list)
+    			{
+    				//plugins.add( str );
+    				//HashMap< String, String > pluginAtts = 
+    				pmc.readPluginFile( pluginName );
+    				//Iterator
+    				System.out.println( "plugin name No.: " + i + ": " + pluginName );
+    				
+    			}
+    		}
+    	}
+    	
+    	
+        PluginResolver resolver = new PluginResolver(); 
+        //IPluggable plugin = resolver.getPlugin( submitter , format, task );
         
         // 30 Call plugins in correct sequence using x parameters
         

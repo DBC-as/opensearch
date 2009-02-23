@@ -8,6 +8,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandler;
@@ -26,11 +27,15 @@ import java.util.Vector;
 import java.util.HashMap;
 import dk.dbc.opensearch.common.types.Pair;
 import org.apache.commons.configuration.ConfigurationException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import org.apache.log4j.Logger;
 import java.util.ArrayList;
 
 import org.apache.commons.configuration.XMLConfiguration;
+import org.xml.sax.SAXException;
+
 import java.net.URL;
 
 /**
@@ -85,8 +90,12 @@ public class DatadockPool
      * @param DatadockJob The job to start.
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
+     * @throws ParserConfigurationException 
+     * @throws PluginResolverException 
+     * @throws NullPointerException 
+     * @throws SAXException 
      */
-    public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException
+    public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         log.debug( String.format( "submit( path='%s', submitter='%s', format='%s' )",
                                   datadockJob.getUri().getRawPath(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
@@ -100,7 +109,7 @@ public class DatadockPool
     }
 
     
-    public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException
+    public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, jobMap ) );
     }

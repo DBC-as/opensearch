@@ -5,6 +5,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamNames;
 
@@ -30,6 +31,9 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
 {
 	Logger log = Logger.getLogger( "FaktalinkRetriver" );
 	
+	private PluginType pluginType = PluginType.RETRIEVE;
+	
+		
 	public FaktalinkRetriever() throws ServiceException 
 	{
 		super();
@@ -111,4 +115,10 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
         log.info( "Successfully retrieved datastream." );
         return cargo;
     }
+
+
+	public PluginType getTaskName() 
+	{
+		return pluginType;
+	}
 }

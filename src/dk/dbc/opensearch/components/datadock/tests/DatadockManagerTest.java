@@ -10,11 +10,13 @@ package dk.dbc.opensearch.components.datadock.tests;
 
 import static org.junit.Assert.*;
 import org.junit.*;
+import org.xml.sax.SAXException;
 
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.components.datadock.DatadockPool;
 import dk.dbc.opensearch.components.datadock.DatadockManager;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.CompletedTask;
 
@@ -25,6 +27,7 @@ import java.io.IOException;
 
 import java.util.concurrent.RejectedExecutionException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 
 import java.net.URI;
@@ -73,7 +76,7 @@ public class DatadockManagerTest {
     
    
     @Test public void testUpdate() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                          FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException
+                                          FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         
         Vector<DatadockJob> jobs = new Vector<DatadockJob>();
@@ -105,7 +108,7 @@ public class DatadockManagerTest {
 
     
     @Test public void testUpdate_reject() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                                 FileNotFoundException, IOException, URISyntaxException, ServiceException {
+                                                 FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException {
         
         Vector<DatadockJob> jobs = new Vector<DatadockJob>();
         jobs.add( mockDatadockJob );

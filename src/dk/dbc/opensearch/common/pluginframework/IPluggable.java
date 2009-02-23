@@ -56,7 +56,8 @@ public interface IPluggable
      */
     //PluginID getPluginID();
 
-    /**
+    
+	/**
      * getTaskName returns the - at compile time given - name of the
      * task the plugin is constructed to handle. The task name is used
      * by the users of the plugin framework to assign jobs and
@@ -65,7 +66,7 @@ public interface IPluggable
      * 
      * @returns a string containing the task name
      */
-    //String getTaskName();
+    public PluginType getTaskName();
     /**
      *	 Empty plugin only used to define the type!
      */

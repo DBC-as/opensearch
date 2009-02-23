@@ -21,4 +21,3 @@ echo ${THE_CLASSPATH}
 #-----------------#
 
 #exec ${JAVABIN} -cp "${CLASSPATH}" "$@"
-

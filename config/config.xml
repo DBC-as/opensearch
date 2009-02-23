@@ -36,6 +36,8 @@
   <pidmanager>
     <num-of-pids-to-retrieve>10</num-of-pids-to-retrieve>
   </pidmanager>
-
+  <filesystem>
+    <trunk>/home/mro/projects/opensearch/trunk</trunk>
+  </filesystem>
 </opensearch-definition>
 

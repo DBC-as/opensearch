@@ -11,6 +11,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
 
 import java.io.FileInputStream;
@@ -45,22 +46,12 @@ public class RUBHarvester implements IHarvestable{
     
     Logger log = Logger.getLogger( RUBHarvester.class );
 
+    private PluginType pluginType = PluginType.HARVEST;
+    
     private String submitter;
     private String format;
     private String path;
 
-    /**
-     * The init method for the RUBHarvester plugin.
-     * 
-     * @param job The jobinstance describing the specific job
-     */
-    public void init( DatadockJob job){        
-        log.debug( "init( datadockJob ) called" );
-        path = job.getUri().getPath();
-        submitter = job.getSubmitter();
-        format = job.getFormat();
-        log.debug( String.format( "values: uri='%s', submitter='%s', format='%s'", path, submitter, format ) );
-    }
 
     /**
      * The getCargoContainer returns a cargoContainer with the data
@@ -68,9 +59,18 @@ public class RUBHarvester implements IHarvestable{
      *  
      * @return the CargoContainer
      * @throws IOException if the data cannot be read
+     * @throws ParserConfigurationException 
+     * @throws SAXException 
      */
-    public CargoContainer getCargoContainer() throws IOException, ParserConfigurationException, SAXException, javax.xml.xpath.XPathExpressionException
+    public CargoContainer getCargoContainer( DatadockJob job ) throws IOException, ParserConfigurationException, SAXException
     { 
+    	log.debug( "init( datadockJob ) called" );
+        
+        path = job.getUri().getPath();
+        submitter = job.getSubmitter();
+        format = job.getFormat();
+        log.debug( String.format( "values: uri='%s', submitter='%s', format='%s'", path, submitter, format ) );
+        
         log.debug( "getCargoContainer() called" );
 
         CargoContainer cargoContainer = new CargoContainer();
@@ -118,4 +118,10 @@ public class RUBHarvester implements IHarvestable{
         
         return cargoContainer; 
     }
+
+	
+	public PluginType getTaskName() 
+	{	
+		return pluginType;
+	}
 }

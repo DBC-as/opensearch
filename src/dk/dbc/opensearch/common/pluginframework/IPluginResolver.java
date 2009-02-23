@@ -1,12 +1,13 @@
 package dk.dbc.opensearch.common.pluginframework;
 
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
+
+import java.io.FileNotFoundException;
+import java.lang.IllegalAccessException;
+import java.lang.InstantiationException;
+import java.util.ArrayList;
 import java.util.Vector;
 
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import java.io.FileNotFoundException;
-import java.lang.InstantiationException;
-
-import java.lang.IllegalAccessException;
 
 /**
  * The pluginframework is accessed through this interface. 
@@ -18,7 +19,6 @@ import java.lang.IllegalAccessException;
  * available plugins through the clearPluginRegistration method, 
  * if someone changed them while the system is running.   
  */
-
 public interface IPluginResolver
 {
     /**
@@ -46,7 +46,7 @@ public interface IPluginResolver
      * @throws PluginResolverException, when there are exceptions from the 
      * framework concerning the registrations of plugins
      */
-    Vector<String> validateArgs( String submitter, String format, String[] taskList )throws PluginResolverException;
+    Vector<String> validateArgs( String submitter, String format, ArrayList< String > taskList )throws PluginResolverException;
     
     
     /**

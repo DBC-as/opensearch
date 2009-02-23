@@ -6,30 +6,26 @@
 
 package dk.dbc.opensearch.plugins;
 
-import org.apache.log4j.Logger;
+
+import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.net.InetAddress;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.util.Scanner;
 import java.net.Socket;
 import java.net.URL;
 
 import java.net.HttpURLConnection;
-
 import java.lang.StringBuilder;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-
 import org.xml.sax.InputSource;
-
-import dk.dbc.opensearch.common.types.CargoContainer;
-
-
+import org.apache.log4j.Logger;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Document;
 import org.jdom.JDOMException;
@@ -41,17 +37,19 @@ import org.jdom.Namespace;
 /**
  *
  */
-public class DocbookAnnotate {
-
+public class DocbookAnnotate 
+{
     static Logger log = Logger.getLogger("FaktalinkAnnotate");
     
     private CargoContainer cargo;
     
+    private PluginType pluginType = PluginType.ANNOTATE;
 
     /**
      *
      */
-    public DocbookAnnotate() {
+    public DocbookAnnotate() 
+    {
         System.out.println( "IM ANNOTATING");
     }
 
@@ -103,12 +101,11 @@ public class DocbookAnnotate {
      *
      * @throws JDOMException if Node doesnt exist
      */
-    public String retriveTitle( Document docbookDocument )throws JDOMException{
-        
+    public String retriveTitle( Document docbookDocument )throws JDOMException
+    {        
         XPath xpath = XPath.newInstance("/docbook:article/docbook:title"); 
         Element e = (Element) xpath.selectSingleNode( docbookDocument );
         return e.getText();
-
     }
 
 
@@ -174,5 +171,11 @@ public class DocbookAnnotate {
         
         conn.disconnect();
         return sb.toString();        
+    }
+    
+    
+    public PluginType getTaskName()
+    {
+    	return pluginType;
     }
 }

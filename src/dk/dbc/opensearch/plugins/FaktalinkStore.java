@@ -19,6 +19,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 
 
 /**
@@ -32,39 +33,33 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 {
 	Logger log = Logger.getLogger( FaktalinkStore.class );
     
-	private CargoContainer cargo;
+	private PluginType pluginType = PluginType.STORE; 
+	
+	private CargoContainer cc;
 
 	
 	public FaktalinkStore() throws ServiceException 
     {
 		super();
-	}	
-	
-    
-    /*
-     * Initialises the plugin with a cargocontainer.
-     */
-    public void init( CargoContainer cargo ) throws ServiceException 
-    {
-        this.cargo = cargo;
-    }
+	}
 
     
-    @Override
-	public String storeCargoContainer() throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
+	public String storeCargoContainer( CargoContainer cc ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
 	{
-		return this.storeCargo();
+		return this.storeCargo( cc );
 	}
 
 
-    private String storeCargo( )throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
+    private String storeCargo( CargoContainer cc ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
     {
+    	this.cc = cc;
+    	
         NonNegativeInteger nni = new NonNegativeInteger( "1" );
         String[] pids = super.fem.getNextPID( nni, "" );
 
         String descriptive_label = String.format( "Faktalink" );
         
-        byte[] foxml = FedoraTools.constructFoxml( this.cargo, pids[0], descriptive_label );
+        byte[] foxml = FedoraTools.constructFoxml( this.cc, pids[0], descriptive_label );
         
         String logm = String.format( "Faktalink inserted" );
         
@@ -86,4 +81,8 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
     }
 
 
+	public PluginType getTaskName() 
+	{
+		return pluginType;
+	}
 }

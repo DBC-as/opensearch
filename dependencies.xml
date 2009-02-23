@@ -75,8 +75,12 @@
 
   <!-- ================================================================== -->
   <target name="opensearch.common.pluginframework">
-  	<antcall target="opensearch.common.types" />
-  	<antcall target="opensearch.common.os" />
+  	<antcall target="opensearch.common.types">
+  	  <param name="dependency.target" value="toplevel.compile" />
+  	</antcall>
+  	<antcall target="opensearch.common.os">
+  	  <param name="dependency.target" value="toplevel.compile" />
+  	</antcall>
   	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/pluginframework"
   	     target="${dependency.target}"
   	     inheritAll="false" />  	

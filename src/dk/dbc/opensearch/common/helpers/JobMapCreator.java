@@ -74,7 +74,6 @@ public class JobMapCreator
     public JobMapCreator( Class classType ) throws ParserConfigurationException, SAXException, IOException 
     {
 
-
         /**
          * \Todo :Not sure i can mock the URL class..
          */
@@ -96,7 +95,7 @@ public class JobMapCreator
         {
             jobFile = FileHandler.getFile( datadockJobURL.getPath() );
         }
-        else
+        else /** \todo: I suggest: else if ( classType...equals( "dk...pti.PTIMain") followed by else throw new Exception( "should never happen" )*/
         {
             jobFile = FileHandler.getFile( ptiJobURL.getPath() );
         }
@@ -161,10 +160,11 @@ public class JobMapCreator
             
             // 60: Put it into the map with  <submitter, format> as key and List as value
 
-            jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >(sortedTaskList) );
+            jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedTaskList) );
         }
     }
 
+    
     public HashMap< Pair< String, String >, ArrayList< String > > getMap()
     {
         log.debug( "GetMap() called" );

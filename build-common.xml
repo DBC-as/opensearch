@@ -20,8 +20,9 @@
   <property name="components.dir"   value="${opensearch.dir}/components"/>
   <property name="datadock.dir"     value="${components.dir}/datadock"/>
   <property name="config.dir"       value="${base.dir}/config"/>
+  <property name="plugins.dir"      value="${opensearch.dir}/plugins" />
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
-  <property name="xsd_2.dir"          value="${opensearch.dir}/xsd" />
+  <property name="xsd_2.dir"        value="${opensearch.dir}/xsd" />
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
@@ -30,6 +31,7 @@
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
     <pathelement location="${classes.dir}" />
     <pathelement location="${config.dir}" />
+  	<pathelement location="${plugins.dir}" />
   </path>
 
   <!-- libraries used internally by ant is named ant_*.jar -->
@@ -97,16 +99,19 @@
 
   <target name="toplevel.compile" description="Compiles source code" > 
   	<!-- depends="toplevel.xsd-classes" -->
-    <mkdir dir="${classes.dir}"/>
-    <echo>
+  	<mkdir dir="${classes.dir}"/>
+  	<echo>
       Building from ${basedir},
       building project ${ant.project.name},
-      and putting it all into ${classes.dir}
+      and putting it all into ${classes.dir}      
     </echo>
     <javac srcdir="${basedir}" destdir="${classes.dir}" excludes="**/tests/*" debug="on">
       <classpath refid="classpath"/>
       <!-- <compilerarg value="-Xlint"/> -->
     </javac>
+  	<copy todir="${classes.dir}/dk/dbc/opensearch/plugins">
+  	  <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
+  	</copy>  	    
   </target>
 
   <target name="toplevel.compile-tests" description="builds the tests for the component" 

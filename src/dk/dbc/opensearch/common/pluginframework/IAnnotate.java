@@ -8,7 +8,5 @@ import java.io.IOException;
 
 public interface IAnnotate extends IPluggable
 {
-    void init( CargoContainer cargo );
-    
-    CargoContainer getCargoContainer() throws IOException;
+    CargoContainer getCargoContainer( CargoContainer cargo ) throws IOException;
 }

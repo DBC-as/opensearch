@@ -6,10 +6,12 @@
 
 package dk.dbc.opensearch.components.datadock;
 
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 
 import java.io.FileNotFoundException;
@@ -23,6 +25,7 @@ import org.apache.log4j.Logger;
 
 
 import org.apache.commons.configuration.XMLConfiguration;
+import org.xml.sax.SAXException;
 
 import java.net.URL;
 
@@ -58,7 +61,7 @@ public class DatadockManager
     }
 
     
-    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException
+    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         log.debug( "update() called" );
         

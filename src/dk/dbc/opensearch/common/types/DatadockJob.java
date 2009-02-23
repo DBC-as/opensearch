@@ -6,20 +6,25 @@
 
 package dk.dbc.opensearch.common.types;
 
+
 import java.net.URI;
 import org.apache.log4j.Logger;
+
+
 /**
  * The purpose of the datadockJob is to hold the information about a
  * job for the datadock. it provides get and set methods
  */
-public class DatadockJob {
-    
-    Logger log = Logger.getLogger("DatadockJob");
+public class DatadockJob 
+{    
+    Logger log = Logger.getLogger( DatadockJob.class );
+ 
     private URI uri;
     private String submitter;
     private String format;
     private String PID;
 
+    
     /**
      * Constructor. initializes the DatadockJob
      * 
@@ -27,9 +32,10 @@ public class DatadockJob {
      * @param submitter The submitter of the Job
      * @param format The format of the Job
      */
-    public DatadockJob( URI uri, String submitter, String format) {
-        log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s' ) called", 
-                                  uri.getRawPath(), submitter, format ) );
+    public DatadockJob( URI uri, String submitter, String format) 
+    {
+        log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s' ) called", uri.getRawPath(), submitter, format ) );
+        
         this.uri = uri;
         this.submitter = submitter;
         this.format = format;
@@ -89,7 +95,8 @@ public class DatadockJob {
      * Sets the path
      * @param The path 
      */
-    public void setUri( URI uri ){
+    public void setUri( URI uri )
+    {
         log.debug( String.format( "setUri( uri='%s' ) called", uri.getRawPath() ) ); 
            this.uri = uri;
     }
@@ -98,24 +105,30 @@ public class DatadockJob {
      * Sets the submitter
      * @param The submitter
      */
-    public void setSubmitter( String submitter ){
+    public void setSubmitter( String submitter )
+    {
         log.debug( String.format( "setSubmitter( submitter='%s' ) called", submitter ) ); 
         this.submitter = submitter;
     }
 
+    
     /**
      * Sets the format
      * @param The format 
      */
-    public void setFormat( String format ){
+    public void setFormat( String format )
+    {
         log.debug( String.format( "setFormat( format='%s' ) called", format ) );
         this.format = format;
     }
+    
+    
     /**
      * Sets the PID
      * @param The PID 
      */
-    public void setPID( String PID ){
+    public void setPID( String PID )
+    {
         log.debug( String.format( "setPID( PID='%s' ) called", PID ) );
         this.PID = PID;
     }

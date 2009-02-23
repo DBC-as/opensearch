@@ -13,6 +13,7 @@ import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.common.fedora.PIDManager;
+import dk.dbc.opensearch.common.helpers.Config;
 import dk.dbc.opensearch.common.helpers.JobMapCreator;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,7 +49,8 @@ import org.apache.commons.configuration.XMLConfiguration;
  */
 public class DatadockMain 
 {
-    static Logger log = Logger.getLogger("DatadockMain");
+    static Logger log = Logger.getLogger( DatadockMain.class );
+    
     static protected boolean shutdownRequested = false;    
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
@@ -69,7 +71,8 @@ public class DatadockMain
         cfgURL = getClass().getResource("/config.xml");
         config = new XMLConfiguration( cfgURL );
         
-        pollTime = config.getInt( "datadock.main-poll-time" );
+        //pollTime = config.getInt( "datadock.main-poll-time" );
+        //pollTime = Config.getDatabasePollTime();
         queueSize = config.getInt( "datadock.queuesize" );
         corePoolSize = config.getInt( "datadock.corepoolsize" );
         maxPoolSize = config.getInt( "datadock.maxpoolsize" );
@@ -223,7 +226,10 @@ public class DatadockMain
             }
         }
     }
-    private HashMap< Pair< String, String >, List< String > > constructHashMap() throws DocumentException{
+    
+    
+    private HashMap< Pair< String, String >, List< String > > constructHashMap() throws DocumentException
+    {
     	HashMap< Pair< String, String >, List< String > > task_list = new HashMap< Pair< String, String >, List< String > >();
         URL jobURL = getClass().getResource("/datadock_jobs.xml");
         

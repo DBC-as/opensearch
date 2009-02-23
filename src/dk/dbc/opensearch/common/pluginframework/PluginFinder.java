@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.jrdf.graph.Collection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -36,7 +37,7 @@ import org.xml.sax.SAXException;
  */
 public class PluginFinder
 {
-    static Logger log = Logger.getLogger( "PluginFinder" );
+    static Logger log = Logger.getLogger( PluginFinder.class );
 
     /**
      * classNameMap contains class names of plugins
@@ -47,7 +48,6 @@ public class PluginFinder
     String path;
 
     
-    //public PluginFinder(){}
     /**
      * builds the map containing the keys and related plugin classes
      * The keys are made from the task, format and datasource, the value is the
@@ -65,7 +65,7 @@ public class PluginFinder
     {
         this.path = path;
         this.docBuilder = docBuilder;
-        classNameMap = new HashMap();
+        classNameMap = new HashMap<Integer, String>();
 
         // call updatePluginClassNameMap to generate the map
         updatePluginClassNameMap( path );
@@ -83,26 +83,37 @@ public class PluginFinder
      * show stoppers. See the source to understand the use of it.
      * @return the name of the plugin class
      **/
-
-
-    String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
+    String getPluginClassName( long key ) throws PluginResolverException, FileNotFoundException
     {
         String className = null;
+        
         // 5: check the map is not null
-        if( classNameMap.size() < 1 ){
+        if( classNameMap.size() < 1 )
             updatePluginClassNameMap( path );
-        }
+        
         //10: search through the map
         className = (String) classNameMap.get( key );
 
         //20: if there is no hit, raise exception
         if( className == null )
-            {
-                throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
-            }
+        {
+        	throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
+        }
 
         //30: return classname
         return className;
+    }
+    
+    
+    void printClassNameMap()
+    {
+    	System.out.println( "print" );
+    	Collection c = (Collection) classNameMap.values();
+    	Iterator< String > iter = c.iterator();
+    	while ( iter.hasNext() )
+    	{
+    		System.out.println( iter.next().toString() );
+    	}
     }
     
 
@@ -114,8 +125,9 @@ public class PluginFinder
      * @throws PluginResolverException if one or more of the found plugins could not be loaded
      *
      */
-    private void updatePluginClassNameMap( String path ) throws PluginResolverException ,FileNotFoundException
+    private void updatePluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException
     {
+    	System.out.println( "path: " + path );
         Iterator pluginNameIter = null;
 
         log.debug( String.format( "Clearing map with %s members", classNameMap.size() ) );
@@ -123,7 +135,9 @@ public class PluginFinder
 
         log.debug( String.format( "Getting file list from %s", path ) );
         FilenameFilter[] filterList = { new PluginFileFilter() };
-        Vector<String> xmlPluginFileNames = FileHandler.getFileList( path, filterList, true );
+        
+        Vector<String> xmlPluginFileNames = FileHandler.getFileList( path, filterList, true );     
+        System.out.println( "PluginFinder size: " + xmlPluginFileNames.size() );
         log.debug( String.format( "Number of found plugins: %s ", xmlPluginFileNames.size() ) );
 
         Vector<ThrownInfo> failedPlugins = new Vector<ThrownInfo>();
@@ -160,15 +174,13 @@ public class PluginFinder
         	catch( SAXException saxe )
         	{
         		couldFormat = false;//dont try to do further work on this file
-        		log.error( String.format( "could not parse pluginxml file: '%s'\nException: %s",
-        				pluginName, saxe.getMessage() ) );
+        		log.error( String.format( "could not parse pluginxml file: '%s'\nException: %s", pluginName, saxe.getMessage() ) );
         		failedPlugins.add( new ThrownInfo( saxe, pluginName ) );
         	}
         	catch( IOException ioe )
         	{
         		couldFormat = false;//dont try to do further work on this file
-        		log.error( String.format( "could not parse pluginxml file: '%s'\nException: %s ",
-        		           pluginName, ioe.getMessage() ) );
+        		log.error( String.format( "could not parse pluginxml file: '%s'\nException: %s ", pluginName, ioe.getMessage() ) );
                 failedPlugins.add( new ThrownInfo( ioe, pluginName ) );
         	}
         	catch( NullPointerException npe )
@@ -200,8 +212,11 @@ public class PluginFinder
         		if( xmlRoot.getTagName().equals( "plugins" ) && submitterName != null && formatName != null && taskName != null && className != null )
         		{
         			//50: build the the key
-        			hashSubject= submitterName + formatName + taskName;
-        			key = hashSubject.hashCode();
+        			//hashSubject= submitterName + formatName + taskName;
+        			//key = hashSubject.hashCode();
+        			key = ( submitterName + formatName + taskName ).hashCode();
+        			System.out.println( submitterName + " " + formatName + " " + taskName );
+        			System.out.println( "PluginFinder key: " + key );
         				
         			//60: add the key and value to the map
         			classNameMap.put( key, className );
@@ -215,19 +230,12 @@ public class PluginFinder
         	}
         }//end .hasNext
 
-        /**
-         * the vector containing exceptions is larger than 0 throw it in
-         * a PluginResolverException
-         */
+        // The vector containing exceptions is larger than 0 throw it in a PluginResolverException 
         if( failedPlugins.size() > 0 )
-        {
             throw new PluginResolverException( failedPlugins, "Exceptions on the plugins");
-        }
 
         if ( classNameMap.size() == 0 )
-        {
             throw new PluginResolverException( String.format( "%s seems to be a valid path with plugins in it, but no plugins were loaded. I'm at my wits end and cannot give a better explanation.", path ) );
-        }
 
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
     }

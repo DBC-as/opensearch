@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginID;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 
 
 public class TestPlugin implements IPluggable
@@ -24,8 +25,8 @@ public class TestPlugin implements IPluggable
     }
     
     
-    public String getTaskName()
+    public PluginType getTaskName()
     {
-        return "testtask";
+        return PluginType.ANNOTATE;
     }
 }

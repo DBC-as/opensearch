@@ -6,6 +6,6 @@
           classname="dk.dbc.opensearch.plugins.FaktalinkHarvester" 
           submitter="dbc" 
           format="faktalink" 
-          task="harvest" />
-    
+          task="faktalinkharvester" />
+
 </plugins>

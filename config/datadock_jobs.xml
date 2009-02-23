@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- List of job to be executed using plugins -->
+
 <job_list>
   <job submitter="dbc" format="faktalink">
-    <task name="faktalinkharvester" position="0"/>
     <task name="docbookannotate" position="1"/>
-    <task name="faktalinkstore"     position="2"/>
+    <task name="faktalinkharvester" position="0"/>
+    <task name="faktalinkstore" position="2"/>
   </job>
 
-  <job submitter="dbc" format="forfatterweb">
+  <!--job submitter="dbc" format="forfatterweb">
     <task name="forfatterwebharvester" position="0"/>
     <task name="forfatterwebannotator" position="1"/>
     <task name="forfatterwebstore"     position="2"/>
-  </job>
+  </job-->
 
 </job_list>
