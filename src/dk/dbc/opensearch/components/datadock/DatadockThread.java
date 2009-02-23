@@ -81,6 +81,8 @@ public class DatadockThread implements Callable<Float>
 
 
     /**
+     *\Todo: Wheet out in the Exceptions 
+     *
      * DataDock is initialized with a DatadockJob containing information
      * about the data to be 'docked' into to system
      *
@@ -110,7 +112,9 @@ public class DatadockThread implements Callable<Float>
             submitter = datadockJob.getSubmitter();
             format = datadockJob.getFormat();
             list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
-
+            /**
+             * \Todo: shouldnt the communication with the processqueue be elsewhere?
+             */
             queue = processqueue;
 
             this.estimate = estimate;

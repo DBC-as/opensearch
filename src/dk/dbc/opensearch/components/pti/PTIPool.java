@@ -13,10 +13,10 @@ import org.compass.core.CompassException;
 
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.common.fedora.FedoraHandler;
-import dk.dbc.opensearch.common.types.Pair;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,12 +26,13 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
-
-import org.apache.commons.configuration.XMLConfiguration;
 import java.net.URL;
 
 
@@ -51,6 +52,7 @@ public class PTIPool
     //    private FedoraHandler fedoraHandler;
     private Compass compass;
     private int shutDownPollTime;
+    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
     XMLConfiguration config = null;
     
@@ -62,14 +64,13 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, //FedoraHandler fedoraHandler, 
-                    Compass compass ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, Compass compass, HashMap< Pair< String, String>, ArrayList< String > > jobMap ) throws ConfigurationException
      {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
          this.threadpool = threadpool;
          this.estimate = estimate;
-         //this.fedoraHandler = fedoraHandler;
+         this.jobMap = jobMap;
          this.compass = compass;
 
          jobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
@@ -106,8 +107,7 @@ public class PTIPool
         CompassSession session = null;
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
-        return new FutureTask( new PTIThread( fedoraHandle, session, //fedoraHandler, 
-                                              estimate ) );
+        return new FutureTask( new PTIThread( fedoraHandle, session, estimate, jobMap ) );
     }
 
     

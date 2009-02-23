@@ -6,27 +6,31 @@
 
 package dk.dbc.opensearch.components.pti;
 
-//import dk.dbc.opensearch.common.fedora.FedoraClientFactory;
-//import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.helpers.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
-
 import dk.dbc.opensearch.common.compass.CompassFactory;
+import dk.dbc.opensearch.common.db.Processqueue;
 
 import org.compass.core.Compass;
 //import fedora.client.FedoraClient;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import java.net.URL;
-
-import dk.dbc.opensearch.common.db.Processqueue;
+import org.xml.sax.SAXException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -52,12 +56,16 @@ public class PTIMain
     static long keepAliveTime;
     static int pollTime;
     static URL cfgURL;
+    static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
-    public PTIMain()  throws ConfigurationException{
+    public PTIMain()  throws ConfigurationException, ParserConfigurationException, SAXException, IOException{
 
         cfgURL = getClass().getResource("/config.xml");
 
         config = new XMLConfiguration( cfgURL );
+        //jobmap
+        JobMapCreator jobMapCreator = new JobMapCreator();
+        jobMap = jobMapCreator.getMap( this.getClass() );
 
         pollTime = config.getInt( "pti.main-poll-time" );
         queueSize = config.getInt( "pti.queuesize" );
@@ -144,12 +152,12 @@ public class PTIMain
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
 
+
             log.debug( "Starting PTIPool" );
             // PTIpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, //fedoraHandler, 
-                                           compass );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, jobMap );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 

@@ -6,12 +6,12 @@
 package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.statistics.Estimate;
-//import dk.dbc.opensearch.common.fedora.FedoraHandler;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -50,54 +50,45 @@ import org.apache.commons.configuration.ConfigurationException;
  * \ingroup pti
  * \brief the PTIThread class is responsible for getting a dataobject from the
  * fedora repository, and index it with compass afterwards. If this
- * was succesfull the estimate values will be updated
+ * was succesfull the estimate values in the statistics db will be updated
  */
 public class PTIThread implements Callable<Long>{
 
     Logger log = Logger.getLogger("PTIThread");
 
-    //private FedoraHandler fh;
-    //    private DefaultCompassSession session;
+    // private FedoraHandler fh;
+    // private DefaultCompassSession session;
     private CompassSession session;
     private CargoContainer cc;
     private Date finishTime;
     private String fedoraHandle;
-    private String datastreamItemID;
+    // private String datastreamItemID;
     private Estimate estimate;
-    private SAXReader saxReader;
+    // private SAXReader saxReader;
+    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    private String submitter;
+    private String format;
 
     /**
      * \brief Constructs the PTI instance with the given parameters
      *
-     * @param session the compass session this pti should communicate with
      * @param fedoraHandle the handle identifying the data object
-     * @param itemID identifying the data object
-     * @param fh the fedorahandler, which communicates with the fedora repository
+     * @param session the compass session this pti should communicate with
      * @param estimate used to update the estimate table in the database
-     *
-     * @throws ConfigurationException error reading configuration file
-     * @throws ClassNotFoundException if the databasedriver is not found
+     * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread(String fedoraHandle, CompassSession session, //FedoraHandler fh, 
-                     Estimate estimate ) throws ConfigurationException, ClassNotFoundException {
-        log.debug( String.format( "constructor(session, fedoraHandle=%s )", fedoraHandle ) );
+    public PTIThread( String fedoraHandle, CompassSession session, Estimate estimate, HashMap< Pair< String, String >, ArrayList< String > > jobMap )
+        {
+            log.debug( String.format( "constructor(session, fedoraHandle=%s )", fedoraHandle ) );
 
-//         if( fh == null ){
-//             throw new NullPointerException( "FedoraHandler was null, aborting" );
-//         }
-//         this.fh = fh;        
+            this.jobMap = jobMap;
+            this.estimate = estimate;
+            this.session = session;
+            this.fedoraHandle = fedoraHandle;
 
-//         //        this.session = ( DefaultCompassSession )session;
-//         this.session = session;
-         this.fedoraHandle = fedoraHandle;
-//         datastreamItemID = "TEST"; // THIS SHOULD BE REMOVED
-//         this.estimate = estimate;
+            log.debug( "CONSTRUCTOR done" );
+        }
 
-//         saxReader = new SAXReader( false );
-//         finishTime = new Date();
-         log.debug( "CONSTRUCTOR" );
-    }
-    
     /**
      * call is the main function of the PTI class. It reads the data
      * pointed to by the fedorahandler given to the class in the
@@ -109,18 +100,12 @@ public class PTIThread implements Callable<Long>{
      *
      * @throws CompassException something went wrong with the compasssession
      * @throws IOException something went wrong initializing the fedora client
-     * @throws DocumentException Couldnt read the xml data from the cargocontainer
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {     
-//         log.debug( String.format( "CALL CALLED handle: '%s'. going to sleep for a while", fedoraHandle ) );
-//         Thread.currentThread().sleep(10);
-//         log.debug( String.format( "YAWN handle: '%s'. returning fluff", fedoraHandle ) );
-
-//         
-        
-//         //return call( saxReader, finishTime, fh, fedoraHandle, datastreamItemID );
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
+            log.debug( String.format( "CALL CALLED handle: '%s'", fedoraHandle ) );
+       
         return 1l;
     }
 
@@ -145,79 +130,79 @@ public class PTIThread implements Callable<Long>{
      * @throws DocumentException Couldnt read the xml data from the cargocontainer
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws ClassNotFoundException if the databasedriver is not found
-     */    
-    public Long call( SAXReader saxReader, Date finishTime, //FedoraHandler fh, 
+     */
+    public Long call( SAXReader saxReader, Date finishTime, //FedoraHandler fh,
                       String fedoraHandle, String datastreamItemID ) throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException {
-//         log.debug( "Entering PTI.call()" );
+        //         log.debug( "Entering PTI.call()" );
 
 
-//         // Constructing CargoConatiner
-//         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
-//         cc = fh.getDatastream( fedoraHandle, datastreamItemID );
-//         log.debug( String.format( "CargoContainer.mimetype %s", cc.getMimeType() ) );
-//         log.debug( String.format( "CargoContainer.submitter %s", cc.getSubmitter() ) );
-//         log.debug( String.format( "CargoContainer.streamlength %s", cc.getStreamLength() ) );
+        //         // Constructing CargoConatiner
+        //         log.debug( String.format( "Constructing CargoContainer from fedoraHandle '%s', datastreamItemID '%s'", fedoraHandle, datastreamItemID ) );
+        //         cc = fh.getDatastream( fedoraHandle, datastreamItemID );
+        //         log.debug( String.format( "CargoContainer.mimetype %s", cc.getMimeType() ) );
+        //         log.debug( String.format( "CargoContainer.submitter %s", cc.getSubmitter() ) );
+        //         log.debug( String.format( "CargoContainer.streamlength %s", cc.getStreamLength() ) );
 
-//         // Construct doc and Start Transaction
-//         log.debug( "Starting transaction on running CompassSession" );
-//         Document doc = null;
+        //         // Construct doc and Start Transaction
+        //         log.debug( "Starting transaction on running CompassSession" );
+        //         Document doc = null;
 
-//         log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
-//         doc = saxReader.read( cc.getData() );
+        //         log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
+        //         doc = saxReader.read( cc.getData() );
 
-//         // this log line is _very_ verbose, but useful in a tight situation
-//         // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
+        //         // this log line is _very_ verbose, but useful in a tight situation
+        //         // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
-//         AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  cc.getFormat(), doc.getRootElement() );
+        //         AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject(  cc.getFormat(), doc.getRootElement() );
 
-//         log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
+        //         log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
-//         log.debug( String.format( "Indexing document" ) );
+        //         log.debug( String.format( "Indexing document" ) );
 
-//         // getting transaction object and saving index
-//         log.debug( String.format( "Getting transaction object" ) );
-//         CompassTransaction trans;
+        //         // getting transaction object and saving index
+        //         log.debug( String.format( "Getting transaction object" ) );
+        //         CompassTransaction trans;
 
-//         log.debug( "Beginning transaction" );
-//         trans = session.beginTransaction();
+        //         log.debug( "Beginning transaction" );
+        //         trans = session.beginTransaction();
 
-//         log.debug( "Saving aliased xml object to the index" );
-//         session.save( xmlObject );
+        //         log.debug( "Saving aliased xml object to the index" );
+        //         session.save( xmlObject );
 
-//         String alias = xmlObject.getAlias();
+        //         String alias = xmlObject.getAlias();
 
-//         log.debug( String.format( "Preparing for insertion of fedora handle '%s' into the index with alias %s", fedoraHandle, alias ) );
+        //         log.debug( String.format( "Preparing for insertion of fedora handle '%s' into the index with alias %s", fedoraHandle, alias ) );
 
-//         Resource xmlObj2 = session.loadResource( alias, xmlObject );
+        //         Resource xmlObj2 = session.loadResource( alias, xmlObject );
 
-//         // \todo do we need to remove the xmlObject from the index?
-//         log.debug( String.format( "Deleting old xml object" ) );
-//         session.delete( xmlObject );
+        //         // \todo do we need to remove the xmlObject from the index?
+        //         log.debug( String.format( "Deleting old xml object" ) );
+        //         session.delete( xmlObject );
 
-//         log.debug( String.format( "Setting field fedoraHandle='%s'", fedoraHandle ) );
+        //         log.debug( String.format( "Setting field fedoraHandle='%s'", fedoraHandle ) );
 
-//         LuceneProperty fedoraField = new LuceneProperty( new Field( "fedora_uri", new StringReader( fedoraHandle ) ) );
-//         xmlObj2.addProperty( fedoraField );
+        //         LuceneProperty fedoraField = new LuceneProperty( new Field( "fedora_uri", new StringReader( fedoraHandle ) ) );
+        //         xmlObj2.addProperty( fedoraField );
 
-//         session.save( xmlObj2 );
+        //         session.save( xmlObj2 );
 
-//         log.debug( "Committing index on transaction" );
-//         trans.commit();
-        
-//         log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );
-//         session.close();
+        //         log.debug( "Committing index on transaction" );
+        //         trans.commit();
 
-//         log.info( String.format( "Document indexed and stored with Compass" ) );
+        //         log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );
+        //         session.close();
 
-//         log.debug( "Obtain processtime, and writing to statisticDB table in database" );
-        
-//         long processtime = finishTime.getTime() - cc.getTimestamp();
-        
+        //         log.info( String.format( "Document indexed and stored with Compass" ) );
 
-//         estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
+        //         log.debug( "Obtain processtime, and writing to statisticDB table in database" );
 
-//         log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
+        //         long processtime = finishTime.getTime() - cc.getTimestamp();
+
+
+        //         estimate.updateEstimate( cc.getMimeType(), cc.getStreamLength(), processtime );
+
+        //         log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", cc.getMimeType(), cc.getStreamLength(), processtime ) );
         Long processtime = 1l;
         return processtime;
-    }    
+    }
 }
