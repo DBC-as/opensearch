@@ -74,7 +74,7 @@ public class RUBHarvester implements IHarvestable{
         log.debug( "getCargoContainer() called" );
 
         CargoContainer cargoContainer = new CargoContainer();
-        String mimetype = "application/pdf";
+        String mimetype = "text/xml";
 
         log.debug( "read and add xml to cargoContainer" );
        
@@ -105,6 +105,7 @@ public class RUBHarvester implements IHarvestable{
        
         log.debug( "read and add pdf to cargoContainer" );
 
+        mimetype = "application/pdf";
         FilenameFilter[] pdfFilter = { new PdfFileFilter() };
         String pdfFilePath = FileHandler.getFileList( path, pdfFilter, false ).remove(0);
         log.debug( String.format( "pdf filepath='%s'", pdfFilePath ) );

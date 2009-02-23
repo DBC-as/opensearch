@@ -64,7 +64,20 @@ public class CargoContainer
     {
     	return data;
     }
-    
+
+
+    public CargoObject getFirstCargoObject( DataStreamNames dsn)
+    {
+        CargoObject rco = null;
+        for( CargoObject co : data ){
+            if( co.getDataStreamName() == dsn ){
+                rco = co;
+        }
+    }
+        return rco;
+    }
+
+        
     
     /**
      * Getter for size, i.e., No. of CargoObjects in internal data representation.

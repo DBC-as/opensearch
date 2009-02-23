@@ -15,6 +15,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DatadockJob;
 
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
@@ -44,7 +45,7 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 	}
 
     
-	public String storeCargoContainer( CargoContainer cc ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
+    public String storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
 	{
 		return this.storeCargo( cc );
 	}

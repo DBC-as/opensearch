@@ -24,16 +24,43 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
+
+import dk.dbc.opensearch.common.types.DataStreamNames;
+
 import org.xml.sax.InputSource;
+
+
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.CargoContainer;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import java.io.ByteArrayInputStream;
+import org.xml.sax.InputSource;
+
+
 import org.apache.log4j.Logger;
-import org.jdom.input.SAXBuilder;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import org.jdom.Element;
-import org.jdom.xpath.XPath;
-import org.jdom.Namespace;
+
+
+
+//================================================
+import java.io.IOException;
+
+import org.xml.sax.SAXException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+
+
 /**
  *
  */
@@ -58,10 +85,24 @@ public class DocbookAnnotate
         this.cargo = cargo;
     }
 
-    public CargoContainer getCargoContainer()throws JDOMException, IOException//, ParserConfigurationException, SAXException
+    public CargoContainer getCargoContainer()throws ParserConfigurationException, SAXException, IOException
     {
 
-        // 10: retrive docbook xml from CargoContainer 
+        // 10: retrive docbook xml from CargoContainer
+        CargoObject co = cargo.getFirstCargoObject( DataStreamNames.OriginalData );
+        byte[] b = co.getBytes();
+
+        ByteArrayInputStream bis = new ByteArrayInputStream( b );
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();     
+        Document document = builder.parse( bis );
+        
+        NodeList doc_art = document.getElementsByTagName( "docbook:article" );
+        System.out.println(doc_art.getLength());
+        NodeList doc_title = ( (Element) doc_art.item( 0 ) ).getElementsByTagName( "docbook:title" );
+        System.out.println(doc_title.getLength());
+        printNode( doc_art.item(0), "  ");
         // 20: isolate submitter (serverChoice)  from CargoObjectInfo
         // String serverChoice = "";
         
@@ -92,6 +133,19 @@ public class DocbookAnnotate
     }
 
 
+
+//     /**
+//      * Retrives the title from a docbook Document.
+//      * 
+//      * @param docbookDocument the document to retrieve the title from
+//      * 
+//      * @returns String containing the isolated title
+//      *
+//      * @throws JDOMException if Node doesnt exist
+//      */
+//     public String retriveTitle( Document docbookDocument )throws JDOMException{
+        
+
     /**
      * Retrives the title from a docbook Document.
      * 
@@ -101,12 +155,13 @@ public class DocbookAnnotate
      *
      * @throws JDOMException if Node doesnt exist
      */
-    public String retriveTitle( Document docbookDocument )throws JDOMException
-    {        
-        XPath xpath = XPath.newInstance("/docbook:article/docbook:title"); 
-        Element e = (Element) xpath.selectSingleNode( docbookDocument );
-        return e.getText();
-    }
+    //    public String retriveTitle( Document docbookDocument )throws JDOMException
+    //    {        
+
+//         XPath xpath = XPath.newInstance("/docbook:article/docbook:title"); 
+//         Element e = (Element) xpath.selectSingleNode( docbookDocument );
+//         return e.getText();
+//    }
 
 
     /**
@@ -115,7 +170,7 @@ public class DocbookAnnotate
      * @param title the title to query. 
      * @param serverChoice This correspond to submitter field (eg. faktalink). Can be empty.
      */
-    public String formURL( String title, String serverChoice ){
+        public String formURL( String title, String serverChoice ){
 
         int maxRecords = 1;
 
@@ -172,10 +227,87 @@ public class DocbookAnnotate
         conn.disconnect();
         return sb.toString();        
     }
+
+
+
+    public void printNode(Node node, String indent)  {
+
+        // Determine action based on node type
+        switch (node.getNodeType()) {
+            case Node.DOCUMENT_NODE:
+                System.out.println("<xml version=\"1.0\">\n");
+                // recurse on each child
+                NodeList nodes = node.getChildNodes();
+                if (nodes != null) {
+                    for (int i=0; i<nodes.getLength(); i++) {
+                        printNode(nodes.item(i), "");
+                    }
+                }
+                /*
+                Document doc = (Document)node;
+                printTree(doc.getDocumentElement(), "");
+                */
+                break;
+            
+            case Node.ELEMENT_NODE:
+                String name = node.getNodeName();
+                System.out.print(indent + "<" + name);
+                NamedNodeMap attributes = node.getAttributes();
+                for (int i=0; i<attributes.getLength(); i++) {
+                    Node current = attributes.item(i);
+                    System.out.print(" " + current.getNodeName() +
+                                     "=\"" + current.getNodeValue() +
+                                     "\"");
+                }
+                System.out.println(">");
+                
+                // recurse on each child
+                NodeList children = node.getChildNodes();
+                if (children != null) {
+                    for (int i=0; i<children.getLength(); i++) {
+                        printNode(children.item(i), indent + "  ");
+                    }
+                }
+                
+                System.out.println(indent + "</" + name + ">");
+                break;
+            
+            case Node.TEXT_NODE:
+            case Node.CDATA_SECTION_NODE:
+                System.out.print(node.getNodeValue());
+                break;
+            
+            case Node.PROCESSING_INSTRUCTION_NODE:
+                System.out.println("<?" + node.getNodeName() +
+                                   " " + node.getNodeValue() +
+                                   "?>");                
+                break;
+            
+            case Node.ENTITY_REFERENCE_NODE:
+                System.out.println("&" + node.getNodeName() + ";");    
+                break;
+                
+            case Node.DOCUMENT_TYPE_NODE: 
+                DocumentType docType = (DocumentType)node;
+                System.out.print("<!DOCTYPE " + docType.getName());
+                if (docType.getPublicId() != null)  {
+                    System.out.print(" PUBLIC \"" + 
+                        docType.getPublicId() + "\" ");                    
+                } else {
+                    System.out.print(" SYSTEM ");
+                }
+                System.out.println("\"" + docType.getSystemId() + "\">");                                
+                break;                
+        }
+    }
+ 
+
+
     
     
     public PluginType getTaskName()
     {
     	return pluginType;
     }
+
 }
