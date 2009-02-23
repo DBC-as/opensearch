@@ -95,7 +95,7 @@ public class JobMapCreator
         }
 
         log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
-        
+
         readJobFile( jobFile );
     }
 
@@ -104,6 +104,7 @@ public class JobMapCreator
     {
     	docBuildFact = DocumentBuilderFactory.newInstance();
         docBuilder = docBuildFact.newDocumentBuilder();        
+
         jobDocument = docBuilder.parse( jobFile );
 
         //build the jobMap
