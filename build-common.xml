@@ -8,6 +8,7 @@
 
   <property name="lib.dir"          value="${base.dir}/lib"/>
   <property name="src.dir"          value="${base.dir}/src"/>
+  <property name="info.dir"         value="${src.dir}/info" />
   <property name="build.dir"        value="${base.dir}/build"/>
   <property name="dist.dir"         value="${base.dir}/dist"/>
   <property name="classes.dir"      value="${build.dir}/classes"/>
@@ -75,12 +76,6 @@
     </exec>
 
   </target>
-
-  <!--target name="opensearch.all">
-      <antcall target="toplevel.compile">
-      <param name="dependency.target" value="toplevel.compile"/>
-      </antcall>
-      </target-->
 
   <target name="toplevel.clean-all"
           description="Deletes all but svn tracked files (this primarily targets the generated files in the xsd folder)"
@@ -230,7 +225,7 @@
   </target>
 
   <target name="toplevel.compile-xsd" description="compiles xsd"
-          depends="toplevel.xsd-classes">
+          depends="toplevel.fedora_soap, toplevel.compile-fedora_soap, toplevel.xsd-classes">
     <mkdir dir="${classes.dir}"/>
 
     <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/*">
@@ -259,10 +254,15 @@
           namespace="http://axis.apache.org/ns/interop"
           package="info" />
     </axis-wsdl2java>
-
-
+  </target>
+  
+  <target name="toplevel.compile-fedora_soap" description="compiles fedora files"
+          depends="toplevel.fedora_soap">
+    <mkdir dir="${classes.dir}" />
     
-
+    <javac srcdir="${info.dir}" destdir="${classes.dir}" excludes="**/tests/*">
+      <classpath refid="classpath" />
+    </javac>
   </target>
 
 

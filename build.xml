@@ -27,22 +27,14 @@
 	  <param name="dependency.target" value="toplevel.dist" />
     </antcall>
   </target>
-
-  <!--target name="opensearch">
-	<antcall target="toplevel.compile">
-	  <param name="dependency.target" value="toplevel.compile" />
-	</antcall>
-  </target--> 
 		  
   <target name="compile-tests" description="Builds tests">
-  	<echo>build.xml -> compile-tests: ${ant.project.name}</echo>
-    <antcall target="${ant.project.name}">
+  	<antcall target="${ant.project.name}">
       <param name="dependency.target" value="toplevel.compile-tests"/>
     </antcall>
   </target>
 	
   <target name="testsuite" description="Run test suite" depends="xsd-classes">
-  	<echo>build.xml -> testsuite: ${ant.project.name}</echo>
   	<antcall target="${ant.project.name}">
   	  <param name="dependency.target" value="toplevel.suite" />
   	</antcall>
