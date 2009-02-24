@@ -64,8 +64,7 @@ public class PTIMain
 
         config = new XMLConfiguration( cfgURL );
         //jobmap
-        JobMapCreator jobMapCreator = new JobMapCreator();
-        jobMap = jobMapCreator.getMap( this.getClass() );
+        jobMap = JobMapCreator.getMap( this.getClass() );
 
         pollTime = config.getInt( "pti.main-poll-time" );
         queueSize = config.getInt( "pti.queuesize" );

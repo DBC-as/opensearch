@@ -82,8 +82,7 @@ public class DatadockMain
         harvestDir = HarvesterConfig.getHarvesterFolder();
         
         // Jobmap
-        JobMapCreator jobMapCreator = new JobMapCreator();
-        jobMap = jobMapCreator.getMap( this.getClass() );
+        jobMap = JobMapCreator.getMap( this.getClass() );
 
         log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
     }

@@ -49,7 +49,7 @@ public class JobMapCreator
      * \Todo: Make the method static when we are not using URL, getClass and getResource...
      */
 
-    public HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException 
+    public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException 
     {
         log.debug( "GetMap() called" );
 
@@ -132,7 +132,7 @@ public class JobMapCreator
     }
     
     
-    private File setJobFile( Class classType ) throws MalformedURLException
+    private static File setJobFile( Class classType ) throws MalformedURLException
     {
     	File jobFile;
     
