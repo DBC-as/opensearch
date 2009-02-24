@@ -2,10 +2,10 @@
 
 <plugins xmlns="info:opensearch.dbc.dk#" >
 
-  <plugin name="faktalinkharvester" 
+  <plugin taskname="faktalinkharvester" 
           classname="dk.dbc.opensearch.plugins.FaktalinkHarvester" 
           submitter="dbc" 
-          format="faktalink" 
-          task="faktalinkharvester" />
+          format="faktalink"
+          type="harvest" />
 
 </plugins>

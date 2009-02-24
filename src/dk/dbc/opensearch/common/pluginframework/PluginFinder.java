@@ -7,7 +7,6 @@ package dk.dbc.opensearch.common.pluginframework;
 
 import dk.dbc.opensearch.common.os.PluginFileFilter;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.pluginframework.TasksNotValidatedException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.ThrownInfo;
 
@@ -25,7 +24,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.jrdf.graph.Collection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -94,14 +92,11 @@ public class PluginFinder
             updatePluginClassNameMap( path );
         
         //10: search through the map
-        //System.out.println( classNameMap.size() );
         className = (String) classNameMap.get( key );
-        //System.out.println( className );
+        
         //20: if there is no hit, raise exception
         if( className == null )
-        {
         	throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
-        }
         
         return className;
     }
@@ -207,7 +202,7 @@ public class PluginFinder
 
         		submitterName = pluginElement.getAttribute( "submitter" );
         		formatName = pluginElement.getAttribute( "format" );
-        		taskName = pluginElement.getAttribute( "task" );
+        		taskName = pluginElement.getAttribute( "taskname" );
         		className = pluginElement.getAttribute( "classname" );
         		
         		log.debug( String.format( "Found plugins with classname=%s, used for task: %s, format: %s from submitter:%s", className, taskName, formatName, submitterName ) );

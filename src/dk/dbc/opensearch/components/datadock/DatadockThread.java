@@ -3,11 +3,10 @@
  * \brief The DataDock class
  * \package datadock
  */
-
 package dk.dbc.opensearch.components.datadock;
 
-import dk.dbc.opensearch.common.db.Processqueue;
 
+import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -21,18 +20,11 @@ import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.ArrayList;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 
@@ -73,6 +65,7 @@ public class DatadockThread implements Callable<Float>
     private Processqueue queue;
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
+    private float result;
     private Estimate estimate;
     private DatadockJob datadockJob;
     private String submitter;
@@ -102,28 +95,25 @@ public class DatadockThread implements Callable<Float>
      * @throws SAXException
      */
     public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
-        {
-            log.debug( String.format( "Entering DatadockThread Constructor" ) );
+    {
+    	log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
-            this.jobMap = jobMap;
-            this.datadockJob = datadockJob;
+    	this.jobMap = jobMap;
+    	this.datadockJob = datadockJob;
 
-            // Each pair identifies a plugin by p1:submitter and p2:format
-            submitter = datadockJob.getSubmitter();
-            format = datadockJob.getFormat();
-            list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
-            /**
-             * \Todo: shouldnt the communication with the processqueue be elsewhere?
-             */
-            queue = processqueue;
+    	// Each pair identifies a plugin by p1:submitter and p2:format
+    	submitter = datadockJob.getSubmitter();
+    	format = datadockJob.getFormat();
+    	list = this.jobMap.get( new Pair< String, String >( submitter, format ) );    	
+    	queue = processqueue;
 
-            this.estimate = estimate;
-            log.debug( String.format( "DataDock Construction finished" ) );
-        }
+    	this.estimate = estimate;
+    	log.debug( String.format( "DataDock Construction finished" ) );
+    }
 
 
     /**
-     * call is the thread entry method on the DataDock. Call operates
+     * call() is the thread entry method on the DataDock. Call operates
      * on the DataDock object, and all data critical for its success
      * is given at DataDock initialization. This method is used with
      * java.util.concurrent.FutureTask, which upon finalisation
@@ -150,45 +140,42 @@ public class DatadockThread implements Callable<Float>
      */
     public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException
     {
+    	// Must be implemented due to class implementing Callable< Float > interface.
+    	// Method is to be extended when we connect to 'Posthuset'
+    	
+    	// Validate plugins
+    	PluginResolver pluginResolver = new PluginResolver();
+    	Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+
+    	if( ! missingPlugins.isEmpty() )
+    	{
+    		System.out.println( " kill thread" );
+    		log.error( "Thread killed due to invalid plugin call");
+    		// kill thread/throw meaningful exception/log message
+    	}
+    	else
+    	{
+    		for( String task : list)
+    		{
+    			IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+    			switch ( plugin.getTaskName() )
+    			{
+    				case HARVEST:
+    					IHarvestable harvestPlugin = (IHarvestable)plugin;
+    					cc = harvestPlugin.getCargoContainer( datadockJob );
+    					//make estimate
+    					break;
+    				case ANNOTATE:
+    					IAnnotate annotatePlugin = (IAnnotate)plugin;
+    					cc = annotatePlugin.getCargoContainer( cc );
+    					break;
+    				case STORE:
+    					IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+    					result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
+    			}
+    		}
+    	}
         
-                // Must be implemented due to class implementing Callable< Float > interface.
-                // Method is to be extended when we connect to 'Posthuset'
-                // Validate plugins
-                PluginResolver pluginResolver = new PluginResolver();
-                Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-
-                if( ! missingPlugins.isEmpty() )
-                    {
-                        System.out.println( " kill thread" );
-                        // kill thread/throw meaningful exception/log message
-                    }
-                else
-                    {
-                        CargoContainer cc = null;
-
-                        for( String task : list)
-                            {
-                                IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-                                switch ( plugin.getTaskName() )
-                                    {
-                                    case HARVEST:
-                                        IHarvestable harvestPlugin = (IHarvestable)plugin;
-                                        cc = harvestPlugin.getCargoContainer( datadockJob );
-                                        //make estimate
-
-                                        break;
-                                    case ANNOTATE:
-                                        IAnnotate annotatePlugin = (IAnnotate)plugin;
-                                        cc = annotatePlugin.getCargoContainer( cc );
-                                        break;
-                                    case STORE:
-                                        IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                                        repositoryStore.storeCargoContainer( cc, this.datadockJob );
-                                    }
-                            }
-                    }
-           
-
-        return null;
+    	return result;
     }
 }

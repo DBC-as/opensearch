@@ -7,8 +7,14 @@
 package dk.dbc.opensearch.plugins;
 
 
-import java.io.IOException;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.FedoraTools;
+import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DatadockJob;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 import javax.xml.rpc.ServiceException;
@@ -18,14 +24,6 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.FedoraTools;
-import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
-import dk.dbc.opensearch.common.types.DatadockJob;
-
-import dk.dbc.opensearch.common.pluginframework.PluginType;
 
 /**
  *
@@ -34,36 +32,34 @@ public class AllStore extends FedoraHandle implements IRepositoryStore
 {
     Logger log = Logger.getLogger( AllStore.class );
 
+    private PluginType pluginType = PluginType.STORE;
     private CargoContainer cargo;
 
 
     public AllStore() throws ServiceException
     {
         super();
-    }
-
-    private PluginType pluginType = PluginType.STORE;
-
-    public String storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException
+    }    
+    
+    
+    public float storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException
     {
         this.cargo = cargo;
         return this.storeCargo( job );
     }
 
 
-    private String storeCargo( DatadockJob job )throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
+    private float storeCargo( DatadockJob job ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
     {
         byte[] foxml = FedoraTools.constructFoxml( this.cargo, job.getPID(), job.getFormat() );
 
         String logm = String.format( "%s inserted", job.getFormat() );
-
         String pid = super.fem.ingest( foxml, job.getFormat(), logm);
         
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
-        return pid;
+        return Float.parseFloat( pid );
     }
-
 
     
     public PluginType getTaskName()

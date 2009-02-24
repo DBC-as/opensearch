@@ -17,8 +17,26 @@
   </xsd:element>
 
   <xsd:complexType name="pluginType">
+    
+    <xsd:attribute name="taskname" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          Possible tasks for a given plugin: 
+          
+          - index: relates to indexing. Plugins of this type handles
+          the process from indexable input format to the handing over
+          of indexed data
 
-    <xsd:attribute name="name" use="required" type="xsd:string">
+          - transformation: The plugins handles transformation of a
+          given input format into an indexable object/format
+
+          - annotation: The plugin handles metadata or supplimentary
+          data annotation to the indexable object
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    
+    <!-- xsd:attribute name="name" use="required" type="xsd:string">
       <xsd:annotation>
         <xsd:documentation>
           Name of the plugin. There are no restrictions on the
@@ -26,7 +44,7 @@
           should have no computational consequences.
         </xsd:documentation>
       </xsd:annotation>
-    </xsd:attribute>
+    </xsd:attribute-->
 
     <xsd:attribute name="classname" use="required" type="xsd:string">
       <xsd:annotation>
@@ -60,8 +78,8 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-
-    <xsd:attribute name="task" use="required">
+    
+    <xsd:attribute name="type" use="required">
       <xsd:annotation>
         <xsd:documentation>
           Possible tasks for a given plugin: 
@@ -83,9 +101,11 @@
           <xsd:enumeration value="annotate"/>
           <xsd:enumeration value="store"/>
           <xsd:enumeration value="index"/>
+          <xsd:enumeration value="process"/>
           <xsd:enumeration value="retrieve"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
+    
   </xsd:complexType>
 </xsd:schema>

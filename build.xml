@@ -10,7 +10,7 @@
   </target>
 
   <target name="clean-all" description="Deletes all but svn tracked files (this primarliy targets the generated files in the xsd folder)">
-  	<antcall target="opensearch.all">
+  	<antcall target="default.clean-all">
       <param name="dependency.target" value="clean-all"/>
     </antcall>
   </target>

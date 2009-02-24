@@ -2,10 +2,10 @@
 
 <plugins xmlns="info:opensearch.dbc.dk#" >
 
-  <plugin name="docbookannotate" 
+  <plugin taskname="docbookannotate" 
           classname="dk.dbc.opensearch.plugins.DocbookAnnotate" 
           submitter="dbc" 
-          format="faktalink" 
-          task="docbookannotate" />
-    
+          format="faktalink"
+          type="annotate" />
+          
 </plugins>

@@ -4,11 +4,12 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DatadockJob;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -20,7 +21,6 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import dk.dbc.opensearch.common.types.DatadockJob;
 
 /**
  * @author stm
@@ -44,13 +44,13 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 	}
 
     
-    public String storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
+    public float storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
 	{
 		return this.storeCargo( cc );
 	}
 
 
-    private String storeCargo( CargoContainer cc ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
+    private float storeCargo( CargoContainer cc ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
     {
     	this.cc = cc;
     	
@@ -78,7 +78,7 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
         
-        return pid;
+        return Float.parseFloat( pid );
     }
 
 

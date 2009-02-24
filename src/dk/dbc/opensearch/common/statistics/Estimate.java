@@ -5,27 +5,30 @@
  */
 package dk.dbc.opensearch.common.statistics;
 
+
 import dk.dbc.opensearch.common.db.DBConnection;
 
-import org.apache.log4j.Logger;
-
+import java.lang.ClassNotFoundException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.NoSuchElementException;
-import java.lang.ClassNotFoundException;
+
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
+
 
 /**
  * \ingroup tools
  * \brief The Estimate class handles all communication to the statistics table
  */
-public class Estimate {
-
+public class Estimate 
+{
     Logger log = Logger.getLogger("Estimate");
     DBConnection DBconnection = null;
+ 
+    
     /**
      * Constructor
      *
@@ -38,6 +41,7 @@ public class Estimate {
         DBconnection = new DBConnection();
     }
 
+    
     /** \todo: construct proper exception like an connnectionerrorexception-type thing */
     /**
      * \brief getEstimate retrieves estimate from statistics table.
@@ -50,9 +54,9 @@ public class Estimate {
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws NoSuchElementException if the mimetype is not known
-
      */
-    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException, NullPointerException{
+    public float getEstimate( String mimeType, long length ) throws SQLException, NoSuchElementException, ClassNotFoundException, NullPointerException
+    {
         log.debug( String.format( "estimate.getEstimate(mimeType=%s, length=%s) called", mimeType, length ) );
 
         Connection con = DBConnection.getConnection();
@@ -63,19 +67,22 @@ public class Estimate {
         String sqlQuery = String.format( "SELECT processtime, dataamount FROM statistics WHERE mimetype = '%s'", mimeType );
         log.debug( String.format( "query database with %s ", sqlQuery ) );
 
-        try{
+        try
+        {
             stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
             rs = stmt.executeQuery ( sqlQuery );
             
-            if( rs == null ){
+            if( rs == null )
+            {
                 throw new NoSuchElementException( String.format( "We didnt get anything from the database, the mimetype \"%s\"is unknown.", mimeType ) );
-
             }
            
             long p = 0l;
             long d = 0l;
             log.debug("obtained resultset");
-            while(rs.next()){
+            
+            while(rs.next())
+            {
                 log.debug("next in rs");
                 p = rs.getLong( "processtime" );
                 log.debug( String.format( "got p: '%s'", p ) );
@@ -83,18 +90,22 @@ public class Estimate {
                 d = rs.getLong( "dataamount" );
                 log.debug( String.format( "got d: '%s'", d ) );
 
-                if ( d != 0l && p != 0l ){ // if either is zero
+                if ( d != 0l && p != 0l ) // if either is zero
+                { 
                     average_time = ( ( (float)p / d ) * length );
                 }
             }
+            
             log.debug( String.format( "processtime=%s dataamount=%s, averagetime=%s", p, d, average_time ) );
         }
-        finally{
+        finally
+        {
             stmt.close();
             con.close();
         }
         
         log.info( String.format( "Obtained average processing time=%s",average_time) );
+        
         return average_time;
     }
 
@@ -114,12 +125,12 @@ public class Estimate {
         log.debug( String.format( "UpdateEstimate(mimeType = %s, length = %s, time = %s) called", mimeType, length, time ) );
 
         Connection con = DBConnection.getConnection();
-
  
         Statement stmt = null;
         String sqlQuery = String.format( "UPDATE statistics "+
                                          "SET processtime = processtime+%s, dataamount = dataamount+%s "+
                                          "WHERE mimetype = '%s'", time, length, mimeType);
+        
         log.debug( String.format( "query database with %s ", sqlQuery ) );
 
         int rowsUpdated = 0;        
