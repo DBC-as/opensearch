@@ -3,23 +3,31 @@
 
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-  <appender class="org.apache.log4j.ConsoleAppender" name="RootConsoleAppender">
-    <param name="Threshold" value="fatal"/>
+  <appender class="org.apache.log4j.FileAppender" name="RootConsoleAppender">
+    <param name="Threshold" value="debug" />
+    <param name="File" value="datadock.log" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss},%p,%c,%t,%C{1},%M %m%n"/>
     </layout>
   </appender>
+  
+  <!--appender class="org.apache.log4j.ConsoleAppender" name="RootConsoleAppender">
+    <param name="Threshold" value="fatal"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss},%p,%c,%t,%C{1},%M %m%n"/>
+    </layout>
+  </appender-->
 
   <logger name="org.apache">
-    <level value="info"/> 
+    <level value="debug"/> 
   </logger>
 
   <logger name="httpclient">
-    <level value="info"/> 
+    <level value="debug"/> 
   </logger>
 
   <root>
-    <level value="fatal"/>
+    <level value="debug"/>
     <appender-ref ref="RootConsoleAppender"/>
   </root>
 

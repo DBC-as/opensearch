@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import java.util.HashMap;
 import java.util.List;
@@ -63,11 +62,10 @@ public class JobMapCreator
         
         log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
 
+        // Build the jobMap
         DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
         Document jobDocument = docBuilder.parse( jobFile );
-
-        // Build the jobMap
         Element xmlRoot = jobDocument.getDocumentElement();
 
         // Get the NodeList

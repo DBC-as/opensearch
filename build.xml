@@ -16,7 +16,6 @@
   </target>
 
   <target name="compile" description="Compiles source code">
-  	<!--antcall target="toplevel.xsd-classes"/-->
   	<antcall target="${ant.project.name}">
       <param name="dependency.target" value="toplevel.compile"/>
     </antcall>

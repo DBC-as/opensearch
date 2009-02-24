@@ -3,8 +3,8 @@
   <database>
     <driver>org.postgresql.Driver</driver>
     <url>jdbc:postgresql:opensearch</url>
-    <userID>shm</userID>
-    <passwd>shm</passwd>
+    <userID>mro</userID>
+    <passwd>mro</passwd>
   </database> 
   <datadock>
     <main-poll-time>1000</main-poll-time>
@@ -26,7 +26,7 @@
     <plugins>/home/mro/projects/opensearch/trunk/build/classes/dk/dbc/opensearch/plugins</plugins>
   </filesystem>
   <harvester>
-    <folder>/home/shm/opensearch/trunk/Harvest-pollTest/</folder>
+    <folder>/home/mro/projects/opensearch/trunk/Harvest-pollTest/</folder>
   </harvester>
   <pidmanager>
     <num-of-pids-to-retrieve>10</num-of-pids-to-retrieve>

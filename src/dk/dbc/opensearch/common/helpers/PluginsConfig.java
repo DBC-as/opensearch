@@ -19,7 +19,9 @@ public class PluginsConfig extends Config
 		return ret;
 	}
 	
-	
+	/**
+	 * @return Path to the config/datadock_jobs.xml file
+	 */
 	public static String getPluginsDatadock() 
 	{
 		PluginsConfig pc = new PluginsConfig();
@@ -36,7 +38,9 @@ public class PluginsConfig extends Config
 		return ret;
 	}
 	
-	
+	/**
+	 * @return Path to the config/pti_jobs.xml file
+	 */	
 	public static String getPluginsPti()
 	{		
 		PluginsConfig pc = new PluginsConfig();

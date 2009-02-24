@@ -19,7 +19,7 @@
   </target>
 
   <!-- ================================================================== -->
-  <target name="opensearch.opensearch" depends="fedora-soap, xsd-classes">
+  <target name="opensearch.opensearch" depends="xsd-classes">
   	<ant dir="${dependencies.basedir}/src/dk/dbc/opensearch"
          target="${dependency.target}"
          inheritAll="false"/>

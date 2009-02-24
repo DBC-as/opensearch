@@ -17,18 +17,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-//import java.io.BufferedReader;
-//import java.io.InputStreamReader;
-
-// import fedora.client.FedoraClient;
-// import fedora.server.management.FedoraAPIM;
-
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-//import java.lang.NullPointerException;
 import org.apache.log4j.Logger;
 
 
@@ -86,6 +78,8 @@ public class PIDManager  extends FedoraHandle {
 
     public PIDManager() throws ConfigurationException, ServiceException
     {
+    	super();
+    	
         log.debug( "Constructor() called" );
      
         URL cfgURL = getClass().getResource("/config.xml");

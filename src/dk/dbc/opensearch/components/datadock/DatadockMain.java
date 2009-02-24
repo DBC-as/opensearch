@@ -70,7 +70,8 @@ public class DatadockMain
     
 
     public DatadockMain() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
-    {                    
+    {       
+    	System.out.println( "constructor");
 //        cfgURL = getClass().getResource("/config.xml");
 //        config = new XMLConfiguration( cfgURL );
         
@@ -146,6 +147,8 @@ public class DatadockMain
      */
     static public void main(String[] args)
     {
+    	System.out.println("print");
+    	
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
         
         try
