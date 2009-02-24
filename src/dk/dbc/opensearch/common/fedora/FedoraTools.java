@@ -27,6 +27,7 @@ import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
 import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
 import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
 import dk.dbc.opensearch.xsd.types.StateType;
+import dk.dbc.opensearch.xsd.types.ContentDigestTypeTYPEType;
 
 public class FedoraTools {
 
@@ -168,6 +169,8 @@ public class FedoraTools {
 		dataStreamVersionElement.setSIZE( lengthFormatted );
 
 		binaryContent.setDIGEST( Base64.encode( ba ) );
+                binaryContent.setTYPE( ContentDigestTypeTYPEType.DISABLED );
+
 
 		dataStreamVersionElement.setContentDigest( binaryContent );
 		DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
