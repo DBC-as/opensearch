@@ -8,5 +8,5 @@ import org.compass.core.CompassSession;
 
 public interface IIndexer extends IPluggable
 {
-    float getEstimate( CargoContainer cargo, CompassSession session );
+    long getProcessTime( CargoContainer cargo, CompassSession session );
 }

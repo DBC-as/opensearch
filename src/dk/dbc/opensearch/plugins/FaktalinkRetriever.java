@@ -43,7 +43,7 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
 	
     /**
      * \brief creates a cargocontainer by getting a dataobject from the repository, identified by the parameters.
-     * \todo: what are these parameters? why both a pid and a itemId?
+     * \todo: what are these parameters? why both a pid and a itemId? This is just a copy of the old PTI "digitalobject" retriever right?
      *
      * @param pid 
      * @param itemId
