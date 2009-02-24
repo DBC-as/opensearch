@@ -21,8 +21,8 @@ import java.net.HttpURLConnection;
 //import java.io.BufferedReader;
 //import java.io.InputStreamReader;
 
-import fedora.client.FedoraClient;
-import fedora.server.management.FedoraAPIM;
+// import fedora.client.FedoraClient;
+// import fedora.server.management.FedoraAPIM;
 
 
 import javax.xml.rpc.ServiceException;
@@ -32,9 +32,40 @@ import java.rmi.RemoteException;
 import org.apache.log4j.Logger;
 
 
-public class PIDManager {
+//-------
+
+import dk.dbc.opensearch.common.helpers.FedoraConfig;
+
+import javax.xml.rpc.ServiceException;
+
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.axis.client.Stub;
+import org.apache.axis.client.Call;
+
+import info.fedora.www.definitions._1._0.api.FedoraAPIA;
+import info.fedora.www.definitions._1._0.api.FedoraAPIAService;
+import info.fedora.www.definitions._1._0.api.FedoraAPIAServiceLocator;
+import info.fedora.www.definitions._1._0.api.FedoraAPIM;
+import info.fedora.www.definitions._1._0.api.FedoraAPIMServiceLocator;
+
+
+//-------
+
+
+
+public class PIDManager  extends FedoraHandle {
 
     HashMap <String, Vector< String > > pidMap;
+
+
+
+    private FedoraAPIMServiceLocator m_locator;
+    private FedoraAPIAServiceLocator a_locator;
+	
+    protected FedoraAPIM fem;
+    protected FedoraAPIA fea;
+
+
 
     String host;
     String port;
@@ -43,8 +74,8 @@ public class PIDManager {
 
     NonNegativeInteger numPIDs;
 
-    FedoraClient client;
-    FedoraAPIM apim;
+    //FedoraClient client;
+    //FedoraAPIM apim;
 
     static Logger log = Logger.getLogger("PIDManager");
 
@@ -53,7 +84,7 @@ public class PIDManager {
      * Constructor for the PIDManager. Gets fedora connection inforamtion from configuration
      */
 
-    public PIDManager() throws ConfigurationException//, IOException, ServiceException
+    public PIDManager() throws ConfigurationException, ServiceException
     {
         log.debug( "Constructor() called" );
      
@@ -117,11 +148,7 @@ public class PIDManager {
         throws MalformedURLException, ServiceException, RemoteException, IOException
     {
         log.debug( String.format( "retrievePIDs(prefix='%s') called", prefix ) );
-        String fedoraUrl  = "http://" + host + ":" + port + "/fedora";
-    
-        FedoraClient client = new FedoraClient( fedoraUrl, user, passphrase );
-        apim = client.getAPIM();
-        return new Vector< String >( Arrays.asList( apim.getNextPID( numPIDs, prefix ) ) );
+        //String fedoraUrl  = "http://" + host + ":" + port + "/fedora";
+        return new Vector< String >( Arrays.asList( super.fem.getNextPID( numPIDs, prefix ) ) );                    
     }
-
 }
