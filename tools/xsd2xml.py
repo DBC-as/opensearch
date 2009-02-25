@@ -17,28 +17,28 @@ To do:
 
   the element definition is guaranteed to have a name, E.g.
   
-  <xsd:element name="c">                     <-- We are here
+  <xsd:element name='c'>                     <-- We are here
     <xsd:complexType>
-      <xsd:attribute name="name1" type="xsd:string"/>
+      <xsd:attribute name='name1' type='xsd:string'/>
 
   if the element defintion has a type (that not an xsd datatype), the
   next element that is a xsd:complexType and has a name that matches
   that type is not in the instance model itself, but defines the
   hierarchy of the xml instance. E.g.:
 
-  <xsd:element name="a" type="aType">    <-- We are here
+  <xsd:element name='a' type='aType'>    <-- We are here
   ...
-  <xsd:complexType name="aType>
-  <xsd:element name="b">
+  <xsd:complexType name='aType'>
+  <xsd:element name='b'>
 
   For a given complexType, the function build_xml_instance looks up
   the name of the complexType in a hashmap to get the corrosponding
   parent (the instance element 'a')
 
-  <xsd:element name"a" type="aType">
+  <xsd:element name'a' type='aType'>
   ...
-    <xsd:complexType name="aType">         <-- We are here
-      <xsd:element name="b">
+    <xsd:complexType name='aType'>         <-- We are here
+      <xsd:element name='b'>
 
   the node itself will not be in the instance_model,
   but it defines the hierarchy, as the pair

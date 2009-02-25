@@ -17,7 +17,10 @@ import os
 usern = os.environ.get( 'USER' )
 
 # should set path to trunk
-path = os.path.abspath( ".." )
+path = os.path.abspath( "." )
+
+if not "tools" in os.listdir( path ):
+    sys.exit( "run this program from the root of the trunk" )
 
 pluginpath = "build/classes/dk/dbc/opensearch/plugins"
 
@@ -109,6 +112,8 @@ maxpool.text   = "6"
 keepalive.text = "10"
 
 import sys
-sys.stdout.write( ET.tostring( root, "UTF-8" ) )
+
+f = open( os.path.join( path, "config", "config.xml" ), "w" )
+f.write( ET.tostring( root, "UTF-8" ) )
 
 
