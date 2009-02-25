@@ -126,8 +126,7 @@ public class PluginFinder
      */
     private void updatePluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException
     {
-    	//System.out.println( "path: " + path );
-        Iterator pluginNameIter = null;
+    	Iterator pluginNameIter = null;
 
         log.debug( String.format( "Clearing map with %s members", classNameMap.size() ) );
         classNameMap.clear();
@@ -151,12 +150,12 @@ public class PluginFinder
         while( pluginNameIter.hasNext() )
         {
         	boolean couldFormat = false;
-        	String submitterName = null;
-        	String formatName = null;
+        	//String submitterName = null;
+        	//String formatName = null;
         	String className = null;
         	//String taskName = null;
         	String name = null;
-        	String hashSubject = null;
+        	//String hashSubject = null;
         	int key = 0;
         	String pluginName = null;;
         	File pluginFile = null;

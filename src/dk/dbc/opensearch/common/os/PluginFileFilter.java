@@ -5,14 +5,17 @@
  */
 package  dk.dbc.opensearch.common.os;
 
+
 import java.io.File;
 import java.io.FilenameFilter;
+
+
 /**
  * \ingroup os
  * \brief Filter extract .plugin files
  */
-public class PluginFileFilter implements FilenameFilter{
-    
+public class PluginFileFilter implements FilenameFilter
+{    
     /**
      *
      * @param dir the path of the directory to be tested
@@ -22,11 +25,11 @@ public class PluginFileFilter implements FilenameFilter{
      *
      * @throws NullPointerException if the dir- or filename is null
      */
-    public boolean accept(File dir, String name) throws NullPointerException{
-        if( !(new File(name).isDirectory()) && name.endsWith( ".plugin" ) ){
+    public boolean accept(File dir, String name) throws NullPointerException
+    {
+        if( !(new File(name).isDirectory()) && name.endsWith( ".plugin" ) )
             return true;
-        }else {
+        else 
             return false;
-        }
     }
 }

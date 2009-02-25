@@ -73,9 +73,7 @@ public class PluginResolver implements IPluginResolver
     {  
     	//int key = ( submitter + format + task ).hashCode();
     	int key = task.hashCode();
-    	//System.out.println( "key: " + key);
-    	//System.out.println( "plugin: " + task );
-        String pluginClassName = PFinder.getPluginClassName( key );
+    	String pluginClassName = PFinder.getPluginClassName( key );
         
         return PLoader.getPlugin( pluginClassName );
     }

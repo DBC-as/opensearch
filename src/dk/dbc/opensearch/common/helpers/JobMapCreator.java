@@ -50,7 +50,7 @@ public class JobMapCreator
 
     public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException 
     {
-        log.debug( "GetMap() called" );
+        log.debug( "getMap() called" );
 
         ArrayList<String> sortedPluginList = new ArrayList< String >();
         List< Pair< String, Integer > > pluginAndPriority = new ArrayList< Pair< String, Integer > >();
