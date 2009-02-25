@@ -9,8 +9,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamNames;
 
-import info.fedora.www.definitions._1._0.types.DatastreamDef;
-import info.fedora.www.definitions._1._0.types.MIMETypedStream;
+import fedora.server.types.gen.DatastreamDef;
+import fedora.server.types.gen.MIMETypedStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
 	private PluginType pluginType = PluginType.RETRIEVE;
 	
 		
-	public FaktalinkRetriever() throws ServiceException 
+    public FaktalinkRetriever() throws ServiceException, java.net.MalformedURLException, java.io.IOException
 	{
 		super();
 		// TODO Auto-generated constructor stub

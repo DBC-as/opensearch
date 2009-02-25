@@ -6,7 +6,7 @@
   <job submitter="dbc" format="faktalink">
     <plugin name="docbookannotate" position="1"/>
     <plugin name="faktalinkharvester" position="0"/>
-    <plugin name="faktalinkstore" position="2"/>
+    <plugin name="store" position="2"/>
   </job>
 
   <!--job submitter="dbc" format="forfatterweb">

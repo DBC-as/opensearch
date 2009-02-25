@@ -231,7 +231,7 @@
   </target>
 
   <target name="toplevel.compile-xsd" description="compiles xsd"
-          depends="toplevel.compile-fedora_soap, toplevel.xsd-classes">
+          depends="toplevel.xsd-classes">
     <mkdir dir="${classes.dir}"/>
 
     <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/*">

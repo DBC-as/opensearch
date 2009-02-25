@@ -33,11 +33,8 @@ public class PIDManager  extends FedoraHandle
 {
     HashMap <String, Vector< String > > pidMap;
 
-    private FedoraAPIMServiceLocator m_locator;
-    private FedoraAPIAServiceLocator a_locator;
-	
-    protected FedoraAPIM fem;
-    protected FedoraAPIA fea;
+    // protected FedoraAPIM fem;
+    // protected FedoraAPIA fea;
 
     String host;
     String port;
@@ -56,7 +53,7 @@ public class PIDManager  extends FedoraHandle
      * Constructor for the PIDManager. Gets fedora connection inforamtion from configuration
      */
 
-    public PIDManager() throws ConfigurationException, ServiceException
+    public PIDManager() throws ConfigurationException, ServiceException, java.net.MalformedURLException, java.io.IOException
     {
     	super();
     	

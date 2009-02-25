@@ -31,7 +31,7 @@ import dk.dbc.opensearch.xsd.types.ContentDigestTypeTYPEType;
 
 public class FedoraTools {
 
-	Logger log = Logger.getLogger("FedoraHandler");
+	static Logger log = Logger.getLogger("FedoraHandler");
 
 	public static byte[] constructFoxml(CargoContainer cargo, String nextPid,
 			String label) throws IOException, MarshalException,
@@ -77,19 +77,30 @@ public class FedoraTools {
 		DigitalObject dot = new DigitalObject();
 		dot.setObjectProperties(op);
 		dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
-                 dot.setPID( nextPid ); //
+                dot.setPID( nextPid ); //
 
+                int cargo_count = cargo.getItemsCount();
+                Datastream[] dsArray = new Datastream[ cargo_count ];
 
-		ArrayList<Datastream> dsArray = new ArrayList<Datastream>();
+                for(int i = 0; i < cargo_count; i++)
+                {
+                    dsArray[i] = constructDatastream( cargo.getData().get( i ), dateFormat, timeNow );
+                }
 
-		for (CargoObject co : cargo.getData())
-        {
-			dsArray.add(constructDatastream(co, dateFormat, timeNow));
-		}
+		//ArrayList<Datastream> dsArray = new ArrayList<Datastream>();
+
+		// for (CargoObject co : cargo.getData())
+                // {
+                //     log.debug( String.format( "adding datastream with format %s", co.getFormat() ) );
+                //     dsArray.add(constructDatastream(co, dateFormat, timeNow));
+		// }
                 
-                Datastream[] ds =new Datastream[dsArray.size()];
-                dsArray.toArray( ds );
-                dot.setDatastream( ds );
+                // Datastream[] ds =new Datastream[dsArray.size()];
+                // ds = dsArray.toArray( ds );
+
+                log.debug( String.format( "length of datastream array=%s", dsArray.length ) );
+
+                dot.setDatastream( dsArray );
 
 		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
 		java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
@@ -97,6 +108,8 @@ public class FedoraTools {
 		m.marshal(dot); // throws MarshallException, ValidationException
 
 		byte[] ret = out.toByteArray();
+
+                log.debug( String.format( "length of return array=%s", ret.length ) );
 		return ret;
 	}
 

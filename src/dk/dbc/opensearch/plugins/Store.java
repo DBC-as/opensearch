@@ -32,7 +32,7 @@ public class Store extends FedoraHandle implements IRepositoryStore
 
     private PluginType pluginType = PluginType.STORE;
 
-    public Store() throws ServiceException
+    public Store() throws ServiceException, java.net.MalformedURLException, java.io.IOException
     {
         super();
     }

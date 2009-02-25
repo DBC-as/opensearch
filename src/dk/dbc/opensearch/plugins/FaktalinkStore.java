@@ -38,8 +38,8 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 	private CargoContainer cc;
 
 	
-	public FaktalinkStore() throws ServiceException 
-    {
+	public FaktalinkStore() throws ServiceException, java.net.MalformedURLException, java.io.IOException
+        {
 		super();
 	}
 
