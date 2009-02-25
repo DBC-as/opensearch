@@ -17,6 +17,7 @@ import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
+import javax.xml.xpath.XPathExpressionException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -138,7 +139,7 @@ public class DatadockThread implements Callable<Float>
      * @throws IOException
      * @throws ParseException
      */
-    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException
+    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException
     {
     	// Must be implemented due to class implementing Callable< Float > interface.
     	// Method is to be extended when we connect to 'Posthuset'

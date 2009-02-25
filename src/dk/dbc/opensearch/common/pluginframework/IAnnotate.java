@@ -9,8 +9,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import javax.xml.xpath.XPathExpressionException;
 
 public interface IAnnotate extends IPluggable
 {
-    CargoContainer getCargoContainer( CargoContainer cargo ) throws IOException, ParserConfigurationException, SAXException;
+    CargoContainer getCargoContainer( CargoContainer cargo ) throws IOException,  XPathExpressionException;
 }
