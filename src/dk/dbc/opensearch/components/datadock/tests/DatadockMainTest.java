@@ -40,7 +40,7 @@ public class DatadockMainTest
     
     @After public void tearDown() {}
 
-   
+    @Ignore( "This method tries to actually connect to the fedora server. No good, should be mocked" )   
     @Test public void testConstructor() throws Exception 
     {
     	DatadockMain datadockmain = new DatadockMain();
