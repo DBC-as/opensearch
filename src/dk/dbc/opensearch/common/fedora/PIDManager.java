@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 //-------
 
 import dk.dbc.opensearch.common.helpers.FedoraConfig;
+import dk.dbc.opensearch.common.helpers.PidManagerConfig;
 
 import javax.xml.rpc.ServiceException;
 
@@ -82,15 +83,12 @@ public class PIDManager  extends FedoraHandle {
     	
         log.debug( "Constructor() called" );
      
-        URL cfgURL = getClass().getResource("/config.xml");
-        XMLConfiguration config = null;
-        config = new XMLConfiguration( cfgURL );        
-        host       = config.getString( "fedora.host" );
-        port       = config.getString( "fedora.port" );
-        user       = config.getString( "fedora.user" );
-        passphrase = config.getString( "fedora.passphrase" );
-    
-        numPIDs = new NonNegativeInteger( config.getString( "pidmanager.num-of-pids-to-retrieve" ) );
+        host = FedoraConfig.getFedoraHost();
+        port = FedoraConfig.getFedoraPort();
+        user = FedoraConfig.getFedoraUser();
+        passphrase = FedoraConfig.getFedoraPassPhrase();
+        numPIDs =  new NonNegativeInteger( PidManagerConfig.getPidManagerNumberOfPidsToRetrieve() );
+
         pidMap = new HashMap <String, Vector< String > >();
     }
 
@@ -142,7 +140,7 @@ public class PIDManager  extends FedoraHandle {
         throws MalformedURLException, ServiceException, RemoteException, IOException
     {
         log.debug( String.format( "retrievePIDs(prefix='%s') called", prefix ) );
-        //String fedoraUrl  = "http://" + host + ":" + port + "/fedora";
+        
         return new Vector< String >( Arrays.asList( super.fem.getNextPID( numPIDs, prefix ) ) );                    
     }
 }

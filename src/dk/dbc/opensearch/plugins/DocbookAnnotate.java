@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-
 import dk.dbc.opensearch.common.types.DataStreamNames;
 
 import org.xml.sax.InputSource;
@@ -44,9 +43,11 @@ import org.w3c.dom.NodeList;
 import java.io.ByteArrayInputStream;
 import org.xml.sax.InputSource;
 
-
+import javax.xml.xpath.*;
 import org.apache.log4j.Logger;
 
+
+import javax.xml.namespace.NamespaceContext;
 
 
 //================================================
@@ -68,50 +69,98 @@ import org.w3c.dom.NodeList;
 public class DocbookAnnotate implements IAnnotate
 {
     static Logger log = Logger.getLogger( DocbookAnnotate.class );
-    
-    private CargoContainer cargo;    
+
+    private CargoContainer cargo;
     private PluginType pluginType = PluginType.ANNOTATE;
 
-    
+
     /**
      *
      */
-    public DocbookAnnotate() 
+
+//         private class NamespaceContextImpl implements NamespaceContext{
+
+//             public String uri;
+//             public String prefix;
+
+//             public String getUri(){
+//                 return uri;
+//             }
+
+//             public void setUri(String uri){
+//                 this.uri=uri;
+//             }
+
+//             public String getPrefix(){
+//                 return prefix;
+//             }
+
+//             public void setPrefix(String prefix){
+//                 this.prefix=prefix;
+//             }
+//         }
+
+
+
+    public DocbookAnnotate()
     {
         System.out.println( "IM ANNOTATING");
     }
 
 
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws IOException, ParserConfigurationException, SAXException
+    public CargoContainer getCargoContainer( CargoContainer cargo ) //throws IOException, ParserConfigurationException, SAXException, javax.xml.xpath.XPathExpressionException
     {
-        this.cargo = cargo;
 
-        // 10: retrive docbook xml from CargoContainer
-//        CargoObject co = cargo.getFirstCargoObject( DataStreamNames.OriginalData );
-//        byte[] b = co.getBytes();
-//
-//        ByteArrayInputStream bis = new ByteArrayInputStream( b );
-//        
-//        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//        DocumentBuilder builder = factory.newDocumentBuilder();     
-//        Document document = builder.parse( bis );
-//        
-//        NodeList doc_art = document.getElementsByTagName( "docbook:article" );
-//        System.out.println(doc_art.getLength());
-//        NodeList doc_title = ( (Element) doc_art.item( 0 ) ).getElementsByTagName( "docbook:title" );
-//        System.out.println(doc_title.getLength());
-//        printNode( doc_art.item(0), "  ");
+//         this.cargo = cargo;
+
+//         // 10: retrive docbook xml from CargoContainer
+//         CargoObject co = cargo.getFirstCargoObject( DataStreamNames.OriginalData );
+//         byte[] b = co.getBytes();
+
+//         XPath xpath = XPathFactory.newInstance().newXPath();
+
+//         XPathExpression  xPathExpression= xpath.compile("/docbook:article");
+
+//         InputSource inputSource = new InputSource(new ByteArrayInputStream( b ) );
+
+//         //---
+//         NamespaceContext namespaceContext=new NamespaceContextImpl();
+//         xpath.setNamespaceContext(namespaceContext);
+//         //---
+
+//         String n = xPathExpression.evaluate( inputSource );
+
+//         //NodeList nodes = (NodeList) xpath.evaluate(xPathExpression, inputSource, XPathConstants.NODESET);
+
+//         System.out.println("LENTGH: "+n );
+
+        //        printNode( nodes.item(0), "  ");
+
+
+
+        //
+        //        ByteArrayInputStream bis = new ByteArrayInputStream( b );
+        //
+        //        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        //        DocumentBuilder builder = factory.newDocumentBuilder();
+        //        Document document = builder.parse( bis );
+        //
+        //        NodeList doc_art = document.getElementsByTagName( "docbook:article" );
+        //        System.out.println(doc_art.getLength());
+        //        NodeList doc_title = ( (Element) doc_art.item( 0 ) ).getElementsByTagName( "docbook:title" );
+        //        System.out.println(doc_title.getLength());
+        //        printNode( doc_art.item(0), "  ");
         // 20: isolate submitter (serverChoice)  from CargoObjectInfo
         // String serverChoice = "";
-        
+
         // 30: isolate title
         //String title = retriveTitle( docbookDocument );
 
         // 40: Build Query String and retrive result.
-        //String xmlString = httpGet( formURL( title, serverChoice ) ); 
-        
+        //String xmlString = httpGet( formURL( title, serverChoice ) );
+
         // 50: Put it into a xml document
-        
+
         //        SAXBuilder builder = new SAXBuilder( "org.apache.xerces.parsers.SAXParser" );
         //        Document annotateXML = builder.build( new InputSource( new StringReader( xmlString ) ) );
 
@@ -121,74 +170,74 @@ public class DocbookAnnotate implements IAnnotate
         //Element e = new Element( "record" );
         //Element tmp  = document.getRootElement().getChild( "records", ns );
         //e.addContent(  tmp.getChild( "record", ns ).detach()  );
-        
+
         // 70: Merge docbookXML (from cargoContainer) with AnnotateXML (Ting-xml)
         // 80: overwrite the docbookXML in the cargoContainer with the new XML
         // 90: return it
 
-        return cargo;    
+        return cargo;
     }
 
 
 
-//     /**
-//      * Retrives the title from a docbook Document.
-//      * 
-//      * @param docbookDocument the document to retrieve the title from
-//      * 
-//      * @returns String containing the isolated title
-//      *
-//      * @throws JDOMException if Node doesnt exist
-//      */
-//     public String retriveTitle( Document docbookDocument )throws JDOMException{
-        
+    //     /**
+    //      * Retrives the title from a docbook Document.
+    //      *
+    //      * @param docbookDocument the document to retrieve the title from
+    //      *
+    //      * @returns String containing the isolated title
+    //      *
+    //      * @throws JDOMException if Node doesnt exist
+    //      */
+    //     public String retriveTitle( Document docbookDocument )throws JDOMException{
+
 
     /**
      * Retrives the title from a docbook Document.
-     * 
+     *
      * @param docbookDocument the document to retrieve the title from
-     * 
+     *
      * @returns String containing the isolated title
      *
      * @throws JDOMException if Node doesnt exist
      */
     //    public String retriveTitle( Document docbookDocument )throws JDOMException
-    //    {        
+    //    {
 
-//         XPath xpath = XPath.newInstance("/docbook:article/docbook:title"); 
-//         Element e = (Element) xpath.selectSingleNode( docbookDocument );
-//         return e.getText();
-//    }
+    //         XPath xpath = XPath.newInstance("/docbook:article/docbook:title");
+    //         Element e = (Element) xpath.selectSingleNode( docbookDocument );
+    //         return e.getText();
+    //    }
 
 
     /**
      * Forms the URL to use for annotate query.
-     * 
-     * @param title the title to query. 
+     *
+     * @param title the title to query.
      * @param serverChoice This correspond to submitter field (eg. faktalink). Can be empty.
      */
-        public String formURL( String title, String serverChoice ){
+    public String formURL( String title, String serverChoice ){
 
         int maxRecords = 1;
 
         String baseURL = "http://koncept.dbc.dk/~fvs/webservice.bibliotek.dk/";
-        
+
         String preTitle = "?version=1.1&operation=searchRetrieve&query=dc.title+%3D+%28%22";
         String postTitle = "%22%29";
-        
+
         String preServerChoice = "+and+cql.serverChoice+%3D+%28";
-        String postServerChoice = "%29"; 
+        String postServerChoice = "%29";
 
         String preRecords = "&startRecord=1&maximumRecords=";
         String postRecords = "&recordSchema=dcting&stylesheet=default.xsl&recordPacking=xml";
 
         String queryURL;
         if( serverChoice == "" ){
-            queryURL = baseURL + preTitle + title + postTitle + 
-                preRecords + maxRecords + postRecords;            
+            queryURL = baseURL + preTitle + title + postTitle +
+                preRecords + maxRecords + postRecords;
         }
         else{
-            queryURL = baseURL + preTitle + title + postTitle + 
+            queryURL = baseURL + preTitle + title + postTitle +
                 preServerChoice + serverChoice + postServerChoice + preRecords + maxRecords + postRecords;
         }
         return queryURL;
@@ -197,11 +246,11 @@ public class DocbookAnnotate implements IAnnotate
 
     /**
      *  Performs a http call and returns the answer
-     *  
+     *
      *  @param URLstr The URL to use for hhtp call.
-     *  
+     *
      *  @returns String containing the response.
-     *  
+     *
      *  @throws IOException if we got a connection error.
      */
     public String httpGet( String URLstr ) throws IOException
@@ -209,24 +258,24 @@ public class DocbookAnnotate implements IAnnotate
         URL url = new URL( URLstr );
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-        if (conn.getResponseCode() != 200) 
-        {
-            throw new IOException(conn.getResponseMessage());
-        }
-        
+        if (conn.getResponseCode() != 200)
+            {
+                throw new IOException(conn.getResponseMessage());
+            }
+
         // Buffer the result into a string
         BufferedReader rd = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
         StringBuilder sb = new StringBuilder();
         String line;
-        while ( ( line = rd.readLine() ) != null ) 
-        {
-            sb.append( line );
-        }
-        
+        while ( ( line = rd.readLine() ) != null )
+            {
+                sb.append( line );
+            }
+
         rd.close();
-        
+
         conn.disconnect();
-        return sb.toString();        
+        return sb.toString();
     }
 
 
@@ -235,80 +284,80 @@ public class DocbookAnnotate implements IAnnotate
 
         // Determine action based on node type
         switch (node.getNodeType()) {
-            case Node.DOCUMENT_NODE:
-                System.out.println("<xml version=\"1.0\">\n");
-                // recurse on each child
-                NodeList nodes = node.getChildNodes();
-                if (nodes != null) {
-                    for (int i=0; i<nodes.getLength(); i++) {
-                        printNode(nodes.item(i), "");
-                    }
+        case Node.DOCUMENT_NODE:
+            System.out.println("<xml version=\"1.0\">\n");
+            // recurse on each child
+            NodeList nodes = node.getChildNodes();
+            if (nodes != null) {
+                for (int i=0; i<nodes.getLength(); i++) {
+                    printNode(nodes.item(i), "");
                 }
-                /*
-                Document doc = (Document)node;
-                printTree(doc.getDocumentElement(), "");
-                */
-                break;
-            
-            case Node.ELEMENT_NODE:
-                String name = node.getNodeName();
-                System.out.print(indent + "<" + name);
-                NamedNodeMap attributes = node.getAttributes();
-                for (int i=0; i<attributes.getLength(); i++) {
-                    Node current = attributes.item(i);
-                    System.out.print(" " + current.getNodeName() +
-                                     "=\"" + current.getNodeValue() +
-                                     "\"");
+            }
+            /*
+              Document doc = (Document)node;
+              printTree(doc.getDocumentElement(), "");
+            */
+            break;
+
+        case Node.ELEMENT_NODE:
+            String name = node.getNodeName();
+            System.out.print(indent + "<" + name);
+            NamedNodeMap attributes = node.getAttributes();
+            for (int i=0; i<attributes.getLength(); i++) {
+                Node current = attributes.item(i);
+                System.out.print(" " + current.getNodeName() +
+                                 "=\"" + current.getNodeValue() +
+                                 "\"");
+            }
+            System.out.println(">");
+
+            // recurse on each child
+            NodeList children = node.getChildNodes();
+            if (children != null) {
+                for (int i=0; i<children.getLength(); i++) {
+                    printNode(children.item(i), indent + "  ");
                 }
-                System.out.println(">");
-                
-                // recurse on each child
-                NodeList children = node.getChildNodes();
-                if (children != null) {
-                    for (int i=0; i<children.getLength(); i++) {
-                        printNode(children.item(i), indent + "  ");
-                    }
-                }
-                
-                System.out.println(indent + "</" + name + ">");
-                break;
-            
-            case Node.TEXT_NODE:
-            case Node.CDATA_SECTION_NODE:
-                System.out.print(node.getNodeValue());
-                break;
-            
-            case Node.PROCESSING_INSTRUCTION_NODE:
-                System.out.println("<?" + node.getNodeName() +
-                                   " " + node.getNodeValue() +
-                                   "?>");                
-                break;
-            
-            case Node.ENTITY_REFERENCE_NODE:
-                System.out.println("&" + node.getNodeName() + ";");    
-                break;
-                
-            case Node.DOCUMENT_TYPE_NODE: 
-                DocumentType docType = (DocumentType)node;
-                System.out.print("<!DOCTYPE " + docType.getName());
-                if (docType.getPublicId() != null)  {
-                    System.out.print(" PUBLIC \"" + 
-                        docType.getPublicId() + "\" ");                    
-                } else {
-                    System.out.print(" SYSTEM ");
-                }
-                System.out.println("\"" + docType.getSystemId() + "\">");                                
-                break;                
+            }
+
+            System.out.println(indent + "</" + name + ">");
+            break;
+
+        case Node.TEXT_NODE:
+        case Node.CDATA_SECTION_NODE:
+            System.out.print(node.getNodeValue());
+            break;
+
+        case Node.PROCESSING_INSTRUCTION_NODE:
+            System.out.println("<?" + node.getNodeName() +
+                               " " + node.getNodeValue() +
+                               "?>");
+            break;
+
+        case Node.ENTITY_REFERENCE_NODE:
+            System.out.println("&" + node.getNodeName() + ";");
+            break;
+
+        case Node.DOCUMENT_TYPE_NODE:
+            DocumentType docType = (DocumentType)node;
+            System.out.print("<!DOCTYPE " + docType.getName());
+            if (docType.getPublicId() != null)  {
+                System.out.print(" PUBLIC \"" +
+                                 docType.getPublicId() + "\" ");
+            } else {
+                System.out.print(" SYSTEM ");
+            }
+            System.out.println("\"" + docType.getSystemId() + "\">");
+            break;
         }
     }
- 
 
 
-    
-    
+
+
+
     public PluginType getTaskName()
     {
-    	return pluginType;
+        return pluginType;
     }
 
 }
