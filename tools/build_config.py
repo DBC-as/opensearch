@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 import os
 
 # this will probably not work for cruisecontrol user
-user = os.environ.get( 'USER' )
+usern = os.environ.get( 'USER' )
 
 # should set path to trunk
 path = os.path.abspath( ".." )
@@ -29,8 +29,8 @@ user   = ET.SubElement( db, "userID" )
 passwd = ET.SubElement( db, "passwd" )
 driver.text = "org.postgresql.Driver"
 url.text    = "jdbc:postgresql:opensearch"
-user.text   = user
-passwd.text = user
+user.text   = usern
+passwd.text = usern
 
 # datadock settings
 poll      = ET.SubElement( dd, "main-poll-time" )
