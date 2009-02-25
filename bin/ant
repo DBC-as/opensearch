@@ -4,6 +4,6 @@ ME=$(type -p $0 )
 MYPATH=$(dirname $ME ) 
 BUILDFILE=build.xml
 JAVABIN=${JAVA_HOME}/bin/java
-CLASSPATH=${CLASSPATH}:$MYPATH/../lib/ant_launcher.jar
+CLASSPATH=${CLASSPATH}:$MYPATH/../lib/ant-launcher.jar
 
 exec ${JAVABIN} -cp "${CLASSPATH}" org.apache.tools.ant.launch.Launcher -buildfile "${BUILDFILE}" "$@"
