@@ -47,7 +47,7 @@ public class FaktalinkHarvester implements IHarvestable
     	
     	/** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
-        String lang = "DA";
+        String lang = "da";
         DataStreamNames dataStreamName = DataStreamNames.OriginalData;
         InputStream data = FileHandler.readFile( this.path );
 
