@@ -3,34 +3,33 @@
  * \brief The DatadockMain class
  * \package datadock;
  */
-
 package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.PIDManager;
+import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.HarvesterConfig;
+import dk.dbc.opensearch.common.helpers.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
-import dk.dbc.opensearch.common.fedora.PIDManager;
-import dk.dbc.opensearch.common.helpers.Config;
-import dk.dbc.opensearch.common.helpers.DataBaseConfig;
-import dk.dbc.opensearch.common.helpers.DatadockConfig;
-import dk.dbc.opensearch.common.helpers.HarvesterConfig;
-import dk.dbc.opensearch.common.helpers.JobMapCreator;
-import java.util.ArrayList;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
-import java.io.IOException;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -38,9 +37,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.SAXException;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
 
 /**
  * The Main method of the datadock. It secures all necessary
@@ -71,10 +69,6 @@ public class DatadockMain
 
     public DatadockMain() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {       
-    	System.out.println( "constructor");
-//        cfgURL = getClass().getResource("/config.xml");
-//        config = new XMLConfiguration( cfgURL );
-        
         pollTime = DatadockConfig.getDatadockMainPollTime();
         queueSize = DatadockConfig.getDatadockQueueSize();
         corePoolSize = DatadockConfig.getDatadockCorePoolSize();
@@ -82,7 +76,6 @@ public class DatadockMain
         keepAliveTime = DatadockConfig.getDatadockKeepAliveTime();
         harvestDir = HarvesterConfig.getHarvesterFolder();
         
-        // Jobmap
         jobMap = JobMapCreator.getMap( this.getClass() );
 
         log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
@@ -90,8 +83,7 @@ public class DatadockMain
     
     
     /**
-     * The shutdown hook. This method is called when the program catch
-     * the kill signal.
+     * The shutdown hook. This method is called when the program catches the kill signal.
      */
     static public void shutdown()
     {
@@ -154,6 +146,7 @@ public class DatadockMain
         try
         {
             DatadockMain datadockmain = new DatadockMain();
+            
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender(startupAppender);
 
@@ -174,6 +167,7 @@ public class DatadockMain
             // Job hashmapper
             
             log.debug( "Starting datadockPool" );
+            
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
@@ -181,6 +175,7 @@ public class DatadockMain
             datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
 
             log.debug( "Starting harvester" );
+            
             // harvester;
             File harvestDirectory = new File( harvestDir );
             IHarvester harvester = new FileHarvest( harvestDirectory );            
@@ -213,18 +208,18 @@ public class DatadockMain
                 datadockManager.update();                
                 Thread.currentThread().sleep( pollTime );
             }
-            catch(InterruptedException ie)
+            catch( InterruptedException ie )
             {
                 log.error("InterruptedException caught in mainloop: ");
                 log.error("  "+ie.getMessage() );
             }
-            catch(RuntimeException re)
+            catch( RuntimeException re )
             {
                 log.error("RuntimeException caught in mainloop: " + re);
                 log.error("  " + re.getCause().getMessage() );
                 throw re;
             }
-            catch(Exception e)
+            catch( Exception e )
             {
                 log.error("Exception caught in mainloop: " + e);
                 log.error("  " + e.getMessage() );

@@ -1,19 +1,19 @@
 package dk.dbc.opensearch.common.helpers;
 
+
+import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.helpers.SecondComparator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.helpers.SecondComparator;
+
 import java.io.File;
 import java.io.IOException;
-
+import java.lang.IllegalArgumentException;
 import java.net.MalformedURLException;
-
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import java.lang.IllegalArgumentException;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -136,14 +136,14 @@ public class JobMapCreator
     
     	if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain" ) )
         {
-            String datadockJobPath = PluginsConfig.getPluginsDatadock();
+            String datadockJobPath = FileSystemConfig.getFileSystemDatadock();
             log.debug( String.format( "DatadockJob path: '%s'", datadockJobPath ) );
             jobFile = FileHandler.getFile( datadockJobPath );
 
         }
         else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
         {
-        	String ptiJobPath = PluginsConfig.getPluginsPti();
+        	String ptiJobPath = FileSystemConfig.getFileSystemPti();
         	log.debug( String.format( "PTIJob path: '%s'", ptiJobPath ) );
         	jobFile = FileHandler.getFile( ptiJobPath );
         }

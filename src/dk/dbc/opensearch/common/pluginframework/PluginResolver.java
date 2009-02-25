@@ -1,7 +1,7 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import dk.dbc.opensearch.common.helpers.FileSystemConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

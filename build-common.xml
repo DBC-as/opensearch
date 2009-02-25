@@ -23,7 +23,7 @@
   <property name="config.dir"       value="${base.dir}/config"/>
   <property name="plugins.dir"      value="${opensearch.dir}/plugins" />
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
-  <property name="xsd_gen.dir"        value="${opensearch.dir}/xsd" />
+  <property name="xsd_gen.dir"      value="${opensearch.dir}/xsd" />
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
@@ -35,7 +35,7 @@
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
     <pathelement location="${classes.dir}" />
     <pathelement location="${config.dir}" />
-  	<pathelement location="${plugins.dir}" />
+    <pathelement location="${plugins.dir}" />
   </path>
 
   <!-- libraries used internally by ant is named ant_*.jar -->
@@ -83,22 +83,21 @@
   </target>
 	
   <target name="toplevel.dist" depends="toplevel.compile"
-	      description="generate the distribution" >
-	<!-- Create the distribution directory -->
-	<mkdir dir="${dist.dir}/lib"/>
+          description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}/lib"/>
 
     <!-- Put everything from ${build} into the ${opensearch}.jar file -->
     <jar jarfile="${dist.dir}/lib/${dist.jar}.jar" basedir="${classes.dir}"/>
-  	  <manifest>
-  	    <attribute name="${dist.jar}" value="dk.dbc.opensearch.datadock.DatadockMain" />
-      </manifest>
+    <manifest>
+      <attribute name="${dist.jar}" value="dk.dbc.opensearch.datadock.DatadockMain" />
+    </manifest>
   </target>
 
-
   <target name="toplevel.compile" description="Compiles source code" > 
-  	<!-- depends="toplevel.xsd-classes" -->
-  	<mkdir dir="${classes.dir}"/>
-  	<echo>
+    <!-- depends="toplevel.xsd-classes" -->
+    <mkdir dir="${classes.dir}"/>
+    <echo>
       Building from ${basedir},
       building project ${ant.project.name},
       and putting it all into ${classes.dir}      
@@ -107,9 +106,9 @@
       <classpath refid="classpath"/>
       <!-- <compilerarg value="-Xlint"/> -->
     </javac>
-  	<copy todir="${classes.dir}/dk/dbc/opensearch/plugins">
-  	  <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
-  	</copy>  	    
+    <copy todir="${classes.dir}/dk/dbc/opensearch/plugins">
+      <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
+    </copy>  	    
   </target>
 
   <target name="toplevel.compile-tests" description="builds the tests for the component" 
@@ -125,29 +124,28 @@
   </target>
 	
   <target name="py_suite" >
-  	<exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
-  	  <arg line="create_test_suite_files.py make"/>
-  	</exec>
+    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
+      <arg line="create_test_suite_files.py make"/>
+    </exec>
 
   </target>
-
 	
   <target name="toplevel.suite" description="Run test suite" depends="py_suite, toplevel.compile-tests">
-  	<echo>
+    <echo>
       Running suite ${suite.name}
-  	</echo>
-  	<junit fork="yes"
+    </echo>
+    <junit fork="yes"
            forkmode="once"
            printsummary="withOutAndErr"
            haltonerror="false"
            haltonfailure="false">
   		
-  	  <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
-  	  <classpath refid="classpath" /> 		
+      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
+      <classpath refid="classpath" /> 		
   	  
-  	  <formatter type="brief" usefile="false" />
-  	  <test name="${suite.name}" />
-  	</junit>
+      <formatter type="brief" usefile="false" />
+      <test name="${suite.name}" />
+    </junit>
   </target>
 
   <target name="toplevel.test" description="Run unittests" depends="py_suite, toplevel.compile-tests">
@@ -158,7 +156,7 @@
            haltonerror="false"
            haltonfailure="true">
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
-
+      
       <!-- <classpath location="${instrumented.dir}" /> -->
       <classpath location="${classes.dir}" />
       <!-- <classpath refid="cobertura.classpath" /> -->
@@ -236,23 +234,19 @@
   <target name="toplevel.fedora_soap" description="Generates Fedora SOAP stubs">
     <taskdef resource="axis-tasks.properties"
              classpathref="classpath" />
-    <axis-wsdl2java
-        output="${src.dir}"
-        testcase="true"
-        verbose="true"
-        url="${fedora_apia.url}" >
-      <mapping
-          namespace="http://axis.apache.org/ns/interop"
-          package="info" />
+    <axis-wsdl2java output="${src.dir}"
+                    testcase="true"
+                    verbose="true"
+                    url="${fedora_apia.url}" >
+      <mapping namespace="http://axis.apache.org/ns/interop"
+               package="info" />
     </axis-wsdl2java>
-    <axis-wsdl2java
-        output="${src.dir}"
-        testcase="true"
-        verbose="true"
-        url="${fedora_apim.url}" >
-      <mapping
-          namespace="http://axis.apache.org/ns/interop"
-          package="info" />
+    <axis-wsdl2java output="${src.dir}"
+                    testcase="true"
+                    verbose="true"
+                    url="${fedora_apim.url}" >
+      <mapping namespace="http://axis.apache.org/ns/interop"
+               package="info" />
     </axis-wsdl2java>
   </target>
   

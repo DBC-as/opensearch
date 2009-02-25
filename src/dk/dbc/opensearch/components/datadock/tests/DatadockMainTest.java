@@ -8,38 +8,26 @@ package dk.dbc.opensearch.components.datadock.tests;
 
 /** \brief UnitTest for DatadockManager **/
 
-import dk.dbc.opensearch.common.helpers.FileSystemConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
-import dk.dbc.opensearch.common.pluginframework.PluginFinder;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.datadock.DatadockMain;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-
-import org.apache.commons.configuration.ConfigurationException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -66,50 +54,50 @@ public class DatadockMainTest
     	// Loop through jobs
     	for( Pair< String, String > pair : keysSet )
     	{
-    		String submitter = pair.getFirst().toString();
-    		String format = pair.getSecond().toString();    		
-    		URI uri = new URI( FileSystemConfig.getFileSystemTrunkPath() + "config/" + "datadock_jobs.xml" ); // new URI( "/datadock_job.xml" );
-    		DatadockJob job = new DatadockJob( uri, submitter, format );
+            String submitter = pair.getFirst().toString();
+            String format = pair.getSecond().toString();    		
+            URI uri = new URI( FileSystemConfig.getFileSystemTrunkPath() + "config/" + "datadock_jobs.xml" ); // new URI( "/datadock_job.xml" );
+            DatadockJob job = new DatadockJob( uri, submitter, format );
     		
-    		if( jobMap.containsKey( pair ) )
-    		{	
-    			// Get list of plugins
-    			ArrayList< String > list = jobMap.get( pair );
-    			
-    			// Validate plugins
-    			PluginResolver pluginResolver = new PluginResolver();
-    			Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+            if( jobMap.containsKey( pair ) )
+    	    {	
+                // Get list of plugins
+                ArrayList< String > list = jobMap.get( pair );
+                    
+                // Validate plugins
+                PluginResolver pluginResolver = new PluginResolver();
+                Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+                    
+                if( ! missingPlugins.isEmpty() )
+                {		
+                    System.out.println( " kill thread" );
+                    throw new Exception( "plugins not found in test" );
+                    // kill thread/throw meaningful exception/log message
+	    	}
+                else
+                {
+                    CargoContainer cc = null;
 				
-    			if( ! missingPlugins.isEmpty() )
-				{		
-					System.out.println( " kill thread" );
-					throw new Exception( "plugins not found in test" );
-					// kill thread/throw meaningful exception/log message
-	    		}
-				else
-				{
-					CargoContainer cc = null;
-				
-					for( String task : list)
-		    		{	
-						IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-	    				switch ( plugin.getTaskName() )
-	    				{	
-	    					case HARVEST:
-	    						IHarvestable harvestPlugin = (IHarvestable)plugin; 
-	    						cc = harvestPlugin.getCargoContainer( job );
-	    						break;
-	    					case ANNOTATE:
-	    						IAnnotate annotatePlugin = (IAnnotate)plugin;
-	    						cc = annotatePlugin.getCargoContainer( cc );
-	    						break;
-	    					case STORE:
-	    						IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-	    						//repositoryStore.storeCargoContainer( cc, job );
-	    				}
-		    		}
-				}
-    		}
+                    for( String task : list)
+                    {	
+                        IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+                        switch ( plugin.getTaskName() )
+                        {	
+                            case HARVEST:
+                                IHarvestable harvestPlugin = (IHarvestable)plugin; 
+                                cc = harvestPlugin.getCargoContainer( job );
+                                break;
+                            case ANNOTATE:
+                                IAnnotate annotatePlugin = (IAnnotate)plugin;
+                                cc = annotatePlugin.getCargoContainer( cc );
+                                break;
+                            case STORE:
+                                IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+                                //repositoryStore.storeCargoContainer( cc, job );
+                        }
+                    }
+                }
+            }
     	}
     }
 }

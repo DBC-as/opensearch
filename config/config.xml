@@ -21,9 +21,12 @@
     <user>fedoraAdmin</user>
     <passphrase>fedoraAdmin</passphrase>
   </fedora>
-  <filesystem>
+  <filesystem>    
+    <!-- all elements are relative to trunk -->
     <trunk>/home/mro/projects/opensearch/trunk</trunk>
-    <plugins>/home/mro/projects/opensearch/trunk/build/classes/dk/dbc/opensearch/plugins</plugins>
+    <plugins>build/classes/dk/dbc/opensearch/plugins</plugins>
+    <datadock>config/datadock_jobs.xml</datadock>
+    <pti>config/pti_jobs.xml</pti>
   </filesystem>
   <harvester>
     <folder>/home/mro/projects/opensearch/trunk/Harvest-pollTest/</folder>
@@ -31,10 +34,6 @@
   <pidmanager>
     <num-of-pids-to-retrieve>10</num-of-pids-to-retrieve>
   </pidmanager>
-  <plugins>
-    <datadock>/home/mro/projects/opensearch/trunk/config/datadock_jobs.xml</datadock>
-    <pti>/home/mro/projects/opensearch/trunk/config/pti_jobs.xml</pti>
-  </plugins>
   <pti>
     <main-poll-time>1000</main-poll-time>
     <rejected-sleep-time>3000</rejected-sleep-time>

@@ -3,29 +3,27 @@
  */
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.helpers.FedoraConfig;
 
-import java.net.URL;
-
-import javax.xml.rpc.ServiceException;
-
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.axis.client.Stub;
-import org.apache.axis.client.Call;
+import dk.dbc.opensearch.common.config.FedoraConfig;
 
 import info.fedora.www.definitions._1._0.api.FedoraAPIA;
-import info.fedora.www.definitions._1._0.api.FedoraAPIAService;
 import info.fedora.www.definitions._1._0.api.FedoraAPIAServiceLocator;
 import info.fedora.www.definitions._1._0.api.FedoraAPIM;
 import info.fedora.www.definitions._1._0.api.FedoraAPIMServiceLocator;
+
+import javax.xml.rpc.ServiceException;
+
+import org.apache.axis.client.Stub;
+import org.apache.axis.client.Call;
+
 
 /**
  * FedoraStore act as the plugin communication link with the fedora base. The
  * only function of this (abstract) class is to establish the SOAP communication
  * layer.
  */
-public abstract class FedoraHandle {
-
+public abstract class FedoraHandle 
+{
 	private FedoraAPIMServiceLocator m_locator;
 	private FedoraAPIAServiceLocator a_locator;
 	
@@ -54,36 +52,30 @@ public abstract class FedoraHandle {
         user       = config.getString( "fedora.user" );
         
         passphrase = config.getString( "fedora.passphrase" );
-
-        
         */
 
-            String fedora_base_url;
+        String fedora_base_url;
 
-            String host = FedoraConfig.getFedoraHost();
-            String port = FedoraConfig.getFedoraPort();
-            String user = FedoraConfig.getFedoraUser();
-            String pass = FedoraConfig.getFedoraPassPhrase();
+        String host = FedoraConfig.getFedoraHost();
+        String port = FedoraConfig.getFedoraPort();
+        String user = FedoraConfig.getFedoraUser();
+        String pass = FedoraConfig.getFedoraPassPhrase();
 
-            fedora_base_url  = String.format( "http://%s:%s/fedora/services/management", host, port );
+        fedora_base_url  = String.format( "http://%s:%s/fedora/services/management", host, port );
 
-            m_locator = new FedoraAPIMServiceLocator();
+        m_locator = new FedoraAPIMServiceLocator();
 
-            // log.debug( String.format( "Connecting to %s", fedora_base_url ) );
+        // log.debug( String.format( "Connecting to %s", fedora_base_url ) );
+        m_locator.setFedoraAPIMServiceHTTPPortEndpointAddress( fedora_base_url );
 
-            m_locator.setFedoraAPIMServiceHTTPPortEndpointAddress( fedora_base_url );
+        // locator.setMaintainSession( false );
+        fem = m_locator.getFedoraAPIMServiceHTTPPort();
 
-            // locator.setMaintainSession( false );
-            fem = m_locator.getFedoraAPIMServiceHTTPPort();
+        // to use Basic HTTP Authentication:
+        ( ( Stub ) fem )._setProperty( Call.USERNAME_PROPERTY, user );
+        ( ( Stub ) fem )._setProperty( Call.PASSWORD_PROPERTY, pass );
 
-            // to use Basic HTTP Authentication:
-            ( ( Stub ) fem )._setProperty( Call.USERNAME_PROPERTY, user );
-            ( ( Stub ) fem )._setProperty( Call.PASSWORD_PROPERTY, pass );
-
-
-
-            a_locator = new FedoraAPIAServiceLocator();
-            fea = a_locator.getFedoraAPIAServiceHTTPPort();
-                          //getFedoraAPIAPortSOAPHTTP();
+        a_locator = new FedoraAPIAServiceLocator();
+        fea = a_locator.getFedoraAPIAServiceHTTPPort(); //getFedoraAPIAPortSOAPHTTP();
 	}
 }

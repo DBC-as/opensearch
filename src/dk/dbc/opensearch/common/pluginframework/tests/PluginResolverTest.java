@@ -164,7 +164,7 @@ public class PluginResolverTest
      * to be returned
      */
     @Test 
-    public void validateArgsNotAllPluginsFoundTest() throws ParserConfigurationException ,FileNotFoundException, PluginResolverException, IOException
+    public void validateArgsNotAllPluginsFoundTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException
     {
         String submitter = "testSubmitter";
         String format = "testFormat";

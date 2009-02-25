@@ -26,8 +26,8 @@ import org.apache.log4j.Logger;
 
 //-------
 
-import dk.dbc.opensearch.common.helpers.FedoraConfig;
-import dk.dbc.opensearch.common.helpers.PidManagerConfig;
+import dk.dbc.opensearch.common.config.FedoraConfig;
+import dk.dbc.opensearch.common.config.PidManagerConfig;
 
 import javax.xml.rpc.ServiceException;
 
