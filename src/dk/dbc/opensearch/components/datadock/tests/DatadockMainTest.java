@@ -56,7 +56,7 @@ public class DatadockMainTest
     	{
             String submitter = pair.getFirst().toString();
             String format = pair.getSecond().toString();    		
-            URI uri = new URI( FileSystemConfig.getFileSystemTrunkPath() + "config/" + "datadock_jobs.xml" ); // new URI( "/datadock_job.xml" );
+            URI uri = new URI( FileSystemConfig.getFileSystemDatadock() ); 
             DatadockJob job = new DatadockJob( uri, submitter, format );
     		
             if( jobMap.containsKey( pair ) )
@@ -73,7 +73,7 @@ public class DatadockMainTest
                     System.out.println( " kill thread" );
                     throw new Exception( "plugins not found in test" );
                     // kill thread/throw meaningful exception/log message
-	    	}
+	    	    }
                 else
                 {
                     CargoContainer cc = null;

@@ -76,7 +76,8 @@ public class DatadockJob
      * Gets the submitter
      * @return The submitter
      */
-    public String getSubmitter(){
+    public String getSubmitter()
+    {
         return submitter;
     }
     

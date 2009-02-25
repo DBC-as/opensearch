@@ -64,7 +64,8 @@ public class PluginResolverTest
         */
         public String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
         {
-            if (key == ( "testSubmitter"+"testFormat"+"throwException" ).hashCode())
+            //if (key == ( "testSubmitter"+"testFormat"+"throwException" ).hashCode())
+        	if (key == ( "throwException" ).hashCode())
             {
                 throw new FileNotFoundException( "no plugin for testTask3" );
             }

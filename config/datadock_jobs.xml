@@ -4,9 +4,9 @@
 
 <job_list>
   <job submitter="dbc" format="faktalink">
-    <task name="docbookannotate" position="1"/>
-    <task name="faktalinkharvester" position="0"/>
-    <task name="faktalinkstore" position="2"/>
+    <plugin name="docbookannotate" position="1"/>
+    <plugin name="faktalinkharvester" position="0"/>
+    <plugin name="faktalinkstore" position="2"/>
   </job>
 
   <!--job submitter="dbc" format="forfatterweb">

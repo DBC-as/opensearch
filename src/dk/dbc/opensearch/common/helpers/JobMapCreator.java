@@ -52,8 +52,8 @@ public class JobMapCreator
     {
         log.debug( "GetMap() called" );
 
-        ArrayList<String> sortedTaskList = new ArrayList< String >();
-        List< Pair< String, Integer > > taskAndPriority = new ArrayList< Pair< String, Integer > >();
+        ArrayList<String> sortedPluginList = new ArrayList< String >();
+        List< Pair< String, Integer > > pluginAndPriority = new ArrayList< Pair< String, Integer > >();
 
         log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
 
@@ -78,10 +78,6 @@ public class JobMapCreator
         Element jobElement;
         String submitter = "";
         String format = "";
-        NodeList taskList;
-        int taskListLength;
-        Element taskElement;
-        String task;
         int position;
         SecondComparator secComp = new SecondComparator();    
         
@@ -92,39 +88,40 @@ public class JobMapCreator
         	submitter = jobElement.getAttribute( "submitter" );
         	format = jobElement.getAttribute( "format" );
 
-        	taskList = jobElement.getElementsByTagName( "task" );
-        	taskListLength = taskList.getLength();
+        	NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
+        	int pluginListLength = pluginList.getLength();
 
-        	taskAndPriority.clear();
-
+        	pluginAndPriority.clear();
+        	
+        	String plugin;
         	// 35: get the tasks in a List
-        	for( int y = 0; y < taskListLength; y++ )
+        	for( int y = 0; y < pluginListLength; y++ )
         	{
-        		taskElement = (Element)taskList.item( y );
+        		Element pluginElement = (Element)pluginList.item( y );
         		//get the name and position of the task element
-        		task = (String)taskElement.getAttribute( "name" );
-        		position = Integer.decode(taskElement.getAttribute( "position" ) );
+        		plugin = (String)pluginElement.getAttribute( "name" );
+        		position = Integer.decode(pluginElement.getAttribute( "position" ) );
 
-        		taskAndPriority.add( new Pair< String, Integer >( task, position ) );
+        		pluginAndPriority.add( new Pair< String, Integer >( plugin, position ) );
         	}
 
         	// 40: sort the tasks based on the position (order)
-        	Collections.sort( taskAndPriority, secComp );
+        	Collections.sort( pluginAndPriority, secComp );
 
         	// 50: put it in a List
-        	sortedTaskList.clear();
-        	for( int z = 0; z < taskListLength; z++ )
+        	sortedPluginList.clear();
+        	for( int z = 0; z < pluginListLength; z++ )
         	{
-        		task = ( (Pair< String, Integer >)taskAndPriority.get( z ) ).getFirst();
-        		sortedTaskList.add( task );
+        		plugin = ( (Pair< String, Integer >)pluginAndPriority.get( z ) ).getFirst();
+        		sortedPluginList.add( plugin );
         	}
 
         	// 60: Put it into the map with  <submitter, format> as key and List as value
-        	jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedTaskList) );
+        	jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
         }
 
         // Put job into the map with <submitter, format> as key and List as value
-        jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedTaskList) );
+        jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
 
         return jobMap;
     }

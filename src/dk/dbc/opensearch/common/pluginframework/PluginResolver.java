@@ -71,7 +71,10 @@ public class PluginResolver implements IPluginResolver
      */
     public IPluggable getPlugin( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException
     {  
-    	int key = ( submitter + format + task ).hashCode();
+    	//int key = ( submitter + format + task ).hashCode();
+    	int key = task.hashCode();
+    	//System.out.println( "key: " + key);
+    	//System.out.println( "plugin: " + task );
         String pluginClassName = PFinder.getPluginClassName( key );
         
         return PLoader.getPlugin( pluginClassName );
@@ -92,7 +95,9 @@ public class PluginResolver implements IPluginResolver
         // Loop through list of tasks finding tasks without matching plugin.
         for( int i = 0; i < taskList.size(); i++ )
         {
-            String hashSubject = submitter + format + taskList.get( i ).toString();
+            //String hashSubject = submitter + format + taskList.get( i ).toString();
+        	//System.out.println( "plugin: " + taskList.get( i ).toString() );
+        	String hashSubject = taskList.get( i ).toString();
             int key = hashSubject.hashCode();
             
             try

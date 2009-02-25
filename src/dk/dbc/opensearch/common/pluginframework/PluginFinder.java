@@ -104,7 +104,6 @@ public class PluginFinder
     
     void printClassNameMap()
     {
-    	System.out.println( "print" );
     	java.util.Collection< String > c = (java.util.Collection< String >) classNameMap.values();
     	Iterator< String > iter = c.iterator();
     	
@@ -155,7 +154,8 @@ public class PluginFinder
         	String submitterName = null;
         	String formatName = null;
         	String className = null;
-        	String taskName = null;
+        	//String taskName = null;
+        	String name = null;
         	String hashSubject = null;
         	int key = 0;
         	String pluginName = null;;
@@ -200,20 +200,24 @@ public class PluginFinder
         		Element pluginElement = (Element) pluginNodeList.item( 0 );
         		//40: pull out the values
 
-        		submitterName = pluginElement.getAttribute( "submitter" );
-        		formatName = pluginElement.getAttribute( "format" );
-        		taskName = pluginElement.getAttribute( "taskname" );
+        		//submitterName = pluginElement.getAttribute( "submitter" );
+        		//formatName = pluginElement.getAttribute( "format" );
+        		//taskName = pluginElement.getAttribute( "taskname" );
+        		name = pluginElement.getAttribute( "name" );
         		className = pluginElement.getAttribute( "classname" );
         		
-        		log.debug( String.format( "Found plugins with classname=%s, used for task: %s, format: %s from submitter:%s", className, taskName, formatName, submitterName ) );
+        		//log.debug( String.format( "Found plugins with classname=%s, used for task: %s, format: %s from submitter:%s", className, taskName, formatName, submitterName ) );
+        		log.debug( String.format( "Found plugins with classname=%s, used for plugin: %s", className, name ) );
         		
         		//45: verify that we got string form the xml file
-        		if( xmlRoot.getTagName().equals( "plugins" ) && submitterName != null && formatName != null && taskName != null && className != null )
+        		//if( xmlRoot.getTagName().equals( "plugins" ) && submitterName != null && formatName != null && taskName != null && className != null )
+        		if( xmlRoot.getTagName().equals( "plugins" ) && name != null && className != null )
         		{
         			//50: build the the key
         			//hashSubject= submitterName + formatName + taskName;
         			//key = hashSubject.hashCode();
-        			key = ( submitterName + formatName + taskName ).hashCode();
+        			//key = ( submitterName + formatName + taskName ).hashCode();
+        			key = name.hashCode();
         			//System.out.println( key );
         			//System.out.println( submitterName + " " + formatName + " " + taskName );
         				

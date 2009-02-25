@@ -18,7 +18,7 @@
 
   <xsd:complexType name="pluginType">
     
-    <xsd:attribute name="taskname" use="required">
+    <xsd:attribute name="name" use="required">
       <xsd:annotation>
         <xsd:documentation>
           Possible tasks for a given plugin: 
@@ -36,16 +36,6 @@
       </xsd:annotation>
     </xsd:attribute>
     
-    <!-- xsd:attribute name="name" use="required" type="xsd:string">
-      <xsd:annotation>
-        <xsd:documentation>
-          Name of the plugin. There are no restrictions on the
-          formation of the name, and what is written in this attribute
-          should have no computational consequences.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute-->
-
     <xsd:attribute name="classname" use="required" type="xsd:string">
       <xsd:annotation>
         <xsd:documentation>
@@ -55,30 +45,6 @@
       </xsd:annotation>
     </xsd:attribute>
 
-
-    <xsd:attribute name="submitter" use="required" type="xsd:string">
-      <xsd:annotation>
-        <xsd:documentation>
-          Submitter must be registered with the authentification
-          mechanisms for the opensearch motor. The submitter string is
-          used not only to identify who submitted the material, but
-          also for authentification and owner id's in the digital
-          repository.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-
-    <xsd:attribute name="format" use="required" type="xsd:string">
-      <xsd:annotation>
-        <xsd:documentation>
-          Format is a specification of what the target format for the
-          plugin should be. If the format is formatted in xml, a
-          validation should be tried, as the indexing process is
-          dependant on well-formed and validating input xml.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-    
     <xsd:attribute name="type" use="required">
       <xsd:annotation>
         <xsd:documentation>
