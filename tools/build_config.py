@@ -20,7 +20,6 @@ fedora = ET.SubElement( root, "fedora" )
 filest = ET.SubElement( root, "filesystem" )
 harvest= ET.SubElement( root, "harvester" )
 pidmng = ET.SubElement( root, "pidmanager" )
-plugin = ET.SubElement( root, "plugins" )
 pti    = ET.SubElement( root, "pti" )
 
 # database settings
@@ -61,10 +60,16 @@ user.text   = "fedoraAdmin"
 passwd.text = "fedoraAdmin"
 
 #filesystem settings
+filest_comment = ET.Comment( "all elements are relative to trunk")
+filest.append( filest_comment )
 trunk   = ET.SubElement( filest, "trunk" )
 plugins = ET.SubElement( filest, "plugins" )
+datadock = ET.SubElement( filest, "datadock" )
+pti_el   = ET.SubElement( filest, "pti" )
 trunk.text   = path
-plugins.text = os.path.join( path, pluginpath )
+plugins.text = pluginpath
+datadock.text = "config/datadock_jobs.xml"
+pti_el.text   = "config/pti_jobs.xml"
 
 #harvester settings
 folder = ET.SubElement( harvest, "folder" )
@@ -73,12 +78,6 @@ folder.text = os.path.join( path, "Harvest/pollTest/" )
 #pidmanager settings
 num_of_pids = ET.SubElement( pidmng, "num-of-pids-to-retrieve" )
 num_of_pids.text = "10"
-
-#plugins settings
-datadock = ET.SubElement( plugin, "datadock" )
-pti_el   = ET.SubElement( plugin, "pti" )
-datadock.text = os.path.join( path, "config/datadock_jobs.xml" )
-pti_el.text      = os.path.join( path, "config/pti_jobs.xml" )
 
 #pti settings
 poll      = ET.SubElement( pti, "main-poll-time" )
