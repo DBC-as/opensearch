@@ -2,7 +2,15 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 
-import xml.etree.ElementTree as ET
+import sys
+try:
+    import xml.etree.ElementTree as ET
+except ImportError:
+    try:
+        import elementtree.ElementTree as ET
+    except ImportError:
+        sys.exit( "could not import elementtree library. Is it installed?" )
+
 import os
 
 # this will probably not work for cruisecontrol user
