@@ -3,62 +3,41 @@
  * \brief The PIDManager class
  * \package fedora;
  */
-
 package dk.dbc.opensearch.common.fedora;
+
+
+import dk.dbc.opensearch.common.config.FedoraConfig;
+import dk.dbc.opensearch.common.config.PidManagerConfig;
 
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.Arrays;
 
-import org.apache.axis.types.NonNegativeInteger;
-
-import java.net.URL;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
-
-import java.io.IOException;
-
-import javax.xml.rpc.ServiceException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import org.apache.log4j.Logger;
-
-
-//-------
-
-import dk.dbc.opensearch.common.config.FedoraConfig;
-import dk.dbc.opensearch.common.config.PidManagerConfig;
-
-import javax.xml.rpc.ServiceException;
-
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.axis.client.Stub;
-import org.apache.axis.client.Call;
-
 import info.fedora.www.definitions._1._0.api.FedoraAPIA;
-import info.fedora.www.definitions._1._0.api.FedoraAPIAService;
 import info.fedora.www.definitions._1._0.api.FedoraAPIAServiceLocator;
 import info.fedora.www.definitions._1._0.api.FedoraAPIM;
 import info.fedora.www.definitions._1._0.api.FedoraAPIMServiceLocator;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 
-//-------
+import javax.xml.rpc.ServiceException;
+
+import org.apache.axis.types.NonNegativeInteger;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
 
 
-
-public class PIDManager  extends FedoraHandle {
-
+public class PIDManager  extends FedoraHandle 
+{
     HashMap <String, Vector< String > > pidMap;
-
-
 
     private FedoraAPIMServiceLocator m_locator;
     private FedoraAPIAServiceLocator a_locator;
 	
     protected FedoraAPIM fem;
     protected FedoraAPIA fea;
-
-
 
     String host;
     String port;
