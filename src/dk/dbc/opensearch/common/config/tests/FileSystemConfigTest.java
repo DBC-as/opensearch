@@ -18,7 +18,7 @@ public class FileSystemConfigTest
     public void testGetTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
     {
         String trunk = FileSystemConfig.getFileSystemTrunkPath();
-        
+        System.out.println( "trunk: " + trunk );
         boolean endsWith = trunk.endsWith( "opensearch/trunk/" ); 
         assertTrue( endsWith );
     }
@@ -28,7 +28,7 @@ public class FileSystemConfigTest
     public void testGetPluginsPath()
     {
     	String plugins = FileSystemConfig.getFileSystemPluginsPath();
-        System.out.println( plugins );
+    	System.out.println( "plugins: " + plugins );
         boolean endsWith = plugins.endsWith( "opensearch/trunk/build/classes/dk/dbc/opensearch/plugins/" ); 
         assertTrue( endsWith );    	
     }
