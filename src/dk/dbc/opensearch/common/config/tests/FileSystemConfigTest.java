@@ -18,8 +18,8 @@ public class FileSystemConfigTest
     public void testGetTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
     {
         String trunk = FileSystemConfig.getFileSystemTrunkPath();
-        System.out.println( "trunk: " + trunk );
-        CharSequence cs = "opensearch/trunk";
+    
+        CharSequence cs = "/opensearch";
         boolean endsWith = trunk.contains( cs ); //endsWith( "opensearch/trunk/" ); 
         assertTrue( endsWith );
     }
@@ -29,8 +29,8 @@ public class FileSystemConfigTest
     public void testGetPluginsPath()
     {
     	String plugins = FileSystemConfig.getFileSystemPluginsPath();
-    	System.out.println( "plugins: " + plugins );
-    	CharSequence cs = "opensearch/trunk/build/classes/dk/dbc/opensearch/plugins";
+    
+    	CharSequence cs = "/build/classes/dk/dbc/opensearch/plugins";
         boolean endsWith = plugins.contains( cs ); //endsWith( "opensearch/trunk/build/classes/dk/dbc/opensearch/plugins/" ); 
         assertTrue( endsWith );    	
     }
@@ -40,8 +40,8 @@ public class FileSystemConfigTest
     public void testGetDatadockPath()
     {
     	String datadock = FileSystemConfig.getFileSystemDatadockPath();
-    	System.out.println( "datadock: " + datadock );
-        boolean endsWith = datadock.endsWith( "opensearch/trunk/config/datadock_jobs.xml" ); 
+    
+        boolean endsWith = datadock.endsWith( "/config/datadock_jobs.xml" ); 
         assertTrue( endsWith );    	
     }
     
@@ -50,8 +50,8 @@ public class FileSystemConfigTest
     public void testGetPtiPath()
     {
     	String pti = FileSystemConfig.getFileSystemPtiPath();
-    	System.out.println( "pti: " + pti );
-        boolean endsWith = pti.endsWith( "opensearch/trunk/config/pti_jobs.xml" ); 
-        assertTrue( endsWith );    	
+    	
+        boolean endsWith = pti.endsWith( "/config/pti_jobs.xml" ); 
+        assertTrue( endsWith );
     }
 }
