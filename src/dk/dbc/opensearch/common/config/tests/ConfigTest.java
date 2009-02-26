@@ -8,8 +8,8 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 public class ConfigTest

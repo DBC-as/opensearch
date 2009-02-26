@@ -5,8 +5,6 @@ import dk.dbc.opensearch.common.config.FileSystemConfig;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -17,13 +15,21 @@ public class FileSystemConfigTest
 
 
     @Test
-    public void testTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+    public void testGetTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
     {
         String trunk = FileSystemConfig.getFileSystemTrunkPath();
-        System.out.println( trunk );
-
-        //boolean endsWith = trunk.endsWith( "opensearch/trunk/" ); 
-        //assertTrue( endsWith );
-
+        
+        boolean endsWith = trunk.endsWith( "opensearch/trunk/" ); 
+        assertTrue( endsWith );
+    }
+    
+    
+    @Test
+    public void testGetPluginsPath()
+    {
+    	String plugins = FileSystemConfig.getFileSystemPluginsPath();
+        System.out.println( plugins );
+        boolean endsWith = plugins.endsWith( "opensearch/trunk/build/classes/dk/dbc/opensearch/plugins/" ); 
+        assertTrue( endsWith );    	
     }
 }

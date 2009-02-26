@@ -41,15 +41,17 @@ public class FileSystemConfig extends Config
 	 * ********************/
 	private String getPluginsPath()
 	{
-		String ret = config.getString( "filesystem.trunk" );
+		FileSystemConfig fc = new FileSystemConfig();
+		String ret = config.getString( "filesystem.plugins" );
+		ret = fc.getTrunkPath() + ret;		
 		return sanitize( ret );
 	}
 	
 	
 	public static String getFileSystemPluginsPath()
 	{		
-		FileSystemConfig f = new FileSystemConfig();
-		return f.getPluginsPath();
+		FileSystemConfig fc = new FileSystemConfig();		
+		return fc.getPluginsPath();
 	}
 	
 	
