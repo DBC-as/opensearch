@@ -216,6 +216,7 @@ public class DatadockMain
             catch( RuntimeException re )
             {
                 log.error("RuntimeException caught in mainloop: " + re);
+                log.debug("hat");
                 log.error("  " + re.getCause().getMessage() );
                 throw re;
             }
