@@ -90,13 +90,14 @@ def start_daemon( q_name, pid_filename ):
 
     proc = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE )
     log.debug( "Started java process with proc.pid=%s"%( proc.pid ) )
-    return ( proc, proc.pid )
+
+    pid = int(proc.pid)+1
+
+    #hackety-hack
+    return ( proc, pid )
 
 
 def stop_daemon( pid ):
-
-    #hackety-hack
-    pid = int(pid)+1
 
     try:
         os.kill( int( pid ), int( 15 ) )
