@@ -57,7 +57,7 @@ public class DatadockMainTest
     	{
             String submitter = pair.getFirst().toString();
             String format = pair.getSecond().toString();    		
-            URI uri = new URI( FileSystemConfig.getFileSystemDatadock() ); 
+            URI uri = new URI( FileSystemConfig.getFileSystemDatadockPath() ); 
             DatadockJob job = new DatadockJob( uri, submitter, format );
     		
             if( jobMap.containsKey( pair ) )

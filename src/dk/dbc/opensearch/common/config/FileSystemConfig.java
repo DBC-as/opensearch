@@ -69,7 +69,7 @@ public class FileSystemConfig extends Config
 	/**
 	 * @return Path to the config/datadock_jobs.xml file
 	 */
-	public static String getFileSystemDatadock() 
+	public static String getFileSystemDatadockPath() 
 	{
 		FileSystemConfig fc = new FileSystemConfig();
 		return fc.getDatadock();
@@ -90,7 +90,7 @@ public class FileSystemConfig extends Config
 	/**
 	 * @return Path to the config/pti_jobs.xml file
 	 */	
-	public static String getFileSystemPti()
+	public static String getFileSystemPtiPath()
 	{		
 		FileSystemConfig fc = new FileSystemConfig();
 		return fc.getPti();

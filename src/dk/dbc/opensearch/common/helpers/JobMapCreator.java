@@ -133,14 +133,14 @@ public class JobMapCreator
     
     	if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain" ) )
         {
-            String datadockJobPath = FileSystemConfig.getFileSystemDatadock();
+            String datadockJobPath = FileSystemConfig.getFileSystemDatadockPath();
             log.debug( String.format( "DatadockJob path: '%s'", datadockJobPath ) );
             jobFile = FileHandler.getFile( datadockJobPath );
 
         }
         else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
         {
-        	String ptiJobPath = FileSystemConfig.getFileSystemPti();
+        	String ptiJobPath = FileSystemConfig.getFileSystemPtiPath();
         	log.debug( String.format( "PTIJob path: '%s'", ptiJobPath ) );
         	jobFile = FileHandler.getFile( ptiJobPath );
         }
