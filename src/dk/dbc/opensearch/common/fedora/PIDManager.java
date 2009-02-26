@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.Arrays;
 
-import info.fedora.www.definitions._1._0.api.FedoraAPIA;
-import info.fedora.www.definitions._1._0.api.FedoraAPIAServiceLocator;
-import info.fedora.www.definitions._1._0.api.FedoraAPIM;
-import info.fedora.www.definitions._1._0.api.FedoraAPIMServiceLocator;
+// import info.fedora.www.definitions._1._0.api.FedoraAPIA;
+// import info.fedora.www.definitions._1._0.api.FedoraAPIAServiceLocator;
+// import info.fedora.www.definitions._1._0.api.FedoraAPIM;
+// import info.fedora.www.definitions._1._0.api.FedoraAPIMServiceLocator;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,10 +36,10 @@ public class PIDManager  extends FedoraHandle
     // protected FedoraAPIM fem;
     // protected FedoraAPIA fea;
 
-    String host;
-    String port;
-    String user;
-    String passphrase;
+    // String host;
+    // String port;
+    // String user;
+    // String passphrase;
 
     NonNegativeInteger numPIDs;
 
@@ -59,10 +59,10 @@ public class PIDManager  extends FedoraHandle
     	
         log.debug( "Constructor() called" );
      
-        host = FedoraConfig.getFedoraHost();
-        port = FedoraConfig.getFedoraPort();
-        user = FedoraConfig.getFedoraUser();
-        passphrase = FedoraConfig.getFedoraPassPhrase();
+        // host = FedoraConfig.getFedoraHost();
+        // port = FedoraConfig.getFedoraPort();
+        // user = FedoraConfig.getFedoraUser();
+        // passphrase = FedoraConfig.getFedoraPassPhrase();
         numPIDs =  new NonNegativeInteger( PidManagerConfig.getPidManagerNumberOfPidsToRetrieve() );
 
         pidMap = new HashMap <String, Vector< String > >();
@@ -116,7 +116,13 @@ public class PIDManager  extends FedoraHandle
         throws MalformedURLException, ServiceException, RemoteException, IOException
     {
         log.debug( String.format( "retrievePIDs(prefix='%s') called", prefix ) );
-        
-        return new Vector< String >( Arrays.asList( super.fem.getNextPID( numPIDs, prefix ) ) );                    
+
+        log.debug( String.format( "Calling through super.dem.getNextPID( %s, %s): fem is %s", numPIDs, prefix, fem ) );
+
+        Vector< String > pidlist = new Vector< String >( Arrays.asList( super.fem.getNextPID( numPIDs, prefix ) ) );
+
+        log.debug( String.format( "Got pidlist=%s",pidlist.toString() ) );
+
+        return pidlist;
     }
 }

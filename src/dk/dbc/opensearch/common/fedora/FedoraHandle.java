@@ -11,6 +11,8 @@ import fedora.server.access.FedoraAPIA;
 
 import javax.xml.rpc.ServiceException;
 
+import org.apache.log4j.Logger;
+
 /**
  * FedoraStore act as the plugin communication link with the fedora base. The
  * only function of this (abstract) class is to establish the SOAP communication
@@ -24,6 +26,7 @@ public abstract class FedoraHandle
     protected FedoraAPIM fem;
     protected FedoraAPIA fea;
 
+    Logger log = Logger.getLogger("FedoraHandle");
 
     /**
      * The constructor handles the initiation of the connection with the
@@ -41,6 +44,8 @@ public abstract class FedoraHandle
         String pass = FedoraConfig.getFedoraPassPhrase();
 
         fedora_base_url  = String.format( "http://%s:%s/fedora", host, port );
+
+        log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
 
         FedoraClient fc = new FedoraClient( fedora_base_url, user, pass );
         fea = fc.getAPIA();

@@ -106,7 +106,7 @@ public class FedoraTools {
 		java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
 		Marshaller m = new Marshaller(outW); // IOException
 		m.marshal(dot); // throws MarshallException, ValidationException
-
+		log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
 		byte[] ret = out.toByteArray();
 
                 log.debug( String.format( "length of return array=%s", ret.length ) );
@@ -124,6 +124,8 @@ public class FedoraTools {
 		int srcLen = co.getContentLength();
 		byte[] ba = co.getBytes();
 
+                log.debug( String.format( "contructing datastream from cargoobject format=%s, submitter=%s, mimetype=%s, contentlength=%s",co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength() ) );
+
 		/** \todo: VERSIONABLE should be configurable in some way */
 		boolean versionable = false;
 
@@ -132,12 +134,9 @@ public class FedoraTools {
 		 * configurable
 		 */
 
-		/** \todo: is this an adequate check? */
+		/** \todo: We always use Managed as control group... This should change/be refactored */
 		DatastreamTypeCONTROL_GROUPType controlGroup = null;
-		if (co.getMimeType() == "text/xml") 
-			controlGroup = DatastreamTypeCONTROL_GROUPType.X;
-		else 
-			controlGroup = DatastreamTypeCONTROL_GROUPType.M;
+                controlGroup = DatastreamTypeCONTROL_GROUPType.M;
 
 		// datastreamElement
 		Datastream dataStreamElement = new Datastream();
@@ -169,25 +168,28 @@ public class FedoraTools {
 		ContentDigest binaryContent = new ContentDigest();
 
 		dVersTypeChoice.setBinaryContent(ba);
+                
 
 		dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
 
 		String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
 		dataStreamVersionElement.setLABEL(mimeLabel);
-		String mimeFormatted = String.format("%s [%s]", co.getFormat(), co.getMimeType());
+		String mimeFormatted = String.format("%s", co.getMimeType());
 		dataStreamVersionElement.setMIMETYPE( mimeFormatted );
 
 		long lengthFormatted = (long) srcLen;
 
 		dataStreamVersionElement.setSIZE( lengthFormatted );
 
-		binaryContent.setDIGEST( Base64.encode( ba ) );
-                binaryContent.setTYPE( ContentDigestTypeTYPEType.DISABLED );
+		//binaryContent.setDIGEST( );//Base64.encode( ba ) );
+                //binaryContent.setTYPE( ContentDigestTypeTYPEType.DISABLED );
 
 
-		dataStreamVersionElement.setContentDigest( binaryContent );
+		//dataStreamVersionElement.setContentDigest( binaryContent );
 		DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
 		dataStreamElement.setDatastreamVersion( dsvArray );
+
+                log.debug( String.format( "Datastream element is valid=%s", dataStreamElement.isValid() ) );
 
 		return dataStreamElement;
 	}

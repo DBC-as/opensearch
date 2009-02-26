@@ -55,6 +55,8 @@ public class Store extends FedoraHandle implements IRepositoryStore
         byte[] foxml = FedoraTools.constructFoxml( cargo, job.getPID(), job.getFormat() );
 
         String logm = String.format( "%s inserted", job.getFormat() );
+
+        log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
         String fullPid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
 
         String pid = fullPid.substring( ( fullPid.indexOf( ":" ) ) +1 );

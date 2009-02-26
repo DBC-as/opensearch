@@ -13,7 +13,11 @@ import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
-
+/**
+ * Description of the task that is to be performed by
+ * FaktalnkHarvester
+ * 
+ */
 public class FaktalinkHarvester implements IHarvestable
 {
     Logger log = Logger.getLogger( FaktalinkHarvester.class );
