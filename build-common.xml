@@ -133,8 +133,8 @@
   </target>
 	
   <target name="py_config">
-    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
-      <arg line="build_config.py > config/config.xml"/>
+    <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
+      <arg line="tools/build_config.py"/>
     </exec>
   </target>
 	

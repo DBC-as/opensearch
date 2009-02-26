@@ -33,7 +33,6 @@ public abstract class FedoraHandle
      */
     public FedoraHandle() throws ServiceException, java.net.MalformedURLException, java.io.IOException
     {
-
         String fedora_base_url;
 
         String host = FedoraConfig.getFedoraHost();
