@@ -8,10 +8,10 @@ import org.apache.commons.configuration.XMLConfiguration;
 
 public class Config 
 {	
-	URL cfgURL = getClass().getResource( "/config.xml" );	
+	URL cfgURL = getClass().getResource( "/config.xml" );
 	static XMLConfiguration config;
     
-	protected Config()
+	public Config()
 	{
 		try 
 		{

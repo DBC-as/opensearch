@@ -35,6 +35,7 @@ public class FedoraHandlerTest
 {    
     Logger log = Logger.getLogger("FedoraHandlerTest");
     
+
     /**
      * The (mock)objects we need for the most of the tests
      */
