@@ -5,9 +5,15 @@
 import os
 import sys
 import subprocess
+import logging as log
 
 
 def main( app, action ):
+    log.basicConfig( level = log.DEBUG,
+                     format = '%(asctime)s %(levelname)s %(message)s',
+                     filename='app_starter.log' )
+    log.getLogger( '' )
+    
 
     pid_filename = ""
     pid_location = os.getcwd()
@@ -28,14 +34,22 @@ def main( app, action ):
 
     if ( get_pid( pid_file ) != "" ):
         pid = get_pid( pid_file )
+
+        log.debug( "read pid=%s"%pid )
+        
         if action == "restart":
+            log.debug( "Restarting. Killing process with pid=%s"%( pid ) )
             print "stopping process with pid %s"%( pid )
             stop_daemon( pid )
+            log.debug( "Removing pid-file %s"%pid_filename )
             os.unlink( pid_filename )
             do_start = True
+            log.debug( "Setting do_start=%s"%( do_start ) )
         elif action == "stop":
+            log.debug( "Stopping. Killing process with pid=%s"%( pid ) )
             print "stopping process with pid %s"%( pid )
             stop_daemon( pid )
+            log.debug( "Removing pid_filename=%s"%( pid_filename ) )
             os.unlink( pid_filename )
         elif action == "start":
             print "Only one %s instance is allowed to run at a time"% ( app )
@@ -49,7 +63,9 @@ def main( app, action ):
 
     if do_start:
         print "starting process"
+        log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
         proc, pid = start_daemon( q_name, pid_filename )
+        log.debug( "Started process with pid=%s"%( pid ) )
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
 
@@ -70,11 +86,18 @@ def start_daemon( q_name, pid_filename ):
 
     cmd = ' '.join( cmd )
 
+    log.debug( "Running process from cmd '%s'"%( cmd ) )
+
     proc = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE )
+    log.debug( "Started java process with proc.pid=%s"%( proc.pid ) )
     return ( proc, proc.pid )
 
 
 def stop_daemon( pid ):
+
+    #hackety-hack
+    pid = int(pid)+1
+
     try:
         os.kill( int( pid ), int( 15 ) )
     except OSError:
