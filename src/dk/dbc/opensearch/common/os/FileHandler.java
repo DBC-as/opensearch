@@ -72,7 +72,7 @@ public class FileHandler
             boolean validate = true;
             for( FilenameFilter fnf: fileFilters )
             {
-                if(! fnf.accept(dir, f.getName() ) )
+                if( ! fnf.accept(dir, f.getName() ) )
                 {
                     validate = false;
                     break;

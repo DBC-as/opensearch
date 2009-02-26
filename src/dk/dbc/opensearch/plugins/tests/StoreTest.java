@@ -6,36 +6,22 @@
 
 package dk.dbc.opensearch.plugins.tests;
 
-import dk.dbc.opensearch.common.os.FileHandler;
 
-import dk.dbc.opensearch.plugins.FaktalinkHarvester;
-import dk.dbc.opensearch.plugins.RUBHarvester;
-import dk.dbc.opensearch.plugins.AllStore;
-import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import java.io.IOException;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.io.ByteArrayOutputStream;
-
-/** \brief UnitTest for Store **/
-
-import static org.junit.Assert.*;
 import org.junit.*;
 
-/**
+
+/** \brief UnitTest for Store
  *
  */
-public class StoreTest {
-
+public class StoreTest 
+{
     /**
      *
      */
-
-    @Test public void test() throws Exception{
+    @Test 
+    public void test() throws Exception
+    {
         System.out.println( "\nstore TEST" );
-
 
         // FAKTALINK
 

@@ -12,7 +12,8 @@ import java.io.FilenameFilter;
 /**
  * 
  */
-public class PdfFileFilter implements FilenameFilter{
+public class PdfFileFilter implements FilenameFilter
+{
     /**
      * This method returns true only if arguments dir+name evals to a
      * filename not starting with a '.' and the suffix is .pdf
@@ -24,12 +25,11 @@ public class PdfFileFilter implements FilenameFilter{
      *
      * @throws NullPointerException if the dir- or filename is null
      */
-    public boolean accept(File dir, String name) throws NullPointerException{
-
-        if( ! ( new File( name ) ).isDirectory() && name.endsWith( ".pdf" ) ){
+    public boolean accept(File dir, String name) throws NullPointerException
+    {
+        if( ! ( new File( name ) ).isDirectory() && name.endsWith( ".pdf" ) )
             return true;
-        }else {
+        else
             return false;
-        }
     }
 }
