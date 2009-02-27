@@ -13,6 +13,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.plugins.Retrieve;
 
@@ -133,8 +135,13 @@ public class PTIThread implements Callable<Long>{
         Retrieve retriever = new Retrieve();
         CargoContainer cc = retriever.getCargoContainer( fedoraHandle );
         //30: Get the submitter and format from the CargoContainer
+        CargoObject co = cc.getFirstCargoObject( DataStreamNames.OriginalData );
+
+        submitter =  co.getSubmitter();
+        format = co.getFormat();
+        
         //40: get the job from the jobMap
-        list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
+        list = jobMap.get( new Pair< String, String >( submitter, format ) );
         //50: validate that there exists plugins for all the tasks
         PluginResolver pluginResolver = new PluginResolver();
         Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
