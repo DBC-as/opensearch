@@ -9,6 +9,7 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -118,7 +119,7 @@ public class PTIThread implements Callable<Long>{
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException  {
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException  {
         log.debug( String.format( "CALL CALLED handle: '%s'", fedoraHandle ) );
 
         long result = 1l;
@@ -147,35 +148,35 @@ public class PTIThread implements Callable<Long>{
         Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
         //60: execute the plugins
         if( ! missingPlugins.isEmpty() )
-            {
+        {
                 System.out.println( " kill thread" );
                 // kill thread/throw meaningful exception/log message
-            }
+        }
         else
+        {
+            
+            for( String task : list)
             {
-
-                for( String task : list)
-                    {
-                        IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-                        switch ( plugin.getTaskName() )
-                            {
-                            case PROCESS:
-                                IProcesser processPlugin = (IProcesser)plugin;
-                                cc = processPlugin.getCargoContainer( cc );
-                                break;
-                            case INDEX:
-                                IIndexer indexPlugin = (IIndexer)plugin;
-                                result = indexPlugin.getProcessTime( cc, session );
-                                //update statistics database
-                                break;
-                                //  case STORE:
-                                //                                         IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                                //                                         repositoryStore.storeCargoContainer( cc, this.datadockJob );
-                            }
-                    }
+                IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+                switch ( plugin.getTaskName() )
+                {
+                case PROCESS:
+                    IProcesser processPlugin = (IProcesser)plugin;
+                    cc = processPlugin.getCargoContainer( cc );
+                    break;
+                case INDEX:
+                    IIndexer indexPlugin = (IIndexer)plugin;
+                    result = indexPlugin.getProcessTime( cc, session );
+                    //update statistics database
+                    break;
+                    //  case STORE:
+                    //                                         IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+                    //                                         repositoryStore.storeCargoContainer( cc, this.datadockJob );
+                }
             }
-
-
+        }
+        
+        
         return result;
     }
 

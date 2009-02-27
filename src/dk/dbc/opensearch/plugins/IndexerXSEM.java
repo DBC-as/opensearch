@@ -8,11 +8,13 @@ import java.util.Date;
 
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.configuration.ConfigurationException;
 
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
@@ -30,25 +32,31 @@ public class IndexerXSEM implements IIndexer
 {
     Logger log = Logger.getLogger( IndexerXSEM.class );
 
-    private PluginType pluginType = PluginType.INDEX;
-
-
-    @Override
-        public long getProcessTime(CargoContainer cargo, CompassSession session)
+    public long getProcessTime(CargoContainer cargo, CompassSession session) throws PluginException
     {
-        // TODO Auto-generated method stub
-        return 0;
+
+        long processTime = 0;
+        try
+        {
+            processTime = getProcessTime( session, cargo );
+
+        }
+        catch( DocumentException doe )
+        {
+            throw new PluginException( "Could not contruct an indexable format from the CargoContainer", doe );
+        }
+
+        return processTime;
     }
 
 
-    @Override
-        public PluginType getTaskName()
+    public PluginType getTaskName()
     {
-        return pluginType;
+        return PluginType.INDEX;
     }
 
 
-    public long stub( CargoContainer cc, Estimate estimate, CompassSession session ) throws DocumentException, SQLException, ClassNotFoundException
+    private long getProcessTime( CompassSession session, CargoContainer cc ) throws DocumentException, PluginException
     {
         long processTime = 0;
         Date finishTime = new Date();
@@ -102,12 +110,44 @@ public class IndexerXSEM implements IIndexer
 
                         processTime += finishTime.getTime() - co.getTimestamp();
 
-                        estimate.updateEstimate( co.getMimeType(), co.getContentLength(), processTime );
-
-                        log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", co.getMimeType(), co.getContentLength(), processTime ) );
+                        updateEstimationDB(  co, processTime );
                     }
             }
 
         return processTime;
     }
+
+    /**
+     * 
+     */
+    private void updateEstimationDB( CargoObject co, long processTime ) throws PluginException
+    {
+
+        Estimate est = null;
+
+        // updating the database with the new estimations
+        try{
+            est = new Estimate();
+
+            est.updateEstimate( co.getMimeType(), co.getContentLength(), processTime );
+            
+            log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", 
+                                    co.getMimeType(), co.getContentLength(), processTime ) );
+        }
+        catch( SQLException sqle )
+        {
+            throw new PluginException( String.format( "Could not update database with estimation %s", processTime ), sqle );
+        }
+        catch( ConfigurationException ce )
+        {
+            throw new PluginException( "Estimate could not be setup correctly", ce );
+        }
+        catch( ClassNotFoundException cnfe )
+        {
+            throw new PluginException( "Could not configure database in Estimation class", cnfe );
+        }
+
+
+    }
+
 }

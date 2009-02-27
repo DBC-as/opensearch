@@ -46,7 +46,8 @@ public class DBConnection{
         log.debug( "DBConnection constructor");
    
         log.debug( "Obtain config paramaters");
-        
+
+        /** \todo: should be refactored to the Config class*/
         URL cfgURL = getClass().getResource("/config.xml");
         
         config = new XMLConfiguration( cfgURL );

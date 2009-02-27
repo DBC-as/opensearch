@@ -13,10 +13,13 @@ import java.util.List;
 
 /**
  * \ingroup common.types
- * \brief CargoObject is a data structure used throughout OpenSearch, which basically consists of a
- * pair (common.types.Pair) of CargoObjectInfo and List< Byte >. This class is the access point
- * (through the CargoObjectInfo object) for information about the input stream stored in the
- * List< Byte > object. It is used a complex type by the CargoContainer class.
+ * 
+ * \brief CargoObject is a data structure used throughout OpenSearch,
+ * which basically consists of a pair (common.types.Pair) of
+ * CargoObjectInfo and a byte[]. This class is the access point
+ * (through the CargoObjectInfo object) for information about the
+ * input stream stored in the byte[]. It is used a
+ * complex type by the CargoContainer class.
  */
 public class CargoObject
 {
@@ -27,10 +30,12 @@ public class CargoObject
 
 
     /**
-     * Constructor for the CargoObject class. Here an object of the type CargoMimeType is constructed,
-     * which in turn is used in the construction of a CargoObjectInfoObject. Also, the InputStream
-     * is read into a List< Byte > holding the actual data of the object. The two are stored in a
-     * pair (common.types.Pair).
+     * Constructor for the CargoObject class. Here an object of the
+     * type CargoMimeType is constructed, which in turn is used in the
+     * construction of a CargoObjectInfoObject. Also, the InputStream
+     * is read into a byte[] holding the actual data of the
+     * object. The two are stored in a pair
+     * (dk.dbc.opensearch.common.types.Pair).
      *
      * @param mimetype
      * @param language
@@ -47,7 +52,12 @@ public class CargoObject
         pair = new Pair<CargoObjectInfo, byte[] >( coi, data );
     }
 
-    
+    /**
+     * gets the name of the datastream (\see:
+     * dk.dbc.opensearch.common.types.DataStreamNames)
+     * 
+     * @return the enum value of the name of the Datastream
+     */
     public DataStreamNames getDataStreamName()
     {
         return this.pair.getFirst().getDataStreamName();
@@ -61,18 +71,40 @@ public class CargoObject
     */
     
 
+    /**
+     * Checks if the language of the submitted data is allowed in a
+     * CargoObject
+     * 
+     * @param language the language to be checked
+     * @return True if language is allowed, False otherwise
+     */
     public boolean checkLanguage( String language )
     {
         return pair.getFirst().checkLanguage( language );
     }
 
 
+    /**
+     * Checks if the mimetype of the submitted data is allowed in a
+     * CargoObject. The string should contain a mimetype conforming 
+     * to the RFC 822 ( http://www.faqs.org/rfcs/rfc822.html)
+     * 
+     * @param mimetype the mimetype to be checked
+     * @return True if mimetype is allowed, False otherwise
+     */
     public boolean validMimetype( String mimetype )
     {
         return pair.getFirst().validMimetype( mimetype );
     }
 
 
+    /**
+     * Checks if the submitter of the submitted data is allowed in a
+     * CargoObject
+     * 
+     * @param submitter the submitter to be checked
+     * @return True if mimetype is allowed, False otherwise
+     */
     public boolean checkSubmitter( String name ) throws IllegalArgumentException
     {
         return pair.getFirst().checkSubmitter( name );
@@ -82,14 +114,18 @@ public class CargoObject
     /**
      * Gets the size of the underlying byte array.
      *
-     * @return the size of the List<Byte>
+     * @return the size of the byte[]
      */
     public int getContentLength()
     {
         return pair.getSecond().length;
     }
 
-
+    /**
+     * Gets the format (type of material) of the CargoObject
+     * 
+     * @return the format as a String
+     */
     public String getLang()
     {
         return pair.getFirst().getLanguage();
@@ -102,10 +138,16 @@ public class CargoObject
     }
 
 
+    public String getLanguage()
+    {
+        return pair.getFirst().getLanguage();
+    }
+
     /**
-     * Returns the mimetype of the data associated with the underlying CargoObjectInfo
+     * Returns the mimetype of the data associated with the underlying
+     * CargoObjectInfo
      *
-     * @returns the mimetype of the data as a string
+     * @returns the mimetype of the data as a String
      */
     public String getMimeType()
     {
@@ -113,9 +155,10 @@ public class CargoObject
     }
 
     /**
-     * Returns the name of the submitter of the data associated with the underlying CargoObjectInfo
+     * Returns the name of the submitter of the data associated with
+     * the underlying CargoObjectInfo
      *
-     * @returns the submitter as a string
+     * @returns the submitter as a String
      */
     public String getSubmitter()
     {
@@ -134,6 +177,11 @@ public class CargoObject
     }
 
 
+    /**
+     * Returns the underlying data in the CargoObject as a byte[]
+     * 
+     * @return a byte[] containing the data of the CargoObject
+     */
     public byte[] getBytes()
     {
         return pair.getSecond();
