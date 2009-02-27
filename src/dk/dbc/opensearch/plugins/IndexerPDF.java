@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.common.plugins;
+package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -9,8 +9,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import org.compass.core.CompassSession;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +16,6 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import org.pdfbox.cos.COSDocument;
-import org.pdfbox.util.PDFTextStripper;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDDocumentInformation;
 import org.pdfbox.pdfparser.PDFParser;
