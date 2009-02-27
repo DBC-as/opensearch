@@ -107,7 +107,7 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
         }
         
         if( cargo == null )
-        {
+            {
             throw new IllegalStateException( String.format( "no cargocontainer with data matching the itemId '%s' in pid '%s' ", itemId, pid ) );
         }
 
@@ -115,7 +115,6 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
         log.info( "Successfully retrieved datastream." );
         return cargo;
     }
-
 
 	public PluginType getTaskName() 
 	{

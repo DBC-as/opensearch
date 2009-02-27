@@ -21,7 +21,7 @@ public class StoreTest
     @Test 
     public void test() throws Exception
     {
-        System.out.println( "\nstore TEST" );
+     System.out.println(" storeTest ");   
 
         // FAKTALINK
 

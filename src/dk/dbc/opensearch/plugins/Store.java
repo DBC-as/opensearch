@@ -22,6 +22,8 @@ import org.apache.axis.types.NonNegativeInteger;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Stores the CargoContainer in the repository.
@@ -50,10 +52,9 @@ public class Store extends FedoraHandle implements IRepositoryStore
      * @throws IOException
      * @throws ParseException
      */
-    public float storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException
+    public float storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
     {
         byte[] foxml = FedoraTools.constructFoxml( cargo, job.getPID(), job.getFormat() );
-
         String logm = String.format( "%s inserted", job.getFormat() );
 
         log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );

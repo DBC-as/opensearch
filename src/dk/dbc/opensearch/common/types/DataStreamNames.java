@@ -5,8 +5,8 @@ import org.apache.log4j.Logger;
 public enum DataStreamNames 
 {	
 	OriginalData ( "originalData", "original data" ),
-	DublinCoreData( "dublinCoreData", "dublin core data" );
-	
+            DublinCoreData( "dublinCoreData", "dublin core data" ),
+            AdminData( "adminData", "Administration" );
 	static Logger log = Logger.getLogger( DataStreamNames.class );
 	
 	String name;

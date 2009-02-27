@@ -39,7 +39,7 @@ public class CargoObject
      * @param data
      * @throws IOException
      */
-    CargoObject( DataStreamNames dataStreamName, String mimetype, String language, String submitter, String format, byte[] data ) throws IOException
+    public CargoObject( DataStreamNames dataStreamName, String mimetype, String language, String submitter, String format, byte[] data ) throws IOException
     {
         CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
         CargoObjectInfo coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format );
@@ -87,6 +87,12 @@ public class CargoObject
     public int getContentLength()
     {
         return pair.getSecond().length;
+    }
+
+
+    public String getLang()
+    {
+        return pair.getFirst().getLanguage();
     }
 
 

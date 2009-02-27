@@ -91,7 +91,7 @@ public class PTIThread implements Callable<Long>{
             this.session = session;
             this.fedoraHandle = fedoraHandle;
 
-            log.debug( "CONSTRUCTOR done" );
+            log.debug( "constructor done" );
         }
 
     /**

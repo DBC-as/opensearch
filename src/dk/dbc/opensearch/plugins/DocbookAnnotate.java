@@ -79,25 +79,19 @@ public class DocbookAnnotate implements IAnnotate
 
     public DocbookAnnotate()
     {
-        System.out.println( "IM ANNOTATING");
+        log.debug( "Constructor called" );
     }
 
 
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws javax.xml.xpath.XPathExpressionException, IOException//, ParserConfigurationException, SAXException,
     {
-
         // namespace context for docbook
         NamespaceContext nsc = new NamespaceContext(){
                 public String getNamespaceURI( String prefix ){
                     String uri = null;
                     if ( prefix.equals( "docbook" ) ){
                         uri = "http://docbook.org/ns/docbook";
-
                     }
-                    //                     else if( prefix.equals( "srr" ) ){
-                    //                         uri = "http://www.loc.gov/zing/srw/";
-                    //                     }
-
                     return uri;
                 }
 
@@ -109,8 +103,7 @@ public class DocbookAnnotate implements IAnnotate
                 }
             };
 
-        //
-        // 10: retrive docbook xml from CargoContainer
+        // Retrive docbook xml from CargoContainer
         CargoObject co = cargo.getFirstCargoObject( DataStreamNames.OriginalData );
         byte[] b = co.getBytes();
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -144,7 +137,6 @@ public class DocbookAnnotate implements IAnnotate
             System.out.println( String.format( "data: title='%s', serverChose(format)=\"\"\nxml retrieved\n%s", title, xmlString ) );
         }
 
-
         // number of records... if one or more than one retrieve the first one
         bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
         annotateSource = new InputSource( bis );
@@ -158,7 +150,6 @@ public class DocbookAnnotate implements IAnnotate
         if ( numOfRec == 1 ){
             cargo.add( DataStreamNames.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", xmlString.getBytes() );
         }
-
         return cargo;
     }
 
@@ -196,7 +187,6 @@ public class DocbookAnnotate implements IAnnotate
         }
         return queryURL;
     }
-
 
     /**
      *  Performs a http call and returns the answer

@@ -15,12 +15,13 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import javax.xml.rpc.ServiceException;
-
+import org.xml.sax.SAXException;
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * @author stm
@@ -44,13 +45,13 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 	}
 
     
-    public float storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException 
+    public float storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
 	{
 		return this.storeCargo( cc );
 	}
 
 
-    private float storeCargo( CargoContainer cc ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException
+    private float storeCargo( CargoContainer cc ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException, ParserConfigurationException, SAXException
     {
     	this.cc = cc;
     	

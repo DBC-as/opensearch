@@ -5,8 +5,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 
 public interface IRepositoryRetrieve extends IPluggable
-{
-    void init( String fedoraUrl );
-    
-    CargoContainer getCargoContainer();
+{    
+    CargoContainer getCargoContainer( String fedoraPID ) throws Exception;
 }

@@ -31,19 +31,19 @@ public class AnnotateTest {
      */
     @Test public void testatest() throws Exception {
 
-//         File f = new File("/home/shm/amnesty.xml");
-//         FileInputStream fis = FileHandler.readFile( f.getPath() ); 
-//         URI uri = new URI( f.getPath() );
-//         byte[] fb = new byte[(int)f.length()];
-//         fis.read( fb );
+//          File f = new File("/home/shm/amnesty.xml");
+//          FileInputStream fis = FileHandler.readFile( f.getPath() ); 
+//          URI uri = new URI( f.getPath() );
+//          byte[] fb = new byte[(int)f.length()];
+//          fis.read( fb );
 
-//         DatadockJob ddj = new DatadockJob( uri, "dbc", "faktalink", "dbc:100" );
-//         CargoContainer cc = new CargoContainer();
-//         cc.add( DataStreamNames.OriginalData, "faktalink", "dbc", "da", "text/xml", fb );
+//          DatadockJob ddj = new DatadockJob( uri, "dbc", "faktalink", "dbc:100" );
+//          CargoContainer cc = new CargoContainer();
+//          cc.add( DataStreamNames.OriginalData, "faktalink", "dbc", "da", "text/xml", fb );
 
-//         System.out.println("Annotate Test !!!");
-//         DocbookAnnotate dba = new DocbookAnnotate();
-//         dba.init(cc);
-//         CargoContainer cc2 = dba.getCargoContainer();
+//          System.out.println("Annotate Test !!!");
+//          DocbookAnnotate dba = new DocbookAnnotate();
+
+//          CargoContainer cc2 = dba.getCargoContainer( cc );
     }
 }

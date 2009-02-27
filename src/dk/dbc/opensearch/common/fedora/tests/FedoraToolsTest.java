@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.SAXException;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class FedoraToolsTest
 {
@@ -79,7 +80,7 @@ public class FedoraToolsTest
     }
 
     @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-    @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException
+        @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException
     {
     	cargo = constructCargo( "æøå" );
         

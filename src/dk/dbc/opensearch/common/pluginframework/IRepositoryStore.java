@@ -14,7 +14,8 @@ import javax.xml.rpc.ServiceException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * @author mro
@@ -22,5 +23,5 @@ import org.exolab.castor.xml.ValidationException;
  */
 public interface IRepositoryStore extends IPluggable 
 {
-    float storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException;
+    float storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException;
 }
