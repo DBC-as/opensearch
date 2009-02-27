@@ -73,6 +73,7 @@ public class IndexerXSEM implements IIndexer
 		        // this log line is _very_ verbose, but useful in a tight situation
 		        // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 		
+        		/** \todo: Dom4jAliasedXmlObject constructor might throw some unknown exception */
 		        AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( co.getFormat(), doc.getRootElement() );
 		
 		        log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
