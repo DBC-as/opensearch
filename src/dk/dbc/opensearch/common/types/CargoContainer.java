@@ -69,14 +69,12 @@ public class CargoContainer
     public CargoObject getFirstCargoObject( DataStreamNames dsn)
     {
         CargoObject rco = null;
-        for( CargoObject co : data ){
-            if( co.getDataStreamName() == dsn ){
-                rco = co;
-        }
-    }
+        for( CargoObject co : data )
+            if( co.getDataStreamName() == dsn )
+                rco = co;        
+    
         return rco;
     }
-
         
     
     /**

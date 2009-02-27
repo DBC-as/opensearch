@@ -47,15 +47,19 @@ public class CargoObject
         pair = new Pair<CargoObjectInfo, byte[] >( coi, data );
     }
 
-    public DataStreamNames getDataStreamName(){
+    
+    public DataStreamNames getDataStreamName()
+    {
         return this.pair.getFirst().getDataStreamName();
     }
+    
 
     /*  public String getDataStreamName( String name )
         {
         return this.pair.getFirst().getDataStreamNameFrom( name );
         }
     */
+    
 
     public boolean checkLanguage( String language )
     {

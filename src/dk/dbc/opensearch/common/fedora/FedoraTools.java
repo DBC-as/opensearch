@@ -136,13 +136,14 @@ public class FedoraTools {
 
 		/** \todo: We always use Managed as control group... This should change/be refactored */
 		DatastreamTypeCONTROL_GROUPType controlGroup = null;
-                controlGroup = DatastreamTypeCONTROL_GROUPType.M;
+        controlGroup = DatastreamTypeCONTROL_GROUPType.M;
 
 		// datastreamElement
 		Datastream dataStreamElement = new Datastream();
 
 		/** \todo: CONTROL_GROUP should be configurable in some way */
 		dataStreamElement.setCONTROL_GROUP( controlGroup );
+		
 
 		//dataStreamElement.setID( co.getFormat() );
 		//dataStreamElement.setID( co.getDataStreamName( "test" ) );
