@@ -7,6 +7,7 @@ package dk.dbc.opensearch.common.helpers.tests;
 import dk.dbc.opensearch.common.helpers.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.components.datadock.DatadockMain;
+import dk.dbc.opensearch.components.pti.PTIMain;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -42,9 +43,6 @@ public class JobMapCreatorTest {
     static File mockFile = createMock( File.class );
     static Document mockDocument = createMock( Document.class );
     static DocumentBuilder mockDocumentBuilder = createMock( DocumentBuilder.class );
-
-
-
 
     FileHandler mockFH;
     Element mockElement;
@@ -112,8 +110,15 @@ public class JobMapCreatorTest {
     /**
      * Testing the happy path
      */
+    @Test public void testConstructor() throws Exception{
+        jmc = new JobMapCreator();
+    }
+    /**
+     * Testing the method that builds the jobmap
+     * happy path.
+     */
     @Ignore
-    @Test public void testConstructor() throws Exception {
+    @Test public void testGetMapMethod() throws Exception {
         /**
          * Setup
          */
@@ -151,6 +156,7 @@ public class JobMapCreatorTest {
          * Do stuff
          */
         jmc = new JobMapCreator();
+        jmc.getMap( DatadockMain.class );
 
         /**
          * Verify

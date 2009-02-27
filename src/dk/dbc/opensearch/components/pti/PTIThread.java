@@ -14,6 +14,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.plugins.Retrieve;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -27,6 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassException;
@@ -51,6 +53,8 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.commons.configuration.ConfigurationException;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 /**
  * \ingroup pti
  * \brief the PTIThread class is responsible for getting a dataobject from the
@@ -112,7 +116,7 @@ public class PTIThread implements Callable<Long>{
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException {
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException  {
         log.debug( String.format( "CALL CALLED handle: '%s'", fedoraHandle ) );
 
         long result = 1l;
@@ -126,6 +130,8 @@ public class PTIThread implements Callable<Long>{
 
         //10: Retrieve digitalobject from FedoraBase
         //20: Create the CargoContainer
+        Retrieve retriever = new Retrieve();
+        CargoContainer cc = retriever.getCargoContainer( fedoraHandle );
         //30: Get the submitter and format from the CargoContainer
         //40: get the job from the jobMap
         list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
@@ -140,7 +146,6 @@ public class PTIThread implements Callable<Long>{
             }
         else
             {
-                CargoContainer cc = null;
 
                 for( String task : list)
                     {
