@@ -21,9 +21,15 @@
     </antcall>
   </target>
 	
-  <target name="dist" description="Generate distribution jar">
+  <target name="dist_datadock" description="Generate distribution jar">
 	<antcall target="${ant.project.name}">
-	  <param name="dependency.target" value="toplevel.dist" />
+	  <param name="dependency.target" value="toplevel.dist_datadock" />
+    </antcall>
+  </target>
+	
+  <target name="dist_pti" description="Generate distribution jar">
+    <antcall target="${ant.project.name}">
+      <param name="dependency.target" value="toplevel.dist_pti" />
     </antcall>
   </target>
 		  

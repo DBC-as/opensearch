@@ -2,12 +2,17 @@
 <project name="build-common" >
   <import file="dependencies.xml"/>
 
+  <tstamp/>
+  <property name="now" value="${DSTAMP}-${TSTAMP}" />
+
   <property name="dist.jar"         value="OpenSearch" />
 	
   <property name="base.dir"         value="${dependencies.basedir}"/>
 
   <property name="lib.dir"          value="${base.dir}/lib"/>
   <property name="src.dir"          value="${base.dir}/src"/>
+  <property name="bin.dir"          value="${base.dir}/bin"/>
+  <property name="admin.dir"        value="${base.dir}/admin"/>
   <property name="info.dir"         value="${src.dir}/info" />
   <property name="build.dir"        value="${base.dir}/build"/>
   <property name="dist.dir"         value="${base.dir}/dist"/>
@@ -85,16 +90,59 @@
           depends="toplevel.clean">
   </target>
 	
-  <target name="toplevel.dist" depends="toplevel.compile"
+  <target name="toplevel.dist_datadock" depends="toplevel.compile"
           description="generate the distribution" >
+  	<echo>
+  	  Building jar file  	${base.dir}  
+  	</echo>
     <!-- Create the distribution directory -->
+  	<mkdir dir="${dist.dir}/lib"/>
+
+    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
+    <jar destfile="${dist.dir}/lib/${dist.jar}_DATADOCK_${now}.jar" 
+    	 basedir="${base.dir}" 
+    	 includes="build/**, lib/**, config/**"
+         excludes="bin, admin" >
+  	
+        <manifest>    
+          <attribute name="Built-By" value="DBC"/>
+          <attribute name="Implementation-Vendor" value="DBC A/S"/>
+          <attribute name="Implementation-Title" value="Opensearch"/>
+          <attribute name="Implementation-Version" value="0.3"/>
+          <!--section name="common/class1.class">
+            <attribute name="Sealed" value="false"/>
+          </section-->
+          <attribute name="Main-Class" value="dk.dbc.opensearch.datadock.DatadockMain" />
+        </manifest>
+    </jar>
+  </target>
+	
+  <target name="toplevel.dist_pti" depends="toplevel.compile"
+	      description="generate the distribution" >
+    <echo>
+	  Building jar file for PTI  
+	</echo>
+	    
+  	<!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}/lib"/>
 
     <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar jarfile="${dist.dir}/lib/${dist.jar}.jar" basedir="${classes.dir}"/>
-    <manifest>
-      <attribute name="${dist.jar}" value="dk.dbc.opensearch.datadock.DatadockMain" />
-    </manifest>
+    <jar destfile="${dist.dir}/lib/${dist.jar}_PTI_${now}.jar" 
+         basedir="${base.dir}" 
+         includes="build/**, lib/**, config/**"
+         excludes="bin, admin" >
+	    
+        <manifest>    
+          <attribute name="Built-By" value="DBC"/>
+          <attribute name="Implementation-Vendor" value="DBC A/S"/>
+          <attribute name="Implementation-Title" value="Opensearch"/>
+          <attribute name="Implementation-Version" value="0.3"/>
+          <!--section name="common/class1.class">
+            <attribute name="Sealed" value="false"/>
+          </section-->
+          <attribute name="Main-Class" value="dk.dbc.opensearch.pti.PTIMain" />
+        </manifest>
+    </jar>
   </target>
 
   <target name="toplevel.compile" description="Compiles source code" > 
