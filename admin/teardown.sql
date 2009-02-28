@@ -1,6 +1,6 @@
-DROP FUNCTION processqueue_pop_post ();
-DROP SEQUENCE processqueue_sequence;
+-- drops the tables functions and sequences
 
-DROP TABLE processqueue;
-DROP TABLE statistics;
+DROP SEQUENCE processqueue_sequence;
+DROP TABLE processqueue CASCADE;
+DROP TABLE statistics CASCADE;
 

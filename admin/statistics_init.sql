@@ -1,3 +1,5 @@
+-- creates the statistics table
+
 CREATE TABLE statistics(  
   processtime INTEGER,
   dataamount INTEGER,
