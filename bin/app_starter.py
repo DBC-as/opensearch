@@ -15,6 +15,9 @@ def main( app, action ):
     log.getLogger( '' )
     
 
+    #generate config file for the system
+    generate_config()
+
     pid_filename = ""
     pid_location = os.getcwd()
     process      = ""
@@ -120,6 +123,15 @@ def get_pid( pid_file ):
     else:
         return ""
 
+def generate_config():
+    """Generates a new config file in the config folder using
+    tools/build_config.py
+    """
+    
+    runproc = subprocess.Popen( [ 'python ../tools/build_config.py ../' ], shell=True, stdout=subprocess.PIPE ) 
+    res = runproc.communicate()[ 0 ].strip( '\n' )
+    print res
+    
 
 if __name__ == '__main__':
     from optparse import OptionParser

@@ -43,7 +43,7 @@ public class FileSystemConfig extends Config
 	{
 		FileSystemConfig fc = new FileSystemConfig();
 		String ret = config.getString( "filesystem.plugins" );
-		ret = fc.getTrunkPath() + ret;		
+		//ret = fc.getTrunkPath() + ret;		
 		return sanitize( ret );
 	}
 	
@@ -62,7 +62,7 @@ public class FileSystemConfig extends Config
 	{
 		FileSystemConfig fc = new FileSystemConfig();
 		String ret = config.getString( "filesystem.datadock" );
-		ret = fc.getTrunkPath() + ret;
+		//ret = fc.getTrunkPath() + ret;
 		return ret;
 	}
 	
@@ -83,7 +83,7 @@ public class FileSystemConfig extends Config
 	{
 		FileSystemConfig fc = new FileSystemConfig();
 		String ret = config.getString( "filesystem.pti" );
-		ret = fc.getTrunkPath() + ret;
+		//ret = fc.getTrunkPath() + ret;
 		return ret;
 	}
 	
