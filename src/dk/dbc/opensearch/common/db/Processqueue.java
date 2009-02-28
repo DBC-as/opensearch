@@ -54,17 +54,15 @@ public class Processqueue {
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
     public void push( String fedorahandle ) throws ClassNotFoundException, SQLException {
-
-        String itemID = "noVal";
-
-        log.debug( String.format( "Processqueue.push( '%s', '%s' ) called", fedorahandle, itemID ) );
+        
+        log.debug( String.format( "Processqueue.push( '%s' ) called", fedorahandle ) );
         Connection con = DBConnection.getConnection();
 
-        log.debug( String.format( "push fedorahandle=%s, itemID=%s to queue", fedorahandle, itemID ) );
+        log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
         Statement stmt = null;
         stmt = con.createStatement();
-        String sql_query = (  String.format( "INSERT INTO processqueue( queueid, fedorahandle, itemID, processing ) "+
-                                             "VALUES( nextval( 'processqueue_sequence' ) ,'%s','%s','N' )", fedorahandle, itemID ) );
+        String sql_query = (  String.format( "INSERT INTO processqueue( queueid, fedorahandle, processing ) "+
+                                             "VALUES( nextval( 'processqueue_sequence' ) ,'%s','N' )", fedorahandle ) );
         log.debug( String.format( "query database with %s ", sql_query ) );
 
         try{
@@ -76,53 +74,7 @@ public class Processqueue {
             stmt.close();
             con.close();
         }
-        log.info( String.format( "fedorahandle=%s, itemID=%s pushed to queue", fedorahandle, itemID ) );
-    }
-
-    /**
-     * pops the top-most element from the Processqueue, returning the fedorahandle as a String
-     *
-     * @returns A triple cointaning the fedorahandle (a String
-     * containing the unique handle), the itemID (a String identifing
-     * the databoject, used for indexing),and queueid a number
-     * identifying the fedorahandle in the queue. Used later for
-     * commit or rollback.  for the resource in the object repository
-     *
-     * @throws ClassNotFoundException if the databasedriver is not found
-     * @throws SQLException if there is something wrong the database connection or the sqlquery
-     * @throws NoSuchElementException if there is no element on the queue to pop
-     */
-    public Triple<String, Integer, String>  pop() throws ClassNotFoundException, SQLException, NoSuchElementException {
-        log.debug( "Entering Processqueue.pop()" );
-        
-        Connection con = DBConnection.getConnection();
-        Triple returntriple = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        try{
-
-            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-            rs = stmt.executeQuery("SELECT * from processqueue_pop_post()");
-            boolean success = rs.next();
-            if(! success || rs.getString( "fedorahandle" ) == null ){
-                throw new NoSuchElementException("No elements on processqueue");
-            }
-
-            String fedorahandle = rs.getString( "fedorahandle" );
-            String itemID = rs.getString( "itemID" );
-            int queueID = rs.getInt( "queueID" );
-            returntriple = Tuple.from( fedorahandle, queueID, itemID );
-            log.debug( String.format( "Retrieved fedorahandle='%s', queueID='%s', itemID='%s'", fedorahandle, queueID, itemID ) );
-            con.commit();            
-        }
-        finally{
-            // Close database connection
-            rs.close();
-            stmt.close();
-            con.close();
-        }
-        return returntriple;
+        log.info( String.format( "fedorahandle=%s pushed to queue", fedorahandle ) );
     }
 
     public Vector<Pair<String, Integer>> popAll() throws SQLException{
@@ -140,7 +92,6 @@ public class Processqueue {
             
             while( rs.next() ){
                 String fedoraHandle = rs.getString( "fedorahandle" );
-                String itemID = rs.getString( "itemID" );
                 int queueID = rs.getInt( "queueID" );
 
                 log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );

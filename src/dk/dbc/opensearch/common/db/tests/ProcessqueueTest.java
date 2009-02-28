@@ -33,82 +33,82 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter {
         processqueue = new Processqueue();
     }
 
-    public  void testPopFromEmptyProcessqueue() throws ConfigurationException, ClassNotFoundException, SQLException {
+//     public  void testPopFromEmptyProcessqueue() throws ConfigurationException, ClassNotFoundException, SQLException {
         
-        String sql_query = "SELECT * from processqueue_pop_post()";
+//         String sql_query = "SELECT * from processqueue_pop_post()";
  
-        statementHandler.prepareGlobalResultSet( result );
+//         statementHandler.prepareGlobalResultSet( result );
 
-        try{
-            Triple<String, Integer, String> triple = processqueue.pop();
-            fail("Should have gotten NoSuchElementException - returned zero rows removed from processqueue table");
-        }
-        catch(NoSuchElementException nse){
-            // Expected - intentional
-        }
-        verifySQLStatementExecuted( sql_query );
-        verifyNotCommitted();
-        verifyAllStatementsClosed();
-        verifyConnectionClosed();
-    }
+//         try{
+//             Triple<String, Integer, String> triple = processqueue.pop();
+//             fail("Should have gotten NoSuchElementException - returned zero rows removed from processqueue table");
+//         }
+//         catch(NoSuchElementException nse){
+//             // Expected - intentional
+//         }
+//         verifySQLStatementExecuted( sql_query );
+//         verifyNotCommitted();
+//         verifyAllStatementsClosed();
+//         verifyConnectionClosed();
+//     }
 
-    public void testPopFromProcessqueueWithNoHandle() throws ConfigurationException, ClassNotFoundException, SQLException {
+//     public void testPopFromProcessqueueWithNoHandle() throws ConfigurationException, ClassNotFoundException, SQLException {
         
-        String fedorahandle = null;
-        int queueid = 1;
-        String itemid = "item_1";
-        String sql_query = "SELECT * from processqueue_pop_post()";
+//         String fedorahandle = null;
+//         int queueid = 1;
+//         String itemid = "item_1";
+//         String sql_query = "SELECT * from processqueue_pop_post()";
 
-        result.addColumn("fedorahandle", new String[] { fedorahandle });
-        result.addColumn("itemID", new String[] { itemid });
-        result.addColumn("queueID", new Integer[] { queueid });
-        statementHandler.prepareGlobalResultSet( result );
+//         result.addColumn("fedorahandle", new String[] { fedorahandle });
+//         result.addColumn("itemID", new String[] { itemid });
+//         result.addColumn("queueID", new Integer[] { queueid });
+//         statementHandler.prepareGlobalResultSet( result );
 
-        Triple<String, Integer, String> triple = null;
+//         Triple<String, Integer, String> triple = null;
        
-        try{
-            triple = processqueue.pop();
-            fail("Should have gotten NoSuchElementException - returned zero rows removed from processqueue table");
-        }
-        catch(NoSuchElementException nse){
-            // Expected - intentional
-        }
+//         try{
+//             triple = processqueue.pop();
+//             fail("Should have gotten NoSuchElementException - returned zero rows removed from processqueue table");
+//         }
+//         catch(NoSuchElementException nse){
+//             // Expected - intentional
+//         }
         
-        verifySQLStatementExecuted( sql_query );
-        verifyNotCommitted();
-        //assertEquals(fedorahandle , Tuple.get1(triple) );
-        //assertEquals(queueid , (int )Tuple.get2(triple) );
-        //assertEquals(itemid , Tuple.get3(triple) );
+//         verifySQLStatementExecuted( sql_query );
+//         verifyNotCommitted();
+//         //assertEquals(fedorahandle , Tuple.get1(triple) );
+//         //assertEquals(queueid , (int )Tuple.get2(triple) );
+//         //assertEquals(itemid , Tuple.get3(triple) );
         
-        verifyAllStatementsClosed();
-    }
+//         verifyAllStatementsClosed();
+//     }
 
 
 
 
-    public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {
+//     public void testPopFromProcessqueueWithActiveElements() throws ConfigurationException, ClassNotFoundException, SQLException {
         
-        String fedorahandle = "test_handle_1";
-        int queueid = 1;
-        String itemid = "item_1";
-        String sql_query = "SELECT * from processqueue_pop_post()";
+//         String fedorahandle = "test_handle_1";
+//         int queueid = 1;
+//         String itemid = "item_1";
+//         String sql_query = "SELECT * from processqueue_pop_post()";
 
-        result.addColumn("fedorahandle", new String[] { fedorahandle });
-        result.addColumn("itemID", new String[] { itemid });
-        result.addColumn("queueID", new Integer[] { queueid });
-        statementHandler.prepareGlobalResultSet( result );
+//         result.addColumn("fedorahandle", new String[] { fedorahandle });
+//         result.addColumn("itemID", new String[] { itemid });
+//         result.addColumn("queueID", new Integer[] { queueid });
+//         statementHandler.prepareGlobalResultSet( result );
 
-        Triple<String, Integer, String> triple = null;
-        triple = processqueue.pop();
+//         Triple<String, Integer, String> triple = null;
+//         triple = processqueue.pop();
         
-        verifySQLStatementExecuted( sql_query );
-        verifyCommitted();
-        assertEquals(fedorahandle , Tuple.get1(triple) );
-        assertEquals(queueid , (int )Tuple.get2(triple) );
-        assertEquals(itemid , Tuple.get3(triple) );
+//         verifySQLStatementExecuted( sql_query );
+//         verifyCommitted();
+//         assertEquals(fedorahandle , Tuple.get1(triple) );
+//         assertEquals(queueid , (int )Tuple.get2(triple) );
+//         assertEquals(itemid , Tuple.get3(triple) );
         
-        verifyAllStatementsClosed();
-    }
+//         verifyAllStatementsClosed();
+//     }
     // @Ignore
 //     public void testPushToProcessqueue() throws ConfigurationException, ClassNotFoundException, SQLException {
         
