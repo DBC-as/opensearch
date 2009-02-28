@@ -80,7 +80,7 @@
     </exec>
 
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
-      <arg line="tools/build_config.py > config/config.xml"/>
+      <arg line="tools/build_config.py ${base.dir} "/>
     </exec>
 
   </target>
@@ -182,7 +182,7 @@
 	
   <target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
-      <arg line="tools/build_config.py"/>
+      <arg line="tools/build_config.py ${base.dir}"/>
     </exec>
   </target>
 	
