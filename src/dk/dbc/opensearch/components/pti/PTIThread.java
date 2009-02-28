@@ -6,6 +6,7 @@
 package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
@@ -18,9 +19,12 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.plugins.Retrieve;
+import dk.dbc.opensearch.xsd.DigitalObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,15 +60,20 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.Field;
 import org.apache.commons.configuration.ConfigurationException;
 
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 /**
  * \ingroup pti
  * \brief the PTIThread class is responsible for getting a dataobject from the
  * fedora repository, and index it with compass afterwards. If this
  * was succesfull the estimate values in the statistics db will be updated
  */
-public class PTIThread implements Callable<Long>{
+public class PTIThread extends FedoraHandle implements Callable<Long>{
 
     Logger log = Logger.getLogger("PTIThread");
 
@@ -73,30 +82,31 @@ public class PTIThread implements Callable<Long>{
     private CompassSession session;
     private CargoContainer cc;
     private Date finishTime;
-    private String fedoraHandle;
+    private String fedoraPid;
     // private String datastreamItemID;
     private Estimate estimate;
     private ArrayList< String > list;
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
-    private String submitter;
-    private String format;
+
 
     /**
      * \brief Constructs the PTI instance with the given parameters
      *
-     * @param fedoraHandle the handle identifying the data object
+     * @param fedoraPid the handle identifying the data object
      * @param session the compass session this pti should communicate with
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraHandle, CompassSession session, Estimate estimate, HashMap< Pair< String, String >, ArrayList< String > > jobMap )
+    public PTIThread( String fedoraPid, CompassSession session, Estimate estimate, HashMap< Pair< String, String >, ArrayList< String > > jobMap ) throws ServiceException, MalformedURLException, IOException
         {
-            log.debug( String.format( "constructor(session, fedoraHandle=%s )", fedoraHandle ) );
+            super();
+
+            log.debug( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
 
             this.jobMap = jobMap;
             this.estimate = estimate;
             this.session = session;
-            this.fedoraHandle = fedoraHandle;
+            this.fedoraPid = fedoraPid;
 
             log.debug( "constructor done" );
         }
@@ -119,29 +129,42 @@ public class PTIThread implements Callable<Long>{
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException  {
-        log.debug( String.format( "CALL CALLED handle: '%s'", fedoraHandle ) );
+    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException, SAXException  
+{
+        log.debug( String.format( "CALL CALLED handle: '%s'", fedoraPid ) );
 
-        long result = 1l;
-        /**
+        //Retrieve digitalobject from FedoraBase
+        Unmarshaller unmarshaller = new Unmarshaller();
+
+        byte[] foxml = super.fem.export( fedoraPid, "info:fedora/fedora-system:FOXML-1.1", "archive" );
+        
+        ByteArrayInputStream bis = new ByteArrayInputStream( foxml );
+        InputSource iSource = new InputSource( bis );
+
+        DigitalObject dot = (DigitalObject) unmarshaller.unmarshal( iSource );
+        
+        //Create the CargoContainer
+
+        CargoContainer cc = new CargoContainer( dot );
+
+        // Get the submitter and format from the CargoContainer
+
+        CargoObject co = cc.getFirstCargoObject( DataStreamNames.OriginalData );
+
+        String submitter =  co.getSubmitter();
+        String format = co.getFormat();
+        
+        long result = 0l;
+        
+/**
          * We cannot have plugins handle the retrieving of the digital object,
          * since we dont know the format and submitter until we can access it
          * and therefore must have retreived it
          * \Todo: Are all digitalobject retrieved and made into a CorgaContainer in
          * the same way?
          */
-
-        //10: Retrieve digitalobject from FedoraBase
-        //20: Create the CargoContainer
-        Retrieve retriever = new Retrieve();
-        CargoContainer cc = retriever.getCargoContainer( fedoraHandle );
-        //30: Get the submitter and format from the CargoContainer
-        CargoObject co = cc.getFirstCargoObject( DataStreamNames.OriginalData );
-
-        submitter =  co.getSubmitter();
-        format = co.getFormat();
         
-        //40: get the job from the jobMap
+        // Get the job from the jobMap
         list = jobMap.get( new Pair< String, String >( submitter, format ) );
         //50: validate that there exists plugins for all the tasks
         PluginResolver pluginResolver = new PluginResolver();

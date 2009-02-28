@@ -21,6 +21,8 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
@@ -29,11 +31,13 @@ import java.util.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.xml.rpc.ServiceException;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
-import java.net.URL;
+
 
 
 /**
@@ -90,7 +94,7 @@ public class PTIPool
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      */
-    public void submit( String fedoraHandle, Integer queueID ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException
+    public void submit( String fedoraHandle, Integer queueID ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, ServiceException, MalformedURLException, IOException
     {
     	log.debug( String.format( "submit( fedoraHandle='%s', queueID='%s' )", fedoraHandle, queueID ) );
     
@@ -101,7 +105,7 @@ public class PTIPool
     }
     
     
-    public  FutureTask getTask( String fedoraHandle ) throws ConfigurationException , ClassNotFoundException
+    public  FutureTask getTask( String fedoraHandle ) throws ConfigurationException , ClassNotFoundException, ServiceException, MalformedURLException, IOException
     {
         log.debug( "GetTask called" );        
         CompassSession session = null;

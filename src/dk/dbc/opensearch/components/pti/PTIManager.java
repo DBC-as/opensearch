@@ -23,7 +23,8 @@ import org.apache.log4j.Logger;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import java.net.URL;
-
+import javax.xml.rpc.ServiceException;
+import java.net.MalformedURLException;
 
 /**
  * \brief the PTIManager manages the startup, running and
@@ -68,7 +69,7 @@ public class PTIManager
      * comenced succesfully), the corresponding element in the
      * processqueue are commited.
      */
-    public void update() throws SQLException, ConfigurationException, ClassNotFoundException, InterruptedException
+    public void update() throws SQLException, ConfigurationException, ClassNotFoundException, InterruptedException, ServiceException, MalformedURLException, IOException
     {
         log.debug( "update() called" );
 
