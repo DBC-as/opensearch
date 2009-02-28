@@ -49,7 +49,8 @@ public class PluginResolver implements IPluginResolver
             
             pluginClassLoader = new PluginClassLoader();
             PLoader = new PluginLoader( pluginClassLoader );
-            path = FileSystemConfig.getFileSystemTrunkPath() + "src/dk/dbc/opensearch/plugins";
+            path = FileSystemConfig.getFileSystemPluginsPath();
+            //            path = FileSystemConfig.getFileSystemTrunkPath() + "src/dk/dbc/opensearch/plugins";
             
             PFinder = new PluginFinder( docBuilder, path );
             
