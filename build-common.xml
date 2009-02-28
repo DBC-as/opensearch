@@ -32,8 +32,8 @@
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
-  <property name="fedora_apim.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-M"/>
-  <property name="fedora_apia.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-A"/>
+  <!--property name="fedora_apim.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-M"/-->
+  <!--property name="fedora_apia.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-A"/-->
 
   
   <path id="classpath">
@@ -79,8 +79,8 @@
       <arg line="create_test_suite_files.py clean"/>
     </exec>
 
-    <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
-      <arg line="tools/build_config.py ${base.dir} "/>
+    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
+      <arg line="build_config.py ${base.dir}"/>
     </exec>
 
   </target>
@@ -287,7 +287,7 @@
     </javac>
   </target>
 
-  <target name="toplevel.fedora_soap" description="Generates Fedora SOAP stubs">
+  <!-- target name="toplevel.fedora_soap" description="Generates Fedora SOAP stubs">
     <taskdef resource="axis-tasks.properties"
              classpathref="classpath" />
     <axis-wsdl2java output="${src.dir}"
@@ -313,7 +313,7 @@
     <javac srcdir="${info.dir}" destdir="${classes.dir}" excludes="**/tests/*">
       <classpath refid="classpath" />
     </javac>
-  </target>
+  </target -->
 
 
   <target name="toplevel.test-target">
