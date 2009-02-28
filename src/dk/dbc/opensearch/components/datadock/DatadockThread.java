@@ -16,6 +16,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
 import javax.xml.xpath.XPathExpressionException;
@@ -36,7 +38,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.SAXException;
 
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.FedoraTools;
 
+import java.sql.SQLException;
 /**
  * \ingroup datadock
  * \brief The public interface for the OpenSearch DataDockService
@@ -59,7 +64,7 @@ import org.xml.sax.SAXException;
  * process of fedora storing, data processing, indexing and
  * search-capabilities
  */
-public class DatadockThread implements Callable<Float>
+public class DatadockThread extends FedoraHandle implements Callable<Float>
 {
     private Logger log = Logger.getLogger( DatadockThread.class );
 
@@ -67,7 +72,7 @@ public class DatadockThread implements Callable<Float>
     private Processqueue queue;
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
-    private float result;
+    private String result;
     private Estimate estimate;
     private DatadockJob datadockJob;
     private String submitter;
@@ -96,8 +101,9 @@ public class DatadockThread implements Callable<Float>
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
+        super();
     	log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
     	this.jobMap = jobMap;
@@ -140,7 +146,7 @@ public class DatadockThread implements Callable<Float>
      * @throws IOException
      * @throws ParseException
      */
-    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException
+    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException
     {
     	// Must be implemented due to class implementing Callable< Float > interface.
     	// Method is to be extended when we connect to 'Posthuset'
@@ -170,14 +176,36 @@ public class DatadockThread implements Callable<Float>
     				case ANNOTATE:
     					IAnnotate annotatePlugin = (IAnnotate)plugin;
     					cc = annotatePlugin.getCargoContainer( cc );
-    					break;
-    				case STORE:
-    					IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-    					result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
+    					//break;
+                                        //case STORE:
+    					//IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+    					//result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
     			}
     		}
     	}
         
-    	return result;
+        // obtain mimetype and length from CargoContainer
+        String mimeType = null;
+        long length = 0;
+        for( CargoObject co : cc.getData() ){
+            if( co.getDataStreamName() == DataStreamNames.OriginalData ){
+                mimeType = co.getMimeType();
+            }
+            length += co.getContentLength();
+        }
+
+        // Store the CargoContainer in the fedora repository
+        byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
+        String logm = String.format( "%s inserted", datadockJob.getFormat() );
+
+        log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
+        String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
+
+        log.info( String.format( "Submitted data, returning pid %s", pid ) );
+        
+        // push to processqueue job to processqueue and get estimate
+        queue.push( pid );
+        return estimate.getEstimate( mimeType, length );
     }
+
 }

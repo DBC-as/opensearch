@@ -45,9 +45,10 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 	}
 
     
-    public float storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
+    public String storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
 	{
-		return this.storeCargo( cc );
+            return "";
+            //return this.storeCargo( cc );
 	}
 
 

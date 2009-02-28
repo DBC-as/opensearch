@@ -109,7 +109,7 @@ public class DatadockPool
     }
 
     
-    public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, jobMap ) );
     }

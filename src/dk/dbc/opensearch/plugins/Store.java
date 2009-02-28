@@ -52,18 +52,18 @@ public class Store extends FedoraHandle implements IRepositoryStore
      * @throws IOException
      * @throws ParseException
      */
-    public float storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
+    public String storeCargoContainer( CargoContainer cargo, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
     {
         byte[] foxml = FedoraTools.constructFoxml( cargo, job.getPID(), job.getFormat() );
         String logm = String.format( "%s inserted", job.getFormat() );
 
         log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
-        String fullPid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
+        String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
 
-        String pid = fullPid.substring( ( fullPid.indexOf( ":" ) ) +1 );
-        log.info( String.format( "Submitted data, returning pid %s", fullPid ) );
-
-        return Float.parseFloat( pid );
+        //String pid = fullPid.substring( ( fullPid.indexOf( ":" ) ) +1 );
+        log.info( String.format( "Submitted data, returning pid %s", pid ) );
+        return pid;
+        //return Float.parseFloat( pid );
     }
 
     /**

@@ -53,7 +53,9 @@ public class Processqueue {
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public void push( String fedorahandle, String itemID ) throws ClassNotFoundException, SQLException {
+    public void push( String fedorahandle ) throws ClassNotFoundException, SQLException {
+
+        String itemID = "noVal";
 
         log.debug( String.format( "Processqueue.push( '%s', '%s' ) called", fedorahandle, itemID ) );
         Connection con = DBConnection.getConnection();

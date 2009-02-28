@@ -186,4 +186,15 @@ public class CargoObject
     {
         return pair.getSecond();
     }
+
+    
+    /**
+     * Returns the length of the underlying byte[]
+     * 
+     * @return length of the byte[]
+     */
+    public int getByteArrayLength(){
+        return pair.getSecond().length;
+    }
+
 }
