@@ -12,10 +12,13 @@ import java.io.File;
 /**
  * 
  */
-public class FileHandlerStaticCall {
+public class FileHandlerStaticCall 
+{    
+    public FileHandlerStaticCall() {}
     
-    public FileHandlerStaticCall(){}
-    public String testStatic(){
+    
+    public String testStatic()
+    {    	
         File f = FileHandler.getFile( "TEST" );
         return f.getAbsolutePath();
     }

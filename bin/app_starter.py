@@ -27,12 +27,13 @@ def main( app, action ):
     
     if app == "pti":
         pid_filename = "ptiDaemon.pid"
-        q_name       = "dk.dbc.opensearch.components.pti.PTIMain"
-        
+        q_name       = "../dist/OpenSearch_PTI.jar"
+        #q_name       = "dk.dbc.opensearch.components.pti.PTIMain"
+       
     elif app == "datadock":
-        pid_filename = 'datadockDaemon.pid'
-        q_name       = "dk.dbc.opensearch.components.datadock.DatadockMain"
-    
+        pid_filename = "datadockDaemon.pid"
+        q_name       = "../dist/OpenSearch_DATADOCK.jar"
+
     pid_file = os.path.join( pid_location, pid_filename )
 
     if ( get_pid( pid_file ) != "" ):
@@ -81,14 +82,15 @@ def start_daemon( q_name, pid_filename ):
     runproc = subprocess.Popen( [ './run' ], shell=True, stdout=subprocess.PIPE ) 
     cp = runproc.communicate()[ 0 ].strip( '\n' )
 
-    cmd = [ 'java',
+    cmd = [ 'java ',
             '-Ddaemon.pidfile=%s'%( pid_filename ),
-            '-cp',
-            cp,
+            ' -jar',
             q_name ]
-
+            
     cmd = ' '.join( cmd )
-
+        
+    print cmd
+    
     log.debug( "Running process from cmd '%s'"%( cmd ) )
 
     proc = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE )

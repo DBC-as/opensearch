@@ -43,6 +43,10 @@
     <pathelement location="${plugins.dir}" />
   </path>
 
+  <path id="classpath4jar">
+    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
+  </path>
+
   <!-- libraries used internally by ant is named ant_*.jar -->
   <path id="antlibpath">
     <fileset dir="${lib.dir}" includes="ant_*.jar"/>
@@ -74,15 +78,12 @@
     <delete dir="${testresults.dir}"/>
     <delete dir="${xsd_gen.dir}" />
     <delete dir="${src.dir}/info"/>
+  	<delete dir="${dist.dir}" />
 
     <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
       <arg line="create_test_suite_files.py clean"/>
     </exec>
-
-    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
-      <arg line="build_config.py ${base.dir}"/>
-    </exec>
-
+    
   </target>
 
   <target name="toplevel.clean-all"
@@ -93,26 +94,26 @@
   <target name="toplevel.dist_datadock" depends="toplevel.compile"
           description="generate the distribution" >
   	<echo>
-  	  Building jar file  	${base.dir}  
+  	  Building jar file for DATADOCK
   	</echo>
     <!-- Create the distribution directory -->
-  	<mkdir dir="${dist.dir}/lib"/>
+  	<mkdir dir="${dist.dir}"/>
 
-    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/lib/${dist.jar}_DATADOCK_${now}.jar" 
-    	 basedir="${base.dir}" 
-    	 includes="build/**, lib/**, config/**"
-         excludes="bin, admin" >
-  	
-        <manifest>    
-          <attribute name="Built-By" value="DBC"/>
-          <attribute name="Implementation-Vendor" value="DBC A/S"/>
-          <attribute name="Implementation-Title" value="Opensearch"/>
-          <attribute name="Implementation-Version" value="0.3"/>
-          <!--section name="common/class1.class">
-            <attribute name="Sealed" value="false"/>
-          </section-->
-          <attribute name="Main-Class" value="dk.dbc.opensearch.datadock.DatadockMain" />
+  	<pathconvert property="jar_classpath" pathsep=" ${lib.dir}/">
+      <path refid="classpath4jar" />
+      <flattenmapper />
+    </pathconvert>
+
+  	<!-- Put everything from ${build} into the ${opensearch}.jar file -->
+    <jar destfile="${dist.dir}/${dist.jar}_DATADOCK.jar" 
+    	 basedir="${classes.dir}">
+      <manifest>    
+        <attribute name="Built-By" value="DBC"/>
+        <attribute name="Implementation-Vendor" value="DBC A/S"/>
+        <attribute name="Implementation-Title" value="Opensearch"/>
+        <attribute name="Implementation-Version" value="0.3"/>
+        <attribute name="Class-Path" value="${lib.dir}/${jar_classpath} ${config.dir}/ ${dist.dir}/" />
+        <attribute name="Main-Class" value="dk.dbc.opensearch.components.datadock.DatadockMain" />
         </manifest>
     </jar>
   </target>
@@ -127,43 +128,39 @@
     <mkdir dir="${dist.dir}/lib"/>
 
     <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/lib/${dist.jar}_PTI_${now}.jar" 
-         basedir="${base.dir}" 
-         includes="build/**, lib/**, config/**"
-         excludes="bin, admin" >
-	    
+    <jar destfile="${dist.dir}/lib/${dist.jar}_PTI.jar" 
+         basedir="${classes.dir}">	    
         <manifest>    
           <attribute name="Built-By" value="DBC"/>
           <attribute name="Implementation-Vendor" value="DBC A/S"/>
           <attribute name="Implementation-Title" value="Opensearch"/>
           <attribute name="Implementation-Version" value="0.3"/>
-          <!--section name="common/class1.class">
-            <attribute name="Sealed" value="false"/>
-          </section-->
-          <attribute name="Main-Class" value="dk.dbc.opensearch.pti.PTIMain" />
+          <attribute name="Class-Path" value="${lib.dir}/${jar_classpath} ${config.dir}/ ${dist.dir}/" />
+          <attribute name="Main-Class" value="dk.dbc.opensearch.components.pti.PTIMain" />
         </manifest>
     </jar>
   </target>
 
-  <target name="toplevel.compile" description="Compiles source code" > 
-    <!-- depends="toplevel.xsd-classes" -->
-    <mkdir dir="${classes.dir}"/>
-    <echo>
+  <target name="toplevel.compile" description="Compiles source code" >
+  	<mkdir dir="${classes.dir}"/>
+  	<echo>
       Building from ${basedir},
       building project ${ant.project.name},
       and putting it all into ${classes.dir}      
     </echo>
+  	
     <javac srcdir="${basedir}" destdir="${classes.dir}" excludes="**/tests/*" debug="on">
       <classpath refid="classpath"/>
       <!-- <compilerarg value="-Xlint"/> -->
     </javac>
-    <copy todir="${classes.dir}/dk/dbc/opensearch/plugins">
+    
+  	<copy todir="${classes.dir}/dk/dbc/opensearch/plugins">
       <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
     </copy>  	    
   </target>
 
   <target name="toplevel.compile-tests" description="builds the tests for the component" 
-          depends="py_suite, py_config, toplevel.compile"> <!-- toplevel.clean-all, -->
+          depends="py_suite, toplevel.compile"> <!-- toplevel.clean-all, -->
     <echo>
       Building from ${basedir},
       building project ${ant.project.name},
@@ -180,11 +177,11 @@
     </exec>
   </target>
 	
-  <target name="py_config">
+  <!--target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
       <arg line="tools/build_config.py ${base.dir}"/>
     </exec>
-  </target>
+  </target-->
 	
   <target name="toplevel.suite" description="Run test suite" depends="py_suite, toplevel.compile-tests">
     <echo>

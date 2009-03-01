@@ -164,6 +164,7 @@ public class PluginFinder
         	try
         	{
         		pluginName = (String)pluginNameIter.next();
+        		log.debug( "plugin: " + pluginName );
         		pluginFile = FileHandler.getFile( pluginName );
         		log.debug( String.format( "Building DOM object from file %s", pluginName ) );
         		pluginDocument = docBuilder.parse( pluginFile );

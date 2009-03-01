@@ -38,7 +38,7 @@ public class FileHandler
      */
     public static File getFile( String path )throws NullPointerException
     {
-        return new File( path );
+    	return new File( path );
     }
     
     

@@ -118,7 +118,9 @@ public class DatadockMain
      */
     static public void daemonize()
     {
-        FileHandler.getFile( System.getProperty( "daemon.pidfile" ) ).deleteOnExit();
+    	String pidFile = System.getProperty( "daemon.pidfile" );
+    	log.debug( "pidfile: " + pidFile );
+        FileHandler.getFile( pidFile ).deleteOnExit();
         System.out.close();
         System.err.close();
     }

@@ -135,19 +135,24 @@ public class JobMapCreator
         {
             String datadockJobPath = FileSystemConfig.getFileSystemDatadockPath();
             log.debug( String.format( "DatadockJob path: '%s'", datadockJobPath ) );
-            jobFile = FileHandler.getFile( datadockJobPath );
-
+            if ( datadockJobPath != null )
+            	jobFile = FileHandler.getFile( datadockJobPath );
+            else
+            	throw new IllegalArgumentException( "test" );
         }
         else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
         {
         	String ptiJobPath = FileSystemConfig.getFileSystemPtiPath();
         	log.debug( String.format( "PTIJob path: '%s'", ptiJobPath ) );
-        	jobFile = FileHandler.getFile( ptiJobPath );
+        	if ( ptiJobPath != null)
+        		jobFile = FileHandler.getFile( ptiJobPath );
+        	else
+        		throw new IllegalArgumentException( "test" );
         }
         else
         {
             log.error( "wrong class given to JobMapCreator.getMap method" );
-            throw new IllegalArgumentException( String.format( "unknown class given to the JobMapCreator.getMap method, the class given: %s", classType.getName() ) );          
+            throw new IllegalArgumentException( String.format( "Unknown class given to the JobMapCreator.getMap method, the class given: %s", classType.getName() ) );          
         }
     	
     	return jobFile;
