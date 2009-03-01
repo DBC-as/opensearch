@@ -82,9 +82,9 @@ def start_daemon( q_name, pid_filename ):
     runproc = subprocess.Popen( [ './run' ], shell=True, stdout=subprocess.PIPE ) 
     cp = runproc.communicate()[ 0 ].strip( '\n' )
 
-    cmd = [ 'java ',
+    cmd = [ 'java',
             '-Ddaemon.pidfile=%s'%( pid_filename ),
-            ' -jar',
+            '-jar',
             q_name ]
             
     cmd = ' '.join( cmd )

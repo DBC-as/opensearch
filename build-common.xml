@@ -125,10 +125,15 @@
 	</echo>
 	    
   	<!-- Create the distribution directory -->
-    <mkdir dir="${dist.dir}/lib"/>
+    <mkdir dir="${dist.dir}"/>
 
+  	<pathconvert property="jar_classpath" pathsep=" ${lib.dir}/">
+      <path refid="classpath4jar" />
+  	  <flattenmapper />
+    </pathconvert>
+  	
     <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/lib/${dist.jar}_PTI.jar" 
+    <jar destfile="${dist.dir}/${dist.jar}_PTI.jar" 
          basedir="${classes.dir}">	    
         <manifest>    
           <attribute name="Built-By" value="DBC"/>
