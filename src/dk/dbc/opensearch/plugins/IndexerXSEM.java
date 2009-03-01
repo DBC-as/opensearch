@@ -38,7 +38,7 @@ public class IndexerXSEM implements IIndexer
 {
     Logger log = Logger.getLogger( IndexerXSEM.class );
 
-    public long getProcessTime(CargoContainer cargo, CompassSession session) throws PluginException
+    public long getProcessTime(CargoContainer cargo, CompassSession session) throws PluginException, CompassException, ParserConfigurationException, SAXException, IOException
     {
 
         long processTime = 0;
