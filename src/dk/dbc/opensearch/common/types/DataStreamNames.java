@@ -6,7 +6,7 @@ public enum DataStreamNames
 {	
 	OriginalData ( "originalData", "original data" ),
             DublinCoreData( "dublinCoreData", "dublin core data" ),
-            AdminData( "adminData", "Administration" );
+            AdminData( "adminData", "Administration" );       
 	static Logger log = Logger.getLogger( DataStreamNames.class );
 	
 	String name;

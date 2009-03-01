@@ -31,6 +31,8 @@ import java.util.concurrent.Callable;
 import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -148,7 +150,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
      * @throws IOException
      * @throws ParseException
      */
-    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException
+    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException
     {
     	// Must be implemented due to class implementing Callable< Float > interface.
     	// Method is to be extended when we connect to 'Posthuset'

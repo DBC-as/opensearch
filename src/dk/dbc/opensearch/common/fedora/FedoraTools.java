@@ -1,6 +1,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +40,16 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
+
+
 import java.io.ObjectOutputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -46,17 +57,14 @@ public class FedoraTools {
 
     static Logger log = Logger.getLogger("FedoraHandler");
 
-    public static byte[] constructFoxml(CargoContainer cargo, String nextPid,
-                                        String label) throws IOException, MarshalException,
-                                                             ValidationException, ParseException, ParserConfigurationException, SAXException 
+    public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException 
 {
         Date now = new Date(System.currentTimeMillis());
         return constructFoxml(cargo, nextPid, label, now);
     }
 
     public static byte[] constructFoxml(CargoContainer cargo, String nextPid,
-                                        String label, Date now) throws IOException, MarshalException,
-                                                                       ValidationException, ParseException, ParserConfigurationException, SAXException 
+                                        String label, Date now) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException 
     {
         ObjectProperties op = new ObjectProperties();
 
@@ -126,18 +134,41 @@ public class FedoraTools {
 
         root.appendChild( (Node) streams );
 
-        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        ObjectOutputStream oStream = new ObjectOutputStream( bStream );
-        oStream.writeObject ( admStream );
-        byte[] byteAdmArray = bStream. toByteArray();
+        Source source = new DOMSource((Node) root );
+        StringWriter stringWriter = new StringWriter();
+        Result result = new StreamResult(stringWriter); 
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.transform(source, result);
+        String admStreamString = stringWriter.getBuffer().toString();
+        //System.out.println( admStreamString );
+        //ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+        //ObjectOutputStream oStream = new ObjectOutputStream( bStream );
+        //oStream.writeObject ( admStream );
+        byte[] byteAdmArray = admStreamString.getBytes();
+        // System.out.println( byteAdmArray );
+        //System.out.println( byteAdmArray.length +" " +admStreamString.length() );
         CargoObject co = new CargoObject( DataStreamNames.AdminData, "text/xml", "da", "dbc", "admin", byteAdmArray );
+        //System.out.println( co.getBytes() );
 
-        dsArray[ cargo_count ]=( constructDatastream( co, dateFormat, timeNow ) );
 
+        dsArray[ cargo_count ] = constructDatastream( co, dateFormat, timeNow );
+        //System.out.println( dsArray.length );
 
         log.debug( String.format( "length of datastream array=%s", dsArray.length ) );
 
         dot.setDatastream( dsArray );
+        /**
+         * Debug!!!!
+         */
+       //  System.out.println("dsArray size: "+ dsArray.length );
+//         CargoContainer testCC = new CargoContainer( dot );
+//         System.out.println( "testCC.getItemsCount() :"+testCC.getItemsCount() );
+ 
+        /**
+         * Debug!!!! 
+         *
+         */
 
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
@@ -160,7 +191,7 @@ public class FedoraTools {
     {
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
-
+       
         log.debug( String.format( "contructing datastream from cargoobject format=%s, submitter=%s, mimetype=%s, contentlength=%s",co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength() ) );
 
         /** \todo: VERSIONABLE should be configurable in some way */
@@ -231,4 +262,5 @@ public class FedoraTools {
 
         return dataStreamElement;
     }
+
 }

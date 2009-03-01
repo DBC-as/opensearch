@@ -14,6 +14,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
 
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 
@@ -80,7 +82,7 @@ public class FedoraToolsTest
     }
 
     @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-        @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException
+        @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException
     {
     	cargo = constructCargo( "æøå" );
         

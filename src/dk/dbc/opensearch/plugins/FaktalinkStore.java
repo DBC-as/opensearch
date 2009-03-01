@@ -22,6 +22,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
 
 /**
  * @author stm
@@ -52,7 +54,7 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 	}
 
 
-    private float storeCargo( CargoContainer cc ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException, ParserConfigurationException, SAXException
+    private float storeCargo( CargoContainer cc ) throws ServiceException, MarshalException, ValidationException, IOException, ParseException, IllegalStateException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
     	this.cc = cc;
     	

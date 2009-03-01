@@ -76,7 +76,11 @@ public class CargoContainer
         Element root = admDoc.getDocumentElement();
         Element streamsElem = (Element) root.getElementsByTagName( "streams" ).item( 0 );
         NodeList streamList = streamsElem.getElementsByTagName( "stream" );
-        
+
+        //System.out.println( "number of <stream> elements " +streamList.getLength() );
+
+        //in this loop we dont add the adminstream
+
         for( int i=0; i < streamList.getLength(); i++){
             Element streamElem = (Element) streamList.item( i );
 
@@ -93,6 +97,12 @@ public class CargoContainer
             CargoObject co = new CargoObject( datastreamName, mimetype, language, submitter, format, barray );
             data.add( co );
         }
+        /**
+         * \Todo: Do we need the adminStream at all now?
+         */
+        //creating a CargoObject out of the adminStream and adding it to the CargoContainer
+        CargoObject admco = new CargoObject( DataStreamNames.AdminData, "text/xml", "da", "dbc", "adminstream", ba );
+        data.add( admco );
     }
 
     
