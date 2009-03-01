@@ -118,8 +118,7 @@ public class DatadockMain
      */
     static public void daemonize()
     {
-    	String pidFile = System.getProperty( "daemon.pidfile" );
-    	log.debug( "pidfile: " + pidFile );
+    	String pidFile = System.getProperty( "daemon.pidfile" );    	
         FileHandler.getFile( pidFile ).deleteOnExit();
         System.out.close();
         System.err.close();
@@ -163,10 +162,6 @@ public class DatadockMain
             
             // Fedora access
             PIDManager PIDmanager = new PIDManager();
-            //            FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
-            //            FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
-            //            FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );      
-            // Job hashmapper
             
             log.debug( "Starting datadockPool" );
             

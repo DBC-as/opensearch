@@ -41,9 +41,7 @@ public class FileSystemConfig extends Config
 	 * ********************/
 	private String getPluginsPath()
 	{
-		FileSystemConfig fc = new FileSystemConfig();
 		String ret = config.getString( "filesystem.plugins" );
-		//ret = fc.getTrunkPath() + ret;		
 		return sanitize( ret );
 	}
 	
@@ -60,9 +58,7 @@ public class FileSystemConfig extends Config
 	 * *********************/
 	private String getDatadock()
 	{
-		FileSystemConfig fc = new FileSystemConfig();
 		String ret = config.getString( "filesystem.datadock" );
-		//ret = fc.getTrunkPath() + ret;
 		return ret;
 	}
 	
@@ -81,9 +77,7 @@ public class FileSystemConfig extends Config
 	 * ***************/
 	private String getPti()
 	{
-		FileSystemConfig fc = new FileSystemConfig();
 		String ret = config.getString( "filesystem.pti" );
-		//ret = fc.getTrunkPath() + ret;
 		return ret;
 	}
 	
@@ -94,5 +88,24 @@ public class FileSystemConfig extends Config
 	{		
 		FileSystemConfig fc = new FileSystemConfig();
 		return fc.getPti();
+	}
+	
+	
+	/* ****************
+	 * FILESYSTEM CPM *
+	 * ***************/
+	private String getCpm()
+	{
+		String ret = config.getString( "filesystem.cpm" );
+		return ret;
+	}
+	
+	/**
+	 * @return Path to the config/pti_jobs.xml file
+	 */	
+	public static String getFileSystemCpmPath()
+	{		
+		FileSystemConfig fc = new FileSystemConfig();
+		return fc.getCpm();
 	}
 }

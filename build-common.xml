@@ -165,7 +165,7 @@
   </target>
 
   <target name="toplevel.compile-tests" description="builds the tests for the component" 
-          depends="py_suite, toplevel.compile"> <!-- toplevel.clean-all, -->
+          depends="py_suite, py_config, toplevel.compile"> <!-- toplevel.clean-all, -->
     <echo>
       Building from ${basedir},
       building project ${ant.project.name},
@@ -182,11 +182,11 @@
     </exec>
   </target>
 	
-  <!--target name="py_config">
+  <target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
       <arg line="tools/build_config.py ${base.dir}"/>
     </exec>
-  </target-->
+  </target>
 	
   <target name="toplevel.suite" description="Run test suite" depends="py_suite, toplevel.compile-tests">
     <echo>

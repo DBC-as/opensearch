@@ -85,10 +85,12 @@ trunk   = ET.SubElement( filest, "trunk" )
 plugins = ET.SubElement( filest, "plugins" )
 datadock = ET.SubElement( filest, "datadock" )
 pti_el   = ET.SubElement( filest, "pti" )
+cpm_xml  = ET.SubElement( filest, "cpm" )
 trunk.text   = path
 plugins.text = pluginpath
 datadock.text = os.path.join( path, "config/datadock_jobs.xml" )
 pti_el.text   = os.path.join( path, "config/pti_jobs.xml" )
+cpm_xml.text = os.path.join( path, "config/xml.cpm.xml" )
 
 #harvester settings
 folder = ET.SubElement( harvest, "folder" )

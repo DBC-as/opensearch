@@ -49,10 +49,6 @@
   </xml-object>
 
 
-
-
-
-
   <!-- below are test mappings, kept for validation/testing purposes -->
 
   <xml-object alias="data1">
@@ -66,10 +62,16 @@
         xpath="/xml-fragment/data/data1" />
   </xml-object>
 
+
   <xml-object alias="data2" xpath="/xml-fragment/data[1]">
-    <xml-id name="id" xpath="id/@value" />
-    <xml-property xpath="data1/@value" />
-    <xml-property name="eleText" xpath="data1" />
+    <xml-id 
+        name="id" 
+        xpath="id/@value" />
+    <xml-property 
+        xpath="data1/@value" />
+    <xml-property 
+        name="eleText" 
+        xpath="data1" />
   </xml-object>
 
 </compass-core-mapping>

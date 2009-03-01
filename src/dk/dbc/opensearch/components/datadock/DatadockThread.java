@@ -42,6 +42,8 @@ import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 
 import java.sql.SQLException;
+
+
 /**
  * \ingroup datadock
  * \brief The public interface for the OpenSearch DataDockService
@@ -187,10 +189,11 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
         // obtain mimetype and length from CargoContainer
         String mimeType = null;
         long length = 0;
-        for( CargoObject co : cc.getData() ){
-            if( co.getDataStreamName() == DataStreamNames.OriginalData ){
+        for( CargoObject co : cc.getData() )
+        {
+            if( co.getDataStreamName() == DataStreamNames.OriginalData )
                 mimeType = co.getMimeType();
-            }
+            
             length += co.getContentLength();
         }
 

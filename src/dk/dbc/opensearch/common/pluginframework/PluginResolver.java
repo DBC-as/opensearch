@@ -93,9 +93,7 @@ public class PluginResolver implements IPluginResolver
         // Loop through list of tasks finding tasks without matching plugin.
         for( int i = 0; i < taskList.size(); i++ )
         {
-            //String hashSubject = submitter + format + taskList.get( i ).toString();
-        	//System.out.println( "plugin: " + taskList.get( i ).toString() );
-        	String hashSubject = taskList.get( i ).toString();
+            String hashSubject = taskList.get( i ).toString();
             int key = hashSubject.hashCode();
             
             try

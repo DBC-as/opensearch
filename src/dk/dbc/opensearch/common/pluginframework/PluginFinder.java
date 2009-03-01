@@ -29,6 +29,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 /**
  * class that handles the creation of the map containing info about the existing
  * plugins. I creates the map, updates when asked to and returns info needed to
@@ -150,12 +151,8 @@ public class PluginFinder
         while( pluginNameIter.hasNext() )
         {
         	boolean couldFormat = false;
-        	//String submitterName = null;
-        	//String formatName = null;
         	String className = null;
-        	//String taskName = null;
         	String name = null;
-        	//String hashSubject = null;
         	int key = 0;
         	String pluginName = null;;
         	File pluginFile = null;
@@ -164,7 +161,6 @@ public class PluginFinder
         	try
         	{
         		pluginName = (String)pluginNameIter.next();
-        		log.debug( "plugin: " + pluginName );
         		pluginFile = FileHandler.getFile( pluginName );
         		log.debug( String.format( "Building DOM object from file %s", pluginName ) );
         		pluginDocument = docBuilder.parse( pluginFile );
@@ -200,9 +196,6 @@ public class PluginFinder
         		Element pluginElement = (Element) pluginNodeList.item( 0 );
         		//40: pull out the values
 
-        		//submitterName = pluginElement.getAttribute( "submitter" );
-        		//formatName = pluginElement.getAttribute( "format" );
-        		//taskName = pluginElement.getAttribute( "taskname" );
         		name = pluginElement.getAttribute( "name" );
         		className = pluginElement.getAttribute( "classname" );
         		
@@ -210,16 +203,10 @@ public class PluginFinder
         		log.debug( String.format( "Found plugins with classname=%s, used for plugin: %s", className, name ) );
         		
         		//45: verify that we got string form the xml file
-        		//if( xmlRoot.getTagName().equals( "plugins" ) && submitterName != null && formatName != null && taskName != null && className != null )
         		if( xmlRoot.getTagName().equals( "plugins" ) && name != null && className != null )
         		{
         			//50: build the the key
-        			//hashSubject= submitterName + formatName + taskName;
-        			//key = hashSubject.hashCode();
-        			//key = ( submitterName + formatName + taskName ).hashCode();
         			key = name.hashCode();
-        			//System.out.println( key );
-        			//System.out.println( submitterName + " " + formatName + " " + taskName );
         				
         			//60: add the key and value to the map
         			classNameMap.put( key, className );
