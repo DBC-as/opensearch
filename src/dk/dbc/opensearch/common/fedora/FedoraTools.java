@@ -1,5 +1,6 @@
 package dk.dbc.opensearch.common.fedora;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
@@ -63,8 +64,7 @@ public class FedoraTools {
         return constructFoxml(cargo, nextPid, label, now);
     }
 
-    public static byte[] constructFoxml(CargoContainer cargo, String nextPid,
-                                        String label, Date now) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException 
+    public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label, Date now) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
         ObjectProperties op = new ObjectProperties();
 
@@ -103,8 +103,6 @@ public class FedoraTools {
         dot.setPID( nextPid ); //
 
         int cargo_count = cargo.getItemsCount();
-        Datastream[] dsArray = new Datastream[ cargo_count+1 ];
-
 
         // Constructing adm stream
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -129,7 +127,6 @@ public class FedoraTools {
 
                 streams.appendChild( (Node) stream );
 
-                dsArray[i] = constructDatastream( c, dateFormat, timeNow );
             }
 
         root.appendChild( (Node) streams );
@@ -141,18 +138,31 @@ public class FedoraTools {
         Transformer transformer = transformerFactory.newTransformer();
         transformer.transform(source, result);
         String admStreamString = stringWriter.getBuffer().toString();
-        //System.out.println( admStreamString );
+        log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
+
         //ByteArrayOutputStream bStream = new ByteArrayOutputStream();
         //ObjectOutputStream oStream = new ObjectOutputStream( bStream );
         //oStream.writeObject ( admStream );
+
         byte[] byteAdmArray = admStreamString.getBytes();
         // System.out.println( byteAdmArray );
         //System.out.println( byteAdmArray.length +" " +admStreamString.length() );
-        CargoObject co = new CargoObject( DataStreamNames.AdminData, "text/xml", "da", "dbc", "admin", byteAdmArray );
-        //System.out.println( co.getBytes() );
+        cargo.add( DataStreamNames.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
 
+        //CargoObject co = new CargoObject( DataStreamNames.AdminData, "text/xml", "da", "dbc", "admin", byteAdmArray );
+        cargo_count = cargo.getItemsCount();
+        log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
+        Datastream[] dsArray = new Datastream[ cargo_count ];
 
-        dsArray[ cargo_count ] = constructDatastream( co, dateFormat, timeNow );
+        for(int i = 0; i < cargo_count; i++)
+        {
+            CargoObject c = cargo.getData().get( i );
+
+            dsArray[i] = constructDatastream( c, dateFormat, timeNow );
+        }
+
+        log.debug( "Successfully contructed datastreams for each CargoObject in the CargoContainer" );
+        //dsArray[ cargo_count ] = constructDatastream( co, dateFormat, timeNow );
         //System.out.println( dsArray.length );
 
         log.debug( String.format( "length of datastream array=%s", dsArray.length ) );
@@ -262,5 +272,63 @@ public class FedoraTools {
 
         return dataStreamElement;
     }
+    public static CargoContainer constructCargoContainerFromDOT( DigitalObject dot ) throws ParserConfigurationException, SAXException, IOException
+    {
+            log.debug( "Constructor( DigitalObject ) called" );
+            
+            CargoContainer data = new CargoContainer();
 
+            Datastream adminStream = null;
+            Datastream[] streams = dot.getDatastream();
+
+            for( Datastream stream : streams ){
+                if ( DataStreamNames.getDataStreamNameFrom( stream.getID() ) == DataStreamNames.AdminData ){
+                    adminStream = stream;
+                }            
+            }
+            
+            if( adminStream == null ){
+            	log.fatal( "The digitial object did not contain an administration stream" );
+            	throw new NullPointerException( "Could not read adminstream from Datastream in the DigitalObject" );
+            }
+            DatastreamVersionTypeChoice datastreamVersionTypeChoice = adminStream.getDatastreamVersion( 0 ).getDatastreamVersionTypeChoice();
+            byte[] ba = datastreamVersionTypeChoice.getBinaryContent();
+            
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document admDoc = builder.parse( new ByteArrayInputStream( ba ) );
+
+            Element root = admDoc.getDocumentElement();
+            Element streamsElem = (Element) root.getElementsByTagName( "streams" ).item( 0 );
+            NodeList streamList = streamsElem.getElementsByTagName( "stream" );
+
+            //System.out.println( "number of <stream> elements " +streamList.getLength() );
+
+            //in this loop we dont add the adminstream
+
+            for( int i=0; i < streamList.getLength(); i++){
+                Element streamElem = (Element) streamList.item( i );
+
+                DataStreamNames datastreamName = DataStreamNames.getDataStreamNameFrom( streamElem.getAttribute( "id" ) ); 
+                String language = streamElem.getAttribute( "lang" );
+                String format = streamElem.getAttribute( "format" );
+                String mimetype = streamElem.getAttribute( "mimetype" );
+                String submitter = streamElem.getAttribute( "submitter");
+                /** \todo: index is not used as a variable here... Remove?*/
+                int index = new Integer( streamElem.getAttribute( "index" ) );
+
+                DatastreamVersionTypeChoice tmp_datastreamVersionTypeChoice = streams[i].getDatastreamVersion( 0 ).getDatastreamVersionTypeChoice();
+                byte[] barray = tmp_datastreamVersionTypeChoice.getBinaryContent();
+
+                data.add( datastreamName, mimetype, language, submitter, format, barray );
+            }
+            /**
+             * \todo: Do we need the adminStream at all now?
+             */
+            //Adding the Adminstream to the CargoContainer
+
+            data.add( DataStreamNames.AdminData, "text/xml", "da", "dbc", "adminstream", ba );
+            
+            return data;
+        }
 }

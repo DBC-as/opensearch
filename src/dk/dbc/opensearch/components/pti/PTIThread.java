@@ -7,6 +7,7 @@ package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
@@ -145,8 +146,10 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
         
         //Create the CargoContainer
 
-        CargoContainer cc = new CargoContainer( dot );
+        //CargoContainer cc = new CargoContainer( dot );
 
+        CargoContainer cc = FedoraTools.constructCargoContainerFromDOT( dot );
+        
         // Get the submitter and format from the CargoContainer
 
         CargoObject co = cc.getFirstCargoObject( DataStreamNames.OriginalData );

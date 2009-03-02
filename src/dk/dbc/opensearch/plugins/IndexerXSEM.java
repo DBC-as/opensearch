@@ -38,18 +38,16 @@ public class IndexerXSEM implements IIndexer
 {
     Logger log = Logger.getLogger( IndexerXSEM.class );
 
-    public long getProcessTime(CargoContainer cargo, CompassSession session) throws PluginException, CompassException, ParserConfigurationException, SAXException, IOException
+    public long getProcessTime(CargoContainer cargo, CompassSession session) throws PluginException
     {
 
         long processTime = 0;
         try
         {
-            processTime = getProcessTime( session, cargo );
-
-        }
-        catch( DocumentException doe )
+        	processTime = getProcessTime( session, cargo );
+        }catch( CompassException ce )
         {
-            throw new PluginException( "Could not contruct an indexable format from the CargoContainer", doe );
+        	throw new PluginException( "Could not commit index on CompassSession", ce );
         }
 
         return processTime;
@@ -62,7 +60,7 @@ public class IndexerXSEM implements IIndexer
     }
 
 
-    private long getProcessTime( CompassSession session, CargoContainer cc ) throws DocumentException, PluginException, CompassException, ParserConfigurationException, SAXException, IOException
+    private long getProcessTime( CompassSession session, CargoContainer cc ) throws PluginException, CompassException
     {
         long processTime = 0;
         Date finishTime = new Date();
@@ -77,12 +75,33 @@ public class IndexerXSEM implements IIndexer
 
         for( CargoObject co : list )
         {
-        	String format = co.getFormat();
-        	if( CPMAlias.isValidAlias( format ) )
+            String format = co.getFormat();
+            boolean isValidAlias = false;
+            try {
+                isValidAlias = CPMAlias.isValidAlias( format );
+            } catch ( ParserConfigurationException pce ) {
+                throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
+            } catch ( SAXException se ) {
+                throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
+            } catch (IOException ioe) {
+                throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
+            }
+            
+            if( ! isValidAlias )
+            {
+                throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", format ) );
+            }
+            else
             {
                 byte[] bytes = co.getBytes();
                 ByteArrayInputStream is = new ByteArrayInputStream( bytes );
-                Document doc = saxReader.read( is );
+                Document doc = null;
+                try {
+                    doc = saxReader.read( is );
+                } catch (DocumentException de) {
+                    // TODO Auto-generated catch block
+                    throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from format=%s, mimetype=%s", co.getFormat(), co.getMimeType() ), de );
+                }
 
                 // this log line is _very_ verbose, but useful in a tight situation
                 // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
@@ -96,14 +115,21 @@ public class IndexerXSEM implements IIndexer
 
                 // getting transaction object and saving index
                 log.debug( String.format( "Getting transaction object" ) );
-                CompassTransaction trans;
-
-                log.debug( "Beginning transaction" );
-                trans = session.beginTransaction();
+                CompassTransaction trans = null;
+                
+                try
+                {
+                    log.debug( "Beginning transaction" );
+                    trans = session.beginTransaction();
+                }catch( CompassException ce )
+                {
+                    throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
+                }
 
                 log.debug( "Saving aliased xml object to the index" );
                 session.save( xmlObject );
                 log.debug( "Committing index on transaction" );
+                
                 trans.commit();
 
                 log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );

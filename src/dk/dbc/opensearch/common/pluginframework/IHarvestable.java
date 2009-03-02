@@ -22,5 +22,5 @@ public interface IHarvestable extends IPluggable
 	 * @throws ParserConfigurationException 
 	 * @throws SAXException 
 	 */
-	public CargoContainer getCargoContainer( DatadockJob job ) throws IOException, ParserConfigurationException, SAXException;
+	public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException;//IOException, ParserConfigurationException, SAXException;
 }

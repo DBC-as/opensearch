@@ -5,9 +5,11 @@ import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.os.StreamHandler;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,7 +31,7 @@ public class FaktalinkHarvester implements IHarvestable
 
     private PluginType pluginType = PluginType.HARVEST;
     
-    public CargoContainer getCargoContainer( DatadockJob job ) throws IOException
+    public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
     {
         cargo = new CargoContainer();
     	this.path = job.getUri().getPath();
@@ -45,7 +47,7 @@ public class FaktalinkHarvester implements IHarvestable
      * @return the CargoContainer from 
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile() throws IOException 
+    private CargoContainer createCargoContainerFromFile() throws PluginException 
     {
     	cargo = new CargoContainer();
     	
@@ -53,11 +55,25 @@ public class FaktalinkHarvester implements IHarvestable
         String mimetype = "text/xml";
         String lang = "da";
         DataStreamNames dataStreamName = DataStreamNames.OriginalData;
-        InputStream data = FileHandler.readFile( this.path );
+        InputStream data;
+		try {
+			data = FileHandler.readFile( this.path );
+		} catch (FileNotFoundException fnfe) {
+			throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
+		}
 
-        byte [] bdata = StreamHandler.bytesFromInputStream( data, 0 );
+        byte[] bdata;
+		try {
+			bdata = StreamHandler.bytesFromInputStream( data, 0 );
+		} catch (IOException ioe) {
+			throw new PluginException( "Could not construct byte[] from InputStream", ioe );
+		}
         
-        cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, bdata );
+        try {
+			cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, bdata );
+		} catch (IOException ioe) {
+			throw new PluginException( "Could not construct CargoContainer", ioe );
+		}
         
         return cargo;
     }

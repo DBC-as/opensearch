@@ -7,6 +7,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DatadockJob;
@@ -47,7 +48,7 @@ public class FaktalinkStore extends FedoraHandle implements IRepositoryStore
 	}
 
     
-    public String storeCargoContainer( CargoContainer cc, DatadockJob job ) throws MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
+    public String storeCargoContainer( CargoContainer cc, DatadockJob job ) throws PluginException// MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, ParserConfigurationException, SAXException
 	{
             return "";
             //return this.storeCargo( cc );

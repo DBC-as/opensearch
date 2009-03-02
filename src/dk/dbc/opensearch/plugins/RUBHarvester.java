@@ -11,10 +11,12 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -62,7 +64,7 @@ public class RUBHarvester implements IHarvestable{
      * @throws ParserConfigurationException 
      * @throws SAXException 
      */
-    public CargoContainer getCargoContainer( DatadockJob job ) throws IOException, ParserConfigurationException, SAXException
+    public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException//IOException, ParserConfigurationException, SAXException
     { 
     	log.debug( "init( datadockJob ) called" );
         
@@ -82,16 +84,37 @@ public class RUBHarvester implements IHarvestable{
         String xmlFilePath = FileHandler.getFileList( path, xmlFilter, false ).remove(0);        
         log.debug( String.format( "xml filepath='%s'", xmlFilePath ) );
         File xmlFile = FileHandler.getFile( xmlFilePath );
-        FileInputStream xmlData = FileHandler.readFile( xmlFilePath ); 
+        FileInputStream xmlData = null;
+		try {
+			xmlData = FileHandler.readFile( xmlFilePath );
+		} catch (FileNotFoundException fnfe) {
+			throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
+		} 
 
         byte xmlBytes[] = new byte[(int)xmlFile.length()];
-        xmlData.read(xmlBytes);
+        try {
+			xmlData.read(xmlBytes);
+		} catch (IOException ioe) {
+			throw new PluginException( "Could not read InputStream into byte[]", ioe );
+		}
 
         log.debug( "get language of pdf from dublin core file" );
        
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();     
-        Document document = builder.parse( xmlFile );
+        DocumentBuilder builder;
+		try {
+			builder = factory.newDocumentBuilder();
+		} catch (ParserConfigurationException pce) {
+			throw new PluginException( "Could not construct a DocumentBuilder", pce);
+		}     
+        Document document;
+		try {
+			document = builder.parse( xmlFile );
+		} catch (SAXException saxe) {
+			throw new PluginException( String.format( "The xml file %s could not be parsed as xml", xmlFilePath ), saxe );
+		} catch (IOException ioe) {
+			throw new PluginException( String.format( "The file %s could not be read", xmlFilePath ), ioe );
+		}
 
         NodeList dcoai = document.getElementsByTagName( "oai_dc:dc" );
         // assert dcoai.getLength() == 1
@@ -101,7 +124,11 @@ public class RUBHarvester implements IHarvestable{
         // assert language.getLength() == 1
         String lang = language.item(0).getNodeValue();
 
-        cargoContainer.add( DataStreamNames.DublinCoreData, format, submitter, lang, mimetype, xmlBytes );
+        try {
+			cargoContainer.add( DataStreamNames.DublinCoreData, format, submitter, lang, mimetype, xmlBytes );
+		} catch (IOException ioe) {
+			throw new PluginException( "Could not construct CargoContainer", ioe );
+		}
        
         log.debug( "read and add pdf to cargoContainer" );
 
@@ -110,12 +137,25 @@ public class RUBHarvester implements IHarvestable{
         String pdfFilePath = FileHandler.getFileList( path, pdfFilter, false ).remove(0);
         log.debug( String.format( "pdf filepath='%s'", pdfFilePath ) );
         File pdfFile = FileHandler.getFile( pdfFilePath );
-        FileInputStream pdfData = FileHandler.readFile( pdfFilePath );
+        FileInputStream pdfData;
+		try {
+			pdfData = FileHandler.readFile( pdfFilePath );
+		} catch (FileNotFoundException fnfe) {
+			throw new PluginException( String.format( "The file %s could not be found or read", pdfFilePath ), fnfe );
+		}
         
         byte pdfBytes[] = new byte[(int)pdfFile.length()];
-        pdfData.read( pdfBytes );
+        try {
+			pdfData.read( pdfBytes );
+		} catch (IOException ioe) {
+			throw new PluginException( "Could not read InputStream into byte[]", ioe );
+		}
 
-        cargoContainer.add( DataStreamNames.OriginalData, format, submitter, lang, mimetype, pdfBytes );
+        try {
+			cargoContainer.add( DataStreamNames.OriginalData, format, submitter, lang, mimetype, pdfBytes );
+		} catch (IOException ioe) {
+			throw new PluginException( "Could not construct CargoContainer", ioe );
+		}
         
         return cargoContainer; 
     }
