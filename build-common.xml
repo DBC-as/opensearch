@@ -99,7 +99,7 @@
     <!-- Create the distribution directory -->
   	<mkdir dir="${dist.dir}"/>
 
-  	<pathconvert property="jar_classpath" pathsep=" ${lib.dir}/">
+  	<pathconvert property="jar_classpath" pathsep=" ../lib/">
       <path refid="classpath4jar" />
       <flattenmapper />
     </pathconvert>
@@ -112,7 +112,7 @@
         <attribute name="Implementation-Vendor" value="DBC A/S"/>
         <attribute name="Implementation-Title" value="Opensearch"/>
         <attribute name="Implementation-Version" value="0.3"/>
-        <attribute name="Class-Path" value="${lib.dir}/${jar_classpath} ${config.dir}/ ${dist.dir}/" />
+        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/ " />
         <attribute name="Main-Class" value="dk.dbc.opensearch.components.datadock.DatadockMain" />
         </manifest>
     </jar>
@@ -127,7 +127,7 @@
   	<!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}"/>
 
-  	<pathconvert property="jar_classpath" pathsep=" ${lib.dir}/">
+  	<pathconvert property="jar_classpath" pathsep=" ../lib/">
       <path refid="classpath4jar" />
   	  <flattenmapper />
     </pathconvert>
@@ -140,7 +140,7 @@
           <attribute name="Implementation-Vendor" value="DBC A/S"/>
           <attribute name="Implementation-Title" value="Opensearch"/>
           <attribute name="Implementation-Version" value="0.3"/>
-          <attribute name="Class-Path" value="${lib.dir}/${jar_classpath} ${config.dir}/ ${dist.dir}/" />
+          <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
           <attribute name="Main-Class" value="dk.dbc.opensearch.components.pti.PTIMain" />
         </manifest>
     </jar>
