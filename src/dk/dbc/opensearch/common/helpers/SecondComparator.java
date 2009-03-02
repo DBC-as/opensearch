@@ -10,7 +10,7 @@ import java.util.Comparator;
  * class to become static. See Todo in JobMapCreator
  */
 
-class SecondComparator implements Comparator
+public class SecondComparator implements Comparator
 {
     public int compare( Object x, Object y )
     {

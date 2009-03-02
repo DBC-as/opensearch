@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -49,10 +49,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerConfigurationException;
-
+import java.util.Collections;
 
 import java.io.ObjectOutputStream;
 import java.io.ByteArrayOutputStream;
+
+import dk.dbc.opensearch.common.helpers.FirstStringComparator;
+import dk.dbc.opensearch.common.helpers.SecondComparator;
 
 public class FedoraTools {
 
@@ -104,6 +107,34 @@ public class FedoraTools {
 
         int cargo_count = cargo.getItemsCount();
 
+
+        
+        FirstStringComparator firstComp = new FirstStringComparator();
+        SecondComparator secondComp = new SecondComparator();
+
+        ArrayList< Pair < String, Integer > > lst = new  ArrayList< Pair < String, Integer > >();
+        for(int i = 0; i < cargo_count; i++){
+            CargoObject c = cargo.getData().get( i );
+            lst.add( new Pair( c.getDataStreamName().getName(), i ) );
+        }
+        Collections.sort( lst, firstComp);
+
+        int j = 0;
+        DataStreamNames dsn = null;
+        ArrayList< Pair < String, Integer > > lst2 = new  ArrayList< Pair < String, Integer > >();
+        for( Pair p : lst){
+            if( dsn != DataStreamNames.getDataStreamNameFrom( (String) p.getFirst() ) ){
+                j = 0;
+            }
+            else{
+                j += 1;
+            }
+            dsn = DataStreamNames.getDataStreamNameFrom( (String) p.getFirst() );
+            lst2.add( new Pair( p.getFirst()+"."+j , p.getSecond() ) );
+        }
+        lst2.add( new Pair( DataStreamNames.AdminData.getName(), lst2.size() ) );
+        Collections.sort( lst2, secondComp);
+        
         // Constructing adm stream
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -111,19 +142,18 @@ public class FedoraTools {
         Document admStream = builder.newDocument();
         Element root = admStream.createElement( "admin-stream" );
         Node streams = admStream.createElement( "streams" );
-
-
+        
         for(int i = 0; i < cargo_count; i++)
             {
                 CargoObject c = cargo.getData().get( i );
 
                 Element stream = admStream.createElement( "stream" );
-                stream.setAttribute( "id", c.getDataStreamName().getName() );
+                stream.setAttribute( "id", lst2.get( i ).getFirst() );
                 stream.setAttribute( "lang", c.getLang() );
                 stream.setAttribute( "format", c.getFormat() );
                 stream.setAttribute( "mimetype", c.getMimeType() );
                 stream.setAttribute( "submitter", c.getSubmitter() );
-                stream.setAttribute( "index", Integer.toString( i ) );
+                stream.setAttribute( "index", Integer.toString( lst2.get( i ).getSecond() ) );
 
                 streams.appendChild( (Node) stream );
 
@@ -149,7 +179,7 @@ public class FedoraTools {
         //System.out.println( byteAdmArray.length +" " +admStreamString.length() );
         cargo.add( DataStreamNames.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
 
-        //CargoObject co = new CargoObject( DataStreamNames.AdminData, "text/xml", "da", "dbc", "admin", byteAdmArray );
+
         cargo_count = cargo.getItemsCount();
         log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
         Datastream[] dsArray = new Datastream[ cargo_count ];
@@ -157,8 +187,10 @@ public class FedoraTools {
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getData().get( i );
+            
+            System.out.println("adding "+lst2.get( i ).getFirst() );
 
-            dsArray[i] = constructDatastream( c, dateFormat, timeNow );
+            dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
         }
 
         log.debug( "Successfully contructed datastreams for each CargoObject in the CargoContainer" );
@@ -197,7 +229,7 @@ public class FedoraTools {
      *
      * @return A datastream suitable for ingestion into the DigitalObject
      */
-    private static Datastream constructDatastream(CargoObject co, SimpleDateFormat dateFormat, String timeNow) throws java.text.ParseException, IOException
+    private static Datastream constructDatastream(CargoObject co, SimpleDateFormat dateFormat, String timeNow, String itemID ) throws java.text.ParseException, IOException
     {
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
@@ -223,9 +255,10 @@ public class FedoraTools {
         dataStreamElement.setCONTROL_GROUP( controlGroup );
 
 
+        System.out.println("itemID "+itemID);
         //dataStreamElement.setID( co.getFormat() );
         //dataStreamElement.setID( co.getDataStreamName( "test" ) );
-        dataStreamElement.setID( co.getDataStreamName().getName() );
+        dataStreamElement.setID( itemID );
         /**
          * \todo: State type defaults to active. Client should interact with
          * datastream after this method if it wants something else
@@ -234,7 +267,7 @@ public class FedoraTools {
         dataStreamElement.setVERSIONABLE( versionable );
 
         // datastreamVersionElement
-        String itemId_version = co.getDataStreamName().getName() + ".0";
+        String itemId_version = itemID+".0";
 
         DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
 
@@ -272,6 +305,7 @@ public class FedoraTools {
 
         return dataStreamElement;
     }
+
     public static CargoContainer constructCargoContainerFromDOT( DigitalObject dot ) throws ParserConfigurationException, SAXException, IOException
     {
             log.debug( "Constructor( DigitalObject ) called" );
@@ -331,4 +365,19 @@ public class FedoraTools {
             
             return data;
         }
+
+//     public static CargoContainer constructCargoContainer( DigitalObject dot ){
+//         log.debug( "Constructor( DigitalObject ) called" );
+            
+//         CargoContainer data = new CargoContainer();
+//         // if validate
+//         String adminStream_id = "";
+//         Datastream[] datastreams = dot.getDatastream();
+//        //  for (Datastream datastream : datastreams ){        
+// //             if ( DataStreamNames.getDataStreamNameFrom( datastream.getID() ) == DataStreamNames.AdminData ){
+// //                  adminStream_id = datastream.getID();
+// //             }            
+// //        }
+        
+//     }
 }
