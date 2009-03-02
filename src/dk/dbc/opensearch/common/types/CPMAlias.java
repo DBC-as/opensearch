@@ -17,21 +17,27 @@ import org.xml.sax.SAXException;
 
 public class CPMAlias
 {
-    static DocumentBuilderFactory docBuilderFactory;
-    static DocumentBuilder docBuilder;
-    static Document cpmDocument;
-    static String cpmFile;
+    DocumentBuilderFactory docBuilderFactory;
+    DocumentBuilder docBuilder;
+    Document cpmDocument;
+    String cpmFile;
+    NodeList cpmNodeList;
 
-
-    public static boolean isValidAlias( String alias ) throws ParserConfigurationException, SAXException, IOException
-    {
-        docBuilderFactory = DocumentBuilderFactory.newInstance();
+    
+    public CPMAlias() throws ParserConfigurationException, SAXException, IOException
+    {    	
+    	docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilder = docBuilderFactory.newDocumentBuilder();
         cpmFile = FileSystemConfig.getFileSystemCpmPath();
         cpmDocument = docBuilder.parse( cpmFile );
         Element xmlRoot = cpmDocument.getDocumentElement();
-        NodeList cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );
+        cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );
+    }
+    
 
+    public boolean isValidAlias( String alias ) throws ParserConfigurationException, SAXException, IOException
+    {
+        
         for( int i = 0; i < cpmNodeList.getLength(); i++ )
         {
             Element aliasNode = (Element)cpmNodeList.item( i );

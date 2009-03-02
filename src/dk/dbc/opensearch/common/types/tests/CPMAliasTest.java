@@ -18,7 +18,8 @@ public class CPMAliasTest
 	@Test
 	public void cpmIsValidAliasTest() throws ParserConfigurationException, SAXException, IOException
 	{
-		boolean valid = CPMAlias.isValidAlias( "faktalink" );
+		CPMAlias cpmAlias = new CPMAlias();
+		boolean valid = cpmAlias.isValidAlias( "faktalink" );
 		assertTrue( valid );
 	}
 	
@@ -26,7 +27,8 @@ public class CPMAliasTest
 	@Test
 	public void cpmIsValidAliasFailTest() throws ParserConfigurationException, SAXException, IOException
 	{
-		boolean inValid = CPMAlias.isValidAlias( "fejlmester" );
+		CPMAlias cpmAlias = new CPMAlias();
+		boolean inValid = cpmAlias.isValidAlias( "fejlmester" );
 		assertFalse( inValid );
 	}
 }
