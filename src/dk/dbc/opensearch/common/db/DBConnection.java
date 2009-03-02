@@ -58,7 +58,7 @@ public class DBConnection{
         passwd = config.getString( "database.passwd" );
 
         Class.forName( driver );        
-        log.debug( String.format( "driver: %s, url: %s, userID: %s",driver, url, userID) );
+        log.debug( String.format( "driver: %s, url: %s, userID: %s", driver, url, userID) );
     }
 
     /**
@@ -72,7 +72,6 @@ public class DBConnection{
         Connection con = null;
         con = DriverManager.getConnection(url, userID, passwd);        
         
-        log.debug( "Got connection." );
         return con;
     }
 }

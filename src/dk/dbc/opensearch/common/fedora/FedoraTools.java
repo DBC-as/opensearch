@@ -154,7 +154,7 @@ public class FedoraTools {
                 stream.setAttribute( "mimetype", c.getMimeType() );
                 stream.setAttribute( "submitter", c.getSubmitter() );
                 stream.setAttribute( "index", Integer.toString( lst2.get( i ).getSecond() ) );
-
+                stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
                 streams.appendChild( (Node) stream );
 
             }

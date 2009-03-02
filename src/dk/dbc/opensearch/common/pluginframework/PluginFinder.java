@@ -96,9 +96,10 @@ public class PluginFinder
         className = (String) classNameMap.get( key );
         
         //20: if there is no hit, raise exception
-        if( className == null )
-        	throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
-        
+        if( className == null ){
+            log.debug( String.format( "No value for key: %s ", key ) );
+            throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
+        }
         return className;
     }
     

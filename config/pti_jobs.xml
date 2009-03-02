@@ -1,6 +1,5 @@
 <job_list>
   <job submitter="dbc" format="faktalink">
-    <plugin name="retrieve" position="0"/>
-    <plugin name="indexserxsem" position="1"/>
+    <plugin name="indexerxsem" position="0"/>
   </job>
 </job_list>

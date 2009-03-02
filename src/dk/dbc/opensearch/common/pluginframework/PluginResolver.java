@@ -95,7 +95,7 @@ public class PluginResolver implements IPluginResolver
         {
             String hashSubject = taskList.get( i ).toString();
             int key = hashSubject.hashCode();
-            
+            log.debug( String.format( "hashcode: %s generated for key: %s", key, hashSubject  ) );            
             try
             {
             	PFinder.getPluginClassName( key );

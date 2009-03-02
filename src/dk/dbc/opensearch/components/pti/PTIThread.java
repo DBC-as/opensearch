@@ -19,8 +19,11 @@ import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamNames;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.plugins.Retrieve;
+//import dk.dbc.opensearch.plugins.Retrieve;
 import dk.dbc.opensearch.xsd.DigitalObject;
+import dk.dbc.opensearch.xsd.Datastream;
+
+import fedora.server.types.gen.MIMETypedStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,14 +33,21 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.rpc.ServiceException;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.compass.core.Compass;
 import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
@@ -50,12 +60,6 @@ import org.compass.core.marshall.MarshallingStrategy;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
 import org.compass.core.xml.javax.NodeAliasedXmlObject;
-
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.DocumentHelper;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Field;
@@ -130,80 +134,100 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Long call() throws CompassException, IOException, DocumentException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException, SAXException  
-{
-        log.debug( String.format( "CALL CALLED handle: '%s'", fedoraPid ) );
-
-        //Retrieve digitalobject from FedoraBase
-        Unmarshaller unmarshaller = new Unmarshaller();
-
-        byte[] foxml = super.fem.export( fedoraPid, "info:fedora/fedora-system:FOXML-1.1", "archive" );
-        
-        ByteArrayInputStream bis = new ByteArrayInputStream( foxml );
-        InputSource iSource = new InputSource( bis );
-
-        DigitalObject dot = (DigitalObject) unmarshaller.unmarshal( iSource );
-        
-        //Create the CargoContainer
-
-        //CargoContainer cc = new CargoContainer( dot );
-
-        CargoContainer cc = FedoraTools.constructCargoContainerFromDOT( dot );
-        
-        // Get the submitter and format from the CargoContainer
-
-        CargoObject co = cc.getFirstCargoObject( DataStreamNames.OriginalData );
-
-        String submitter =  co.getSubmitter();
-        String format = co.getFormat();
-        
-        long result = 0l;
-        
-/**
-         * We cannot have plugins handle the retrieving of the digital object,
-         * since we dont know the format and submitter until we can access it
-         * and therefore must have retreived it
-         * \Todo: Are all digitalobject retrieved and made into a CorgaContainer in
-         * the same way?
-         */
-        
-        // Get the job from the jobMap
-        list = jobMap.get( new Pair< String, String >( submitter, format ) );
-        //50: validate that there exists plugins for all the tasks
-        PluginResolver pluginResolver = new PluginResolver();
-        Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-        //60: execute the plugins
-        if( ! missingPlugins.isEmpty() )
+    public Long call() throws CompassException, IOException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException, SAXException
         {
-                System.out.println( " kill thread" );
-                // kill thread/throw meaningful exception/log message
-        }
-        else
-        {
-            
-            for( String task : list)
-            {
-                IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-                switch ( plugin.getTaskName() )
-                {
-                case PROCESS:
-                    IProcesser processPlugin = (IProcesser)plugin;
-                    cc = processPlugin.getCargoContainer( cc );
-                    break;
-                case INDEX:
-                    IIndexer indexPlugin = (IIndexer)plugin;
-                    result = indexPlugin.getProcessTime( cc, session );
-                    //update statistics database
-                    break;
-                    //  case STORE:
-                    //                                         IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                    //                                         repositoryStore.storeCargoContainer( cc, this.datadockJob );
-                }
+            log.debug( String.format( "CALL CALLED handle: '%s'", fedoraPid ) );
+
+            MIMETypedStream ds = super.fea.getDatastreamDissemination(fedoraPid, DataStreamNames.AdminData.getName(), null);
+            byte[] adminStream = ds.getStream();
+
+            CargoContainer cc = new CargoContainer();
+
+            log.debug( new String(adminStream));
+            DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFact.newDocumentBuilder();
+            ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+            Document admDoc = docBuilder.parse( new InputSource( bis ) );
+            Element root = admDoc.getDocumentElement();
+            NodeList streamsNL = root.getElementsByTagName( "streams" );
+            Element streams = (Element)streamsNL.item(0);
+            NodeList streamNL = streams.getElementsByTagName( "stream" );
+            for(int i = 0; i < streamNL.getLength(); i++ ){
+                Element stream = (Element)streamNL.item(i);
+                String streamID = stream.getAttribute( "id" );
+
+                MIMETypedStream dstream = super.fea.getDatastreamDissemination(fedoraPid, streamID, null);
+
+
+                cc.add( DataStreamNames.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
+                        stream.getAttribute( "format" ),
+                        stream.getAttribute( "submitter" ),
+                        stream.getAttribute( "lang" ),
+                        stream.getAttribute( "mimetype" ),
+                        dstream.getStream() );
             }
+
+            //CargoContainer cc = FedoraTools.constructCargoContainer( dot, fedoraPid );
+            log.debug( String.format(" cc is null = %s", null == cc) );
+
+            // Get the submitter and format from the CargoContainer
+            CargoObject co = cc.getFirstCargoObject( DataStreamNames.OriginalData );
+            log.debug( String.format(" co is null = %s", null == co) );
+            String submitter =  co.getSubmitter();
+            String format = co.getFormat();
+            log.debug( String.format( "the submitter %s", submitter ) );
+            log.debug( String.format( "the format %s", format ) );
+            log.debug( String.format( "number og datastreams in cc: %s", cc.getItemsCount() ) );
+            //CargoObject co1 = cc.getFirstCargoObject( DataStreamNames.AdminData );
+
+            long result = 0l;
+
+            // Get the job from the jobMap
+            list = jobMap.get( new Pair< String, String >( submitter, format ) );
+            //50: validate that there exists plugins for all the tasks
+            PluginResolver pluginResolver = new PluginResolver();
+            for( int i = 0; i < list.size(); i++ ){
+                log.debug( String.format( " plugin to be found: %s",list.get(i) ) );
+            }
+            Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+            //60: execute the plugins
+            if( ! missingPlugins.isEmpty() )
+                {
+
+                    Iterator iter = missingPlugins.iterator();
+                    while( iter.hasNext())
+                        {
+                            log.debug( String.format( "no plugin for task: %s", (String)iter.next() ) );
+                        }
+                    log.debug( " kill thread" );
+                    // kill thread/throw meaningful exception/log message
+                }
+            else
+                {
+                    log.debug( "Entering switch" );
+
+                    for( String task : list)
+                        {
+                            IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+                            switch ( plugin.getTaskName() )
+                                {
+                                case PROCESS:
+                                    log.debug( "calling processerplugin");
+                                    IProcesser processPlugin = (IProcesser)plugin;
+                                    cc = processPlugin.getCargoContainer( cc );
+                                    break;
+                                case INDEX:
+                                    log.debug( "calling indexerplugin");
+                                    IIndexer indexPlugin = (IIndexer)plugin;
+                                    result = indexPlugin.getProcessTime( cc, session );
+                                    //update statistics database
+                                    break;
+                                }
+                        }
+                }
+            log.debug( result );
+
+            return result;
         }
-        
-        
-        return result;
-    }
 
 }

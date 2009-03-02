@@ -57,7 +57,7 @@ public class Processqueue {
         
         log.debug( String.format( "Processqueue.push( '%s' ) called", fedorahandle ) );
         Connection con = DBConnection.getConnection();
-
+        
         log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
         Statement stmt = null;
         stmt = con.createStatement();
