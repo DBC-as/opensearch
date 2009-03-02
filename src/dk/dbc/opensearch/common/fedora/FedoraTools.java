@@ -320,14 +320,14 @@ public class FedoraTools {
                 DatastreamVersionTypeChoice tmp_datastreamVersionTypeChoice = streams[i].getDatastreamVersion( 0 ).getDatastreamVersionTypeChoice();
                 byte[] barray = tmp_datastreamVersionTypeChoice.getBinaryContent();
 
-                data.add( datastreamName, mimetype, language, submitter, format, barray );
+                data.add( datastreamName, format, submitter, language, mimetype, barray );
             }
             /**
              * \todo: Do we need the adminStream at all now?
              */
             //Adding the Adminstream to the CargoContainer
 
-            data.add( DataStreamNames.AdminData, "text/xml", "da", "dbc", "adminstream", ba );
+            data.add( DataStreamNames.AdminData, "adminstream", "dbc", "da", "text/xml", ba );
             
             return data;
         }
