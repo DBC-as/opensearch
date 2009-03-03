@@ -4,15 +4,12 @@
 
 <job_list>
   <job submitter="dbc" format="faktalink">
+    <plugin name="docbookharvester" position="0"/>
     <plugin name="docbookannotate" position="1"/>
-    <plugin name="faktalinkharvester" position="0"/>
-    <plugin name="store" position="2"/>
   </job>
 
-  <!--job submitter="dbc" format="forfatterweb">
-    <task name="forfatterwebharvester" position="0"/>
-    <task name="forfatterwebannotator" position="1"/>
-    <task name="forfatterwebstore"     position="2"/>
-  </job-->
-
+  <job submitter="dbc" format="forfatterweb">    
+    <plugin name="docbookharvester" position="0"/>
+    <plugin name="docbookannotate" position="1"/>
+  </job>
 </job_list>
