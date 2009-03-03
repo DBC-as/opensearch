@@ -107,11 +107,11 @@ def call_walk_make( srcDir ):
 def main( arg_lst):
     
     sourceDir = os.getcwd()
-    
+
     if os.path.basename( sourceDir ) == 'tools':
         sourceDir = '../src/dk/dbc/opensearch'  
         #print sourceDir
-        
+
     elif os.path.basename( sourceDir ) == 'trunk':
         sourceDir = 'src/dk/dbc/opensearch'
         #print sourceDir
