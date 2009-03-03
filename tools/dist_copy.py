@@ -2,10 +2,17 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 
-import os, sys
-import os.path
-import subprocess
-import getopt
+
+import subprocess, sys, os.path
+
+
+help = """
+Make and copy distribution jar files to <server> <folder>:
+
+   default values:
+           server: sempu
+           folder: dist/dist
+"""
 
 
 src_dir = os.getcwd()
@@ -54,5 +61,8 @@ def make_dist():
 
 
 if __name__ == '__main__':
-    set_server()
-    make_dist()
+    if sys.argv[1] == '-h':
+        print help
+    else:
+        set_server()
+        make_dist()
