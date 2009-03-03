@@ -1,8 +1,10 @@
 package dk.dbc.opensearch.common.helpers;
 
+
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.util.Comparator;
+
 
 /**
  * helper class for the JobMapCreator class for use in sorting arraylists 
@@ -11,7 +13,7 @@ import java.util.Comparator;
  * class to become static. See Todo in JobMapCreator
  */
 
-public class SecondComparator implements Comparator
+public class PairComparator_SecondInteger implements Comparator
 {
     public int compare( Object x, Object y )
     {

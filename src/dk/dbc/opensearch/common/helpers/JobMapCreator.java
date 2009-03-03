@@ -2,7 +2,7 @@ package dk.dbc.opensearch.common.helpers;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.helpers.SecondComparator;
+import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
 
@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
@@ -79,7 +79,7 @@ public class JobMapCreator
         String submitter = "";
         String format = "";
         int position;
-        SecondComparator secComp = new SecondComparator();    
+        PairComparator_SecondInteger secComp = new PairComparator_SecondInteger();
         
         for( int x = 0; x < listLength ; x++ )
         {

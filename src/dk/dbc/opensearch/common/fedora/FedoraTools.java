@@ -1,74 +1,78 @@
 package dk.dbc.opensearch.common.fedora;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ArrayList;
 
-import org.apache.axis.encoding.Base64;
-import org.apache.log4j.Logger;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.helpers.PairComparator_FirstString;
+import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.xsd.ObjectProperties;
-import dk.dbc.opensearch.xsd.Property;
-import dk.dbc.opensearch.xsd.PropertyType;
+import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.xsd.ContentDigest;
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
 import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
 import dk.dbc.opensearch.xsd.DigitalObject;
+import dk.dbc.opensearch.xsd.ObjectProperties;
+import dk.dbc.opensearch.xsd.Property;
+import dk.dbc.opensearch.xsd.PropertyType;
+import dk.dbc.opensearch.xsd.types.ContentDigestTypeTYPEType;
 import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
 import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
 import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
 import dk.dbc.opensearch.xsd.types.StateType;
-import dk.dbc.opensearch.xsd.types.ContentDigestTypeTYPEType;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerConfigurationException;
-import java.util.Collections;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import java.io.ObjectOutputStream;
-import java.io.ByteArrayOutputStream;
+import org.apache.axis.encoding.Base64;
+import org.apache.log4j.Logger;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
-import dk.dbc.opensearch.common.helpers.FirstStringComparator;
-import dk.dbc.opensearch.common.helpers.SecondComparator;
 
 public class FedoraTools {
 
     static Logger log = Logger.getLogger("FedoraHandler");
 
-    public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException 
+    public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
 {
+    log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
+    
         Date now = new Date(System.currentTimeMillis());
         return constructFoxml(cargo, nextPid, label, now);
     }
 
     public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label, Date now) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
+        log.debug( String.format( "constructFoxml( cargo, nexPid='%s', label='%s', now) called", nextPid, label ) );
+
+        // Setting properties
         ObjectProperties op = new ObjectProperties();
 
         Property pState = new Property();
@@ -83,6 +87,7 @@ public class FedoraTools {
         pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
         /** \todo: set correct value for owner of the Digital Object*/
         pOwner.setVALUE( "user" );
+
 
         // createdDate
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
@@ -100,18 +105,21 @@ public class FedoraTools {
                                             (Property) pCreatedDate, (Property) pLastModifiedDate };
         op.setProperty(props);
 
+        log.debug( "Properties set, constructing the DigitalObject" );
         DigitalObject dot = new DigitalObject();
         dot.setObjectProperties(op);
         dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
-        dot.setPID( nextPid ); //
+        dot.setPID( nextPid ); 
 
         int cargo_count = cargo.getItemsCount();
-
+        log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
 
         
-        FirstStringComparator firstComp = new FirstStringComparator();
-        SecondComparator secondComp = new SecondComparator();
+        log.debug( "Constructing adminstream" );
+        PairComparator_FirstString firstComp = new PairComparator_FirstString();
+        PairComparator_SecondInteger secondComp = new PairComparator_SecondInteger();
 
+        // Constructing list with datastream indexes and id
         ArrayList< Pair < String, Integer > > lst = new  ArrayList< Pair < String, Integer > >();
         for(int i = 0; i < cargo_count; i++){
             CargoObject c = cargo.getData().get( i );
@@ -119,6 +127,7 @@ public class FedoraTools {
         }
         Collections.sort( lst, firstComp);
 
+        // Add a number to the id according to the number of datastreams with this datastreamname
         int j = 0;
         DataStreamNames dsn = null;
         ArrayList< Pair < String, Integer > > lst2 = new  ArrayList< Pair < String, Integer > >();
@@ -160,7 +169,7 @@ public class FedoraTools {
             }
 
         root.appendChild( (Node) streams );
-
+        // Transform document to xml string
         Source source = new DOMSource((Node) root );
         StringWriter stringWriter = new StringWriter();
         Result result = new StreamResult(stringWriter); 
@@ -170,48 +179,29 @@ public class FedoraTools {
         String admStreamString = stringWriter.getBuffer().toString();
         log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
 
-        //ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        //ObjectOutputStream oStream = new ObjectOutputStream( bStream );
-        //oStream.writeObject ( admStream );
-
+        // add teh adminstream to the cargoContainer
         byte[] byteAdmArray = admStreamString.getBytes();
-        // System.out.println( byteAdmArray );
-        //System.out.println( byteAdmArray.length +" " +admStreamString.length() );
         cargo.add( DataStreamNames.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
 
-
+        log.debug( "Constructing foxml byte[] from cargoContainer" );
         cargo_count = cargo.getItemsCount();
+
         log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
         Datastream[] dsArray = new Datastream[ cargo_count ];
-
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getData().get( i );
-            
-            System.out.println("adding "+lst2.get( i ).getFirst() );
-
             dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
         }
 
         log.debug( "Successfully contructed datastreams for each CargoObject in the CargoContainer" );
-        //dsArray[ cargo_count ] = constructDatastream( co, dateFormat, timeNow );
-        //System.out.println( dsArray.length );
 
-        log.debug( String.format( "length of datastream array=%s", dsArray.length ) );
+        log.debug( String.format( "Successfully contructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
 
+        // add the streams to the digital object
         dot.setDatastream( dsArray );
-        /**
-         * Debug!!!!
-         */
-       //  System.out.println("dsArray size: "+ dsArray.length );
-//         CargoContainer testCC = new CargoContainer( dot );
-//         System.out.println( "testCC.getItemsCount() :"+testCC.getItemsCount() );
- 
-        /**
-         * Debug!!!! 
-         *
-         */
-
+  
+        log.debug( "Marshalling the digitalObject to a byte[]" );
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
         Marshaller m = new Marshaller(outW); // IOException
@@ -219,7 +209,7 @@ public class FedoraTools {
         log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
         byte[] ret = out.toByteArray();
 
-        log.debug( String.format( "length of return array=%s", ret.length ) );
+        log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
         return ret;
     }
 
@@ -256,8 +246,6 @@ public class FedoraTools {
 
 
         System.out.println("itemID "+itemID);
-        //dataStreamElement.setID( co.getFormat() );
-        //dataStreamElement.setID( co.getDataStreamName( "test" ) );
         dataStreamElement.setID( itemID );
         /**
          * \todo: State type defaults to active. Client should interact with
@@ -281,7 +269,6 @@ public class FedoraTools {
 
         dVersTypeChoice.setBinaryContent(ba);
 
-
         dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
 
         String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
@@ -292,12 +279,7 @@ public class FedoraTools {
         long lengthFormatted = (long) srcLen;
 
         dataStreamVersionElement.setSIZE( lengthFormatted );
-
-        //binaryContent.setDIGEST( );//Base64.encode( ba ) );
-        //binaryContent.setTYPE( ContentDigestTypeTYPEType.DISABLED );
-
-
-        //dataStreamVersionElement.setContentDigest( binaryContent );
+        
         DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
         dataStreamElement.setDatastreamVersion( dsvArray );
 
@@ -305,79 +287,4 @@ public class FedoraTools {
 
         return dataStreamElement;
     }
-
-    public static CargoContainer constructCargoContainerFromDOT( DigitalObject dot ) throws ParserConfigurationException, SAXException, IOException
-    {
-            log.debug( "Constructor( DigitalObject ) called" );
-            
-            CargoContainer data = new CargoContainer();
-
-            Datastream adminStream = null;
-            Datastream[] streams = dot.getDatastream();
-
-            for( Datastream stream : streams ){
-                if ( DataStreamNames.getDataStreamNameFrom( stream.getID() ) == DataStreamNames.AdminData ){
-                    adminStream = stream;
-                }            
-            }
-            
-            if( adminStream == null ){
-            	log.fatal( "The digitial object did not contain an administration stream" );
-            	throw new NullPointerException( "Could not read adminstream from Datastream in the DigitalObject" );
-            }
-            DatastreamVersionTypeChoice datastreamVersionTypeChoice = adminStream.getDatastreamVersion( 0 ).getDatastreamVersionTypeChoice();
-            byte[] ba = datastreamVersionTypeChoice.getBinaryContent();
-            
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document admDoc = builder.parse( new ByteArrayInputStream( ba ) );
-
-            Element root = admDoc.getDocumentElement();
-            Element streamsElem = (Element) root.getElementsByTagName( "streams" ).item( 0 );
-            NodeList streamList = streamsElem.getElementsByTagName( "stream" );
-
-            //System.out.println( "number of <stream> elements " +streamList.getLength() );
-
-            //in this loop we dont add the adminstream
-
-            for( int i=0; i < streamList.getLength(); i++){
-                Element streamElem = (Element) streamList.item( i );
-
-                DataStreamNames datastreamName = DataStreamNames.getDataStreamNameFrom( streamElem.getAttribute( "id" ) ); 
-                String language = streamElem.getAttribute( "lang" );
-                String format = streamElem.getAttribute( "format" );
-                String mimetype = streamElem.getAttribute( "mimetype" );
-                String submitter = streamElem.getAttribute( "submitter");
-                /** \todo: index is not used as a variable here... Remove?*/
-                int index = new Integer( streamElem.getAttribute( "index" ) );
-
-                DatastreamVersionTypeChoice tmp_datastreamVersionTypeChoice = streams[i].getDatastreamVersion( 0 ).getDatastreamVersionTypeChoice();
-                byte[] barray = tmp_datastreamVersionTypeChoice.getBinaryContent();
-
-                data.add( datastreamName, format, submitter, language, mimetype, barray );
-            }
-            /**
-             * \todo: Do we need the adminStream at all now?
-             */
-            //Adding the Adminstream to the CargoContainer
-
-            data.add( DataStreamNames.AdminData, "adminstream", "dbc", "da", "text/xml", ba );
-            
-            return data;
-        }
-
-//     public static CargoContainer constructCargoContainer( DigitalObject dot ){
-//         log.debug( "Constructor( DigitalObject ) called" );
-            
-//         CargoContainer data = new CargoContainer();
-//         // if validate
-//         String adminStream_id = "";
-//         Datastream[] datastreams = dot.getDatastream();
-//        //  for (Datastream datastream : datastreams ){        
-// //             if ( DataStreamNames.getDataStreamNameFrom( datastream.getID() ) == DataStreamNames.AdminData ){
-// //                  adminStream_id = datastream.getID();
-// //             }            
-// //        }
-        
-//     }
 }
