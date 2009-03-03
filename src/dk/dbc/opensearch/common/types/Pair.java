@@ -4,7 +4,7 @@ package dk.dbc.opensearch.common.types;
  * InputPair
  * not for use when values are to be compared until an equals() method is implemented
  */
-public class Pair<E, V> 
+public class Pair<E, V>// implements Comparator
 {
     /**
      *
@@ -58,5 +58,4 @@ public class Pair<E, V>
     {
         return first.hashCode() + second.hashCode();
     }
-
 }

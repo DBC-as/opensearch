@@ -45,7 +45,6 @@ public class JobMapCreator
      * @param classType the class of the calling object, either DatadockMain or PTIMain
      * @returns the map containing a list of tasks for each pair of submitter, format
      * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
-     * \Todo: Make the method static when we are not using URL, getClass and getResource...
      */
 
     public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException 
