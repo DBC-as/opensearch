@@ -1,7 +1,7 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
@@ -54,7 +54,7 @@ public class FaktalinkHarvester implements IHarvestable
     	/** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
-        DataStreamNames dataStreamName = DataStreamNames.OriginalData;
+        DataStreamType dataStreamName = DataStreamType.OriginalData;
         InputStream data;
 		try {
 			data = FileHandler.readFile( this.path );

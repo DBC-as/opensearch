@@ -24,7 +24,7 @@ public class CargoObjectInfo
 	/**
 	 * Property naming type of data stream.
 	 */
-	private DataStreamNames dataStreamName;
+	private DataStreamType dataStreamName;
 	
 	private String format;
 
@@ -58,7 +58,7 @@ public class CargoObjectInfo
      * @param format The format of the data
      * @param indexable true if the material can be indexed, false otherwise
      */
-    CargoObjectInfo ( DataStreamNames dataStreamName, CargoMimeType mimeType, String lang, String submitter, String format )
+    CargoObjectInfo ( DataStreamType dataStreamName, CargoMimeType mimeType, String lang, String submitter, String format )
     {
     	this.dataStreamName = dataStreamName;
     	this.format = format;
@@ -162,7 +162,7 @@ public class CargoObjectInfo
         return language;
     }
     
-    DataStreamNames getDataStreamName(){
+    DataStreamType getDataStreamName(){
     	return dataStreamName;    	
     }
     

@@ -16,7 +16,7 @@ import java.net.URI;
 
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.os.FileHandler;
 

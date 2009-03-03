@@ -16,7 +16,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
@@ -193,7 +193,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
         long length = 0;
         for( CargoObject co : cc.getData() )
         {
-            if( co.getDataStreamName() == DataStreamNames.OriginalData )
+            if( co.getDataStreamName() == DataStreamType.OriginalData )
                 mimeType = co.getMimeType();
             
             length += co.getContentLength();

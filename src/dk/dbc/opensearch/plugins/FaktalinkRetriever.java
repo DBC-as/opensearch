@@ -7,7 +7,7 @@ import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 
 import fedora.server.types.gen.DatastreamDef;
 import fedora.server.types.gen.MIMETypedStream;
@@ -101,7 +101,7 @@ public class FaktalinkRetriever extends FedoraHandle implements IPluggable
 
                 cargo = new CargoContainer();
                 
-                DataStreamNames dsn = DataStreamNames.OriginalData;
+                DataStreamType dsn = DataStreamType.OriginalData;
                 cargo.add( dsn, itemId, pidNS, language, def.getMIMEType(), datastr );
             }
         }

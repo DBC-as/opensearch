@@ -5,7 +5,7 @@ import dk.dbc.opensearch.common.helpers.PairComparator_FirstString;
 import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.xsd.ContentDigest;
 import dk.dbc.opensearch.xsd.Datastream;
@@ -129,19 +129,19 @@ public class FedoraTools {
 
         // Add a number to the id according to the number of datastreams with this datastreamname
         int j = 0;
-        DataStreamNames dsn = null;
+        DataStreamType dsn = null;
         ArrayList< Pair < String, Integer > > lst2 = new  ArrayList< Pair < String, Integer > >();
         for( Pair p : lst){
-            if( dsn != DataStreamNames.getDataStreamNameFrom( (String) p.getFirst() ) ){
+            if( dsn != DataStreamType.getDataStreamNameFrom( (String) p.getFirst() ) ){
                 j = 0;
             }
             else{
                 j += 1;
             }
-            dsn = DataStreamNames.getDataStreamNameFrom( (String) p.getFirst() );
+            dsn = DataStreamType.getDataStreamNameFrom( (String) p.getFirst() );
             lst2.add( new Pair( p.getFirst()+"."+j , p.getSecond() ) );
         }
-        lst2.add( new Pair( DataStreamNames.AdminData.getName(), lst2.size() ) );
+        lst2.add( new Pair( DataStreamType.AdminData.getName(), lst2.size() ) );
         Collections.sort( lst2, secondComp);
         
         // Constructing adm stream
@@ -181,7 +181,7 @@ public class FedoraTools {
 
         // add teh adminstream to the cargoContainer
         byte[] byteAdmArray = admStreamString.getBytes();
-        cargo.add( DataStreamNames.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
+        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
 
         log.debug( "Constructing foxml byte[] from cargoContainer" );
         cargo_count = cargo.getItemsCount();

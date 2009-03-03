@@ -17,7 +17,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.statistics.Estimate;
 //import dk.dbc.opensearch.plugins.Retrieve;
 import dk.dbc.opensearch.xsd.DigitalObject;
@@ -138,7 +138,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
         {
             log.debug( String.format( "CALL CALLED handle: '%s'", fedoraPid ) );
 
-            MIMETypedStream ds = super.fea.getDatastreamDissemination(fedoraPid, DataStreamNames.AdminData.getName(), null);
+            MIMETypedStream ds = super.fea.getDatastreamDissemination(fedoraPid, DataStreamType.AdminData.getName(), null);
             byte[] adminStream = ds.getStream();
 
             CargoContainer cc = new CargoContainer();
@@ -159,7 +159,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
                 MIMETypedStream dstream = super.fea.getDatastreamDissemination(fedoraPid, streamID, null);
 
 
-                cc.add( DataStreamNames.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
+                cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                         stream.getAttribute( "format" ),
                         stream.getAttribute( "submitter" ),
                         stream.getAttribute( "lang" ),
@@ -171,7 +171,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
             log.debug( String.format(" cc is null = %s", null == cc) );
 
             // Get the submitter and format from the CargoContainer
-            CargoObject co = cc.getFirstCargoObject( DataStreamNames.OriginalData );
+            CargoObject co = cc.getFirstCargoObject( DataStreamType.OriginalData );
             log.debug( String.format(" co is null = %s", null == co) );
             String submitter =  co.getSubmitter();
             String format = co.getFormat();

@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 
-import dk.dbc.opensearch.xsd.DigitalObject;
-import dk.dbc.opensearch.xsd.Datastream;
-import dk.dbc.opensearch.xsd.DatastreamVersion;
-import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
+// import dk.dbc.opensearch.xsd.DigitalObject;
+// import dk.dbc.opensearch.xsd.Datastream;
+// import dk.dbc.opensearch.xsd.DatastreamVersion;
+// import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -51,10 +51,7 @@ public class CargoContainer
     {
     	this.data = new ArrayList< CargoObject >();
     }
-    
-
-
-    
+  
     /**
      * Add CargoObject to internal data representation.
      * 
@@ -66,7 +63,7 @@ public class CargoContainer
      * @return TRUE if add operation finishes successfully.
      * @throws IOException
      */
-    public void add( DataStreamNames dataStreamName, String format, String submitter, String language, String mimetype, byte[] data ) throws IOException
+    public void add( DataStreamType dataStreamName, String format, String submitter, String language, String mimetype, byte[] data ) throws IOException
     {
     	CargoObject co = new CargoObject( dataStreamName, mimetype, language, submitter, format, data );
     	this.data.add( co );    	
@@ -84,7 +81,7 @@ public class CargoContainer
     }
 
 
-    public CargoObject getFirstCargoObject( DataStreamNames dsn)
+    public CargoObject getFirstCargoObject( DataStreamType dsn)
     {
         CargoObject rco = null;
         for( CargoObject co : data )

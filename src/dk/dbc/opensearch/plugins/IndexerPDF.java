@@ -3,7 +3,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 
 import org.compass.core.CompassSession;
@@ -27,7 +27,7 @@ public class IndexerPDF implements IIndexer
 
     public long getProcessTime( CargoContainer cargo, CompassSession session ) 
     {
-        CargoObject co = cargo.getFirstCargoObject( DataStreamNames.OriginalData );
+        CargoObject co = cargo.getFirstCargoObject( DataStreamType.OriginalData );
         byte[] data = co.getBytes();
 
         //10: read pdf from byte[] (pdf object from inputstream)

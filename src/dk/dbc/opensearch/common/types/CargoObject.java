@@ -44,7 +44,7 @@ public class CargoObject
      * @param data
      * @throws IOException
      */
-    public CargoObject( DataStreamNames dataStreamName, String mimetype, String language, String submitter, String format, byte[] data ) throws IOException
+    public CargoObject( DataStreamType dataStreamName, String mimetype, String language, String submitter, String format, byte[] data ) throws IOException
     {
         CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
         CargoObjectInfo coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format );
@@ -58,7 +58,7 @@ public class CargoObject
      * 
      * @return the enum value of the name of the Datastream
      */
-    public DataStreamNames getDataStreamName()
+    public DataStreamType getDataStreamName()
     {
         return this.pair.getFirst().getDataStreamName();
     }
@@ -121,6 +121,7 @@ public class CargoObject
         return pair.getSecond().length;
     }
 
+
     /**
      * Gets the format (type of material) of the CargoObject
      * 
@@ -143,6 +144,7 @@ public class CargoObject
         return pair.getFirst().getLanguage();
     }
 
+
     /**
      * Returns the mimetype of the data associated with the underlying
      * CargoObjectInfo
@@ -153,6 +155,7 @@ public class CargoObject
     {
         return pair.getFirst().getMimeType();
     }
+
 
     /**
      * Returns the name of the submitter of the data associated with

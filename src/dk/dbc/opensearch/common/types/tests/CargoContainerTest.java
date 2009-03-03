@@ -5,7 +5,7 @@ package dk.dbc.opensearch.common.types.tests;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
 import fedora.common.policy.DatastreamNamespace;
 import fedora.server.types.gen.Datastream;
@@ -35,14 +35,14 @@ public class CargoContainerTest
     private String submitter;
     //private InputStream data;
     private byte[] data;
-    private DataStreamNames dsn;
+    private DataStreamType dsn;
     String teststring;
 
 
     @Before
         public void SetUp() throws UnsupportedEncodingException
     {
-        dsn = DataStreamNames.getDataStreamNameFrom( "originalData" );
+        dsn = DataStreamType.getDataStreamNameFrom( "originalData" );
         format = "forfatterweb";
         language = "DA";
         mimetype = "text/xml";

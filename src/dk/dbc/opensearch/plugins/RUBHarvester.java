@@ -8,7 +8,7 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamNames;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -125,7 +125,7 @@ public class RUBHarvester implements IHarvestable{
         String lang = language.item(0).getNodeValue();
 
         try {
-			cargoContainer.add( DataStreamNames.DublinCoreData, format, submitter, lang, mimetype, xmlBytes );
+			cargoContainer.add( DataStreamType.DublinCoreData, format, submitter, lang, mimetype, xmlBytes );
 		} catch (IOException ioe) {
 			throw new PluginException( "Could not construct CargoContainer", ioe );
 		}
@@ -152,7 +152,7 @@ public class RUBHarvester implements IHarvestable{
 		}
 
         try {
-			cargoContainer.add( DataStreamNames.OriginalData, format, submitter, lang, mimetype, pdfBytes );
+			cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, pdfBytes );
 		} catch (IOException ioe) {
 			throw new PluginException( "Could not construct CargoContainer", ioe );
 		}
