@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
-    app_list = [ 'datadock', 'pti' ]
+    app_list = [ 'datadock', 'pti', 'both' ]
 
     if options.listapps:
         print "Available applications:\n"
@@ -160,5 +160,8 @@ if __name__ == '__main__':
     if len( args ) != 1:
         sys.exit( parser.print_help() )
 
-    main( options.app, args[0] )
-
+    if options.app == 'both':
+        main( 'pti', args[0] )
+        main( 'datadock', args[0] )
+    else:
+        main( options.app, args[0] )

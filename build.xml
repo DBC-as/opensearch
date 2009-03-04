@@ -30,6 +30,20 @@
       <param name="dependency.target" value="toplevel.dist_pti" />
     </antcall>
   </target>
+	
+  <target name="dist_datadock" description="Generate distribution jar">
+    <antcall target="clean-all"/>
+      <antcall target="${ant.project.name}">
+        <param name="dependency.target" value="toplevel.dist_datadock" />
+      </antcall>
+  </target>
+	
+  <target name="dist_pti" description="Generate distribution jar">
+    <antcall target="clean-all"/>
+    <antcall target="${ant.project.name}">
+      <param name="dependency.target" value="toplevel.dist_pti" />
+    </antcall>
+  </target>
 		  
   <target name="compile-tests" description="Builds tests">
   	<antcall target="${ant.project.name}">
