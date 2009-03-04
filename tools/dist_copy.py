@@ -85,7 +85,7 @@ scp_dist = "scp -r "
 
 def __set_copy_from_folder( fldr ):
     global scp_dist
-    scp_dist += folder + '/* '
+    scp_dist += fldr + '/* '
 
 
 def __set_copy_to_server( srv ):
