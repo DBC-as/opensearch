@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.apache.log4j.Logger;
 
 /**
  * \ingroup common.types
@@ -27,7 +27,7 @@ public class CargoObject
      * Internal data structure for the CargoObject class.
      */
     Pair< CargoObjectInfo, byte[] > pair;
-
+    Logger log = Logger.getLogger( CargoObject.class );
 
     /**
      * Constructor for the CargoObject class. Here an object of the
@@ -48,7 +48,7 @@ public class CargoObject
     {
         CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
         CargoObjectInfo coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format );
-
+        log.debug( String.format( "length of data: %s", data.length ) );
         pair = new Pair<CargoObjectInfo, byte[] >( coi, data );
     }
 

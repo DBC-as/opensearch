@@ -42,7 +42,7 @@ public class CargoContainer
 	
     /** The internal representation of the data contained in the CC*/
     private ArrayList< CargoObject > data;
-    
+    private IndexingAlias indexingAlias = null;
     
     /**
      * Constructor initializes internal representation of data, i.e., ArrayList of CargoObjects
@@ -66,7 +66,12 @@ public class CargoContainer
     public void add( DataStreamType dataStreamName, String format, String submitter, String language, String mimetype, byte[] data ) throws IOException
     {
     	CargoObject co = new CargoObject( dataStreamName, mimetype, language, submitter, format, data );
+
+        log.debug( String.format("length of data in the corgobobject just created: %s ",co.getContentLength() ) );
+
     	this.data.add( co );    	
+        log.debug("cargoObject added to container");
+        log.debug( String.format( "number of CargoObjects: %s", this.getItemsCount() ) );
     }
 
 
@@ -100,5 +105,21 @@ public class CargoContainer
     public int getItemsCount()
     {
     	return data.size();
+    }
+
+    /**
+     * setter for the indexingAlias
+     */
+    public void setIndexingAlias( IndexingAlias indexingAlias )
+    {
+        this.indexingAlias = indexingAlias;
+    }
+
+    /**
+     * getter for the indexing alias
+     */
+    public IndexingAlias getIndexingAlias()
+    {
+        return indexingAlias;
     }
 }

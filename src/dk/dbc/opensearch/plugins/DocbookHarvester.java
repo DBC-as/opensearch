@@ -9,6 +9,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class DocbookHarvester implements IHarvestable
 {
     Logger log = Logger.getLogger( DocbookHarvester.class );
 
-    private CargoContainer cargo;
+    //private CargoContainer cargo;
     private String submitter;
     private String format;
     private String path;
@@ -35,11 +36,11 @@ public class DocbookHarvester implements IHarvestable
     
     public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
     {
-        cargo = new CargoContainer();
+        //cargo = new CargoContainer();
     	this.path = job.getUri().getPath();
     	this.submitter = job.getSubmitter();
     	this.format = job.getFormat();
-		
+        //cargo.setIndexingAlias( IndexingAlias.Article );		
         return createCargoContainerFromFile();
     }
 
@@ -51,8 +52,8 @@ public class DocbookHarvester implements IHarvestable
      */
     private CargoContainer createCargoContainerFromFile() throws PluginException 
     {
-    	cargo = new CargoContainer();
-    	
+    	CargoContainer cargo = new CargoContainer();
+    	cargo.setIndexingAlias( IndexingAlias.Article );
     	/** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";

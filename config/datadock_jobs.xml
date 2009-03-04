@@ -7,9 +7,27 @@
     <plugin name="docbookharvester" position="0"/>
     <plugin name="docbookannotate" position="1"/>
   </job>
-
-  <job submitter="dbc" format="forfatterweb">    
+  <job submitter="dbc" format="forfatterweb">
     <plugin name="docbookharvester" position="0"/>
     <plugin name="docbookannotate" position="1"/>
+  </job>
+  <job submitter="åkb" format="danmarcxchange">
+    <plugin name="marcxchangeharvester" position="0"/>
+  </job>
+  <job submitter="åkb" format="ebsco">
+    <plugin name="marcxchangeharvester" position="0"/>
+  </job>
+  <job submitter="åkb" format="ebrary">
+    <plugin name="marcxchangeharvester" position="0"/>
+  </job>
+  <job submitter="kkb" format="danmarcxchange">
+    <plugin name="marcxchangeharvester" position="0"/>
+  </job>
+  <job submitter="dbc" format="materialevurderinger">
+    <plugin name="docbookharvester" position="0"/>
+    <plugin name="docbookannotate" position="1"/>
+  </job>
+  <job submitter="dbc" format="dr_forfatteratlas">
+    <plugin name="marcxchangeharvester" position="0"/>
   </job>
 </job_list>

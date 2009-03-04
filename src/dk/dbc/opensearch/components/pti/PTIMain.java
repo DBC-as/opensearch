@@ -12,6 +12,7 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.config.PtiConfig;
 
 import org.compass.core.Compass;
 //import fedora.client.FedoraClient;
@@ -49,28 +50,33 @@ public class PTIMain
     static PTIPool ptiPool = null;
     static PTIManager ptiManager = null;
 
-    static XMLConfiguration config = null;
+    //static XMLConfiguration config = null;
     static int queueSize;
     static int corePoolSize;
     static int maxPoolSize;
     static long keepAliveTime;
     static int pollTime;
-    static URL cfgURL;
+    //static URL cfgURL;
     static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
     public PTIMain()  throws ConfigurationException, ParserConfigurationException, SAXException, IOException{
 
-        cfgURL = getClass().getResource("/config.xml");
+        //        cfgURL = getClass().getResource("/config.xml");
 
-        config = new XMLConfiguration( cfgURL );
+        //config = new XMLConfiguration( cfgURL );
         //jobmap
         jobMap = JobMapCreator.getMap( this.getClass() );
 
-        pollTime = config.getInt( "pti.main-poll-time" );
-        queueSize = config.getInt( "pti.queuesize" );
-        corePoolSize = config.getInt( "pti.corepoolsize" );
-        maxPoolSize = config.getInt( "pti.maxpoolsize" );
-        keepAliveTime = config.getInt( "pti.keepalivetime" );
+        pollTime = PtiConfig.getPtiMainPollTime();
+        queueSize = PtiConfig.getPtiQueueSize();
+        corePoolSize = PtiConfig.getPtiCorePoolSize();
+        maxPoolSize = PtiConfig.getPtiMaxPoolSize();
+        keepAliveTime = PtiConfig.getPtiKeepAliveTime();
+//         pollTime = config.getInt( "pti.main-poll-time" );
+//         queueSize = config.getInt( "pti.queuesize" );
+//         corePoolSize = config.getInt( "pti.corepoolsize" );
+//         maxPoolSize = config.getInt( "pti.maxpoolsize" );
+//         keepAliveTime = config.getInt( "pti.keepalivetime" );
     }
 
 

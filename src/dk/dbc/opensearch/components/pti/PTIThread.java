@@ -18,6 +18,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;;
 import dk.dbc.opensearch.common.statistics.Estimate;
 //import dk.dbc.opensearch.plugins.Retrieve;
 import dk.dbc.opensearch.xsd.DigitalObject;
@@ -143,12 +144,16 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
 
             CargoContainer cc = new CargoContainer();
 
-            log.debug( new String(adminStream));
+            //log.debug( new String(adminStream));
             DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFact.newDocumentBuilder();
             ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
             Document admDoc = docBuilder.parse( new InputSource( bis ) );
             Element root = admDoc.getDocumentElement();
+            Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" ).item( 0 );
+            String indexingAliasName = indexingAliasElem.getAttribute( "name" );
+            cc.setIndexingAlias( IndexingAlias.getIndexingAlias( indexingAliasName )  );
+
             NodeList streamsNL = root.getElementsByTagName( "streams" );
             Element streams = (Element)streamsNL.item(0);
             NodeList streamNL = streams.getElementsByTagName( "stream" );
@@ -168,11 +173,11 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
             }
 
             //CargoContainer cc = FedoraTools.constructCargoContainer( dot, fedoraPid );
-            log.debug( String.format(" cc is null = %s", null == cc) );
+            //            log.debug( String.format(" cc is null = %s", null == cc) );
 
             // Get the submitter and format from the CargoContainer
             CargoObject co = cc.getFirstCargoObject( DataStreamType.OriginalData );
-            log.debug( String.format(" co is null = %s", null == co) );
+            //log.debug( String.format(" co is null = %s", null == co) );
             String submitter =  co.getSubmitter();
             String format = co.getFormat();
             log.debug( String.format( "the submitter %s", submitter ) );

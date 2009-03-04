@@ -62,7 +62,7 @@ public class FileHarvest implements IHarvester
      * 
      * @param path The path to the directory to harvest from.
      * 
-     * @throws IllegalArgumentException if the patt given is not a directory.
+     * @throws IllegalArgumentException if the path given is not a directory.
      */
     public FileHarvest( File path ) throws IllegalArgumentException 
     {

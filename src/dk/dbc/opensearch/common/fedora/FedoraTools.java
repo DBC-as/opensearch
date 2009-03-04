@@ -150,6 +150,11 @@ public class FedoraTools {
 
         Document admStream = builder.newDocument();
         Element root = admStream.createElement( "admin-stream" );
+        
+        Element indexingaliasElem = admStream.createElement( "indexingalias" );
+        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias().getName() );
+        root.appendChild( (Node)indexingaliasElem );
+        
         Node streams = admStream.createElement( "streams" );
         
         for(int i = 0; i < cargo_count; i++)
@@ -179,7 +184,7 @@ public class FedoraTools {
         String admStreamString = stringWriter.getBuffer().toString();
         log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
 
-        // add teh adminstream to the cargoContainer
+        // add the adminstream to the cargoContainer
         byte[] byteAdmArray = admStreamString.getBytes();
         cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
 
@@ -265,7 +270,7 @@ public class FedoraTools {
 
         DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
 
-        ContentDigest binaryContent = new ContentDigest();
+        //ContentDigest binaryContent = new ContentDigest();
 
         dVersTypeChoice.setBinaryContent(ba);
 

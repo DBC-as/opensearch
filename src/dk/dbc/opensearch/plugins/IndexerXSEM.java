@@ -66,6 +66,10 @@ public class IndexerXSEM implements IIndexer
         long processTime = 0;
         Date finishTime = new Date();
 
+        //right know we index all stream in a cc with the same alias. If it should be
+        //different for each stream, each CargoObject should have a IndexingAlias.
+        String indexingAlias = cc.getIndexingAlias().getName();
+
         // Construct doc and Start Transaction
         log.debug( "Starting transaction on running CompassSession" );
 
@@ -73,6 +77,7 @@ public class IndexerXSEM implements IIndexer
         SAXReader saxReader = new SAXReader();
 
         CPMAlias cpmAlias = null;
+        log.debug( String.format( "number of streams in cc: %s", cc.getItemsCount() ) );
         ArrayList< CargoObject > list = cc.getData();
         try {
         	cpmAlias = new CPMAlias();			
@@ -86,10 +91,12 @@ public class IndexerXSEM implements IIndexer
         
         for( CargoObject co : list )
         {
-            String format = co.getFormat();
+            //String format = co.getFormat();
+            //format = "article";
+            //log.debug( String.format( "format of CargoObject: %s", format ) );
             boolean isValidAlias = false;
             try {
-                isValidAlias = cpmAlias.isValidAlias( format );
+                isValidAlias = cpmAlias.isValidAlias( indexingAlias );
             } catch ( ParserConfigurationException pce ) {
                 throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
             } catch ( SAXException se ) {
@@ -100,24 +107,26 @@ public class IndexerXSEM implements IIndexer
             
             if( ! isValidAlias )
             {
-            	throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", format ) );
+            	throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
             }
             else
             {
                 byte[] bytes = co.getBytes();
+                log.debug( new String( bytes ) );
                 ByteArrayInputStream is = new ByteArrayInputStream( bytes );
                 Document doc = null;
                 try {
                     doc = saxReader.read( is );
                 } catch (DocumentException de) {
-                    throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from format=%s, mimetype=%s", co.getFormat(), co.getMimeType() ), de );
+                    throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
                 }
 
                 // this log line is _very_ verbose, but useful in a tight situation
                 // log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
                 /** \todo: Dom4jAliasedXmlObject constructor might throw some unknown exception */
-                AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( co.getFormat(), doc.getRootElement() );
+                AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( indexingAlias, doc.getRootElement() );
+                //AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( co.getFormat(), doc.getRootElement() );
 
                 log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
@@ -136,8 +145,13 @@ public class IndexerXSEM implements IIndexer
                     throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
                 }
 
-                log.debug( "Saving aliased xml object to the index" );
-                session.save( xmlObject );
+                log.debug( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
+                try{
+                    session.save( xmlObject );
+                }catch( Exception e ){
+                    log.fatal( String.format( "class of thrown exception: %s, message: %s ", e.getClass(), e.getMessage() ) );
+                    throw new PluginException( "debugging...", e);
+                }
                 log.debug( "Committing index on transaction" );
                 
                 trans.commit();

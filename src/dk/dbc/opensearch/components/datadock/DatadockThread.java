@@ -198,7 +198,8 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
             
             length += co.getContentLength();
         }
-
+        if( cc.getItemsCount() < 1 )
+            log.error( "The cargocontainer has no data!!!!!!!" );
         // Store the CargoContainer in the fedora repository
         byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );

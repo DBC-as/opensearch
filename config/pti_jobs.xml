@@ -1,5 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- List of job to be executed using plugins -->
 <job_list>
   <job submitter="dbc" format="faktalink">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="dbc" format="forfatterweb">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="åkb" format="danmarcxchange">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="åkb" format="ebsco">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="åkb" format="ebrary">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="kkb" format="danmarcxchange">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="dbc" format="materialevurderinger">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="dbc" format="dr_forfatteratlas">
     <plugin name="indexerxsem" position="0"/>
   </job>
 </job_list>

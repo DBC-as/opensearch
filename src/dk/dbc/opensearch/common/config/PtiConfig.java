@@ -13,14 +13,14 @@ public class PtiConfig extends Config
 	/* ***********************
 	 * PTI
 	 * *********************/
-	private String getMainPollTime()
+	private int getMainPollTime()
 	{
-		String ret = config.getString( "pti.main-poll-time" );
+		int ret = config.getInt( "pti.main-poll-time" );
 		return ret;
 	}
 	
 	
-	public static String getPtiMainPollTime() 
+	public static int getPtiMainPollTime() 
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getMainPollTime();

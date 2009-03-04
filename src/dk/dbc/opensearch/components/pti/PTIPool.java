@@ -78,7 +78,8 @@ public class PTIPool
          this.compass = compass;
 
          jobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
-
+         
+         //should use the config class
          
         URL cfgURL = getClass().getResource("/config.xml");
         config = new XMLConfiguration( cfgURL );
@@ -145,12 +146,17 @@ public class PTIPool
                 }
                 catch( ExecutionException ee )
                 {                    
-                    log.fatal( "Exception caught from job" );    
+                    log.error( "Exception caught from job" );    
                     // getting exception from thread
                     Throwable cause = ee.getCause();
                     RuntimeException re = new RuntimeException( cause );
-                    log.error( String.format( "Exception Caught: '%s'\n'%s'" , re.getMessage(), re.getStackTrace() ) );
-                    // throw re; //shouldnt throw just because thread throw
+                    log.error( String.format( "Exception Caught: '%s'" , re.getMessage() ) );
+                    StackTraceElement[] expStack =  re.getStackTrace();
+                    for( int i = 0; i < expStack.length; i++ )
+                        {
+                            log.error( String.format( "Trace element %s : %s", i, expStack[i].toString() ) );
+                        }                   
+ // throw re; //shouldnt throw just because thread throw
                 }
                 log.debug( String.format( "adding (queueID='%s') to finished jobs", queueID ) );
                 Pair pair = new Pair< Long, Integer >( l, queueID );
