@@ -16,13 +16,13 @@ DECLARE
     r processqueue%rowtype;
 BEGIN
     FOR r IN SELECT * FROM processqueue
-    WHERE processing = 'N'
-    LOOP
+    WHERE processing = 'N' LOOP
         UPDATE processqueue
-        SET processing = 'Y';
+        SET processing = 'Y'
+        WHERE queueid = r.queueid;
         RETURN NEXT r;
     END LOOP;
     RETURN;
 END
 $BODY$
-LANGUAGE 'plpgsql'
+LANGUAGE 'plpgsql';
