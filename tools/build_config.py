@@ -47,7 +47,7 @@ url    = ET.SubElement( db, "url" )
 user   = ET.SubElement( db, "userID" )
 passwd = ET.SubElement( db, "passwd" )
 driver.text = "org.postgresql.Driver"
-url.text    = "jdbc:postgresql:opensearch"
+url.text    = "jdbc:postgresql:shm"
 user.text   = usern
 passwd.text = usern
 
@@ -63,9 +63,9 @@ keepalive = ET.SubElement( dd, "keepalivetime" )
 poll.text      = "1000" 
 reject.text    = "3000"
 shutdown.text  = "1000"
-queuesz.text   = "20"
-corepool.text  = "3"
-maxpool.text   = "6"
+queuesz.text   = "1"
+corepool.text  = "1"
+maxpool.text   = "1"
 keepalive.text = "10"
 
 #fedora settings
@@ -94,7 +94,7 @@ cpm_xml.text = os.path.join( path, "config/xml.cpm.xml" )
 
 #harvester settings
 folder = ET.SubElement( harvest, "folder" )
-folder.text = os.path.join( path, "Harvest/pollTest/" )
+folder.text = os.path.join( path, "Harvest" )
 
 #pidmanager settings
 num_of_pids = ET.SubElement( pidmng, "num-of-pids-to-retrieve" )
@@ -104,6 +104,7 @@ num_of_pids.text = "10"
 poll      = ET.SubElement( pti, "main-poll-time" )
 reject    = ET.SubElement( pti, "rejected-sleep-time" )
 shutdown  = ET.SubElement( pti, "shutdown-poll-time" )
+resultsz  = ET.SubElement( pti, "queue-resultset-maxsize" )
 queuesz   = ET.SubElement( pti, "queuesize" )
 corepool  = ET.SubElement( pti, "corepoolsize" )
 maxpool   = ET.SubElement( pti, "maxpoolsize" )
@@ -112,10 +113,12 @@ keepalive = ET.SubElement( pti, "keepalivetime" )
 poll.text      = "1000" 
 reject.text    = "3000"
 shutdown.text  = "1000"
-queuesz.text   = "20"
-corepool.text  = "3"
-maxpool.text   = "6"
-keepalive.text = "10"
+resultsz.text  = "20"
+queuesz.text   = "1"
+corepool.text  = "1"
+maxpool.text   = "1"
+keepalive.text = "1"
+
 
 import sys
 

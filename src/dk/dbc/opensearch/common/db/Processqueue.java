@@ -5,24 +5,25 @@
  */
 package dk.dbc.opensearch.common.db;
 
-import org.apache.log4j.Logger;
 
-import com.mallardsoft.tuple.Tuple;
 import com.mallardsoft.tuple.Triple;
+import com.mallardsoft.tuple.Tuple;
 
-import java.sql.Connection;
+import dk.dbc.opensearch.common.db.DBConnection;
+import dk.dbc.opensearch.common.types.Pair;
+
 import java.sql.CallableStatement;
-import java.sql.Statement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.sql.Statement;
 import java.util.NoSuchElementException;
-import org.apache.commons.configuration.ConfigurationException;
-
 import java.util.Vector;
 
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.db.DBConnection;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
+
+
 /**
  * \ingroup tools
  * \brief The Processqueue class handles all communication to the processqueue
@@ -89,6 +90,39 @@ public class Processqueue {
         try{
             stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
             rs = stmt.executeQuery("SELECT * from get_all_posts()");
+            
+            while( rs.next() ){
+                String fedoraHandle = rs.getString( "fedorahandle" );
+                int queueID = rs.getInt( "queueID" );
+
+                log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
+                
+                Pair<String, Integer> pair = new Pair( fedoraHandle, queueID );
+                jobs.add( pair );
+            }
+            con.commit();
+        }
+        finally{
+            // Close database connection
+            rs.close();
+            stmt.close();
+            con.close();
+        }
+        return jobs;
+    }
+
+    public Vector<Pair<String, Integer>> pop( int maxSize ) throws SQLException{
+        log.debug( "Entering Processqueue.popAll()" );
+        
+        Connection con = DBConnection.getConnection();
+        Statement stmt = null;
+        ResultSet rs = null;
+        
+        Vector<Pair<String, Integer>> jobs = new Vector<Pair<String, Integer>>();
+
+        try{
+            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+            rs = stmt.executeQuery( String.format( "SELECT * from get_all_posts( %s)", maxSize ) );
             
             while( rs.next() ){
                 String fedoraHandle = rs.getString( "fedorahandle" );

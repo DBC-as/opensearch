@@ -6,25 +6,28 @@
 
 package dk.dbc.opensearch.components.pti;
 
-import dk.dbc.opensearch.common.types.CompletedTask;
+
+import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
+import java.lang.Integer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.SQLException;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
 
-import dk.dbc.opensearch.common.types.Pair;
-import java.sql.SQLException;
+import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
-import org.apache.commons.configuration.XMLConfiguration;
-import java.net.URL;
-import javax.xml.rpc.ServiceException;
-import java.net.MalformedURLException;
 
 /**
  * \brief the PTIManager manages the startup, running and
@@ -38,6 +41,7 @@ public class PTIManager
     private Processqueue processqueue = null;
 
     private int rejectedSleepTime;
+    private int resultsetMaxSize;
 
     XMLConfiguration config = null;
 
@@ -51,12 +55,10 @@ public class PTIManager
         this.processqueue = processqueue;
         this.pool = pool;
 
-        
+        // get config parameters
+        resultsetMaxSize = new Integer( PTIManagerConfig.getPTIManagerQueueResultsetMaxSize() );
+        rejectedSleepTime = new Integer( PTIManagerConfig.getPTIManagerRejectedSleepTime() );
 
-        URL cfgURL = getClass().getResource("/config.xml");        
-        config = new XMLConfiguration( cfgURL );
-        rejectedSleepTime = config.getInt( "pti.rejected-sleep-time" );
-    
         log.debug( "Removing entries marked as active from the processqueue" );
         int removed = processqueue.deActivate();
         log.debug( String.format( "marked  %s 'active' threads as ready to process", removed ) );
@@ -74,7 +76,7 @@ public class PTIManager
         log.debug( "update() called" );
 
         // checking for new jobs
-        Vector<Pair<String, Integer>> newJobs = processqueue.popAll();
+        Vector<Pair<String, Integer>> newJobs = processqueue.pop( resultsetMaxSize );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
