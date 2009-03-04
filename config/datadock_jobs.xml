@@ -11,13 +11,13 @@
     <plugin name="docbookharvester" position="0"/>
     <plugin name="docbookannotate" position="1"/>
   </job>
-  <job submitter="åkb" format="danmarcxchange">
+  <job submitter="aakb" format="danmarcxchange">
     <plugin name="marcxchangeharvester" position="0"/>
   </job>
-  <job submitter="åkb" format="ebsco">
+  <job submitter="aakb" format="ebsco">
     <plugin name="marcxchangeharvester" position="0"/>
   </job>
-  <job submitter="åkb" format="ebrary">
+  <job submitter="aakb" format="ebrary">
     <plugin name="marcxchangeharvester" position="0"/>
   </job>
   <job submitter="kkb" format="danmarcxchange">
