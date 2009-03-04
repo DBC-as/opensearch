@@ -7,66 +7,30 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-//import java.net.InetAddress;
-import java.io.IOException;
-//import java.net.UnknownHostException;
-//import java.io.InputStream;
-//import java.util.Scanner;
-//import java.net.Socket;
-import java.net.URL;
-
-import java.net.HttpURLConnection;
-import java.lang.StringBuilder;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-//import java.io.StringReader;
+import java.lang.Integer;
+import java.lang.StringBuilder;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Iterator;
 
-
-import org.xml.sax.InputSource;
-
-
-
-//import javax.xml.parsers.DocumentBuilderFactory;
-//import javax.xml.parsers.DocumentBuilder;
-//import javax.xml.parsers.ParserConfigurationException;
-//import org.xml.sax.SAXException;
-//import org.w3c.dom.Document;
-//import org.w3c.dom.Element;
-//import org.w3c.dom.NodeList;
-import java.io.ByteArrayInputStream;
-//import org.xml.sax.InputSource;
-
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.*;
 
 import org.apache.log4j.Logger;
-
-
-import javax.xml.namespace.NamespaceContext;
-//import javax.xml.XMLConstants;
-
-import java.util.Iterator;
-
-import java.lang.Integer;
-
-//================================================
-//import java.io.IOException;
-
-//import org.xml.sax.SAXException;
-
-// import org.w3c.dom.Document;
-//import org.w3c.dom.DocumentType;
-//import org.w3c.dom.NamedNodeMap;
-//import org.w3c.dom.Node;
-//import org.w3c.dom.NodeList;
-
+import org.xml.sax.InputSource;
 
 
 /**
@@ -80,31 +44,18 @@ public class DocbookAnnotate implements IAnnotate
 
     public DocbookAnnotate()
     {
-        log.debug( "Constructor called" );
+        log.debug( "Constructor() called" );
     }
 
-
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException// javax.xml.xpath.XPathExpressionException, IOException//, ParserConfigurationException, SAXException,
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-        // namespace context for docbook
-        NamespaceContext nsc = new NamespaceContext(){
-                public String getNamespaceURI( String prefix ){
-                    String uri = null;
-                    if ( prefix.equals( "docbook" ) ){
-                        uri = "http://docbook.org/ns/docbook";
-                    }
-                    return uri;
-                }
+        log.debug( "getCargoContainer() called" );
 
-                public Iterator< String > getPrefixes( String val ) {
-                    return ( Iterator< String > ) null;
-                }
-                public String getPrefix( String uri ){
-                    return new String();
-                }
-            };
+        // our namespace context for evaluating xpath expressions
+        NamespaceContext nsc = new OpensearchNamespaceContext();
 
-        // Retrive docbook xml from CargoContainer
+
+        log.debug( "Retrive docbook xml from CargoContainer" );
         CargoObject co = cargo.getFirstCargoObject( DataStreamType.OriginalData );
         byte[] b = co.getBytes();
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -129,7 +80,8 @@ public class DocbookAnnotate implements IAnnotate
         String serverChoice = co.getFormat();
         String queryUrl = formURL( title, serverChoice );
 
-        // query the webservice
+        
+        log.debug( "querying the webservice" );
         String xmlString = null;
         String wsURL = null;
         try {
@@ -138,10 +90,8 @@ public class DocbookAnnotate implements IAnnotate
         } catch (IOException ioe) {
             throw new PluginException( String.format( "could not get result from webservice = %s", wsURL ), ioe);
         }
+        log.debug( String.format( "data: title='%s', serverChoise(format)='%s', QueryUrl='%s', xml retrieved='%s'", title, serverChoice, queryUrl, xmlString ) );
 
-        System.out.println( String.format( "data: title='%s', serverChose(format)='%s'\nQueryUrl='%s'\nxml retrieved\n%s", title, serverChoice, queryUrl, xmlString ) );
-
-        // number of records... if one or more than one retrieve the first one
         ByteArrayInputStream bis;
         try {
             bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
@@ -150,6 +100,9 @@ public class DocbookAnnotate implements IAnnotate
         }
         InputSource annotateSource = new InputSource( bis );
 
+        
+        // Get number of records... if one or more than one record retrieve the first one
+                
         xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
         try {
@@ -158,7 +111,7 @@ public class DocbookAnnotate implements IAnnotate
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/docbook:article/docbook:title" ), e );
         }
 
-
+        log.debug( "Got answer from the webservice" );
         int numOfRec = 0;
         try {
             numOfRec = Integer.parseInt( xPathExpression.evaluate( annotateSource ) );
@@ -185,9 +138,9 @@ public class DocbookAnnotate implements IAnnotate
 
         // number of records... if one or more than one retrieve the first one
         try
-        {
-            bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
-        } catch (UnsupportedEncodingException uee) {
+            {
+                bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
+            } catch (UnsupportedEncodingException uee) {
             throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
         }
 
@@ -196,18 +149,18 @@ public class DocbookAnnotate implements IAnnotate
         xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
         try
-        {
-            xPathExpression= xpath.compile( "/*/*[2]" );
-        } catch (XPathExpressionException e) {
+            {
+                xPathExpression= xpath.compile( "/*/*[2]" );
+            } catch (XPathExpressionException e) {
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/docbook:article/docbook:title" ), e );
         }
 
         String xpath_evaluation = null;
         try
-        {
-            xpath_evaluation = xPathExpression.evaluate( annotateSource );
-            numOfRec = Integer.parseInt( xpath_evaluation );
-        } catch (NumberFormatException nfe) {
+            {
+                xpath_evaluation = xPathExpression.evaluate( annotateSource );
+                numOfRec = Integer.parseInt( xpath_evaluation );
+            } catch (NumberFormatException nfe) {
             log.fatal( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
             throw new PluginException( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int",
                                                       xpath_evaluation ), nfe );
