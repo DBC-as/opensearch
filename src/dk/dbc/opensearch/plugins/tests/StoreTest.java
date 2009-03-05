@@ -18,7 +18,7 @@ public class StoreTest
     /**
      *
      */
-    @Test 
+    @Test @Ignore( "not yet implemented" )
     public void test() throws Exception
     {
      System.out.println(" storeTest ");   
