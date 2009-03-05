@@ -19,6 +19,18 @@ public class FileSystemConfig extends Config
 	}
 	
 	
+	/* ****************************
+	 * FILESYSTEM CONFIG.XML PATH *
+	 *****************************/
+	public static String getConfigPath()
+	{
+		FileSystemConfig f = new FileSystemConfig();
+		String ret = f.getTrunkPath();
+		
+		return ret + "config/"; 
+	}
+	
+	
 	/* ******************
 	 * FILESYSTEM TRUNK *
 	 * ******************/

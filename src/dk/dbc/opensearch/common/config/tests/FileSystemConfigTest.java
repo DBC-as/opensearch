@@ -13,6 +13,17 @@ public class FileSystemConfigTest
 {
     Logger logger = Logger.getLogger( FileSystemConfigTest.class );
 
+    
+    @Test
+    public void testGetConfigPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+    {
+        String trunk = FileSystemConfig.getConfigPath();
+    
+        String str = "/config/";
+        boolean endsWith = trunk.contains( str ); 
+        assertTrue( endsWith );
+    }
+    
 
     @Test
     public void testGetTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
@@ -20,7 +31,7 @@ public class FileSystemConfigTest
         String trunk = FileSystemConfig.getFileSystemTrunkPath();
     
         CharSequence cs = "/opensearch";
-        boolean endsWith = trunk.contains( cs ); //endsWith( "opensearch/trunk/" ); 
+        boolean endsWith = trunk.contains( cs );  
         assertTrue( endsWith );
     }
     
@@ -30,9 +41,8 @@ public class FileSystemConfigTest
     {
     	String plugins = FileSystemConfig.getFileSystemPluginsPath();
     
-    	//CharSequence cs = "/build/classes/dk/dbc/opensearch/plugins";
     	CharSequence cs = "/plugins";
-        boolean endsWith = plugins.contains( cs ); //endsWith( "opensearch/trunk/build/classes/dk/dbc/opensearch/plugins/" ); 
+        boolean endsWith = plugins.contains( cs ); 
         assertTrue( endsWith );    	
     }
     

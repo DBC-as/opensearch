@@ -6,37 +6,36 @@
 
 package dk.dbc.opensearch.components.datadock;
 
-import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraHandler;
+import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.Pair;
 
-import dk.dbc.opensearch.common.fedora.PIDManager;
-
-import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.Vector;
-import java.util.HashMap;
-import dk.dbc.opensearch.common.types.Pair;
-import org.apache.commons.configuration.ConfigurationException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-import org.apache.log4j.Logger;
-import java.util.ArrayList;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import java.net.URL;
 
 /**
  * \ingroup datadock
@@ -78,9 +77,13 @@ public class DatadockPool
 
         jobs = new Vector< FutureTask >();
 
-        URL cfgURL = getClass().getResource("/config.xml");
-        config = new XMLConfiguration( cfgURL );
-        shutDownPollTime = config.getInt( "datadock.shutdown-poll-time" );
+        //URL cfgURL = getClass().getResource("/config.xml");
+        String cfgFile = FileSystemConfig.getConfigPath() + "config.xml"; 
+        //config = new XMLConfiguration( cfgURL );
+        config = new XMLConfiguration( cfgFile );
+        
+        //shutDownPollTime = config.getInt( "datadock.shutdown-poll-time" );
+        shutDownPollTime = DatadockConfig.getDatadockShutdownPollTime();
     }
 
     
