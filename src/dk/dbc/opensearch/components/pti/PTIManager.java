@@ -3,7 +3,6 @@
  * \brief The PTIManager class
  * \package pti;
  */
-
 package dk.dbc.opensearch.components.pti;
 
 
@@ -12,12 +11,10 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.Pair;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.lang.Integer;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
@@ -64,6 +61,7 @@ public class PTIManager
         int removed = processqueue.deActivate();
         log.debug( String.format( "marked  %s 'active' threads as ready to process", removed ) );
     }
+    
 
     /**
      * Updates the ptimanager.  First of it checks for new jobs and
@@ -81,16 +79,19 @@ public class PTIManager
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
-        for( Pair<String, Integer> job : newJobs ){
-
+        for( Pair<String, Integer> job : newJobs )
+        {
             boolean submitted = false;
-            while( ! submitted ){
-                try{
+            while( ! submitted )
+            {
+                try
+                {
                     pool.submit( job.getFirst(), job.getSecond() );
                     submitted = true;
                     log.debug( String.format( "submitted job: fedorahandle='%s' and queueID='%s'",job.getFirst(), job.getSecond() ) );
                 }
-                catch( RejectedExecutionException re ){
+                catch( RejectedExecutionException re )
+                {
                     log.debug( String.format( "job: fedorahandle='%s' and queueID='%s' rejected - trying again",job.getFirst(), job.getSecond() ) );
                     Thread.currentThread().sleep( rejectedSleepTime );
                 }
@@ -100,43 +101,48 @@ public class PTIManager
         // Checking jobs and commiting jobs
         Vector<CompletedTask> finishedJobs = pool.checkJobs();
         
-        for ( CompletedTask task : finishedJobs){
-            
+        for ( CompletedTask task : finishedJobs)
+        {            
             Pair< Long, Integer > pair = (Pair) task.getResult();
             Long result = pair.getFirst();
             int queueID = pair.getSecond();
-            if ( result != null ){// sucess
+            if ( result != null ) // sucess
+            {
                 log.debug( String.format( "Commiting queueID: '%s', result: '%s' to processqueue", queueID, result ) );
                 processqueue.commit( queueID );
             }
-            else{ /** the job returned null - rollback ? */ 
+            else /** the job returned null - rollback ? */
+            {
                 log.debug( String.format( "job with queueID: '%s', result: '%s' Not successfull... rolling back", queueID, result ) );
                 processqueue.rollback( queueID );
             }    
         }
     }
 
+    
     /**
      * Shuts down the ptiManager. Shuts down the pool and waits until
      * all jobs are finished.
-     */
-    
+     */    
     public void shutdown() throws InterruptedException
     {
         log.debug( "Shutting down the pool" );
         // waiting for threads to finish before returning
         pool.shutdown();
-        try{
+        try
+        {
             update();
         }
-        catch( Exception e){
+        catch( Exception e)
+        {
             log.fatal( String.format( "Caught exception in PTIManager:\n %s \n'%s'",e.getClass(),  e.getMessage() ) );
             StackTraceElement[] trace = e.getStackTrace();
             for( int i = 0; i < trace.length; i++ )
-                {
-                    log.fatal( trace[i].toString() );
-                }
+            {
+            	log.fatal( trace[i].toString() );
+            }
         }
+        
         log.debug( "The pool is down" );
     }
 }

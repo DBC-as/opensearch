@@ -30,7 +30,8 @@ public class FileSystemConfigTest
     {
     	String plugins = FileSystemConfig.getFileSystemPluginsPath();
     
-    	CharSequence cs = "/build/classes/dk/dbc/opensearch/plugins";
+    	//CharSequence cs = "/build/classes/dk/dbc/opensearch/plugins";
+    	CharSequence cs = "/plugins";
         boolean endsWith = plugins.contains( cs ); //endsWith( "opensearch/trunk/build/classes/dk/dbc/opensearch/plugins/" ); 
         assertTrue( endsWith );    	
     }

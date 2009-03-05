@@ -51,27 +51,18 @@ public class JobMapCreator
     {
         log.debug( "getMap() called" );
 
+        HashMap< Pair< String, String >, ArrayList<String> > jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
         ArrayList<String> sortedPluginList = new ArrayList< String >();
         List< Pair< String, Integer > > pluginAndPriority = new ArrayList< Pair< String, Integer > >();
 
         log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
-
         // Set jobFile depending on classType: datadock or pti.
         File jobFile = setJobFile( classType );
         
         log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
-
         // Build the jobMap
-        DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-        Document jobDocument = docBuilder.parse( jobFile );
-        Element xmlRoot = jobDocument.getDocumentElement();
-
-        // Get the NodeList
-        NodeList jobNodeList = xmlRoot.getElementsByTagName( "job" );
+        NodeList jobNodeList = getJobMapNodeList( jobFile );        
         int listLength = jobNodeList.getLength();
-
-        HashMap< Pair< String, String >, ArrayList<String> > jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
 
         // 30: For each node read the task name and position        
         Element jobElement;
@@ -126,7 +117,18 @@ public class JobMapCreator
     }
     
     
-    private static File setJobFile( Class classType ) throws MalformedURLException
+    private static NodeList getJobMapNodeList( File jobFile ) throws ParserConfigurationException, SAXException, IOException 
+    {
+    	DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+        Document jobDocument = docBuilder.parse( jobFile );
+        Element xmlRoot = jobDocument.getDocumentElement();
+
+        return xmlRoot.getElementsByTagName( "job" );
+	}
+
+
+	private static File setJobFile( Class classType ) throws MalformedURLException
     {
     	File jobFile;
     

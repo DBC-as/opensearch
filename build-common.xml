@@ -159,7 +159,9 @@
       <!-- <compilerarg value="-Xlint"/> -->
     </javac>
     
-  	<copy todir="${classes.dir}/dk/dbc/opensearch/plugins">
+  	<!-- Copy .plugin files to .../opensearch/.../plugins/ folder -->
+  	<!--copy todir="${classes.dir}/dk/dbc/opensearch/plugins"-->  	
+    <copy todir="${base.dir}/plugins">
       <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
     </copy>  	    
   </target>

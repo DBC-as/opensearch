@@ -5,49 +5,49 @@
  */
 package dk.dbc.opensearch.common.compass;
 
-import org.compass.core.Compass;
-import org.compass.core.CompassSession;
-import org.compass.core.config.CompassConfiguration;
-import org.compass.core.config.CompassConfigurationFactory;
-import org.compass.core.CompassException;
-
-
-import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.log4j.Logger;
-import org.apache.commons.configuration.ConfigurationException;
 
 import java.net.URL;
 import java.io.File;
+
+import org.apache.log4j.Logger;
+import org.compass.core.Compass;
+import org.compass.core.config.CompassConfiguration;
+
 
 /**
  * \ingroup tools
  * \brief Compass factory. The role of this class is to build and hold one
  * Compass, and spawn references to it.
  */
-public class CompassFactory{
+public class CompassFactory
+{
     private static Compass compass = null;
 
     Logger log = Logger.getLogger("CompassFactory"); 
 
+    
     /**
      * The getCompass method returns a reference to the Compass. If
      * none exist a new one is build and returned
      *
      * @return the Compass
      */
-    public Compass getCompass(){
+    public Compass getCompass()
+    {
         log.debug("Entering CompassFactory.getCompass");
 
-        if( compass == null ){
+        if( compass == null )
             buildCompass();
-        }
+        
         return compass;
     }
+    
     
     /**
      * builds the Compass with appropriate mapping and configuration files
      */
-    private void buildCompass(){
+    private void buildCompass()
+    {
         log.debug("Entering CompassFactory.buildCompass");
         log.debug( "Setting up the Compass object" ); 
 

@@ -8,8 +8,8 @@ import datetime, os, shutil, sys
 
 
 files = [ 'dist_copy.py', 'xsd2xml.py' ]
-fldrs = [ 'admin', 'bin', 'config', 'dist', 'lib', 'tools' ]
-trees = [ 'Harvest', 'build' ]
+fldrs = [ 'admin', 'bin', 'config', 'dist', 'lib', 'plugins', 'tools' ]
+trees = [ 'Harvest' ]
 
 
 """#########################################

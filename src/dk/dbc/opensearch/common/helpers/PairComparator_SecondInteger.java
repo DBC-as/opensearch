@@ -12,22 +12,16 @@ import java.util.Comparator;
  * Is made a class on its on and not an inner class to prepare the JobMapCreator 
  * class to become static. See Todo in JobMapCreator
  */
-
 public class PairComparator_SecondInteger implements Comparator
 {
     public int compare( Object x, Object y )
-    {
+    {	
         if( ((Pair< String, Integer >)x).getSecond() < ((Pair< String, Integer >)y).getSecond() )
-            {
-                return -4;
-            }
+        	return -4;
         else
-            {
-                if( ((Pair<String, Integer>)x).getSecond() == ((Pair<String, Integer>)y).getSecond() )
-                    {
-                        return 0;
-                    }
-            }
+        	if( ((Pair<String, Integer>)x).getSecond() == ((Pair<String, Integer>)y).getSecond() )
+        		return 0;
+                    
         return 4;
     }
 

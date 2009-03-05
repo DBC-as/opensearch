@@ -3,6 +3,7 @@
 # -*- mode: python -*-
 
 import sys
+
 try:
     import xml.etree.ElementTree as ET
 except ImportError:
@@ -12,7 +13,7 @@ except ImportError:
         sys.exit( "could not import elementtree library. Is it installed?" )
 
 import os
-from time import  strftime, gmtime
+from time import strftime, gmtime
 
 # this will probably not work for cruisecontrol user
 usern = os.environ.get( 'USER' )
@@ -25,7 +26,9 @@ else:
 
 #should check that path stat's
 
-pluginpath = os.path.join( path, "build/classes/dk/dbc/opensearch/plugins" )
+#pluginpath = os.path.join( path, "build/classes/dk/dbc/opensearch/plugins" )
+pluginpath = os.path.join( path, "plugins" )
+print pluginpath
 
 root   = ET.Element( "opensearch-definition" )
 
