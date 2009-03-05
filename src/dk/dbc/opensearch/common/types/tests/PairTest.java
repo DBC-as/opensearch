@@ -1,9 +1,12 @@
 /** \brief UnitTest for Pair */
 package dk.dbc.opensearch.common.types.tests;
 
+
 import dk.dbc.opensearch.common.types.Pair;
-import static org.junit.Assert.*;
+
 import org.junit.*;
+import static org.junit.Assert.*;
+
 
 /**
  * 

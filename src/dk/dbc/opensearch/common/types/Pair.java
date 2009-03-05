@@ -1,10 +1,13 @@
 package dk.dbc.opensearch.common.types;
 
+import java.lang.UnsupportedOperationException;
 /**
  * InputPair
- * not for use when values are to be compared until an equals() method is implemented
+ * 
+ * If You would like to have sorting done on the Pair type, please use
+ * dk.dbc.opensearch.common.types.ComparablePair type instead
  */
-public class Pair<E, V>// implements Comparator
+public class Pair< E, V >// implements Comparator
 {
     /**
      *
@@ -32,30 +35,32 @@ public class Pair<E, V>// implements Comparator
     }
     
     
-    @Override 
-    public boolean equals( Object obj )
+    public boolean equals( Pair<E, V> pair )
     {
-        if(!( obj instanceof Pair ) )
+        if( pair == null )
+        {
             return false;
-        else if(!( first.equals( ( (Pair)obj ).getFirst() ) ) )
-            return false;
-        else if(!( second.equals( ( (Pair)obj ).getSecond() ) ) )
-            return false;
+        }
+        if ( ( first == pair.getFirst() ) && ( second ==  pair.getSecond() ) )
+        {
+            return true;
+        }
         else
-        	return true;
+        {
+            return false;
+        }
     }
     
     
-    @Override 
     public String toString()
     {
-        return first.toString() + ", " + second.toString();
+        return String.format( "Pair< %s, %s >", first.toString(), second.toString() );
     }
     
     
-    @Override 
     public int hashCode()
     {
         return first.hashCode() + second.hashCode();
     }
+
 }
