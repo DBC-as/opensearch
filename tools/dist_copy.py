@@ -160,7 +160,7 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit()
 
-    __check_conn( options.server )
+    #__check_conn( options.server )
     
     if len( args ) != 1:
         parser.print_help()
@@ -178,11 +178,14 @@ Creating jar(s): """ + args[0] + """
 copying folder:  """ + folder + """
 to server:       """ + server
 
-    __copy_dist()
+    try:
+        __copy_dist()
+    except:
+        raise Error( "Unable to copy to " + server + " - check connection!" )
 
      # Delete tmp dir
     os.system( "tree " + del_dir )
-    #os.system( "rm -fr " + del_dir )
+    os.system( "rm -fr " + del_dir )
 
     print 'tmp dir deleted'
 
