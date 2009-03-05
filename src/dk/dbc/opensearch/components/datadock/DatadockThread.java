@@ -7,6 +7,8 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -16,34 +18,31 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
-import javax.xml.xpath.XPathExpressionException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.Callable;
-import java.util.ArrayList;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.SAXException;
-
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.FedoraTools;
-
-import java.sql.SQLException;
 
 
 /**
@@ -199,12 +198,14 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
             length += co.getContentLength();
         }
         if( cc.getItemsCount() < 1 )
-            log.error( "The cargocontainer has no data!!!!!!!" );
+            log.error( "The cargocontainer has no data!" );
         // Store the CargoContainer in the fedora repository
         byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
 
-        log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
+        // Beware of this innocent looking log line, it writes yhe
+        //binary content of the stored data to the log 
+        //log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
         String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
 
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
