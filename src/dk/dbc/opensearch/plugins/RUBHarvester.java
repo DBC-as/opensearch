@@ -76,6 +76,7 @@ public class RUBHarvester implements IHarvestable{
         log.debug( "getCargoContainer() called" );
 
         CargoContainer cargoContainer = new CargoContainer();
+        cargoContainer.setFilePath( path );
         String mimetype = "text/xml";
 
         log.debug( "read and add xml to cargoContainer" );

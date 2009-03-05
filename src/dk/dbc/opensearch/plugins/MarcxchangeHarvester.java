@@ -35,7 +35,7 @@ public class MarcxchangeHarvester implements IHarvestable
         this.path = job.getUri().getPath();
         this.submitter = job.getSubmitter();
         this.format = job.getFormat();
-        
+
         return createCargoContainerFromFile();
     }
 
@@ -48,7 +48,8 @@ public class MarcxchangeHarvester implements IHarvestable
     private CargoContainer createCargoContainerFromFile() throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
-cargo.setIndexingAlias( IndexingAlias.Danmarcxchange );
+        cargo.setIndexingAlias( IndexingAlias.Danmarcxchange );
+        cargo.setFilePath( path );
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
