@@ -126,6 +126,11 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
         Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" ).item( 0 );
         String indexingAliasName = indexingAliasElem.getAttribute( "name" );
         cc.setIndexingAlias( IndexingAlias.getIndexingAlias( indexingAliasName )  );
+        
+        Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
+        String filePath = filePathElem.getAttribute( "name" );
+        cc.setFilePath( filePath ); 
+        log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
 
         NodeList streamsNL = root.getElementsByTagName( "streams" );
         Element streams = (Element)streamsNL.item(0);

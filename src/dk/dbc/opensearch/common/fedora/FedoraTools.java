@@ -154,6 +154,9 @@ public class FedoraTools {
         Element indexingaliasElem = admStream.createElement( "indexingalias" );
         indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias().getName() );
         root.appendChild( (Node)indexingaliasElem );
+        Element filePathElem = admStream.createElement( "filepath" );
+        filePathElem.setAttribute( "name", cargo.getFilePath() );
+        root.appendChild( (Node)filePathElem );
         
         Node streams = admStream.createElement( "streams" );
         

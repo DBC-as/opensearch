@@ -29,5 +29,8 @@
   </job>
   <job submitter="dbc" format="dr_forfatteratlas">
     <plugin name="marcxchangeharvester" position="0"/>
+  </job>  
+  <job submitter="dbc" format="dr_bonanza">
+    <plugin name="dcharvester" position="0"/>
   </job>
 </job_list>

@@ -88,7 +88,7 @@ public class IndexerXSEM implements IIndexer
 		} catch (IOException ioe) {
 			throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
 		}
-        
+        log.info( "cpmAlias constructed" );
         for( CargoObject co : list )
         {
             //String format = co.getFormat();
@@ -98,11 +98,21 @@ public class IndexerXSEM implements IIndexer
             try {
                 isValidAlias = cpmAlias.isValidAlias( indexingAlias );
             } catch ( ParserConfigurationException pce ) {
+                log.error( "parserconfexception");
                 throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
             } catch ( SAXException se ) {
+                log.error( "saxexp ");
                 throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
             } catch (IOException ioe) {
+                log.error("ioexp");
                 throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
+            }catch(Exception e){
+                log.fatal("exp: %s with message %s thrown");
+                StackTraceElement[] trace = e.getStackTrace();
+                for( int i = 0; i < trace.length; i++ )
+                    {
+                        log.fatal( trace[i].toString() );
+                    }
             }
             
             if( ! isValidAlias )
@@ -110,7 +120,7 @@ public class IndexerXSEM implements IIndexer
             	throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
             }
             else
-            {
+            {                
                 byte[] bytes = co.getBytes();
                 //log.debug( new String( bytes ) );
                 ByteArrayInputStream is = new ByteArrayInputStream( bytes );
@@ -128,7 +138,7 @@ public class IndexerXSEM implements IIndexer
                 AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( indexingAlias, doc.getRootElement() );
                 //AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( co.getFormat(), doc.getRootElement() );
 
-                log.debug( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
+                log.info( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
                 log.debug( String.format( "Indexing document" ) );
 
@@ -145,11 +155,12 @@ public class IndexerXSEM implements IIndexer
                     throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
                 }
 
-                log.debug( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
+                log.info( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
                 try{
                     session.save( xmlObject );
                 }catch( Exception e ){
                     log.fatal( String.format( "class of thrown exception: %s, message: %s ", e.getClass(), e.getMessage() ) );
+                    log.fatal( String.format( "the file not being indexed is: %s",cc.getFilePath() ) );
                     throw new PluginException(e);
                 }
                 log.debug( "Committing index on transaction" );

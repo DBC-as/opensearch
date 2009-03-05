@@ -24,5 +24,8 @@
   </job>
   <job submitter="dbc" format="dr_forfatteratlas">
     <plugin name="indexerxsem" position="0"/>
+  </job> 
+  <job submitter="dbc" format="dr_bonanza">
+    <plugin name="indexerxsem" position="0"/>
   </job>
 </job_list>

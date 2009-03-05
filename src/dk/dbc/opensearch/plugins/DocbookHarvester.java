@@ -54,6 +54,7 @@ public class DocbookHarvester implements IHarvestable
     {
     	CargoContainer cargo = new CargoContainer();
     	cargo.setIndexingAlias( IndexingAlias.Article );
+        cargo.setFilePath( path );
     	/** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";

@@ -19,7 +19,7 @@ public class CPMAliasTest
 	public void cpmIsValidAliasTest() throws ParserConfigurationException, SAXException, IOException
 	{
 		CPMAlias cpmAlias = new CPMAlias();
-		boolean valid = cpmAlias.isValidAlias( "faktalink" );
+		boolean valid = cpmAlias.isValidAlias( "article" );
 		assertTrue( valid );
 	}
 	

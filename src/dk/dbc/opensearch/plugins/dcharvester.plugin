@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugins xmlns="info:opensearch.dbc.dk#" >
+
+  <plugin name="dcharvester" 
+          classname="dk.dbc.opensearch.plugins.DCHarvester" 
+          type="harvester" />
+          
+</plugins>

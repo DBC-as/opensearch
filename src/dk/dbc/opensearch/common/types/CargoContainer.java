@@ -43,6 +43,8 @@ public class CargoContainer
     /** The internal representation of the data contained in the CC*/
     private ArrayList< CargoObject > data;
     private IndexingAlias indexingAlias = null;
+    /** The path to the file on disk where it is harvested from, only for debugging purposes */
+    private String filePath = null;
     
     /**
      * Constructor initializes internal representation of data, i.e., ArrayList of CargoObjects
@@ -121,5 +123,21 @@ public class CargoContainer
     public IndexingAlias getIndexingAlias()
     {
         return indexingAlias;
+    } 
+    
+    /**
+     * setter for the filePath
+     */
+    public void setFilePath( String filePath )
+    {
+        this.filePath = filePath;
+    }
+
+    /**
+     * getter for the filePath
+     */
+    public String getFilePath()
+    {
+        return filePath;
     }
 }

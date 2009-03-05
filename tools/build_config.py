@@ -50,7 +50,7 @@ url    = ET.SubElement( db, "url" )
 user   = ET.SubElement( db, "userID" )
 passwd = ET.SubElement( db, "passwd" )
 driver.text = "org.postgresql.Driver"
-url.text    = "jdbc:postgresql:opensearch"
+url.text    = "jdbc:postgresql:lvh"
 user.text   = usern
 passwd.text = usern
 
@@ -97,7 +97,7 @@ cpm_xml.text = os.path.join( path, "config/xml.cpm.xml" )
 
 #harvester settings
 folder = ET.SubElement( harvest, "folder" )
-folder.text = os.path.join( path, "Harvest" )
+folder.text = os.path.join( path, "Harvest/pollTest" )
 
 #pidmanager settings
 num_of_pids = ET.SubElement( pidmng, "num-of-pids-to-retrieve" )

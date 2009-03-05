@@ -9,8 +9,7 @@ public enum IndexingAlias
 {
     Article ( "article", "the docbook/ting xml alias" ),
         Danmarcxchange ( "danmarcxchange", "alias for marc posts" ),
-        /** \todo: just on the face of the name, I would assume it to be Dublin Core?*/
-        DC ( "dc","data fra DR" );
+        DC ( "dc","data from DR in Dublin Core format" );
 
     static Logger log = Logger.getLogger( IndexingAlias.class );
 
