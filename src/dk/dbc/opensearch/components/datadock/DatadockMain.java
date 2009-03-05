@@ -178,8 +178,7 @@ public class DatadockMain
             IHarvester harvester = new FileHarvest( harvestDirectory );            
             
             log.debug( "Starting the manager" );
-            // Starting the manager
-            
+            // Starting the manager            
             datadockManager = new DatadockManager( datadockPool, harvester );
 
             /** --------------- setup and startup of the datadockmanager done ---------------- **/
@@ -203,7 +202,8 @@ public class DatadockMain
             try
             {            	
                 datadockManager.update();                
-                Thread.currentThread().sleep( pollTime );
+                Thread.currentThread();
+				Thread.sleep( pollTime );
             }
             catch( InterruptedException ie )
             {
@@ -222,37 +222,5 @@ public class DatadockMain
                 log.error("  " + e.getMessage() );
             }
         }
-    }
-    
-    
-    private HashMap< Pair< String, String >, List< String > > constructHashMap() throws DocumentException
-    {
-    	HashMap< Pair< String, String >, List< String > > task_list = new HashMap< Pair< String, String >, List< String > >();
-        URL jobURL = getClass().getResource("/datadock_jobs.xml");
-        
-        Document doc = null;
-        SAXReader saxReader = new SAXReader();
-        doc = saxReader.read( jobURL );
-        
-        Element root = doc.getRootElement();
-
-        
-/*        for ( Iterator<Element> i = root.elementIterator(); i.hasNext(); )
-        {
-        	foreach job:
-        		Pair< String, String > key = new Pair< String, String >( "submitter", "format");
-        		List< String> values = new ArrayList< String >();
-        		
-        		foreach task:
-        			values.append( name )
-        			
-       			Element element = i.next();
-                element.getText();
-                task_list.put(, value)
-        }
-*/        
-        
-    	return task_list;
-    }
-    
+    }    
 }

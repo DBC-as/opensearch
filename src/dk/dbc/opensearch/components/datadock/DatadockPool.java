@@ -77,12 +77,9 @@ public class DatadockPool
 
         jobs = new Vector< FutureTask >();
 
-        //URL cfgURL = getClass().getResource("/config.xml");
         String cfgFile = FileSystemConfig.getConfigPath() + "config.xml"; 
-        //config = new XMLConfiguration( cfgURL );
         config = new XMLConfiguration( cfgFile );
         
-        //shutDownPollTime = config.getInt( "datadock.shutdown-poll-time" );
         shutDownPollTime = DatadockConfig.getDatadockShutdownPollTime();
     }
 
@@ -148,7 +145,6 @@ public class DatadockPool
                 {                    
                     log.fatal( "Exception caught from job" );
                  
-                    //jobs.remove( job );
                     // getting exception from thread
                     Throwable cause = ee.getCause();
                     RuntimeException re = new RuntimeException( cause );
@@ -156,10 +152,7 @@ public class DatadockPool
                     log.error( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
                     StackTraceElement[] trace = cause.getStackTrace();
                     for( int i = 0; i < trace.length; i++ )
-                        {
-                            log.error( trace[i].toString() );
-                        }
-                    // throw re; //shouldnt throw just because thread throw
+                    	log.error( trace[i].toString() );
                 }
                 log.debug( "adding to finished jobs" );
                 finishedJobs.add( new CompletedTask( job, f ) );
@@ -191,12 +184,8 @@ public class DatadockPool
         {
             activeJobs = false;
             for( FutureTask job : jobs )
-            {
                 if( ! job.isDone() )
-                {
                     activeJobs = true;
-                }
-            }
         }
     }
 }
