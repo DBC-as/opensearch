@@ -112,7 +112,7 @@ public class Processqueue {
     }
 
     public Vector<Pair<String, Integer>> pop( int maxSize ) throws SQLException{
-        log.debug( "Entering Processqueue.popAll()" );
+        log.debug( "Entering Processqueue.pop()" );
         
         Connection con = DBConnection.getConnection();
         Statement stmt = null;
@@ -122,7 +122,7 @@ public class Processqueue {
 
         try{
             stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-            rs = stmt.executeQuery( String.format( "SELECT * from get_all_posts( %s)", maxSize ) );
+            rs = stmt.executeQuery( String.format( "SELECT * from get_posts( %s)", maxSize ) );
             
             while( rs.next() ){
                 String fedoraHandle = rs.getString( "fedorahandle" );

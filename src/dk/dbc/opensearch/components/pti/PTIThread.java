@@ -137,7 +137,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
      * */
     public Long call() throws CompassException, IOException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException, SAXException
         {
-            log.debug( String.format( "CALL CALLED handle: '%s'", fedoraPid ) );
+            log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
 
             MIMETypedStream ds = super.fea.getDatastreamDissemination(fedoraPid, DataStreamType.AdminData.getName(), null);
             byte[] adminStream = ds.getStream();
@@ -180,15 +180,19 @@ public class PTIThread extends FedoraHandle implements Callable<Long>{
             //log.debug( String.format(" co is null = %s", null == co) );
             String submitter =  co.getSubmitter();
             String format = co.getFormat();
-            log.debug( String.format( "the submitter %s", submitter ) );
-            log.debug( String.format( "the format %s", format ) );
-            log.debug( String.format( "number og datastreams in cc: %s", cc.getItemsCount() ) );
+            //log.debug( String.format( "the submitter %s", submitter ) );
+            //log.debug( String.format( "the format %s", format ) );
+            //log.debug( String.format( "number og datastreams in cc: %s", cc.getItemsCount() ) );
             //CargoObject co1 = cc.getFirstCargoObject( DataStreamNames.AdminData );
 
             long result = 0l;
 
             // Get the job from the jobMap
             list = jobMap.get( new Pair< String, String >( submitter, format ) );
+            if(list == null){
+                log.fatal( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
+                    throw new NullPointerException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
+                    }
             //50: validate that there exists plugins for all the tasks
             PluginResolver pluginResolver = new PluginResolver();
             for( int i = 0; i < list.size(); i++ ){

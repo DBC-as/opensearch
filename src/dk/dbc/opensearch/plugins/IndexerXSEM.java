@@ -112,7 +112,7 @@ public class IndexerXSEM implements IIndexer
             else
             {
                 byte[] bytes = co.getBytes();
-                log.debug( new String( bytes ) );
+                //log.debug( new String( bytes ) );
                 ByteArrayInputStream is = new ByteArrayInputStream( bytes );
                 Document doc = null;
                 try {
@@ -150,7 +150,7 @@ public class IndexerXSEM implements IIndexer
                     session.save( xmlObject );
                 }catch( Exception e ){
                     log.fatal( String.format( "class of thrown exception: %s, message: %s ", e.getClass(), e.getMessage() ) );
-                    throw new PluginException( "debugging...", e);
+                    throw new PluginException(e);
                 }
                 log.debug( "Committing index on transaction" );
                 

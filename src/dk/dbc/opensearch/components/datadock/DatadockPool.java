@@ -150,7 +150,12 @@ public class DatadockPool
                     Throwable cause = ee.getCause();
                     RuntimeException re = new RuntimeException( cause );
                     
-                    log.error( String.format( "Exception Caught: '%s'\n'%s'" , re.getMessage(), re.getStackTrace() ) );
+                    log.error( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
+                    StackTraceElement[] trace = cause.getStackTrace();
+                    for( int i = 0; i < trace.length; i++ )
+                        {
+                            log.error( trace[i].toString() );
+                        }
                     // throw re; //shouldnt throw just because thread throw
                 }
                 log.debug( "adding to finished jobs" );

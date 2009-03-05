@@ -56,6 +56,7 @@ public class PTIManager
         this.pool = pool;
 
         // get config parameters
+        log.debug( String.format( "the PTImanagerQueueResultSetMaxSzie: %s ",PTIManagerConfig.getPTIManagerQueueResultsetMaxSize() ) );
         resultsetMaxSize = new Integer( PTIManagerConfig.getPTIManagerQueueResultsetMaxSize() );
         rejectedSleepTime = new Integer( PTIManagerConfig.getPTIManagerRejectedSleepTime() );
 
@@ -129,7 +130,12 @@ public class PTIManager
             update();
         }
         catch( Exception e){
-            log.debug( String.format( "Caught exception in PTIManager:\n'%s'\n'%s'", e.getMessage(), e.getStackTrace() ) );
+            log.fatal( String.format( "Caught exception in PTIManager:\n %s \n'%s'",e.getClass(),  e.getMessage() ) );
+            StackTraceElement[] trace = e.getStackTrace();
+            for( int i = 0; i < trace.length; i++ )
+                {
+                    log.fatal( trace[i].toString() );
+                }
         }
         log.debug( "The pool is down" );
     }

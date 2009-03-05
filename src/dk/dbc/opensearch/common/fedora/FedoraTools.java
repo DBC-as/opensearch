@@ -211,7 +211,7 @@ public class FedoraTools {
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
         Marshaller m = new Marshaller(outW); // IOException
         m.marshal(dot); // throws MarshallException, ValidationException
-        log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
+        //        log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
         byte[] ret = out.toByteArray();
 
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
