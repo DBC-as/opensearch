@@ -6,28 +6,29 @@
 
 package dk.dbc.opensearch.components.datadock;
 
+
+import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
+import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
-import dk.dbc.opensearch.common.types.Pair;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
+
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
-
-
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import java.net.URL;
 
 /**
  * \brief the DataDockManager manages the startup, running and
@@ -35,7 +36,7 @@ import java.net.URL;
  */
 public class DatadockManager
 {
-    static Logger log = Logger.getLogger("DatadockManager");
+    static Logger log = Logger.getLogger( DatadockManager.class );
 
     private DatadockPool pool= null;
     private IHarvester harvester = null;
@@ -43,11 +44,11 @@ public class DatadockManager
 
     XMLConfiguration config = null;
     
+    
     /**
      * Constructs the the DatadockManager instance.
      */
     public DatadockManager( DatadockPool pool, IHarvester harvester ) throws ConfigurationException
-
     {
         log.debug( "Constructor( pool, harvester ) called" );
 
@@ -55,9 +56,10 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
 
-        URL cfgURL = getClass().getResource("/config.xml");        
-        config = new XMLConfiguration( cfgURL );
-        rejectedSleepTime = config.getInt( "datadock.rejected-sleep-time" );
+        String cfgFile = FileSystemConfig.getConfigPath() + "/config.xml";        
+        config = new XMLConfiguration( cfgFile );
+        
+        rejectedSleepTime = DatadockConfig.getDatadockRejectedSleepTime();
     }
 
     
@@ -83,7 +85,8 @@ public class DatadockManager
                  catch( RejectedExecutionException re )
                  {
                      log.debug( String.format( "job: '%s' rejected, trying again",job.getUri().getRawPath() ) );
-                     Thread.currentThread().sleep( rejectedSleepTime );
+                     Thread.currentThread();
+					Thread.sleep( rejectedSleepTime );
                  }
             }
         }

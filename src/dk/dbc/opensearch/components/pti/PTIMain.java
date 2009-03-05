@@ -3,38 +3,34 @@
  * \brief The PTIMain class
  * \package pti;
  */
-
 package dk.dbc.opensearch.components.pti;
 
-import dk.dbc.opensearch.common.types.Pair;
+
+import dk.dbc.opensearch.common.compass.CompassFactory;
+import dk.dbc.opensearch.common.config.PtiConfig;
+import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.helpers.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.compass.CompassFactory;
-import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.config.PtiConfig;
+import dk.dbc.opensearch.common.types.Pair;
 
-import org.compass.core.Compass;
-//import fedora.client.FedoraClient;
-
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.compass.core.Compass;
 import org.xml.sax.SAXException;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
+
 /**
  * The Main method of the PTI. It secures all necessary
  * resources for the program, starts the PTIManager and then
@@ -50,36 +46,39 @@ public class PTIMain
     static PTIPool ptiPool = null;
     static PTIManager ptiManager = null;
 
-    //static XMLConfiguration config = null;
     static int queueSize;
     static int corePoolSize;
     static int maxPoolSize;
     static long keepAliveTime;
     static int pollTime;
-    //static URL cfgURL;
+    
     static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
-    public PTIMain()  throws ConfigurationException, ParserConfigurationException, SAXException, IOException{
-
-        //        cfgURL = getClass().getResource("/config.xml");
-
-        //config = new XMLConfiguration( cfgURL );
-        //jobmap
-        jobMap = JobMapCreator.getMap( this.getClass() );
+    
+    @SuppressWarnings("unchecked")
+	public static void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
+    {
+    	PTIMain pti = new PTIMain();
+    	Class classType = pti.getClassType();
+    	jobMap = JobMapCreator.getMap( classType );
 
         pollTime = PtiConfig.getPtiMainPollTime();
         queueSize = PtiConfig.getPtiQueueSize();
         corePoolSize = PtiConfig.getPtiCorePoolSize();
         maxPoolSize = PtiConfig.getPtiMaxPoolSize();
         keepAliveTime = PtiConfig.getPtiKeepAliveTime();
-//         pollTime = config.getInt( "pti.main-poll-time" );
-//         queueSize = config.getInt( "pti.queuesize" );
-//         corePoolSize = config.getInt( "pti.corepoolsize" );
-//         maxPoolSize = config.getInt( "pti.maxpoolsize" );
-//         keepAliveTime = config.getInt( "pti.keepalivetime" );
+
     }
 
 
+    // Helper method to avoid static problems in init
+    @SuppressWarnings("unchecked")
+	private Class getClassType()
+    {
+    	return this.getClass();
+    }
+
+    
     /**
      * The shutdown hook. This method is called when the program catch
      * the kill signal.
@@ -88,11 +87,13 @@ public class PTIMain
     {
         shutdownRequested = true;
 
-        try{
+        try
+        {
             log.info("Shutting down.");
             ptiManager.shutdown();
         }
-        catch(InterruptedException e){
+        catch(InterruptedException e)
+        {
             log.error("Interrupted while waiting on main daemon thread to complete.");
         }
 
@@ -129,6 +130,7 @@ public class PTIMain
         Runtime.getRuntime().addShutdownHook( new Thread() { public void run() { shutdown(); }});
     }
 
+    
     /**
      * The PTIs main method.
      * Starts the PTI and starts the PTIManager.
@@ -137,8 +139,10 @@ public class PTIMain
     {
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
-        try{
-            PTIMain ptimain = new PTIMain();
+        try
+        {
+            init();
+            
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender(startupAppender);
 
@@ -150,16 +154,10 @@ public class PTIMain
             Estimate estimate = new Estimate();
             Processqueue processqueue = new Processqueue();
 
-            //FedoraClientFactory fedoraClientFactory = new FedoraClientFactory();
-            //FedoraClient fedoraClient = fedoraClientFactory.getFedoraClient();
-            //FedoraHandler fedoraHandler = new FedoraHandler( fedoraClient );
-
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
 
-
             log.debug( "Starting PTIPool" );
-            // PTIpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
             PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, jobMap );
@@ -172,39 +170,42 @@ public class PTIMain
             daemonize();
             addDaemonShutdownHook();
 
-        }catch (Throwable e){
+        }
+        catch (Throwable e)
+        {
             System.out.println("Startup failed." + e);
             log.fatal("Startup failed.",e);
         }
         finally
-            {
-                log.removeAppender(startupAppender);
-            }
+        {
+            log.removeAppender(startupAppender);
+        }
 
         while(!isShutdownRequested())
-            {// Mainloop
-                try
-                    {
-                        ptiManager.update();
-                        Thread.currentThread().sleep( pollTime );
-                    }
-                catch(InterruptedException ie)
-                    {
-                        log.error("InterruptedException caught in mainloop: ");
-                        log.error("  "+ie.getMessage() );
-                    }
-                catch(RuntimeException re)
-                    {
-                        log.error("RuntimeException caught in mainloop: " + re);
-                        log.error("\n" + re.getCause().getMessage() );
-                        log.error("\n" + re.getCause().getStackTrace() );
-                        throw re;
-                    }
-                catch(Exception e)
-                    {
-                        log.error("Exception caught in mainloop: " + e);
-                        log.error("  " + e.getMessage() );
-                    }
+        {// Mainloop
+        	try
+            {
+                ptiManager.update();
+                Thread.currentThread();
+				Thread.sleep( pollTime );
             }
+        	catch(InterruptedException ie)
+            {
+                log.error("InterruptedException caught in mainloop: ");
+                log.error("  "+ie.getMessage() );
+            }
+        	catch(RuntimeException re)
+            {
+                log.error("RuntimeException caught in mainloop: " + re);
+                log.error("\n" + re.getCause().getMessage() );
+                log.error("\n" + re.getCause().getStackTrace() );
+                throw re;
+            }
+        	catch(Exception e)
+            {
+                log.error("Exception caught in mainloop: " + e);
+                log.error("  " + e.getMessage() );
+            }
+        }
     }
 }
