@@ -137,8 +137,7 @@ public class DatadockPool
                 //log.fatal( "Catched exception from job" );
                 try
                 {
-                    log.debug( "Checking job" );
-                    
+                    log.debug( "Checking job" );                    
                     f = (Float) job.get();
                 }
                 catch( ExecutionException ee )
@@ -147,7 +146,7 @@ public class DatadockPool
                  
                     // getting exception from thread
                     Throwable cause = ee.getCause();
-                    RuntimeException re = new RuntimeException( cause );
+                    //RuntimeException re = new RuntimeException( cause );
                     
                     log.error( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
                     StackTraceElement[] trace = cause.getStackTrace();
