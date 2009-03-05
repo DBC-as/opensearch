@@ -29,6 +29,7 @@ public class AnnotateTest {
     /**
      *
      */
+	@Ignore
     @Test public void testatest() throws Exception {
 
 //          File f = new File("/home/shm/amnesty.xml");
