@@ -74,6 +74,7 @@ public class DatadockPool
         this.processqueue = processqueue;
         this.PIDmanager = PIDmanager;
         this.jobMap = jobMap;
+        log.debug(String.format( "jobMap:%s", jobMap.toString() ));
 
         jobs = new Vector< FutureTask >();
 
@@ -104,8 +105,11 @@ public class DatadockPool
         datadockJob.setPID( PIDmanager.getNextPID( datadockJob.getSubmitter() ) );
         
         FutureTask future = getTask( datadockJob );
+        
         threadpool.submit( future );
+        //log.debug(String.format("Future is null is: %s ", future == null));        
         jobs.add( future );
+
     }
 
     

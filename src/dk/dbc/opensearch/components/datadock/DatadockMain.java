@@ -72,11 +72,12 @@ public class DatadockMain
         harvestDir = HarvesterConfig.getHarvesterFolder();
         
         jobMap = JobMapCreator.getMap( this.getClass() );
+        log.debug( String.format( "the map: %s ",jobMap.toString() ));
 
         log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
     }
     
-    
+                   
     /**
      * The shutdown hook. This method is called when the program catches the kill signal.
      */

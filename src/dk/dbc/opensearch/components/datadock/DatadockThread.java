@@ -110,14 +110,17 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
     	log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
     	this.jobMap = jobMap;
+        log.debug(String.format("the jobMap: %s", this.jobMap.toString()));
     	this.datadockJob = datadockJob;
 
     	// Each pair identifies a plugin by p1:submitter and p2:format
     	submitter = datadockJob.getSubmitter();
     	format = datadockJob.getFormat();
-        log.debug( String.format( "Retrieving jobs based on submitter=%s and format=%s" ) );
-    	list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
-        log.debug( String.format( "Got list of jobs, length=%s", list.size() ) );
+
+        log.debug( String.format("submitter: %s, format: %s", submitter, format ) );
+    	list = this.jobMap.get( new Pair< String, String >( submitter, format ) );   
+        log.debug( String.format( "list has %s elements", list.size() ) ); 	
+
     	queue = processqueue;
 
     	this.estimate = estimate;
