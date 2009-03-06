@@ -53,4 +53,24 @@ public class ComparablePairTest {
         assertEquals( apairlist.get( 1 ).getSecond(), 2 );
     }
 
+    /**
+     * Verify that null values are not comparable
+     */
+    @Test public void testNullDoesNotEqual(){
+        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", null );
+        ComparablePair<String, String> two = null;//new ComparablePair<String, String>( "a", null );
+
+        assertTrue( ! one.equals( two ) );
+    }
+
+    @Test public void testEqualsWork(){
+        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
+        ComparablePair<String, String> two = new ComparablePair<String, String>( "a", "1" );
+        System.out.println( String.format( "%s", one.hashCode() ) );
+        System.out.println( String.format( "%s", two.hashCode() ) );
+        System.out.println( String.format( "%s", one.toString() ) );
+        System.out.println( String.format( "%s", two.toString() ) );
+        assertTrue( one.equals( two ) );
+    }
+
 }

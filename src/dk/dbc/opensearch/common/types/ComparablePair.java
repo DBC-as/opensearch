@@ -39,11 +39,11 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         {
             return false;
         }
-        if ( ( first == pair.getFirst() ) && ( second ==  pair.getSecond() ) )
+        else if ( ( first.equals( pair.getFirst() ) ) && ( second.equals( pair.getSecond() ) ) )
         {
             return true;
         }
-        else
+        else// do work
         {
             return false;
         }
@@ -52,13 +52,13 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
     
     public String toString()
     {
-        return String.format( "Pair< %s, %s >", first.toString(), second.toString() );
+        return String.format( "ComparablePair< %s, %s >", first.toString(), second.toString() );
     }
     
     
     public int hashCode()
     {
-        return first.hashCode() + second.hashCode();
+        return first.hashCode() ^ second.hashCode();
     }
 
     public int compareTo( Object pair ){
