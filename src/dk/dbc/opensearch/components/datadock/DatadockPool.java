@@ -73,6 +73,7 @@ public class DatadockPool
         this.estimate = estimate;
         this.processqueue = processqueue;
         this.PIDmanager = PIDmanager;
+        
         this.jobMap = jobMap;
         log.debug(String.format( "jobMap:%s", jobMap.toString() ));
 

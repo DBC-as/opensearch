@@ -119,6 +119,9 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
 
         log.debug( String.format("submitter: %s, format: %s", submitter, format ) );
         log.debug( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
+        
+        log.debug( "printing jobMap" );
+        printHashMap( this.jobMap );
     	list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
 
         if( list == null )
@@ -126,11 +129,23 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
             throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
         }
         log.debug( String.format( "list has elements" ) ); 	
-
+        fejl
     	queue = processqueue;
 
     	this.estimate = estimate;
     	log.debug( String.format( "DataDock Construction finished" ) );
+    }
+    
+    
+    void printHashMap( HashMap< Pair< String, String >, ArrayList< String > > jobMap )
+    {
+    	java.util.Set< Pair< String, String > > s = jobMap.keySet();
+    	java.util.Iterator< Pair< String, String > > iter = s.iterator();
+    	while( iter.hasNext() )
+    	{
+    		Pair< String, String > pair = (Pair< String, String >)iter.next(); 
+    		log.debug( "jobMap pair - First: " + pair.getFirst().toString() + " Second: " + pair.getSecond().toString() );
+    	}
     }
 
 

@@ -34,6 +34,7 @@ public class Pair< E, V >// implements Comparator
         return second;
     }
     
+    
     public boolean equals( Object obj )
     {
         if(!( obj instanceof Pair ) )
@@ -53,6 +54,7 @@ public class Pair< E, V >// implements Comparator
             return true;
         }
     }
+    
     
     public String toString()
     {

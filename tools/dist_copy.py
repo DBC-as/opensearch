@@ -99,7 +99,10 @@ def __set_copy_to_folder( fldr ):
     global scp_dist 
     scp_dist += middle + fldr
 
-   
+
+import exceptions
+from subprocess import PIPE
+
 def __make_dist( dist ):
     global src_dir
     global ant_dist
@@ -107,17 +110,19 @@ def __make_dist( dist ):
 
     if src_dir.endswith("tools"):
         src_dir = src_dir.replace("/tools", "" )
-        
+    
     if dist == 'datadock':
-        runproc = subprocess.Popen( ant_data, shell=True, cwd=src_dir )
+        runproc = subprocess.Popen( ant_data, shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
     elif dist == 'pti':
-        runproc = subprocess.Popen( ant_pti,  shell=True, cwd=src_dir )    
+        runproc = subprocess.Popen( ant_pti,  shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )    
     else:
-        runproc = subprocess.Popen( ant_dist, shell=True, cwd=src_dir )
-
-    runproc.communicate()[ 0 ]
-
-
+        runproc = subprocess.Popen( ant_dist, shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
+        
+    stdin, stderr = runproc.communicate()
+    if not stderr == '':
+        raise Exception( stderr )
+   
+   
 def __copy_dist():
     print scp_dist
     os.system( scp_dist )
