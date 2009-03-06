@@ -129,7 +129,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
             throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
         }
         log.debug( String.format( "list has elements" ) ); 	
-        fejl
+        
     	queue = processqueue;
 
     	this.estimate = estimate;
