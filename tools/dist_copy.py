@@ -35,7 +35,7 @@ def __cp_fldr( src, dst, filename ):
     files = os.listdir( src )
     for f in files:
         if __test_file( f ):
-            shutil.copyfile( src + f, dst + f )
+            shutil.copy2( src + f, dst + f )
 
 def __cp_tree( src, dst, folder ):
     shutil.copytree( src, dst, symlinks=False )
@@ -80,7 +80,7 @@ folder = 'tst'
 ant_dist = "ant dist"
 ant_pti  = "ant dist_pti"
 ant_data = "ant dist_datadock"
-scp_dist = "scp -r "
+scp_dist = "scp -rp "
 
 
 def __set_copy_from_folder( fldr ):

@@ -50,7 +50,7 @@ url    = ET.SubElement( db, "url" )
 user   = ET.SubElement( db, "userID" )
 passwd = ET.SubElement( db, "passwd" )
 driver.text = "org.postgresql.Driver"
-url.text    = "jdbc:postgresql:usern"
+url.text    = "jdbc:postgresql:" + usern
 user.text   = usern
 passwd.text = usern
 
