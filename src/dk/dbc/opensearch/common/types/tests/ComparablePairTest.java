@@ -62,14 +62,11 @@ public class ComparablePairTest {
 
         assertTrue( ! one.equals( two ) );
     }
-    @Ignore( "does not work, yet" )
+
     @Test public void testEqualsWork(){
         ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
         ComparablePair<String, String> two = new ComparablePair<String, String>( "a", "1" );
-        System.out.println( String.format( "%s", one.hashCode() ) );
-        System.out.println( String.format( "%s", two.hashCode() ) );
-        System.out.println( String.format( "%s", one.toString() ) );
-        System.out.println( String.format( "%s", two.toString() ) );
+
         assertTrue( one.equals( two ) );
     }
 

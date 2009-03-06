@@ -32,20 +32,28 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         return second;
     }
     
-    
-    public boolean equals( Pair<E, V> pair )
+    @Override
+    public boolean equals( Object cPair )
     {
-        if( pair == null )
+        if( cPair == null )
         {
             return false;
         }
-        else if ( ( first.equals( pair.getFirst() ) ) && ( second.equals( pair.getSecond() ) ) )
+        else if( ! ( cPair instanceof ComparablePair ) )
+        {
+            return false;
+        }
+        else if(!( first.equals( ( (ComparablePair)cPair ).getFirst() ) ) )
+        {
+            return false;
+        }
+        else if(!( second.equals( ( (ComparablePair)cPair ).getSecond() ) ) )
+        {
+            return false;
+        }
+        else
         {
             return true;
-        }
-        else// do work
-        {
-            return false;
         }
     }
     
