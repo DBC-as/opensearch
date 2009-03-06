@@ -2,6 +2,7 @@
 package dk.dbc.opensearch.common.types.tests;
 
 
+import java.util.HashMap;
 import dk.dbc.opensearch.common.types.Pair;
 
 import org.junit.*;
@@ -52,5 +53,15 @@ public class PairTest {
             new Pair<String, String>( "a", "b" );
 
         assertTrue( p3.equals( p ) );
+    }
+
+    @Test public void testPairInHashMaps(){
+        HashMap< Pair< String, String >, String > hm =
+            new HashMap< Pair< String, String >, String >();
+
+        hm.put( new Pair<String, String>( "a", "b" ), "c" );
+        hm.put( new Pair<String, String>( "d", "e" ), "f" );
+
+        assertNotNull( hm.get( new Pair<String, String>( "a", "b" ) ) );
     }
 }
