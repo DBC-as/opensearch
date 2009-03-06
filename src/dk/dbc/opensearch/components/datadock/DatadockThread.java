@@ -118,8 +118,14 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
     	format = datadockJob.getFormat();
 
         log.debug( String.format("submitter: %s, format: %s", submitter, format ) );
-    	list = this.jobMap.get( new Pair< String, String >( submitter, format ) );   
-        log.debug( String.format( "list has %s elements", list.size() ) ); 	
+        log.debug( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
+    	list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
+
+        if( list == null )
+        {
+            throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
+        }
+        log.debug( String.format( "list has elements" ) ); 	
 
     	queue = processqueue;
 
