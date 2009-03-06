@@ -34,23 +34,25 @@ public class Pair< E, V >// implements Comparator
         return second;
     }
     
-    
-    public boolean equals( Pair<E, V> pair )
+    public boolean equals( Object obj )
     {
-        if( pair == null )
+        if(!( obj instanceof Pair ) )
         {
             return false;
         }
-        if ( ( first == pair.getFirst() ) && ( second ==  pair.getSecond() ) )
+        else if(!( first.equals( ( (Pair)obj ).getFirst() ) ) )
         {
-            return true;
+            return false;
+        }
+        else if(!( second.equals( ( (Pair)obj ).getSecond() ) ) )
+        {
+            return false;
         }
         else
         {
-            return false;
+            return true;
         }
     }
-    
     
     public String toString()
     {
