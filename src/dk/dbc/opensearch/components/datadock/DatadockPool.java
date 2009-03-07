@@ -64,10 +64,9 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, PIDManager PIDmanager, 
-                         HashMap< Pair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, PIDManager PIDmanager, HashMap< Pair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
     {
-        log.debug( "Constructor( threadpool, estimat, processqueue, fedoraHandler ) called" );
+        log.debug( "Constructor( threadpool, estimat, processqueue, PIDmanager, jobMap ) called" );
 
         this.threadpool = threadpool;
         this.estimate = estimate;
@@ -79,8 +78,8 @@ public class DatadockPool
 
         jobs = new Vector< FutureTask >();
 
-        String cfgFile = FileSystemConfig.getConfigPath() + "config.xml"; 
-        config = new XMLConfiguration( cfgFile );
+        //String cfgFile = FileSystemConfig.getConfigPath() + "config.xml"; 
+        //config = new XMLConfiguration( cfgFile );
         
         shutDownPollTime = DatadockConfig.getDatadockShutdownPollTime();
     }
@@ -121,8 +120,8 @@ public class DatadockPool
 
 
     /**
-     * Checks the jobs submitted for execution, and return the number
-     * of active jobs.
+     * Checks the jobs submitted for execution, and returns a vector containing 
+     * the jobs that are not running anymore
      *
      * if a Job throws an exception it is written to the log and the
      * datadock continues.

@@ -7,6 +7,9 @@ import java.lang.UnsupportedOperationException;
 
 /**
  *  Use this class if you want a Pair class that can be sorted
+ *  It sorts on the first element and only considers the second 
+ *  if the two first elements are equal.
+ *  If u want another type of comparing please us a Comparator
  */
 
 public class ComparablePair< E extends Comparable< E >, V extends Comparable< V > > implements Comparable
@@ -77,7 +80,15 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
 
         ComparablePair newpair = (ComparablePair)pair;
 
-        /** \todo: I'm fairly certain that the compiler would never allow an instance of ComparablePair with nonComparable objects, but then again, I don't trust my intuition _that_ much*/
+        /**
+         * \todo: I'm fairly certain that the compiler would never allow an instance 
+         * of ComparablePair with nonComparable objects, but then again, I don't trust 
+         * my intuition _that_ much
+         * \todo: Do I understand this right: the two second elements are only significant 
+         * if the two first are equal?
+         */
+
+
         if ( newpair.getFirst() instanceof Comparable && newpair.getSecond() instanceof Comparable )
         {
             if ( first.equals( newpair.getFirst() ) )

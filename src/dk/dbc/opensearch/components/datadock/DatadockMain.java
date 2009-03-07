@@ -39,18 +39,18 @@ import org.xml.sax.SAXException;
  * The Main method of the datadock. It secures all necessary
  * resources for the program, starts the datadockManager and then
  * closes stdin and stdout thus closing connection to the console.
- * 
+ *
  * It also adds a shutdown hook to the JVM so orderly shutdown is
  * accompleshed when the process is killed.
  */
-public class DatadockMain 
+public class DatadockMain
 {
     static Logger log = Logger.getLogger( DatadockMain.class );
-    
-    static protected boolean shutdownRequested = false;    
+
+    static protected boolean shutdownRequested = false;
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
-    
+
     static XMLConfiguration config = null;
     static int queueSize;
     static int corePoolSize;
@@ -60,24 +60,24 @@ public class DatadockMain
     static URL cfgURL;
     static String harvestDir;
     public static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
-    
+
 
     public DatadockMain() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
-    {       
+    {
         pollTime = DatadockConfig.getDatadockMainPollTime();
         queueSize = DatadockConfig.getDatadockQueueSize();
         corePoolSize = DatadockConfig.getDatadockCorePoolSize();
         maxPoolSize = DatadockConfig.getDatadockMaxPoolSize();
         keepAliveTime = DatadockConfig.getDatadockKeepAliveTime();
         harvestDir = HarvesterConfig.getHarvesterFolder();
-        
+
         jobMap = JobMapCreator.getMap( this.getClass() );
         log.debug( String.format( "the map: %s ",jobMap.toString() ));
 
         log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
     }
-    
-                   
+
+
     /**
      * The shutdown hook. This method is called when the program catches the kill signal.
      */
@@ -86,19 +86,19 @@ public class DatadockMain
         shutdownRequested = true;
 
         try
-        {
-            log.info("Shutting down.");
-            datadockManager.shutdown();
-        }
+            {
+                log.info("Shutting down.");
+                datadockManager.shutdown();
+            }
         catch(InterruptedException e)
-        {
-            log.error("Interrupted while waiting on main daemon thread to complete.");
-        }
-        
+            {
+                log.error("Interrupted while waiting on main daemon thread to complete.");
+            }
+
         log.info("Exiting.");
     }
 
-    
+
     /**
      * Getter method for shutdown signal.
      */
@@ -107,20 +107,20 @@ public class DatadockMain
         return shutdownRequested;
     }
 
-    
+
     /**
      * Daemonizes the program, ie. disconnects from the console and
      * creates a pidfile.
      */
     static public void daemonize()
     {
-    	String pidFile = System.getProperty( "daemon.pidfile" );    	
+        String pidFile = System.getProperty( "daemon.pidfile" );
         FileHandler.getFile( pidFile ).deleteOnExit();
         System.out.close();
         System.err.close();
     }
 
-    
+
     /**
      * Adds the shutdownhook.
      */
@@ -129,94 +129,100 @@ public class DatadockMain
         Runtime.getRuntime().addShutdownHook( new Thread() { public void run() { shutdown(); }});
     }
 
-    
+
     /**
-     * The datadocks main method.  
+     * The datadocks main method.
      * Starts the datadock and starts the datadockManager.
      */
     static public void main(String[] args)
     {
-    	System.out.println("print");
-    	
+        //System.out.println("print");
+
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
-        
+
         try
-        {
-            DatadockMain datadockmain = new DatadockMain();
-            
-            log.removeAppender( "RootConsoleAppender" );
-            log.addAppender(startupAppender);
+            {
+                DatadockMain datadockmain = new DatadockMain();
 
-            /** -------------------- setup and start the datadockmanager -------------------- **/            
-            log.info("Starting the datadock");
-            
-            log.debug( "initializing resources" );
-            
-            // DB access
-            Estimate estimate = new Estimate();
-            Processqueue processqueue = new Processqueue();               
-            
-            // Fedora access
-            PIDManager PIDmanager = new PIDManager();
-            
-            log.debug( "Starting datadockPool" );
-            
-            // datadockpool
-            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
-            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
+                log.removeAppender( "RootConsoleAppender" );
+                log.addAppender(startupAppender);
 
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
+                /** -------------------- setup and start the datadockmanager -------------------- **/
+                log.info("Starting the datadock");
 
-            log.debug( "Starting harvester" );
-            
-            // harvester;
-            File harvestDirectory = FileHandler.getFile( harvestDir );
-            IHarvester harvester = new FileHarvest( harvestDirectory );            
-            
-            log.debug( "Starting the manager" );
-            // Starting the manager            
-            datadockManager = new DatadockManager( datadockPool, harvester );
+                log.debug( "initializing resources" );
 
-            /** --------------- setup and startup of the datadockmanager done ---------------- **/
-            log.debug( "Daemonizing" );
-            
-            daemonize();
-            addDaemonShutdownHook();
-        }
+                // DB access
+                Estimate estimate = new Estimate();
+                Processqueue processqueue = new Processqueue();
+
+                // Fedora access
+                PIDManager PIDmanager = new PIDManager();
+
+                log.debug( "Starting datadockPool" );
+
+                // datadockpool
+                LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
+                ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
+
+                datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
+
+                log.debug( "Starting harvester" );
+
+                // harvester;
+                File harvestDirectory = FileHandler.getFile( harvestDir );
+                IHarvester harvester = new FileHarvest( harvestDirectory );
+
+                log.debug( "Starting the manager" );
+                // Starting the manager
+                datadockManager = new DatadockManager( datadockPool, harvester );
+
+                /** --------------- setup and startup of the datadockmanager done ---------------- **/
+                log.debug( "Daemonizing" );
+
+                daemonize();
+                addDaemonShutdownHook();
+            }
         catch (Throwable e)
-        {
-            System.out.println("Startup failed." + e);
-            log.fatal("Startup failed.",e);
-        }
+            {
+                System.out.println("Startup failed." + e);
+                log.fatal("Startup failed.",e);
+            }
         finally
-        {
-            log.removeAppender(startupAppender);
-        }
+            {
+                log.removeAppender(startupAppender);
+            }
 
         while(!isShutdownRequested())
-        {
-            try
-            {            	
-                datadockManager.update();                
-                Thread.currentThread();
-				Thread.sleep( pollTime );
-            }
-            catch( InterruptedException ie )
             {
-                log.error("InterruptedException caught in mainloop: ");
-                log.error("  "+ie.getMessage() );
+                try
+                    {
+                        datadockManager.update();
+                        Thread.currentThread();
+                        Thread.sleep( pollTime );
+                    }
+                catch( InterruptedException ie )
+                    {
+                        /**
+                         * \todo: dont we want to get the trace?
+                         */
+                        log.error("InterruptedException caught in mainloop: " +ie);
+                        log.error("  "+ie.getMessage() );
+                    }
+                catch( RuntimeException re )
+                    {
+                        log.error("RuntimeException caught in mainloop: " + re);
+                        log.error("  " + re.getCause().getMessage() );
+                        throw re;
+                    }
+                catch( Exception e )
+                    {
+                        /**
+                         * \todo: dont we want to get the trace?
+                         */
+                        log.error("Exception caught in mainloop: " + e.toString() );
+                        //log.error("  " + e.getMessage() );
+                    }
             }
-            catch( RuntimeException re )
-            {
-                log.error("RuntimeException caught in mainloop: " + re);
-                log.error("  " + re.getCause().getMessage() );
-                throw re;
-            }
-            catch( Exception e )
-            {
-                log.error("Exception caught in mainloop: " + e);
-                log.error("  " + e.getMessage() );
-            }
-        }
-    }    
+    }
 }

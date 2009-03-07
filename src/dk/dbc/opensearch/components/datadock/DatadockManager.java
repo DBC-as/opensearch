@@ -56,8 +56,8 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
 
-        String cfgFile = FileSystemConfig.getConfigPath() + "/config.xml";        
-        config = new XMLConfiguration( cfgFile );
+        // String cfgFile = FileSystemConfig.getConfigPath() + "/config.xml";        
+        //config = new XMLConfiguration( cfgFile );
         
         rejectedSleepTime = DatadockConfig.getDatadockRejectedSleepTime();
     }

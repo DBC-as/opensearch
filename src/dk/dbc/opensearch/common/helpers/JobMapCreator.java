@@ -113,6 +113,10 @@ public class JobMapCreator
         // Put job into the map with <submitter, format> as key and List as value
         jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
 
+        if( jobMap == null )
+            {
+                throw new NullPointerException( String.format( "no jobs found for: %s ", classType.getName() ) );
+            }
         return jobMap;
     }
     
