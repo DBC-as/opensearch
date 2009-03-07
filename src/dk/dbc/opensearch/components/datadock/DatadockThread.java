@@ -12,7 +12,6 @@ import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
-import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
@@ -105,52 +104,38 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
      * @throws SAXException
      */
     public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
-        {
-            super();
-            log.debug( String.format( "Entering DatadockThread Constructor" ) );
-
-            this.jobMap = jobMap;
-            //        log.debug(String.format("the jobMap: %s", this.jobMap.toString()));
-            this.datadockJob = datadockJob;
-
-            // Each pair identifies a plugin by p1:submitter and p2:format
-            submitter = datadockJob.getSubmitter();
-            format = datadockJob.getFormat();
-
-            log.debug( String.format("submitter: %s, format: %s", submitter, format ) );
-            log.debug( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
-
-            log.debug( "printing jobMap" );
-            log.debug( jobMap.toString() );
-            list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
-
-            if( list == null )
-                {
-                    throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
-                }
-            log.debug( String.format( "list has elements" ) );
-
-            queue = processqueue;
-
-            this.estimate = estimate;
-            log.debug( String.format( "DataDock Construction finished" ) );
-        }
-
-    /**
-     * \Todo: Why not just the nice toSting() method of the vector class?
-     */
-    void printHashMap( HashMap< Pair< String, String >, ArrayList< String > > jobMap )
     {
-        java.util.Set< Pair< String, String > > s = jobMap.keySet();
-        java.util.Iterator< Pair< String, String > > iter = s.iterator();
-        while( iter.hasNext() )
-            {
-                Pair< String, String > pair = (Pair< String, String >)iter.next();
-                log.debug( "jobMap pair - First: " + pair.getFirst().toString() + " Second: " + pair.getSecond().toString() );
-            }
+        super();
+        log.debug( String.format( "Entering DatadockThread Constructor" ) );
+
+        this.jobMap = jobMap;
+        //        log.debug(String.format("the jobMap: %s", this.jobMap.toString()));
+        this.datadockJob = datadockJob;
+
+        // Each pair identifies a plugin by p1:submitter and p2:format
+        submitter = datadockJob.getSubmitter();
+        format = datadockJob.getFormat();
+
+        log.debug( String.format("submitter: %s, format: %s", submitter, format ) );
+        log.debug( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
+
+        log.debug( "printing jobMap" );
+        log.debug( jobMap.toString() );
+        list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
+
+        if( list == null )
+        {
+            throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
+        }
+        log.debug( String.format( "list has elements" ) );
+
+        queue = processqueue;
+
+        this.estimate = estimate;
+        log.debug( String.format( "DataDock Construction finished" ) );
     }
 
-
+    
     /**
      * call() is the thread entry method on the DataDock. Call operates
      * on the DataDock object, and all data critical for its success
@@ -178,81 +163,83 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
      * @throws ParseException
      */
     public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException
+    {
+        // Must be implemented due to class implementing Callable< Float > interface.
+        // Method is to be extended when we connect to 'Posthuset'
+
+        // Validate plugins
+        PluginResolver pluginResolver = new PluginResolver();
+        Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+
+        if( ! missingPlugins.isEmpty() )
         {
-            // Must be implemented due to class implementing Callable< Float > interface.
-            // Method is to be extended when we connect to 'Posthuset'
-
-            // Validate plugins
-            PluginResolver pluginResolver = new PluginResolver();
-            Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-
-            if( ! missingPlugins.isEmpty() )
-                {
-                    System.out.println( " kill thread" );
-                    log.error( "Thread killed due to invalid plugin call");
-                    log.error( String.format( "couldnt find the following plugins: %s", missingPlugins.toString() ) );
-                    // kill thread/throw meaningful exception/log message
-                }
-            else
-                {
-                    for( String task : list)
-                        {
-                            IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-                            switch ( plugin.getTaskName() )
-                                {
-                                case HARVEST:
-                                    IHarvestable harvestPlugin = (IHarvestable)plugin;
-                                    cc = harvestPlugin.getCargoContainer( datadockJob );
-                                    if( cc.getItemsCount() < 1 )
-                                    {
-                                        /**
-                                         * no data in the cargocontainer, so no
-                                         * reason to continue
-                                         */
-                                        log.error( String.format( "no data in the cargocontainer for file: %s", cc.getFilePath() ) );
-                                        throw new IllegalStateException( String.format( "no data in the cargocontainer for file: %s", cc.getFilePath() ) );
-                                    }
-                                    //make estimate
-                                    break;
-                                case ANNOTATE:
-                                    IAnnotate annotatePlugin = (IAnnotate)plugin;
-                                    cc = annotatePlugin.getCargoContainer( cc );
-                                    //break;
-                                    //case STORE:
-                                    //IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                                    //result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
-                                }
-                        }
-                }
-
-            // obtain mimetype and length from CargoContainer
-            String mimeType = null;
-            long length = 0;
-            for( CargoObject co : cc.getData() )
-                {
-                    if( co.getDataStreamName() == DataStreamType.OriginalData )
-                        mimeType = co.getMimeType();
-
-                    length += co.getContentLength();
-                }
-            //This should be caught in the harvest plugin!!!
-            if( cc.getItemsCount() < 1 ){
-                log.error( String.format( "The cargocontainer for file %s has no data!", cc.getFilePath() ) );
-            }
-            // Store the CargoContainer in the fedora repository
-            byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
-            String logm = String.format( "%s inserted", datadockJob.getFormat() );
-
-            // Beware of this innocent looking log line, it writes the
-            //binary content of the stored data to the log
-            //log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
-            String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
-
-            log.info( String.format( "Submitted data, returning pid %s", pid ) );
-
-            // push to processqueue job to processqueue and get estimate
-            queue.push( pid );
-            return estimate.getEstimate( mimeType, length );
+            System.out.println( " kill thread" );
+            log.error( "Thread killed due to invalid plugin call");
+            log.error( String.format( "couldnt find the following plugins: %s", missingPlugins.toString() ) );
+            // kill thread/throw meaningful exception/log message
         }
+        else
+        {
+            for( String task : list)
+            {
+                IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+                switch ( plugin.getTaskName() )
+                {
+                case HARVEST:
+                    IHarvestable harvestPlugin = (IHarvestable)plugin;
+                    cc = harvestPlugin.getCargoContainer( datadockJob );
+                    if( cc.getItemsCount() < 1 )
+                    {
+                        /**
+                         * no data in the cargocontainer, so no
+                         * reason to continue
+                         */
+                        log.error( String.format( "no data in the cargocontainer for file: %s", cc.getFilePath() ) );
+                        throw new IllegalStateException( String.format( "no data in the cargocontainer for file: %s", cc.getFilePath() ) );
+                    }
+                    //make estimate
+                    break;
+                case ANNOTATE:
+                    IAnnotate annotatePlugin = (IAnnotate)plugin;
+                    cc = annotatePlugin.getCargoContainer( cc );
+                    //break;
+                    //case STORE:
+                    //IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+                    //result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
+                }
+            }
+        }
+
+        // obtain mimetype and length from CargoContainer
+        String mimeType = null;
+        long length = 0;
+        for( CargoObject co : cc.getData() )
+        {
+            if( co.getDataStreamName() == DataStreamType.OriginalData )
+                mimeType = co.getMimeType();
+
+            length += co.getContentLength();
+        }
+
+        //This should be caught in the harvest plugin!!!
+        if( cc.getItemsCount() < 1 )
+        {
+            log.error( String.format( "The cargocontainer for file %s has no data!", cc.getFilePath() ) );
+        }
+        // Store the CargoContainer in the fedora repository
+        byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
+        String logm = String.format( "%s inserted", datadockJob.getFormat() );
+
+        // Beware of this innocent looking log line, it writes the
+        //binary content of the stored data to the log
+        //log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
+        String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
+
+        log.info( String.format( "Submitted data, returning pid %s", pid ) );
+
+        // push to processqueue job to processqueue and get estimate
+        queue.push( pid );
+        return estimate.getEstimate( mimeType, length );
+    }
 
 }

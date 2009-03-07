@@ -5,10 +5,10 @@
  */
 package dk.dbc.opensearch.components.datadock;
 
-import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
+import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
@@ -86,14 +86,14 @@ public class DatadockMain
         shutdownRequested = true;
 
         try
-            {
-                log.info("Shutting down.");
-                datadockManager.shutdown();
-            }
+        {
+            log.info("Shutting down.");
+            datadockManager.shutdown();
+        }
         catch(InterruptedException e)
-            {
-                log.error("Interrupted while waiting on main daemon thread to complete.");
-            }
+        {
+            log.error("Interrupted while waiting on main daemon thread to complete.");
+        }
 
         log.info("Exiting.");
     }
@@ -141,88 +141,88 @@ public class DatadockMain
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         try
-            {
-                DatadockMain datadockmain = new DatadockMain();
+        {
+            DatadockMain datadockmain = new DatadockMain();
 
-                log.removeAppender( "RootConsoleAppender" );
-                log.addAppender(startupAppender);
+            log.removeAppender( "RootConsoleAppender" );
+            log.addAppender(startupAppender);
 
-                /** -------------------- setup and start the datadockmanager -------------------- **/
-                log.info("Starting the datadock");
+            /** -------------------- setup and start the datadockmanager -------------------- **/
+            log.info("Starting the datadock");
 
-                log.debug( "initializing resources" );
+            log.debug( "initializing resources" );
 
-                // DB access
-                Estimate estimate = new Estimate();
-                Processqueue processqueue = new Processqueue();
+            // DB access
+            Estimate estimate = new Estimate();
+            Processqueue processqueue = new Processqueue();
 
-                // Fedora access
-                PIDManager PIDmanager = new PIDManager();
+            // Fedora access
+            PIDManager PIDmanager = new PIDManager();
 
-                log.debug( "Starting datadockPool" );
+            log.debug( "Starting datadockPool" );
 
-                // datadockpool
-                LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
-                ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
+            // datadockpool
+            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
+            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
 
-                datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
 
-                log.debug( "Starting harvester" );
+            log.debug( "Starting harvester" );
 
-                // harvester;
-                File harvestDirectory = FileHandler.getFile( harvestDir );
-                IHarvester harvester = new FileHarvest( harvestDirectory );
+            // harvester;
+            File harvestDirectory = FileHandler.getFile( harvestDir );
+            IHarvester harvester = new FileHarvest( harvestDirectory );
 
-                log.debug( "Starting the manager" );
-                // Starting the manager
-                datadockManager = new DatadockManager( datadockPool, harvester );
+            log.debug( "Starting the manager" );
+            // Starting the manager
+            datadockManager = new DatadockManager( datadockPool, harvester );
 
-                /** --------------- setup and startup of the datadockmanager done ---------------- **/
-                log.debug( "Daemonizing" );
+            /** --------------- setup and startup of the datadockmanager done ---------------- **/
+            log.debug( "Daemonizing" );
 
-                daemonize();
-                addDaemonShutdownHook();
-            }
+            daemonize();
+            addDaemonShutdownHook();
+        }
         catch (Throwable e)
-            {
-                System.out.println("Startup failed." + e);
-                log.fatal("Startup failed.",e);
-            }
+        {
+            System.out.println("Startup failed." + e);
+            log.fatal("Startup failed.",e);
+        }
         finally
-            {
-                log.removeAppender(startupAppender);
-            }
+        {
+            log.removeAppender(startupAppender);
+        }
 
         while(!isShutdownRequested())
+        {
+            try
             {
-                try
-                    {
-                        datadockManager.update();
-                        Thread.currentThread();
-                        Thread.sleep( pollTime );
-                    }
-                catch( InterruptedException ie )
-                    {
-                        /**
-                         * \todo: dont we want to get the trace?
-                         */
-                        log.error("InterruptedException caught in mainloop: " +ie);
-                        log.error("  "+ie.getMessage() );
-                    }
-                catch( RuntimeException re )
-                    {
-                        log.error("RuntimeException caught in mainloop: " + re);
-                        log.error("  " + re.getCause().getMessage() );
-                        throw re;
-                    }
-                catch( Exception e )
-                    {
-                        /**
-                         * \todo: dont we want to get the trace?
-                         */
-                        log.error("Exception caught in mainloop: " + e.toString() );
-                        //log.error("  " + e.getMessage() );
-                    }
+                datadockManager.update();
+                Thread.currentThread();
+                Thread.sleep( pollTime );
             }
+            catch( InterruptedException ie )
+            {
+                /**
+                 * \todo: dont we want to get the trace?
+                 */
+                log.error("InterruptedException caught in mainloop: " +ie);
+                log.error("  "+ie.getMessage() );
+            }
+            catch( RuntimeException re )
+            {
+                log.error("RuntimeException caught in mainloop: " + re);
+                log.error("  " + re.getCause().getMessage() );
+                throw re;
+            }
+            catch( Exception e )
+            {
+                /**
+                 * \todo: dont we want to get the trace?
+                 */
+                log.error("Exception caught in mainloop: " + e.toString() );
+                //log.error("  " + e.getMessage() );
+            }
+        }
     }
 }

@@ -7,7 +7,6 @@
 package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
@@ -19,7 +18,6 @@ import dk.dbc.opensearch.common.types.Pair;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
@@ -187,8 +185,12 @@ public class DatadockPool
         {
             activeJobs = false;
             for( FutureTask job : jobs )
+            {
                 if( ! job.isDone() )
+                {
                     activeJobs = true;
+                }
+            }
         }
     }
 }

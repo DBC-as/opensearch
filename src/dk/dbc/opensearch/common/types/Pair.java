@@ -1,6 +1,6 @@
 package dk.dbc.opensearch.common.types;
 
-import java.lang.UnsupportedOperationException;
+
 /**
  * InputPair
  * 

@@ -6,9 +6,10 @@
 
 package dk.dbc.opensearch.components.harvest;
 
-import dk.dbc.opensearch.common.types.DatadockJob;
 
-import com.mallardsoft.tuple.Pair;
+import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.Pair;
+//import com.mallardsoft.tuple.Pair;
 import com.mallardsoft.tuple.Tuple;
 
 import java.io.File;
@@ -57,6 +58,7 @@ public class FileHarvest implements IHarvester
     private HashSet< File > jobSet;
     private HashSet< Pair< File, Long > > jobApplications;
 
+    
     /**
      * Constructs the FileHarvest class, and starts polling the given path for files and subsequent file-changes.
      * 
@@ -72,10 +74,10 @@ public class FileHarvest implements IHarvester
             throw new IllegalArgumentException( String.format( "'%s' is not a directory !", path.getAbsolutePath() ) );
         
         this.path = path;
-        jobApplications = new HashSet< Pair< File, Long > >();
-        submitters = new Vector< Pair< File, Long > >();
-        formats = new Vector< Pair< File, Long > >();
-        jobSet = new HashSet< File >();
+        this.jobApplications = new HashSet< Pair< File, Long > >();
+        this.submitters = new Vector< Pair< File, Long > >();
+        this.formats = new Vector< Pair< File, Long > >();
+        this.jobSet = new HashSet< File >();
     }
 
     
@@ -91,8 +93,10 @@ public class FileHarvest implements IHarvester
         
         for( Pair< File, Long > job : findAllJobs() )
         {
-            log.debug( String.format( "adding path='%s' to jobSet and jobApllications", Tuple.get1(job).getAbsolutePath() ) );
-            jobSet.add( Tuple.get1( job ) );
+            //log.debug( String.format( "adding path='%s' to jobSet and jobApllications", Tuple.get1(job).getAbsolutePath() ) );
+            log.debug( String.format( "adding path='%s' to jobSet and jobApllications", job.getFirst().getAbsolutePath() ) );
+            //jobSet.add( Tuple.get1( job ) );
+            jobSet.add( job.getFirst() );
         }
         
         jobApplications = findAllJobs();
@@ -131,11 +135,15 @@ public class FileHarvest implements IHarvester
     
         for( Pair< File, Long > job : jobApplications )
         {
-            if( Tuple.get1( job ).length() == Tuple.get2( job) )
+            //if( Tuple.get1( job ).length() == Tuple.get2( job) )
+        	if( job.getFirst().length() == job.getSecond() )
             {
-                DatadockJob datadockJob = new DatadockJob( Tuple.get1( job ).toURI(),
-                                                           Tuple.get1( job ).getParentFile().getParentFile().getName(),
-                                                           Tuple.get1( job ).getParentFile().getName() );
+                //DatadockJob datadockJob = new DatadockJob( Tuple.get1( job ).toURI(),
+                //                                           Tuple.get1( job ).getParentFile().getParentFile().getName(),
+                //                                           Tuple.get1( job ).getParentFile().getName() );
+                DatadockJob datadockJob = new DatadockJob( job.getFirst().toURI(),
+                                                           job.getFirst().getParentFile().getParentFile().getName(),
+                                                           job.getFirst().getParentFile().getName() );
                 log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'",
                                           datadockJob.getUri().getRawPath(),
                                           datadockJob.getSubmitter(),
@@ -148,7 +156,8 @@ public class FileHarvest implements IHarvester
         // removing confirmed jobs from applications
         for( Pair< File, Long > job : removeJobs )
         {
-            log.debug( String.format( "Removing job='%s' from applications", Tuple.get1( job ).getAbsolutePath() ) );
+            //log.debug( String.format( "Removing job='%s' from applications", Tuple.get1( job ).getAbsolutePath() ) );
+        	log.debug( String.format( "Removing job='%s' from applications", job.getFirst().getAbsolutePath() ) );
             jobApplications.remove( job );
         }
 
@@ -157,7 +166,8 @@ public class FileHarvest implements IHarvester
         boolean changed = false;
         for( Pair< File, Long > format : formats )
         {
-            if( Tuple.get1( format ).lastModified() > Tuple.get2( format ) )
+            //if( Tuple.get1( format ).lastModified() > Tuple.get2( format ) )
+        	if( format.getFirst().lastModified() > format.getSecond() )
             {
                 changed = true;
             }
@@ -169,7 +179,9 @@ public class FileHarvest implements IHarvester
             for( File newJob : findNewJobs() )
             {
                 log.debug( String.format( "adding new job to applications: path='%s'", newJob.getAbsolutePath() ) );
-                jobApplications.add( Tuple.from( newJob, newJob.length() ) );
+                //jobApplications.add( Tuple.from( newJob, newJob.length() ) );
+                //jobApplications.add( Tuple.from( newJob, newJob.length() ) );
+                jobApplications.add( new Pair< File, Long >( newJob, newJob.length() ) );
             }
 
             // generating new snapshot
@@ -180,8 +192,8 @@ public class FileHarvest implements IHarvester
             jobSet = new HashSet< File >();
             for( Pair< File, Long > job : findAllJobs() )
             {                
-                log.debug( String.format( "adding path='%s' to jobSet", Tuple.get1( job ).getAbsolutePath() ) );
-                jobSet.add( Tuple.get1( job ) );
+//                log.debug( String.format( "adding path='%s' to jobSet", Tuple.get1( job ).getAbsolutePath() ) );
+//                jobSet.add( Tuple.get1( job ) );
             }
         }
         
@@ -203,17 +215,20 @@ public class FileHarvest implements IHarvester
             if( submitter.isDirectory() )
             {
                 log.debug( String.format( "adding submitter: path='%s'", submitter.getAbsolutePath() ) );
-                submitters.add( Tuple.from( submitter, submitter.lastModified() ) );
+                //submitters.add( Tuple.from( submitter, submitter.lastModified() ) );
+                submitters.add( new Pair< File, Long >( submitter, submitter.lastModified() ) );
             }
         }
         
         log.debug( "formats:" );        
         for( Pair<File, Long> submitter : submitters )
         {
-            for( File format : Tuple.get1( submitter ).listFiles() )
+            //for( File format : Tuple.get1( submitter ).listFiles() )
+        	for( File format : submitter.getFirst().listFiles() )
             {
-                log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
-                formats.add( Tuple.from( format, format.lastModified() ) );
+                //log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
+        		//formats.add( Tuple.from( format, format.lastModified() ) );
+        		formats.add( new Pair< File, Long >( format, format.lastModified() ) );
             }
         }
     }
@@ -230,7 +245,8 @@ public class FileHarvest implements IHarvester
         HashSet<File> currentJobs = new HashSet<File>();
         for( Pair<File, Long> job : findAllJobs() )
         {
-            currentJobs.add( Tuple.get1(job) );
+            //currentJobs.add( Tuple.get1(job) );
+        	currentJobs.add( job.getFirst() );
         }
         
         HashSet<File> newJobs = new HashSet<File>( jobSet );
@@ -251,16 +267,22 @@ public class FileHarvest implements IHarvester
      * 
      * @returns a hashset of pairs containing new job files and their size.
      */
-    private HashSet<Pair<File, Long >> findAllJobs()
+    private HashSet< Pair< File, Long > > findAllJobs()
     {
         log.debug( "findAllJobs() called" );
         HashSet< Pair< File, Long > > jobs = new HashSet< Pair< File, Long > >();
+        
         for( Pair< File, Long > format : formats )
         {
-            for( File job : Tuple.get1( format ).listFiles() )
+        	//int l = Tuple.get1( format ).listFiles().length;
+        	int l = format.getFirst().listFiles().length;
+        	log.debug( "FileHarvest: fileList length:" + l + " Format: " + format.getFirst().getAbsolutePath() );
+            //for( File job : Tuple.get1( format ).listFiles() )
+        	for( File job : format.getFirst().listFiles() )
             {
                 log.debug( String.format( "found job: '%s'", job.getAbsolutePath() ) );
-                jobs.add( Tuple.from( job, job.length() )  );
+                //jobs.add( Tuple.from( job, job.length() )  );
+                jobs.add( new Pair< File, Long >( job, job.length() )  );
             }
         }
         

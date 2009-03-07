@@ -27,7 +27,7 @@ public class FileSystemConfig extends Config
 		FileSystemConfig f = new FileSystemConfig();
 		String ret = f.getTrunkPath();
 		
-		return ret + "config/"; 
+		return ret + "config/" ; 
 	}
 	
 	

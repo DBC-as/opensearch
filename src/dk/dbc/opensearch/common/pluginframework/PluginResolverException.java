@@ -5,10 +5,10 @@
  */
 package dk.dbc.opensearch.common.pluginframework;
 
+
 import dk.dbc.opensearch.common.types.ThrownInfo;
 import java.util.Vector;
-//import com.mallardsoft.tuple.Tuple;
-//import com.mallardsoft.tuple.Pair;
+
 
 /**
  * This class is a custom Exception for handling the many exceptions that can be 
@@ -19,21 +19,25 @@ import java.util.Vector;
  * The info from the ThrownInfo tells what object the exception is concerned 
  * with or caused by.     
  */
-public class PluginResolverException extends Exception {
+public class PluginResolverException extends Exception 
+{
     Vector<ThrownInfo> exceptionVector;
     String message;
 
+    
     /**
      * @param exceptionVector is the Vector containing the ThrownInfos, that each 
      * contains a Throwable and aditional information.
      * @param String, message is the general message about the Exception, stating
      * what the collection of Throwables are regarding. 
      */
-    public PluginResolverException( Vector<ThrownInfo> exceptionVector, String message ) {
+    public PluginResolverException( Vector<ThrownInfo> exceptionVector, String message ) 
+    {
         this.exceptionVector = exceptionVector;
         this.message = message;
     }
 
+    
     /**
      * Constructor for sending a single message when the flow of the 
      * PluginResolvers components is as expected and no Exceptions where 
@@ -43,20 +47,24 @@ public class PluginResolverException extends Exception {
      * @param String, message is the general message about the Exception, stating 
      * what the collection of Throwables are regarding. 
      */
-    public PluginResolverException( String message ) {
+    public PluginResolverException( String message ) 
+    {
         this.exceptionVector = null;
         this.message = message;
     }
 
+    
     /**
      * The standard method for retrieving the overall information about 
      * the Exception.  
      * @return String, the overall information about the Exception.
      */
-    public String getMessage(){
+    public String getMessage()
+    {
         return message;
     }
 
+    
     /**
      * The method for retrieving the Vector containing the Throwables and 
      * eachs paired information. The returned Vector should allways be 
@@ -64,7 +72,8 @@ public class PluginResolverException extends Exception {
      * @return Vector<ThrownInfo> the Vector with the Throwables 
      * and information about them.
      */
-    public Vector<ThrownInfo> getExceptionVector(){
+    public Vector<ThrownInfo> getExceptionVector()
+    {
         return exceptionVector;
     }
 }
