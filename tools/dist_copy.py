@@ -11,8 +11,6 @@ from subprocess import PIPE
 
 
 files = [ 'dist_copy.py', 'xsd2xml.py' ]
-fldrs = [ 'admin', 'bin', 'config', 'dist', #'lib',
-          'plugins', 'tools' ]
 trees = []
 
 # Globals
@@ -21,7 +19,7 @@ src_dir = os.getcwd()
 # default values
 #server = 'sempu'
 middle = ':./'
-folder = 'tst'
+#folder = 'tst'
 
 ant_dist = "ant dist"
 ant_pti  = "ant dist_pti"
@@ -44,7 +42,7 @@ def __test_file( f ):
         return True    
 
 
-def __cp_fldr( src, dst, filename ):
+def __cp_fldr( src, dst ):
     if not os.path.exists( dst ):
         os.mkdir( dst )
 
@@ -53,11 +51,11 @@ def __cp_fldr( src, dst, filename ):
         if __test_file( f ):
             shutil.copy2( src + f, dst + f )
 
-def __cp_tree( src, dst, folder ):
+def __cp_tree( src, dst ):
     shutil.copytree( src, dst, symlinks=False )
 
 
-def __create_copy_dist():
+def __create_copy_dist( fldrs ):
     cur_dir = os.getcwd()
 
     # Create tmp dir. Suffix used for deletion later
@@ -77,9 +75,10 @@ def __create_copy_dist():
         src = cur_dir + '/' + name + '/'
         dst = tmp_dir + '/' + name + '/' 
         if name in fldrs:
-            __cp_fldr( src, dst, name )
+            #NOTE: name is not used....
+            __cp_fldr( src, dst )
         elif name in trees:
-            __cp_tree( src, dst, name )
+            __cp_tree( src, dst )
             
     return suffix
 
@@ -141,7 +140,28 @@ def __check_conn( copy_server ):
     test = os.system( cmd )
     if test == '':
         sys.exit( "ssh on %s does not seem to be running" )
-        
+
+
+def __check_remote_folder_exists( remote_folder, server ):
+    print "testing if remote folder exists"
+    cmd = "ssh %s 'stat %s'"%( server, remote_folder )
+    runproc = subprocess.Popen( cmd, shell=True, stdin=PIPE, stderr=PIPE )
+
+    ret = runproc.communicate()
+
+    if ret[1] != '':
+        return False
+    else:
+        return True
+
+def __create_remote_folder( folder_name, server ):
+    print "testing if remote folder exists"
+    cmd = "ssh %s 'mkdir %s'"%( server, folder_name )
+    runproc = subprocess.Popen( cmd, shell=True, stdin=PIPE, stderr=PIPE )
+
+    ret = runproc.communicate()
+
+
 
 if __name__ == '__main__':    
     if not os.getcwd().endswith( 'tools' ):         
@@ -183,8 +203,6 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit()
 
-    print "Options.folder= %s"%(options.folder)
-
     if options.folder is None:
         parser.error( "please specify (existing) folder on remote host to copy to.\nUse -h to see available options" )
     #__check_conn( options.server )
@@ -192,19 +210,33 @@ if __name__ == '__main__':
     if len( args ) != 1:
         parser.print_help()
         sys.exit( "\nPlease specify target" )
+
+    fldrs = [ 'admin', 'bin', 'config', 'dist', 'lib', 'plugins', 'tools' ]
+
+    print fldrs
+
+    if not __check_remote_folder_exists( os.path.join( options.folder ), options.server ):
+        print( "remote folder %s does not exist. Creating it"% options.folder )
+        __create_remote_folder( options.folder, options.server )
         
+
+    if __check_remote_folder_exists( os.path.join( options.folder, "lib" ), options.server ):
+        print "folder %s:%s/%s exists, skipping copy of libs"%( options.server, options.folder, "lib" )
+        fldrs.remove( "lib" )
+
     __make_dist( args[0] )
 
-    del_dir = __create_copy_dist()
+    del_dir = __create_copy_dist( fldrs )
+
     __set_copy_from_folder( del_dir )
     __set_copy_to_server( options.server )
     __set_copy_to_folder( options.folder )
 
     print """
-Creating jar(s): """ + args[0] + """
-copying folder:  """ + folder + """
-to server:       """ + options.server + """
-to folder:       """ + options.folder
+    Creating jar(s): """ + args[0] + """
+    copying folder:  """ + del_dir + """
+    to server:       """ + options.server + """
+    to remote folder:""" + options.folder
 
     try:
         __copy_dist()
