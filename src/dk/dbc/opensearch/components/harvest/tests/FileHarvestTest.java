@@ -36,15 +36,15 @@ public class FileHarvestTest {
     @After public void TearDown() { }
 
     
+    @Ignore
     @Test
     public void testCheckFormat() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
     {
-//    	String ddjPath = FileSystemConfig.getFileSystemDatadockPath();
-//    	File datadockJobsFile = new File( ddjPath );
-    	
     	String pollTestPath = HarvesterConfig.getHarvesterFolder();
     	File pollTestFile = new File( pollTestPath );
     	FileHarvest fh = new FileHarvest( pollTestFile );
+    	
+    	
     	
     	fh.callInitVectors();
     }
@@ -95,7 +95,7 @@ public class FileHarvestTest {
         testdir2.mkdir();
         testdir2.deleteOnExit();
 
-        File testdir3 = new File( testdir + "/test.dir/teste.dir3/" );
+        File testdir3 = new File( testdir + "/test.dir/test.dir3/" );
         testdir3.mkdir();
         testdir3.deleteOnExit();
         
@@ -107,11 +107,11 @@ public class FileHarvestTest {
         testFile3.createNewFile();
         testFile3.deleteOnExit();
 
-        File testFile4 = new File( testdir + "/test.dir/teste.dir3/testfile4" );
+        File testFile4 = new File( testdir + "/test.dir/test.dir3/testfile4" );
         testFile4.createNewFile();
         testFile4.deleteOnExit();
         
-        File testdir4 = new File( testdir + "/test.dir/teste.dir3/testdir4" );
+        File testdir4 = new File( testdir + "/test.dir/test.dir3/testdir4" );
         testdir4.mkdir();
         testdir4.deleteOnExit();
 
@@ -120,7 +120,7 @@ public class FileHarvestTest {
         Vector<DatadockJob> result1 = fileHarvest.getJobs();
         Vector<DatadockJob> result2 = fileHarvest.getJobs();
         
-        File testFile5 = new File( testdir + "/test.dir/teste.dir3/testfile5" );
+        File testFile5 = new File( testdir + "/test.dir/test.dir3/testfile5" );
         testFile5.createNewFile();
         testFile5.deleteOnExit();
     }
