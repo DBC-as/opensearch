@@ -61,7 +61,8 @@ public class JobMapCreator
         
         log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
         // Build the jobMap
-        NodeList jobNodeList = getJobMapNodeList( jobFile );        
+        //NodeList jobNodeList = getJobMapNodeList( jobFile );
+        NodeList jobNodeList = XMLFileReader.getNodeList( jobFile, "job" );
         int listLength = jobNodeList.getLength();
 
         // 30: For each node read the task name and position        
@@ -121,15 +122,15 @@ public class JobMapCreator
     }
     
     
-    private static NodeList getJobMapNodeList( File jobFile ) throws ParserConfigurationException, SAXException, IOException 
-    {
-    	DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-        Document jobDocument = docBuilder.parse( jobFile );
-        Element xmlRoot = jobDocument.getDocumentElement();
-
-        return xmlRoot.getElementsByTagName( "job" );
-	}
+//    private static NodeList getJobMapNodeList( File jobFile ) throws ParserConfigurationException, SAXException, IOException 
+//    {
+//    	DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+//        Document jobDocument = docBuilder.parse( jobFile );
+//        Element xmlRoot = jobDocument.getDocumentElement();
+//
+//        return xmlRoot.getElementsByTagName( "job" );
+//	}
 
 
 	private static File setJobFile( Class classType ) throws MalformedURLException

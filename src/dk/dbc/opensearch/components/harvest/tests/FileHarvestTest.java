@@ -6,6 +6,8 @@
 package dk.dbc.opensearch.components.harvest.tests;
 
 
+import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 
@@ -13,7 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.*;
+import org.xml.sax.SAXException;
+
 import static org.junit.Assert.*;
 
 
@@ -30,10 +36,27 @@ public class FileHarvestTest {
     @After public void TearDown() { }
 
     
+    @Test
+    public void testCheckFormat() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
+    {
+//    	String ddjPath = FileSystemConfig.getFileSystemDatadockPath();
+//    	File datadockJobsFile = new File( ddjPath );
+    	
+    	String pollTestPath = HarvesterConfig.getHarvesterFolder();
+    	File pollTestFile = new File( pollTestPath );
+    	FileHarvest fh = new FileHarvest( pollTestFile );
+    	
+    	fh.callInitVectors();
+    }
+    
+    
     /**
+     * @throws IOException 
+     * @throws SAXException 
+     * @throws ParserConfigurationException 
      * 
      */
-    @Test public void testConstructorException()
+    @Test public void testConstructorException() throws ParserConfigurationException, SAXException, IOException
     {
         testdir = new File( "test" );
         
@@ -50,7 +73,7 @@ public class FileHarvestTest {
     
     
     @Test 
-    public void testConstructor() throws IOException
+    public void testConstructor() throws IOException, IllegalArgumentException, ParserConfigurationException, SAXException
     {        
         //
         testdir = File.createTempFile("opensearch-unittest","" );
@@ -60,7 +83,7 @@ public class FileHarvestTest {
         testdir.mkdir();
         testdir.deleteOnExit();
         //
-        File testdir1 = new File( testdir + "/test.dir" );
+        File testdir1 = new File( testdir + "/test.dir/" );
         testdir1.mkdir();
         testdir1.deleteOnExit();
 
@@ -72,7 +95,7 @@ public class FileHarvestTest {
         testdir2.mkdir();
         testdir2.deleteOnExit();
 
-        File testdir3 = new File( testdir + "/test.dir/test.dir3" );
+        File testdir3 = new File( testdir + "/test.dir/teste.dir3/" );
         testdir3.mkdir();
         testdir3.deleteOnExit();
         
@@ -84,11 +107,11 @@ public class FileHarvestTest {
         testFile3.createNewFile();
         testFile3.deleteOnExit();
 
-        File testFile4 = new File( testdir + "/test.dir/test.dir3/testfile4" );
+        File testFile4 = new File( testdir + "/test.dir/teste.dir3/testfile4" );
         testFile4.createNewFile();
         testFile4.deleteOnExit();
         
-        File testdir4 = new File( testdir + "/test.dir/test.dir3/testdir4" );
+        File testdir4 = new File( testdir + "/test.dir/teste.dir3/testdir4" );
         testdir4.mkdir();
         testdir4.deleteOnExit();
 
@@ -97,7 +120,7 @@ public class FileHarvestTest {
         Vector<DatadockJob> result1 = fileHarvest.getJobs();
         Vector<DatadockJob> result2 = fileHarvest.getJobs();
         
-        File testFile5 = new File( testdir + "/test.dir/test.dir3/testfile5" );
+        File testFile5 = new File( testdir + "/test.dir/teste.dir3/testfile5" );
         testFile5.createNewFile();
         testFile5.deleteOnExit();
     }
