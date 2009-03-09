@@ -71,7 +71,10 @@ public class DBConnection{
 
         Connection con = null;
         con = DriverManager.getConnection(url, userID, passwd);        
-        
+        if( con == null )
+        {
+            throw new NullPointerException( String.format( "Could not get connection to database using url=%s, userID=%s, passwd=%s", url, userID, passwd ) );
+        }
         return con;
     }
 }
