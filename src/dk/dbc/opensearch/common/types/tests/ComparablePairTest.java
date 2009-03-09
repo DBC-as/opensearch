@@ -19,8 +19,6 @@ public class ComparablePairTest {
     /**
      * 
      */
-
-
     @Test public void testSortableOnFirst(){
         ArrayList< ComparablePair > apairlist = 
             new ArrayList< ComparablePair >();
@@ -69,5 +67,4 @@ public class ComparablePairTest {
 
         assertTrue( one.equals( two ) );
     }
-
 }
