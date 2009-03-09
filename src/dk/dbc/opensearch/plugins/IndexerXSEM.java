@@ -1,31 +1,37 @@
 package dk.dbc.opensearch.plugins;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.Reader;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
-import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CPMAlias;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.config.FedoraConfig;
 
-import org.apache.log4j.Logger;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.configuration.ConfigurationException;
-
+import org.apache.log4j.Logger;
+import org.apache.lucene.document.Field;
 import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
+import org.compass.core.Resource;
+import org.compass.core.lucene.LuceneProperty;
+import org.compass.core.marshall.DefaultMarshallingStrategy;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -38,19 +44,18 @@ public class IndexerXSEM implements IIndexer
 {
     Logger log = Logger.getLogger( IndexerXSEM.class );
 
-    
     public PluginType getTaskName()
     {
         return PluginType.INDEX;
     }
     
     
-    public long getProcessTime(CargoContainer cargo, CompassSession session) throws PluginException
+    public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException
     {
         long processTime = 0;
         try
         {
-        	processTime = getProcessTime( session, cargo );
+            processTime = getProcessTime( session, cargo, fedoraHandle );
         }
         catch( CompassException ce )
         {
@@ -61,7 +66,7 @@ public class IndexerXSEM implements IIndexer
     }
 
 
-    private long getProcessTime( CompassSession session, CargoContainer cc ) throws PluginException, CompassException
+    private long getProcessTime( CompassSession session, CargoContainer cc, String fedoraHandle ) throws PluginException, CompassException
     {
         long processTime = 0;
         Date finishTime = new Date();
@@ -140,8 +145,6 @@ public class IndexerXSEM implements IIndexer
 
                 log.info( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
-                log.debug( String.format( "Indexing document" ) );
-
                 // getting transaction object and saving index
                 log.debug( String.format( "Getting transaction object" ) );
                 CompassTransaction trans = null;
@@ -152,12 +155,22 @@ public class IndexerXSEM implements IIndexer
                     trans = session.beginTransaction();
                 }catch( CompassException ce )
                 {
+                    log.fatal( String.format( "Could not initiate transaction on the CompassSession" ) );
                     throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
                 }
 
                 log.info( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
+
+                /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
+                HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
+
+                fieldMap.put( "fedoraPid", fedoraHandle );
+                fieldMap.put( "original_format", co.getFormat() );
+
+                Resource resObject = updateAliasedXmlObject( session, xmlObject, fieldMap );
+
                 try{
-                    session.save( xmlObject );
+                    session.save( resObject );
                 }catch( Exception e ){
                     log.fatal( String.format( "class of thrown exception: %s, message: %s ", e.getClass(), e.getMessage() ) );
                     log.fatal( String.format( "the file not being indexed is: %s",cc.getFilePath() ) );
@@ -167,12 +180,13 @@ public class IndexerXSEM implements IIndexer
                 
                 trans.commit();
 
+                /** todo: does trans.wasCommitted have any side-effects? Such as waiting for the transaction to finish before returning?*/
                 log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );
                 session.close();
 
                 log.info( String.format( "Document indexed and stored with Compass" ) );
 
-                log.debug( "Obtain processtime, and writing to statisticDB table in database" );
+                log.debug( "Obtain processtime, and writing statistics into the database" );
 
                 processTime += finishTime.getTime() - co.getTimestamp();
 
@@ -183,6 +197,101 @@ public class IndexerXSEM implements IIndexer
         return processTime;
     }
 
+    /**
+     * Adds fields to a Compass index. New fields are given in the
+     * HashMap, which contains the field names resp. the field values.
+     * 
+     * @param sess The compass session which we are operating on
+     * @param xmlObj The AliasedXmlObject that we retrieve our index from
+     * @param fieldMap HashMap containing the field names resp. field values that are to be written to the index
+     * 
+     * @return the updated index as a Compass Resource
+     * 
+     * Please note that the AliasedXmlObject is deleted completely
+     * from the session and the returned Resource takes its place and
+     * contains its information. See the todo in the code.
+     */
+    private Resource updateAliasedXmlObject( CompassSession sess, AliasedXmlObject xmlObj, HashMap< String, String> fieldMap )
+    {
+
+        String alias = xmlObj.getAlias();
+
+        log.debug( String.format( "Preparing for insertion of new fields in index with alias %s", alias ) );
+
+        Resource xmlObj2 = sess.loadResource( alias, xmlObj );
+
+        // \todo do we need to remove the xmlObject from the index?
+        log.debug( String.format( "Deleting old xml object" ) );
+        sess.delete( xmlObj );
+
+        for( String key : fieldMap.keySet() )
+        {
+            log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
+            LuceneProperty newField = new LuceneProperty( new Field( key, new StringReader( fieldMap.get( key ) ) ) );
+            xmlObj2.addProperty( newField );            
+        }
+
+        return xmlObj2;
+
+
+
+
+
+
+
+
+
+
+
+        /////////////////////
+        // DefaultMarshallingStrategy marshallingStrategy = 
+        //     new DefaultMarshallingStrategy( sess.getMapping(),
+        //                                     sess.getSearchEngine(),
+        //                                     sess.getMapping().getConverterLookup(),
+        //                                     sess );
+        // // save the index
+        // sess.save( xmlObj );
+
+        // /** The following code is a hack; in order to write a field,
+        //  * we must
+        //  * 10: convert the XmlAliasedObject to a Resource,
+        //  * 20 :contruct (ie. save) the Resource in the session,  
+        //  * 30: retrieve the Resource from the session, 
+        //  * 40: add fields to the Resource object and 
+        //  * 50: return the modified Resource to be 
+        //  * (60: saved again on the session.) 
+        //  */
+
+        // // 10: convert the XmlAliasedObject to a Resouce
+        // String alias = xmlObj.getAlias();
+        // // 20: contruct the Resource
+        // Resource resource = marshallingStrategy.marshall( alias, xmlObj );
+
+        // //        log.debug( String.format( "Preparing for insertion of fedora handle '%s' into the index with alias %s", fedoraHandle, alias ) );
+
+        // // 25: save the Resource in the session
+        // sess.save( resource);
+
+        // // 30: retrieve the index as a Resource
+        // Resource xmlObj2 = sess.loadResource( alias, xmlObj );
+
+        // // \todo do we need to remove the xmlObject from the index?
+        // log.debug( String.format( "Deleting old xml object" ) );
+        // ses.delete( xmlObj );
+
+        // log.debug( String.format( "Setting field fedoraHandle='%s'", fedoraHandle ) );
+
+        // // 40: Add field to the index
+        // for( String key : fieldMap.keySet() )
+        // {
+        //     log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
+        //     LuceneProperty fedoraField = new LuceneProperty( new Field( key, new StringReader( fieldMap.get( key ) ) ) );
+        //     xmlObj2.addProperty( fedoraField );            
+        // }
+
+        // // 50: return the modified index
+        // return xmlObj2;
+    }
     
     /**
      * 

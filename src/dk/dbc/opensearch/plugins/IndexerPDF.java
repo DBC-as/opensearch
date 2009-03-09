@@ -25,7 +25,7 @@ public class IndexerPDF implements IIndexer
 
     Logger log = Logger.getLogger( IndexerPDF.class );
 
-    public long getProcessTime( CargoContainer cargo, CompassSession session ) 
+    public long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle ) 
     {
         CargoObject co = cargo.getFirstCargoObject( DataStreamType.OriginalData );
         byte[] data = co.getBytes();

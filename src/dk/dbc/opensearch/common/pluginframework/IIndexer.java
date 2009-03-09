@@ -8,5 +8,5 @@ import org.compass.core.CompassSession;
 
 public interface IIndexer extends IPluggable
 {
-    long getProcessTime( CargoContainer cargo, CompassSession session ) throws PluginException;//, CompassException, ParserConfigurationException, SAXException, IOException;
+    long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException;//, CompassException, ParserConfigurationException, SAXException, IOException;
 }

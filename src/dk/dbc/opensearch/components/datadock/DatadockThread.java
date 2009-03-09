@@ -239,7 +239,9 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
 
         // push to processqueue job to processqueue and get estimate
         queue.push( pid );
-        return estimate.getEstimate( mimeType, length );
+        Float est = estimate.getEstimate( mimeType, length );
+        log.debug( String.format( "Got estimate of %s",est ) );
+        return est;
     }
 
 }

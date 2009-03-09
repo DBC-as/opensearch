@@ -52,6 +52,8 @@ public class DatadockPool
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
     private PIDManager PIDmanager;
 
+    private int i = 0;
+
     XMLConfiguration config = null;
 
     /**
@@ -101,7 +103,9 @@ public class DatadockPool
 
         // Get fedoraPID for job and adding it to the datadockJob.
         datadockJob.setPID( PIDmanager.getNextPID( datadockJob.getSubmitter() ) );
-        
+
+        log.debug( String.format( "counter = %s", ++i  ) );
+
         FutureTask future = getTask( datadockJob );
         
         threadpool.submit( future );
