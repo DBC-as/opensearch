@@ -6,11 +6,27 @@
 import subprocess, sys, os, fnmatch
 import datetime, os, shutil, sys
 
+import exceptions
+from subprocess import PIPE
+
 
 files = [ 'dist_copy.py', 'xsd2xml.py' ]
-fldrs = [ 'admin', 'bin', 'config', 'dist', 'lib', 'plugins', 'tools' ]
+fldrs = [ 'admin', 'bin', 'config', 'dist', #'lib',
+          'plugins', 'tools' ]
 trees = []
 
+# Globals
+src_dir = os.getcwd()
+
+# default values
+#server = 'sempu'
+middle = ':./'
+folder = 'tst'
+
+ant_dist = "ant dist"
+ant_pti  = "ant dist_pti"
+ant_data = "ant dist_datadock"
+scp_dist = "scp -rp "
 
 """#########################################
    Functions for copying files to distribute
@@ -71,17 +87,6 @@ def __create_copy_dist():
 """ #########################################################
     Functions for setting server and copying folder to server
     #########################################################"""
-src_dir = os.getcwd()
-
-server = 'sempu'
-middle = ':./'
-folder = 'tst'
-
-ant_dist = "ant dist"
-ant_pti  = "ant dist_pti"
-ant_data = "ant dist_datadock"
-scp_dist = "scp -rp "
-
 
 def __set_copy_from_folder( fldr ):
     global scp_dist
@@ -99,9 +104,6 @@ def __set_copy_to_folder( fldr ):
     global scp_dist 
     scp_dist += middle + fldr
 
-
-import exceptions
-from subprocess import PIPE
 
 def __make_dist( dist ):
     global src_dir
@@ -147,17 +149,33 @@ if __name__ == '__main__':
 
     from optparse import OptionParser
     
-    parser = OptionParser( usage="%prog [options] datadock|pti|both" )
+    parser = OptionParser( usage="%prog [options] ant_target" )
 
-    parser.add_option( "-l", dest="listjars", action="store_true",
-                       default=False, help="List available " )
+    parser.add_option( "--ls", dest="listserv", action="store_true",
+                       default=False, help="List available servers" )
+    parser.add_option( "--lt", dest="listtarget", action="store_true",
+                       default=False, help="List available ant targets" )
     parser.add_option( "-s", type="string", dest="server", 
                        help="Name of server to copy to." )
-   
+    parser.add_option( "-d", "--dest", type="string", dest="folder", 
+                       help="Name of of destination folder (from ~/) to copy to. Defaults to 'tst'" )
+
     (options, args) = parser.parse_args()
 
     target_list = [ 'datadock', 'pti', 'both' ]
     server_list = [ 'andrus', 'sempu' ]
+
+    if options.listserv:
+        print "Available servers to copy to:"
+        for server in server_list:
+            print server
+        sys.exit( 0 )
+
+    if options.listtarget:
+        print "Available ant targets:"
+        for target in target_list:
+            print target
+        sys.exit( 0 )
     
     if options.server not in server_list:
         print "Use option -s to specify server. Available servers are:\n"
@@ -165,6 +183,10 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit()
 
+    print "Options.folder= %s"%(options.folder)
+
+    if options.folder is None:
+        parser.error( "please specify (existing) folder on remote host to copy to.\nUse -h to see available options" )
     #__check_conn( options.server )
     
     if len( args ) != 1:
@@ -176,12 +198,13 @@ if __name__ == '__main__':
     del_dir = __create_copy_dist()
     __set_copy_from_folder( del_dir )
     __set_copy_to_server( options.server )
-    __set_copy_to_folder( folder )
+    __set_copy_to_folder( options.folder )
 
     print """
 Creating jar(s): """ + args[0] + """
 copying folder:  """ + folder + """
-to server:       """ + server
+to server:       """ + options.server + """
+to folder:       """ + options.folder
 
     try:
         __copy_dist()
