@@ -6,15 +6,17 @@
 
 package dk.dbc.opensearch.common.os;
 
-import org.apache.log4j.Logger;
-import java.util.Vector;
-import java.io.InputStream;
-import java.io.FileInputStream;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.lang.IllegalArgumentException; 
 import java.lang.NullPointerException;
+import java.util.Vector;
+
+import org.apache.log4j.Logger;
+
 
 /**
  * /brief Class to handle file operations.
@@ -22,7 +24,7 @@ import java.lang.NullPointerException;
  */
 public class FileHandler 
 {
-    static Logger log = Logger.getLogger( "FileHandler" );
+    static Logger log = Logger.getLogger( FileHandler.class );
 
     /**
      * The empty FileHandler constructor
@@ -38,6 +40,7 @@ public class FileHandler
      */
     public static File getFile( String path )throws NullPointerException
     {
+    	log.debug( "Calling getFile(), path: " + path );
     	return new File( path );
     }
     

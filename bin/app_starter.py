@@ -75,18 +75,26 @@ def main( app, action ):
 
         
         
-def start_daemon( q_name, pid_filename ):
+def start_daemon( q_name, pid_filename, use_jmp ):
+    
     """
     Starts the Application daemon
     """
     runproc = subprocess.Popen( [ './run' ], shell=True, stdout=subprocess.PIPE ) 
     cp = runproc.communicate()[ 0 ].strip( '\n' )
+    
+    tijmp = ''
+    if use_jmp:
+        print 'true'
+        tijmp = "-agentlib:tijmp"
+    else:
+        print 'false'
 
-    cmd = [ 'java',
+    cmd = [ 'java %s'%( tijmp ),
             '-Ddaemon.pidfile=%s'%( pid_filename ),
             '-jar',
             q_name ]
-            
+   
     cmd = ' '.join( cmd )
         
     print cmd
@@ -135,7 +143,7 @@ def generate_config():
     print res
     
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     from optparse import OptionParser
     parser = OptionParser( usage="%prog [options] start|stop|restart" )
 
@@ -143,10 +151,13 @@ if __name__ == '__main__':
                        help="Name of app to execute")
     parser.add_option( "-l", dest="listapps", action="store_true",
                        default=False, help="List available apps" )
+    parser.add_option( "-t", action="store_true", dest="use_jmp" )
 
     (options, args) = parser.parse_args()
 
     app_list = [ 'datadock', 'pti', 'both' ]
+
+    use_jmp = options.use_jmp
 
     if options.listapps:
         print "Available applications:\n"
@@ -162,6 +173,6 @@ if __name__ == '__main__':
 
     if options.app == 'both':
         main( 'pti', args[0] )
-        main( 'datadock', args[0] )
+        main( 'datadock', args[0], use_jmp )
     else:
-        main( options.app, args[0] )
+        main( options.app, args[0], use_jmp )
