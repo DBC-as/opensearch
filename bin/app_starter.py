@@ -8,7 +8,7 @@ import subprocess
 import logging as log
 
 
-def main( app, action ):
+def main( app, action, use_jmp ):
     log.basicConfig( level = log.DEBUG,
                      format = '%(asctime)s %(levelname)s %(message)s',
                      filename='app_starter.log' )
@@ -68,7 +68,7 @@ def main( app, action ):
     if do_start:
         print "starting process"
         log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
-        proc, pid = start_daemon( q_name, pid_filename )
+        proc, pid = start_daemon( q_name, pid_filename, use_jmp )
         log.debug( "Started process with pid=%s"%( pid ) )
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
@@ -85,10 +85,7 @@ def start_daemon( q_name, pid_filename, use_jmp ):
     
     tijmp = ''
     if use_jmp:
-        print 'true'
         tijmp = "-agentlib:tijmp"
-    else:
-        print 'false'
 
     cmd = [ 'java %s'%( tijmp ),
             '-Ddaemon.pidfile=%s'%( pid_filename ),
@@ -172,7 +169,7 @@ if __name__ == '__main__':
         sys.exit( parser.print_help() )
 
     if options.app == 'both':
-        main( 'pti', args[0] )
+        main( 'pti', args[0], use_jmp )
         main( 'datadock', args[0], use_jmp )
     else:
         main( options.app, args[0], use_jmp )
