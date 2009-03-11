@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
@@ -196,7 +195,7 @@ public class DatadockMain
             log.removeAppender(startupAppender);
         }
 
-        while(!isShutdownRequested())
+        while( ! isShutdownRequested() )
         {
             try
             {
@@ -209,8 +208,8 @@ public class DatadockMain
                 /**
                  * \todo: dont we want to get the trace?
                  */
-                log.error("InterruptedException caught in mainloop: " +ie);
-                log.error("  "+ie.getMessage() );
+                log.error("InterruptedException caught in mainloop: "  + ie);
+                log.error("  " + ie.getMessage() );
             }
             catch( RuntimeException re )
             {
@@ -224,7 +223,6 @@ public class DatadockMain
                  * \todo: dont we want to get the trace?
                  */
                 log.error("Exception caught in mainloop: " + e.toString() );
-                //log.error("  " + e.getMessage() );
             }
         }
     }

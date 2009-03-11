@@ -3,8 +3,13 @@
  * \brief The Harvester class
  * \package harvest;
  */
-
 package dk.dbc.opensearch.components.harvest;
+
+
+import dk.dbc.opensearch.common.types.DatadockJob;
+
+import java.util.Vector;
+
 
 /**
  * Harvester interface. Harvester is the interface for the datadock
@@ -15,11 +20,6 @@ package dk.dbc.opensearch.components.harvest;
  * call the getJobs method at intervals until the shutdown method is
  * called.
  */
-
-import dk.dbc.opensearch.common.types.DatadockJob;
-import java.util.Vector;
-import java.net.URI;
-
 public interface IHarvester
 {
     /**
@@ -27,11 +27,15 @@ public interface IHarvester
      * construction of the instance.
      */
     void start();
+    
+    
     /**
      * The shutdown method. Called by the datadock when closing down
      * the harvester.
      */
     void shutdown();
+    
+    
     /**
      * The getJobs method. Called consecutively by the datadock when
      * it is up and running.
@@ -39,5 +43,5 @@ public interface IHarvester
      * @return getJobs Returns a vector of DatadockJobs - representing
      * the new jobs registered since the last call to this method.
      */
-    Vector<DatadockJob> getJobs();
+    Vector< DatadockJob > getJobs();
 }
