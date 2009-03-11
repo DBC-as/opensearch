@@ -62,9 +62,12 @@ public class DatadockMain
     public static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
 
-    public DatadockMain() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    public DatadockMain() {}
+    
+    
+    public void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
     {
-        pollTime = DatadockConfig.getDatadockMainPollTime();
+    	pollTime = DatadockConfig.getDatadockMainPollTime();
         queueSize = DatadockConfig.getDatadockQueueSize();
         corePoolSize = DatadockConfig.getDatadockCorePoolSize();
         maxPoolSize = DatadockConfig.getDatadockMaxPoolSize();
@@ -136,13 +139,12 @@ public class DatadockMain
      */
     static public void main(String[] args)
     {
-        //System.out.println("print");
-
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         try
         {
             DatadockMain datadockmain = new DatadockMain();
+            datadockmain.init();
 
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender(startupAppender);
@@ -163,8 +165,9 @@ public class DatadockMain
 
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
-            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-
+            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
+            threadpool.purge();
+            
             datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
 
             log.debug( "Starting harvester" );

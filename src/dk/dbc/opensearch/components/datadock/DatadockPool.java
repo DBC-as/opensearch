@@ -78,9 +78,6 @@ public class DatadockPool
 
         jobs = new Vector< FutureTask >();
 
-        //String cfgFile = FileSystemConfig.getConfigPath() + "config.xml"; 
-        //config = new XMLConfiguration( cfgFile );
-        
         shutDownPollTime = DatadockConfig.getDatadockShutdownPollTime();
     }
 
@@ -157,8 +154,11 @@ public class DatadockPool
                     log.error( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
                     StackTraceElement[] trace = cause.getStackTrace();
                     for( int i = 0; i < trace.length; i++ )
+                    {
                     	log.error( trace[i].toString() );
+                    }
                 }
+                
                 log.debug( "adding to finished jobs" );
                 finishedJobs.add( new CompletedTask( job, f ) );
             }

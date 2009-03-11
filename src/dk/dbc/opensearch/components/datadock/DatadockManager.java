@@ -8,7 +8,6 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
@@ -17,7 +16,6 @@ import dk.dbc.opensearch.components.harvest.IHarvester;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
-import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -56,9 +54,6 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
 
-        // String cfgFile = FileSystemConfig.getConfigPath() + "/config.xml";        
-        //config = new XMLConfiguration( cfgFile );
-        
         rejectedSleepTime = DatadockConfig.getDatadockRejectedSleepTime();
     }
 
@@ -84,9 +79,9 @@ public class DatadockManager
                  }
                  catch( RejectedExecutionException re )
                  {
-                     log.debug( String.format( "job: '%s' rejected, trying again",job.getUri().getRawPath() ) );
+                     log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
                      Thread.currentThread();
-					Thread.sleep( rejectedSleepTime );
+                     Thread.sleep( rejectedSleepTime );
                  }
             }
         }
