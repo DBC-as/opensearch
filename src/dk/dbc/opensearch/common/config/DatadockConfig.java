@@ -127,4 +127,21 @@ public class DatadockConfig extends Config
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getKeepAliveTime();
 	}
+	
+	
+	/* *******************
+	 * DATADOCK JOBLIMIT *
+	 * *******************/
+	private int getJobLimit()
+	{
+		int ret = config.getInt( "datadock.joblimit" );
+		return ret;
+	}
+	
+	
+	public static int getDatadockJobLimit()
+	{
+		DatadockConfig ddc = new DatadockConfig();
+		return ddc.getJobLimit();
+	}
 }

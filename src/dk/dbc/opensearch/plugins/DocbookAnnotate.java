@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
 
 
 /**
- * Plgin for annotating docbook carcoContainers
+ * Plugin for annotating docbook carcoContainers
  */
 public class DocbookAnnotate implements IAnnotate
 {
@@ -80,7 +80,6 @@ public class DocbookAnnotate implements IAnnotate
 
         // our namespace context for evaluating xpath expressions
         
-
         log.debug( "Retrive docbook xml from CargoContainer" );
         CargoObject co = cargo.getFirstCargoObject( DataStreamType.OriginalData );
         byte[] b = co.getBytes();

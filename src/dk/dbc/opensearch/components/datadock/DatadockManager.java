@@ -39,9 +39,11 @@ public class DatadockManager
     private DatadockPool pool= null;
     private IHarvester harvester = null;
     private int rejectedSleepTime;
+    private int jobLimit;
 
     XMLConfiguration config = null;
     
+    Vector< DatadockJob > registeredJobs = null;
     
     /**
      * Constructs the the DatadockManager instance.
@@ -55,15 +57,32 @@ public class DatadockManager
         harvester.start();
 
         rejectedSleepTime = DatadockConfig.getDatadockRejectedSleepTime();
+        jobLimit = DatadockConfig.getDatadockJobLimit();
+
+        registeredJobs = new Vector< DatadockJob >(); 
+
     }
 
     
     public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         log.debug( "update() called" );
-        
-        // checking for new jobs and executing them
-        Vector< DatadockJob > jobs = harvester.getJobs();
+      
+        // Check if there are any registered jobs ready for docking
+        // if not... new jobs are requested from the harvester
+        if( registeredJobs.size() == 0 ){
+            log.debug( "no more jobs. requesting new jobs from the harvester" );
+            registeredJobs = harvester.getJobs();
+        }
+      
+        // isolate the jobs to execute in this update... 
+        Vector< DatadockJob > jobs = new Vector< DatadockJob >();
+        for(  int i=0; i < jobLimit; i++){
+            if( registeredJobs.size() == 0 ){ break;}
+            jobs.add( registeredJobs.remove( 0 ) );
+        }
+
+        // execute jobs
         for( DatadockJob job : jobs )
         {
             boolean submitted = false;

@@ -62,14 +62,16 @@ queuesz   = ET.SubElement( dd, "queuesize" )
 corepool  = ET.SubElement( dd, "corepoolsize" )
 maxpool   = ET.SubElement( dd, "maxpoolsize" )
 keepalive = ET.SubElement( dd, "keepalivetime" )
+joblimit  = ET.SubElement( dd, "joblimit" )
 
 poll.text      = "1000" 
 reject.text    = "3000"
 shutdown.text  = "1000"
-queuesz.text   = "1"
-corepool.text  = "1"
-maxpool.text   = "1"
+queuesz.text   = "20"
+corepool.text  = "3"
+maxpool.text   = "6"
 keepalive.text = "10"
+joblimit.text  = "20"
 
 #fedora settings
 host   = ET.SubElement( fedora, "host" )
@@ -117,10 +119,10 @@ poll.text      = "1000"
 reject.text    = "3000"
 shutdown.text  = "1000"
 resultsz.text  = "20"
-queuesz.text   = "1"
-corepool.text  = "1"
-maxpool.text   = "1"
-keepalive.text = "1"
+queuesz.text   = "20"
+corepool.text  = "3"
+maxpool.text   = "6"
+keepalive.text = "10"
 
 
 import sys
