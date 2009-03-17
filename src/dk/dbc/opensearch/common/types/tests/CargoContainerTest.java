@@ -7,6 +7,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 import fedora.common.policy.DatastreamNamespace;
 import fedora.server.types.gen.Datastream;
 
@@ -145,5 +146,42 @@ public class CargoContainerTest
         int actualCount = cc.getItemsCount();
 
         assertEquals( expectedCount, actualCount );
+    }
+
+    @Test public void testGetFirstCargoObject() throws IOException
+    { 
+        CargoContainer cc = new CargoContainer();
+        CargoObject co;
+        DataStreamType dst1 = DataStreamType.getDataStreamNameFrom( "originalData" );
+        DataStreamType dst2 = DataStreamType.getDataStreamNameFrom( "indexableData" );
+        DataStreamType dst3 = DataStreamType.getDataStreamNameFrom( "adminData" );
+        String str1 = "abc";
+        byte[] data1 = str1.getBytes();
+        String str2 = "abc";
+        byte[] data2 = str2.getBytes();
+
+        cc.add( dst1, format, submitter, language, mimetype, data1);
+        cc.add( dst2, format, submitter, language, mimetype, data2);
+
+        co = cc.getFirstCargoObject( dst2 );
+        assertTrue(data2 == co.getBytes() );
+
+        assertTrue( cc.getFirstCargoObject( dst3 ) == null  );
+
+    }
+
+    @Test public void testIndexingAliasSetAndGet() //throws IOException
+    {
+        CargoContainer cc = new CargoContainer();
+        IndexingAlias ia = IndexingAlias.getIndexingAlias( "article" );
+        cc.setIndexingAlias( ia );
+        assertTrue( ia == cc.getIndexingAlias() );
+    }
+    @Test public void testFilePathSetAndGet()
+    {
+        CargoContainer cc = new CargoContainer();
+        String testFilePath = "testPath";
+        cc.setFilePath( testFilePath );
+        assertTrue( cc.getFilePath().equals( testFilePath ) );
     }
 }

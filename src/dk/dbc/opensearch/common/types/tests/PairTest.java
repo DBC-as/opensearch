@@ -47,12 +47,37 @@ public class PairTest {
         assertEquals( p.hashCode(), p2.hashCode() );
 
     }
+    /**
+     * happy path
+     */
 
     @Test public void testEquals(){
         Pair<String, String> p3 = 
             new Pair<String, String>( "a", "b" );
 
         assertTrue( p3.equals( p ) );
+    }
+    /**
+     * two non-equal pair
+     */
+
+    @Test public void testEqualsDifferent()
+    {
+        Pair<String, String> p3 = 
+            new Pair<String, String>( "a", "a" );
+
+        assertFalse( p3.equals( p ) ); 
+    
+    }
+    /**
+     * Calling equal with a non-pair
+     */
+   @Test public void testEqualsInvalid()
+    {
+        String test = "test";
+
+        assertFalse( p.equals( test ) ); 
+    
     }
 
     @Test public void testPairInHashMaps(){

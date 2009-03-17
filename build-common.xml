@@ -414,7 +414,7 @@
   </target>
 
   <target name="toplevel.coverage-check" depends="toplevel.coverage-test">
-    <cobertura-check branchrate="34" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" >
+    <cobertura-check branchrate="100" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" >
       <!--  Vi skal have fundet nogle fornuftige værdier her   -->
       <!--       <regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/> -->
       <!--       <regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/> -->
