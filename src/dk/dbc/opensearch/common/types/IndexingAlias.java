@@ -15,7 +15,8 @@ public enum IndexingAlias
 
     private String name;
     private String description;
-    IndexingAlias( String name, String Description )
+
+    IndexingAlias( String name, String description )
     {
         this.name = name;
         this.description = description;

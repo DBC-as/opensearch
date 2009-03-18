@@ -14,6 +14,9 @@ import java.io.UnsupportedEncodingException;
 import static org.junit.Assert.*;
 import org.junit.*;
 
+/**
+ * The getTimestamp method is not tested
+ */
 
 public class CargoObjectInfoTest
 {
@@ -83,14 +86,26 @@ public class CargoObjectInfoTest
     		assertTrue( co.checkSubmitter( test_submitter ) );
     }
     
+    @Test
+    public void testCheckSubmitterInvalid()
+    {
+    	for( CargoObject co : cc.getData() )
+    		assertFalse( co.checkSubmitter( "invalid" ) );
+    }
     
     @Test
-    public void testCheckLanguage()
+    public void testCheckLanguageValid()
     {
     	for( CargoObject co : cc.getData() )
     		assertTrue( co.checkLanguage( test_lang ) );
     }
-    
+     
+    @Test
+    public void testCheckLanguageInvalid()
+    {
+    	for( CargoObject co : cc.getData() )
+    		assertFalse( co.checkLanguage( "invalid" ) );
+    }
     
     @Test
     public void testValidMimetype()

@@ -78,24 +78,12 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         }
 
         ComparablePair newpair = (ComparablePair)pair;
-
-        /**
-         * \todo: I'm fairly certain that the compiler would never allow an instance 
-         * of ComparablePair with nonComparable objects, but then again, I don't trust 
-         * my intuition _that_ much
-         */
-        if ( newpair.getFirst() instanceof Comparable && newpair.getSecond() instanceof Comparable )
+ 
+        if ( first.equals( newpair.getFirst() ) )
         {
-            if ( first.equals( newpair.getFirst() ) )
-            {
                 return (int)second.compareTo( (V)newpair.getSecond() );
-            }
-            return (int)first.compareTo( (E)newpair.getFirst() );
         }
-        else
-        {
-            /** \todo: this could really be more granular*/
-            throw new UnsupportedOperationException( String.format( "Type %s is not a comparable type", newpair.toString().toString() ) );
-        }
+        return (int)first.compareTo( (E)newpair.getFirst() );
+        
     }
 }
