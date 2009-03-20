@@ -66,6 +66,7 @@ public class DatadockMain
     
     public void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
     {
+    	log.debug( "DatadockMain init called" );
     	pollTime = DatadockConfig.getDatadockMainPollTime();
         queueSize = DatadockConfig.getDatadockQueueSize();
         corePoolSize = DatadockConfig.getDatadockCorePoolSize();
@@ -76,7 +77,7 @@ public class DatadockMain
         jobMap = JobMapCreator.getMap( this.getClass() );
         log.debug( String.format( "the map: %s ",jobMap.toString() ));
 
-        log.debug( String.format( "--->queueSIZE='%s'", queueSize ) );
+        log.debug( String.format( "---> queueSIZE = '%s'", queueSize ) );
     }
 
 
@@ -138,18 +139,21 @@ public class DatadockMain
      */
     static public void main(String[] args)
     {
+    	log.debug( "DatadockMain main called" );
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         try
         {
             DatadockMain datadockmain = new DatadockMain();
+            log.debug( "DatadockMain main called" );
+            
             datadockmain.init();
 
             log.removeAppender( "RootConsoleAppender" );
-            log.addAppender(startupAppender);
+            log.addAppender( startupAppender );
 
             /** -------------------- setup and start the datadockmanager -------------------- **/
-            log.info("Starting the datadock");
+            log.info( "Starting the datadock" );
 
             log.debug( "initializing resources" );
 
@@ -187,18 +191,19 @@ public class DatadockMain
         }
         catch (Throwable e)
         {
-            System.out.println("Startup failed." + e);
-            log.fatal("Startup failed.",e);
+            System.out.println( "Startup failed." + e );
+            log.fatal( "Startup failed.", e);
         }
         finally
         {
-            log.removeAppender(startupAppender);
+            log.removeAppender( startupAppender );
         }
 
         while( ! isShutdownRequested() )
         {
             try
             {
+            	log.debug( "DatadockMain calling datadockManager update" );
                 datadockManager.update();
                 Thread.currentThread();
                 Thread.sleep( pollTime );

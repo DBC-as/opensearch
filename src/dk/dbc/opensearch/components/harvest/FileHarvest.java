@@ -150,7 +150,8 @@ public class FileHarvest implements IHarvester
 
     public Vector<DatadockJob> getJobs()
     {
-        log.debug( "getJobs() called " );
+        log.debug( "FileHarvest getJobs called " );
+        
         // validating candidates - if the filelength have remained the
         // same for two consecutive calls it is added to newJobs
         Vector< DatadockJob > newJobs = new Vector<DatadockJob>();

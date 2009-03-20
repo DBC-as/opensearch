@@ -66,7 +66,7 @@ public class DatadockManager
     
     public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
-        log.debug( "update() called" );
+        log.debug( "DatadockManager update called" );
       
         // Check if there are any registered jobs ready for docking
         // if not... new jobs are requested from the harvester
@@ -83,6 +83,7 @@ public class DatadockManager
         }
 
         // execute jobs
+        log.debug( String.format( "DatadockManager harvester getJobs called. jobs.size: %s", jobs.size() ) );
         for( DatadockJob job : jobs )
         {
             boolean submitted = false;

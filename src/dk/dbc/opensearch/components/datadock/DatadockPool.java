@@ -3,8 +3,8 @@
  * \brief The DatadockPool class
  * \package datadock;
  */
-
 package dk.dbc.opensearch.components.datadock;
+
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
@@ -43,7 +43,8 @@ import org.xml.sax.SAXException;
  */
 public class DatadockPool
 {
-    static Logger log = Logger.getLogger("DatadockPool");
+    static Logger log = Logger.getLogger( DatadockPool.class );
+    
     private Vector< FutureTask > jobs;
     private final ThreadPoolExecutor threadpool;
     private Estimate estimate;
@@ -56,6 +57,7 @@ public class DatadockPool
 
     XMLConfiguration config = null;
 
+    
     /**
      * Constructs the the datadockPool instance
      *
@@ -166,7 +168,7 @@ public class DatadockPool
         
         for( CompletedTask finishedJob : finishedJobs )
         {
-            log.debug( "Removing Job" );
+            log.debug( String.format( "Removing Job Vector< FutureTask > jobs size: %s", jobs.size() ) );
             jobs.remove( finishedJob.getFuture() );
         }
         

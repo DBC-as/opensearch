@@ -109,7 +109,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
         this.jobMap = jobMap;
-        //        log.debug(String.format("the jobMap: %s", this.jobMap.toString()));
+        //log.debug(String.format("the jobMap: %s", this.jobMap.toString()));
         this.datadockJob = datadockJob;
 
         // Each pair identifies a plugin by p1:submitter and p2:format
@@ -226,6 +226,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
         {
             log.error( String.format( "The cargocontainer for file %s has no data!", cc.getFilePath() ) );
         }
+        
         // Store the CargoContainer in the fedora repository
         byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
@@ -240,8 +241,8 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
         // push to processqueue job to processqueue and get estimate
         queue.push( pid );
         Float est = estimate.getEstimate( mimeType, length );
-        log.debug( String.format( "Got estimate of %s",est ) );
+        log.debug( String.format( "Got estimate of %s", est ) );
+        
         return est;
     }
-
 }
