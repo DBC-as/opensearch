@@ -95,6 +95,12 @@
     <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/** testdir/**" debug="on">
       <classpath refid="classpath"/>
     </javac>
+
+    <!-- Copy .plugin files to .../opensearch/.../plugins/ folder -->
+    <!--copy todir="${classes.dir}/dk/dbc/opensearch/plugins"-->  	
+    <copy todir="${base.dir}/plugins">
+      <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
+    </copy>  
   </target>
 
 
