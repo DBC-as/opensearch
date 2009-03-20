@@ -115,7 +115,6 @@ public class PluginFinderTest
      * So there is no seperate test for that methods general functionality.
      * Happy path.
      */
-    @Ignore
     @Test
     public void constructorTest() throws SAXException, IOException, NullPointerException, PluginResolverException 
     {
@@ -129,9 +128,9 @@ public class PluginFinderTest
          */
         //in the updatePluginClassNameMap method
 
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         expect( mockVector.size() ).andReturn( 0 ); //log call
         expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        expect( mockVector.iterator() ).andReturn( mockIterator );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -139,7 +138,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( true );
         //in while again
@@ -148,7 +147,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( false );
 
@@ -164,7 +163,7 @@ public class PluginFinderTest
         replay( mockFile );
 
         /** do stuff */
-        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+        pluginFinder = new PluginFinder( mockDocBuilder, "testPath" );
 
         /**  4 check if it happened as expected
          * verify
@@ -182,7 +181,6 @@ public class PluginFinderTest
     /**
      * Test the behaviour when there are no .plugin files to be found
      */
-    @Ignore
     @Test( expected = FileNotFoundException.class )
         public void noPluginDescriptionFiles() throws SAXException, IOException, NullPointerException, PluginResolverException{
         /** 1 setup
@@ -215,7 +213,6 @@ public class PluginFinderTest
      * Tests that the SAXException that can be caused by a parse operation is
      * put unto the PluginResolverException and that this is thrown
      */
-    @Ignore
     @Test
     public void saxExceptionParseTest() throws FileNotFoundException, SAXException, IOException 
     {
@@ -230,9 +227,9 @@ public class PluginFinderTest
          */
         //in the updatePluginClassNameMap method
 
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         expect( mockVector.size() ).andReturn( 0 ); //log call
         expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        expect( mockVector.iterator() ).andReturn( mockIterator );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -271,7 +268,6 @@ public class PluginFinderTest
      * tests that the IOException that can be caused by a parse is sent with the
      * PluginResolverException
      */
-    @Ignore
     @Test 
     public void ioExceptionParseTest() throws FileNotFoundException, SAXException, IOException 
     {
@@ -286,9 +282,9 @@ public class PluginFinderTest
          */
         //in the updatePluginClassNameMap method
 
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         expect( mockVector.size() ).andReturn( 0 ); //log call
         expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        expect( mockVector.iterator() ).andReturn( mockIterator );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -328,7 +324,6 @@ public class PluginFinderTest
      * tests that the NullPointerException that can be caused by a parse is put
      * into the PluginResolverException, and that this is thrown
      */
-    @Ignore
     @Test 
     public void nullPointerExceptionParseTest() throws FileNotFoundException, SAXException, IOException 
     {
@@ -388,9 +383,8 @@ public class PluginFinderTest
       * this happen by returning null when the mockElement.getAttribute is called,
       * to get the submitter
       */
-    @Ignore
     @Test 
-    public void invalidFileFormatSubmitterTest() throws SAXException, FileNotFoundException, IOException
+    public void invalidFileNameTest() throws SAXException, FileNotFoundException, IOException
     {
         /** 1 setup
          *
@@ -403,9 +397,9 @@ public class PluginFinderTest
          */
         //in the updatePluginClassNameMap method
 
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         expect( mockVector.size() ).andReturn( 0 ); //log call
         expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
+        expect( mockVector.iterator() ).andReturn( mockIterator );       
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -414,7 +408,7 @@ public class PluginFinderTest
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( null );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 3 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString );
         expect( mockElement.getTagName() ).andReturn( "plugins" );
 
         expect( mockIterator.hasNext() ).andReturn( true );
@@ -424,7 +418,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( false );
 
@@ -471,7 +465,6 @@ public class PluginFinderTest
      * null a SAXException is put onto the PluginResolverException. We make
      * this happen by returning another String than the expected "plugins"
      */
-    @Ignore
     @Test 
     public void invalidFileFormatPluginsTest() throws SAXException, FileNotFoundException, IOException
     {
@@ -486,17 +479,17 @@ public class PluginFinderTest
          */
         //in the updatePluginClassNameMap method
 
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         expect( mockVector.size() ).andReturn( 0 ); //log call
         expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
-        //entering while
+ expect( mockVector.iterator() ).andReturn( mockIterator );       
+ //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
         expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 );
         expect( mockElement.getTagName() ).andReturn( "invalid" );
 
         expect( mockIterator.hasNext() ).andReturn( true );
@@ -506,7 +499,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( false );
 
@@ -554,9 +547,8 @@ public class PluginFinderTest
      * this happen by returning null when the mockElement.getAttribute is called,
      * to get the format
      */
-    @Ignore
     @Test 
-    public void invalidFileFormatFormatTest() throws SAXException, FileNotFoundException, IOException
+    public void invalidFileClassNameTest() throws SAXException, FileNotFoundException, IOException
     {
         /** 1 setup
          *
@@ -581,7 +573,7 @@ public class PluginFinderTest
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( null );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 );
+       
         expect( mockElement.getTagName() ).andReturn( "plugins" );
 
         expect( mockIterator.hasNext() ).andReturn( true );
@@ -591,7 +583,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( false );
 
@@ -631,179 +623,12 @@ public class PluginFinderTest
     }
 
     
-    /**
-     * Test that if the plugin xml file doesnt have "plugins" as name of the
-     * root element or one of the four values extracted from the file are
-     * null a SAXException is put onto the PluginResolverException. We make
-     * this happen by returning null when the mockElement.getAttribute is called,
-     * to get the task
-     */
-    @Ignore
-    @Test 
-    public void invalidFileFormatTaskTest() throws SAXException, FileNotFoundException, IOException
-    {
-        /** 1 setup
-         *
-         */
-        String testString = "test";
-        Vector<ThrownInfo> exceptionVector = null;
-        Iterator expVecIter;
-        /** 2 expectations
-         *
-         */
-        //in the updatePluginClassNameMap method
-
-        expect( mockVector.iterator() ).andReturn( mockIterator );
-        expect( mockVector.size() ).andReturn( 0 ); //log call
-        expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
-        //entering while
-        expect( mockIterator.hasNext() ).andReturn( true );
-        expect( mockIterator.next() ).andReturn( testString );
-        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
-        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( null );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString );
-        expect( mockElement.getTagName() ).andReturn( "plugins" );
-
-        expect( mockIterator.hasNext() ).andReturn( true );
-        //in while again
-        expect( mockIterator.next() ).andReturn( testString );
-        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
-        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
-        expect( mockElement.getTagName() ).andReturn( "plugins" );
-        expect( mockIterator.hasNext() ).andReturn( false );
-
-        /** 3 replay
-         *
-         */
-        replay( mockVector );
-        replay( mockIterator );
-        replay( mockDocBuilder );
-        replay( mockDocument );
-        replay( mockElement );
-        replay( mockNodeList );
-        replay( mockFile );
-
-        /** do stuff */
-        try
-        {
-            pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        }
-        catch( PluginResolverException pre)
-        {
-            exceptionVector = pre.getExceptionVector();
-        }
-        expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( ( ( ThrownInfo ) expVecIter.next()).getThrowable().getClass() ) );
-
-        /**  4 check if it happened as expected
-         * verify
-         */
-        verify( mockVector );
-        verify( mockIterator );
-        verify( mockDocBuilder );
-        verify( mockDocument );
-        verify( mockElement );
-        verify( mockNodeList );
-        verify( mockFile );
-    }
-    
-    
-    /**
-     * Test that if the plugin xml file doesnt have "plugins" as name of the
-     * root element or one of the four values extracted from the file are
-     * null a SAXException is put onto the PluginResolverException. We make
-     * this happen by returning null when the mockElement.getAttribute is called,
-     * to get the classname
-     */
-    @Ignore
-    @Test 
-    public void invalidFileFormatClassnameTest() throws SAXException, FileNotFoundException, IOException
-    {
-        /** 1 setup
-         *
-         */
-        String testString = "test";
-        Vector<ThrownInfo> exceptionVector = null;
-        Iterator expVecIter;
-        /** 2 expectations
-         *
-         */
-        //in the updatePluginClassNameMap method
-
-        expect( mockVector.iterator() ).andReturn( mockIterator );
-        expect( mockVector.size() ).andReturn( 0 ); //log call
-        expect( mockVector.size() ).andReturn( 2 ); //must be larger than 0
-        //entering while
-        expect( mockIterator.hasNext() ).andReturn( true );
-        expect( mockIterator.next() ).andReturn( testString );
-        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
-        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 3 );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( null );
-        expect( mockElement.getTagName() ).andReturn( "plugins" );
-
-        expect( mockIterator.hasNext() ).andReturn( true );
-        //in while again
-        expect( mockIterator.next() ).andReturn( testString );
-        expect( mockDocBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
-        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
-        expect( mockElement.getTagName() ).andReturn( "plugins" );
-        expect( mockIterator.hasNext() ).andReturn( false );
-
-        /** 3 replay
-         *
-         */
-        replay( mockVector );
-        replay( mockIterator );
-        replay( mockDocBuilder );
-        replay( mockDocument );
-        replay( mockElement );
-        replay( mockNodeList );
-        replay( mockFile );
-
-        /** do stuff */
-        try
-        {
-            pluginFinder = new PluginFinder( mockDocBuilder, "" );
-        }
-        catch( PluginResolverException pre)
-        {
-            exceptionVector = pre.getExceptionVector();
-        }
-        
-        expVecIter = exceptionVector.iterator();
-        assertTrue( SAXException.class == ( ( (ThrownInfo) expVecIter.next() ).getThrowable().getClass() ) );
-
-        /**  4 check if it happened as expected
-         * verify
-         */
-        verify( mockVector );
-        verify( mockIterator );
-        verify( mockDocBuilder );
-        verify( mockDocument );
-        verify( mockElement );
-        verify( mockNodeList );
-        verify( mockFile );
-    }
     
     
     /**
      * test the happy path of the getPluginClassName method, where
      * classNameMap  needs to be rebuild.
      */
-    @Ignore
     @Test 
     public void getPluginClassNameTest() throws InvocationTargetException, IOException, PluginResolverException, SAXException, FileNotFoundException, NoSuchMethodException, IllegalAccessException 
     {
@@ -817,10 +642,10 @@ public class PluginFinderTest
          */
         //in the updatePluginClassNameMap method
 
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         // value doesn't matter, this call is logging
         expect( mockVector.size() ).andReturn( 0 );
         expect( mockVector.size() ).andReturn( 1 );
+        expect( mockVector.iterator() ).andReturn( mockIterator );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -828,7 +653,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( false );
 
@@ -839,9 +664,9 @@ public class PluginFinderTest
         //in the getPluginClassName method again
 
         //in the updatePluginClassNameMap method again
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         expect( mockVector.size() ).andReturn( 0 );//log call
         expect( mockVector.size() ).andReturn( 2 );
+        expect( mockVector.iterator() ).andReturn( mockIterator );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -849,7 +674,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( false );
 
@@ -871,9 +696,9 @@ public class PluginFinderTest
         Method method2;
         Class[] argClasses1 = new Class[]{};
         Class[] argClasses2 = new Class[]{ int.class };
-        Object[] args2 = new Object[]{ (testString + testString + testString).hashCode() };
+        Object[] args2 = new Object[]{ testString.hashCode() };
 
-        pluginFinder = new PluginFinder( mockDocBuilder, "" );
+        pluginFinder = new PluginFinder( mockDocBuilder, "testPath" );
 
         method1 = pluginFinder.getClass().getDeclaredMethod( "clearClassNameMap", argClasses1 );
         method2 = pluginFinder.getClass().getDeclaredMethod( "getPluginClassName", argClasses2 );
@@ -901,7 +726,6 @@ public class PluginFinderTest
      * Tests the throwing of the FileNotFoundException when there is no
      * plugin classname corresponding to the key
      */
-    @Ignore
     @Test 
     public void noFileFoundExceptionTest () throws IOException, PluginResolverException, SAXException, FileNotFoundException, NoSuchMethodException, IllegalAccessException
     {
@@ -909,14 +733,15 @@ public class PluginFinderTest
          *
          */
         String testString = "test";
+        String otherTestString = "wrong";
         boolean fileNotFound = false;
         /** 2 expectations
          *
          */
         //in the updatePluginClassNameMap method
-        expect( mockVector.iterator() ).andReturn( mockIterator );
         expect( mockVector.size() ).andReturn( 0 );// log call
         expect( mockVector.size() ).andReturn( 1 );
+        expect( mockVector.iterator() ).andReturn( mockIterator );
         //entering while
         expect( mockIterator.hasNext() ).andReturn( true );
         expect( mockIterator.next() ).andReturn( testString );
@@ -924,7 +749,7 @@ public class PluginFinderTest
         expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 4 ) ;
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 ) ;
         expect( mockElement.getTagName() ).andReturn( "plugins" );
         expect( mockIterator.hasNext() ).andReturn( false );
 
@@ -944,7 +769,7 @@ public class PluginFinderTest
         /** do stuff */
         Method method;
         Class[] argClasses = new Class[]{ int.class };
-        Object[] args = new Object[]{ testString.hashCode() };
+        Object[] args = new Object[]{ otherTestString.hashCode() };
 
         pluginFinder = new PluginFinder( mockDocBuilder, "" );
         try

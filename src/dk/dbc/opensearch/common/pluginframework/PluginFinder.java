@@ -50,8 +50,8 @@ public class PluginFinder
     
     /**
      * builds the map containing the keys and related plugin classes
-     * The keys are made from the task, format and datasource, the value is the
-     * class of the plugin that can solve the specified task
+     * The keys are made from the name the value is the
+     * className of the plugin that can solve the specified task
      * @param path: the directory to look for the xml files describing the plugins
      * @param docBuilder: the DocumentBuilder used for parsing the xml files
      * @throws IllegalArgumentException when there is no directory or no files in it
@@ -103,7 +103,7 @@ public class PluginFinder
         return className;
     }
     
-    
+    /* 
     void printClassNameMap()
     {
     	java.util.Collection< String > c = (java.util.Collection< String >) classNameMap.values();
@@ -116,7 +116,7 @@ public class PluginFinder
     		System.out.println( "value: " + iter.next().toString() );
     	}
     }
-    
+    */
 
     /**
      * creates or updates the classname map with the names of the plugins found
@@ -147,8 +147,8 @@ public class PluginFinder
 
         pluginNameIter = xmlPluginFileNames.iterator();
 
-        //30: for each pull task, format, datasource and class out of them and build
-        // the key and put it into the map with the class as value
+        //30: for each pull name and className out of them and build
+        // the key from the name and put it into the map with the className as value
         while( pluginNameIter.hasNext() )
         {
         	boolean couldFormat = false;
