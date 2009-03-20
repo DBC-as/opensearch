@@ -61,6 +61,11 @@
   </target>
 
 
+  <target name="test-single" depends="compile-tests">
+    <antcall target="_test-single" />
+  </target>
+
+
   <target name="dist" depends="clean, xsd">
     <antcall target="compile">
       <param name="project.name" value="dist/*.jar" />
@@ -229,6 +234,10 @@
   </target>
 
 
+  <!--
+      XSD TARGET
+  -->
+
   <target name="xsd">
     <antcall target="_xsd-classes" />
     <antcall target="_compile">
@@ -236,5 +245,29 @@
       <param name="src.dir" value="${xsd_gen.dir}/" />
     </antcall>
   </target>
+
+
+  <!--
+      EXPERIMENTAL TARGETS
+  -->
+  
+  <target name="chokoladekage">
+    <input message="Er det fredag?"
+           validargs="j,n"
+           addproperty="is.friday" />
+    <condition property="do.answer">
+      <equals arg1="j" arg2="${is.friday}" />      
+    </condition>
+    <if>
+      <equals arg1="${do.answer}" arg2="true" />
+      <then>
+        <echo>Så gå i kantinen og se om der skulle chokoladekage i dag!</echo>
+      </then>
+      <else>
+        <echo>Så vent til det bliver fredag, eller gå på tanken!</echo>
+      </else>
+    </if>
+  </target>
+    
 
 </project>

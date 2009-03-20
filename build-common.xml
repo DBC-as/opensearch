@@ -156,6 +156,28 @@
   </target>
 
 
+  <target name="_test-single"
+          description="Run a single unittest using\nant -Dtest='dk.dbc.opensearch.common.fedora.tests.MyTest' test-single">
+    <echo>
+      basedir  = ${basedir}
+      base.dir = ${base.dir}
+    </echo>
+    <junit fork="yes"
+           forkmode="once"
+           printsummary="on"
+           haltonerror="false"
+           haltonfailure="false">
+      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
+      <classpath location="${classes.dir}" />
+
+      <formatter type="plain" usefile="no"/>
+      <classpath refid="classpath"/>
+      <test name="${test}"/>
+    </junit>
+  </target>
+
+
+
   <target name="_dist_datadock"
          description="generates jar file _DATADOCK.jar" >
     <echo>
