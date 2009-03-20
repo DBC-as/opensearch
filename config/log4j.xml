@@ -19,15 +19,15 @@
   </appender-->
 
   <logger name="org.apache">
-    <level value="info"/> 
+    <level value="debug"/> 
   </logger>
 
   <logger name="httpclient">
-    <level value="info"/> 
+    <level value="debug"/> 
   </logger>
 
   <logger name="org.exolab">
-    <level value="info"/> 
+    <level value="debug"/> 
   </logger>
 
   <root>

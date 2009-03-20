@@ -1,8 +1,9 @@
-package dk.dbc.opensearch.common.helpers;
+package dk.dbc.opensearch.common.pluginframework;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
+import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
 

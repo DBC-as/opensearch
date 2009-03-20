@@ -28,7 +28,8 @@ else:
 
 #pluginpath = os.path.join( path, "build/classes/dk/dbc/opensearch/plugins" )
 pluginpath = os.path.join( path, "plugins" )
-print pluginpath
+print 'plugin path:     ' + pluginpath
+print 'config.xml path: ' + path
 
 root   = ET.Element( "opensearch-definition" )
 

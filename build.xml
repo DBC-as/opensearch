@@ -1,132 +1,230 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="opensearch.all" default="compile">
-  <import file="dependencies.xml"/>
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="targets" >
+
   <import file="build-common.xml" />
-	
-  <target name="clean" description="Deletes build files">
-  	<antcall target="toplevel.clean">
-      <param name="dependency.target" value="toplevel.clean"/>
-    </antcall>
-  </target>
 
-  <target name="clean-all" description="Deletes all but svn tracked files (this primarliy targets the generated files in the xsd folder)">
-  	<antcall target="default.clean-all">
-      <param name="dependency.target" value="clean-all"/>
-    </antcall>
-  </target>
+  <dirname property="targets.basedir" file="${ant.file.targets}"/>
 
-  <target name="compile" description="Compiles source code">
-  	<antcall target="${ant.project.name}">
-      <param name="dependency.target" value="toplevel.compile"/>
-    </antcall>
-  </target>
-	
-  <target name="dist" description="Generate distribution jar">
-  	<antcall target="clean-all"/>
-	<antcall target="${ant.project.name}">
-	  <param name="dependency.target" value="toplevel.dist_datadock" />
-    </antcall>
-  	<antcall target="${ant.project.name}">
-      <param name="dependency.target" value="toplevel.dist_pti" />
-    </antcall>
+  <target name="help">
+	<echo>
+  	  Usage: There are two ways to use this ant build script:		     
+             1) ant target
+                Examples: ant compile
+                          ant test
+                          ...
+  	     
+             2) ant project -Darg="target"
+                Examples: ant config -Darg="compile"
+                          ant datadock -Darg="test"
+                          ...
+      
+	  where 'target' options are the "usual", e.g., compile, test, etc.,
+	  and 'projects' can be obtained by issuing command 'tree -d src/dk/dbc/opensearch/'
+  	</echo>
   </target>
 	
-  <target name="dist_datadock" description="Generate distribution jar">
-    <antcall target="clean-all"/>
-      <antcall target="${ant.project.name}">
-        <param name="dependency.target" value="toplevel.dist_datadock" />
-      </antcall>
-  </target>
+  <!-- ANT TASKS -->
+  <property name="clean" value="true" />
 	
-  <target name="dist_pti" description="Generate distribution jar">
-    <antcall target="clean-all"/>
-    <antcall target="${ant.project.name}">
-      <param name="dependency.target" value="toplevel.dist_pti" />
-    </antcall>
+  <target name="clean">
+    <if>
+      <equals arg1="${clean}" arg2="true"/>
+      <then>
+        <antcall target="_clean" />
+      </then>
+    </if>
+    <var name="clean" unset="true"/>
+    <property name="clean" value="false"/>
   </target>
-		  
-  <target name="compile-tests" description="Builds tests">
-  	<antcall target="${ant.project.name}">
-      <param name="dependency.target" value="toplevel.compile-tests"/>
-    </antcall>
+  	 
+   
+  <target name="compile" depends="clean, xsd">
+    <antcall target="_compile" />
   </target>
+
+  <target name="compile_project" depends="clean">
+    <antcall target="_compile" />
+  </target>
+
 	
-  <target name="testsuite" description="Run test suite" depends="xsd-classes">
-  	<antcall target="${ant.project.name}">
-  	  <param name="dependency.target" value="toplevel.suite" />
-  	</antcall>
+  <target name="compile-tests" depends="compile">
+    <antcall target="_compile-tests" />
   </target>
 
-  <target name="test" description="Run unit tests">
-  	<antcall target="${ant.project.name}">
-      <param name="dependency.target" value="toplevel.test"/>
+   <target name="compile-tests_project" depends="compile_project">
+    <antcall target="_compile-tests" />
+  </target>
+
+
+  <target name="test" depends="compile-tests">
+    <antcall target="_test"/>
+  </target>
+
+
+  <target name="dist" depends="clean, xsd">
+    <antcall target="compile">
+      <param name="project.name" value="dist/*.jar" />
+    </antcall>
+    <antcall target="_dist_datadock">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
+    </antcall>
+    <antcall target="_dist_pti">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
+    </antcall>
+  </target> 
+
+
+  <target name="dist_datadock" depends="clean, xsd, compile">
+    <antcall target="_dist_datadock">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
   </target>
 
-  <target name="test-single" description="Run a single unittest using ant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single">
-    <antcall target="toplevel.test-single">
-      <param name="dependency.target" value="test-single"/>
+
+  <target name="dist_pti" depends="clean, xsd, compile">
+    <antcall target="_dist_pti">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
     </antcall>
   </target>
 
-  <target name="doc" description="Creates api documentation">
-    <antcall target="opensearch.all">
-      <param name="dependency.target" value="doc"/>
+
+  <target name="doc">
+    <antcall target="_doc" />
+  </target>
+
+
+  <target name="coverage-instrument" depends="compile-tests">
+    <antcall target="_coverage-instrument" />
+  </target>
+
+
+  <!-- Auxilliary target -->
+  <target name="test_Darg" unless="arg">
+    <echo>
+      '-Darg="..." should be set to, e.g., compile, test, etc.
+    </echo>
+    <antcall target="help" />
+    <fail message="'-Darg' should be set; see above!"/>
+  </target>
+  
+
+  <!-- ANT TARGETS -->  
+  <target name="config" depends="test_Darg, clean">
+    <!--antcall target="test_Darg" /-->
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/config" />
+      <param name="project.name" value="config" />
     </antcall>
   </target>
 
-  <target name="build.xsd-classes" description="Generates classes from XSD files">
-    <antcall target="opensearch.all">
-      <param name="dependency.target" value="xsd-classes"/>
+
+  <target name="db" depends="test_Darg, clean, types">
+    <!--antcall target="test_Darg" /-->
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/db" />
+      <param name="project.name" value="db" />
     </antcall>
   </target>
 
-  <target name="test-target" description="Prints classpath information">
-  	<antcall target="toplevel.test-target">
-      <param name="dependency.target" value="test-target"/>
+
+  <target name="fedora" depends="test_Darg, clean, xsd, types, helpers">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/fedora" />
+      <param name="project.name" value="fedora" />
     </antcall>
   </target>
 
-  <target name="coverage-instrument" description="build instrumented classes">
-    <antcall target="toplevel.coverage-instrument">
-      <param name="dependency.target" value="coverage-instrument"/>
+
+  <target name="helpers" depends="test_Darg, types, os">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/helpers" />
+      <param name="project.name" value="helpers" />
     </antcall>
   </target>
 
-  <target name="coverage-test" description="performs coverage test">
-    <antcall target="toplevel.coverage-test">
-      <param name="dependency.target" value="coverage-test"/>
+
+  <target name="os" depends="test_Darg">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/os" />
+      <param name="project.name" value="os" /> 
     </antcall>
   </target>
 
-  <target name="coverage-report-html" description="Making a html coverage report">
-    <antcall target="toplevel.coverage-report-html">
-      <param name="dependency.target" value="coverage-report-html"/>
+
+  <target name="pluginframework" depends="test_Darg, types, os">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/pluginframework" />
+      <param name="project.name" value="pluginframework" />
     </antcall>
   </target>
 
-  <target name="coverage-report-xml" description="Making an xml coverage report">
-    <antcall target="toplevel.coverage-report-xml">
-      <param name="dependency.target" value="coverage-report-xml"/>
+
+  <target name="statistics" depends="test_Darg, db">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/statistics" />
+      <param name="project.name" value="statistics" />
     </antcall>
   </target>
 
-  <target name="coverage-reports" description="Making an xml and a htmlcoverage report">
-    <antcall target="toplevel.coverage-reports">
-      <param name="dependency.target" value="coverage-reports"/>
+
+  <target name="types" depends="test_Darg, clean, config">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/types" />
+      <param name="project.name" value="types" />
     </antcall>
   </target>
 
-  <target name="coverage-check" description="Checks the coverage test">
-    <antcall target="toplevel.coverage-check">
-      <param name="dependency.target" value="coverage-check"/>
+
+  <target name="datadock" depends="test_Darg, fedora">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/datadock" />
+      <param name="project.name" value="datadock" />
     </antcall>
   </target>
 
-  <!--target name="fedora_soap" description="Generates the fedora soap stubs">
-    <antcall target="toplevel.fedora_soap">
-      <param name="dependency.target" value="toplevel.fedora_soap"/>
-    </antcall>
 
+  <target name="harvest" depends="test_Darg, helpers">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/harvest" />
+      <param name="project.name" value="harvest" />
+    </antcall>
+  </target>
+
+
+  <!--target name="lantern">
+    <antcall target="${arg}">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/lantern" />
+      <param name="project.name" value="lantern" />
+    </antcall>
   </target-->
+
+
+  <target name="pti" depends="test_Darg, fedora">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/" />
+      <param name="project.name" value="pti" />
+    </antcall>
+  </target>
+
+
+  <target name="plugins" depends="test_Darg, pluginframework, helpers, statistics">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/plugins" />
+      <param name="project.name" value="plugins" />
+    </antcall> 
+  </target>
+
+
+  <target name="xsd">
+    <antcall target="_xsd-classes" />
+    <antcall target="_compile">
+      <param name="project.name" value="xsd" />
+      <param name="src.dir" value="${xsd_gen.dir}/" />
+    </antcall>
+  </target>
+
 </project>

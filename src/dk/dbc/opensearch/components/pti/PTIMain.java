@@ -9,7 +9,7 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.helpers.JobMapCreator;
+import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.Pair;

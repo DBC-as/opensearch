@@ -2,9 +2,10 @@
  * \file JobMapCreatorTest.java
  * \brief UnitTest for JobMapCreator
  */
-package dk.dbc.opensearch.common.helpers.tests;
+package dk.dbc.opensearch.common.pluginframework.tests;
 
-import dk.dbc.opensearch.common.helpers.JobMapCreator;
+
+import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.components.datadock.DatadockMain;
 import dk.dbc.opensearch.components.pti.PTIMain;

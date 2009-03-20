@@ -1,214 +1,130 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="build-common" >
-  <import file="dependencies.xml"/>
-
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="build" default="compile">
+  
   <tstamp/>
-  <property name="now" value="${DSTAMP}-${TSTAMP}" />
-
+  <property name="now"              value="${DSTAMP}-${TSTAMP}" />
   <property name="dist.jar"         value="OpenSearch" />
-	
-  <property name="base.dir"         value="${dependencies.basedir}"/>
 
-  <property name="lib.dir"          value="${base.dir}/lib"/>
-  <property name="src.dir"          value="${base.dir}/src"/>
-  <property name="bin.dir"          value="${base.dir}/bin"/>
+  <!-- directory definitions -->
+  <property name="base.dir"         value="${basedir}" />
+
   <property name="admin.dir"        value="${base.dir}/admin"/>
-  <property name="info.dir"         value="${src.dir}/info" />
-  <property name="build.dir"        value="${base.dir}/build"/>
-  <property name="dist.dir"         value="${base.dir}/dist"/>
-  <property name="classes.dir"      value="${build.dir}/classes"/>
-  <!-- please note that the "docs" value is hardcoded in the Doxyfile -->
   <property name="doc.dir"          value="${base.dir}/docs"/>
-  <property name="api.dir"          value="${doc.dir}/api"/>
+  <property name="api.dir"          value="${doc.dir}/api"/> 
+  <property name="bin.dir"          value="${base.dir}/bin"/>
+  <property name="build.dir"        value="${base.dir}/build"/>
+  <property name="classes.dir"      value="${build.dir}/classes"/>
+  <property name="config.dir"       value="${base.dir}/config" />
+  <property name="dist.dir"         value="${base.dir}/dist"/>
+  <property name="info.dir"         value="${src.dir}/info" />
+  <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
+  <property name="lib.dir"          value="${base.dir}/lib"/>  
+  <property name="report.dir"       value="${doc.dir}/coverage-report"/>
+  <property name="src.dir"          value="${base.dir}/src"/>
   <property name="opensearch.dir"   value="${src.dir}/dk/dbc/opensearch"/>
-  <property name="common.dir"       value="${opensearch.dir}/common"/>
-  <property name="types.dir"        value="${common.dir}/types"/>
-  <property name="components.dir"   value="${opensearch.dir}/components"/>
-  <property name="datadock.dir"     value="${components.dir}/datadock"/>
-  <property name="config.dir"       value="${base.dir}/config"/>
   <property name="plugins.dir"      value="${opensearch.dir}/plugins" />
+  <property name="testresults.dir"  value="${base.dir}/test-results"/>
+
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
   <property name="xsd_gen.dir"      value="${opensearch.dir}/xsd" />
-  <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
-  <property name="testresults.dir"  value="${base.dir}/test-results"/>
-  <property name="report.dir"       value="${doc.dir}/coverage-report"/>
-  <!--property name="fedora_apim.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-M"/-->
-  <!--property name="fedora_apia.url"  value="http://andrus.dbc.dk:8080/fedora/wsdl?api=API-A"/-->
 
-  
+  <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
+  <!--property name="testresults.dir"  value="${base.dir}/test-results"/>
+  <property name="report.dir"       value="${doc.dir}/coverage-report"/-->
+ 
+
+  <!-- CLASSPATH STUFF -->
   <path id="classpath">
-    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
-    <pathelement location="${classes.dir}" />
-    <pathelement location="${config.dir}" />
-    <pathelement location="${plugins.dir}" />
+   <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
+   <pathelement location="${classes.dir}" />
+   <pathelement location="${config.dir}" />
+   <pathelement location="${plugins.dir}" />
   </path>
 
   <path id="classpath4jar">
-    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
+   <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
   </path>
+
 
   <!-- libraries used internally by ant is named ant_*.jar -->
   <path id="antlibpath">
-    <fileset dir="${lib.dir}" includes="ant_*.jar"/>
+   <fileset dir="${lib.dir}" includes="ant_*.jar"/>
   </path>
 
   <!-- just for debugging purposes, putting the classpath into a property-->
   <pathconvert targetos="unix" property="cp" refid="classpath">
-    <map from="${classpath}" to="${cp}"/>
+   <map from="${classpath}" to="${cp}"/>
   </pathconvert>
 
   <pathconvert targetos="unix" property="alp" refid="antlibpath">
-    <map from="${antlibpath}}" to="${alp}"/>
+   <map from="${antlibpath}}" to="${alp}"/>
   </pathconvert>
-  <!-- end debugging section -->
 
-  <!-- ===================================================================== -->
+  <!-- Enable use of tasks such as <var>, <if><then><else>..., etc.
+      Ref. http://ant-contrib.sourceforge.net/tasks/tasks/index.html     -->
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+   <classpath>
+     <pathelement location="lib/ant-contrib.jar"/>
+   </classpath>
+  </taskdef>
+
   <!-- TARGETS -->
-	
-  <!-- target names are prefixed with 'toplevel.' to avoid circularity due to import of file
-       build-common.xml in build.xml -->
-  <!-- ===================================================================== -->
-  <target name="toplevel.clean"
-          description="Deletes files created during the build">
-    <delete dir="${build.dir}"/>
-    <delete dir="${dist.dir}"/>
-    <delete dir="${api.dir}"/>
-    <delete dir="${report.dir}"/>
-    <delete file="${base.dir}/doxygen-warnings"/>
-    <delete dir="${testresults.dir}"/>
-    <delete dir="${xsd_gen.dir}" />
-    <delete dir="${src.dir}/info"/>
-  	<delete dir="${dist.dir}" />
+  <target name="_clean" description="Deletes files created during the build">
+   <delete file="${base.dir}/doxygen-warnings"/>
 
-    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
-      <arg line="create_test_suite_files.py clean"/>
-    </exec>
-    
+   <delete dir="${api.dir}"/>
+   <delete dir="${build.dir}"/>
+   <delete dir="${dist.dir}"/>
+   <delete dir="${report.dir}"/>    
+   <delete dir="${src.dir}/info"/>
+   <delete dir="${testresults.dir}"/>
+   <delete dir="${xsd_gen.dir}" />
+
+   <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
+     <arg line="create_test_suite_files.py clean"/>
+   </exec>    
   </target>
 
-  <target name="toplevel.clean-all"
-          description="Deletes all but svn tracked files (this primarily targets the generated files in the xsd folder)"
-          depends="toplevel.clean">
-  </target>
-	
-  <target name="toplevel.dist_datadock" depends="toplevel.compile"
-          description="generate the distribution" >
-  	<echo>
-  	  Building jar file for DATADOCK
-  	</echo>
-    <!-- Create the distribution directory -->
-  	<mkdir dir="${dist.dir}"/>
 
-  	<pathconvert property="jar_classpath" pathsep=" ../lib/">
-      <path refid="classpath4jar" />
-      <flattenmapper />
-    </pathconvert>
-
-  	<!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/${dist.jar}_DATADOCK.jar" 
-    	 basedir="${classes.dir}">
-      <manifest>    
-        <attribute name="Built-By" value="DBC"/>
-        <attribute name="Implementation-Vendor" value="DBC A/S"/>
-        <attribute name="Implementation-Title" value="Opensearch"/>
-        <attribute name="Implementation-Version" value="0.3"/>
-        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/ " />
-        <attribute name="Main-Class" value="dk.dbc.opensearch.components.datadock.DatadockMain" />
-        </manifest>
-    </jar>
-  </target>
-	
-  <target name="toplevel.dist_pti" depends="toplevel.compile"
-	      description="generate the distribution" >
+  <target name="_compile" description="Target used for all compilation">
+    <mkdir dir="${classes.dir}"/>
     <echo>
-	  Building jar file for PTI  
-	</echo>
-	    
-  	<!-- Create the distribution directory -->
-    <mkdir dir="${dist.dir}"/>
-
-  	<pathconvert property="jar_classpath" pathsep=" ../lib/">
-      <path refid="classpath4jar" />
-  	  <flattenmapper />
-    </pathconvert>
-  	
-    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/${dist.jar}_PTI.jar" 
-         basedir="${classes.dir}">	    
-        <manifest>    
-          <attribute name="Built-By" value="DBC"/>
-          <attribute name="Implementation-Vendor" value="DBC A/S"/>
-          <attribute name="Implementation-Title" value="Opensearch"/>
-          <attribute name="Implementation-Version" value="0.3"/>
-          <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
-          <attribute name="Main-Class" value="dk.dbc.opensearch.components.pti.PTIMain" />
-        </manifest>
-    </jar>
-  </target>
-
-  <target name="toplevel.compile" description="Compiles source code" >
-  	<mkdir dir="${classes.dir}"/>
-  	<echo>
-      Building from ${basedir},
-      building project ${ant.project.name},
-      and putting it all into ${classes.dir}      
+      Building from '${src.dir}',
+      building project '${project.name}',
+      and putting it all into '${classes.dir}'
     </echo>
-  	
-    <javac srcdir="${basedir}" destdir="${classes.dir}" excludes="**/tests/*" debug="on">
-      <classpath refid="classpath"/>
-      <!-- <compilerarg value="-Xlint"/> -->
-    </javac>
-    
-  	<!-- Copy .plugin files to .../opensearch/.../plugins/ folder -->
-  	<!--copy todir="${classes.dir}/dk/dbc/opensearch/plugins"-->  	
-    <copy todir="${base.dir}/plugins">
-      <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
-    </copy>  	    
-  </target>
-
-  <target name="toplevel.compile-tests" description="builds the tests for the component" 
-          depends="py_suite, py_config, toplevel.compile"> <!-- toplevel.clean-all, -->
-    <echo>
-      Building from ${basedir},
-      building project ${ant.project.name},
-      and putting it all into ${classes.dir}
-    </echo>
-    <javac srcdir="${basedir}" destdir="${classes.dir}" includes="**/tests/*" debug="on">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/** testdir/**" debug="on">
       <classpath refid="classpath"/>
     </javac>
   </target>
-	
+
+
+  <target name="_compile-tests" description="builds the tests for the component" >
+    <echo>
+      Building from '${src.dir}/tests',
+      building project '${project.name}.tests',
+      and putting it all into '${classes.dir}'
+    </echo>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" includes="**/tests/*" debug="on">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+  
+  
   <target name="py_suite" >
     <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
       <arg line="create_test_suite_files.py make"/>
     </exec>
   </target>
-	
+  
   <target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
       <arg line="tools/build_config.py ${base.dir}"/>
     </exec>
   </target>
-	
-  <target name="toplevel.suite" description="Run test suite" depends="py_suite, toplevel.compile-tests">
-    <echo>
-      Running suite ${suite.name}
-    </echo>
-    <junit fork="yes"
-           forkmode="once"
-           printsummary="withOutAndErr"
-           haltonerror="false"
-           haltonfailure="false">
-  		
-      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
-      <classpath refid="classpath" /> 		
-  	  
-      <formatter type="brief" usefile="false" />
-      <test name="${suite.name}" />
-    </junit>
-  </target>
 
-  <target name="toplevel.test" description="Run unittests" depends="py_suite, toplevel.compile-tests">
+
+  <target name="_test" description="Run unittests" depends="py_config">
     <mkdir dir="${testresults.dir}"/>
     <junit fork="yes"
            forkmode="once"
@@ -233,38 +149,67 @@
       </batchtest>
     </junit>
   </target>
-  
-  <target name="toplevel.test-single"
-          description="Run a single unittest using\nant -Dtest='dbc.opensearch.tools.tests.MyTest' test-single"
-          depends="toplevel.compile-tests">
+
+
+  <target name="_dist_datadock"
+         description="generates jar file _DATADOCK.jar" >
     <echo>
-      basedir  = ${basedir}
-      base.dir = ${base.dir}
+      Building jar file for DATADOCK
+   </echo>
+   <!-- Create the distribution directory -->
+   <mkdir dir="${dist.dir}"/>
+
+   <pathconvert property="jar_classpath" pathsep=" ../lib/">
+     <path refid="classpath4jar" />
+     <flattenmapper />
+   </pathconvert>
+
+   <!-- Put everything from ${build} into the ${opensearch}.jar file -->
+   <jar destfile="${dist.dir}/${dist.jar}_DATADOCK.jar" 
+        basedir="${classes.dir}">
+     <manifest>    
+       <attribute name="Built-By" value="DBC"/>
+       <attribute name="Implementation-Vendor" value="DBC A/S"/>
+       <attribute name="Implementation-Title" value="Opensearch"/>
+       <attribute name="Implementation-Version" value="0.3"/>
+       <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/ " />
+       <attribute name="Main-Class" value="dk.dbc.opensearch.components.datadock.DatadockMain" />
+     </manifest>
+   </jar>
+  </target>
+  
+  
+  <target name="_dist_pti"
+          description="generates jar file _PTI.jar" >
+    <echo>
+      Building jar file for PTI  
     </echo>
-    <junit fork="yes"
-           forkmode="once"
-           printsummary="on"
-           haltonerror="false"
-           haltonfailure="false">
-      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
-      <classpath location="${classes.dir}" />
-
-      <formatter type="plain" usefile="no"/>
-      <classpath refid="classpath"/>
-      <test name="${test}"/>
-    </junit>
+    
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}"/>
+    
+    <pathconvert property="jar_classpath" pathsep=" ../lib/">
+      <path refid="classpath4jar" />
+      <flattenmapper />
+    </pathconvert>
+    
+    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
+    <jar destfile="${dist.dir}/${dist.jar}_PTI.jar" 
+         basedir="${classes.dir}">	    
+      <manifest>    
+        <attribute name="Built-By" value="DBC"/>
+        <attribute name="Implementation-Vendor" value="DBC A/S"/>
+        <attribute name="Implementation-Title" value="Opensearch"/>
+        <attribute name="Implementation-Version" value="0.3"/>
+        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
+        <attribute name="Main-Class" value="dk.dbc.opensearch.components.pti.PTIMain" />
+      </manifest>
+    </jar>
   </target>
+  
 
-  <target name="doc" description="generates documentation for ${src.dir}">
-    <taskdef
-        name="doxygen"
-        classname="org.doxygen.tools.DoxygenTask"
-        classpath="${alp}" />
-
-    <doxygen configFilename="${base.dir}/Doxyfile" />
-  </target>
-
-  <target name="toplevel.xsd-classes" description="Generate Java source files from the Schemas found in ${xsd.dir}.">
+  <target name="_xsd-classes" description="Generate Java source files from the Schemas found in ${xsd.dir}.">
+    <echo>${src.dir}</echo>
     <taskdef name="castor-srcgen"
              classname="org.castor.anttask.CastorCodeGenTask"
              classpathref="classpath" />
@@ -282,53 +227,24 @@
 
   </target>
 
-  <target name="toplevel.compile-xsd" description="compiles xsd"
+  <!--target name="toplevel.compile-xsd" description="compiles xsd"
           depends="toplevel.xsd-classes">
     <mkdir dir="${classes.dir}"/>
 
     <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/*">
       <classpath refid="classpath"/>
     </javac>
-  </target>
+  </target-->
 
-  <!-- target name="toplevel.fedora_soap" description="Generates Fedora SOAP stubs">
-    <taskdef resource="axis-tasks.properties"
-             classpathref="classpath" />
-    <axis-wsdl2java output="${src.dir}"
-                    testcase="true"
-                    verbose="true"
-                    url="${fedora_apia.url}" >
-      <mapping namespace="http://axis.apache.org/ns/interop"
-               package="info" />
-    </axis-wsdl2java>
-    <axis-wsdl2java output="${src.dir}"
-                    testcase="true"
-                    verbose="true"
-                    url="${fedora_apim.url}" >
-      <mapping namespace="http://axis.apache.org/ns/interop"
-               package="info" />
-    </axis-wsdl2java>
+
+  <target name="_doc" description="generates documentation for ${src.dir}">
+    <taskdef name="doxygen"
+             classname="org.doxygen.tools.DoxygenTask"
+             classpath="${alp}" />    
+    <doxygen configFilename="${base.dir}/Doxyfile" />
   </target>
   
-  <target name="toplevel.compile-fedora_soap" description="compiles fedora files"
-          depends="toplevel.fedora_soap">
-    <mkdir dir="${classes.dir}" />
     
-    <javac srcdir="${info.dir}" destdir="${classes.dir}" excludes="**/tests/*">
-      <classpath refid="classpath" />
-    </javac>
-  </target -->
-
-
-  <target name="toplevel.test-target">
-    <echo>
-      ant classpath=${cp}
-      Basedir=${base.dir}
-      lib.dir=${lib.dir}
-      ant libs=${alp}
-    </echo>
-  </target>
-
   <!-- ============================ -->
   <!-- Cobertura code coverage tool -->
 
@@ -342,10 +258,12 @@
       <exclude name="ant.jar" />
     </fileset>
   </path>
+  
+
   <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
   <!--   The instrument target - building instrumented code -->
-  <target name="toplevel.coverage-instrument" depends="toplevel.compile-tests">
+  <target name="_coverage-instrument">
 
     <!-- Remove the coverage data file and any old instrumentation. -->
     <delete dir="${instrumented.dir}" />
@@ -370,7 +288,8 @@
     </cobertura-instrument>
   </target>
 
-  <target name="toplevel.coverage-test" depends="toplevel.coverage-instrument, toplevel.test">
+
+  <target name="_coverage-test" depends="_coverage-instrument, _test">
     <mkdir dir="${report.dir}" />
 
     <junit fork="yes"
@@ -397,15 +316,17 @@
     </junit>
   </target>
 
-  <target name="toplevel.coverage-report-html" depends="toplevel.coverage-test">
+
+  <!--target name="toplevel.coverage-report-html" depends="toplevel.coverage-test">
     <cobertura-report destdir="${testresults.dir}/cobertura/html" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
       </fileset>
     </cobertura-report>
-  </target>
+  </target-->
 
-  <target name="toplevel.coverage-report-xml" depends="toplevel.coverage-test">
+
+  <target name="toplevel.coverage-report-xml" depends="_coverage-test">
     <cobertura-report format="xml" destdir="${testresults.dir}/cobertura/xml" datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
@@ -413,29 +334,17 @@
     </cobertura-report>
   </target>
 
-  <target name="toplevel.coverage-check" depends="toplevel.coverage-test">
-    <cobertura-check branchrate="100" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" >
-      <!--  Vi skal have fundet nogle fornuftige værdier her   -->
-      <!--       <regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/> -->
-      <!--       <regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/> -->
+
+  <!-- target name="toplevel.coverage-check" depends="toplevel.coverage-test">
+    <cobertura-check branchrate="34" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" >
+      < ! - -  Vi skal have fundet nogle fornuftige værdier her - - >
+      < ! - -  <regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/> - - >
+      < ! - -  <regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/> - - >
     </cobertura-check>
-  </target>
-
-  <target name="toplevel.coverage-reports" depends="toplevel.coverage-test, toplevel.coverage-report-html, toplevel.coverage-report-xml" />
-
-  <!-- ===================================================================== -->
-  <!-- Experimental targets -->
-  <!-- ===================================================================== -->
+  </target-->
 
 
-  <target name="update" description="updates the sources to HEAD">
-    <typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpath="${alp}" />
+  <!--target name="toplevel.coverage-reports" depends="toplevel.coverage-test, toplevel.coverage-report-html, toplevel.coverage-report-xml" /-->
 
-    <svn javahl="false">
-      <wcVersion path="${base.dir}"/>
-      <update dir="${base.dir}"/>
-    </svn>
-    <echo message="${base.dir} updated to ${revision.max}"/>
-  </target>
 
 </project>

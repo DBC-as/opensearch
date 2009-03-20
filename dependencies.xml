@@ -48,7 +48,7 @@
          inheritAll="false"/>
   </target>
 
-  <!-- ================================================================== -->
+ <!-- ================================================================== -->
   <target name="opensearch.common.db" >
     <ant dir="${dependencies.basedir}/src/dk/dbc/opensearch/common/db"
          target="${dependency.target}"
