@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 
 import mockit.Mock;
 import mockit.Mockit;
@@ -29,12 +30,12 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import java.net.URL;
+
 /**
  * Class for testing tha JobMapCreator class
  */
-public class JobMapCreatorTest {
-
+public class JobMapCreatorTest 
+{
     JobMapCreator jmc;
     /**
      * \Todo: The mockURL should be created in another way...
@@ -51,24 +52,26 @@ public class JobMapCreatorTest {
 
 
     @MockClass( realClass = FileHandler.class )
-        public static class MockFileHandler
-        {
-            @Mock public static File getFile( String path )
-            {
-                System.out.println( "mockFile returned" );
-                return mockFile;
-            }
-        }
+    public static class MockFileHandler
+    {
+    	@Mock public static File getFile( String path )
+    	{
+    		System.out.println( "mockFile returned" );
+    		return mockFile;
+    	}
+    }
+    
 
     @MockClass( realClass = DocumentBuilderFactory.class )
-        public static class MockDocumentBuilderFactory
-        {
-            @Mock public static DocumentBuilder newDocumentBuilder()
-            {
-                System.out.println( "mockDocumentBuilder returned" );
-                return mockDocumentBuilder;
-            }
+    public static class MockDocumentBuilderFactory
+    {
+    	@Mock public static DocumentBuilder newDocumentBuilder()
+    	{
+    		System.out.println( "mockDocumentBuilder returned" );
+    		return mockDocumentBuilder;
         }
+    }
+    
 
     // @MockClass( realClass = ClassLoader.class )
     //         public class MockClassLoader
@@ -80,11 +83,12 @@ public class JobMapCreatorTest {
 
     //         }
 
+    
     /**
      *
      */
-    @Before public void SetUp() {
-
+    @Before public void SetUp() 
+    {
         Mockit.setUpMocks( MockDocumentBuilderFactory.class, MockFileHandler.class );
 
         mockDocument = createMock( Document.class );
@@ -92,11 +96,12 @@ public class JobMapCreatorTest {
         mockNodeList = createMock( NodeList.class );
     }
 
+    
     /**
      *
      */
-    @After public void TearDown() {
-
+    @After public void TearDown() 
+    {
         Mockit.tearDownMocks();
 
         //reset( mockURL );
@@ -106,19 +111,24 @@ public class JobMapCreatorTest {
         reset( mockElement );
         reset( mockNodeList );
     }
+    
 
     /**
      * Testing the happy path
      */
-    @Test public void testConstructor() throws Exception{
+    @Test public void testConstructor() throws Exception
+    {
         jmc = new JobMapCreator();
     }
+    
+    
     /**
      * Testing the method that builds the jobmap
      * happy path.
      */
     @Ignore
-    @Test public void testGetMapMethod() throws Exception {
+    @Test public void testGetMapMethod() throws Exception 
+    {
         /**
          * Setup
          */

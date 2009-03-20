@@ -3,15 +3,17 @@
  */
 package dk.dbc.opensearch.common.fedora;
 
+
 import dk.dbc.opensearch.common.config.FedoraConfig;
 
 import fedora.client.FedoraClient;
-import fedora.server.management.FedoraAPIM;
 import fedora.server.access.FedoraAPIA;
+import fedora.server.management.FedoraAPIM;
 
 import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
+
 
 /**
  * FedoraStore act as the plugin communication link with the fedora base. The

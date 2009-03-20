@@ -15,12 +15,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -115,22 +112,12 @@ public class JobMapCreator
         jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
 
         if( jobMap == null )
-            {
-                throw new NullPointerException( String.format( "no jobs found for: %s ", classType.getName() ) );
-            }
+        {
+        	throw new NullPointerException( String.format( "no jobs found for: %s ", classType.getName() ) );
+        }
+        
         return jobMap;
     }
-    
-    
-//    private static NodeList getJobMapNodeList( File jobFile ) throws ParserConfigurationException, SAXException, IOException 
-//    {
-//    	DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-//        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-//        Document jobDocument = docBuilder.parse( jobFile );
-//        Element xmlRoot = jobDocument.getDocumentElement();
-//
-//        return xmlRoot.getElementsByTagName( "job" );
-//	}
 
 
 	private static File setJobFile( Class classType ) throws MalformedURLException
@@ -142,18 +129,26 @@ public class JobMapCreator
             String datadockJobPath = FileSystemConfig.getFileSystemDatadockPath();
             log.debug( String.format( "DatadockJob path: '%s'", datadockJobPath ) );
             if ( datadockJobPath != null )
+            {
             	jobFile = FileHandler.getFile( datadockJobPath );
+            }
             else
+            {
             	throw new IllegalArgumentException( "test" );
+            }
         }
         else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
         {
         	String ptiJobPath = FileSystemConfig.getFileSystemPtiPath();
         	log.debug( String.format( "PTIJob path: '%s'", ptiJobPath ) );
         	if ( ptiJobPath != null)
+        	{
         		jobFile = FileHandler.getFile( ptiJobPath );
+        	}
         	else
+        	{
         		throw new IllegalArgumentException( "test" );
+        	}
         }
         else
         {
