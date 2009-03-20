@@ -102,7 +102,12 @@
   </target>
 
 
-  <target name="coverage-report-xml">
+  <target name="coverage-test" depends="coverage-instrument, test">
+    <antcall target="_coverage-test" />
+  </target>
+
+
+  <target name="coverage-report-xml" depends="coverage-test">
     <antcall target="_coverage-report-xml" />
   </target>
 

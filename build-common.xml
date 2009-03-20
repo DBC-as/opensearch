@@ -17,7 +17,6 @@
   <property name="config.dir"       value="${base.dir}/config" />
   <property name="dist.dir"         value="${base.dir}/dist"/>
   <property name="info.dir"         value="${src.dir}/info" />
-  <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <property name="lib.dir"          value="${base.dir}/lib"/>  
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
   <property name="src.dir"          value="${base.dir}/src"/>
@@ -289,7 +288,7 @@
   </target>
 
 
-  <target name="_coverage-test" depends="_coverage-instrument, _test">
+  <target name="_coverage-test">
     <mkdir dir="${report.dir}" />
 
     <junit fork="yes"
@@ -297,8 +296,8 @@
            printsummary="off"
            haltonerror="false"
            haltonfailure="false"
-           dir="${instrumented.dir}"
-           >
+           dir="${instrumented.dir}">
+
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
 
       <!-- Setting up the classpath -->
