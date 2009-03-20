@@ -58,4 +58,28 @@ public class DatadockJobTest {
         assertTrue( datadockJob.getFormat().equals( testFormat ) );
         assertTrue( datadockJob.getUri().equals( testURI ) );
     }
+
+    @Test public void testConstructorWithPid()
+    {
+      String testSubmitter = "testSubmitter";
+        String testFormat = "testFormat";
+        URI testURI = null;
+        String testPID1 = "dbc:1";
+        String testPID2 = "dbc:2";
+        
+        try
+        {
+            testURI = new URI( "testURI" );
+        }
+        catch( URISyntaxException use )
+        {
+            fail( "Catched URISyntaxException under construction of test uri."+use.getMessage() );
+        }   
+
+        DatadockJob ddj = new DatadockJob( testURI, testSubmitter, testFormat, testPID1 );
+
+        assertEquals( ddj.getPID(), testPID1 );
+        ddj.setPID( testPID2 );
+        assertEquals( ddj.getPID(), testPID2 );
+    }
 }
