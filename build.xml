@@ -67,7 +67,7 @@
 
 
   <target name="dist" depends="clean, xsd">
-    <antcall target="compile">
+    <antcall target="compile_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>
     <antcall target="_dist_datadock">
