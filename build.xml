@@ -102,6 +102,11 @@
   </target>
 
 
+  <target name="coverage-report-xml">
+    <antcall target="_coverage-report-xml" />
+  </target>
+
+
   <!-- Auxilliary target -->
   <target name="test_Darg" unless="arg">
     <echo>
