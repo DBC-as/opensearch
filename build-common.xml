@@ -111,11 +111,11 @@
   </target>
   
   
-  <target name="py_suite" >
+  <!--target name="py_suite" >
     <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
       <arg line="create_test_suite_files.py make"/>
     </exec>
-  </target>
+  </target-->
   
   <target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
