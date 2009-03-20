@@ -1,4 +1,0 @@
-<project name="opensearch.common.compass" default="usage">
-  <!--Time-stamp: <2009-01-14 15:07:11 stm> -->
-  <import file="../../../../../../build.xml"/>
-</project>
