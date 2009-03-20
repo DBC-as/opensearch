@@ -11,7 +11,7 @@ public class TasksNotValidatedException extends Exception {
   /**
    * 
    */
-    public TasksNotValidatedException( Vector<String> exceptoinVector, String message) {
+    public TasksNotValidatedException( Vector<String> exceptionVector, String message) {
       this.exceptionVector = exceptionVector;
       this.message = message;
   }
