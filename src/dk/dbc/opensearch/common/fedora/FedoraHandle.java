@@ -22,13 +22,10 @@ import org.apache.log4j.Logger;
  */
 public abstract class FedoraHandle
 {
-    // private FedoraAPIMServiceLocator m_locator;
-    // private FedoraAPIAServiceLocator a_locator;
-
     protected FedoraAPIM fem;
     protected FedoraAPIA fea;
 
-    Logger log = Logger.getLogger("FedoraHandle");
+    Logger log = Logger.getLogger( FedoraHandle.class );
 
     /**
      * The constructor handles the initiation of the connection with the

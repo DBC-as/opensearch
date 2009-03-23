@@ -11,9 +11,7 @@ import dk.dbc.opensearch.common.config.FedoraConfig;
 import fedora.client.FedoraClient;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -43,14 +41,6 @@ public class FedoraClientFactory
     {         
         log.debug( "Obtain config paramaters for configuring fedora connection");
         
-        //URL cfgURL = getClass().getResource("/config.xml");
-        //XMLConfiguration config = null;
-        //config = new XMLConfiguration( cfgURL );
-        
-        //host       = config.getString( "fedora.host" );
-        //port       = config.getString( "fedora.port" );
-        //user       = config.getString( "fedora.user" );
-        //passphrase = config.getString( "fedora.passphrase" );
         host       = FedoraConfig.getFedoraHost();
         port       = FedoraConfig.getFedoraPort();
         user       = FedoraConfig.getFedoraUser();

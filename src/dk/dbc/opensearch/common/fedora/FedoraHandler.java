@@ -5,55 +5,14 @@
  */
 package dk.dbc.opensearch.common.fedora;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.NoSuchElementException;
-import java.util.List;
-import java.util.ArrayList;
 
-import javax.xml.rpc.ServiceException;
-import javax.xml.stream.XMLStreamException;
-
-import org.apache.axis.encoding.Base64;
-import org.apache.axis.types.NonNegativeInteger;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObjectInfo;
-import dk.dbc.opensearch.common.types.Pair;
-
-import dk.dbc.opensearch.xsd.ContentDigest;
-import dk.dbc.opensearch.xsd.Datastream;
-import dk.dbc.opensearch.xsd.DatastreamVersion;
-import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
-import dk.dbc.opensearch.xsd.DigitalObject;
-import dk.dbc.opensearch.xsd.ObjectProperties;
-import dk.dbc.opensearch.xsd.Property;
-import dk.dbc.opensearch.xsd.PropertyType;
-import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
-import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
-import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
-import dk.dbc.opensearch.xsd.types.StateType;
 import fedora.client.FedoraClient;
 import fedora.common.Constants;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
-import fedora.server.types.gen.DatastreamDef;
-import fedora.server.types.gen.MIMETypedStream;
+
 
 /**
  * \ingroup tools
@@ -62,15 +21,9 @@ import fedora.server.types.gen.MIMETypedStream;
  */
 public class FedoraHandler implements Constants 
 {
-    /*
-    private static String host = "";
-    private static String port = "";
-    private static String fedoraUrl = "";
-    private static String passphrase = "";
-    */
     private static String user = "";
 
-    Logger log = Logger.getLogger("FedoraHandler");
+    Logger log = Logger.getLogger( FedoraHandler.class );
 
     // The fedora api
     FedoraClient client;
