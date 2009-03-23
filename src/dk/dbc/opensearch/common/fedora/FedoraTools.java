@@ -51,7 +51,7 @@ import org.xml.sax.SAXException;
 
 public class FedoraTools 
 {
-    static Logger log = Logger.getLogger( FedoraHandler.class );
+    static Logger log = Logger.getLogger( FedoraTools.class );
 
     public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
