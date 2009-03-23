@@ -32,10 +32,16 @@ public class FileFilter implements FilenameFilter
     	boolean isDir = new File(dir, name).isDirectory();
     	
         if ( isDir )
+        {
             return false;
+        }
         else if( name.startsWith( "." ) )
+        {
             return false;
+        }
         else
+        {
             return true;
+        }
     }
 }

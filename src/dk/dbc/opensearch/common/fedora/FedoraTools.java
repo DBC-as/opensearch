@@ -53,6 +53,7 @@ public class FedoraTools
 {
     static Logger log = Logger.getLogger( FedoraTools.class );
 
+
     public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
     	log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
@@ -117,15 +118,16 @@ public class FedoraTools
         ArrayList< Pair < String, Integer > > lst = new  ArrayList< Pair < String, Integer > >();
         for(int i = 0; i < cargo_count; i++){
             CargoObject c = cargo.getData().get( i );
-            lst.add( new Pair( c.getDataStreamName().getName(), i ) );
+            lst.add( new Pair< String, Integer >( c.getDataStreamName().getName(), i ) );
         }
+        
         Collections.sort( lst, firstComp);
 
         // Add a number to the id according to the number of datastreams with this datastreamname
         int j = 0;
         DataStreamType dsn = null;
         ArrayList< Pair < String, Integer > > lst2 = new  ArrayList< Pair < String, Integer > >();
-        for( Pair p : lst){
+        for( Pair< String, Integer > p : lst){
             if( dsn != DataStreamType.getDataStreamNameFrom( (String) p.getFirst() ) ){
                 j = 0;
             }
@@ -133,9 +135,10 @@ public class FedoraTools
                 j += 1;
             }
             dsn = DataStreamType.getDataStreamNameFrom( (String) p.getFirst() );
-            lst2.add( new Pair( p.getFirst()+"."+j , p.getSecond() ) );
+            lst2.add( new Pair< String, Integer >( p.getFirst() + "." + j , p.getSecond() ) );
         }
-        lst2.add( new Pair( DataStreamType.AdminData.getName(), lst2.size() ) );
+        
+        lst2.add( new Pair< String, Integer >( DataStreamType.AdminData.getName(), lst2.size() ) );
         Collections.sort( lst2, secondComp);
         
         // Constructing adm stream
@@ -155,22 +158,22 @@ public class FedoraTools
         Node streams = admStream.createElement( "streams" );
         
         for(int i = 0; i < cargo_count; i++)
-            {
-                CargoObject c = cargo.getData().get( i );
+        {
+        	CargoObject c = cargo.getData().get( i );
 
-                Element stream = admStream.createElement( "stream" );
-                stream.setAttribute( "id", lst2.get( i ).getFirst() );
-                stream.setAttribute( "lang", c.getLang() );
-                stream.setAttribute( "format", c.getFormat() );
-                stream.setAttribute( "mimetype", c.getMimeType() );
-                stream.setAttribute( "submitter", c.getSubmitter() );
-                stream.setAttribute( "index", Integer.toString( lst2.get( i ).getSecond() ) );
-                stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
-                streams.appendChild( (Node) stream );
-
-            }
-
+        	Element stream = admStream.createElement( "stream" );
+        	stream.setAttribute( "id", lst2.get( i ).getFirst() );
+        	stream.setAttribute( "lang", c.getLang() );
+        	stream.setAttribute( "format", c.getFormat() );
+        	stream.setAttribute( "mimetype", c.getMimeType() );
+        	stream.setAttribute( "submitter", c.getSubmitter() );
+        	stream.setAttribute( "index", Integer.toString( lst2.get( i ).getSecond() ) );
+        	stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
+        	streams.appendChild( (Node) stream );
+        }
+        
         root.appendChild( (Node) streams );
+        
         // Transform document to xml string
         Source source = new DOMSource((Node) root );
         StringWriter stringWriter = new StringWriter();
@@ -215,6 +218,7 @@ public class FedoraTools
         return ret;
     }
 
+    
     /**
      * constructDatastream creates a Datastream object on the basis of the
      * information and data found in the Pair of CargoObjectInfo and List<Byte>.

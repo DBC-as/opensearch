@@ -70,15 +70,21 @@ public class DatadockManager
       
         // Check if there are any registered jobs ready for docking
         // if not... new jobs are requested from the harvester
-        if( registeredJobs.size() == 0 ){
+        if( registeredJobs.size() == 0 )
+        {
             log.debug( "no more jobs. requesting new jobs from the harvester" );
             registeredJobs = harvester.getJobs();
         }
       
         // isolate the jobs to execute in this update... 
         Vector< DatadockJob > jobs = new Vector< DatadockJob >();
-        for(  int i=0; i < jobLimit; i++){
-            if( registeredJobs.size() == 0 ){ break;}
+        for(  int i = 0; i < jobLimit; i++)
+        {
+            if( registeredJobs.size() == 0 )
+            { 
+            	break;
+            }
+            
             jobs.add( registeredJobs.remove( 0 ) );
         }
 
@@ -95,7 +101,7 @@ public class DatadockManager
                      pool.submit( job );
                      submitted = true;
              
-                     log.debug( String.format( "submitted job: '%s'",job.getUri().getRawPath() ) );
+                     log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
                  }
                  catch( RejectedExecutionException re )
                  {

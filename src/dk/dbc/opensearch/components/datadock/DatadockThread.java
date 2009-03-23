@@ -127,6 +127,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
         {
             throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
         }
+        
         log.debug( String.format( "list has elements" ) );
 
         queue = processqueue;
@@ -216,8 +217,10 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
         for( CargoObject co : cc.getData() )
         {
             if( co.getDataStreamName() == DataStreamType.OriginalData )
+            {
                 mimeType = co.getMimeType();
-
+            }
+            
             length += co.getContentLength();
         }
 
@@ -233,7 +236,6 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
 
         // Beware of this innocent looking log line, it writes the
         //binary content of the stored data to the log
-        //log.debug( String.format( "Inserting data: %s", new String( foxml ) ) );
         String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
 
         log.info( String.format( "Submitted data, returning pid %s", pid ) );

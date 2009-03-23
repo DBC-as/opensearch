@@ -36,28 +36,6 @@ package dk.dbc.opensearch.common.pluginframework;
 public interface IPluggable
 {
 	/**
-     * Initializes the plugin with the necessary information needed to
-     * perform the task at hand.
-     * @param pluginId The id given by the pluginframework, specifying  
-     * 
-     */
-	//public void init();
-
-    
-    /**
-     * getPluginID returns the - at object creation time given - id
-     * for this plugin. pluginIDs identify plugins to the
-     * pluginframework, which exposes the plugin to the system based
-     * on which task and format the plugin can handle and which
-     * submitters the plugin is valid for.
-     * 
-     * @returns a PluginID type containing the plugin id (the hashcode
-     * of the plugin identifiers)
-     */
-    //PluginID getPluginID();
-
-    
-	/**
      * getTaskName returns the - at compile time given - name of the
      * task the plugin is constructed to handle. The task name is used
      * by the users of the plugin framework to assign jobs and

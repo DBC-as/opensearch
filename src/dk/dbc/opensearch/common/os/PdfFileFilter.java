@@ -6,11 +6,12 @@
 
 package dk.dbc.opensearch.common.os;
 
+
 import java.io.File;
 import java.io.FilenameFilter;
 
 /**
- * 
+ *  
  */
 public class PdfFileFilter implements FilenameFilter
 {
@@ -28,8 +29,12 @@ public class PdfFileFilter implements FilenameFilter
     public boolean accept(File dir, String name) throws NullPointerException
     {
         if( ! ( new File( name ) ).isDirectory() && name.endsWith( ".pdf" ) )
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
 }

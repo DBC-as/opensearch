@@ -1,5 +1,6 @@
 package dk.dbc.opensearch.common.pluginframework;
 
+
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 

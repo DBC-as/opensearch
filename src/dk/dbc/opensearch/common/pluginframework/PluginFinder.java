@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -85,39 +84,28 @@ public class PluginFinder
      **/
     String getPluginClassName( int key ) throws FileNotFoundException, PluginResolverException
     {
-    	//printClassNameMap();
         String className = null;
         
-        // 5: check the map is not null
+        // check the map is not null
         if( classNameMap.size() < 1 )
+        {
             updatePluginClassNameMap( path );
+        }
         
-        //10: search through the map
+        // search through the map
         className = (String) classNameMap.get( key );
         
-        //20: if there is no hit, raise exception
-        if( className == null ){
+        // if there is no hit, raise exception
+        if( className == null )
+        {        	
             log.debug( String.format( "No value for key: %s ", key ) );
             throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
         }
+        
         return className;
     }
     
-    /* 
-    void printClassNameMap()
-    {
-    	java.util.Collection< String > c = (java.util.Collection< String >) classNameMap.values();
-    	Iterator< String > iter = c.iterator();
-    	
-    	Set< Integer> keySet = classNameMap.keySet();
-    	for( Integer i : keySet )
-    	{
-    		System.out.println( "key: " + i );
-    		System.out.println( "value: " + iter.next().toString() );
-    	}
-    }
-    */
-
+    
     /**
      * creates or updates the classname map with the names of the plugins found
      * on and loaded from the given path
@@ -128,7 +116,7 @@ public class PluginFinder
      */
     private void updatePluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException
     {
-    	Iterator pluginNameIter = null;
+    	Iterator< String > pluginNameIter = null;
 
         log.debug( String.format( "Clearing map with %s members", classNameMap.size() ) );
         classNameMap.clear();
@@ -190,27 +178,24 @@ public class PluginFinder
         	{
         		Element xmlRoot = pluginDocument.getDocumentElement();
 
-        		// 37: get the plugin element
+        		// get the plugin element
         		NodeList pluginNodeList = xmlRoot.getElementsByTagName( "plugin" );
 
         		/** \todo: NodeList.item( int index ) returns null if outofbounds**/
         		Element pluginElement = (Element) pluginNodeList.item( 0 );
-        		//40: pull out the values
-
+        		
+        		// pull out the values
         		name = pluginElement.getAttribute( "name" );
         		className = pluginElement.getAttribute( "classname" );
         		
-        		//log.debug( String.format( "Found plugins with classname=%s, used for task: %s, format: %s from submitter:%s", className, taskName, formatName, submitterName ) );
         		log.debug( String.format( "Found plugins with classname=%s, used for plugin: %s", className, name ) );
         		
-        		//45: verify that we got string form the xml file
+        		// verify that we got string form the xml file
         		if( xmlRoot.getTagName().equals( "plugins" ) && name != null && className != null )
         		{
-        			//50: build the the key
         			key = name.hashCode();
-        				
-        			//60: add the key and value to the map
         			classNameMap.put( key, className );
+        			
         			log.debug( String.format( "key: %s added to map with the value %s", key, className ) );
         		}
         		else
@@ -223,11 +208,15 @@ public class PluginFinder
 
         // The vector containing exceptions is larger than 0 throw it in a PluginResolverException 
         if( failedPlugins.size() > 0 )
+        {
             throw new PluginResolverException( failedPlugins, "Exceptions on the plugins");
-
+        }
+        
         if ( classNameMap.size() == 0 )
+        {
             throw new PluginResolverException( String.format( "%s seems to be a valid path with plugins in it, but no plugins were loaded. I'm at my wits end and cannot give a better explanation.", path ) );
-
+        }
+        
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
     }
     

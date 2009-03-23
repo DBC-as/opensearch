@@ -252,15 +252,16 @@ public class FileHarvest implements IHarvester
         }
     }
     
-    public void callInitVectors() {}
+    
     private boolean checkSubmitterFormat( File submitterFile, File formatFile )
     {
     	String submitterFilePath = sanitize( submitterFile );
     	String formatFilePath = sanitize( formatFile );
-    	submitterFilePath = submitterFile.getAbsolutePath().substring( submitterFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );
-    	log.debug( "FileHarvest.checkSubmitterFormat -> submitter: " + submitterFilePath );
+    	submitterFilePath = submitterFile.getAbsolutePath().substring( submitterFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );    	
+    	log.debug( "FileHarvest.checkSubmitterFormat -> submitter: " + submitterFilePath );    	
     	formatFilePath = formatFile.getAbsolutePath().substring( formatFile.getAbsolutePath().lastIndexOf( "/") + 1 );
     	log.debug( "FileHarvest.checkSubmitterFormat -> format: " + formatFilePath );
+    	
     	Pair< String, String > pair = new Pair< String, String >( submitterFilePath, formatFilePath );
     	if ( submittersFormatsVector.contains( pair ) )
     	{

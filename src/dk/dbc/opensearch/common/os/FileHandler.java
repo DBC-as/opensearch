@@ -107,8 +107,10 @@ public class FileHandler
     public static FileInputStream readFile( String file ) throws FileNotFoundException
     {
     	if(! new File ( file ).isFile() )
+    	{
             throw new FileNotFoundException( String.format( "Error - '%s' is not a file", file ) );
-        
+    	}
+    	
         FileInputStream data = new FileInputStream( file );
         return data;
     }

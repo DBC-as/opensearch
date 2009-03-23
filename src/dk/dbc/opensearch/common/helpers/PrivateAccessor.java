@@ -4,10 +4,13 @@
  * \package tools
  */
 package dk.dbc.opensearch.common.helpers;
+
+
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import junit.framework.Assert;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import junit.framework.Assert;
 
 
 /**
@@ -16,8 +19,8 @@ import java.lang.reflect.InvocationTargetException;
  * implements 2 methods that can give you access to private members of
  * a class for testing purposes.
  */
-public final class PrivateAccessor{
-
+public final class PrivateAccessor
+{
     /**
      * Retrieves the value of a private field (for unittesting purposes) 
      *
@@ -26,23 +29,28 @@ public final class PrivateAccessor{
      *
      * @returns an object containing the fields value
      */
-    public static Object getPrivateField( Object o, String fieldName ){
-
+    public static Object getPrivateField( Object o, String fieldName )
+    {
         Assert.assertNotNull( o );
         Assert.assertNotNull( fieldName );
 
         final Field[] fields = o.getClass().getDeclaredFields();
-        for( int i = 0; i < fields.length; i++ ){
-            if( fieldName.equals( fields[i].getName() ) ){
-                try{
+        for( int i = 0; i < fields.length; i++ )
+        {
+            if( fieldName.equals( fields[i].getName() ) )
+            {
+                try
+                {
                     fields[i].setAccessible(true);
                     return fields[i].get( o );
                 }
-                catch( IllegalAccessException ex ){
+                catch( IllegalAccessException ex )
+                {
                     Assert.fail( String.format( "IllegalAccessException accessing %s", fieldName ) );
                 }
             }
         }
+        
         throw new IllegalArgumentException( String.format( "Field '%s' not found", fieldName ) );
     }
 
@@ -56,29 +64,33 @@ public final class PrivateAccessor{
      *
      * @returns an object containing the methods return value, if any.
      */
-    public static Object invokePrivateMethod(Object o, String methodName, Object... args){
-
+    public static Object invokePrivateMethod(Object o, String methodName, Object... args)
+    {
         Assert.assertNotNull( o );
         Assert.assertNotNull( methodName );
 
         final Method methods[] = o.getClass().getDeclaredMethods();
-        for( int i = 0; i < methods.length; i++ ){
+        for( int i = 0; i < methods.length; i++ )
+        {
             //can fail if there are overloaded methods 
-            if( methodName.equals( methods[i].getName() ) ){
-                try{
+            if( methodName.equals( methods[i].getName() ) )
+            {
+                try
+                {
                     methods[i].setAccessible(true);
                     return methods[i].invoke( o, args );
                 }
-                catch( IllegalAccessException iae ){
+                catch( IllegalAccessException iae )
+                {
                     Assert.fail( String.format( "IllegalAccessException accessing %s", methodName ) );
                 }
-                catch( InvocationTargetException ite ){
+                catch( InvocationTargetException ite )
+                {
                         Assert.fail( String.format( "InvocationTargetException (the method has thrown an error) accessing %s", methodName ) );
                 }
             }
         }
-throw new IllegalArgumentException( String.format( "Method '%s' not found", methodName ) );
-// Assert.fail( String.format( "Method '%s' not found", methodName ) );
-//      return null;
+        
+        throw new IllegalArgumentException( String.format( "Method '%s' not found", methodName ) );
     }
 }

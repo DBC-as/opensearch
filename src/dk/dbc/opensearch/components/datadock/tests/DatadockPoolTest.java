@@ -9,7 +9,6 @@ package dk.dbc.opensearch.components.datadock.tests;
 /** \brief UnitTest for DatadockPool **/
 
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.common.fedora.FedoraHandler;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
 import dk.dbc.opensearch.common.types.CompletedTask;
@@ -52,7 +51,6 @@ public class DatadockPoolTest extends TestCase
     /**
      * The (mock)objects we need for the most of the tests
      */
-    //  FedoraHandler mockFedoraHandler;
     Estimate mockEstimate;
     Processqueue mockProcessqueue;
     CargoContainer mockCargoContainer;

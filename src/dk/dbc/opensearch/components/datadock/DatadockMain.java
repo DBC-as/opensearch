@@ -90,15 +90,15 @@ public class DatadockMain
 
         try
         {
-            log.info("Shutting down.");
+            log.info( "Shutting down." );
             datadockManager.shutdown();
         }
-        catch(InterruptedException e)
+        catch( InterruptedException e )
         {
-            log.error("Interrupted while waiting on main daemon thread to complete.");
+            log.error( "Interrupted while waiting on main daemon thread to complete." );
         }
 
-        log.info("Exiting.");
+        log.info( "Exiting." );
     }
 
 
@@ -129,7 +129,7 @@ public class DatadockMain
      */
     static protected void addDaemonShutdownHook()
     {
-        Runtime.getRuntime().addShutdownHook( new Thread() { public void run() { shutdown(); }});
+        Runtime.getRuntime().addShutdownHook( new Thread() { public void run() { shutdown(); } } );
     }
 
 
