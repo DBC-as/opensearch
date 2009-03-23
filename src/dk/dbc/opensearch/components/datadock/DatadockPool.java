@@ -131,7 +131,7 @@ public class DatadockPool
      */
     public Vector< CompletedTask > checkJobs() throws InterruptedException 
     {
-        log.debug( "checkJobs() called" );
+        log.debug( "DatadockPool method checkJobs called" );
     
         Vector< CompletedTask > finishedJobs = new Vector< CompletedTask >();
         for( FutureTask job : jobs )        
@@ -142,12 +142,12 @@ public class DatadockPool
                 
                 try
                 {
-                    log.debug( "Checking job" );                    
-                    f = (Float) job.get();
+                    log.debug( "DatadockPool checking job" );                    
+                    f = (Float)job.get();
                 }
                 catch( ExecutionException ee )
                 {                    
-                    log.fatal( "Exception caught from job" );
+                    log.fatal( "DatadockPool Exception caught from job" );
                  
                     // getting exception from thread
                     Throwable cause = ee.getCause();
@@ -160,7 +160,7 @@ public class DatadockPool
                     }
                 }
                 
-                log.debug( "adding to finished jobs" );
+                log.debug( "DatadockPool adding to finished jobs" );
                 finishedJobs.add( new CompletedTask( job, f ) );
             }
         }

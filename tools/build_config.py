@@ -28,8 +28,6 @@ else:
 
 #pluginpath = os.path.join( path, "build/classes/dk/dbc/opensearch/plugins" )
 pluginpath = os.path.join( path, "plugins" )
-print 'plugin path:     ' + pluginpath
-print 'path: ' + path
 
 root   = ET.Element( "opensearch-definition" )
 
@@ -52,9 +50,6 @@ cpmpath    = ET.SubElement( compass, "cpmpath" )
 
 configpath.text = path + "/config/compass.cfg.xml"
 cpmpath.text    = path + "/config/xml.cpm.xml"
-
-print "configpath.text: " + configpath.text
-print "cmppath.text: " + cpmpath.text
 
 # database settings
 driver = ET.SubElement( db, "driver" )
