@@ -43,10 +43,6 @@ public class FileHarvestTest {
     	String pollTestPath = HarvesterConfig.getHarvesterFolder();
     	File pollTestFile = new File( pollTestPath );
     	FileHarvest fh = new FileHarvest( pollTestFile );
-    	
-    	
-    	
-    	fh.callInitVectors();
     }
     
     
