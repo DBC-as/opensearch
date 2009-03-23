@@ -6,15 +6,23 @@ package dk.dbc.opensearch.common.pluginframework.tests;
 
 
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
-import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.components.datadock.DatadockMain;
 import dk.dbc.opensearch.components.pti.PTIMain;
+import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.os.FileHandler;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import java.lang.IllegalStateException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import mockit.Mock;
 import mockit.Mockit;
@@ -28,10 +36,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-
 /**
  * Class for testing tha JobMapCreator class
  */
@@ -41,58 +45,50 @@ public class JobMapCreatorTest
     /**
      * \Todo: The mockURL should be created in another way...
      */
-    //URL mockURL = getClass().getResource( "/datadock_jobs.xml" );
     static File mockFile = createMock( File.class );
-    static Document mockDocument = createMock( Document.class );
-    static DocumentBuilder mockDocumentBuilder = createMock( DocumentBuilder.class );
+    static NodeList mockNodeList = createMock( NodeList.class );
 
-    FileHandler mockFH;
     Element mockElement;
-    NodeList mockNodeList;
+    
 
 
 
-    @MockClass( realClass = FileHandler.class )
-    public static class MockFileHandler
+    @MockClass( realClass = XMLFileReader.class )
+    public static class MockXMLFileReader
     {
-    	@Mock public static File getFile( String path )
+    	@Mock public static NodeList getNodeList( File xmlFile, String tagName )
     	{
-    		System.out.println( "mockFile returned" );
-    		return mockFile;
+            //	System.out.println( "mockNodeList returned" );
+    		return mockNodeList;
     	}
     }
     
-
-    @MockClass( realClass = DocumentBuilderFactory.class )
-    public static class MockDocumentBuilderFactory
-    {
-    	@Mock public static DocumentBuilder newDocumentBuilder()
-    	{
-    		System.out.println( "mockDocumentBuilder returned" );
-    		return mockDocumentBuilder;
+    @MockClass( realClass = JobMapCreator.class )
+        public static class MockJobMapCreator
+        {
+            @Mock public static File setJobFile( Class classType )
+            {
+                //  System.out.println( "mockFile returned" );
+                return mockFile;
+            }
         }
-    }
-    
 
-    // @MockClass( realClass = ClassLoader.class )
-    //         public class MockClassLoader
-    //         {
-    //             @Mock public URL getResource()
-    //             {
-    //                 return mockURL;
-    //             }
-
-    //         }
-
+    @MockClass( realClass = FileHandler.class)
+        public static class MockFH
+        {
+            public static File getFile( String path )
+            {
+                return mockFile;
+            }
+        }
     
     /**
      *
      */
     @Before public void SetUp() 
     {
-        Mockit.setUpMocks( MockDocumentBuilderFactory.class, MockFileHandler.class );
+        Mockit.setUpMocks( MockXMLFileReader.class );
 
-        mockDocument = createMock( Document.class );
         mockElement = createMock( Element.class );
         mockNodeList = createMock( NodeList.class );
     }
@@ -105,10 +101,7 @@ public class JobMapCreatorTest
     {
         Mockit.tearDownMocks();
 
-        //reset( mockURL );
         reset( mockFile );
-        reset( mockDocumentBuilder );
-        reset( mockDocument );
         reset( mockElement );
         reset( mockNodeList );
     }
@@ -124,59 +117,152 @@ public class JobMapCreatorTest
     
     
     /**
-     * Testing the method that builds the jobmap
+     * Testing the method that builds the jobmap.
+     * We mock the setJobFile method in the JobMapCreator
      * happy path.
      */
-    @Ignore
     @Test public void testGetMapMethod() throws Exception 
     {
         /**
          * Setup
          */
+        Mockit.setUpMocks( MockJobMapCreator.class ); //mocks the getFile method only
+
         String testString = "test";
-        String position = "0";
+        String testString1 = "test1";
+        String testString2 = "test2";
+        String position1 = "1";
+        String position2 = "2";
+        HashMap< Pair< String, String >, ArrayList<String> > jobMap;
         /**
          * Exepctations
          */
-        //expect( mockURL.getPath() ).andReturn( "testPath" ).times( 2 );
-        expect( mockFile.getPath() ).andReturn( "unittestPath" );
-        expect( mockDocumentBuilder.parse( isA( File.class ) ) ).andReturn( mockDocument );
-        expect( mockDocument.getDocumentElement() ).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
+        expect( mockFile.getPath() ).andReturn( "unittestPath" ); //logging
         expect( mockNodeList.getLength() ).andReturn( 1 );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 1 );
+        expect( mockNodeList.getLength() ).andReturn( 2 );
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position );
-
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString2 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position2 );
+        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString1 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position1 );
+        
         /**
          * replay
          */
-        //replay( mockURL );
         replay( mockFile );
-        replay( mockDocumentBuilder );
-        replay( mockDocument );
         replay( mockElement );
         replay( mockNodeList );
 
-        //replay();
+        /**
+         * Do stuff
+         */
+        jmc = new JobMapCreator();
+        jobMap = jmc.getMap( DatadockMain.class );
+        //this tests both the sorting and the building
+        assertTrue(jobMap.get( new Pair<String, String >( testString, testString ) ).get( 0 ) == testString1 );
+        /**
+         * Verify
+         */
+        verify( mockFile );
+        verify( mockElement );
+        verify( mockNodeList );
+    }
+    
+    @Test( expected = IllegalStateException.class ) 
+        public void testNPexceptionFromGetMap()throws ParserConfigurationException, SAXException, IOException
+    {
+        /**
+         * Setup
+         */
+        Mockit.setUpMocks( MockJobMapCreator.class );
+       
+        /**
+         * Exepctations
+         */
+        expect( mockFile.getPath() ).andReturn( "unittestPath" ); //logging
+        expect( mockNodeList.getLength() ).andReturn( 0 );
+        
+        /**
+         * replay
+         */
+        replay( mockFile );
+
+        replay( mockNodeList );
+
         /**
          * Do stuff
          */
         jmc = new JobMapCreator();
         jmc.getMap( DatadockMain.class );
-
+        //this tests both the sorting and the building
+        //        assertTrue(jobMap.get( new Pair<String, String >( testString, testString ) ).get( 0 ) == testString1 );
         /**
          * Verify
          */
-        //verify( mockURL );
         verify( mockFile );
-        verify( mockDocumentBuilder );
-        verify( mockDocument );
-        verify( mockElement );
+
         verify( mockNodeList );
+
+    } 
+
+    /**
+     * Tests the happy paths of the getFile method
+     */
+
+    @Test( expected = IllegalStateException.class ) 
+        public void testGetFile() throws ParserConfigurationException, IOException, SAXException
+    {
+         /**
+         * Setup
+         */
+        Mockit.setUpMocks( MockFH.class );
+
+        HashMap< Pair< String, String >, ArrayList<String> > jobMap;
+
+        String test1 = "test1";
+        String position = "0";
+
+        /**
+         * Exepctations
+         */    
+        expect( mockFile.getPath() ).andReturn( "getFile method test" ); //logging
+        expect( mockNodeList.getLength() ).andReturn( 1 );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 ).times( 2 );
+        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
+        expect( mockNodeList.getLength() ).andReturn( 1 );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position );
+        
+        //calling getMap again
+
+ expect( mockFile.getPath() ).andReturn( "getFile method test" ); //logging
+        expect( mockNodeList.getLength() ).andReturn( 0 );
+
+        /**
+         * replay
+         */ 
+        replay( mockFile );
+        replay( mockNodeList );
+        
+        /**
+         * Do stuff
+         */
+        jmc = new JobMapCreator();
+        jmc.getMap( DatadockMain.class);
+        jmc.getMap( PTIMain.class );
+        /**
+         * Verify
+         */
+        verify( mockFile );
+
+        verify( mockNodeList );
+
+
     }
 }

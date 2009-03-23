@@ -10,6 +10,7 @@ import dk.dbc.opensearch.common.types.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.lang.IllegalArgumentException;
+import java.lang.IllegalStateException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +46,7 @@ public class JobMapCreator
      * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
      */
 
-    public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException 
+    public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, IllegalStateException 
     {
         log.debug( "getMap() called" );
 
@@ -110,18 +111,21 @@ public class JobMapCreator
         }
 
         // Put job into the map with <submitter, format> as key and List as value
-        jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
+        //jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
 
-        if( jobMap == null )
+        if( jobMap.isEmpty() )
         {
-        	throw new NullPointerException( String.format( "no jobs found for: %s ", classType.getName() ) );
+        	throw new IllegalStateException( String.format( "no jobs found for: %s ", classType.getName() ) );
         }
         
         return jobMap;
     }
 
-
-	private static File setJobFile( Class classType ) throws MalformedURLException
+    /**
+     * \Todo: this method should be package private, but it is not so until we put the 
+     * testfiles in the same package as the files under test... 
+     */
+    public static File setJobFile( Class classType ) throws MalformedURLException
     {
     	File jobFile;
     
@@ -135,7 +139,7 @@ public class JobMapCreator
             }
             else
             {
-            	throw new IllegalArgumentException( "test" );
+            	throw new IllegalArgumentException( "The value og datadockJobPath was null" );
             }
         }
         else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
@@ -148,7 +152,7 @@ public class JobMapCreator
         	}
         	else
         	{
-        		throw new IllegalArgumentException( "test" );
+        		throw new IllegalArgumentException( "the value of ptiJobPath was null" );
         	}
         }
         else
