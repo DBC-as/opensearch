@@ -19,7 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 public final class PrivateAccessor{
 
     /**
-     * Retrieves the value of a private field (for unitesting purposes) 
+     * Retrieves the value of a private field (for unittesting purposes) 
      *
      * @param o is the object that the field resides in
      * @param fieldName is the name of the field you want access.
@@ -36,16 +36,14 @@ public final class PrivateAccessor{
             if( fieldName.equals( fields[i].getName() ) ){
                 try{
                     fields[i].setAccessible(true);
-                    return fields[i].get(0);
+                    return fields[i].get( o );
                 }
                 catch( IllegalAccessException ex ){
                     Assert.fail( String.format( "IllegalAccessException accessing %s", fieldName ) );
                 }
             }
         }
-        Assert.fail( String.format( "Field '%s' not found", fieldName ) );
-
-        return null;
+        throw new IllegalArgumentException( String.format( "Field '%s' not found", fieldName ) );
     }
 
     
@@ -79,7 +77,8 @@ public final class PrivateAccessor{
                 }
             }
         }
-        Assert.fail( String.format( "Method '%s' not found", methodName ) );
-        return null;
+throw new IllegalArgumentException( String.format( "Method '%s' not found", methodName ) );
+// Assert.fail( String.format( "Method '%s' not found", methodName ) );
+//      return null;
     }
 }
