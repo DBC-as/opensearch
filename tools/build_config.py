@@ -29,7 +29,7 @@ else:
 #pluginpath = os.path.join( path, "build/classes/dk/dbc/opensearch/plugins" )
 pluginpath = os.path.join( path, "plugins" )
 print 'plugin path:     ' + pluginpath
-print 'config.xml path: ' + path
+print 'path: ' + path
 
 root   = ET.Element( "opensearch-definition" )
 
@@ -50,8 +50,11 @@ compass= ET.SubElement( root, "compass" )
 configpath = ET.SubElement( compass, "configpath" )
 cpmpath    = ET.SubElement( compass, "cpmpath" )
 
-configpath.text = "/home/shm/opensearch/config/compass.cfg.xml"
-cpmpath.text    = "/home/shm/opensearch/config/xml.cpm.xml"
+configpath.text = path + "/config/compass.cfg.xml"
+cpmpath.text    = path + "/config/xml.cpm.xml"
+
+print "configpath.text: " + configpath.text
+print "cmppath.text: " + cpmpath.text
 
 # database settings
 driver = ET.SubElement( db, "driver" )
