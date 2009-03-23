@@ -6,8 +6,11 @@
 package dk.dbc.opensearch.common.compass;
 
 
-import java.net.URL;
+import dk.dbc.opensearch.common.config.CompassConfig;
+import dk.dbc.opensearch.common.os.FileHandler;
+
 import java.io.File;
+import java.net.URL;
 
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
@@ -53,16 +56,17 @@ public class CompassFactory
 
         log.debug( "Obtaining configuration parameters." );
         CompassConfiguration conf = new CompassConfiguration();
-        URL cfg = getClass().getResource("/compass.cfg.xml");
-        URL cpm = getClass().getResource("/xml.cpm.xml");
+        //URL cfg = getClass().getResource("/compass.cfg.xml");
+        //URL cpm = getClass().getResource("/xml.cpm.xml");
 
-        log.debug( String.format( "Compass configuration=%s", cfg.getFile() ) );
-        log.debug( String.format( "XSEM mappings file   =%s", cpm.getFile() ) );
-        File cpmFile = new File( cpm.getFile() );
- 
+        String cfg = CompassConfig.getCompassConfigPath();
+        String cpm = CompassConfig.getCompassXSEMPath();
+        log.debug( String.format( "Compass configuration=%s", cfg ) );
+        log.debug( String.format( "XSEM mappings file   =%s", cpm ) );
+       
         log.debug( "Building Compass." );
-        conf.configure( cfg );
-        conf.addFile( cpmFile );
+        conf.configure( FileHandler.getFile( cfg ) );
+        conf.addFile( cpm );
         compass = conf.buildCompass();
     }        
 }

@@ -1,6 +1,7 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -8,7 +9,6 @@ import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CPMAlias;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.config.FedoraConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -167,10 +167,14 @@ public class IndexerXSEM implements IIndexer
                 fieldMap.put( "fedoraPid", fedoraHandle );
                 fieldMap.put( "original_format", co.getFormat() );
 
-                Resource resObject = updateAliasedXmlObject( session, xmlObject, fieldMap );
+                
 
                 try{
+                    session.save( xmlObject );
+                    Resource resObject = updateAliasedXmlObject( session, xmlObject, fieldMap );
+                    session.delete( xmlObject );
                     session.save( resObject );
+                    //session.flush();
                 }catch( Exception e ){
                     log.fatal( String.format( "class of thrown exception: %s, message: %s ", e.getClass(), e.getMessage() ) );
                     log.fatal( String.format( "the file not being indexed is: %s",cc.getFilePath() ) );
@@ -222,7 +226,7 @@ public class IndexerXSEM implements IIndexer
 
         // \todo do we need to remove the xmlObject from the index?
         log.debug( String.format( "Deleting old xml object" ) );
-        sess.delete( xmlObj );
+      
 
         for( String key : fieldMap.keySet() )
         {

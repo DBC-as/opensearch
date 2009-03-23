@@ -44,6 +44,14 @@ filest = ET.SubElement( root, "filesystem" )
 harvest= ET.SubElement( root, "harvester" )
 pidmng = ET.SubElement( root, "pidmanager" )
 pti    = ET.SubElement( root, "pti" )
+compass= ET.SubElement( root, "compass" )
+
+# compass settings
+configpath = ET.SubElement( compass, "configpath" )
+cpmpath    = ET.SubElement( compass, "cpmpath" )
+
+configpath.text = "/home/shm/opensearch/config/compass.cfg.xml"
+cpmpath.text    = "/home/shm/opensearch/config/xml.cpm.xml"
 
 # database settings
 driver = ET.SubElement( db, "driver" )
