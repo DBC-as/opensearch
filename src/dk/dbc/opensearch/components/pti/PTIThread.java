@@ -26,7 +26,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.Iterator;
@@ -112,12 +111,11 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
     {
         log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
 
-        MIMETypedStream ds = super.fea.getDatastreamDissemination(fedoraPid, DataStreamType.AdminData.getName(), null);
+        MIMETypedStream ds = super.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
 
         CargoContainer cc = new CargoContainer();
 
-        //log.debug( new String(adminStream));
         DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFact.newDocumentBuilder();
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );

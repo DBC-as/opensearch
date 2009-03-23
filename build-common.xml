@@ -232,7 +232,6 @@
   
 
   <target name="_xsd-classes" description="Generate Java source files from the Schemas found in ${xsd.dir}.">
-    <echo>${src.dir}</echo>
     <taskdef name="castor-srcgen"
              classname="org.castor.anttask.CastorCodeGenTask"
              classpathref="classpath" />

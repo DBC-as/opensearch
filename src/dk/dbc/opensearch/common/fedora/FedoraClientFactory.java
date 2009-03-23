@@ -5,22 +5,26 @@
  */
 package dk.dbc.opensearch.common.fedora;
 
+
+import dk.dbc.opensearch.common.config.FedoraConfig;
+
 import fedora.client.FedoraClient;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
-import org.apache.commons.configuration.ConfigurationException;
-import java.net.MalformedURLException;
 
 /**
  * \ingroup tools
  * \brief The factory spawns fedoraClients
  */
-public class FedoraClientFactory {
-    
-    Logger log = Logger.getLogger("FedoraClientFactory"); 
+public class FedoraClientFactory 
+{    
+    Logger log = Logger.getLogger( FedoraClientFactory.class ); 
     
     private static String host = "";
     private static String port = "";
@@ -35,17 +39,22 @@ public class FedoraClientFactory {
      * @throws ConfigurationException error reading configuration file
      * @throws MalformedURLException error obtaining fedora configuration
      */
-    public FedoraClient getFedoraClient()throws ConfigurationException, MalformedURLException {
-         
+    public FedoraClient getFedoraClient()throws ConfigurationException, MalformedURLException 
+    {         
         log.debug( "Obtain config paramaters for configuring fedora connection");
-        URL cfgURL = getClass().getResource("/config.xml");
-        XMLConfiguration config = null;
-        config = new XMLConfiguration( cfgURL );
         
-        host       = config.getString( "fedora.host" );
-        port       = config.getString( "fedora.port" );
-        user       = config.getString( "fedora.user" );
-        passphrase = config.getString( "fedora.passphrase" );
+        //URL cfgURL = getClass().getResource("/config.xml");
+        //XMLConfiguration config = null;
+        //config = new XMLConfiguration( cfgURL );
+        
+        //host       = config.getString( "fedora.host" );
+        //port       = config.getString( "fedora.port" );
+        //user       = config.getString( "fedora.user" );
+        //passphrase = config.getString( "fedora.passphrase" );
+        host       = FedoraConfig.getFedoraHost();
+        port       = FedoraConfig.getFedoraPort();
+        user       = FedoraConfig.getFedoraUser();
+        passphrase = FedoraConfig.getFedoraPassPhrase();
         fedoraUrl  = "http://" + host + ":" + port + "/fedora";
         
         log.debug( String.format( "Connecting to fedora server at:\n%s\n using user: %s, pass: %s ", fedoraUrl, user, passphrase ) );
@@ -57,5 +66,4 @@ public class FedoraClientFactory {
         log.debug( "Constructed FedoraClient" );
         return client;
     }
-
 }
