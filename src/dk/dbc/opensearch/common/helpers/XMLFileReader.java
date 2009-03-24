@@ -12,12 +12,24 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
 public class XMLFileReader 
 {
 	Logger log = Logger.getLogger( XMLFileReader.class );
+	
+	
+	public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
+	{
+		DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFact.newDocumentBuilder();
+        Document admDoc = docBuilder.parse( is );
+        Element root = admDoc.getDocumentElement();
+        
+        return root;
+	}
 	
 	
 	public static NodeList getNodeList( File xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException

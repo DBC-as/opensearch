@@ -22,7 +22,6 @@ import java.util.concurrent.RejectedExecutionException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 
@@ -37,7 +36,6 @@ public class PTIManager
     
     private PTIPool pool= null;
     private Processqueue processqueue = null;
-
     private int rejectedSleepTime;
     private int resultsetMaxSize;
 
@@ -93,17 +91,18 @@ public class PTIManager
                 catch( RejectedExecutionException re )
                 {
                     log.debug( String.format( "job: fedorahandle='%s' and queueID='%s' rejected - trying again",job.getFirst(), job.getSecond() ) );
-                    Thread.currentThread().sleep( rejectedSleepTime );
+                    Thread.currentThread();
+					Thread.sleep( rejectedSleepTime );
                 }
             }
         }
 
         // Checking jobs and commiting jobs
-        Vector<CompletedTask> finishedJobs = pool.checkJobs();
+        Vector< CompletedTask > finishedJobs = pool.checkJobs();
         
         for ( CompletedTask task : finishedJobs)
         {            
-            Pair< Long, Integer > pair = (Pair) task.getResult();
+            Pair< Long, Integer > pair = (Pair< Long, Integer >)task.getResult();
             Long result = pair.getFirst();
             int queueID = pair.getSecond();
             if ( result != null ) // sucess

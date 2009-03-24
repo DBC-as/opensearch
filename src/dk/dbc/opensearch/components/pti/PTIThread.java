@@ -7,6 +7,7 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
@@ -60,6 +61,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
 {
     Logger log = Logger.getLogger( PTIThread.class );
 
+    
     private CompassSession session;
     private String fedoraPid;
     private Estimate estimate;
@@ -117,11 +119,8 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
 
         CargoContainer cc = new CargoContainer();
 
-        DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFact.newDocumentBuilder();
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        Document admDoc = docBuilder.parse( new InputSource( bis ) );
-        Element root = admDoc.getDocumentElement();
+        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );        
+        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );        
         Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" ).item( 0 );
         String indexingAliasName = indexingAliasElem.getAttribute( "name" );
         cc.setIndexingAlias( IndexingAlias.getIndexingAlias( indexingAliasName )  );
