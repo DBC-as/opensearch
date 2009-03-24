@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-<compass-core-config xmlns="http://www.compass-project.org/schema/core-config"
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:schemaLocation="http://www.compass-project.org/schema/core-config http://www.compass-project.org/schema/compass-core-config-2.2.xsd">
--->
 <xsd:schema xmlns="http://www.compass-project.org/schema/core-config" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.compass-project.org/schema/core-config" elementFormDefault="qualified"
             attributeFormDefault="unqualified">
@@ -61,7 +56,7 @@
                 <xsd:documentation>
                     A setting for managed id index feature. When an internal managed id is created, it's index setting
                     will be created using this global setting (if not defined locally in the mapping file). Possible
-                    values are no and not_analyzed, with default value set to no.
+                    values are no and un_tokenized, with default value set to no.
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
@@ -132,14 +127,6 @@
                         <xsd:annotation>
                             <xsd:documentation>
                                 Should the all property honor boost settings on sepecific proeprties when searching.
-                                Defaults to true.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:attribute>
-                    <xsd:attribute name="includeUnmappedProperties" type="booleanType" use="optional">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                Should unmapped properties be included in the all property.
                                 Defaults to true.
                             </xsd:documentation>
                         </xsd:annotation>
@@ -638,13 +625,42 @@
                     </xsd:documentation>
                 </xsd:annotation>
                 <xsd:complexType>
-                    <xsd:attribute name="type" use="optional" type="xsd:string">
+                    <xsd:attribute name="type" use="optional">
                         <xsd:annotation>
                             <xsd:documentation>
                                 Sets the type of the optimizer that will be used by the Compass instance. Defaults to
-                                Compass default optimizer.
+                                the adaptive optimizer.
                             </xsd:documentation>
                         </xsd:annotation>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:enumeration value="org.compass.core.lucene.engine.optimizer.AdaptiveOptimizer">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            When the number of segments exceeds that specified mergeFactor, the segments
+                                            will be merged from the last segment, until a segment with a higher resource
+                                            count will be encountered.
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:enumeration>
+                                <xsd:enumeration value="org.compass.core.lucene.engine.optimizer.AggressiveOptimizer">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            When the number of segments exceeds that specified mergeFactor, all the
+                                            segments are merged into a single segment.
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:enumeration>
+                                <xsd:enumeration value="org.compass.core.lucene.engine.optimizer.NullOptimizer">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            Performs no optimization. Will not be scheduled even if the scheduled flag
+                                            is true.
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:enumeration>
+                            </xsd:restriction>
+                        </xsd:simpleType>
                     </xsd:attribute>
                     <xsd:attribute name="schedule" type="booleanType" use="optional" default="true">
                         <xsd:annotation>
@@ -661,7 +677,7 @@
                             </xsd:documentation>
                         </xsd:annotation>
                     </xsd:attribute>
-                    <xsd:attribute name="maxNumberOfSegments" type="xsd:positiveInteger" use="optional">
+                    <xsd:attribute name="mergeFactor" type="xsd:positiveInteger" use="optional">
                         <xsd:annotation>
                             <xsd:documentation>
                                 The merge factor for Adaptive and Aggressive optimizers.
@@ -720,10 +736,10 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="cacheInvalidationInterval" type="xsd:string" use="optional">
+        <xsd:attribute name="cacheInvalidationInterval" type="xsd:integer" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
-                    Sets how often (in time notation) the index manager will check if the index cache needs to be
+                    Sets how often (in milliseconds) the index manager will check if the index cache needs to be
                     invalidated. Defaults to 5000. Setting it to 0 means that the cache will check if it needs to be
                     invalidated all the time. Setting it to -1 means that the cache will never check if it needs to be
                     invalidated, note, that it is perfectly fine if a single instance is manipulating the index. It
@@ -732,19 +748,11 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="cacheAsyncInvalidation" type="booleanType" use="optional">
+        <xsd:attribute name="indexManagerScheduleInterval" type="xsd:integer" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
-                    Sets if invalidation of cache will happen in the background or not. By default set to true.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="indexManagerScheduleInterval" type="xsd:string" use="optional">
-            <xsd:annotation>
-                <xsd:documentation>
-                    The index manager schedule interval (in time notation) where different actions related to index
-                    manager will happen (such as global cache interval checks). Set to -1 in order to disable it.
-                    Defaults to 60 seconds.
+                    The index manager schedule interval (in seconds) where different actions related to index manager
+                    will happen (such as global cache interval checks).
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
@@ -926,7 +934,7 @@
                                         </xsd:documentation>
                                     </xsd:annotation>
                                 </xsd:enumeration>
-                                <xsd:enumeration value="org.compass.core.cache.first.PlainFirstLevelCache">
+                                <xsd:enumeration value="org.compass.core.cache.first.DefaultFirstLevelCache">
                                     <xsd:annotation>
                                         <xsd:documentation>
                                             Default first level cache handling, storing Resource and Objects in the
@@ -950,236 +958,28 @@
         </xsd:annotation>
         <xsd:sequence>
             <xsd:choice>
-                <xsd:element name="processors" minOccurs="0">
+                <xsd:element name="readCommittedSettings" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Specialized settings for read_committed isolation level.
+                        </xsd:documentation>
+                    </xsd:annotation>
                     <xsd:complexType>
-                        <xsd:choice minOccurs="1" maxOccurs="unbounded">
-                            <xsd:element name="readCommitted" minOccurs="0">
-                                <xsd:annotation>
-                                    <xsd:documentation>
-                                        Specialized settings for processor.
-                                    </xsd:documentation>
-                                </xsd:annotation>
-                                <xsd:complexType>
-                                    <xsd:attribute name="transLog" use="optional" default="ram://">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The transactional log connection. Can be either ram:// or file://.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="optimizeTransLog" use="optional" default="true">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Should the transactional log be optimized before added to the actual
-                                                index. Defaults
-                                                to true.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="concurrentOperations" use="optional" type="booleanType">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Should dirty operations be perfomed asynchronously. Defaults to true.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="concurrencyLevel" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The number of threads used to process dirty operations asynchronously.
-                                                Defaults to 5. Note, this is the number of threads used per transaction
-                                                and threads are pooled.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="hashing" use="optional">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Controls how hashing will be done for parallel processing.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                        <xsd:simpleType>
-                                            <xsd:restriction base="xsd:string">
-                                                <xsd:enumeration value="uid"/>
-                                                <xsd:enumeration value="subindex"/>
-                                            </xsd:restriction>
-                                        </xsd:simpleType>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="backlog" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The backlog size of the current ongoing dirty operations. If full, will
-                                                block the dirty operation until it is emptied by the running async
-                                                processor threads.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="addTimeout" use="optional">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The time for a dirty operation to wait if the backlog is full until the
-                                                dirty operation can be added. Defaults to 10 seconds. Supports time
-                                                based configuration and default value is in millis.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                </xsd:complexType>
-                            </xsd:element>
-                            <xsd:element name="lucene" minOccurs="0">
-                                <xsd:annotation>
-                                    <xsd:documentation>
-                                        Specialized settings for processor.
-                                    </xsd:documentation>
-                                </xsd:annotation>
-                                <xsd:complexType>
-                                    <xsd:attribute name="concurrentOperations" use="optional" type="booleanType">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Should dirty operations be perfomed asynchronously. Defaults to true.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="concurrencyLevel" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The number of threads used to process dirty operations asynchronously.
-                                                Defaults to 5. Note, this is the number of threads used per transaction
-                                                and threads are pooled.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="hashing" use="optional">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Controls how hashing will be done for parallel processing.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                        <xsd:simpleType>
-                                            <xsd:restriction base="xsd:string">
-                                                <xsd:enumeration value="uid"/>
-                                                <xsd:enumeration value="subindex"/>
-                                            </xsd:restriction>
-                                        </xsd:simpleType>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="backlog" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The backlog size of the current ongoing dirty operations. If full, will
-                                                block the dirty operation until it is emptied by the running async
-                                                processor threads.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="addTimeout" use="optional">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The time for a dirty operation to wait if the backlog is full until the
-                                                dirty operation can be added. Defaults to 10 seconds. Supports time
-                                                based configuration and default value is in millis.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                </xsd:complexType>
-                            </xsd:element>
-                            <xsd:element name="async" minOccurs="0">
-                                <xsd:annotation>
-                                    <xsd:documentation>
-                                        Specialized settings for async processor.
-                                    </xsd:documentation>
-                                </xsd:annotation>
-                                <xsd:complexType>
-                                    <xsd:attribute name="backlog" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The bounded size of the backlog for async transactions to process (note,
-                                                a transaciton includes one or more destructive operations. Once the
-                                                backlog is full, transactions will block until new tranasctions can be
-                                                inserted to it. The default backlog size is 10.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="addTimeout" use="optional">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The timeout value to wait if the backlog is full until it is cleared.
-                                                Defaults to 10 seconds. Accepts Compass time format settings.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="batchJobSize" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Once a transaction is identified as needed to be processed
-                                                asynchronously, it can try and wait for more transactions to happen in
-                                                order to process all of them in one go. This settings controls how many
-                                                additional transactions will be accumalated by blocking for them. The
-                                                blocking time is controlled using batchJobTimeout.
-
-                                                While there is an additional job within the timeout, transactions will
-                                                be accumelated until the configured size. If there is none within the
-                                                timeout, the processor will break and won't wait for more in order to
-                                                process the jobs.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="batchJobTimeout" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Once a transaction is identified as needed to be processed
-                                                asynchronously, it can try and wait for more transactions to happen in
-                                                order to process all of them in one go. This settings controls how long
-                                                to wait for each additional transaction.
-
-                                                While there is an additional job within the timeout, transactions will
-                                                be accumelated until the configured size. If there is none within the
-                                                timeout, the processor will break and won't wait for more in order to
-                                                process the jobs.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="nonBlockingBatchJobSize" use="optional"
-                                                   type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Once a transaction is identified as needed to be processed
-                                                asynchronously, and after it has waited for additional transactions (see
-                                                batchJobSize and batchJobTimeout, this setting controls the number of
-                                                additional transacitons the processor will try to get in a non blocking
-                                                fashion.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="concurrencyLevel" use="optional" type="xsd:positiveInteger">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                The number of threads that will be used to process the transactions.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="processBeforeClose" use="optional" type="booleanType">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                When Compass is closed, should it wait for all the unprocessed
-                                                transactions to be processed.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                    </xsd:attribute>
-                                    <xsd:attribute name="hashing" use="optional">
-                                        <xsd:annotation>
-                                            <xsd:documentation>
-                                                Controls how hashing will be done for parallel processing.
-                                            </xsd:documentation>
-                                        </xsd:annotation>
-                                        <xsd:simpleType>
-                                            <xsd:restriction base="xsd:string">
-                                                <xsd:enumeration value="uid"/>
-                                                <xsd:enumeration value="subindex"/>
-                                            </xsd:restriction>
-                                        </xsd:simpleType>
-                                    </xsd:attribute>
-                                </xsd:complexType>
-                            </xsd:element>
-                        </xsd:choice>
+                        <xsd:attribute name="transLog" use="optional" default="ram://">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    The transactional log connection. Can be either ram:// or file://.
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:attribute>
+                        <xsd:attribute name="optimizeTransLog" use="optional" default="true">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    Should the transactional log be optimized before added to the actual index. Defaults
+                                    to true.
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:attribute>
                     </xsd:complexType>
                 </xsd:element>
             </xsd:choice>
@@ -1300,12 +1100,55 @@
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
-        <xsd:attribute name="processor" use="optional" default="read_committed">
+        <xsd:attribute name="isolation" use="optional" default="read_committed">
             <xsd:annotation>
                 <xsd:documentation>
                     Transaction isolation levels that Compass supports.
                 </xsd:documentation>
             </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="read_committed">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The same read committed from data base systems. As fast for read only transactions.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:enumeration>
+                    <xsd:enumeration value="read_only_read_committed">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The same read committed from data base systems. Marks the transaciton as read only,
+                                which helps when integrating with transaction strageties that support read only flag.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:enumeration>
+                    <xsd:enumeration value="serializable">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The same as serializable from data base systems. Performance killer, basically results
+                                in transactions executed sequentially.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:enumeration>
+                    <xsd:enumeration value="batch_insert">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Same as Lucene transaction isolation level.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:enumeration>
+                    <xsd:enumeration value="lucene">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                An isolation level allowing for faster indexing at the expense of transactional
+                                sematics. Operations done during a transaction will not be visible to find/load/get
+                                operations within that transaction.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:enumeration>
+                </xsd:restriction>
+            </xsd:simpleType>
         </xsd:attribute>
         <xsd:attribute name="commitBeforeCompletion" type="booleanType" use="optional" default="false">
             <xsd:annotation>
@@ -1315,11 +1158,11 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="lockTimeout" type="xsd:string" use="optional">
+        <xsd:attribute name="lockTimeout" type="xsd:positiveInteger" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
                     The amount of time a transaction will wait in order to obtain it's specific lock (in seconds) for
-                    dirty operations. Defaults to 10 seconds. Accepts Compass time format values.
+                    dirty operations. Defaults to 10 seconds.
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
@@ -1352,7 +1195,6 @@
             <xsd:choice>
                 <xsd:element name="file" type="fileConnType"/>
                 <xsd:element name="mmap" type="mmapConnType"/>
-                <xsd:element name="niofs" type="niofsConnType"/>
                 <xsd:element name="ram" type="ramConnType"/>
                 <xsd:element name="jdbc" type="jdbcConnType"/>
                 <xsd:element name="space" type="spaceConnType"/>
@@ -1434,7 +1276,7 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="bucketSize" type="xsd:string" use="optional">
+        <xsd:attribute name="bucketSize" type="xsd:positiveInteger" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
                     The bucket size of the index.
@@ -1503,21 +1345,7 @@
                 A Terracota based index.
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:attribute name="indexName" type="xsd:string" use="required">
-            <xsd:annotation>
-                <xsd:documentation>
-                    The index name.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="type" type="xsd:string" use="optional">
-            <xsd:annotation>
-                <xsd:documentation>
-                    The type of Terracotta directory store. Can be "managed", "chm" and "csm".
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="bufferSize" type="xsd:string" use="optional">
+        <xsd:attribute name="bufferSize" type="xsd:positiveInteger" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
                     The buffer size of the index.
@@ -1531,47 +1359,12 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="chmInitialCapacity" type="xsd:positiveInteger" use="optional">
-            <xsd:annotation>
-                <xsd:documentation>
-                    The inital capacity of the concurrent hash map for each sub index directory.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="chmLoadFactor" type="xsd:float" use="optional">
-            <xsd:annotation>
-                <xsd:documentation>
-                    The load factor of the concurrent hash map for each sub index directory.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="chmConcurrencyLevel" type="xsd:positiveInteger" use="optional">
-            <xsd:annotation>
-                <xsd:documentation>
-                    The concurrency level of the concurrent hash map for each sub index directory.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
     </xsd:complexType>
     <xsd:complexType name="mmapConnType">
         <xsd:annotation>
             <xsd:documentation>
                 A file system based index using NIO MMAp Class. Considered slower than the general file system one, but
                 might have memory benefits (according to the Lucene documentation).
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:attribute name="path" type="xsd:string" use="required">
-            <xsd:annotation>
-                <xsd:documentation>
-                    The path to the index directory.
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-    </xsd:complexType>
-    <xsd:complexType name="niofsConnType">
-        <xsd:annotation>
-            <xsd:documentation>
-                A file system based index using NIOFS Class.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="path" type="xsd:string" use="required">
