@@ -32,16 +32,16 @@ import org.apache.log4j.Logger;
  */
 public class PTIManager
 {
-    static Logger log = Logger.getLogger("PTIManager");
+    static Logger log = Logger.getLogger( PTIManager.class );
 
+    
     private PTIPool pool= null;
     private Processqueue processqueue = null;
 
     private int rejectedSleepTime;
     private int resultsetMaxSize;
 
-    XMLConfiguration config = null;
-
+    
     /**
      * Constructs the the PTIManager instance.
      */

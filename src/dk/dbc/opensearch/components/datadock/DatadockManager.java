@@ -38,7 +38,6 @@ public class DatadockManager
 
     private DatadockPool pool= null;
     private IHarvester harvester = null;
-    private int rejectedSleepTime;
     private int jobLimit;
 
     XMLConfiguration config = null;
@@ -56,7 +55,6 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
 
-        rejectedSleepTime = DatadockConfig.getRejectedSleepTime();
         jobLimit = DatadockConfig.getJobLimit();
 
         registeredJobs = new Vector< DatadockJob >(); 
@@ -99,8 +97,6 @@ public class DatadockManager
             	catch( RejectedExecutionException re )
             	{
             		log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
-            		//Thread.currentThread();
-            		//Thread.sleep( rejectedSleepTime );
             	}
             }
         }
