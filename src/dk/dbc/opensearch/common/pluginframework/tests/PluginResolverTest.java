@@ -31,6 +31,8 @@ import org.junit.*;
 import static org.easymock.classextension.EasyMock.*;
 
 import mockit.Mockit;
+import mockit.Mock;
+import mockit.MockClass;
 
 
 /**
@@ -38,12 +40,8 @@ import mockit.Mockit;
  */
 public class PluginResolverTest 
 {
-    //DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
-    //DocumentBuilder docB = null;
-    //String path = "";
+   
     PluginResolver PR;
-    //PluginID mockPluginID;
-
 
     static String staticString = "staticString";
     static TestPlugin mockPlugin = createMock( TestPlugin.class );    
@@ -52,19 +50,12 @@ public class PluginResolverTest
     /**
      * The class to mock the PluginFinder
      */
-    //@MockClass(realClass = PluginFinder.class)
+    @MockClass( realClass = PluginFinder.class )
     public static class ReplacePluginFinder
     {   
-        /*public ReplacePluginFinder(){
-        }
-        
-        public ReplacePluginFinder( DocumentBuilder docB, String path ){
-            System.out.print(" hep finder \n");
-        }
-        */
-        public String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
+      
+        @Mock public static String getPluginClassName( int key ) throws PluginResolverException, FileNotFoundException
         {
-            //if (key == ( "testSubmitter"+"testFormat"+"throwException" ).hashCode())
         	if (key == ( "throwException" ).hashCode())
             {
                 throw new FileNotFoundException( "no plugin for testTask3" );
@@ -73,17 +64,17 @@ public class PluginResolverTest
             return "staticString";
         }
         
-        public void updatePluginClassNameMap( String path ) {}
+        @Mock public void updatePluginClassNameMap( String path ) {}
     }
     
     
     /**
      * The class to mock the PluginLoader
      */
-    //@MockClass(realClass = PluginLoader.class)
+    @MockClass(realClass = PluginLoader.class)
     public static class ReplacePluginLoader
     {        
-        public IPluggable getPlugin( String className )
+        @Mock public static IPluggable getPlugin( String className )
         {
             return (IPluggable)mockPlugin;
         } 
@@ -92,19 +83,16 @@ public class PluginResolverTest
     
     @Before public void setUp() throws Exception 
     {        
-        //mockPluginID = createMock( PluginID.class );
+      
 
-        //  Mockit.setUpMocks(ReplacePluginFinder.class);
-        //Mockit.setUpMocks(ReplacePluginLoader.class);
-
-        Mockit.redefineMethods( PluginLoader.class, ReplacePluginLoader.class );
-        Mockit.redefineMethods( PluginFinder.class, ReplacePluginFinder.class );
+        Mockit.setUpMocks( ReplacePluginLoader.class );
+        Mockit.setUpMocks( ReplacePluginFinder.class );
     } 
     
     
     @After public void tearDown() 
     {
-        Mockit.restoreAllOriginalDefinitions();
+        Mockit.tearDownMocks();
     
         //reset( mockPluginID );
         //    PR = null;
@@ -125,7 +113,7 @@ public class PluginResolverTest
     /**
      * tests the getPlugin method, not a lot to test... 
      */
-    @Ignore
+    //@Ignore
     @Test public void getPluginTest() throws NullPointerException, IOException, FileNotFoundException, PluginResolverException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException 
     {
         PR = new PluginResolver();
@@ -137,7 +125,7 @@ public class PluginResolverTest
     
     
     /**
-     * Tests the happy path of the validatArgs method, where an empty vector is return
+     * Tests the happy path of the validatArgs method, where an empty vector is returned
      */
     @Test 
     public void validateArgsTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException
@@ -161,7 +149,7 @@ public class PluginResolverTest
     /**
      * Tests the case where plugins cant be found for all wanted tasks. 
      * The redefinded method of the PluginFinder throws the FileNotFoundException 
-     * when asked to look for the task "throwException". This but it on the vector 
+     * when asked to look for the task "throwException". This put it on the vector 
      * to be returned
      */
     @Test 
