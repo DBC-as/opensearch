@@ -66,7 +66,7 @@ public class DataBaseConfig extends Config
 	 * *****************/
 	private String getDataBasePassWd()
 	{
-		String ret = config.getString( "passwd" );
+		String ret = config.getString( "database.passwd" );
 		return ret;
 	}
 	
