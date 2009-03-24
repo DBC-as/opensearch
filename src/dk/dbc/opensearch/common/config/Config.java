@@ -15,6 +15,7 @@ public class Config
 	URL cfgURL = getClass().getResource( "/config.xml" );
 	static XMLConfiguration config;
     
+
 	public Config() throws ConfigurationException
 	{
 		try 
