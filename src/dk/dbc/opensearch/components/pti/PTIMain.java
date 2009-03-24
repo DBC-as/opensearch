@@ -62,11 +62,11 @@ public class PTIMain
     	Class classType = pti.getClassType();
     	jobMap = JobMapCreator.getMap( classType );
 
-        pollTime = PtiConfig.getPtiMainPollTime();
-        queueSize = PtiConfig.getPtiQueueSize();
-        corePoolSize = PtiConfig.getPtiCorePoolSize();
-        maxPoolSize = PtiConfig.getPtiMaxPoolSize();
-        keepAliveTime = PtiConfig.getPtiKeepAliveTime();
+        pollTime = PtiConfig.getMainPollTime();
+        queueSize = PtiConfig.getQueueSize();
+        corePoolSize = PtiConfig.getCorePoolSize();
+        maxPoolSize = PtiConfig.getMaxPoolSize();
+        keepAliveTime = PtiConfig.getKeepAliveTime();
 
     }
 

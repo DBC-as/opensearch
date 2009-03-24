@@ -49,7 +49,7 @@ public class PluginResolver implements IPluginResolver
             
             pluginClassLoader = new PluginClassLoader();
             PLoader = new PluginLoader( pluginClassLoader );
-            path = FileSystemConfig.getFileSystemPluginsPath();
+            path = FileSystemConfig.getPluginsPath();
             
             PFinder = new PluginFinder( docBuilder, path );
             

@@ -37,10 +37,10 @@ public abstract class FedoraHandle
     {
         String fedora_base_url;
 
-        String host = FedoraConfig.getFedoraHost();
-        String port = FedoraConfig.getFedoraPort();
-        String user = FedoraConfig.getFedoraUser();
-        String pass = FedoraConfig.getFedoraPassPhrase();
+        String host = FedoraConfig.getHost();
+        String port = FedoraConfig.getPort();
+        String user = FedoraConfig.getUser();
+        String pass = FedoraConfig.getPassPhrase();
 
         fedora_base_url  = String.format( "http://%s:%s/fedora", host, port );
 

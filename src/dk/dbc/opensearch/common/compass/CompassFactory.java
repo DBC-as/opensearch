@@ -56,17 +56,15 @@ public class CompassFactory
 
         log.debug( "Obtaining configuration parameters." );
         CompassConfiguration conf = new CompassConfiguration();
-        //URL cfg = getClass().getResource("/compass.cfg.xml");
-        //URL cpm = getClass().getResource("/xml.cpm.xml");
 
-        String cfg = CompassConfig.getCompassConfigPath();
-        String cpm = CompassConfig.getCompassXSEMPath();
+        String cfg  = CompassConfig.getConfigPath();
+        String xsem = CompassConfig.getXSEMPath();
         log.debug( String.format( "Compass configuration=%s", cfg ) );
-        log.debug( String.format( "XSEM mappings file   =%s", cpm ) );
+        log.debug( String.format( "XSEM mappings file   =%s", xsem ) );
        
         log.debug( "Building Compass." );
         conf.configure( FileHandler.getFile( cfg ) );
-        conf.addFile( cpm );
+        conf.addFile( xsem );
         compass = conf.buildCompass();
     }        
 }

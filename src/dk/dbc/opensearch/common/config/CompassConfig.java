@@ -10,23 +10,33 @@ package dk.dbc.opensearch.common.config;
 /**
  * 
  */
-public class CompassConfig extends Config{
-    
-    private String getConfigPath(){
+public class CompassConfig extends Config
+{    
+    private String getCompassConfigPath()
+    {
         String ret = config.getString( "compass.configpath" );
         return ret;
     }
-    public static String getCompassConfigPath(){
+    
+    
+    public static String getConfigPath()
+    {
         CompassConfig cc = new CompassConfig();
-        return cc.getConfigPath();
+        return cc.getCompassConfigPath();
     }
-    private String getXSEMPath(){
-        String ret = config.getString( "compass.cpmpath" );
+    
+    
+    private String getCompassXSEMPath()
+    {
+        String ret = config.getString( "compass.xsempath" );
         return ret;
     }
-    public static String getCompassXSEMPath(){
+    
+    
+    public static String getXSEMPath()
+    {
         CompassConfig cc = new CompassConfig();
-        return cc.getXSEMPath();
+        return cc.getCompassXSEMPath();
     }
     
 }

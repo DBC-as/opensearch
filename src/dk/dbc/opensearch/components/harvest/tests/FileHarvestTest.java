@@ -40,7 +40,7 @@ public class FileHarvestTest {
     @Test
     public void testCheckFormat() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
     {
-    	String pollTestPath = HarvesterConfig.getHarvesterFolder();
+    	String pollTestPath = HarvesterConfig.getFolder();
     	File pollTestFile = new File( pollTestPath );
     	FileHarvest fh = new FileHarvest( pollTestFile );
     }

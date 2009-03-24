@@ -80,7 +80,7 @@ public class DatadockPool
 
         jobs = new Vector< FutureTask >();
 
-        shutDownPollTime = DatadockConfig.getDatadockShutdownPollTime();
+        shutDownPollTime = DatadockConfig.getShutdownPollTime();
     }
 
     

@@ -41,10 +41,10 @@ public class FedoraClientFactory
     {         
         log.debug( "Obtain config paramaters for configuring fedora connection");
         
-        host       = FedoraConfig.getFedoraHost();
-        port       = FedoraConfig.getFedoraPort();
-        user       = FedoraConfig.getFedoraUser();
-        passphrase = FedoraConfig.getFedoraPassPhrase();
+        host       = FedoraConfig.getHost();
+        port       = FedoraConfig.getPort();
+        user       = FedoraConfig.getUser();
+        passphrase = FedoraConfig.getPassPhrase();
         fedoraUrl  = "http://" + host + ":" + port + "/fedora";
         
         log.debug( String.format( "Connecting to fedora server at:\n%s\n using user: %s, pass: %s ", fedoraUrl, user, passphrase ) );

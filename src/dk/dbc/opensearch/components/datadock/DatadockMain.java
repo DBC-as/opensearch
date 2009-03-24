@@ -67,12 +67,12 @@ public class DatadockMain
     public void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
     {
     	log.debug( "DatadockMain init called" );
-    	pollTime = DatadockConfig.getDatadockMainPollTime();
-        queueSize = DatadockConfig.getDatadockQueueSize();
-        corePoolSize = DatadockConfig.getDatadockCorePoolSize();
-        maxPoolSize = DatadockConfig.getDatadockMaxPoolSize();
-        keepAliveTime = DatadockConfig.getDatadockKeepAliveTime();
-        harvestDir = HarvesterConfig.getHarvesterFolder();
+    	pollTime = DatadockConfig.getMainPollTime();
+        queueSize = DatadockConfig.getQueueSize();
+        corePoolSize = DatadockConfig.getCorePoolSize();
+        maxPoolSize = DatadockConfig.getMaxPoolSize();
+        keepAliveTime = DatadockConfig.getKeepAliveTime();
+        harvestDir = HarvesterConfig.getFolder();
 
         jobMap = JobMapCreator.getMap( this.getClass() );
         log.debug( String.format( "the map: %s ",jobMap.toString() ));

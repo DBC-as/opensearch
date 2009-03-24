@@ -6,6 +6,7 @@
 package dk.dbc.opensearch.components.harvest;
 
 
+import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.types.DatadockJob;
@@ -88,7 +89,7 @@ public class FileHarvest implements IHarvester
         this.formats = new Vector< Pair< File, Long > >();
         this.jobSet = new HashSet< File >();        
 
-        String datadockJobsFilePath = FileSystemConfig.getFileSystemDatadockPath();
+        String datadockJobsFilePath = DatadockConfig.getPath();
     	File datadockJobsFile = new File( datadockJobsFilePath );
     	NodeList jobNodeList = XMLFileReader.getNodeList( datadockJobsFile, "job" );
     	submittersFormatsVector = new Vector< Pair< String, String > >();

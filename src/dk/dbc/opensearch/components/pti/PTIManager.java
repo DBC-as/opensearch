@@ -53,9 +53,9 @@ public class PTIManager
         this.pool = pool;
 
         // get config parameters
-        log.debug( String.format( "the PTImanagerQueueResultSetMaxSzie: %s ",PTIManagerConfig.getPTIManagerQueueResultsetMaxSize() ) );
-        resultsetMaxSize = new Integer( PTIManagerConfig.getPTIManagerQueueResultsetMaxSize() );
-        rejectedSleepTime = new Integer( PTIManagerConfig.getPTIManagerRejectedSleepTime() );
+        log.debug( String.format( "the PTImanagerQueueResultSetMaxSzie: %s ",PTIManagerConfig.getQueueResultsetMaxSize() ) );
+        resultsetMaxSize = new Integer( PTIManagerConfig.getQueueResultsetMaxSize() );
+        rejectedSleepTime = new Integer( PTIManagerConfig.getRejectedSleepTime() );
 
         log.debug( "Removing entries marked as active from the processqueue" );
         int removed = processqueue.deActivate();

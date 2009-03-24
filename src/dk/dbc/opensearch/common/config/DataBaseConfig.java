@@ -13,68 +13,68 @@ public class DataBaseConfig extends Config
 	/* *****************
 	 * DATABASE DRIVER *
 	 * *****************/
-	private String getDriver()
+	private String getDataBaseDriver()
 	{
 		String ret = config.getString( "database.driver" );
 		return ret;
 	}
 	
 	
-	public static String getDataBaseDriver() 
+	public static String getDriver() 
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getDriver();
+		return dbc.getDataBaseDriver();
 	}
 	
 	
 	/* **************
 	 * DATABASE URL *
 	 * **************/
-	private String getUrl()
+	private String getDataBaseUrl()
 	{
 		String ret = config.getString( "database.url" );
 		return ret;
 	}
 	
 	
-	public static String getDataBaseUrl()
+	public static String getUrl()
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getUrl();
+		return dbc.getDataBaseUrl();
 	}
 	
 	
 	/* *****************
 	 * DATABASE USERID *
 	 * *****************/
-	private String getUserID()
+	private String getDataBaseUserID()
 	{
 		String ret = config.getString( "database.userID" );
 		return ret;
 	}
 	
 	
-	public static String getDataBaseUserID()
+	public static String getUserID()
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getUserID();
+		return dbc.getDataBaseUserID();
 	}
 	
 	
 	/* *****************
 	 * DATABASE PASSWD *
 	 * *****************/
-	private String getPassWd()
+	private String getDataBasePassWd()
 	{
 		String ret = config.getString( "passwd" );
 		return ret;
 	}
 	
 	
-	public static String getDataBasePassWd()
+	public static String getPassWd()
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getPassWd();
+		return dbc.getDataBasePassWd();
 		
 	}
 }

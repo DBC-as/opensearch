@@ -13,135 +13,154 @@ public class DatadockConfig extends Config
 	/* *************************
 	 * DATADOCK MAIN-POLL-TIME *
 	 * *************************/
-	private int getMainPollTime()
+	private int getDatadockMainPollTime()
 	{
 		int ret = config.getInt( "datadock.main-poll-time" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockMainPollTime() 
+	public static int getMainPollTime() 
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getMainPollTime();
+		return ddc.getDatadockMainPollTime();
 	}
 	
 	
 	/* ******************************
 	 * DATADOCK REJECTED-SLEEP-TIME *
 	 * ******************************/
-	private int getRejectedSleepTime()
+	private int getDatadockRejectedSleepTime()
 	{
 		int ret = config.getInt( "datadock.rejected-sleep-time" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockRejectedSleepTime()
+	public static int getRejectedSleepTime()
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getRejectedSleepTime();
+		return ddc.getDatadockRejectedSleepTime();
 	}
 	
 	
 	/* *****************************
 	 * DATADOCK SHUTDOWN-POLL-TIME *
 	 * *****************************/
-	private int getShutdownPollTime()
+	private int getDatadockShutdownPollTime()
 	{
 		int ret = config.getInt( "datadock.shutdown-poll-time" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockShutdownPollTime()
+	public static int getShutdownPollTime()
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getShutdownPollTime();
+		return ddc.getDatadockShutdownPollTime();
 	}
 	
 	
 	/* ********************
 	 * DATADOCK QUEUESIZE *
 	 * ********************/
-	private int getQueueSize()
+	private int getDatadockQueueSize()
 	{
 		int ret = config.getInt( "datadock.queuesize" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockQueueSize()
+	public static int getQueueSize()
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getQueueSize();
+		return ddc.getDatadockQueueSize();
 	}
 	
 	
 	/* ***********************
 	 * DATADOCK COREPOOLSIZE *
 	 * ***********************/
-	private int getCorePoolSize()
+	private int getDatadockCorePoolSize()
 	{
 		int ret = config.getInt( "datadock.corepoolsize" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockCorePoolSize()
+	public static int getCorePoolSize()
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getCorePoolSize();
+		return ddc.getDatadockCorePoolSize();
 	}
 	
 	
 	/* **********************
 	 * DATADOCK MAXPOOLSIZE *
 	 * **********************/
-	private int getMaxPoolSize()
+	private int getDatadockMaxPoolSize()
 	{
 		int ret = config.getInt( "datadock.maxpoolsize" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockMaxPoolSize()
+	public static int getMaxPoolSize()
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getMaxPoolSize();
+		return ddc.getDatadockMaxPoolSize();
 	}
 	
 	
 	/* ************************
 	 * DATADOCK KEEPALIVETIME *
 	 * ***********************/
-	private int getKeepAliveTime()
+	private int getDatadockKeepAliveTime()
 	{
 		int ret = config.getInt( "datadock.keepalivetime" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockKeepAliveTime()
+	public static int getKeepAliveTime()
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getKeepAliveTime();
+		return ddc.getDatadockKeepAliveTime();
 	}
 	
 	
 	/* *******************
 	 * DATADOCK JOBLIMIT *
 	 * *******************/
-	private int getJobLimit()
+	private int getDatadockJobLimit()
 	{
 		int ret = config.getInt( "datadock.joblimit" );
 		return ret;
 	}
 	
 	
-	public static int getDatadockJobLimit()
+	public static int getJobLimit()
 	{
 		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getJobLimit();
+		return ddc.getDatadockJobLimit();
 	}
+	
+	
+	/* ***************
+	 * DATADOCK PATH *
+	 * ***************/
+	private String getDatadockPath()
+	{
+		String ret = config.getString( "datadock.path" );
+		return ret;
+	}
+	
+	/**
+	 * @return Path to the config/datadock_jobs.xml file
+	 */
+	public static String getPath() 
+	{
+		DatadockConfig ddc = new DatadockConfig();
+		return ddc.getDatadockPath();
+	} 
 }

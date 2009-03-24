@@ -1,16 +1,16 @@
 package dk.dbc.opensearch.common.types.tests;
 
 
-import java.io.IOException;
-
 import dk.dbc.opensearch.common.types.CPMAlias;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.*;
-import org.xml.sax.SAXException;
+import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.junit.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.xml.sax.SAXException;
 
 
 public class CPMAliasTest 
@@ -18,26 +18,27 @@ public class CPMAliasTest
     /**
       * This test is not a strict unittest because we are dependant on a file on the disc.
       */
-
     CPMAlias cpmAlias;
-@Before
+    @Before
     public void setUp() throws Exception
     {
        	cpmAlias = new CPMAlias();
     }
 
-@After
+    
+    @After
     public void tearDown() throws Exception
     {
         cpmAlias = null;
     }
 
+    
 	@Test
 	public void cpmIsValidAliasTest() throws ParserConfigurationException, SAXException, IOException
 	{
             boolean valid = cpmAlias.isValidAlias( "article" );
             assertTrue( valid );
-        }
+    }
 	
 	
 	@Test

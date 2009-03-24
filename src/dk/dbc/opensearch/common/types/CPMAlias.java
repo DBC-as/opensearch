@@ -1,7 +1,7 @@
 package dk.dbc.opensearch.common.types;
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.config.CompassConfig;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ public class CPMAlias
     DocumentBuilderFactory docBuilderFactory;
     DocumentBuilder docBuilder;
     Document cpmDocument;
-    String cpmFile;
+    String xsemFile;
     NodeList cpmNodeList;
 
     
@@ -28,8 +28,8 @@ public class CPMAlias
     {    	
     	docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilder = docBuilderFactory.newDocumentBuilder();
-        cpmFile = FileSystemConfig.getFileSystemCpmPath();
-        cpmDocument = docBuilder.parse( cpmFile );
+        xsemFile = CompassConfig.getXSEMPath();
+        cpmDocument = docBuilder.parse( xsemFile );
         Element xmlRoot = cpmDocument.getDocumentElement();
         cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );
     }

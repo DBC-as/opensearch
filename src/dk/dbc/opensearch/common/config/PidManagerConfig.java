@@ -10,16 +10,16 @@ package dk.dbc.opensearch.common.config;
  */
 public class PidManagerConfig extends Config
 {
-	private String getNumberOfPidsToRetrieve()
+	private String getPidManagerNumberOfPidsToRetrieve()
 	{
 		String ret = config.getString( "pidmanager.num-of-pids-to-retrieve" );
 		return ret;
 	}
 	
 	
-	public static String getPidManagerNumberOfPidsToRetrieve() 
+	public static String getNumberOfPidsToRetrieve() 
 	{
 		PidManagerConfig pmc = new PidManagerConfig();
-		return pmc.getNumberOfPidsToRetrieve();
+		return pmc.getPidManagerNumberOfPidsToRetrieve();
 	} 
 }

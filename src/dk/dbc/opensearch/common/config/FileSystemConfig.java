@@ -19,105 +19,48 @@ public class FileSystemConfig extends Config
 	}
 	
 	
-	/* ****************************
-	 * FILESYSTEM CONFIG.XML PATH *
-	 *****************************/
-	public static String getConfigPath()
-	{
-		FileSystemConfig f = new FileSystemConfig();
-		String ret = f.getTrunkPath();
-		
-		return ret + "config/" ; 
-	}
-	
-	
 	/* ******************
 	 * FILESYSTEM TRUNK *
 	 * ******************/
-	private String getTrunkPath()
+	private String getFileSystemTrunkPath()
 	{
 		String ret = config.getString( "filesystem.trunk" );
 		return sanitize( ret );
 	}
 	
 	
-	public static String getFileSystemTrunkPath() 
+	public static String getTrunkPath() 
 	{
 		FileSystemConfig f = new FileSystemConfig();
-		return f.getTrunkPath();
+		return f.getFileSystemTrunkPath();
 	} 
+	
+	
+	/* ****************************
+	 * FILESYSTEM CONFIG.XML PATH *
+	 *****************************/
+	public static String getConfigPath()
+	{
+		FileSystemConfig f = new FileSystemConfig();
+		String ret = f.getFileSystemTrunkPath();
+		
+		return ret + "config/"; 
+	}
 	
 	
 	/* ********************
 	 * FILESYSTEM PLUGINS *
 	 * ********************/
-	private String getPluginsPath()
+	private String getFileSystemPluginsPath()
 	{
 		String ret = config.getString( "filesystem.plugins" );
 		return sanitize( ret );
 	}
 	
 	
-	public static String getFileSystemPluginsPath()
+	public static String getPluginsPath()
 	{		
 		FileSystemConfig fc = new FileSystemConfig();		
-		return fc.getPluginsPath();
-	}
-	
-	
-	/* *********************
-	 * FILESYSTEM DATADOCK *
-	 * *********************/
-	private String getDatadock()
-	{
-		String ret = config.getString( "filesystem.datadock" );
-		return ret;
-	}
-	
-	/**
-	 * @return Path to the config/datadock_jobs.xml file
-	 */
-	public static String getFileSystemDatadockPath() 
-	{
-		FileSystemConfig fc = new FileSystemConfig();
-		return fc.getDatadock();
-	} 
-	
-	
-	/* ****************
-	 * FILESYSTEM PTI *
-	 * ***************/
-	private String getPti()
-	{
-		String ret = config.getString( "filesystem.pti" );
-		return ret;
-	}
-	
-	/**
-	 * @return Path to the config/pti_jobs.xml file
-	 */	
-	public static String getFileSystemPtiPath()
-	{		
-		FileSystemConfig fc = new FileSystemConfig();
-		return fc.getPti();
-	}
-	
-	
-	/* ****************
-	 * FILESYSTEM CPM *
-	 * ***************/
-	private String getCpm()
-	{
-		String ret = config.getString( "filesystem.cpm" );
-		return ret;
-	}
-	
-	/**
-	 * @return Path to the config/pti_jobs.xml file
-	 */	
-	public static String getFileSystemCpmPath()
-	{		
-		FileSystemConfig fc = new FileSystemConfig();
-		return fc.getCpm();
+		return fc.getFileSystemPluginsPath();
 	}
 }

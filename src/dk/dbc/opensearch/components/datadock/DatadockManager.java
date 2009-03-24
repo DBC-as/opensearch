@@ -56,8 +56,8 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
 
-        rejectedSleepTime = DatadockConfig.getDatadockRejectedSleepTime();
-        jobLimit = DatadockConfig.getDatadockJobLimit();
+        rejectedSleepTime = DatadockConfig.getRejectedSleepTime();
+        jobLimit = DatadockConfig.getJobLimit();
 
         registeredJobs = new Vector< DatadockJob >(); 
 

@@ -13,16 +13,16 @@ public class HarvesterConfig extends Config
 	/* ******************
 	 * HARVESTER FOLDER *
 	 * ******************/
-	private String getFolder()
+	private String getHarvesterFolder()
 	{
 		String ret = config.getString( "harvester.folder" );
 		return ret;
 	}
 	
 	
-	public static String getHarvesterFolder() 
+	public static String getFolder() 
 	{
 		HarvesterConfig hc = new HarvesterConfig();
-		return hc.getFolder();
+		return hc.getHarvesterFolder();
 	} 
 }

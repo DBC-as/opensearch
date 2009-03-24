@@ -13,118 +13,137 @@ public class PtiConfig extends Config
 	/* ***********************
 	 * PTI
 	 * *********************/
-	private int getMainPollTime()
+	private int getPtiMainPollTime()
 	{
 		int ret = config.getInt( "pti.main-poll-time" );
 		return ret;
 	}
 	
 	
-	public static int getPtiMainPollTime() 
+	public static int getMainPollTime() 
 	{
 		PtiConfig pc = new PtiConfig();
-		return pc.getMainPollTime();
+		return pc.getPtiMainPollTime();
 	} 
 	
 	
 	/* *************************
 	 * PTI REJECTED-SLEEP-TIME *
 	 * *************************/
-	private int getRejectedSleepTime()
+	private int getPtiRejectedSleepTime()
 	{
 		int ret = config.getInt( "pti.rejected-sleep-time" );
 		return ret;
 	}
 	
 	
-	public static int getPtiRejectedSleepTime()
+	public static int getRejectedSleepTime()
 	{
 		PtiConfig pc = new PtiConfig();
-		return pc.getRejectedSleepTime();
+		return pc.getPtiRejectedSleepTime();
 	}
 	
 	
 	/* ************************
 	 * PTI SHUTDOWN-POLL-TIME *
 	 * ************************/
-	private int getShutdownPollTime()
+	private int getPtiShutdownPollTime()
 	{
 		int ret = config.getInt( "pti.shutdown-poll-time" );
 		return ret;
 	}
 	
 	
-	public static int getPtiShutdownPollTime()
+	public static int getShutdownPollTime()
 	{
 		PtiConfig pc = new PtiConfig();
-		return pc.getShutdownPollTime();
+		return pc.getPtiShutdownPollTime();
 	}
 	
 	
 	/* ***************
 	 * PTI QUEUESIZE *
 	 * ***************/
-	private int getQueueSize()
+	private int getPtiQueueSize()
 	{
 		int ret = config.getInt( "pti.queuesize" );
 		return ret;
 	}
 	
 	
-	public static int getPtiQueueSize()
+	public static int getQueueSize()
 	{
 		PtiConfig pc = new PtiConfig();
-		return pc.getQueueSize();
+		return pc.getPtiQueueSize();
 	}
 	
 	
 	/* ******************
 	 * PTI COREPOOLSIZE *
 	 * ******************/
-	private int getCorePoolSize()
+	private int getPtiCorePoolSize()
 	{
 		int ret = config.getInt( "pti.corepoolsize" );
 		return ret;
 	}
 	
 	
-	public static int getPtiCorePoolSize()
+	public static int getCorePoolSize()
 	{
 		PtiConfig pc = new PtiConfig();
-		return pc.getCorePoolSize();
+		return pc.getPtiCorePoolSize();
 	}
 	
 	
 	/* *****************
 	 * PTI MAXPOOLSIZE *
 	 * *****************/
-	private int getMaxPoolSize()
+	private int getPtiMaxPoolSize()
 	{
 		int ret = config.getInt( "pti.maxpoolsize" );
 		return ret;
 	}
 	
 	
-	public static int getPtiMaxPoolSize()
+	public static int getMaxPoolSize()
 	{
 		PtiConfig pc = new PtiConfig();
-		return pc.getMaxPoolSize();
+		return pc.getPtiMaxPoolSize();
 	}
 	
 	
 	/* *******************
 	 * PTI KEEPALIVETIME *
 	 * *******************/
-	private int getKeepAliveTime()
+	private int getPtiKeepAliveTime()
 	{
 		int ret = config.getInt( "pti.keepalivetime" );
 		return ret;
 	}
 	
 	
-	public static int getPtiKeepAliveTime()
+	public static int getKeepAliveTime()
 	{
 		PtiConfig pc = new PtiConfig();
-		return pc.getKeepAliveTime();
+		return pc.getPtiKeepAliveTime();
+	}
+	
+	
+	/* **********
+	 * PTI PATH *
+	 * **********/
+	private String getPtiPath()
+	{
+		String ret = config.getString( "pti.path" );
+		return ret;
+	}
+	
+	/**
+	 * @return Path to the config/pti_jobs.xml file
+	 */	
+	public static String getPath()
+	{		
+		PtiConfig pc = new PtiConfig();
+		return pc.getPtiPath();
 	}
 }

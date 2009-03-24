@@ -8,6 +8,7 @@ package dk.dbc.opensearch.components.datadock.tests;
 
 /** \brief UnitTest for DatadockManager **/
 
+import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
@@ -58,7 +59,7 @@ public class DatadockMainTest
     	{
             String submitter = pair.getFirst().toString();
             String format = pair.getSecond().toString();    		
-            URI uri = new URI( FileSystemConfig.getFileSystemDatadockPath() ); 
+            URI uri = new URI( DatadockConfig.getPath() ); 
             DatadockJob job = new DatadockJob( uri, submitter, format );
     		
             if( jobMap.containsKey( pair ) )

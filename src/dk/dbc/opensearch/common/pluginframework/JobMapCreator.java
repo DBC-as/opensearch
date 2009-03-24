@@ -1,7 +1,8 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -131,7 +132,7 @@ public class JobMapCreator
     
     	if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain" ) )
         {
-            String datadockJobPath = FileSystemConfig.getFileSystemDatadockPath();
+            String datadockJobPath = DatadockConfig.getPath();
             log.debug( String.format( "DatadockJob path: '%s'", datadockJobPath ) );
             if ( datadockJobPath != null )
             {
@@ -144,7 +145,7 @@ public class JobMapCreator
         }
         else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
         {
-        	String ptiJobPath = FileSystemConfig.getFileSystemPtiPath();
+        	String ptiJobPath = PtiConfig.getPath();
         	log.debug( String.format( "PTIJob path: '%s'", ptiJobPath ) );
         	if ( ptiJobPath != null)
         	{

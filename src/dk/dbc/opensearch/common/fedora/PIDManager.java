@@ -41,7 +41,7 @@ public class PIDManager  extends FedoraHandle
     	
         log.debug( "Constructor() called" );
      
-        numPIDs =  new NonNegativeInteger( PidManagerConfig.getPidManagerNumberOfPidsToRetrieve() );
+        numPIDs =  new NonNegativeInteger( PidManagerConfig.getNumberOfPidsToRetrieve() );
         pidMap = new HashMap <String, Vector< String > >();
     }
 

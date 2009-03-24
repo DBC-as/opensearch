@@ -13,32 +13,32 @@ public class PTIManagerConfig extends Config
      * PTIMANAGER QUEUE RESULTSET MAX SIZE *
      * *************************************/
 
-    private String getQueueResultsetMaxSize()
+    private String getPtiManagerQueueResultsetMaxSize()
     {
         String ret = config.getString( "pti.queue-resultset-maxsize" );
         return ret;
     }
 
-    public static String getPTIManagerQueueResultsetMaxSize()
+    public static String getQueueResultsetMaxSize()
     {
         PTIManagerConfig pmc = new PTIManagerConfig();
-        return pmc.getQueueResultsetMaxSize();
+        return pmc.getPtiManagerQueueResultsetMaxSize();
     }
 
+    
     /* *************************************
      * PTIMANAGER REJECTED JOB SLEEP TIME  *
      * *************************************/
-
-    private String getRejectedSleepTime()
+    private String getPtiManagerRejectedSleepTime()
     {
         String ret = config.getString( "pti.rejected-sleep-time" );
         return ret;
     }
 
-    public static String getPTIManagerRejectedSleepTime()
+    public static String getRejectedSleepTime()
     {
         PTIManagerConfig pmc = new PTIManagerConfig();
-        return pmc.getRejectedSleepTime();
+        return pmc.getPtiManagerRejectedSleepTime();
     }
 }
 
