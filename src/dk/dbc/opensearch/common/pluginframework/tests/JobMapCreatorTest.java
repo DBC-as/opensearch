@@ -11,6 +11,9 @@ import dk.dbc.opensearch.components.datadock.DatadockMain;
 import dk.dbc.opensearch.components.pti.PTIMain;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.os.FileHandler;
+//import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.PtiConfig;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -21,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.lang.IllegalStateException;
+import java.lang.IllegalArgumentException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -76,12 +80,46 @@ public class JobMapCreatorTest
     @MockClass( realClass = FileHandler.class)
         public static class MockFH
         {
-            public static File getFile( String path )
+            @Mock public static File getFile( String path )
             {
                 return mockFile;
             }
         }
     
+    @MockClass( realClass = DatadockConfig.class )
+        public static class MockDDConfig1
+        {
+            @Mock public static String getPath()
+            {
+                return "not null";
+            }
+        }
+    @MockClass( realClass = PtiConfig.class )
+        public static class MockPtiConfig1
+        { 
+            @Mock public static String getPath()
+            {
+                return "not null";
+            }
+        }
+
+    @MockClass( realClass = DatadockConfig.class )
+        public static class MockDDConfig2
+        {
+            @Mock public static String getPath()
+            {
+                return null;
+            } 
+        }
+    @MockClass( realClass = PtiConfig.class )
+        public static class MockPtiConfig2
+        {
+            @Mock public static String getPath()
+            {
+                return null;
+            }
+        }
+
     /**
      *
      */
@@ -138,12 +176,12 @@ public class JobMapCreatorTest
          * Exepctations
          */
         expect( mockFile.getPath() ).andReturn( "unittestPath" ); //logging
-        expect( mockNodeList.getLength() ).andReturn( 1 );
+        expect( mockNodeList.getLength() ).andReturn( 1 ); //outer loop
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 );
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 2 );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockNodeList.getLength() ).andReturn( 2 ); //inner loop
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );        
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString2 );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position2 );
         expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
@@ -172,8 +210,13 @@ public class JobMapCreatorTest
         verify( mockNodeList );
     }
     
+    /**
+     * Provokes the IllegalStateException by returning a NodeList with length 0
+     * so that no the jobMap will be empty
+     */
+
     @Test( expected = IllegalStateException.class ) 
-        public void testNPexceptionFromGetMap()throws ParserConfigurationException, SAXException, IOException
+        public void testISexceptionFromGetMap() throws ParserConfigurationException, SAXException, IOException
     {
         /**
          * Setup
@@ -198,8 +241,7 @@ public class JobMapCreatorTest
          */
         jmc = new JobMapCreator();
         jmc.getMap( DatadockMain.class );
-        //this tests both the sorting and the building
-        //        assertTrue(jobMap.get( new Pair<String, String >( testString, testString ) ).get( 0 ) == testString1 );
+  
         /**
          * Verify
          */
@@ -211,15 +253,20 @@ public class JobMapCreatorTest
 
     /**
      * Tests the happy paths of the getFile method
+     * using both DatadockMain and PTIMain classes as argument. 
+     * I terminate computation by provoking an IllegalStateException in 
+     * the second call to getMap after setJobFile method has been called
      */
 
     @Test( expected = IllegalStateException.class ) 
-        public void testGetFile() throws ParserConfigurationException, IOException, SAXException
+        public void testSetJobFile() throws ParserConfigurationException, IOException, SAXException
     {
          /**
          * Setup
          */
         Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockDDConfig1.class );
+        Mockit.setUpMocks( MockPtiConfig1.class );
 
         HashMap< Pair< String, String >, ArrayList<String> > jobMap;
 
@@ -230,24 +277,27 @@ public class JobMapCreatorTest
          * Exepctations
          */    
         expect( mockFile.getPath() ).andReturn( "getFile method test" ); //logging
-        expect( mockNodeList.getLength() ).andReturn( 1 );
+        expect( mockNodeList.getLength() ).andReturn( 1 ); //outer loop
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 ).times( 2 );
+        
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );        
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );        
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 1 );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position );
+         expect( mockNodeList.getLength() ).andReturn( 1 );
+         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );
+         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position );
         
         //calling getMap again
 
- expect( mockFile.getPath() ).andReturn( "getFile method test" ); //logging
+        expect( mockFile.getPath() ).andReturn( "getFile method test" ); //logging
         expect( mockNodeList.getLength() ).andReturn( 0 );
 
         /**
          * replay
          */ 
         replay( mockFile );
+        replay( mockElement );
         replay( mockNodeList );
         
         /**
@@ -260,9 +310,104 @@ public class JobMapCreatorTest
          * Verify
          */
         verify( mockFile );
-
+        verify( mockElement );
         verify( mockNodeList );
-
-
     }
+
+    /**
+     * Setting the datadockJobPath to null through the MockFSC2 class
+     */
+
+    @Test( expected= IllegalArgumentException.class )
+        public void testSetJobFileException1() throws ParserConfigurationException, SAXException, IOException
+    {
+ /**
+         * Setup
+         */
+        Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockDDConfig2.class );
+
+        /**
+         * Exepctations
+         */    
+      
+        /**
+         * replay
+         */ 
+              
+        /**
+         * Do stuff
+         */
+        jmc = new JobMapCreator();
+        jmc.getMap( DatadockMain.class);
+      
+        /**
+         * Verify
+         */
+      
+    }
+
+    /**
+     * Setting the ptiJobPath to null through the MockFSC2 class
+     */
+
+  @Test( expected= IllegalArgumentException.class )
+        public void testSetJobFileException2() throws ParserConfigurationException, SAXException, IOException
+    {
+ /**
+         * Setup
+         */
+        Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockPtiConfig2.class );
+
+        /**
+         * Exepctations
+         */    
+      
+        /**
+         * replay
+         */ 
+              
+        /**
+         * Do stuff
+         */
+        jmc = new JobMapCreator();
+        jmc.getMap( PTIMain.class);
+      
+        /**
+         * Verify
+         */
+      
+    }
+
+    /**
+     * Giving the setJobFile a class other than DatadockMain and PTIMain
+     */
+ @Test( expected= IllegalArgumentException.class )
+        public void testSetJobFileException3() throws ParserConfigurationException, SAXException, IOException
+    {
+ /**
+         * Setup
+         */
+        
+        /**
+         * Exepctations
+         */    
+      
+        /**
+         * replay
+         */ 
+              
+        /**
+         * Do stuff
+         */
+        jmc = new JobMapCreator();
+        jmc.getMap( FileHandler.class);
+      
+        /**
+         * Verify
+         */
+      
+    }
+
 }

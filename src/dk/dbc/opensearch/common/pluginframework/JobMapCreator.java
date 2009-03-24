@@ -49,6 +49,7 @@ public class JobMapCreator
 
     public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, IllegalStateException 
     {
+        //System.out.println( String.format( "calling getMap with %s", classType.getName() ) );
         log.debug( "getMap() called" );
 
         HashMap< Pair< String, String >, ArrayList<String> > jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
@@ -61,10 +62,9 @@ public class JobMapCreator
         
         log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
         // Build the jobMap
-        //NodeList jobNodeList = getJobMapNodeList( jobFile );
         NodeList jobNodeList = XMLFileReader.getNodeList( jobFile, "job" );
         int listLength = jobNodeList.getLength();
-
+       
         // 30: For each node read the task name and position        
         Element jobElement;
         String submitter = "";
@@ -75,7 +75,7 @@ public class JobMapCreator
         for( int x = 0; x < listLength ; x++ )
         {
         	jobElement = (Element)jobNodeList.item( x );
-
+                
         	submitter = jobElement.getAttribute( "submitter" );
         	format = jobElement.getAttribute( "format" );
 
