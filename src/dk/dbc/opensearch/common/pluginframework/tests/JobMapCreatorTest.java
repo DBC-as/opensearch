@@ -321,7 +321,7 @@ public class JobMapCreatorTest
      * Setting the datadockJobPath to null through the MockFSC2 class
      */
     @Test( expected= IllegalArgumentException.class )
-    public void testSetJobFileException1() throws ParserConfigurationException, SAXException, IOException
+    public void testSetJobFileException1() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
  /**
          * Setup
@@ -340,8 +340,7 @@ public class JobMapCreatorTest
         /**
          * Do stuff
          */
-        jmc = new JobMapCreator();
-        jmc.getMap( DatadockMain.class);
+        JobMapCreator.getMap( DatadockMain.class);
       
         /**
          * Verify
@@ -349,12 +348,12 @@ public class JobMapCreatorTest
       
     }
 
+    
     /**
      * Setting the ptiJobPath to null through the MockFSC2 class
      */
-
      @Test( expected= IllegalArgumentException.class )
-     public void testSetJobFileException2() throws ParserConfigurationException, SAXException, IOException
+     public void testSetJobFileException2() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
      {
  /**
          * Setup
@@ -373,22 +372,21 @@ public class JobMapCreatorTest
         /**
          * Do stuff
          */
-        jmc = new JobMapCreator();
-        jmc.getMap( PTIMain.class);
+        JobMapCreator.getMap( PTIMain.class);
       
         /**
          * Verify
-         */
-      
+         */      
     }
+     
 
     /**
      * Giving the setJobFile a class other than DatadockMain and PTIMain
      */
- @Test( expected= IllegalArgumentException.class )
-        public void testSetJobFileException3() throws ParserConfigurationException, SAXException, IOException
-    {
- /**
+     @Test( expected= IllegalArgumentException.class )
+     public void testSetJobFileException3() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
+     {
+    	 /**
          * Setup
          */
         
@@ -403,13 +401,10 @@ public class JobMapCreatorTest
         /**
          * Do stuff
          */
-        jmc = new JobMapCreator();
-        jmc.getMap( FileHandler.class);
+        JobMapCreator.getMap( FileHandler.class);
       
         /**
          * Verify
-         */
-      
-    }
-
+         */      
+     }
 }
