@@ -14,6 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -39,8 +40,9 @@ public class PluginResolver implements IPluginResolver
      * @throws PluginResolverException if the PluginFinder has trouble while reading the .plugin files
      * @throws ParserConfigurationException from PluginFinder if it cant parse the .plugin files
      * @throws FileNotFoundException when the PluginFinder cant find the .plugin files
+     * @throws ConfigurationException 
      */
-    public PluginResolver() throws NullPointerException, PluginResolverException, ParserConfigurationException, FileNotFoundException
+    public PluginResolver() throws NullPointerException, PluginResolverException, ParserConfigurationException, FileNotFoundException, ConfigurationException
     {      
         if( ! constructed )
         {

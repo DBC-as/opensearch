@@ -3,6 +3,8 @@
  */
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 
 /**
  * @author mro
@@ -10,6 +12,12 @@ package dk.dbc.opensearch.common.config;
  */
 public class DataBaseConfig extends Config
 {
+	public DataBaseConfig() throws ConfigurationException 
+	{
+		super();
+	}
+
+
 	/* *****************
 	 * DATABASE DRIVER *
 	 * *****************/
@@ -20,7 +28,7 @@ public class DataBaseConfig extends Config
 	}
 	
 	
-	public static String getDriver() 
+	public static String getDriver() throws ConfigurationException 
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
 		return dbc.getDataBaseDriver();
@@ -37,7 +45,7 @@ public class DataBaseConfig extends Config
 	}
 	
 	
-	public static String getUrl()
+	public static String getUrl() throws ConfigurationException
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
 		return dbc.getDataBaseUrl();
@@ -54,7 +62,7 @@ public class DataBaseConfig extends Config
 	}
 	
 	
-	public static String getUserID()
+	public static String getUserID() throws ConfigurationException
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
 		return dbc.getDataBaseUserID();
@@ -71,10 +79,9 @@ public class DataBaseConfig extends Config
 	}
 	
 	
-	public static String getPassWd()
+	public static String getPassWd() throws ConfigurationException
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getDataBasePassWd();
-		
+		return dbc.getDataBasePassWd();		
 	}
 }

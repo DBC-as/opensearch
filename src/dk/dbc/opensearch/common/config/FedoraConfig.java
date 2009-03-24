@@ -3,6 +3,8 @@
  */
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 
 /**
  * @author mro
@@ -10,6 +12,12 @@ package dk.dbc.opensearch.common.config;
  */
 public class FedoraConfig extends Config
 {
+	public FedoraConfig() throws ConfigurationException 
+	{
+		super();
+	}
+
+
 	/* *************
 	 * FEDORA HOST *
 	 * *************/
@@ -20,7 +28,7 @@ public class FedoraConfig extends Config
 	}
 	
 	
-	public static String getHost() 
+	public static String getHost() throws ConfigurationException 
 	{
 		FedoraConfig fc = new FedoraConfig();		
 		return fc.getFedoraHost();
@@ -37,7 +45,7 @@ public class FedoraConfig extends Config
 	}
 	
 	
-	public static String getPort()
+	public static String getPort() throws ConfigurationException
 	{
 		FedoraConfig fc = new FedoraConfig();
 		return fc.getFedoraPort();
@@ -54,7 +62,7 @@ public class FedoraConfig extends Config
 	}
 	
 	
-	public static String getUser()
+	public static String getUser() throws ConfigurationException
 	{
 		FedoraConfig fc = new FedoraConfig();
 		return fc.getFedoraUser();
@@ -71,7 +79,7 @@ public class FedoraConfig extends Config
 	}
 	
 	
-	public static String getPassPhrase()
+	public static String getPassPhrase() throws ConfigurationException
 	{
 		FedoraConfig fc = new FedoraConfig();
 		return fc.getFedoraPassPhrase();

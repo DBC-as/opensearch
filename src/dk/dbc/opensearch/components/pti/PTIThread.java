@@ -37,6 +37,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
@@ -74,7 +75,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, Estimate estimate, HashMap< Pair< String, String >, ArrayList< String > > jobMap ) throws ServiceException, MalformedURLException, IOException
+    public PTIThread( String fedoraPid, CompassSession session, Estimate estimate, HashMap< Pair< String, String >, ArrayList< String > > jobMap ) throws ServiceException, MalformedURLException, IOException, ConfigurationException
     {
     	super();
 
@@ -107,7 +108,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Long call() throws CompassException, IOException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException, SAXException
+    public Long call() throws CompassException, IOException, SQLException, ClassNotFoundException, InterruptedException, PluginResolverException, InstantiationException, ParserConfigurationException, IllegalAccessException, MarshalException, ServiceException, ValidationException, PluginException, SAXException, ConfigurationException
     {
         log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
 
@@ -133,12 +134,12 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
         NodeList streamsNL = root.getElementsByTagName( "streams" );
         Element streams = (Element)streamsNL.item(0);
         NodeList streamNL = streams.getElementsByTagName( "stream" );
-        for(int i = 0; i < streamNL.getLength(); i++ ){
+        for(int i = 0; i < streamNL.getLength(); i++ )
+        {
             Element stream = (Element)streamNL.item(i);
             String streamID = stream.getAttribute( "id" );
 
             MIMETypedStream dstream = super.fea.getDatastreamDissemination(fedoraPid, streamID, null);
-
 
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),

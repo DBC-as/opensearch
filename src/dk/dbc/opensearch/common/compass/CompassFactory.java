@@ -12,6 +12,7 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
 import org.compass.core.config.CompassConfiguration;
@@ -35,12 +36,14 @@ public class CompassFactory
      *
      * @return the Compass
      */
-    public Compass getCompass()
+    public Compass getCompass() throws ConfigurationException
     {
         log.debug("Entering CompassFactory.getCompass");
 
         if( compass == null )
+        {
             buildCompass();
+        }
         
         return compass;
     }
@@ -49,7 +52,7 @@ public class CompassFactory
     /**
      * builds the Compass with appropriate mapping and configuration files
      */
-    private void buildCompass()
+    private void buildCompass() throws ConfigurationException
     {
         log.debug("Entering CompassFactory.buildCompass");
         log.debug( "Setting up the Compass object" ); 

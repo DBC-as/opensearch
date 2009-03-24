@@ -6,10 +6,18 @@
 
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
+
 public class PTIManagerConfig extends Config
 {
 
-    /* *************************************
+    public PTIManagerConfig() throws ConfigurationException 
+    {
+		super();
+	}
+
+	/* *************************************
      * PTIMANAGER QUEUE RESULTSET MAX SIZE *
      * *************************************/
 
@@ -19,7 +27,7 @@ public class PTIManagerConfig extends Config
         return ret;
     }
 
-    public static String getQueueResultsetMaxSize()
+    public static String getQueueResultsetMaxSize() throws ConfigurationException
     {
         PTIManagerConfig pmc = new PTIManagerConfig();
         return pmc.getPtiManagerQueueResultsetMaxSize();
@@ -35,7 +43,7 @@ public class PTIManagerConfig extends Config
         return ret;
     }
 
-    public static String getRejectedSleepTime()
+    public static String getRejectedSleepTime() throws ConfigurationException
     {
         PTIManagerConfig pmc = new PTIManagerConfig();
         return pmc.getPtiManagerRejectedSleepTime();

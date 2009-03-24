@@ -17,7 +17,12 @@
                 Examples: ant config -Darg="compile"
                           ant datadock -Darg="test"
                           ...
-      
+              
+             3) ant test-single -Dtest="project"
+                Examples: ant test-single -Dtest="dk.dbc.opensearch.common.os.tests.FileFilterTest"
+                          ant test-single -Dtest="dk.dbc.opensearch.components.datadock.tests.DatadockManagerTest"                          
+                          ...
+
 	  where 'target' options are the "usual", e.g., compile, test, etc.,
 	  and 'projects' can be obtained by issuing command 'tree -d src/dk/dbc/opensearch/'
   	</echo>
@@ -61,7 +66,7 @@
   </target>
 
 
-  <target name="test-single" depends="compile-tests">
+  <target name="test-single" depends="test_Dtest, compile-tests">
     <antcall target="_test-single" />
   </target>
 
@@ -124,6 +129,15 @@
     </echo>
     <antcall target="help" />
     <fail message="'-Darg' should be set; see above!"/>
+  </target>
+  
+
+  <target name="test_Dtest" unless="test">
+    <echo>
+      '-Dtest="..." should be set to some [project].tests.MyClassTest.
+    </echo>
+    <antcall target="help" />
+    <fail message="'-Dtest' should be set; see above!"/>
   </target>
   
 

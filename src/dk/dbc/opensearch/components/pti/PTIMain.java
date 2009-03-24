@@ -56,7 +56,7 @@ public class PTIMain
 
     
     @SuppressWarnings("unchecked")
-	public static void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
+	public static void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
     	PTIMain pti = new PTIMain();
     	Class classType = pti.getClassType();

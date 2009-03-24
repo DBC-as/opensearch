@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -45,9 +46,10 @@ public class JobMapCreator
      * @param classType the class of the calling object, either DatadockMain or PTIMain
      * @returns the map containing a list of tasks for each pair of submitter, format
      * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
+     * @throws ConfigurationException 
      */
 
-    public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, IllegalStateException 
+    public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, IllegalStateException, ConfigurationException 
     {
         //System.out.println( String.format( "calling getMap with %s", classType.getName() ) );
         log.debug( "getMap() called" );
@@ -125,8 +127,9 @@ public class JobMapCreator
     /**
      * \Todo: this method should be package private, but it is not so until we put the 
      * testfiles in the same package as the files under test... 
+     * @throws ConfigurationException 
      */
-    public static File setJobFile( Class classType ) throws MalformedURLException
+    public static File setJobFile( Class classType ) throws MalformedURLException, ConfigurationException
     {
     	File jobFile;
     

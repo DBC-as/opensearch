@@ -50,7 +50,7 @@ public class IndexerXSEM implements IIndexer
     }
     
     
-    public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException
+    public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException, ConfigurationException
     {
         long processTime = 0;
         try
@@ -66,7 +66,7 @@ public class IndexerXSEM implements IIndexer
     }
 
 
-    private long getProcessTime( CompassSession session, CargoContainer cc, String fedoraHandle ) throws PluginException, CompassException
+    private long getProcessTime( CompassSession session, CargoContainer cc, String fedoraHandle ) throws PluginException, CompassException, ConfigurationException
     {
         long processTime = 0;
         Date finishTime = new Date();

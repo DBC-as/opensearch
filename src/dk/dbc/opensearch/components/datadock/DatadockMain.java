@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
@@ -64,7 +65,7 @@ public class DatadockMain
     public DatadockMain() {}
     
     
-    public void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
+    public void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
     	log.debug( "DatadockMain init called" );
     	pollTime = DatadockConfig.getMainPollTime();

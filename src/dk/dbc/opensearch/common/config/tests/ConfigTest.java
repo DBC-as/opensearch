@@ -6,6 +6,7 @@ import dk.dbc.opensearch.common.config.Config;
 import java.lang.reflect.Field;
 import java.net.URL;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -18,7 +19,7 @@ public class ConfigTest
 
 
     @Test
-    public void testConstructor() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+    public void testConstructor() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ConfigurationException
     {
     	Config c = new Config();
         Field cfgURL;

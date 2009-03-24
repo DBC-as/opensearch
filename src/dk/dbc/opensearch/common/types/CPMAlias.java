@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -24,7 +25,7 @@ public class CPMAlias
     NodeList cpmNodeList;
 
     
-    public CPMAlias() throws ParserConfigurationException, SAXException, IOException
+    public CPMAlias() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
     {    	
     	docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilder = docBuilderFactory.newDocumentBuilder();

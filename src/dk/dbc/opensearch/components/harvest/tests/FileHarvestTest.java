@@ -17,6 +17,7 @@ import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
 import org.xml.sax.SAXException;
 
@@ -38,7 +39,7 @@ public class FileHarvestTest {
     
     @Ignore
     @Test
-    public void testCheckFormat() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException
+    public void testCheckFormat() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
     	String pollTestPath = HarvesterConfig.getFolder();
     	File pollTestFile = new File( pollTestPath );
@@ -50,9 +51,10 @@ public class FileHarvestTest {
      * @throws IOException 
      * @throws SAXException 
      * @throws ParserConfigurationException 
+     * @throws ConfigurationException 
      * 
      */
-    @Test public void testConstructorException() throws ParserConfigurationException, SAXException, IOException
+    @Test public void testConstructorException() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
         testdir = new File( "test" );
         
@@ -69,7 +71,7 @@ public class FileHarvestTest {
     
     
     @Test 
-    public void testConstructor() throws IOException, IllegalArgumentException, ParserConfigurationException, SAXException
+    public void testConstructor() throws IOException, IllegalArgumentException, ParserConfigurationException, SAXException, ConfigurationException
     {        
         //
         testdir = File.createTempFile("opensearch-unittest","" );

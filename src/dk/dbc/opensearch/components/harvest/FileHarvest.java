@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -75,8 +76,9 @@ public class FileHarvest implements IHarvester
      * @throws IOException 
      * @throws SAXException 
      * @throws ParserConfigurationException 
+     * @throws ConfigurationException 
      */
-    public FileHarvest( File path ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException 
+    public FileHarvest( File path ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException 
     {
         log.debug( String.format( "Constructor( path='%s' )", path.getAbsolutePath() ) );
         

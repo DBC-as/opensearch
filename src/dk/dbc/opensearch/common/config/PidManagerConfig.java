@@ -3,6 +3,8 @@
  */
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 
 /**
  * @author mro
@@ -10,6 +12,12 @@ package dk.dbc.opensearch.common.config;
  */
 public class PidManagerConfig extends Config
 {
+	public PidManagerConfig() throws ConfigurationException 
+	{
+		super();
+	}
+
+
 	private String getPidManagerNumberOfPidsToRetrieve()
 	{
 		String ret = config.getString( "pidmanager.num-of-pids-to-retrieve" );
@@ -17,7 +25,7 @@ public class PidManagerConfig extends Config
 	}
 	
 	
-	public static String getNumberOfPidsToRetrieve() 
+	public static String getNumberOfPidsToRetrieve() throws ConfigurationException 
 	{
 		PidManagerConfig pmc = new PidManagerConfig();
 		return pmc.getPidManagerNumberOfPidsToRetrieve();

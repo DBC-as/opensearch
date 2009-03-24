@@ -3,6 +3,8 @@
  */
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 
 /**
  * @author mro
@@ -10,6 +12,12 @@ package dk.dbc.opensearch.common.config;
  */
 public class HarvesterConfig extends Config
 {
+	public HarvesterConfig() throws ConfigurationException 
+	{
+		super();
+	}
+
+
 	/* ******************
 	 * HARVESTER FOLDER *
 	 * ******************/
@@ -20,7 +28,7 @@ public class HarvesterConfig extends Config
 	}
 	
 	
-	public static String getFolder() 
+	public static String getFolder() throws ConfigurationException 
 	{
 		HarvesterConfig hc = new HarvesterConfig();
 		return hc.getHarvesterFolder();

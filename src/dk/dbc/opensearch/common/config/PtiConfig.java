@@ -3,6 +3,8 @@
  */
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 
 /**
  * @author mro
@@ -10,6 +12,12 @@ package dk.dbc.opensearch.common.config;
  */
 public class PtiConfig extends Config
 {
+	public PtiConfig() throws ConfigurationException
+	{
+		super();
+	}
+
+
 	/* ***********************
 	 * PTI
 	 * *********************/
@@ -20,7 +28,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	public static int getMainPollTime() 
+	public static int getMainPollTime() throws ConfigurationException 
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiMainPollTime();
@@ -37,7 +45,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	public static int getRejectedSleepTime()
+	public static int getRejectedSleepTime() throws ConfigurationException
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiRejectedSleepTime();
@@ -54,7 +62,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	public static int getShutdownPollTime()
+	public static int getShutdownPollTime() throws ConfigurationException
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiShutdownPollTime();
@@ -71,7 +79,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	public static int getQueueSize()
+	public static int getQueueSize() throws ConfigurationException
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiQueueSize();
@@ -88,7 +96,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	public static int getCorePoolSize()
+	public static int getCorePoolSize() throws ConfigurationException
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiCorePoolSize();
@@ -105,7 +113,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	public static int getMaxPoolSize()
+	public static int getMaxPoolSize() throws ConfigurationException
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiMaxPoolSize();
@@ -122,7 +130,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	public static int getKeepAliveTime()
+	public static int getKeepAliveTime() throws ConfigurationException
 	{
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiKeepAliveTime();
@@ -140,8 +148,9 @@ public class PtiConfig extends Config
 	
 	/**
 	 * @return Path to the config/pti_jobs.xml file
+	 * @throws ConfigurationException 
 	 */	
-	public static String getPath()
+	public static String getPath() throws ConfigurationException
 	{		
 		PtiConfig pc = new PtiConfig();
 		return pc.getPtiPath();

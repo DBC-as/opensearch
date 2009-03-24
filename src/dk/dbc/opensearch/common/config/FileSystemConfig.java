@@ -3,6 +3,8 @@
  */
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 
 /**
  * @author mro
@@ -10,6 +12,12 @@ package dk.dbc.opensearch.common.config;
  */
 public class FileSystemConfig extends Config
 {
+	public FileSystemConfig() throws ConfigurationException 
+	{
+		super();
+	}
+
+
 	private String sanitize( String path )
 	{
 		if( path.endsWith( "/" ) )
@@ -29,7 +37,7 @@ public class FileSystemConfig extends Config
 	}
 	
 	
-	public static String getTrunkPath() 
+	public static String getTrunkPath() throws ConfigurationException 
 	{
 		FileSystemConfig f = new FileSystemConfig();
 		return f.getFileSystemTrunkPath();
@@ -39,7 +47,7 @@ public class FileSystemConfig extends Config
 	/* ****************************
 	 * FILESYSTEM CONFIG.XML PATH *
 	 *****************************/
-	public static String getConfigPath()
+	public static String getConfigPath() throws ConfigurationException
 	{
 		FileSystemConfig f = new FileSystemConfig();
 		String ret = f.getFileSystemTrunkPath();
@@ -58,7 +66,7 @@ public class FileSystemConfig extends Config
 	}
 	
 	
-	public static String getPluginsPath()
+	public static String getPluginsPath() throws ConfigurationException
 	{		
 		FileSystemConfig fc = new FileSystemConfig();		
 		return fc.getFileSystemPluginsPath();

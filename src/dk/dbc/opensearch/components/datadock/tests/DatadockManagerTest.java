@@ -8,46 +8,45 @@ package dk.dbc.opensearch.components.datadock.tests;
 
 /** \brief UnitTest for DatadockManager **/
 
-import static org.junit.Assert.*;
-import org.junit.*;
-import org.xml.sax.SAXException;
-
-import dk.dbc.opensearch.components.harvest.FileHarvest;
-import dk.dbc.opensearch.components.harvest.IHarvester;
-import dk.dbc.opensearch.components.datadock.DatadockPool;
-import dk.dbc.opensearch.components.datadock.DatadockManager;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.components.datadock.DatadockManager;
+import dk.dbc.opensearch.components.datadock.DatadockPool;
+import dk.dbc.opensearch.components.harvest.FileHarvest;
+import dk.dbc.opensearch.components.harvest.IHarvester;
 
-import org.apache.commons.configuration.ConfigurationException;
-import java.lang.ClassNotFoundException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.lang.ClassNotFoundException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import org.apache.commons.configuration.ConfigurationException;
 import static org.easymock.classextension.EasyMock.*;
-import java.util.Vector;
+import org.junit.*;
+import org.xml.sax.SAXException;
+
 
 /**
  * Unittest for the DatadockManager
  */
-public class DatadockManagerTest {
-
+public class DatadockManagerTest 
+{
     IHarvester mockHarvester;
     DatadockPool mockDatadockPool;
     Vector<DatadockJob> mockJobs;
     DatadockJob mockDatadockJob;
-    Vector<CompletedTask> mockFinJobs;
+    Vector< CompletedTask > mockFinJobs;
 
-    @Before public void Setup()
+    
+    @Before 
+    public void Setup()
     {
         mockHarvester = createMock( FileHarvest.class );
         mockDatadockPool = createMock( DatadockPool.class );
@@ -56,7 +55,8 @@ public class DatadockManagerTest {
     }
 
     
-    @After public void tearDown()
+    @After 
+    public void tearDown()
     {
         reset( mockHarvester);
         reset( mockDatadockPool );
@@ -66,7 +66,8 @@ public class DatadockManagerTest {
     }
 
    
-    @Test public void testConstructor() throws ConfigurationException 
+    @Test 
+    public void testConstructor() throws ConfigurationException 
     {
         mockHarvester.start();
         replay( mockHarvester );
@@ -75,10 +76,9 @@ public class DatadockManagerTest {
     }
     
    
-    @Test public void testUpdate() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                          FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
-    {
-        
+    @Test 
+    public void testUpdate() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException                                          
+    {        
         Vector<DatadockJob> jobs = new Vector<DatadockJob>();
         jobs.add( mockDatadockJob );
 
@@ -90,27 +90,24 @@ public class DatadockManagerTest {
         mockDatadockPool.submit( mockDatadockJob );
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
         expect( mockDatadockJob.getUri() ).andReturn( testURI );
-        
-        
+                
         replay( mockHarvester );
         replay( mockDatadockPool );
         replay( mockDatadockJob );
         
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
         datadockManager.update();
-
-        //
-                       
+        
         verify( mockHarvester );
         verify( mockDatadockPool );
         verify( mockDatadockJob );
     }
 
     
-    @Test public void testUpdate_reject() throws InterruptedException, ConfigurationException, ClassNotFoundException, 
-                                                 FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException {
-        
-        Vector<DatadockJob> jobs = new Vector<DatadockJob>();
+    @Test 
+    public void testUpdate_reject() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException 
+    {        
+        Vector< DatadockJob > jobs = new Vector< DatadockJob >();
         jobs.add( mockDatadockJob );
 
         URI testURI = new URI( "testURI" );
@@ -137,7 +134,10 @@ public class DatadockManagerTest {
         verify( mockDatadockJob );
     }
     
-    @Test public void testShutdown() throws InterruptedException, ConfigurationException{
+    
+    @Test 
+    public void testShutdown() throws InterruptedException, ConfigurationException
+    {
         mockHarvester.start();
         mockHarvester.shutdown();
         mockDatadockPool.shutdown();
@@ -148,8 +148,6 @@ public class DatadockManagerTest {
         datadockmanager.shutdown();
     
         verify( mockDatadockPool );
-        verify( mockHarvester );
-        
+        verify( mockHarvester );        
      }
-
 }

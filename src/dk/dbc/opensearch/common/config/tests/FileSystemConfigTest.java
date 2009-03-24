@@ -3,6 +3,7 @@ package dk.dbc.opensearch.common.config.tests;
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +16,7 @@ public class FileSystemConfigTest
 
     
     @Test
-    public void testGetConfigPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+    public void testGetConfigPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ConfigurationException
     {
         String trunk = FileSystemConfig.getConfigPath();
     
@@ -26,7 +27,7 @@ public class FileSystemConfigTest
     
 
     @Test
-    public void testGetTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+    public void testGetTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ConfigurationException
     {
         String trunk = FileSystemConfig.getTrunkPath();
     
@@ -37,7 +38,7 @@ public class FileSystemConfigTest
     
     
     @Test
-    public void testGetPluginsPath()
+    public void testGetPluginsPath() throws ConfigurationException
     {
     	String plugins = FileSystemConfig.getPluginsPath();
     

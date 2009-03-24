@@ -60,7 +60,6 @@ public class DatadockManager
         jobLimit = DatadockConfig.getJobLimit();
 
         registeredJobs = new Vector< DatadockJob >(); 
-
     }
 
     
@@ -76,39 +75,33 @@ public class DatadockManager
             registeredJobs = harvester.getJobs();
         }
       
-        // isolate the jobs to execute in this update... 
-        Vector< DatadockJob > jobs = new Vector< DatadockJob >();
-        for(  int i = 0; i < jobLimit; i++)
+        for( int i = 0; i < jobLimit; i++)
         {
-            if( registeredJobs.size() == 0 )
-            { 
+        	if( registeredJobs.size() == 0 )
+            {
             	break;
             }
             
-            jobs.add( registeredJobs.remove( 0 ) );
-        }
-
-        // execute jobs
-        log.debug( String.format( "DatadockManager harvester getJobs called. jobs.size: %s", jobs.size() ) );
-        for( DatadockJob job : jobs )
-        {
+            DatadockJob job = registeredJobs.remove( 0 );
+        
+            // execute jobs
+            //log.debug( String.format( "DatadockManager harvester getJobs called. jobs.size: %s", jobs.size() ) );
             boolean submitted = false;
             
             while( ! submitted )
             {
-                 try
-                 {
-                     pool.submit( job );
-                     submitted = true;
-             
-                     log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
-                 }
-                 catch( RejectedExecutionException re )
-                 {
-                     log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
-                     Thread.currentThread();
-                     Thread.sleep( rejectedSleepTime );
-                 }
+            	try
+            	{
+            		pool.submit( job );
+            		submitted = true;
+            		log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
+            	}
+            	catch( RejectedExecutionException re )
+            	{
+            		log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
+            		//Thread.currentThread();
+            		//Thread.sleep( rejectedSleepTime );
+            	}
             }
         }
         

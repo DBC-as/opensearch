@@ -3,6 +3,8 @@
  */
 package dk.dbc.opensearch.common.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+
 
 /**
  * @author mro
@@ -10,6 +12,12 @@ package dk.dbc.opensearch.common.config;
  */
 public class DatadockConfig extends Config
 {
+	public DatadockConfig() throws ConfigurationException 
+	{
+		super();
+	}
+
+
 	/* *************************
 	 * DATADOCK MAIN-POLL-TIME *
 	 * *************************/
@@ -20,7 +28,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getMainPollTime() 
+	public static int getMainPollTime() throws ConfigurationException 
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockMainPollTime();
@@ -37,7 +45,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getRejectedSleepTime()
+	public static int getRejectedSleepTime() throws ConfigurationException
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockRejectedSleepTime();
@@ -54,7 +62,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getShutdownPollTime()
+	public static int getShutdownPollTime() throws ConfigurationException
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockShutdownPollTime();
@@ -71,7 +79,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getQueueSize()
+	public static int getQueueSize() throws ConfigurationException
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockQueueSize();
@@ -88,7 +96,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getCorePoolSize()
+	public static int getCorePoolSize() throws ConfigurationException
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockCorePoolSize();
@@ -105,7 +113,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getMaxPoolSize()
+	public static int getMaxPoolSize() throws ConfigurationException
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockMaxPoolSize();
@@ -122,7 +130,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getKeepAliveTime()
+	public static int getKeepAliveTime() throws ConfigurationException
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockKeepAliveTime();
@@ -139,7 +147,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	public static int getJobLimit()
+	public static int getJobLimit() throws ConfigurationException
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockJobLimit();
@@ -157,8 +165,9 @@ public class DatadockConfig extends Config
 	
 	/**
 	 * @return Path to the config/datadock_jobs.xml file
+	 * @throws ConfigurationException 
 	 */
-	public static String getPath() 
+	public static String getPath() throws ConfigurationException 
 	{
 		DatadockConfig ddc = new DatadockConfig();
 		return ddc.getDatadockPath();

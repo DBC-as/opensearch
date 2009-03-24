@@ -82,7 +82,7 @@ public class FedoraToolsTest
     }
 
     @Ignore( "ignoring until the architecture has been stabilised after the CargoContainer refactoring" )
-        @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException
+    @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException
     {
     	cargo = constructCargo( "æøå" );
         

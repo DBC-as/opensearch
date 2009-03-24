@@ -27,6 +27,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import static org.junit.Assert.*;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
 import static org.easymock.classextension.EasyMock.*;
 
@@ -103,7 +105,7 @@ public class PluginResolverTest
      * tests the construction of the PluginResolver
      */
     @Test 
-    public void pluginResolverConstructorTest() throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException, IOException
+    public void pluginResolverConstructorTest() throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException, IOException, ConfigurationException
     {
         PR = new PluginResolver();
         PluginResolver PR2 = new PluginResolver();
@@ -114,7 +116,7 @@ public class PluginResolverTest
      * tests the getPlugin method, not a lot to test... 
      */
     //@Ignore
-    @Test public void getPluginTest() throws NullPointerException, IOException, FileNotFoundException, PluginResolverException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException 
+    @Test public void getPluginTest() throws NullPointerException, IOException, FileNotFoundException, PluginResolverException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, ConfigurationException 
     {
         PR = new PluginResolver();
 
@@ -128,7 +130,7 @@ public class PluginResolverTest
      * Tests the happy path of the validatArgs method, where an empty vector is returned
      */
     @Test 
-    public void validateArgsTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException
+    public void validateArgsTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException, ConfigurationException
     {
         String submitter = "testSubmitter";
         String format = "testFormat";
@@ -153,7 +155,7 @@ public class PluginResolverTest
      * to be returned
      */
     @Test 
-    public void validateArgsNotAllPluginsFoundTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException
+    public void validateArgsNotAllPluginsFoundTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException, ConfigurationException
     {
         String submitter = "testSubmitter";
         String format = "testFormat";
@@ -179,7 +181,7 @@ public class PluginResolverTest
      * There is nothing but a method call to the PluginFinder in it
      */
     @Test 
-    public void clearPluginRegistrationTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException
+    public void clearPluginRegistrationTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException, ConfigurationException
     {
         PR = new PluginResolver();
 

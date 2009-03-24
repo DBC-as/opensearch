@@ -11,7 +11,6 @@ import dk.dbc.opensearch.components.datadock.DatadockMain;
 import dk.dbc.opensearch.components.pti.PTIMain;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.os.FileHandler;
-//import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 
@@ -34,11 +33,14 @@ import mockit.MockClass;
 
 import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 
 /**
  * Class for testing tha JobMapCreator class
@@ -68,15 +70,16 @@ public class JobMapCreatorTest
     }
     
     @MockClass( realClass = JobMapCreator.class )
-        public static class MockJobMapCreator
-        {
-            @Mock public static File setJobFile( Class classType )
-            {
+    public static class MockJobMapCreator
+    {
+    	@Mock public static File setJobFile( Class classType )
+    	{
                 //  System.out.println( "mockFile returned" );
                 return mockFile;
-            }
         }
+    }
 
+    
     @MockClass( realClass = FileHandler.class)
         public static class MockFH
         {
@@ -216,7 +219,7 @@ public class JobMapCreatorTest
      */
 
     @Test( expected = IllegalStateException.class ) 
-        public void testISexceptionFromGetMap() throws ParserConfigurationException, SAXException, IOException
+    public void testISexceptionFromGetMap() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
         /**
          * Setup
@@ -259,7 +262,7 @@ public class JobMapCreatorTest
      */
 
     @Test( expected = IllegalStateException.class ) 
-        public void testSetJobFile() throws ParserConfigurationException, IOException, SAXException
+    public void testSetJobFile() throws ParserConfigurationException, IOException, SAXException, ConfigurationException
     {
          /**
          * Setup
@@ -283,10 +286,10 @@ public class JobMapCreatorTest
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );        
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );        
         expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-         expect( mockNodeList.getLength() ).andReturn( 1 );
-         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );
-         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position );
+        expect( mockNodeList.getLength() ).andReturn( 1 );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position );
         
         //calling getMap again
 
@@ -303,9 +306,8 @@ public class JobMapCreatorTest
         /**
          * Do stuff
          */
-        jmc = new JobMapCreator();
-        jmc.getMap( DatadockMain.class);
-        jmc.getMap( PTIMain.class );
+        JobMapCreator.getMap( DatadockMain.class);
+        JobMapCreator.getMap( PTIMain.class );
         /**
          * Verify
          */
@@ -314,12 +316,12 @@ public class JobMapCreatorTest
         verify( mockNodeList );
     }
 
+
     /**
      * Setting the datadockJobPath to null through the MockFSC2 class
      */
-
     @Test( expected= IllegalArgumentException.class )
-        public void testSetJobFileException1() throws ParserConfigurationException, SAXException, IOException
+    public void testSetJobFileException1() throws ParserConfigurationException, SAXException, IOException
     {
  /**
          * Setup
@@ -351,9 +353,9 @@ public class JobMapCreatorTest
      * Setting the ptiJobPath to null through the MockFSC2 class
      */
 
-  @Test( expected= IllegalArgumentException.class )
-        public void testSetJobFileException2() throws ParserConfigurationException, SAXException, IOException
-    {
+     @Test( expected= IllegalArgumentException.class )
+     public void testSetJobFileException2() throws ParserConfigurationException, SAXException, IOException
+     {
  /**
          * Setup
          */

@@ -12,6 +12,7 @@ import fedora.server.management.FedoraAPIM;
 
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -32,8 +33,9 @@ public abstract class FedoraHandle
      * fedora base
      *
      * @throws ServiceException
+     * @throws ConfigurationException 
      */
-    public FedoraHandle() throws ServiceException, java.net.MalformedURLException, java.io.IOException
+    public FedoraHandle() throws ServiceException, java.net.MalformedURLException, java.io.IOException, ConfigurationException
     {
         String fedora_base_url;
 
