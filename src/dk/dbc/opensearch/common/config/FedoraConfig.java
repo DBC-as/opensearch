@@ -3,11 +3,17 @@
  */
 package dk.dbc.opensearch.common.config;
 
+
 import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
  * @author mro
+ * 
+ * Sub class of Config providing access to fedora settings in the 
+ * configuration file. Method names should be explanatory enough.
+ * 
+ * See super class Config for description of methodology.
  *
  */
 public class FedoraConfig extends Config
@@ -18,9 +24,7 @@ public class FedoraConfig extends Config
 	}
 
 
-	/* *************
-	 * FEDORA HOST *
-	 * *************/
+	/* HOST */
 	private String getFedoraHost()
 	{
 		String ret = config.getString( "fedora.host" );
@@ -35,9 +39,7 @@ public class FedoraConfig extends Config
 	}
 	
 	
-	/* *************
-	 * FEDORA PORT *
-	 * *************/
+	/* PORT */
 	private String getFedoraPort()
 	{
 		String ret = config.getString( "fedora.port" );
@@ -52,9 +54,7 @@ public class FedoraConfig extends Config
 	}
 	
 	
-	/* *************
-	 * FEDORA USER *
-	 * *************/
+	/* USER */
 	private String getFedoraUser()
 	{
 		String ret = config.getString( "fedora.user" );
@@ -69,9 +69,7 @@ public class FedoraConfig extends Config
 	}
 	
 	
-	/* *******************
-	 * FEDORA PASSPHRASE *
-	 * ******************/
+	/* PASS PHRASE */
 	private String getFedoraPassPhrase()
 	{
 		String ret = config.getString( "fedora.passphrase" );

@@ -8,6 +8,11 @@ import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * @author mro
+ * 
+ * Sub class of Config providing access to harvester settings in the 
+ * configuration file. Method names should be explanatory enough.
+ * 
+ * See super class Config for description of methodology.
  *
  */
 public class HarvesterConfig extends Config
@@ -18,9 +23,7 @@ public class HarvesterConfig extends Config
 	}
 
 
-	/* ******************
-	 * HARVESTER FOLDER *
-	 * ******************/
+	/* FOLDER */
 	private String getHarvesterFolder()
 	{
 		String ret = config.getString( "harvester.folder" );

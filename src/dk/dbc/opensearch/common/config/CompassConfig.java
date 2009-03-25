@@ -6,11 +6,18 @@
 
 package dk.dbc.opensearch.common.config;
 
+
 import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
+ * @author mro
  * 
+ * Sub class of Config providing access to compass settings in the 
+ * configuration file. Method names should be explanatory enough.
+ * 
+ * See super class Config for description of methodology.
+ *
  */
 public class CompassConfig extends Config
 {    
@@ -20,6 +27,7 @@ public class CompassConfig extends Config
 	}
 
 
+    /* CONFIG PATH */
 	private String getCompassConfigPath()
     {
         String ret = config.getString( "compass.configpath" );
@@ -34,6 +42,7 @@ public class CompassConfig extends Config
     }
     
     
+    /* XSEM PATH */
     private String getCompassXSEMPath()
     {
         String ret = config.getString( "compass.xsempath" );

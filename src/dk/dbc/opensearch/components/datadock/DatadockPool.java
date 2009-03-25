@@ -45,6 +45,7 @@ public class DatadockPool
 {
     static Logger log = Logger.getLogger( DatadockPool.class );
     
+    
     private Vector< FutureTask > jobs;
     private final ThreadPoolExecutor threadpool;
     private Estimate estimate;

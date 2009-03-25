@@ -9,9 +9,6 @@ package dk.dbc.opensearch.common.compass;
 import dk.dbc.opensearch.common.config.CompassConfig;
 import dk.dbc.opensearch.common.os.FileHandler;
 
-import java.io.File;
-import java.net.URL;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
@@ -25,9 +22,10 @@ import org.compass.core.config.CompassConfiguration;
  */
 public class CompassFactory
 {
-    private static Compass compass = null;
-
-    Logger log = Logger.getLogger("CompassFactory"); 
+	Logger log = Logger.getLogger( CompassFactory.class );
+	
+	
+	private static Compass compass = null;    
 
     
     /**
@@ -62,8 +60,8 @@ public class CompassFactory
 
         String cfg  = CompassConfig.getConfigPath();
         String xsem = CompassConfig.getXSEMPath();
-        log.debug( String.format( "Compass configuration=%s", cfg ) );
-        log.debug( String.format( "XSEM mappings file   =%s", xsem ) );
+        log.debug( String.format( "Compass configuration = %s", cfg ) );
+        log.debug( String.format( "XSEM mappings file    = %s", xsem ) );
        
         log.debug( "Building Compass." );
         conf.configure( FileHandler.getFile( cfg ) );

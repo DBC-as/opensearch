@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -44,7 +42,6 @@ import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.MarshalException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -57,7 +54,7 @@ import org.xml.sax.SAXException;
  * fedora repository, and index it with compass afterwards. If this
  * was succesfull the estimate values in the statistics db will be updated
  */
-public class PTIThread extends FedoraHandle implements Callable<Long>
+public class PTIThread extends FedoraHandle implements Callable< Long >
 {
     Logger log = Logger.getLogger( PTIThread.class );
 
@@ -157,7 +154,7 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
 
         // Get the job from the jobMap
         list = jobMap.get( new Pair< String, String >( submitter, format ) );
-        if(list == null)
+        if( list == null )
         {
             log.fatal( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
             throw new NullPointerException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
@@ -166,7 +163,9 @@ public class PTIThread extends FedoraHandle implements Callable<Long>
         //50: validate that there exists plugins for all the tasks
         PluginResolver pluginResolver = new PluginResolver();
         for( int i = 0; i < list.size(); i++ )
-            log.debug( String.format( " plugin to be found: %s",list.get(i) ) );
+        {
+            log.debug( String.format( " plugin to be found: %s", list.get(i) ) );
+        }
         
         Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
         //60: execute the plugins

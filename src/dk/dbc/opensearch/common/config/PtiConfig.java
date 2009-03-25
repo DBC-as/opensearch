@@ -8,6 +8,11 @@ import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * @author mro
+ * 
+ * Sub class of Config providing access to pti settings in the 
+ * configuration file. Method names should be explanatory enough.
+ * 
+ * See super class Config for description of methodology.
  *
  */
 public class PtiConfig extends Config
@@ -18,9 +23,7 @@ public class PtiConfig extends Config
 	}
 
 
-	/* ***********************
-	 * PTI
-	 * *********************/
+	/* MAIN POLL TIME */
 	private int getPtiMainPollTime()
 	{
 		int ret = config.getInt( "pti.main-poll-time" );
@@ -35,9 +38,7 @@ public class PtiConfig extends Config
 	} 
 	
 	
-	/* *************************
-	 * PTI REJECTED-SLEEP-TIME *
-	 * *************************/
+	/* REJECTED-SLEEP-TIME */
 	private int getPtiRejectedSleepTime()
 	{
 		int ret = config.getInt( "pti.rejected-sleep-time" );
@@ -52,9 +53,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	/* ************************
-	 * PTI SHUTDOWN-POLL-TIME *
-	 * ************************/
+	/* SHUTDOWN-POLL-TIME */
 	private int getPtiShutdownPollTime()
 	{
 		int ret = config.getInt( "pti.shutdown-poll-time" );
@@ -69,9 +68,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	/* ***************
-	 * PTI QUEUESIZE *
-	 * ***************/
+	/* QUEUE SIZE */
 	private int getPtiQueueSize()
 	{
 		int ret = config.getInt( "pti.queuesize" );
@@ -86,9 +83,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	/* ******************
-	 * PTI COREPOOLSIZE *
-	 * ******************/
+	/* CORE POOL SIZE */
 	private int getPtiCorePoolSize()
 	{
 		int ret = config.getInt( "pti.corepoolsize" );
@@ -103,9 +98,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	/* *****************
-	 * PTI MAXPOOLSIZE *
-	 * *****************/
+	/* MAX POOL SIZE */
 	private int getPtiMaxPoolSize()
 	{
 		int ret = config.getInt( "pti.maxpoolsize" );
@@ -120,9 +113,7 @@ public class PtiConfig extends Config
 	}
 	
 	
-	/* *******************
-	 * PTI KEEPALIVETIME *
-	 * *******************/
+	/* KEEP ALIVE TIME */
 	private int getPtiKeepAliveTime()
 	{
 		int ret = config.getInt( "pti.keepalivetime" );
@@ -137,19 +128,14 @@ public class PtiConfig extends Config
 	}
 	
 	
-	/* **********
-	 * PTI PATH *
-	 * **********/
+	/* PATH */
 	private String getPtiPath()
 	{
 		String ret = config.getString( "pti.path" );
 		return ret;
 	}
 	
-	/**
-	 * @return Path to the config/pti_jobs.xml file
-	 * @throws ConfigurationException 
-	 */	
+	
 	public static String getPath() throws ConfigurationException
 	{		
 		PtiConfig pc = new PtiConfig();

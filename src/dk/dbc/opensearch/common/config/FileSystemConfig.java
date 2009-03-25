@@ -8,6 +8,11 @@ import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * @author mro
+ * 
+ * Sub class of Config providing access to file system settings in the 
+ * configuration file. Method names should be explanatory enough.
+ * 
+ * See super class Config for description of methodology.
  *
  */
 public class FileSystemConfig extends Config
@@ -18,6 +23,7 @@ public class FileSystemConfig extends Config
 	}
 
 
+	/* Ensuring a '/' at the end of path */
 	private String sanitize( String path )
 	{
 		if( path.endsWith( "/" ) )
@@ -27,9 +33,7 @@ public class FileSystemConfig extends Config
 	}
 	
 	
-	/* ******************
-	 * FILESYSTEM TRUNK *
-	 * ******************/
+	/* TRUNK */
 	private String getFileSystemTrunkPath()
 	{
 		String ret = config.getString( "filesystem.trunk" );
@@ -44,9 +48,7 @@ public class FileSystemConfig extends Config
 	} 
 	
 	
-	/* ****************************
-	 * FILESYSTEM CONFIG.XML PATH *
-	 *****************************/
+	/* CONFIG.XML PATH */
 	public static String getConfigPath() throws ConfigurationException
 	{
 		FileSystemConfig f = new FileSystemConfig();
@@ -56,9 +58,7 @@ public class FileSystemConfig extends Config
 	}
 	
 	
-	/* ********************
-	 * FILESYSTEM PLUGINS *
-	 * ********************/
+	/* PLUGINS */
 	private String getFileSystemPluginsPath()
 	{
 		String ret = config.getString( "filesystem.plugins" );

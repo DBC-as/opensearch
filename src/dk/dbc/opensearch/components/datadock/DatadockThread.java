@@ -174,7 +174,6 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
 
         if( ! missingPlugins.isEmpty() )
         {
-            System.out.println( " kill thread" );
             log.error( "Thread killed due to invalid plugin call");
             log.error( String.format( "couldnt find the following plugins: %s", missingPlugins.toString() ) );
             // kill thread/throw meaningful exception/log message

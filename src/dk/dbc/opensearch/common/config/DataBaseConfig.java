@@ -3,11 +3,17 @@
  */
 package dk.dbc.opensearch.common.config;
 
+
 import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
  * @author mro
+ * 
+ * Sub class of Config providing access to database settings in the 
+ * configuration file. Method names should be explanatory enough.
+ * 
+ * See super class Config for description of methodology.
  *
  */
 public class DataBaseConfig extends Config
@@ -18,9 +24,7 @@ public class DataBaseConfig extends Config
 	}
 
 
-	/* *****************
-	 * DATABASE DRIVER *
-	 * *****************/
+	/* DRIVER */
 	private String getDataBaseDriver()
 	{
 		String ret = config.getString( "database.driver" );
@@ -35,9 +39,7 @@ public class DataBaseConfig extends Config
 	}
 	
 	
-	/* **************
-	 * DATABASE URL *
-	 * **************/
+	/* URL */
 	private String getDataBaseUrl()
 	{
 		String ret = config.getString( "database.url" );
@@ -52,9 +54,7 @@ public class DataBaseConfig extends Config
 	}
 	
 	
-	/* *****************
-	 * DATABASE USERID *
-	 * *****************/
+	/* USERID */
 	private String getDataBaseUserID()
 	{
 		String ret = config.getString( "database.userID" );
@@ -69,9 +69,7 @@ public class DataBaseConfig extends Config
 	}
 	
 	
-	/* *****************
-	 * DATABASE PASSWD *
-	 * *****************/
+	/* PASSWD */
 	private String getDataBasePassWd()
 	{
 		String ret = config.getString( "database.passwd" );

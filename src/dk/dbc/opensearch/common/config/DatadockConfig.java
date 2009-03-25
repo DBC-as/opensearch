@@ -3,11 +3,17 @@
  */
 package dk.dbc.opensearch.common.config;
 
+
 import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
  * @author mro
+ * 
+ * Sub class of Config providing access to datadock settings in the 
+ * configuration file. Method names should be explanatory enough.
+ * 
+ * See super class Config for description of methodology.
  *
  */
 public class DatadockConfig extends Config
@@ -18,9 +24,7 @@ public class DatadockConfig extends Config
 	}
 
 
-	/* *************************
-	 * DATADOCK MAIN-POLL-TIME *
-	 * *************************/
+	/* MAIN POLL TIME */
 	private int getDatadockMainPollTime()
 	{
 		int ret = config.getInt( "datadock.main-poll-time" );
@@ -35,9 +39,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* ******************************
-	 * DATADOCK REJECTED-SLEEP-TIME *
-	 * ******************************/
+	/* REJECTED SLEEP TIME */
 	private int getDatadockRejectedSleepTime()
 	{
 		int ret = config.getInt( "datadock.rejected-sleep-time" );
@@ -52,9 +54,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* *****************************
-	 * DATADOCK SHUTDOWN-POLL-TIME *
-	 * *****************************/
+	/* SHUTDOWN POLL TIME */
 	private int getDatadockShutdownPollTime()
 	{
 		int ret = config.getInt( "datadock.shutdown-poll-time" );
@@ -69,9 +69,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* ********************
-	 * DATADOCK QUEUESIZE *
-	 * ********************/
+	/* QUEUE SIZE */
 	private int getDatadockQueueSize()
 	{
 		int ret = config.getInt( "datadock.queuesize" );
@@ -86,9 +84,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* ***********************
-	 * DATADOCK COREPOOLSIZE *
-	 * ***********************/
+	/* CORE POOL SIZE */
 	private int getDatadockCorePoolSize()
 	{
 		int ret = config.getInt( "datadock.corepoolsize" );
@@ -103,9 +99,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* **********************
-	 * DATADOCK MAXPOOLSIZE *
-	 * **********************/
+	/* MAX POOL SIZE */
 	private int getDatadockMaxPoolSize()
 	{
 		int ret = config.getInt( "datadock.maxpoolsize" );
@@ -120,9 +114,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* ************************
-	 * DATADOCK KEEPALIVETIME *
-	 * ***********************/
+	/* KEEP ALIVE TIME */
 	private int getDatadockKeepAliveTime()
 	{
 		int ret = config.getInt( "datadock.keepalivetime" );
@@ -137,9 +129,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* *******************
-	 * DATADOCK JOBLIMIT *
-	 * *******************/
+	/* JOB LIMIT */
 	private int getDatadockJobLimit()
 	{
 		int ret = config.getInt( "datadock.joblimit" );
@@ -154,9 +144,7 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* ***************
-	 * DATADOCK PATH *
-	 * ***************/
+	/* PATH */
 	private String getDatadockPath()
 	{
 		String ret = config.getString( "datadock.path" );
