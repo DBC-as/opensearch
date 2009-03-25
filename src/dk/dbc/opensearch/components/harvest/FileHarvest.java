@@ -7,7 +7,6 @@ package dk.dbc.opensearch.components.harvest;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
@@ -55,10 +54,9 @@ import org.xml.sax.SAXException;
  */
 public class FileHarvest implements IHarvester
 {
-    /**
-     *
-     */
     static Logger log = Logger.getLogger( FileHarvest.class );
+    
+    
     private File path;
     private Vector< Pair< File, Long > > submitters;
     private Vector< Pair< File, Long > > formats;
