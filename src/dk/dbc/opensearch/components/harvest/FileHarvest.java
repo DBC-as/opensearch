@@ -66,7 +66,8 @@ public class FileHarvest implements IHarvester
 
     
     /**
-     * Constructs the FileHarvest class, and starts polling the given path for files and subsequent file-changes.
+     * Constructs the FileHarvest class, and starts polling the given path for 
+     * files and subsequent file-changes.
      * 
      * @param path The path to the directory to harvest from.
      * 
@@ -78,6 +79,7 @@ public class FileHarvest implements IHarvester
      */
     public FileHarvest( File path ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException 
     {
+        System.out.println(String.format( "Constructor( path='%s' )", path.getAbsolutePath() ) );
         log.debug( String.format( "Constructor( path='%s' )", path.getAbsolutePath() ) );
         
         if ( ! path.isDirectory() )
@@ -119,6 +121,7 @@ public class FileHarvest implements IHarvester
         
         for( Pair< File, Long > job : findAllJobs() )
         {
+            System.out.println( String.format( "adding path='%s' to jobSet and jobApllications", job.getFirst().getAbsolutePath() ) );
             log.debug( String.format( "adding path='%s' to jobSet and jobApllications", job.getFirst().getAbsolutePath() ) );
             jobSet.add( job.getFirst() );
         }
@@ -157,7 +160,7 @@ public class FileHarvest implements IHarvester
         // same for two consecutive calls it is added to newJobs
         Vector< DatadockJob > newJobs = new Vector<DatadockJob>();
         HashSet< Pair< File, Long > > removeJobs = new HashSet< Pair< File, Long > >();
-    
+        System.out.println( jobApplications);
         for( Pair< File, Long > job : jobApplications )
         {
             if( job.getFirst().length() == job.getSecond() )
@@ -165,6 +168,11 @@ public class FileHarvest implements IHarvester
                 DatadockJob datadockJob = new DatadockJob( job.getFirst().toURI(),
                                                            job.getFirst().getParentFile().getParentFile().getName(),
                                                            job.getFirst().getParentFile().getName() );
+                System.out.println( String.format( "found new job: path='%s', submitter='%s', format='%s'",
+                                                   datadockJob.getUri().getRawPath(),
+                                          datadockJob.getSubmitter(),
+                                          datadockJob.getFormat() ) );
+
                 log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'",
                                           datadockJob.getUri().getRawPath(),
                                           datadockJob.getSubmitter(),
