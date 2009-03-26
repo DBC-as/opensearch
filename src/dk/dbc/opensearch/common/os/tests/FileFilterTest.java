@@ -21,8 +21,10 @@ import org.junit.*;
 public class FileFilterTest 
 {
     FileFilter ff;
-    static String dir = ".shouldnotbeaccepted"; 
+    static String dir = ".shouldnotbeaccepted";
+    static String testString = "test"; 
     static File dummy = null;
+    static File dummyChild = null;
 
     
     /**
@@ -34,6 +36,8 @@ public class FileFilterTest
     {
         dummy = new File( dir );
         dummy.mkdir();
+        dummyChild = new File( dummy, testString );
+        dummyChild.mkdir();
         ff = new FileFilter();
     }
 
@@ -46,6 +50,7 @@ public class FileFilterTest
     {
         try
         {
+            dummyChild.delete();
             dummy.delete();
         }
         catch( Exception e ) 
@@ -80,8 +85,7 @@ public class FileFilterTest
      */
     @Test public void testDirsNotAccepted()
     {
-        //new File( dummy, dir).mkdir();
-        assertFalse( ff.accept( dummy, dir ) );
+        assertFalse( ff.accept( dummy, dummyChild.getName() ) );
     }
 
     /**

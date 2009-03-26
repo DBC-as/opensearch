@@ -27,6 +27,10 @@ public class PluginFileFilter implements FilenameFilter
      */
     public boolean accept( File dir, String name ) throws NullPointerException
     {
+        if( dir == null )
+        {
+            throw new NullPointerException( "invalid directory given" );
+        }
         if( !( new File( name ).isDirectory()) && name.endsWith( ".plugin" ) )
         {
             return true;
