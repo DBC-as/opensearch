@@ -1,7 +1,7 @@
 /** \brief UnitTest for PluginFileFilter */
 package dk.dbc.opensearch.common.os.tests;
 
-import dk.dbc.opensearch.common.os.PluginFileFilter;
+import dk.dbc.opensearch.common.os.PdfFileFilter;
 
 import java.io.File;
 
@@ -11,24 +11,24 @@ import org.junit.*;
 /**
  * 
  */
-public class PluginFileFilterTest {
+public class PdfFileFilterTest {
 
     /**
      *
      */
-    PluginFileFilter pff;
-    static File pluginDir = new File( "pluginDir" );
-    static File pluginFile;
+    PdfFileFilter pff;
+    static File pdfDir = new File( "pdfDir" );
+    static File pdfFile;
     static File otherFile;
     static File dir2; 
     
 
     @Before public void SetUp() 
     {
-        pff = new PluginFileFilter();
-        pluginDir.mkdir();
-        pluginFile = new File( pluginDir, "test.plugin"); 
-        otherFile = new File( pluginDir, "notplugin" );
+        pff = new PdfFileFilter();
+        pdfDir.mkdir();
+        pdfFile = new File( pdfDir, "test.pdf"); 
+        otherFile = new File( pdfDir, "notplugin" );
     }
 
     /**
@@ -36,28 +36,28 @@ public class PluginFileFilterTest {
      */
     @After public void TearDown() 
     {
-        pluginDir.delete();
+        pdfDir.delete();
     }
 
     /**
      * 
      */
-    @Test public void testAcceptsPluginFiles()
+    @Test public void testAcceptsPdfFiles()
     {
-        assertTrue( pff.accept( pluginDir, pluginFile.getName() ) );
+        assertTrue( pff.accept( pdfDir, pdfFile.getName() ) );
     }
 
-@Test public void testRejectsNonPluginFiles()
+@Test public void testRejectsNonPdfFiles()
     {
-        assertFalse( pff.accept( pluginDir, otherFile.getName() ) );
+        assertFalse( pff.accept( pdfDir, otherFile.getName() ) );
     }
 
     @Test public void testRejectsDirectories()
     {
-        dir2 = new File( pluginDir, "testdir" );
+        dir2 = new File( pdfDir, "testdir" );
         dir2.mkdir();
         //System.out.println( (new File( pluginDir, dir2.getName() )).isDirectory() );
-        assertFalse( pff.accept( pluginDir, dir2.getName() ) );
+        assertFalse( pff.accept( pdfDir, dir2.getName() ) );
         dir2.delete();
     }
 
@@ -65,13 +65,13 @@ public class PluginFileFilterTest {
     public void testNPException1()
     {
         otherFile = null;
-        pff.accept( otherFile, pluginFile.getName() );
+        pff.accept( otherFile, pdfFile.getName() );
     }
     @Test( expected = NullPointerException.class )  
         public void testNPException2()
     {
         String hat = null;
-        pff.accept( pluginDir, hat );
+        pff.accept( pdfDir, hat );
     }
     
 }

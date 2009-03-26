@@ -27,7 +27,7 @@ public class XmlFileFilter implements FilenameFilter{
      */
     public boolean accept(File dir, String name) throws NullPointerException{
 
-        if( ! ( new File( name ) ).isDirectory() && name.endsWith( ".xml" ) ){
+        if( ! ( new File( dir, name ) ).isDirectory() && name.endsWith( ".xml" ) ){
             return true;
         }else {
             return false;

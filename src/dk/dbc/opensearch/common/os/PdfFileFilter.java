@@ -28,7 +28,12 @@ public class PdfFileFilter implements FilenameFilter
      */
     public boolean accept(File dir, String name) throws NullPointerException
     {
-        if( ! ( new File( name ) ).isDirectory() && name.endsWith( ".pdf" ) )
+        
+         if( dir == null )
+         {
+             throw new NullPointerException( "invalid directory" );
+         }
+        if( ! ( new File( dir, name ) ).isDirectory() && name.endsWith( ".pdf" ) )
         {
             return true;
         }
