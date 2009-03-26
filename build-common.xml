@@ -70,6 +70,8 @@
   <!-- TARGETS -->
   <target name="_clean" description="Deletes files created during the build">
    <delete file="${base.dir}/doxygen-warnings"/>
+   <delete file="${base.dir}/datadock.log"/>
+   <delete file="${config.dir}/config.xml"/>
 
    <delete dir="${api.dir}"/>
    <delete dir="${build.dir}"/>
@@ -78,6 +80,7 @@
    <delete dir="${src.dir}/info"/>
    <delete dir="${testresults.dir}"/>
    <delete dir="${xsd_gen.dir}" />
+   <delete dir="${base.dir}/plugins" />
 
    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
      <arg line="create_test_suite_files.py clean"/>
@@ -304,7 +307,7 @@
             don't instrument the test classes.
         -->
         <include name="**/*.class" />
-        <exclude name="**/*Test.class" />
+        <exclude name="**/tests/*" />
         <exclude name="**/xsd/**/*.class" />
       </fileset>
     </cobertura-instrument>
