@@ -15,9 +15,6 @@ import java.io.FilenameFilter;
 public class XmlFileFilter implements FilenameFilter{
     
     /**
-     * This method returns true only if arguments dir+name evals to a
-     * filename not starting with a '.'
-     *
      * @param dir the path of the directory to be tested
      * @param name the dir- or filename on the path
      *
@@ -27,6 +24,10 @@ public class XmlFileFilter implements FilenameFilter{
      */
     public boolean accept(File dir, String name) throws NullPointerException{
 
+        if( dir == null )
+        {
+            throw new NullPointerException( "invalid directory" );
+        }
         if( ! ( new File( dir, name ) ).isDirectory() && name.endsWith( ".xml" ) ){
             return true;
         }else {

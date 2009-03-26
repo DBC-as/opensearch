@@ -5,11 +5,12 @@ import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
 /**
- * StreamHandler is an appendix to FileHandler and provides methods for handling Streams within the opensearch project
+ * StreamHandler is an appendix to FileHandler and provides methods for 
+ * handling Streams within the opensearch project
  */
 public class StreamHandler 
 {
-    /*
+    /**
      * bytesFromInputStream extracts a byte array from an InputStream.
      * 
      * @param in The InputStream to extract the byte array from
@@ -34,7 +35,6 @@ public class StreamHandler
 
         try 
         {
-
             while( ( bytesRead = in.read( b, 0, chunkSize ) ) > 0 )
             {
                 baos.write( b, 0, bytesRead );

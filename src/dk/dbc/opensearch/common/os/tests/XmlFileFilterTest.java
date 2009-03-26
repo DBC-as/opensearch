@@ -14,29 +14,28 @@ import java.io.IOException;
 public class XmlFileFilterTest {
 
     XmlFileFilter xff;
-    static String acceptedName = "test.xml";
-    static String dir = ".shouldnotbeaccepted";
-    static File acceptedFile = null;
-    static File dummy = null;
+    static File xmlFile;
+    static File xmlDir;
+    static File otherFile;
 
     /**
      * Before each test we construct a dummy directory path and a
      * clean FileFilter instance
      */
     @Before public void SetUp() {
-        dummy = new File( dir );
-        dummy.mkdir();
-        acceptedFile = new File( acceptedName );
+        xmlDir = new File( "xmlDir" );
+        xmlDir.mkdir();
+        xmlFile = new File( xmlDir, ".xml" );
+        otherFile = new File( xmlDir, "notXml" );
         xff = new XmlFileFilter();
     }
 
     /**
-     * After each test the dummy directory is removed
+     * After each test the xmlDir directory is removed
      */
     @After public void TearDown() {
         try{
-            dummy.delete();
-            acceptedFile.delete();
+            xmlDir.delete();
         }catch( Exception e ){}
     }
 
@@ -45,14 +44,14 @@ public class XmlFileFilterTest {
      */
     @Test public void testXmlNameAccepted() {
 
-        assertTrue( xff.accept( acceptedFile, acceptedName ) );
+        assertTrue( xff.accept( xmlDir, xmlFile.getName() ) );
     }
 
     /**
      * Files without .xml suffix should not be accepted
      */
     @Test public void testNoXmlSuffixNotAccepted(){
-        assertFalse( xff.accept( acceptedFile, dir ) );
+        assertFalse( xff.accept( xmlDir, otherFile.getName() ) );
     }
 
     /**
@@ -60,7 +59,9 @@ public class XmlFileFilterTest {
      */
     @Test public void testDirsNotAccepted()
     {
-        assertFalse( xff.accept( dummy, dir ) );
+        otherFile.mkdir();
+        assertFalse( xff.accept( xmlDir, otherFile.getName() ) );
+        otherFile.delete();
     }
 
     /**
@@ -68,7 +69,14 @@ public class XmlFileFilterTest {
      */
     @Test(expected = NullPointerException.class) 
     public void testNullValueForFilenameShouldFail(){
-        assertFalse( xff.accept( new File( "idontexist" ), null ) );
+        String hat = null;
+        xff.accept( xmlDir, hat );
     }
+    @Test(expected = NullPointerException.class) 
+    public void testNullValueForDirShouldFail(){
+        xmlDir = null;
+        xff.accept( xmlDir, xmlFile.getName() );
 
+    
+    }
 }
