@@ -37,7 +37,7 @@ public class FileHarvestTest {
     @After public void TearDown() { }
 
     
-    @Ignore
+   
     @Test
     public void testCheckFormat() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
@@ -54,19 +54,15 @@ public class FileHarvestTest {
      * @throws ConfigurationException 
      * 
      */
-    @Test public void testConstructorException() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
+    @Test(expected = IllegalArgumentException.class) 
+        public void testConstructorException() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
         testdir = new File( "test" );
         
-        try
-        {
+        
             fileHarvest = new FileHarvest( testdir );
             fail( "Should have thrown IllegalArgumentException" );
-        }
-        catch( IllegalArgumentException iae )
-        { 
-            // expected
-        }
+        
     }
     
     
