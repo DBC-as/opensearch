@@ -49,6 +49,14 @@
         xpath="/ting:container/ting:dc/*"
         index="un_tokenized"
         />
+    <xml-property
+        xpath="/ting:container/fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/original_format"
+        index="un_tokenized"
+        />
 
   </xml-object>
 
@@ -280,28 +288,16 @@
         xpath="/ting:container/ting:dc/*"
         index="un_tokenized"
         />
+    <xml-property
+        xpath="/ting:container/fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/original_format"
+        index="un_tokenized"
+        />
+
       
-  </xml-object>
-
-
-
-  <!-- below are test mappings, kept for validation/testing purposes -->
-
-  <xml-object alias="data1">
-    <xml-id 
-        name="id" 
-        xpath="/xml-fragment/data/id/@value" />
-    <xml-property 
-        xpath="/xml-fragment/data/data1/@value" />
-    <xml-property 
-        name="eleText" 
-        xpath="/xml-fragment/data/data1" />
-  </xml-object>
-
-  <xml-object alias="data2" xpath="/xml-fragment/data[1]">
-    <xml-id name="id" xpath="id/@value" />
-    <xml-property xpath="data1/@value" />
-    <xml-property name="eleText" xpath="data1" />
   </xml-object>
 
 </compass-core-mapping>
