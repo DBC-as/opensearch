@@ -24,25 +24,25 @@ import org.apache.log4j.Logger;
  * \ingroup tools
  * \brief The Processqueue class handles all communication to the processqueue
  */
-public class Processqueue 
+public class Processqueue
 {
-	Logger log = Logger.getLogger( Processqueue.class );
+    Logger log = Logger.getLogger( Processqueue.class );
     DBConnection DBconnection = null;
-    
-    
+
+
     /**
      * Constructor
      *
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public Processqueue()throws ConfigurationException, ClassNotFoundException 
+    public Processqueue()throws ConfigurationException, ClassNotFoundException
     {
         log.debug( "Processqueue Constructor" );
         DBconnection = new DBConnection();
     }
 
-    
+
     /**
      * Pushes a fedorahandle to the processqueue
      *
@@ -52,11 +52,11 @@ public class Processqueue
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public void push( String fedorahandle ) throws ClassNotFoundException, SQLException 
-    {        
+    public void push( String fedorahandle ) throws ClassNotFoundException, SQLException
+    {
         log.debug( String.format( "Processqueue.push( '%s' ) called", fedorahandle ) );
         Connection con = DBConnection.getConnection();
-        
+
         log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
         Statement stmt = null;
         stmt = con.createStatement();
@@ -65,95 +65,95 @@ public class Processqueue
         log.debug( String.format( "query database with %s ", sql_query ) );
 
         try
-        {
-            stmt.executeUpdate( sql_query );
-            con.commit();
-        }
+            {
+                stmt.executeUpdate( sql_query );
+                con.commit();
+            }
         finally
-        {
-            // Close database connection
-            stmt.close();
-            con.close();
-        }
+            {
+                // Close database connection
+                stmt.close();
+                con.close();
+            }
         log.info( String.format( "fedorahandle=%s pushed to queue", fedorahandle ) );
     }
-    
+
 
     public Vector< Pair< String, Integer > > popAll() throws SQLException
     {
         log.debug( "Entering Processqueue.popAll()" );
-        
+
         Connection con = DBConnection.getConnection();
         Statement stmt = null;
         ResultSet rs = null;
-        
+
         Vector<Pair<String, Integer>> jobs = new Vector<Pair<String, Integer>>();
 
         try
-        {
-            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-            rs = stmt.executeQuery("SELECT * from get_all_posts()");
-            
-            while( rs.next() )
             {
-                String fedoraHandle = rs.getString( "fedorahandle" );
-                int queueID = rs.getInt( "queueID" );
+                stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+                rs = stmt.executeQuery("SELECT * from get_all_posts()");
 
-                log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
-                
-                Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
-                jobs.add( pair );
+                while( rs.next() )
+                    {
+                        String fedoraHandle = rs.getString( "fedorahandle" );
+                        int queueID = rs.getInt( "queueID" );
+
+                        log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
+
+                        Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
+                        jobs.add( pair );
+                    }
+
+                con.commit();
             }
-            
-            con.commit();
-        }
         finally
-        {
-            // Close database connection
-            rs.close();
-            stmt.close();
-            con.close();
-        }
-        
+            {
+                // Close database connection
+                rs.close();
+                stmt.close();
+                con.close();
+            }
+
         return jobs;
     }
 
-    
+
     public Vector<Pair<String, Integer>> pop( int maxSize ) throws SQLException
     {
         log.debug( "Entering Processqueue.pop()" );
-        
+
         Connection con = DBConnection.getConnection();
         Statement stmt = null;
         ResultSet rs = null;
-        
+
         Vector<Pair<String, Integer>> jobs = new Vector<Pair<String, Integer>>();
 
         try
-        {
-            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-            rs = stmt.executeQuery( String.format( "SELECT * from get_posts( %s)", maxSize ) );
-            
-            while( rs.next() )
             {
-                String fedoraHandle = rs.getString( "fedorahandle" );
-                int queueID = rs.getInt( "queueID" );
+                stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+                rs = stmt.executeQuery( String.format( "SELECT * from get_posts( %s)", maxSize ) );
 
-                log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
-                
-                Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
-                jobs.add( pair );
+                while( rs.next() )
+                    {
+                        String fedoraHandle = rs.getString( "fedorahandle" );
+                        int queueID = rs.getInt( "queueID" );
+
+                        log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
+
+                        Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
+                        jobs.add( pair );
+                    }
+
+                con.commit();
             }
-            
-            con.commit();
-        }
         finally
-        {
-            // Close database connection
-            rs.close();
-            stmt.close();
-            con.close();
-        }
+            {
+                // Close database connection
+                rs.close();
+                stmt.close();
+                con.close();
+            }
         return jobs;
     }
 
@@ -168,7 +168,7 @@ public class Processqueue
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      * @throws NoSuchElementException if there is no element on the queue to pop
      */
-    public void commit( int queueID ) throws ClassNotFoundException, SQLException, NoSuchElementException 
+    public void commit( int queueID ) throws ClassNotFoundException, SQLException, NoSuchElementException
     {
         log.debug( String.format( "Processqueue.commit( queueID='%s' ) called", queueID ) );
         Connection con = DBConnection.getConnection();
@@ -181,27 +181,27 @@ public class Processqueue
 
         // remove element from queue ie. delete row from processqueue table
         try
-        {
-            stmt = con.createStatement();
-            rowsRemoved = stmt.executeUpdate( sql_query );
-
-            if( rowsRemoved == 0 ) 
             {
-                throw new NoSuchElementException( "The queueID does not match a popped element." );
+                stmt = con.createStatement();
+                rowsRemoved = stmt.executeUpdate( sql_query );
+
+                if( rowsRemoved == 0 )
+                    {
+                        throw new NoSuchElementException( "The queueID does not match a popped element." );
+                    }
+
+                con.commit();
             }
-            
-            con.commit();
-        }
         finally
-        {
-            // Close database connection
-            stmt.close();
-            con.close();
-        }
+            {
+                // Close database connection
+                stmt.close();
+                con.close();
+            }
         log.info( String.format( "Element with queueID=%s is commited",queueID ) );
     }
 
-    
+
     /**
      * rolls back the pop. This restores the element in the queue and
      * the element is in concideration the next time a pop i done.
@@ -222,27 +222,27 @@ public class Processqueue
 
         // restore element in queue ie. update queueID in row from processqueue table
         try
-        {
-            stmt = con.createStatement();
-            rowsRemoved = stmt.executeUpdate( sql_query );
-
-            if( rowsRemoved == 0 ) 
             {
-                throw new NoSuchElementException( "The queueID does not match a popped element." );
+                stmt = con.createStatement();
+                rowsRemoved = stmt.executeUpdate( sql_query );
+
+                if( rowsRemoved == 0 )
+                    {
+                        throw new NoSuchElementException( "The queueID does not match a popped element." );
+                    }
+
+                con.commit();
             }
-            
-            con.commit();
-        }
         finally
-        {
-            // Close database connection
-            stmt.close();
-            con.close();
-        }
+            {
+                // Close database connection
+                stmt.close();
+                con.close();
+            }
         log.info( String.format( "Element with queueID=%s is rolled back",queueID ) );
     }
-        
-    
+
+
     /**
      * deactivate elements on the processqueue.  It finds all elements
      * on the processqueue which are marked as active and mark them as
@@ -253,29 +253,63 @@ public class Processqueue
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public int deActivate() throws ClassNotFoundException, SQLException 
+    public int deActivate() throws ClassNotFoundException, SQLException
     {
         log.debug( "Entering Processqueue.deActivate()" );
         Connection con = DBConnection.getConnection();
-        
+
         String sql_query = "UPDATE processqueue SET processing = 'N' WHERE processing = 'Y'";
-        
+
         Statement stmt = con.createStatement();
         int rowsUpdated = 0;
         try
-        {
-            rowsUpdated = stmt.executeUpdate( sql_query );
-        }
+            {
+                rowsUpdated = stmt.executeUpdate( sql_query );
+            }
         finally
-        {
-            // Close database connection
-            stmt.close();
-            con.close();
-        }
+            {
+                // Close database connection
+                stmt.close();
+                con.close();
+            }
         log.info(String.format("Updated %S processes from active to not active" , rowsUpdated ));
-        
+
         return rowsUpdated;
     }
-    
-    
+    public void notIndexed(int queueID ) throws ClassNotFoundException, SQLException
+    {
+        log.debug( String.format( "Entering notIndexed( queueID = '%s')",queueID ) );
+        Connection con = DBConnection.getConnection();
+
+        String sql_query = String.format( "SELECT * FROM processqueue WHERE queueID = %s", queueID );
+
+        ResultSet rs = null;
+        Statement stmt_get = con.createStatement();
+        int rowsSelected = 0;
+
+        try{
+
+            stmt_get = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+            rs = stmt_get.executeQuery( sql_query );
+            while( rs.next() ){
+                String fedoraHandle = rs.getString( "fedorahandle" );
+                int qid = rs.getInt( "queueID" );
+                Statement stmt_insert = con.createStatement();
+                sql_query = String.format( "INSERT INTO notindexed( queueid, fedorahandle ) VALUES( %s, '%s' )", qid, fedoraHandle );
+                stmt_insert.executeUpdate( sql_query );
+
+                commit( qid );
+                stmt_insert.close();
+            }
+        }
+        finally
+            {
+                // Close database connection
+                con.commit();
+                stmt_get.close();
+                con.close();
+            }
+
+    }
+
 }

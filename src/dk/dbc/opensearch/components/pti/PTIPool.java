@@ -5,39 +5,37 @@
  */
 package dk.dbc.opensearch.components.pti;
 
-import org.compass.core.Compass;
-import org.compass.core.CompassSession;
-import org.compass.core.config.CompassConfiguration;
-import org.compass.core.config.CompassConfigurationFactory;
-import org.compass.core.CompassException;
 
-import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.db.Processqueue;
-
+import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.Vector;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-
-
+import org.compass.core.Compass;
+import org.compass.core.CompassException;
+import org.compass.core.CompassSession;
+import org.compass.core.config.CompassConfiguration;
+import org.compass.core.config.CompassConfigurationFactory;
 
 
 /**
@@ -84,7 +82,7 @@ public class PTIPool
         URL cfgURL = getClass().getResource("/config.xml");
         config = new XMLConfiguration( cfgURL );
         shutDownPollTime = config.getInt( "pti.shutdown-poll-time" );
-
+        
      }
     
     
@@ -163,7 +161,7 @@ public class PTIPool
                 finishedJobs.add( new CompletedTask( job, pair ) );
             }
         }
-        
+
         for( CompletedTask finishedJob : finishedJobs )
         {
              log.debug( "Removing Job" );            

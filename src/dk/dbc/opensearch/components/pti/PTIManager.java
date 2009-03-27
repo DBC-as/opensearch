@@ -113,7 +113,8 @@ public class PTIManager
             else /** the job returned null - rollback ? */
             {
                 log.debug( String.format( "job with queueID: '%s', result: '%s' Not successfull... rolling back", queueID, result ) );
-                processqueue.rollback( queueID );
+                processqueue.notIndexed( queueID );
+                //processqueue.rollback( queueID );
             }    
         }
     }
