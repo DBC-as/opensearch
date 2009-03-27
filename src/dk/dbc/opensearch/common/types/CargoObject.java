@@ -190,11 +190,22 @@ public class CargoObject
         return pair.getSecond();
     }
 
+    /**
+     * Handle with care
+     * Overwrites the existing data with new data given in the byte[]
+     */
+    public void updateByteArray( byte[] data )
+    {
+        Pair<CargoObjectInfo, byte[]> new_pair = new Pair<CargoObjectInfo, byte[]>( pair.getFirst(), data );
+        pair = new_pair;
+    }
     
     /**
      * Returns the length of the underlying byte[]
      * 
      * @return length of the byte[]
+     * 
+     * \todo: this is a duplicate method. Please refactor one of us out.
      */
     public int getByteArrayLength(){
         return pair.getSecond().length;

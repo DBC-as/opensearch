@@ -1,6 +1,6 @@
 /**
- * \file FaktalinkAnnotate.java
- * \brief The FaktalinkAnnotate class
+ * \file DocbookAnnotate.java
+ * \brief The DocbookAnnotate class
  * \package plugins;
  */
 

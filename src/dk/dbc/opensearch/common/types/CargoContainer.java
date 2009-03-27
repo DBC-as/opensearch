@@ -44,6 +44,7 @@ public class CargoContainer
     private ArrayList< CargoObject > data;
     private IndexingAlias indexingAlias = null;
     /** The path to the file on disk where it is harvested from, only for debugging purposes */
+    /** \todo: WTF?*/
     private String filePath = null;
     
     /**
