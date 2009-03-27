@@ -3,11 +3,11 @@
 <!-- List of job to be executed using plugins -->
 
 <job_list>
-  <job submitter="dbc" format="faktalink">
+  <job submitter="dbc" format="docbook_faktalink">
     <plugin name="docbookharvester" position="0"/>
     <plugin name="docbookannotate" position="1"/>
   </job>
-  <job submitter="dbc" format="forfatterweb">
+  <job submitter="dbc" format="docbook_forfatterweb">
     <plugin name="docbookharvester" position="0"/>
     <plugin name="docbookannotate" position="1"/>
   </job>
@@ -28,6 +28,12 @@
     <plugin name="docbookannotate" position="1"/>
   </job>
   <job submitter="dbc" format="dr_forfatteratlas">
+    <plugin name="marcxchangeharvester" position="0"/>
+  </job>  
+  <job submitter="dbc" format="anmeldelser">
+    <plugin name="marcxchangeharvester" position="0"/>
+  </job>  
+  <job submitter="dbc" format="artikler">
     <plugin name="marcxchangeharvester" position="0"/>
   </job>  
   <job submitter="dbc" format="dr_bonanza">

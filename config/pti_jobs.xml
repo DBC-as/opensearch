@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- List of job to be executed using plugins -->
 <job_list>
-  <job submitter="dbc" format="faktalink">
+  <job submitter="dbc" format="docbook_faktalink">
     <plugin name="indexerxsem" position="0"/>
   </job>
-  <job submitter="dbc" format="forfatterweb">
+  <job submitter="dbc" format="docbook_forfatterweb">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="dbc" format="materialevurderinger">
+    <plugin name="indexerxsem" position="0"/>
+  </job>
+  <job submitter="dbc" format="anmeldelser">
+    <plugin name="indexerxsem" position="0"/>
+  </job>  
+  <job submitter="dbc" format="artikler">
+    <plugin name="indexerxsem" position="0"/>
+  </job>  
+  <job submitter="dbc" format="dr_forfatteratlas">
+    <plugin name="indexerxsem" position="0"/>
+  </job> 
+  <job submitter="dbc" format="dr_bonanza">
     <plugin name="indexerxsem" position="0"/>
   </job>
   <job submitter="aakb" format="danmarcxchange">
@@ -17,15 +32,6 @@
     <plugin name="indexerxsem" position="0"/>
   </job>
   <job submitter="kkb" format="danmarcxchange">
-    <plugin name="indexerxsem" position="0"/>
-  </job>
-  <job submitter="dbc" format="materialevurderinger">
-    <plugin name="indexerxsem" position="0"/>
-  </job>
-  <job submitter="dbc" format="dr_forfatteratlas">
-    <plugin name="indexerxsem" position="0"/>
-  </job> 
-  <job submitter="dbc" format="dr_bonanza">
     <plugin name="indexerxsem" position="0"/>
   </job>
 </job_list>
