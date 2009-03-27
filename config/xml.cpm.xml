@@ -8,7 +8,7 @@
   <xml-object alias="article">
     <xml-id
         name="id"
-        xpath="/"/>
+        xpath="/ting:container/docbook:article/docbook:title"/>
     <xml-property
         name="dc.title"
         xpath="/ting:container/docbook:article/docbook:title"
@@ -18,7 +18,7 @@
         xpath="/ting:container/docbook:article/docbook:info/docbook:author/docbook:personname/* | /ting:container/ting:dc/dc:creator"
         />
     <xml-property
-        name="cql.anyIndex"
+        name="cql.anyIndexes"
         xpath="/ting:container/docbook:article/docbook:title | /ting:container/docbook:article/docbook:info/docbook:abstract/docbook:para | /ting:container/docbook:article/docbook:info/docbook:subjectset/docbook:subject/docbook:subjectterm | /ting:container/docbook:article/docbook:section/docbook:title | /ting:container/docbook:article/docbook:section/docbook:para"
         />
     <xml-property
@@ -56,7 +56,7 @@
   <xml-object alias="dc">
     <xml-id
         name="id"
-        xpath="/"/>
+        xpath="/ting:container/ting:dc/dc:title"/>
     <xml-property
         name="dc.title"
         xpath="/ting:container/ting:dc/dc:title"
@@ -66,7 +66,7 @@
         xpath="/ting:container/ting:dc/dc:creator"
         />
     <xml-property
-        name="cql.anyIndex"
+        name="cql.anyIndexes"
         xpath="/ting:container/ting:dc/*"
         />
     <xml-property
@@ -97,6 +97,15 @@
         xpath="/ting:container/ting:dc/*"
         index="un_tokenized"
         />
+    <xml-property
+        xpath="/ting:container/fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/original_format"
+        index="un_tokenized"
+        />
+
 
   </xml-object>
 <xml-object alias="danmarcxchange"> 
@@ -263,7 +272,11 @@
         xpath="/*/*/*/*[@tag='008']/*[@code='n']
         | /*/*/*/*[@tag='518']/*[@code='a']"
         />
-      <xml-property
+    <xml-property
+        name="cql.anyIndex" 
+        xpath="/ting:container/ting:dc/*"
+        />
+    <xml-property
         xpath="/ting:container/ting:dc/*"
         index="un_tokenized"
         />

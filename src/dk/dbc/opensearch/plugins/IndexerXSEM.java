@@ -38,6 +38,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
 
@@ -137,9 +138,23 @@ public class IndexerXSEM implements IIndexer
                 } catch (DocumentException de) {
                     throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
                 }
+                /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
+                HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
+                log.debug( String.format( "Initializing new fields for the index" ) );
+                fieldMap.put( "fedoraPid", fedoraHandle );
+                fieldMap.put( "original_format", co.getFormat() );
+                
+                Element root = doc.getRootElement();
 
+                for( String key : fieldMap.keySet() )
+                {
+                    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
+                    Element newElement = new DOMElement( key ).addText( fieldMap.get( key ) );
+                    root.add( newElement );
+                }
+                
                 // this log line is _very_ verbose, but useful in a tight situation
-                //log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
+                log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
                 /** \todo: Dom4jAliasedXmlObject constructor might throw some unknown exception */
                 AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( indexingAlias, doc.getRootElement() );
@@ -160,34 +175,27 @@ public class IndexerXSEM implements IIndexer
                     throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
                 }
 
-                DefaultMarshallingStrategy marshallingStrategy = new DefaultMarshallingStrategy( ( (DefaultCompassSession) session).getMapping(),
-                		( (DefaultCompassSession) session).getSearchEngine(),
-                		( (DefaultCompassSession) session).getMapping().getConverterLookup(),
-                		( DefaultCompassSession) session );
-                Resource resource = marshallingStrategy.marshall( indexingAlias, xmlObject );
-
-
                 //log.info( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
                 //session.save( xmlObject );
                 //log.debug( String.format( "Xml Object saved to index" ) );
                 
                 /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
-                HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
-                log.debug( String.format( "Initializing new fields for the index" ) );
-                fieldMap.put( "fedoraPid", fedoraHandle );
-                fieldMap.put( "original_format", co.getFormat() );
+                //HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
+                //log.debug( String.format( "Initializing new fields for the index" ) );
+                //fieldMap.put( "fedoraPid", fedoraHandle );
+                //fieldMap.put( "original_format", co.getFormat() );
 
-                for( String key : fieldMap.keySet() )
-                {
-                    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
-                    LuceneProperty newField = new LuceneProperty( new Field( key, new StringReader( fieldMap.get( key ) ) ) );
-                    resource.addProperty( newField );            
-                }
-                log.debug( String.format( "Saving Resource with new fields to index" ) );
+                //for( String key : fieldMap.keySet() )
+                //{
+                //    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
+                //    LuceneProperty newField = new LuceneProperty( new Field( key, new StringReader( fieldMap.get( key ) ) ) );
+                //    resource.addProperty( newField );            
+                //}
 
                 try
                 {
-                    session.save( resource );
+                    log.debug( String.format( "Saving Compass Resource '%s' with new fields to index", xmlObject.getAlias() ) );
+                    session.save( xmlObject );
                 }
                 catch( Exception e ){
                     log.fatal( String.format( "class of thrown exception: %s, message: %s ", e.getClass(), e.getMessage() ) );

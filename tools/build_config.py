@@ -100,7 +100,7 @@ plugins.text = pluginpath
 
 #harvester settings
 folder = ET.SubElement( harvest, "folder" )
-folder.text = os.path.join( path, "Harvest/pollTest" )
+folder.text = os.path.join( path, "kanon" )
 
 #pidmanager settings
 num_of_pids = ET.SubElement( pidmng, "num-of-pids-to-retrieve" )

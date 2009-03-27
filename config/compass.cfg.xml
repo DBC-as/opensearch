@@ -19,7 +19,7 @@
      </connection>
 
      <transaction 
-         lockTimeout="300"
+         lockTimeout="3"
          lockPollInterval="200"
      />
 
