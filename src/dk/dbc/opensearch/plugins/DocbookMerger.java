@@ -114,7 +114,7 @@ public class DocbookMerger implements IProcesser
         new_root.add( root );
 
         String new_original_data = new_document.asXML();
-
+        log.debug( String.format( "Original xml: %s", new String( orig.getBytes() ) ) );
         log.debug( "Adding annotated data to CargoContainer, overwriting original data" );
         orig.updateByteArray( new_original_data.getBytes() );
         // } catch (IOException ioe) {

@@ -136,7 +136,7 @@ public class IndexerXSEM implements IIndexer
                 try {
                     doc = saxReader.read( is );
                 } catch (DocumentException de) {
-                    log.fatal( String.format( "Caught exception from SAX Parsing : %s", de.toString() ) );
+                    log.fatal( String.format( "While parsing xml: %s, I caught exception from SAX Parsing : %s", new String( co.getBytes() ), de.getMessage() ) );
                     throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
                 }
                 /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
