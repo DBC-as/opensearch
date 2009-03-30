@@ -2,10 +2,12 @@
 <!-- List of job to be executed using plugins -->
 <job_list>
   <job submitter="dbc" format="docbook_faktalink">
-    <plugin name="indexerxsem" position="0"/>
+    <plugin name="docbookmerger" position="0"/>
+    <plugin name="indexerxsem" position="1"/>
   </job>
   <job submitter="dbc" format="docbook_forfatterweb">
-    <plugin name="indexerxsem" position="0"/>
+    <plugin name="docbookmerger" position="0"/>
+    <plugin name="indexerxsem" position="1"/>
   </job>
   <job submitter="dbc" format="materialevurderinger">
     <plugin name="indexerxsem" position="0"/>

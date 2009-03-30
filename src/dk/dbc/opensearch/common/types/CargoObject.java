@@ -122,17 +122,17 @@ public class CargoObject
     }
 
 
-    /**
-     * Gets the format (type of material) of the CargoObject
-     * 
-     * @return the format as a String
-     */
     public String getLang()
     {
         return pair.getFirst().getLanguage();
     }
 
 
+    /**
+     * Gets the format (type of material) of the CargoObject
+     * 
+     * @return the format as a String
+     */
     public String getFormat()
     {
         return pair.getFirst().getFormat();

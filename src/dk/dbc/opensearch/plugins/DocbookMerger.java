@@ -30,19 +30,20 @@ import java.net.URL;
 import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-import javax.xml.xpath.*;
+// import javax.xml.parsers.DocumentBuilder;
+// import javax.xml.parsers.DocumentBuilderFactory;
+// import javax.xml.parsers.ParserConfigurationException;
+// import javax.xml.rpc.ServiceException;
+// import javax.xml.xpath.*;
 import org.dom4j.dom.DOMElement;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-//import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import org.dom4j.io.SAXReader;
+import org.dom4j.DocumentFactory;
+import org.dom4j.Element;
+import org.dom4j.DocumentException;
+import org.dom4j.Namespace;
 import org.xml.sax.SAXException;
 
 
@@ -67,62 +68,62 @@ public class DocbookMerger implements IProcesser
         return PluginType.PROCESS;
     }
 
-    public CargoContainer getCargoContainer( CargoContainer cargo )
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
 
         log.debug( "Entered getCargoContainer( CargoContainer cargo )" );
 
-        // CargoObject co = cargo.getFirstCargoObject( DataStreamType.DublinCoreData );
+        CargoObject dc = cargo.getFirstCargoObject( DataStreamType.DublinCoreData );
 
-        // Element annotation = null;
+        Element annotation = null;
 
-        // CargoObject orig = cargo.getFirstCargoObject( DataStreamType.OriginalData );
+        CargoObject orig = cargo.getFirstCargoObject( DataStreamType.OriginalData );
 
-        // byte[] orig_bytes = orig.getBytes();
-        // ByteArrayInputStream is = new ByteArrayInputStream( orig_bytes );
-        // Document doc = null;
+        byte[] orig_bytes = orig.getBytes();
+        ByteArrayInputStream is = new ByteArrayInputStream( orig_bytes );
+        Document doc = null;
 
-        // DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        // try{
-        //     DocumentBuilder builder = factory.newDocumentBuilder();
-        //     doc = builder.parse( is );
-        // }catch( ParserConfigurationException pce ){
-        //     log.fatal( String.format( "Caught error while trying to instanciate documentbuilder '%s'", pce ) );
-        //     throw new PluginException( "Caught error while trying to instanciate documentbuilder", pce );
-        // }catch( SAXException se){
-        //     log.fatal( String.format( "Could not parse annotation data: '%s'", se ) );
-        //     throw new PluginException( "Could not parse annotation data ", se );
-        // }catch( IOException ioe ){
-        //     log.fatal( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
-        //     throw new PluginException( "Could not cast the bytearrayinputstream to a inputsource", ioe );
-        // }
-        // Element root = doc.getRootElement();
+        
+        try{
+            SAXReader reader = new SAXReader();
+            doc = reader.read( is );
+        }catch( DocumentException docex){
+            log.fatal( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", docex ) );
+            throw new PluginException( "Could not cast the bytearrayinputstream to a inputsource", docex );
+        }
 
-        // Element tingElement = new DOMElement( "container" );
+        Element root = doc.getRootElement();
 
-        // Document new_document = DocumentFactory.createDocument();
+        Namespace ns = new Namespace( "ting", "http://www.dbc.dk/ting/");
 
-        // new_document.setRootElement( tingElement );
+        Element tingElement = new DOMElement( "container", ns );
+        
+        DocumentFactory factory = new DocumentFactory();
 
-        // Element new_root = new_document.getRootElement();
+        Document new_document = factory.createDocument();
 
-        // if( co != null) {
-        //     log.debug( String.format( "CargoContainer has no annotation data" ) );
-        //     root.add( annotation );
-        // }
+        new_document.setRootElement( tingElement );
 
-        // root.add( root );
+        Element new_root = new_document.getRootElement();
 
-        // String new_original_data = new_document.asXML();
+        if( dc != null) {
+            log.debug( String.format( "CargoContainer has no annotation data" ) );
+            new_root.add( annotation );
+        }
 
-        // try {
-        //     log.debug( "Adding annotated data to CargoContainer, overwriting original data" );
-        //     co.updateByteArray( new_original_data.getBytes() );
+        new_root.add( root );
+
+        String new_original_data = new_document.asXML();
+
+        log.debug( "Adding annotated data to CargoContainer, overwriting original data" );
+        orig.updateByteArray( new_original_data.getBytes() );
         // } catch (IOException ioe) {
         //     log.fatal( "Could not add Annotation data to CargoContainer" );
         //     throw new PluginException( "Could not add Annotation data to CargoContainer", ioe );
         // }
 
+        // changeme
+        log.debug( String.format( "New xml data: %s", new String( orig.getBytes() ) ) );
         return cargo;
 
     }

@@ -4,5 +4,5 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 public interface IProcesser extends IPluggable
 {
-    CargoContainer getCargoContainer( CargoContainer cargo );
+    CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException;
 }

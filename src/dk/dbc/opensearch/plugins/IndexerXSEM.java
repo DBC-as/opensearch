@@ -130,12 +130,13 @@ public class IndexerXSEM implements IIndexer
             else
             {                
                 byte[] bytes = co.getBytes();
-                //log.debug( new String( bytes ) );
+                log.debug( String.format( "altered xml: %s", new String( bytes ) ) );
                 ByteArrayInputStream is = new ByteArrayInputStream( bytes );
                 Document doc = null;
                 try {
                     doc = saxReader.read( is );
                 } catch (DocumentException de) {
+                    log.fatal( String.format( "Caught exception from SAX Parsing : %s", de.toString() ) );
                     throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
                 }
                 /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
