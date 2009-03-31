@@ -107,7 +107,6 @@ public class DocbookAnnotate implements IAnnotate
         // isolate format
         String serverChoice = co.getFormat();
 
-
         // Querying webservice
         log.debug( String.format( "querying the webservice with title='%s', serverChoice(format)='%s'", title, serverChoice ) );
 
@@ -120,7 +119,7 @@ public class DocbookAnnotate implements IAnnotate
         } catch (IOException ioe) {
             throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
         }
-        log.debug( String.format( "data: title='%s', serverChoise(format)='%s', queryURL='%s', xml retrieved='%s'", title, serverChoice, queryURL, xmlString ) );
+        log.debug( String.format( "data: title='%s', serverChoice(format)='%s', queryURL='%s', xml retrieved='%s'", title, serverChoice, queryURL, xmlString ) );
 
 
         // put retrieved answer into inputsource object
@@ -139,31 +138,35 @@ public class DocbookAnnotate implements IAnnotate
         // create xpath exp
         xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
+        
+        //String xpathString = "/docbook:article/docbook:title";
+        // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
+        String xpathString = "/*/*[2]";
         try {
-            // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
-            xPathExpression_numOfRec = xpath.compile( "/*/*[2]" );
+            xPathExpression_numOfRec = xpath.compile( xpathString );
         } catch (XPathExpressionException e) {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/docbook:article/docbook:title" ), e );
+            throw new PluginException( String.format( "Could not compile xpath expression '%s'",  xmlString ), e );
         }
 
-
         int numOfRec = 0;
-        try {
+        try 
+        {
             numOfRec = Integer.parseInt( xPathExpression_numOfRec.evaluate( annotateSource ) );
-        } catch (NumberFormatException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (XPathExpressionException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch ( NumberFormatException nfe ) {
+            log.fatal( String.format( "Could not format number of records returned by the webservice" ) );
+            throw new PluginException( "Could not format number of records returned by the webservice", nfe );
+        } catch (XPathExpressionException xpee ) {
+            log.fatal( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
+            throw new PluginException( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ), xpee );
         }
 
         log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
 
-        if( numOfRec == 0 ){ // no hits make another search without serverchoice
+        if( numOfRec == 0 ){ // no hits. Make another search without serverchoice
             String xmlStr = null;
             queryURL = null;
-            try {
+            try 
+            {
                 queryURL = formURL( title, serverChoice );
                 xmlStr = httpGet( queryURL );
             } catch (IOException ioe) {
@@ -175,9 +178,10 @@ public class DocbookAnnotate implements IAnnotate
 
         // put retrieved answer into inputsource object
         try
-            {
-                bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
-            } catch (UnsupportedEncodingException uee) {
+        {
+            bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
+        } catch (UnsupportedEncodingException uee) {
+            log.fatal( String.format( "Could not convert string to UTF-8 ByteArrayInputStream" ) );
             throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
         }
         annotateSource = new InputSource( bis );
@@ -186,14 +190,15 @@ public class DocbookAnnotate implements IAnnotate
            
         String xpath_evaluation = null;
         try
-            {
-                xpath_evaluation = xPathExpression_numOfRec.evaluate( annotateSource );
-                numOfRec = Integer.parseInt( xpath_evaluation );
-            } catch (NumberFormatException nfe) {
+        {
+            xpath_evaluation = xPathExpression_numOfRec.evaluate( annotateSource );
+            numOfRec = Integer.parseInt( xpath_evaluation );
+        } catch (NumberFormatException nfe) {
             log.fatal( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
             throw new PluginException( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int",
                                                       xpath_evaluation ), nfe );
         } catch (XPathExpressionException xpe) {
+            log.fatal( String.format( "Could not evaluate xpath expression to find number of returned records" ) );
             throw new PluginException( "Could not evaluate xpath expression to find number of returned records", xpe );
         }
 
@@ -202,8 +207,8 @@ public class DocbookAnnotate implements IAnnotate
         if ( numOfRec == 1 ){
             try {
                 log.debug( "Adding annotation to CargoContainer" );
-                xmlString = isolateDCData( xmlString );        
-                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", xmlString.getBytes() );
+                String isolatedDCData = isolateDCData( xmlString );        
+                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", isolatedDCData.getBytes() );
             } catch (IOException ioe) {
                 log.fatal( "Could not add DC data to CargoContainer" );
                 throw new PluginException( "Could not add DC data to CargoContainer", ioe );
@@ -257,7 +262,7 @@ public class DocbookAnnotate implements IAnnotate
         } catch (XPathExpressionException e) {
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/*/*[3]/*/*[3]" ), e );
         }
-        
+        log.debug( String.format( "IsolateDC returns xml: %s", recordString ) );
         return recordString;
     }
 
