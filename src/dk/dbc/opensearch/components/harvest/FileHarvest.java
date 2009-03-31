@@ -287,7 +287,7 @@ public class FileHarvest implements IHarvester
     {
     	if ( file.getAbsolutePath().endsWith( "/" ) )
     	{
-    		return (String)file.getAbsolutePath().subSequence( 0 , (file.getAbsolutePath().length() - 1) );
+    		return ( String )file.getAbsolutePath().subSequence( 0 , ( file.getAbsolutePath().length() - 1) );
     	}
     	else
     	{
@@ -300,11 +300,11 @@ public class FileHarvest implements IHarvester
      * 
      * @returns a hashset of new job files.
      */
-    private HashSet<File> findNewJobs()
+    private HashSet< File > findNewJobs()
     {
         log.debug( "findNewJobs() called" );
-        HashSet<File> currentJobs = new HashSet<File>();
-        for( Pair<File, Long> job : findAllJobs() )
+        HashSet< File > currentJobs = new HashSet< File >();
+        for( Pair< File, Long > job : findAllJobs() )
         {
             currentJobs.add( job.getFirst() );
         }

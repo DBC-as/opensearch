@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
@@ -51,7 +50,6 @@ public class DatadockMain
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
 
-    static XMLConfiguration config = null;
     static int queueSize;
     static int corePoolSize;
     static int maxPoolSize;

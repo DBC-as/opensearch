@@ -11,10 +11,18 @@ import org.apache.log4j.Logger;
 /**
  * @author mro
  * 
- * Super class for config classes. The sole purpose of this class is to  
- * provide access to the configuration file ../config/config.xml. This 
- * file is parsed and made available to sub classes through a non static
- * object.
+ * Super (or base) class for the config classes. Hence: 
+ * 	 
+ *       DO NOT ALTER THIS CLASS IF IT CAN BE AVOIDED!!!
+ *    
+ * It should read one config file and make this file accessible via a 
+ * constructor -- and do nothing else! That is, the sole purpose of this 
+ * class is to provide access to the configuration file:
+ *                   
+ *                   ../config/config.xml. 
+ *                    
+ * This file is parsed and made available to sub classes through a non 
+ * static object.
  * 
  * The intended use is for sub classes to provide access to configuration 
  * settings via static methods. This is done via:

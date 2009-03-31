@@ -178,7 +178,7 @@
 
 
   <target name="_dist_datadock"
-         description="generates jar file _DATADOCK.jar" >
+          description="generates jar file _DATADOCK.jar" >
     <echo>
       Building jar file for DATADOCK
    </echo>
