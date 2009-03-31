@@ -334,8 +334,8 @@ public class FileHarvest implements IHarvester
         
         for( Pair< File, Long > format : formats )
         {	
-        	int l = format.getFirst().listFiles().length;
-        	log.debug( "FileHarvest: fileList length:" + l + " Format: " + format.getFirst().getAbsolutePath() );        	
+        	//int l = format.getFirst().listFiles().length;
+        	//log.debug( "FileHarvest: fileList length:" + l + " Format: " + format.getFirst().getAbsolutePath() );        	
             for( File job : format.getFirst().listFiles() )
             {            	
                 log.debug( String.format( "found job: '%s'", job.getAbsolutePath() ) );
