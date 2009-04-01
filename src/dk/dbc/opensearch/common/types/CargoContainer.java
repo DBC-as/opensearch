@@ -63,7 +63,6 @@ public class CargoContainer
      * @param language
      * @param mimetype
      * @param data
-     * @return TRUE if add operation finishes successfully.
      * @throws IOException
      */
     public void add( DataStreamType dataStreamName, String format, String submitter, String language, String mimetype, byte[] data ) throws IOException
