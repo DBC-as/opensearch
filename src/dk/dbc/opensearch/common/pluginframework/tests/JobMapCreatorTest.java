@@ -49,7 +49,7 @@ public class JobMapCreatorTest
 {
     JobMapCreator jmc;
     /**
-     * \Todo: The mockURL should be created in another way...
+     * \todo: The mockURL should be created in another way...
      */
     static File mockFile = createMock( File.class );
     static NodeList mockNodeList = createMock( NodeList.class );

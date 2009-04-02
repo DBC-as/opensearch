@@ -522,7 +522,7 @@ IMAGE_PATH             =
 # this input filter catches the vs style todos and converts them into 
 # something doxygenable.
 
-INPUT_FILTER		= "sed -r 's/\/\/ todo/\/\/! \\todo/'"
+INPUT_FILTER		= "sed -r 's/\/\/ \\todo/\/\/! \\todo/'"
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern 
 # basis.  Doxygen will compare the file name with each pattern and apply the 

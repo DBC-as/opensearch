@@ -28,7 +28,7 @@ public interface IPluginResolver
      * @throws FileNotFoundException when the wanted plugin cannot be found or 
      * there are no plugin registration files to be found. 
      * @throws InstantiationException when the plugin cannot be instantiated
-     * \Todo: Should we throw different exceptions for the 2 cases 
+     * \todo: Should we throw different exceptions for the 2 cases 
      * FileNotFoundException covers?  
      * @throws IllegalAccessException 
      */

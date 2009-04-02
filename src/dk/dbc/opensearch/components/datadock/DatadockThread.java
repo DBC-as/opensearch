@@ -83,7 +83,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
 
 
     /**
-     *\Todo: Wheet out in the Exceptions
+     *\todo: Wheet out in the Exceptions
      *
      * DataDock is initialized with a DatadockJob containing information
      * about the data to be 'docked' into to system

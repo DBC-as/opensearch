@@ -36,7 +36,7 @@ public class JobMapCreator
 
 
     /**
-     * default constructor \Todo : Is it nessecary?
+     * default constructor \todo : Is it nessecary?
      */
     public JobMapCreator() {}
 
@@ -125,7 +125,7 @@ public class JobMapCreator
     }
 
     /**
-     * \Todo: this method should be package private, but it is not so until we put the 
+     * \todo: this method should be package private, but it is not so until we put the 
      * testfiles in the same package as the files under test... 
      * @throws ConfigurationException 
      */

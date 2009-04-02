@@ -10,7 +10,7 @@ import java.util.Comparator;
  * helper class for the JobMapCreator class for use in sorting arraylists 
  * of Pair<String,Integer>
  * Is made a class on its on and not an inner class to prepare the JobMapCreator 
- * class to become static. See Todo in JobMapCreator
+ * class to become static. See todo in JobMapCreator
  */
 public class PairComparator_SecondInteger implements Comparator
 {

@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 /**
- * \Todo make it possible to the DocumentBuilderFactory or the DocumentBuilder...
+ * \todo make it possible to the DocumentBuilderFactory or the DocumentBuilder...
  * If that is not possible it is only possible to test the methods with real files
  */
 public class XMLFileReaderTest {
