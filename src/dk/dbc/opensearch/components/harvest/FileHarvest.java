@@ -107,6 +107,7 @@ public class FileHarvest implements IHarvester
             String submitterAtt = pluginElement.getAttribute( "submitter" );
             if( ! submittersFormatsVector.contains( formatAtt ) )
             {
+            	log.debug( String.format( "Adding submitter and format to Vector submitterFormatPair: %s and %s", submitterAtt, formatAtt ) );
             	Pair< String, String > submitterFormatPair = new Pair< String, String >( submitterAtt, formatAtt );
             	submittersFormatsVector.add( submitterFormatPair );
             }
@@ -186,7 +187,7 @@ public class FileHarvest implements IHarvester
         String toHarvestFolder = HarvesterConfig.getFolder();
         String harvestDoneFolder = HarvesterConfig.getDoneFolder();
         int max = HarvesterConfig.getMaxToHarvest();
-        
+        log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
         for( Pair< File, Long > format : formats )
         {	
             File[] files = format.getFirst().listFiles();
@@ -213,7 +214,7 @@ public class FileHarvest implements IHarvester
     }
 
 
-    public synchronized void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException 
+    public void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException 
     {
     	log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
     	boolean ok = false;
@@ -229,7 +230,7 @@ public class FileHarvest implements IHarvester
         if ( ok )
         {
         	log.debug( "destFldr created: " + destFldr.getPath().toString() );
-        	ok = dest.createNewFile();
+        	ok = src.renameTo( dest );
         	if ( ok )
         	{
         		log.debug( "New file created: " + dest.getPath().toString() );
@@ -380,12 +381,15 @@ public class FileHarvest implements IHarvester
     	log.debug( "FileHarvest.checkSubmitterFormat -> format: " + formatFilePath );
     	
     	Pair< String, String > pair = new Pair< String, String >( submitterFilePath, formatFilePath );
-    	if ( submittersFormatsVector.contains( pair ) )
+    	boolean contains = submittersFormatsVector.contains( pair );
+    	log.debug( "FileHarvest.checkSubmitterFormat -> contains: " + contains );
+    	if ( contains )
     	{
     		return true;
     	}
     	else
     	{
+    		log.debug( "FileHarvest.checkSubmitterFormat -> Vector: " + submittersFormatsVector.toString() );
     		return false;
     	}
     }
