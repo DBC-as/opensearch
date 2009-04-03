@@ -8,7 +8,11 @@ package dk.dbc.opensearch.components.harvest;
 
 import dk.dbc.opensearch.common.types.DatadockJob;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Vector;
+
+import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
@@ -42,6 +46,9 @@ public interface IHarvester
      * 
      * @return getJobs Returns a vector of DatadockJobs - representing
      * the new jobs registered since the last call to this method.
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     * @throws ConfigurationException 
      */
-    Vector< DatadockJob > getJobs();
+    Vector< DatadockJob > getJobs() throws FileNotFoundException, IOException, ConfigurationException;
 }

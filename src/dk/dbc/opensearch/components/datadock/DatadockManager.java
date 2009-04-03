@@ -73,6 +73,54 @@ public class DatadockManager
             registeredJobs = harvester.getJobs();
         }
       
+        log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
+        
+        for( int i = 0; i < jobLimit; i++ )
+        {
+        	if( registeredJobs.size() == 0 )
+            {
+            	break;
+            }
+            
+        	log.debug( "DatadockManager.update: Removing job from registeredJobs" );
+            DatadockJob job = registeredJobs.remove( 0 );
+        
+            // execute jobs
+            //log.debug( String.format( "DatadockManager harvester getJobs called. jobs.size: %s", jobs.size() ) );
+            boolean submitted = false;
+            
+            while( ! submitted )
+            {
+            	try
+            	{
+            		pool.submit( job );
+            		submitted = true;
+            		log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
+            	}
+            	catch( RejectedExecutionException re )
+            	{
+            		log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
+            	}
+            }
+        }
+        
+        //checking jobs
+        Vector<CompletedTask> finishedJobs = pool.checkJobs();
+    }
+    
+    
+    /*public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    {
+        log.debug( "DatadockManager update called" );
+      
+        // Check if there are any registered jobs ready for docking
+        // if not... new jobs are requested from the harvester
+        if( registeredJobs.size() == 0 )
+        {
+            log.debug( "no more jobs. requesting new jobs from the harvester" );
+            registeredJobs = harvester.getJobs();
+        }
+      
         for( int i = 0; i < jobLimit; i++)
         {
         	if( registeredJobs.size() == 0 )
@@ -103,9 +151,9 @@ public class DatadockManager
         
         //checking jobs
         Vector<CompletedTask> finishedJobs = pool.checkJobs();
-    }
+    }*/
     
-
+    
     public void shutdown() throws InterruptedException
     {
         log.debug( "Shutting down the pool" );

@@ -79,7 +79,7 @@ queuesz.text   = "20"
 corepool.text  = "3"
 maxpool.text   = "6"
 keepalive.text = "10"
-joblimit.text  = "20"
+joblimit.text  = "1000"
 datadock.text  = os.path.join( path, "config/datadock_jobs.xml" )
 
 #fedora settings
@@ -99,8 +99,12 @@ trunk.text   = path
 plugins.text = pluginpath
 
 #harvester settings
-folder = ET.SubElement( harvest, "folder" )
-folder.text = os.path.join( path, "kanon" )
+toharvestfolder = ET.SubElement( harvest, "toharvest" )
+harvestdonefolder = ET.SubElement( harvest, "harvestdone" )
+maxtoharvest = ET.SubElement( harvest, "maxtoharvest" )
+toharvestfolder.text = os.path.join( path, "Harvest" )
+harvestdonefolder.text = os.path.join( path, "HarvestDone" )
+maxtoharvest.text = "1000"
 
 #pidmanager settings
 num_of_pids = ET.SubElement( pidmng, "num-of-pids-to-retrieve" )

@@ -104,7 +104,7 @@ def call_walk_make( srcDir ):
     print 'Suite files successfully created!'
 
 
-def main( arg_lst):
+def main( arg_lst ):
     
     sourceDir = os.getcwd()
 

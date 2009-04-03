@@ -26,7 +26,7 @@ public class HarvesterConfig extends Config
 	/* FOLDER */
 	private String getHarvesterFolder()
 	{
-		String ret = config.getString( "harvester.folder" );
+		String ret = config.getString( "harvester.toharvest" );
 		return ret;
 	}
 	
@@ -35,5 +35,35 @@ public class HarvesterConfig extends Config
 	{
 		HarvesterConfig hc = new HarvesterConfig();
 		return hc.getHarvesterFolder();
-	} 
+	}
+	
+	
+	/* DONE FOLDER */
+	private String getHarvesterDoneFolder()
+	{
+		String ret = config.getString( "harvester.harvestdone" );
+		return ret;
+	}
+	
+	
+	public static String getDoneFolder() throws ConfigurationException 
+	{
+		HarvesterConfig hc = new HarvesterConfig();
+		return hc.getHarvesterDoneFolder();
+	}
+	
+	
+	/* MAX TO HARVEST */
+	private int getHarvesterMaxToHarvest()
+	{
+		int ret = config.getInt( "harvester.maxtoharvest" );
+		return ret;
+	}
+	
+	
+	public static int getMaxToHarvest() throws ConfigurationException 
+	{
+		HarvesterConfig hc = new HarvesterConfig();
+		return hc.getHarvesterMaxToHarvest();
+	}
 }
