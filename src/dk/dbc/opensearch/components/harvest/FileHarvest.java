@@ -233,21 +233,21 @@ public class FileHarvest implements IHarvester
         	ok = src.renameTo( dest );
         	if ( ok )
         	{
-        		log.debug( "New file created: " + dest.getPath().toString() );
-        		ok = src.delete();
-        		if ( ok )
-        		{
-        			log.debug( "Old file deleted: " + src.getAbsolutePath().toString() );
-        		}
-        		else
-        		{
-        			log.debug( "Could not delete old file: " + src.getAbsolutePath().toString() );
-        			throw new IOException( "IOException thrown in FileHarvest.move: Could not delete old file: " + src.getAbsolutePath().toString() );
-        		}
+//        		log.debug( "New file created: " + dest.getPath().toString() );
+//        		ok = src.delete();
+//        		if ( ok )
+//        		{
+//        			log.debug( "Old file deleted: " + src.getAbsolutePath().toString() );
+//        		}
+//        		else
+//        		{
+//        			log.debug( "Could not delete old file: " + src.getAbsolutePath().toString() );
+//        			throw new IOException( "IOException thrown in FileHarvest.move: Could not delete old file: " + src.getAbsolutePath().toString() );
+//        		}
         	}
         	else 
         	{
-        		log.debug( "Could not create new file: " + dest.getAbsolutePath().toString() );
+        		log.debug( String.format( "Could not rename file: %s to %s", src.getAbsolutePath().toString(), dest.getAbsolutePath().toString() ) );
         		throw new IOException( "IOException thrown in FileHarvest.move: Could not create new file: " + src.getAbsolutePath().toString() );
         	}
         	

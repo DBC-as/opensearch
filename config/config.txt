@@ -1,0 +1,51 @@
+# This is a config file used for writing config.xml, which is the actual
+# config file of the program.
+
+[ "compass" ]
+configpath = compass.cfg.xml
+xsempath   = xml.cpm.xml
+
+[ "database" ]
+driver = org.postgresql.Driver
+url    = jdbc:postgresql:
+
+[ "datadock" ]
+main_poll_time      = 1000
+rejected_sleep_time = 3000
+shutdown_poll_time  = 1000
+queue_size          = 20
+core_poll_size      = 3
+max_poll_size       = 6
+keep_alive_time     = 10
+job_limit           = 20
+path                = config/datadock_jobs.xml
+
+[ "fedora" ]
+host       = localhost
+port       = 8080
+user       = fedoraAdmin
+passphrase = fedoraAdmin
+
+[ "filesystem" ]
+# trunk   = 
+# plugins = 
+
+[ "harvester" ]
+toharvest = "Harvest"
+harvestdone = "HarvestDone"
+maxtoharvest = "1000"
+
+
+[ "pidmanager" ]
+num_of_pids = 10
+
+[ "pti" ]
+main_poll_time          = 1000
+rejected_sleep_time     = 3000
+shutdown_poll_time      = 1000
+queue_resultset_maxsize = 20
+queue_size              = 20
+core_poll_size          = 3
+max_poll_size           = 6
+keep_alive_time         = 10
+path                    = config/pti_jobs.xml
