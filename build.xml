@@ -65,6 +65,11 @@
     <antcall target="_test"/>
   </target>
 
+  
+  <target name="test_project" depends="compile-tests_project">
+    <antcall target="_test" />
+  </target>
+
 
   <target name="test-single" depends="test_Dtest, compile-tests">
     <antcall target="_test-single" />
@@ -213,7 +218,7 @@
   </target>
 
 
-  <target name="datadock" depends="test_Darg, fedora">
+  <target name="datadock" depends="test_Darg, fedora, os">
     <antcall target="${arg}_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/datadock" />
       <param name="project.name" value="datadock" />

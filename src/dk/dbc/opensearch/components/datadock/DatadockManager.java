@@ -75,35 +75,27 @@ public class DatadockManager
       
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
         
-        //for( int i = 0; i < jobLimit; i++ )
         for( int i = 0; i < registeredJobs.size(); i++ )
         {
-//        	if( registeredJobs.size() == 0 )
-//            {
-//            	break;
-//            }
-            
-        	log.debug( "DatadockManager.update: Removing job from registeredJobs" );
-            //DatadockJob job = registeredJobs.remove( 0 );
         	DatadockJob job = registeredJobs.get( 0 );
         
             // execute jobs
             //log.debug( String.format( "DatadockManager harvester getJobs called. jobs.size: %s", jobs.size() ) );
-            //boolean submitted = false;            
-            //while( ! submitted )
-            //{
-            	try
-            	{
-            		pool.submit( job );
-            		registeredJobs.remove( 0 );
-            		//submitted = true;
-            		log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
-            	}
-            	catch( RejectedExecutionException re )
-            	{
-            		log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
-            	}
-            //}
+        	boolean submitted = false;
+    		while( ! submitted )
+    		{
+	           	try
+	           	{
+	           		pool.submit( job );
+	           		registeredJobs.remove( 0 );
+	           		submitted = true;
+	           		log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
+	           	}
+	           	catch( RejectedExecutionException re )
+	           	{
+	           		log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );	           	
+	           	}
+    		}
         }
         
         //checking jobs
