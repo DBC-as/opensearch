@@ -276,6 +276,33 @@ public class Processqueue
 
         return rowsUpdated;
     }
+
+    public void notDocked( String path ) throws ClassNotFoundException, SQLException
+    {
+        log.debug( String.format( "Entering notDocked( path = '%s')",path ) );
+        Connection con = DBConnection.getConnection();
+
+        //log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
+        Statement stmt = null;
+        stmt = con.createStatement();
+        String sql_query = (  String.format( "INSERT INTO notDocked( path ) "+
+                                             "VALUES( %s )", path ) );
+    
+        try
+            {
+                stmt.executeUpdate( sql_query );
+                con.commit();
+            }
+        finally
+            {
+                // Close database connection
+                stmt.close();
+                con.close();
+            }
+
+    }
+
+
     public void notIndexed(int queueID ) throws ClassNotFoundException, SQLException
     {
         log.debug( String.format( "Entering notIndexed( queueID = '%s')",queueID ) );

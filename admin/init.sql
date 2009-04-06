@@ -2,4 +2,4 @@
 
 \i processqueue_init.sql
 \i statistics_init.sql
-\i not_indexed.sql
+\i not_indexed.sql/i not_docked.sql
