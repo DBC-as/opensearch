@@ -81,21 +81,21 @@ public class DatadockManager
         
             // execute jobs
             //log.debug( String.format( "DatadockManager harvester getJobs called. jobs.size: %s", jobs.size() ) );
-        	boolean submitted = false;
-    		while( ! submitted )
-    		{
+//        	boolean submitted = false;
+//    		while( ! submitted )
+//    		{
 	           	try
 	           	{
 	           		pool.submit( job );
 	           		registeredJobs.remove( 0 );
-	           		submitted = true;
+//	           		submitted = true;
 	           		log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
 	           	}
 	           	catch( RejectedExecutionException re )
 	           	{
 	           		log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );	           	
 	           	}
-    		}
+    //		}
         }
         
         //checking jobs
