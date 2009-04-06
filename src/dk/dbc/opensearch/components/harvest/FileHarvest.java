@@ -64,8 +64,6 @@ public class FileHarvest implements IHarvester
     private Vector< Pair< File, Long > > submitters;
     private Vector< Pair< File, Long > > formats;
     private Vector< Pair< String, String > > submittersFormatsVector;
-    //private HashSet< File > jobSet;
-    //private HashSet< Pair< File, Long > > jobApplications;
 
     
     /**
@@ -91,10 +89,8 @@ public class FileHarvest implements IHarvester
         }
         
         this.path = path;
-        //this.jobApplications = new HashSet< Pair< File, Long > >();
         this.submitters = new Vector< Pair< File, Long > >();
         this.formats = new Vector< Pair< File, Long > >();
-        //this.jobSet = new HashSet< File >();        
 
         String datadockJobsFilePath = DatadockConfig.getPath();
     	File datadockJobsFile = new File( datadockJobsFilePath );
@@ -124,16 +120,6 @@ public class FileHarvest implements IHarvester
 
         initVectors();        
         log.debug( "Vectors initialized" );
-        
-        /*HashSet< Pair< File, Long > > temp = findAllJobs();
-        for( Pair< File, Long > job : temp )
-        {
-            System.out.println( String.format( "adding path='%s' to jobSet and jobApllications", job.getFirst().getAbsolutePath() ) );
-            log.debug( String.format( "adding path='%s' to jobSet and jobApllications", job.getFirst().getAbsolutePath() ) );
-            jobSet.add( job.getFirst() );
-        }
-        
-        jobApplications = temp;*/
     }
 
     
@@ -145,197 +131,6 @@ public class FileHarvest implements IHarvester
         log.debug( "shutdown() called" );
     }
     
-
-    /**
-     * getJobs. Locate jobs and returns them.  First off, the
-     * candidates already registered analyzed. if their filesize has
-     * remained the same as last time it is removed from the
-     * applications vector and added to the newJobs vector and
-     * returned when the method exits.
-     * 
-     * afterwards it finds new jobs and adds them to the applications
-     * vector, and generate a new snapshot of the harvest directory.
-     * @throws ConfigurationException 
-     * 
-     * @returns A vector of Datadockjobs containing the necessary information to process the jobs.
-     */
-    public Vector< DatadockJob > getJobs() throws FileNotFoundException, IOException, ConfigurationException
-    {
-        Vector< DatadockJob > jobs = new Vector< DatadockJob>();
-        HashSet< Pair< File, Long > > newJobs = getNewJobs();
-        for( Pair< File, Long > job : newJobs )
-        {
-            URI uri = job.getFirst().toURI();
-            String grandParentFile = job.getFirst().getParentFile().getParentFile().getName();
-            String parentFile = job.getFirst().getParentFile().getName();
-            DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
-            log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'", datadockJob.getUri().getRawPath(),
-            		                                                                           datadockJob.getSubmitter(),
-            		                                                                           datadockJob.getFormat() ) );
-            jobs.add( datadockJob );            
-        }
-
-        return jobs;
-    }
-
-
-    
-    private HashSet< Pair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
-    {
-    	log.debug( "Calling FileHarvest.getNewJobs");
-        HashSet< Pair< File, Long > > jobs = new HashSet< Pair< File, Long > >();
-        String toHarvestFolder = HarvesterConfig.getFolder();
-        String harvestDoneFolder = HarvesterConfig.getDoneFolder();
-        int max = HarvesterConfig.getMaxToHarvest();
-        log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
-        for( Pair< File, Long > format : formats )
-        {	
-            File[] files = format.getFirst().listFiles();
-            int l = files.length;
-            int i = 0;
-            while( i < l && i < max )
-            {            	
-                File job = files[i];
-                //jobs.add( new Pair< File, Long >( job, job.length() )  );
-                String path = job.getPath();
-                String newPath = path.replace( toHarvestFolder, harvestDoneFolder ); 
-                String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
-                File destFldr = new File( destFldrStr );
-                File dest = new File( newPath );               
-                move( job, destFldr, dest );
-                jobs.add( new Pair< File, Long >( dest, dest.length() )  );
-                i++;
-            }
-        }
-        
-        log.debug( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
-        
-        return jobs;
-    }
-
-
-    public void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException 
-    {
-    	log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
-    	boolean ok = false;
-    	if ( ! destFldr.exists() )
-    	{
-    		ok = destFldr.mkdirs();
-    	}
-    	else
-    	{
-    		ok = true;
-    	}
-    	
-        if ( ok )
-        {
-        	log.debug( "destFldr created: " + destFldr.getPath().toString() );
-        	ok = src.renameTo( dest );
-        	if ( ok )
-        	{
-//        		log.debug( "New file created: " + dest.getPath().toString() );
-//        		ok = src.delete();
-//        		if ( ok )
-//        		{
-//        			log.debug( "Old file deleted: " + src.getAbsolutePath().toString() );
-//        		}
-//        		else
-//        		{
-//        			log.debug( "Could not delete old file: " + src.getAbsolutePath().toString() );
-//        			throw new IOException( "IOException thrown in FileHarvest.move: Could not delete old file: " + src.getAbsolutePath().toString() );
-//        		}
-        	}
-        	else 
-        	{
-        		log.debug( String.format( "Could not rename file: %s to %s", src.getAbsolutePath().toString(), dest.getAbsolutePath().toString() ) );
-        		throw new IOException( "IOException thrown in FileHarvest.move: Could not create new file: " + src.getAbsolutePath().toString() );
-        	}
-        	
-        }
-        else
-        {
-        	log.debug( "Could not create destination folder for old files: " + destFldr.getAbsolutePath().toString() );
-        	throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
-        
-        }
-    }
-    
-    
-    /*public Vector< DatadockJob > getJobs2()
-    {
-        log.debug( "FileHarvest getJobs called " );
-        
-        // validating candidates - if the filelength have remained the
-        // same for two consecutive calls it is added to newJobs
-        Vector< DatadockJob > newJobs = new Vector<DatadockJob>();
-        HashSet< Pair< File, Long > > removeJobs = new HashSet< Pair< File, Long > >();
-        //System.out.println( jobApplications );
-        for( Pair< File, Long > job : jobApplications )
-        {
-            if( job.getFirst().length() == job.getSecond() )
-            {
-                DatadockJob datadockJob = new DatadockJob( job.getFirst().toURI(),
-                                                           job.getFirst().getParentFile().getParentFile().getName(),
-                                                           job.getFirst().getParentFile().getName() );
-                System.out.println( String.format( "found new job: path='%s', submitter='%s', format='%s'",
-                                                   datadockJob.getUri().getRawPath(),
-                                          datadockJob.getSubmitter(),
-                                          datadockJob.getFormat() ) );
-
-                log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'",
-                                          datadockJob.getUri().getRawPath(),
-                                          datadockJob.getSubmitter(),
-                                          datadockJob.getFormat() ) );
-                newJobs.add( datadockJob );
-                removeJobs.add( job );
-            }
-        }
-        
-        // removing confirmed jobs from applications
-        for( Pair< File, Long > job : removeJobs )
-        {
-            log.debug( String.format( "Removing job='%s' from applications", job.getFirst().getAbsolutePath() ) );
-            jobApplications.remove( job );
-        }
-
-        // Finding new Jobs
-        // Has anything happened ?
-        boolean changed = false;
-        for( Pair< File, Long > format : formats )
-        {
-            if( format.getFirst().lastModified() > format.getSecond() )
-            {
-                changed = true;
-            }
-        }
-
-        if( changed )
-        {
-            log.debug( "Files changed" );
-            for( File newJob : findNewJobs() )
-            {
-                log.debug( String.format( "adding new job to applications: path='%s'", newJob.getAbsolutePath() ) );
-                jobApplications.add( new Pair< File, Long >( newJob, newJob.length() ) );
-            }
-
-            // generating new snapshot
-            submitters = new Vector<Pair<File, Long >>();
-            formats = new Vector<Pair<File, Long >>();
-            initVectors();
-             
-            jobSet = new HashSet< File >();
-            for( Pair< File, Long > job : findAllJobs() )
-            {                
-            	//log.debug( String.format( "adding path='%s' to jobSet", Tuple.get1( job ).getAbsolutePath() ) );
-            	//log.debug( String.format( "adding path='%s' to jobSet", job.getFirst().getAbsolutePath() ) );
-                //jobSet.add( Tuple.get1( job ) );
-            	//jobSet.add( job.getFirst() );
-            }
-        }
-        
-        return newJobs;
-    }*/
-
     
     /**
      * Private method to initialize the local vectors representing the
@@ -407,55 +202,103 @@ public class FileHarvest implements IHarvester
     	}
     }
     
+
+    /**
+     * getJobs. Locate jobs and returns them.  First off, the
+     * candidates already registered analyzed. if their filesize has
+     * remained the same as last time it is removed from the
+     * applications vector and added to the newJobs vector and
+     * returned when the method exits.
+     * 
+     * afterwards it finds new jobs and adds them to the applications
+     * vector, and generate a new snapshot of the harvest directory.
+     * @throws ConfigurationException 
+     * 
+     * @returns A vector of Datadockjobs containing the necessary information to process the jobs.
+     */
+    public Vector< DatadockJob > getJobs() throws FileNotFoundException, IOException, ConfigurationException
+    {
+        Vector< DatadockJob > jobs = new Vector< DatadockJob>();
+        HashSet< Pair< File, Long > > newJobs = getNewJobs();
+        for( Pair< File, Long > job : newJobs )
+        {
+            URI uri = job.getFirst().toURI();
+            String grandParentFile = job.getFirst().getParentFile().getParentFile().getName();
+            String parentFile = job.getFirst().getParentFile().getName();
+            DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
+            log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'", datadockJob.getUri().getRawPath(),
+            		                                                                           datadockJob.getSubmitter(),
+            		                                                                           datadockJob.getFormat() ) );
+            jobs.add( datadockJob );            
+        }
+
+        return jobs;
+    }
+
+
     
-    /**
-     * Finds the new jobs in the poll Directory
-     * 
-     * @returns a hashset of new job files.
-     */
-    /*private HashSet< File > findNewJobs()
+    private HashSet< Pair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
-        log.debug( "findNewJobs() called" );
-        HashSet< File > currentJobs = new HashSet< File >();
-        for( Pair< File, Long > job : findAllJobs() )
-        {
-            currentJobs.add( job.getFirst() );
-        }
-        
-        HashSet<File> newJobs = new HashSet<File>( jobSet );
-        log.debug( String.format( "newjob size='%s', '%s'", newJobs.size(), newJobs.size() ) );
-        newJobs.addAll( currentJobs );
-        newJobs.removeAll( jobSet );
-
-        for( File job : newJobs )
-        {
-            log.debug( String.format( "found job: '%s'", job.getAbsolutePath() ) );
-        }
-        
-        return newJobs;
-    }*/
-
-    /**
-     * Finds all jobs in the poll Directory
-     * 
-     * @returns a hashset of pairs containing new job files and their size.
-     */
-    /*private HashSet< Pair< File, Long > > findAllJobs()
-    {
-        log.debug( "findAllJobs() called" );
+    	log.debug( "Calling FileHarvest.getNewJobs");
         HashSet< Pair< File, Long > > jobs = new HashSet< Pair< File, Long > >();
-        
+        String toHarvestFolder = HarvesterConfig.getFolder();
+        String harvestDoneFolder = HarvesterConfig.getDoneFolder();
+        int max = HarvesterConfig.getMaxToHarvest();
+        log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
         for( Pair< File, Long > format : formats )
         {	
-        	int l = format.getFirst().listFiles().length;
-        	log.debug( "FileHarvest: fileList length:" + l + " Format: " + format.getFirst().getAbsolutePath() );        	
-            for( File job : format.getFirst().listFiles() )
+            File[] files = format.getFirst().listFiles();
+            int l = files.length;
+            int i = 0;
+            while( i < l && i < max )
             {            	
-                log.debug( String.format( "found job: '%s'", job.getAbsolutePath() ) );
-                jobs.add( new Pair< File, Long >( job, job.length() )  );
+                File job = files[i];
+                String path = job.getPath();
+                String newPath = path.replace( toHarvestFolder, harvestDoneFolder ); 
+                String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
+                File destFldr = new File( destFldrStr );
+                File dest = new File( newPath );               
+                move( job, destFldr, dest );
+                jobs.add( new Pair< File, Long >( dest, dest.length() )  );
+                i++;
             }
         }
         
+        log.debug( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
+        
         return jobs;
-    }*/
+    }
+
+
+    public void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException 
+    {
+    	log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
+    	boolean ok = false;
+    	if ( ! destFldr.exists() )
+    	{
+    		ok = destFldr.mkdirs();
+    	}
+    	else
+    	{
+    		ok = true;
+    	}
+    	
+        if ( ok )
+        {
+        	log.debug( "destFldr created: " + destFldr.getPath().toString() );
+        	ok = src.renameTo( dest );
+    	    if ( ! ok )
+        	{
+        		log.debug( String.format( "Could not rename file: %s to %s", src.getAbsolutePath().toString(), dest.getAbsolutePath().toString() ) );
+        		throw new IOException( "IOException thrown in FileHarvest.move: Could not create new file: " + src.getAbsolutePath().toString() );
+        	}
+        	
+        }
+        else
+        {
+        	log.debug( "Could not create destination folder for old files: " + destFldr.getAbsolutePath().toString() );
+        	throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
+        
+        }
+    }
 }

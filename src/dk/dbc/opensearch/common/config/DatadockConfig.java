@@ -129,21 +129,6 @@ public class DatadockConfig extends Config
 	}
 	
 	
-	/* JOB LIMIT */
-	private int getDatadockJobLimit()
-	{
-		int ret = config.getInt( "datadock.joblimit" );
-		return ret;
-	}
-	
-	
-	public static int getJobLimit() throws ConfigurationException
-	{
-		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getDatadockJobLimit();
-	}
-	
-	
 	/* PATH */
 	private String getDatadockPath()
 	{

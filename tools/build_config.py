@@ -69,7 +69,6 @@ queuesz   = ET.SubElement( dd, "queuesize" )
 corepool  = ET.SubElement( dd, "corepoolsize" )
 maxpool   = ET.SubElement( dd, "maxpoolsize" )
 keepalive = ET.SubElement( dd, "keepalivetime" )
-joblimit  = ET.SubElement( dd, "joblimit" )
 datadock  = ET.SubElement( dd, "path" )
 
 poll.text      = "1000" 
@@ -79,7 +78,6 @@ queuesz.text   = "20"
 corepool.text  = "3"
 maxpool.text   = "6"
 keepalive.text = "10"
-joblimit.text  = "1000"
 datadock.text  = os.path.join( path, "config/datadock_jobs.xml" )
 
 #fedora settings
