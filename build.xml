@@ -71,7 +71,12 @@
   </target>
 
 
-  <target name="dist" depends="clean, xsd">
+  <target name="config_py">
+    <antcall target="py_config" />
+  </target>
+
+
+  <target name="dist" depends="clean, xsd, config_py">
     <antcall target="compile_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>
