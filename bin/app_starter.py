@@ -8,7 +8,7 @@ import subprocess
 import logging as log
 
 
-def main( app, action, use_jmp ):
+def main( app, action, monitor ):
     log.basicConfig( level = log.DEBUG,
                      format = '%(asctime)s %(levelname)s %(message)s',
                      filename='app_starter.log' )
@@ -68,26 +68,28 @@ def main( app, action, use_jmp ):
     if do_start:
         print "starting process"
         log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
-        proc, pid = start_daemon( q_name, pid_filename, use_jmp )
+        proc, pid = start_daemon( q_name, pid_filename, monitor )
         log.debug( "Started process with pid=%s"%( pid ) )
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
 
         
         
-def start_daemon( q_name, pid_filename, use_jmp ):
+def start_daemon( q_name, pid_filename, monitor ):
     
     """
     Starts the Application daemon
     """
     runproc = subprocess.Popen( [ './run' ], shell=True, stdout=subprocess.PIPE ) 
     cp = runproc.communicate()[ 0 ].strip( '\n' )
-    
-    tijmp = ''
-    if use_jmp:
-        tijmp = "-agentlib:tijmp"
 
-    cmd = [ 'java %s'%( tijmp ),
+    monitor_args = ''
+    if monitor == 'tijmp':
+        monitor_args = "-agentlib:tijmp"
+    if monitor == 'jconsole':
+        monitor_args = "-Dcom.sun.management.jmxremote.port=8155 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+
+    cmd = [ 'java %s'%( monitor_args ),
             '-Ddaemon.pidfile=%s'%( pid_filename ),
             '-jar',
             q_name ]
@@ -148,13 +150,24 @@ if __name__ == '__main__':
                        help="Name of app to execute")
     parser.add_option( "-l", dest="listapps", action="store_true",
                        default=False, help="List available apps" )
-    parser.add_option( "-t", action="store_true", dest="use_jmp" )
+
+    #parser.add_option( "-t", action="store_true", dest="use_jmp" )
+
+    parser.add_option( "-m", type="string", action="store", dest="monitor")
 
     (options, args) = parser.parse_args()
 
     app_list = [ 'datadock', 'pti', 'both' ]
 
-    use_jmp = options.use_jmp
+    #use_jmp = options.use_jmp
+
+    available_monitors = ["tijmp", "jconsole"]
+    if options.monitor and not options.monitor in available_monitors:
+        print "Available monitors:\n"
+        print '\n'.join( available_monitors )
+        sys.exit(2)
+    if not options.monitor:
+        options.monitor = ''
 
     if options.listapps:
         print "Available applications:\n"
@@ -169,7 +182,7 @@ if __name__ == '__main__':
         sys.exit( parser.print_help() )
 
     if options.app == 'both':
-        main( 'pti', args[0], use_jmp )
-        main( 'datadock', args[0], use_jmp )
+        main( 'pti', args[0], options.monitor )
+        main( 'datadock', args[0], options.monitor )
     else:
-        main( options.app, args[0], use_jmp )
+        main( options.app, args[0], options.monitor )
