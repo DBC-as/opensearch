@@ -2,6 +2,7 @@
  * \file CompletedTask.java
  * \brief The CompletedTask class
  * \package types;
+ */
 
 /*
    
@@ -22,7 +23,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
- */
 package dk.dbc.opensearch.common.types;
 
 
