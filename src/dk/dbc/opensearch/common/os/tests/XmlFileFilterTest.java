@@ -44,9 +44,12 @@ public class XmlFileFilterTest {
      */
     @Before public void SetUp() {
         xmlDir = new File( "xmlDir" );
+        xmlDir.deleteOnExit();
         xmlDir.mkdir();
         xmlFile = new File( xmlDir, ".xml" );
+        xmlFile.deleteOnExit();
         otherFile = new File( xmlDir, "notXml" );
+        otherFile.deleteOnExit();
         xff = new XmlFileFilter();
     }
 
