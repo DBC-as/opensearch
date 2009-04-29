@@ -96,16 +96,16 @@ public class FedoraCommunication extends FedoraHandle
             {
                 mimeType = co.getMimeType();
             }
-
+            
             length += co.getContentLength();
         }
 
-        //This should be caught in the harvest plugin!!!
+        // \todo: This should be caught in the harvest plugin!!!
         if ( cc.getItemsCount() < 1 )
         {
             log.error( String.format( "The cargocontainer for file %s has no data!", cc.getFilePath() ) );
         }
-
+        
         // Store the CargoContainer in the fedora repository
         byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
