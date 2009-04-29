@@ -27,7 +27,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraCom;
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
@@ -102,7 +102,7 @@ public class DatadockThread implements Callable<Float>
     private String submitter;
     private String format;
     private ArrayList< String > list;
-    private FedoraCom fedoraCom;
+    private FedoraCommunication fedoraCom;
 
 
     /**
@@ -156,7 +156,7 @@ public class DatadockThread implements Callable<Float>
         queue = processqueue;
 
         this.estimate = estimate;
-        fedoraCom = new FedoraCom();
+        fedoraCom = new FedoraCommunication();
 
         log.debug( String.format( "DataDock Construction finished" ) );
     }

@@ -67,10 +67,10 @@ import org.xml.sax.SAXException;
  * only function of this (abstract) class is to establish the SOAP communication
  * layer.
  */
-public class FedoraCom extends FedoraHandle
+public class FedoraCommunication extends FedoraHandle
 {
 
-    Logger log = Logger.getLogger( FedoraCom.class );
+    Logger log = Logger.getLogger( FedoraCommunication.class );
 
     /**
      * The constructor handles the initiation of the connection with the
@@ -79,7 +79,7 @@ public class FedoraCom extends FedoraHandle
      * @throws ServiceException
      * @throws ConfigurationException
      */
-    public FedoraCom() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException
+    public FedoraCommunication() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException
     {
         super();
     }
