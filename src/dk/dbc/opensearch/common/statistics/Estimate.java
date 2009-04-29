@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
  * \ingroup tools
  * \brief The Estimate class handles all communication to the statistics table
  */
-public class Estimate 
+public class Estimate implements IEstimate
 {
     Logger log = Logger.getLogger("Estimate");
     DBConnection DBconnection = null;

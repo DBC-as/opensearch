@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
  * \ingroup tools
  * \brief The Processqueue class handles all communication to the processqueue
  */
-public class Processqueue
+public class Processqueue implements IProcessqueue
 {
     Logger log = Logger.getLogger( Processqueue.class );
     DBConnection DBconnection = null;

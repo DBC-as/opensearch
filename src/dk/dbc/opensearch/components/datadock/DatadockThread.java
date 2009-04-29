@@ -25,7 +25,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
@@ -35,6 +35,7 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -91,11 +92,11 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
     private Logger log = Logger.getLogger( DatadockThread.class );
 
     private CargoContainer cc;
-    private Processqueue queue;
+    private IProcessqueue queue;
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
 
     private String result;
-    private Estimate estimate;
+    private IEstimate estimate;
     private DatadockJob datadockJob;
     private String submitter;
     private String format;
@@ -123,7 +124,7 @@ public class DatadockThread extends FedoraHandle implements Callable<Float>
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, Estimate estimate, Processqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         super();
         log.debug( String.format( "Entering DatadockThread Constructor" ) );

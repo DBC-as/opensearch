@@ -27,10 +27,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
@@ -68,8 +70,8 @@ public class DatadockPool
     
     private Vector< FutureTask > jobs;
     private final ThreadPoolExecutor threadpool;
-    private Estimate estimate;
-    private Processqueue processqueue;
+    private IEstimate estimate;
+    private IProcessqueue processqueue;
     private int shutDownPollTime;
     private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
     private PIDManager PIDmanager;
@@ -87,7 +89,7 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, Processqueue processqueue, PIDManager PIDmanager, HashMap< Pair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, HashMap< Pair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
     {
         log.debug( "Constructor( threadpool, estimat, processqueue, PIDmanager, jobMap ) called" );
 

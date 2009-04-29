@@ -27,7 +27,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
@@ -69,8 +71,8 @@ public class PTIPool
     static Logger log = Logger.getLogger("PTIPool");
     private Vector< Pair< FutureTask< PTIThread >, Integer > > jobs;
     private final ThreadPoolExecutor threadpool;
-    private Estimate estimate;
-    private Processqueue processqueue;
+    private IEstimate estimate;
+    private IProcessqueue processqueue;
     //    private FedoraHandler fedoraHandler;
     private Compass compass;
     private int shutDownPollTime;
@@ -86,7 +88,7 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, Estimate estimate, Compass compass, HashMap< Pair< String, String>, ArrayList< String > > jobMap ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< Pair< String, String>, ArrayList< String > > jobMap ) throws ConfigurationException
      {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 

@@ -29,9 +29,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
@@ -171,8 +173,8 @@ public class PTIMain
 
             log.debug( "initializing resources" );
 
-            Estimate estimate = new Estimate();
-            Processqueue processqueue = new Processqueue();
+            IEstimate estimate = new Estimate();
+            IProcessqueue processqueue = new Processqueue();
 
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();

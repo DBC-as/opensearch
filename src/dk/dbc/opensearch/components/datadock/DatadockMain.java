@@ -28,9 +28,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
@@ -177,8 +179,8 @@ public class DatadockMain
             log.debug( "initializing resources" );
 
             // DB access
-            Estimate estimate = new Estimate();
-            Processqueue processqueue = new Processqueue();
+            IEstimate estimate = new Estimate();
+            IProcessqueue processqueue = new Processqueue();
 
             // Fedora access
             PIDManager PIDmanager = new PIDManager();

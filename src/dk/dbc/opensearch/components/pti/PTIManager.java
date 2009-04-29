@@ -28,6 +28,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.Pair;
 
@@ -55,7 +56,7 @@ public class PTIManager
 
     
     private PTIPool pool= null;
-    private Processqueue processqueue = null;
+    private IProcessqueue processqueue = null;
     private int rejectedSleepTime;
     private int resultsetMaxSize;
 
@@ -63,7 +64,7 @@ public class PTIManager
     /**
      * Constructs the the PTIManager instance.
      */
-    public PTIManager( PTIPool pool, Processqueue processqueue ) throws ClassNotFoundException, SQLException, ConfigurationException
+    public PTIManager( PTIPool pool, IProcessqueue processqueue ) throws ClassNotFoundException, SQLException, ConfigurationException
     {
         log.debug( "Constructor( pool ) called" );
 
