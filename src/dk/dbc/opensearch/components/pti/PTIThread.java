@@ -197,8 +197,7 @@ public class PTIThread extends FedoraHandle implements Callable< Long >
             {
                 log.debug( String.format( "no plugin for task: %s", ( String )iter.next() ) );
             }
-
-            log.debug( " kill thread" );
+            log.debug( String.format( "thread terminates because it cannot work on the file: %s", cc.getFilePath() ) );
         }
         else
         {
