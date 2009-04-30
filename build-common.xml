@@ -160,7 +160,7 @@
 
 
   <target name="_test-single"
-          description="Run a single unittest using\nant -Dtest='dk.dbc.opensearch.common.fedora.tests.MyTest' test-single">
+          description="Run a single unittest using\nant -Dtest='dk.dbc.opensearch.common.fedora.tests.MyTest' test-single" depends="py_config">
     <junit fork="yes"
            forkmode="once"
            printsummary="on"

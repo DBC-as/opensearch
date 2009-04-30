@@ -88,6 +88,7 @@ public class PluginFinder
 
         // call updatePluginClassNameMap to generate the map
         updatePluginClassNameMap( path );
+       
     }
 
 
@@ -238,6 +239,7 @@ public class PluginFinder
         }
         
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
+        log.info( "classNameMap updated" );
     }
     
     
@@ -248,6 +250,7 @@ public class PluginFinder
     void clearClassNameMap()
     {
         classNameMap.clear();
+        log.info( "classNameMap cleared" );
     }
 
 }

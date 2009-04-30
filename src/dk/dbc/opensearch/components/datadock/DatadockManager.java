@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 
+
 /**
  * \brief the DataDockManager manages the startup, running and
  * closedown of the associated harvester and threadpool
@@ -65,7 +66,7 @@ public class DatadockManager
     /**
      * Constructs the the DatadockManager instance.
      */
-    public DatadockManager( DatadockPool pool, IHarvester harvester ) throws ConfigurationException
+    public DatadockManager( DatadockPool pool, IHarvester harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
         log.debug( "Constructor( pool, harvester ) called" );
 

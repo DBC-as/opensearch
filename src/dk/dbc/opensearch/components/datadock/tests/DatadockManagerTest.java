@@ -87,7 +87,7 @@ public class DatadockManagerTest
 
    
     @Test 
-    public void testConstructor() throws ConfigurationException 
+    public void testConstructor() throws ConfigurationException, ParserConfigurationException, SAXException, IOException 
     {
         mockHarvester.start();
         replay( mockHarvester );
@@ -156,7 +156,7 @@ public class DatadockManagerTest
     
     
     @Test 
-    public void testShutdown() throws InterruptedException, ConfigurationException
+    public void testShutdown() throws InterruptedException, ConfigurationException, ParserConfigurationException, SAXException, IOException 
     {
         mockHarvester.start();
         mockHarvester.shutdown();

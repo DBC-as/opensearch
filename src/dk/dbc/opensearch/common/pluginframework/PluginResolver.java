@@ -75,7 +75,8 @@ public class PluginResolver implements IPluginResolver
             
             PFinder = new PluginFinder( docBuilder, path );
             
-            constructed = true;            
+            constructed = true;
+            log.info( "PluginResolver constructed" );            
         }
     }
 

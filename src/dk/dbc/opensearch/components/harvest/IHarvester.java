@@ -33,7 +33,8 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.apache.commons.configuration.ConfigurationException;
-
+import org.xml.sax.SAXException;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Harvester interface. Harvester is the interface for the datadock
@@ -50,7 +51,7 @@ public interface IHarvester
      * The start method. Called by the datadock just after
      * construction of the instance.
      */
-    void start();
+    void start() throws ParserConfigurationException, SAXException, IOException;
     
     
     /**

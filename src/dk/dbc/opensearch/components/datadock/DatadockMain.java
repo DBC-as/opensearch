@@ -197,8 +197,8 @@ public class DatadockMain
             log.debug( "Starting harvester" );
 
             // harvester;
-            File harvestDirectory = FileHandler.getFile( harvestDir );
-            IHarvester harvester = new FileHarvest( harvestDirectory );
+            //File harvestDirectory = FileHandler.getFile( harvestDir ); absolete
+            IHarvester harvester = new FileHarvest( /*harvestDirectory*/ );
 
             log.debug( "Starting the manager" );
             // Starting the manager
