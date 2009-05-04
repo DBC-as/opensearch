@@ -1,27 +1,26 @@
 package dk.dbc.opensearch.plugins;
 
 /*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -32,31 +31,24 @@ import dk.dbc.opensearch.common.types.CargoObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.Field;
 import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
 import org.compass.core.Resource;
-import org.compass.core.impl.DefaultCompassSession;
-import org.compass.core.lucene.LuceneProperty;
-import org.compass.core.marshall.DefaultMarshallingStrategy;
-//import org.compass.core.marshall.DefaultMarshallingStrategy;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
@@ -71,8 +63,8 @@ public class IndexerXSEM implements IIndexer
     {
         return PluginType.INDEX;
     }
-    
-    
+
+
     public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException, ConfigurationException
     {
         long processTime = 0;
@@ -82,9 +74,9 @@ public class IndexerXSEM implements IIndexer
         }
         catch( CompassException ce )
         {
-        	throw new PluginException( "Could not commit index on CompassSession", ce );
+            throw new PluginException( "Could not commit index on CompassSession", ce );
         }
- 
+
         return processTime;
     }
 
@@ -94,9 +86,8 @@ public class IndexerXSEM implements IIndexer
         long processTime = 0;
         Date finishTime = new Date();
 
-        //right know we index all stream in a cc with the same alias. If it should be
-        //different for each stream, each CargoObject should have a IndexingAlias.
-        String indexingAlias = cc.getIndexingAlias().getName();
+        /* \todo: right now we index all stream in a cc with the same alias. each CargoObject should have a IndexingAlias. see bug #8719 */
+        //String indexingAlias = cc.getIndexingAlias().getName();
 
         // Construct doc and Start Transaction
         log.debug( "Starting transaction on running CompassSession" );
@@ -105,50 +96,55 @@ public class IndexerXSEM implements IIndexer
         SAXReader saxReader = new SAXReader();
 
         CPMAlias cpmAlias = null;
-        log.debug( String.format( "number of streams in cc: %s", cc.getItemsCount() ) );
-        ArrayList< CargoObject > list = cc.getData();
+        log.debug( String.format( "number of streams in cc: %s", cc.getCargoObjectCount() ) );
+        List< CargoObject > list = cc.getCargoObjects();
         try {
-        	cpmAlias = new CPMAlias();			
+            cpmAlias = new CPMAlias();
         } catch( ParserConfigurationException pce ) {
-        	throw new PluginException( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
+            log.fatal( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
+            throw new PluginException( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
         } catch (SAXException se) {
-        	throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
-		} catch (IOException ioe) {
-			throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
-		}
+            log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
+            throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
+        } catch (IOException ioe) {
+            log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
+            throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
+        }
         log.info( "cpmAlias constructed" );
         for( CargoObject co : list )
         {
             //String format = co.getFormat();
             //format = "article";
             //log.debug( String.format( "format of CargoObject: %s", format ) );
+            String indexingAlias = co.getIndexingAlias().getName();
             boolean isValidAlias = false;
             try {
                 isValidAlias = cpmAlias.isValidAlias( indexingAlias );
             } catch ( ParserConfigurationException pce ) {
-                log.error( "parserconfexception");
+                log.fatal( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
                 throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
             } catch ( SAXException se ) {
-                log.error( "saxexp ");
+                log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
                 throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
             } catch (IOException ioe) {
-                log.error("ioexp");
+                log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
                 throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
-            }catch(Exception e){
-                log.fatal("exp: %s with message %s thrown");
-                StackTraceElement[] trace = e.getStackTrace();
-                for( int i = 0; i < trace.length; i++ )
-                    {
-                        log.fatal( trace[i].toString() );
-                    }
+            // }catch(Exception e){
+            //     log.fatal("exp: %s with message %s thrown");
+            //     StackTraceElement[] trace = e.getStackTrace();
+            //     for( int i = 0; i < trace.length; i++ )
+            //     {
+            //         log.fatal( trace[i].toString() );
+            //     }
             }
-            
+
             if( ! isValidAlias )
             {
-            	throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
+                log.fatal( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
+                throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
             }
             else
-            {                
+            {
                 byte[] bytes = co.getBytes();
                 log.debug( String.format( "altered xml: %s", new String( bytes ) ) );
                 ByteArrayInputStream is = new ByteArrayInputStream( bytes );
@@ -164,7 +160,7 @@ public class IndexerXSEM implements IIndexer
                 log.debug( String.format( "Initializing new fields for the index" ) );
                 fieldMap.put( "fedoraPid", fedoraHandle );
                 fieldMap.put( "original_format", co.getFormat() );
-                
+
                 Element root = doc.getRootElement();
 
                 for( String key : fieldMap.keySet() )
@@ -173,7 +169,7 @@ public class IndexerXSEM implements IIndexer
                     Element newElement = new DOMElement( key ).addText( fieldMap.get( key ) );
                     root.add( newElement );
                 }
-                
+
                 // this log line is _very_ verbose, but useful in a tight situation
                 log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
 
@@ -185,7 +181,7 @@ public class IndexerXSEM implements IIndexer
                 // getting transaction object and saving index
                 log.debug( String.format( "Getting transaction object" ) );
                 CompassTransaction trans = null;
-                
+
                 try
                 {
                     log.debug( "Beginning transaction" );
@@ -199,7 +195,7 @@ public class IndexerXSEM implements IIndexer
                 //log.info( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
                 //session.save( xmlObject );
                 //log.debug( String.format( "Xml Object saved to index" ) );
-                
+
                 /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
                 //HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
                 //log.debug( String.format( "Initializing new fields for the index" ) );
@@ -210,7 +206,7 @@ public class IndexerXSEM implements IIndexer
                 //{
                 //    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
                 //    LuceneProperty newField = new LuceneProperty( new Field( key, new StringReader( fieldMap.get( key ) ) ) );
-                //    resource.addProperty( newField );            
+                //    resource.addProperty( newField );
                 //}
 
                 try
@@ -218,14 +214,13 @@ public class IndexerXSEM implements IIndexer
                     log.debug( String.format( "Saving Compass Resource '%s' with new fields to index", xmlObject.getAlias() ) );
                     session.save( xmlObject );
                 }
-                catch( Exception e ){
-                    log.fatal( String.format( "class of thrown exception: %s, message: %s ", e.getClass(), e.getMessage() ) );
-                    log.fatal( String.format( "the file not being indexed is: %s",cc.getFilePath() ) );
-                    throw new PluginException( e );
+                catch( CompassException ce ){
+                    log.fatal( String.format( "Could not save index object to index. Cause: %s, message: %s ", ce.getCause(), ce.getMessage() ) );
+                    throw new PluginException( String.format( "Could not save index object to index. Cause: %s, message: %s ", ce.getCause(), ce.getMessage() ), ce );
                 }
-                
+
                 log.debug( "Committing index on transaction" );
-                
+
                 trans.commit();
 
                 /** todo: does trans.wasCommitted have any side-effects? Such as waiting for the transaction to finish before returning?*/
@@ -248,13 +243,13 @@ public class IndexerXSEM implements IIndexer
     /**
      * Adds fields to a Compass index. New fields are given in the
      * HashMap, which contains the field names resp. the field values.
-     * 
+     *
      * @param sess The compass session which we are operating on
      * @param xmlObj The AliasedXmlObject that we retrieve our index from
      * @param fieldMap HashMap containing the field names resp. field values that are to be written to the index
-     * 
+     *
      * @return the updated index as a Compass Resource
-     * 
+     *
      * Please note that the AliasedXmlObject is deleted completely
      * from the session and the returned Resource takes its place and
      * contains its information. See the todo in the code.
@@ -270,14 +265,14 @@ public class IndexerXSEM implements IIndexer
 
         // \todo do we need to remove the xmlObject from the index?
         log.debug( String.format( "Deleting old xml object" ) );
-        
+
 
 
         return xmlObj2;
     }
-    
+
     /**
-     * 
+     *
      */
     private void updateEstimationDB( CargoObject co, long processTime ) throws PluginException
     {
@@ -288,20 +283,23 @@ public class IndexerXSEM implements IIndexer
         {
             est = new Estimate();
             est.updateEstimate( co.getMimeType(), co.getContentLength(), processTime );
-            
-            log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s", 
+
+            log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s",
                                     co.getMimeType(), co.getContentLength(), processTime ) );
         }
         catch( SQLException sqle )
         {
+            log.fatal( String.format( "Could not update database with estimation %s", processTime ), sqle );
             throw new PluginException( String.format( "Could not update database with estimation %s", processTime ), sqle );
         }
         catch( ConfigurationException ce )
         {
+            log.fatal( "Estimate could not be setup correctly", ce );
             throw new PluginException( "Estimate could not be setup correctly", ce );
         }
         catch( ClassNotFoundException cnfe )
         {
+            log.fatal( "Could not configure database in Estimation class", cnfe );
             throw new PluginException( "Could not configure database in Estimation class", cnfe );
         }
     }

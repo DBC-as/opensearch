@@ -47,7 +47,7 @@ public class IndexerPDF implements IIndexer
 
     public long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle ) 
     {
-        CargoObject co = cargo.getFirstCargoObject( DataStreamType.OriginalData );
+        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         byte[] data = co.getBytes();
 
         //10: read pdf from byte[] (pdf object from inputstream)

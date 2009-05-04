@@ -5,25 +5,25 @@
  */
 package dk.dbc.opensearch.components.pti;
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/**
+ *  
+ *This file is part of opensearch.
+ *Copyright © 2009, Dansk Bibliotekscenter a/s, 
+ *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+ *
+ *opensearch is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *opensearch is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 import dk.dbc.opensearch.common.db.Processqueue;
@@ -33,7 +33,7 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -69,14 +69,14 @@ import org.compass.core.config.CompassConfigurationFactory;
 public class PTIPool
 {
     static Logger log = Logger.getLogger("PTIPool");
-    private Vector< Pair< FutureTask< PTIThread >, Integer > > jobs;
+    private Vector< InputPair< FutureTask< PTIThread >, Integer > > jobs;
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
     //    private FedoraHandler fedoraHandler;
     private Compass compass;
     private int shutDownPollTime;
-    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
     XMLConfiguration config = null;
     
@@ -88,8 +88,8 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< Pair< String, String>, ArrayList< String > > jobMap ) throws ConfigurationException
-     {
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair< String, String>, ArrayList< String > > jobMap ) throws ConfigurationException
+    {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
          this.threadpool = threadpool;
@@ -97,7 +97,7 @@ public class PTIPool
          this.jobMap = jobMap;
          this.compass = compass;
 
-         jobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
+         jobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();
          
          //should use the config class
          
@@ -121,7 +121,7 @@ public class PTIPool
     
         FutureTask future = getTask( fedoraHandle );
         threadpool.submit( future );
-        Pair pair = new Pair< FutureTask< PTIThread >, Integer >( future, queueID );
+        InputPair pair = new InputPair< FutureTask< PTIThread >, Integer >( future, queueID );
         jobs.add( pair );
     }
     
@@ -150,7 +150,7 @@ public class PTIPool
         log.debug( "checkJobs() called" );
     
         Vector<CompletedTask> finishedJobs = new Vector<CompletedTask>();
-        for( Pair<FutureTask<PTIThread>, Integer> jobpair : jobs )        
+        for( InputPair<FutureTask<PTIThread>, Integer> jobpair : jobs )        
         {
             FutureTask job = jobpair.getFirst();
             Integer queueID = jobpair.getSecond();
@@ -176,10 +176,9 @@ public class PTIPool
                         {
                             log.error( String.format( "Trace element %s : %s", i, expStack[i].toString() ) );
                         }                   
- // throw re; //shouldnt throw just because thread throw
                 }
                 log.debug( String.format( "adding (queueID='%s') to finished jobs", queueID ) );
-                Pair pair = new Pair< Long, Integer >( l, queueID );
+                InputPair pair = new InputPair< Long, Integer >( l, queueID );
                 finishedJobs.add( new CompletedTask( job, pair ) );
             }
         }
@@ -188,11 +187,11 @@ public class PTIPool
         {
              log.debug( "Removing Job" );            
              
-             Pair< Long, Integer > finishedpair = (Pair) finishedJob.getResult();
+             InputPair< Long, Integer > finishedpair = (InputPair) finishedJob.getResult();
              log.debug( String.format( "Removing Job queueID='%s'", finishedpair.getSecond() ) );
              
-             Vector< Pair< FutureTask< PTIThread >, Integer > > removeableJobs = new Vector< Pair< FutureTask< PTIThread >, Integer > >();
-             for( Pair< FutureTask< PTIThread >, Integer > job : jobs )
+             Vector< InputPair< FutureTask< PTIThread >, Integer > > removeableJobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();
+             for( InputPair< FutureTask< PTIThread >, Integer > job : jobs )
              {
                 Integer queueID = job.getSecond();
                 if( queueID.equals( finishedpair.getSecond() ) )
@@ -219,7 +218,7 @@ public class PTIPool
         while( activeJobs )
         {
             activeJobs = false;
-            for( Pair<FutureTask<PTIThread>, Integer> jobpair : jobs )
+            for( InputPair<FutureTask<PTIThread>, Integer> jobpair : jobs )
             {
                 FutureTask job = jobpair.getFirst(); 
                 if( ! job.isDone() )

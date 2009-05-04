@@ -5,25 +5,25 @@
  */
 package dk.dbc.opensearch.components.pti;
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/**
+ *   
+ *This file is part of opensearch.
+ *Copyright © 2009, Dansk Bibliotekscenter a/s, 
+ *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+ *
+ *opensearch is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *opensearch is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 import dk.dbc.opensearch.common.compass.CompassFactory;
@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class PTIMain
     static long keepAliveTime;
     static int pollTime;
     
-    static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
     
     @SuppressWarnings("unchecked")

@@ -4,10 +4,11 @@
  * \package testindexer;
  */
 
-
+package dk.dbc.opensearch.tools.testindexer;
 
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
 import dk.dbc.opensearch.tools.testindexer.Estimate;
@@ -43,7 +44,7 @@ public class Indexer{
     private FedoraHandle fedorahandle;
     //private Executor pool;
     private ExecutorService pool;
-    public static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    public static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
     public Indexer()throws ServiceException, MalformedURLException, IOException, ConfigurationException
     {

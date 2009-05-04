@@ -5,25 +5,25 @@
  */
 package dk.dbc.opensearch.components.pti;
 
-/*
-
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/**
+ *
+ *This file is part of opensearch.
+ *Copyright © 2009, Dansk Bibliotekscenter a/s,
+ *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+ *
+ *opensearch is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *opensearch is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
@@ -37,10 +37,11 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.common.types.Pair;
+//import dk.dbc.opensearch.common.types.Pair;
 
 import fedora.server.types.gen.MIMETypedStream;
 
@@ -65,6 +66,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -84,7 +86,7 @@ public class PTIThread extends FedoraHandle implements Callable< Long >
     private String fedoraPid;
     private IEstimate estimate;
     private ArrayList< String > list;
-    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
 
     /**
@@ -95,7 +97,8 @@ public class PTIThread extends FedoraHandle implements Callable< Long >
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, HashMap< Pair< String, String >, ArrayList< String > > jobMap ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, HashMap< InputPair< String, String >, ArrayList< String > > jobMap ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         super();
 
@@ -131,50 +134,65 @@ public class PTIThread extends FedoraHandle implements Callable< Long >
     public Long call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, MarshalException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException, ValidationException
     {
         log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
+        CargoContainer cc = null;
+        CargoObject co = null;
+        String submitter =  null;
+        String format = null;
 
-        MIMETypedStream ds = super.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
-        byte[] adminStream = ds.getStream();
+        try{
+            log.debug( String.format( "Trying to get stream from fedora with pid %s and name %s", fedoraPid, DataStreamType.AdminData.getName() ) );
+            MIMETypedStream ds = super.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
+            byte[] adminStream = ds.getStream();
+            log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+            cc = new CargoContainer();
 
-        CargoContainer cc = new CargoContainer();
+            ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+            log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+            Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+            log.debug( String.format( "root element from adminstream == %s", root ) );
+            //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+            NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+            if( indexingAliasElem == null )
+            {
+                log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+            }
+            log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
+            String indexingAliasName = (String)((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+            log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+            //Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
+            //String filePath = filePathElem.getAttribute( "name" );
+            //cc.setFilePath( filePath );
+            //log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
 
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
-        Element indexingAliasElem = ( Element )root.getElementsByTagName( "indexingalias" ).item( 0 );
-        String indexingAliasName = indexingAliasElem.getAttribute( "name" );
-        cc.setIndexingAlias( IndexingAlias.getIndexingAlias( indexingAliasName ) );
-
-        Element filePathElem = ( Element )root.getElementsByTagName( "filepath" ).item( 0 );
-        String filePath = filePathElem.getAttribute( "name" );
-        cc.setFilePath( filePath );
-        log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
-
-        NodeList streamsNL = root.getElementsByTagName( "streams" );
-        Element streams = ( Element )streamsNL.item( 0 );
-        NodeList streamNL = streams.getElementsByTagName( "stream" );
-        for ( int i = 0; i < streamNL.getLength(); i++ )
-        {
-            Element stream = ( Element )streamNL.item( i );
-            String streamID = stream.getAttribute( "id" );
-
-            MIMETypedStream dstream = super.fea.getDatastreamDissemination( fedoraPid, streamID, null );
-
-            cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
-                    stream.getAttribute( "format" ),
-                    stream.getAttribute( "submitter" ),
-                    stream.getAttribute( "lang" ),
-                    stream.getAttribute( "mimetype" ),
-                    dstream.getStream() );
+            NodeList streamsNL = root.getElementsByTagName( "streams" );
+            Element streams = (Element)streamsNL.item(0);
+            NodeList streamNL = streams.getElementsByTagName( "stream" );
+            log.debug( String.format( "Iterating streams in nodelist" ) );
+            for(int i = 0; i < streamNL.getLength(); i++ )
+            {
+                Element stream = (Element)streamNL.item(i);
+                String streamID = stream.getAttribute( "id" );
+                MIMETypedStream dstream = super.fea.getDatastreamDissemination(fedoraPid, streamID, null);
+                cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
+                        stream.getAttribute( "format" ),
+                        stream.getAttribute( "submitter" ),
+                        stream.getAttribute( "lang" ),
+                        stream.getAttribute( "mimetype" ),
+                        IndexingAlias.getIndexingAlias( indexingAliasName ),
+                        dstream.getStream() );
+            }
+        }catch( Exception e ){
+            log.fatal( String.format( "Caught exception with cause: %s, message: %s", e.getCause(), e.getMessage() ) );
+            throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
         }
 
-        // Get the submitter and format from the CargoContainer
-        CargoObject co = cc.getFirstCargoObject( DataStreamType.OriginalData );
-        String submitter =  co.getSubmitter();
-        String format = co.getFormat();
+            co = cc.getCargoObject( DataStreamType.OriginalData );
+            submitter =  co.getSubmitter();
+            format = co.getFormat();
 
         long result = 0l;
-
         // Get the job from the jobMap
-        list = jobMap.get( new Pair< String, String >( submitter, format ) );
+        list = jobMap.get( new InputPair< String, String >( submitter, format ) );
         if ( list == null )
         {
             log.fatal( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
@@ -197,7 +215,9 @@ public class PTIThread extends FedoraHandle implements Callable< Long >
             {
                 log.debug( String.format( "no plugin for task: %s", ( String )iter.next() ) );
             }
-            log.debug( String.format( "thread terminates because it cannot work on the file: %s", cc.getFilePath() ) );
+
+
+            log.debug( " kill thread" );
         }
         else
         {

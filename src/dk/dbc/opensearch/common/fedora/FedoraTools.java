@@ -25,6 +25,8 @@ import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
@@ -125,7 +127,7 @@ public class FedoraTools
         dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
         dot.setPID( nextPid ); 
 
-        int cargo_count = cargo.getItemsCount();
+        int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
 
         
@@ -136,8 +138,8 @@ public class FedoraTools
         // Constructing list with datastream indexes and id
         ArrayList< Pair < String, Integer > > lst = new  ArrayList< Pair < String, Integer > >();
         for(int i = 0; i < cargo_count; i++){
-            CargoObject c = cargo.getData().get( i );
-            lst.add( new Pair< String, Integer >( c.getDataStreamName().getName(), i ) );
+            CargoObject c = cargo.getCargoObjects().get( i );
+            lst.add( new InputPair< String, Integer >( c.getDataStreamName().getName(), i ) );
         }
         
         Collections.sort( lst, firstComp);
@@ -154,10 +156,10 @@ public class FedoraTools
                 j += 1;
             }
             dsn = DataStreamType.getDataStreamNameFrom( (String) p.getFirst() );
-            lst2.add( new Pair< String, Integer >( p.getFirst() + "." + j , p.getSecond() ) );
+            lst2.add( new InputPair< String, Integer >( p.getFirst() + "." + j , p.getSecond() ) );
         }
         
-        lst2.add( new Pair< String, Integer >( DataStreamType.AdminData.getName(), lst2.size() ) );
+        lst2.add( new InputPair< String, Integer >( DataStreamType.AdminData.getName(), lst2.size() ) );
         Collections.sort( lst2, secondComp);
         
         // Constructing adm stream
@@ -168,17 +170,17 @@ public class FedoraTools
         Element root = admStream.createElement( "admin-stream" );
         
         Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias().getName() );
+        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
         root.appendChild( (Node)indexingaliasElem );
-        Element filePathElem = admStream.createElement( "filepath" );
-        filePathElem.setAttribute( "name", cargo.getFilePath() );
-        root.appendChild( (Node)filePathElem );
+        //Element filePathElem = admStream.createElement( "filepath" );
+        //filePathElem.setAttribute( "name", cargo.getFilePath() );
+        //root.appendChild( (Node)filePathElem );
         
         Node streams = admStream.createElement( "streams" );
         
         for(int i = 0; i < cargo_count; i++)
         {
-        	CargoObject c = cargo.getData().get( i );
+        	CargoObject c = cargo.getCargoObjects().get( i );
 
         	Element stream = admStream.createElement( "stream" );
         	stream.setAttribute( "id", lst2.get( i ).getFirst() );
@@ -205,16 +207,17 @@ public class FedoraTools
 
         // add the adminstream to the cargoContainer
         byte[] byteAdmArray = admStreamString.getBytes();
-        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
+        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
+        //cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
 
         log.debug( "Constructing foxml byte[] from cargoContainer" );
-        cargo_count = cargo.getItemsCount();
+        cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
 
         log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
         Datastream[] dsArray = new Datastream[ cargo_count ];
         for(int i = 0; i < cargo_count; i++)
         {
-            CargoObject c = cargo.getData().get( i );
+            CargoObject c = cargo.getCargoObjects().get( i );
             dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
         }
 

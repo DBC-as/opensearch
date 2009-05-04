@@ -30,6 +30,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -96,7 +97,7 @@ public class RUBHarvester implements IHarvestable{
         log.debug( "getCargoContainer() called" );
 
         CargoContainer cargoContainer = new CargoContainer();
-        cargoContainer.setFilePath( path );
+        //cargoContainer.setFilePath( path );
         String mimetype = "text/xml";
 
         log.debug( "read and add xml to cargoContainer" );
@@ -173,7 +174,7 @@ public class RUBHarvester implements IHarvestable{
 		}
 
         try {
-			cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, pdfBytes );
+			cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, IndexingAlias.Article, pdfBytes );
 		} catch (IOException ioe) {
 			throw new PluginException( "Could not construct CargoContainer", ioe );
 		}

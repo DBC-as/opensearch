@@ -30,6 +30,7 @@ import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
@@ -94,7 +95,7 @@ public class PTIManager
         log.debug( "update() called" );
 
         // checking for new jobs
-        Vector<Pair<String, Integer>> newJobs = processqueue.pop( resultsetMaxSize );
+        Vector<InputPair<String, Integer>> newJobs = processqueue.pop( resultsetMaxSize );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
@@ -111,9 +112,10 @@ public class PTIManager
                 }
                 catch( RejectedExecutionException re )
                 {
-                    log.debug( String.format( "job: fedorahandle='%s' and queueID='%s' rejected - trying again",job.getFirst(), job.getSecond() ) );
+                    log.error( String.format( "Job rejected, cause: %s, message: %s", re.getCause(), re.getMessage() ) );
+                    log.warn( String.format( "job: fedorahandle='%s' and queueID='%s' rejected - trying again",job.getFirst(), job.getSecond() ) );
                     Thread.currentThread();
-					Thread.sleep( rejectedSleepTime );
+                    Thread.sleep( rejectedSleepTime );
                 }
             }
         }
@@ -123,10 +125,10 @@ public class PTIManager
         
         for ( CompletedTask task : finishedJobs)
         {            
-            Pair< Long, Integer > pair = (Pair< Long, Integer >)task.getResult();
+            InputPair< Long, Integer > pair = (InputPair< Long, Integer >)task.getResult();
             Long result = pair.getFirst();
             int queueID = pair.getSecond();
-            if ( result != null ) // sucess
+            if ( result != null ) // success
             {
                 log.debug( String.format( "Commiting queueID: '%s', result: '%s' to processqueue", queueID, result ) );
                 processqueue.commit( queueID );

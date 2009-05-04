@@ -23,7 +23,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import java.util.HashMap;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -34,13 +34,13 @@ import static org.junit.Assert.*;
  */
 public class PairTest {
 
-    Pair<String, String> p;
+    InputPair<String, String> p;
 
     /**
      *
      */
     @Before public void SetUp() {
-        p = new Pair<String, String>( "a", "b");
+        p = new InputPair<String, String>( "a", "b");
     }
 
     /**
@@ -61,8 +61,8 @@ public class PairTest {
 
     @Test 
     public void testHashCode(){
-        Pair<String, String> p2 = 
-            new Pair<String, String>( "a", "b" );
+        InputPair<String, String> p2 = 
+            new InputPair<String, String>( "a", "b" );
 
         assertEquals( p.hashCode(), p2.hashCode() );
 
@@ -72,8 +72,8 @@ public class PairTest {
      */
 
     @Test public void testEquals(){
-        Pair<String, String> p3 = 
-            new Pair<String, String>( "a", "b" );
+        InputPair<String, String> p3 = 
+            new InputPair<String, String>( "a", "b" );
 
         assertTrue( p3.equals( p ) );
     }
@@ -83,8 +83,8 @@ public class PairTest {
 
     @Test public void testEqualsDifferent()
     {
-        Pair<String, String> p3 = 
-            new Pair<String, String>( "a", "a" );
+        InputPair<String, String> p3 = 
+            new InputPair<String, String>( "a", "a" );
 
         assertFalse( p3.equals( p ) ); 
     
@@ -101,12 +101,12 @@ public class PairTest {
     }
 
     @Test public void testPairInHashMaps(){
-        HashMap< Pair< String, String >, String > hm =
-            new HashMap< Pair< String, String >, String >();
+        HashMap< InputPair< String, String >, String > hm =
+            new HashMap< InputPair< String, String >, String >();
 
-        hm.put( new Pair<String, String>( "a", "b" ), "c" );
-        hm.put( new Pair<String, String>( "d", "e" ), "f" );
+        hm.put( new InputPair<String, String>( "a", "b" ), "c" );
+        hm.put( new InputPair<String, String>( "d", "e" ), "f" );
 
-        assertNotNull( hm.get( new Pair<String, String>( "a", "b" ) ) );
+        assertNotNull( hm.get( new InputPair<String, String>( "a", "b" ) ) );
     }
 }

@@ -68,8 +68,7 @@ public class DCHarvester implements IHarvestable
     private CargoContainer createCargoContainerFromFile() throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
-        cargo.setIndexingAlias( IndexingAlias.DC );
-        cargo.setFilePath( path );
+        //cargo.setFilePath( path );
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
@@ -91,13 +90,13 @@ public class DCHarvester implements IHarvestable
         }
 
         try {
-            cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, bdata );
+            cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.DC, bdata );
         } catch (IOException ioe) {
             throw new PluginException( "Could not construct CargoContainer", ioe );
         }catch(Exception e){
             log.error( String.format( "Exception of type: %s cast with message: %s", e.getClass(), e.getMessage() ) );
         }
-        log.debug(String.format("num of objects in cargo: %s", cargo.getItemsCount()) );
+        log.debug(String.format("num of objects in cargo: %s", cargo.getCargoObjectCount()) );
         return cargo;
     }
 

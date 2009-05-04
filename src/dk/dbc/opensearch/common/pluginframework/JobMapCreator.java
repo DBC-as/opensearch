@@ -1,32 +1,34 @@
 package dk.dbc.opensearch.common.pluginframework;
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/**
+ *   
+ * This file is part of opensearch.
+ * Copyright © 2009, Dansk Bibliotekscenter a/s, 
+ * Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+ *
+ * opensearch is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * opensearch is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
-import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
+//import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ComparablePair;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,14 +71,14 @@ public class JobMapCreator
      * @throws ConfigurationException 
      */
 
-    public static HashMap< Pair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, IllegalStateException, ConfigurationException 
+    public static HashMap< InputPair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, IllegalStateException, ConfigurationException 
     {
         //System.out.println( String.format( "calling getMap with %s", classType.getName() ) );
         log.debug( "getMap() called" );
 
-        HashMap< Pair< String, String >, ArrayList<String> > jobMap = new HashMap< Pair< String, String >, ArrayList<String> >();
+        HashMap< InputPair< String, String >, ArrayList<String> > jobMap = new HashMap< InputPair< String, String >, ArrayList<String> >();
         ArrayList<String> sortedPluginList = new ArrayList< String >();
-        List< Pair< String, Integer > > pluginAndPriority = new ArrayList< Pair< String, Integer > >();
+        List< ComparablePair< String, Integer > > pluginAndPriority = new ArrayList< ComparablePair< String, Integer > >();
 
         log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
         // Set jobFile depending on classType: datadock or pti.
@@ -92,7 +94,7 @@ public class JobMapCreator
         String submitter = "";
         String format = "";
         int position;
-        PairComparator_SecondInteger secComp = new PairComparator_SecondInteger();
+        //PairComparator_SecondInteger secComp = new PairComparator_SecondInteger();
         
         for( int x = 0; x < listLength ; x++ )
         {
@@ -115,11 +117,11 @@ public class JobMapCreator
         		plugin = (String)pluginElement.getAttribute( "name" );
         		position = Integer.decode(pluginElement.getAttribute( "position" ) );
 
-        		pluginAndPriority.add( new Pair< String, Integer >( plugin, position ) );
+        		pluginAndPriority.add( new ComparablePair< String, Integer >( plugin, position ) );
         	}
 
         	// 40: sort the tasks based on the position (order)
-        	Collections.sort( pluginAndPriority, secComp );
+        	Collections.sort( pluginAndPriority ); //, secComp );
 
         	// 50: put it in a List
         	sortedPluginList.clear();
@@ -130,7 +132,7 @@ public class JobMapCreator
         	}
 
         	// 60: Put it into the map with  <submitter, format> as key and List as value
-        	jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
+        	jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
         }
 
         // Put job into the map with <submitter, format> as key and List as value
@@ -152,7 +154,7 @@ public class JobMapCreator
     public static File setJobFile( Class classType ) throws MalformedURLException, ConfigurationException
     {
     	File jobFile;
-    
+        /** \todo: wouldn't it be better to let the classes that are allowed to call JobMapCreator inherit the same interface and check on that instead? It would make this whole setup _much_ less dependant on classpaths (which notoriously change) and would prevent this class in having to break at runtime because of unrelated changes elsewhere in the project. */
     	if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain" ) )
         {
             String datadockJobPath = DatadockConfig.getPath();
@@ -163,7 +165,7 @@ public class JobMapCreator
             }
             else
             {
-            	throw new IllegalArgumentException( "The value og datadockJobPath was null" );
+            	throw new IllegalArgumentException( "The value of datadockJobPath was null" );
             }
         }
         else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )

@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
@@ -79,7 +79,7 @@ public class DatadockMain
     static int pollTime;
     static URL cfgURL;
     static String harvestDir;
-    public static HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    public static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
 
     public DatadockMain() {}
@@ -192,10 +192,10 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, PIDmanager, jobMap );
+            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, jobMap );
 
             log.debug( "Starting harvester" );
-
+            
             // harvester;
             //File harvestDirectory = FileHandler.getFile( harvestDir ); absolete
             IHarvester harvester = new FileHarvest( /*harvestDirectory*/ );

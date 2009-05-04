@@ -93,11 +93,11 @@ public class DocbookMerger implements IProcesser
 
         log.debug( "Entered getCargoContainer( CargoContainer cargo )" );
 
-        CargoObject dc = cargo.getFirstCargoObject( DataStreamType.DublinCoreData );
+        CargoObject dc = cargo.getCargoObject( DataStreamType.DublinCoreData );
 
         Element annotation = null;
 
-        CargoObject orig = cargo.getFirstCargoObject( DataStreamType.OriginalData );
+        CargoObject orig = cargo.getCargoObject( DataStreamType.OriginalData );
 
         byte[] orig_bytes = orig.getBytes();
         ByteArrayInputStream is = new ByteArrayInputStream( orig_bytes );

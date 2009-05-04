@@ -15,6 +15,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 
 import fedora.client.FedoraClient;
@@ -72,7 +73,7 @@ public class FedoraHandle
     public Pair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, Processqueue queue, Estimate estimate) throws IOException, RemoteException, ClassNotFoundException, SQLException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException
     {
         this.cc = cc;
-        return new Pair<String, Float>( "nopid", 0f );
+        return new InputPair<String, Float>( "nopid", 0f );
     }
 
     public CargoContainer retrieveContainer( String fedoraPid) throws RemoteException, ParserConfigurationException, IOException, SAXException

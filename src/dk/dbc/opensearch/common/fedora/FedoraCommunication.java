@@ -35,6 +35,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import fedora.client.FedoraClient;
 import fedora.server.access.FedoraAPIA;
@@ -90,8 +91,9 @@ public class FedoraCommunication extends FedoraHandle
         // obtain mimetype and length from CargoContainer
         String mimeType = null;
         long length = 0;
-        for ( CargoObject co : cc.getData() )
+        for ( CargoObject co : cc.getCargoObjects() )
         {
+            /** \todo: use CargoContainer.getCargoObject( DataStreamType type ) instead */
             if ( co.getDataStreamName() == DataStreamType.OriginalData )
             {
                 mimeType = co.getMimeType();
@@ -100,10 +102,11 @@ public class FedoraCommunication extends FedoraHandle
             length += co.getContentLength();
         }
 
-        // \todo: This should be caught in the harvest plugin!!!
-        if ( cc.getItemsCount() < 1 )
+        /** \todo: This should be caught in the harvest plugin!!! */
+        if ( cc.getCargoObjectCount() < 1 )
         {
-            log.error( String.format( "The cargocontainer for file %s has no data!", cc.getFilePath() ) );
+            log.error( String.format( "The cargocontainer for has no data!" ) );
+            /** \todo: I should throw, shouldn't I? */
         }
         
         // Store the CargoContainer in the fedora repository
@@ -121,7 +124,7 @@ public class FedoraCommunication extends FedoraHandle
         Float est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est ) );
 
-        return new Pair<String, Float>( pid, est );
+        return new InputPair< String, Float >( pid, est );
 
     }
 
@@ -136,13 +139,17 @@ public class FedoraCommunication extends FedoraHandle
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
         Element indexingAliasElem = ( Element )root.getElementsByTagName( "indexingalias" ).item( 0 );
+        if( indexingAliasElem == null )
+        {
+            log.error( "Could not get indexingalias from adminstream. " );
+        }
         String indexingAliasName = indexingAliasElem.getAttribute( "name" );
-        cc.setIndexingAlias( IndexingAlias.getIndexingAlias( indexingAliasName ) );
+        // cc.setIndexingAlias( IndexingAlias.getIndexingAlias( indexingAliasName ) );
 
-        Element filePathElem = ( Element )root.getElementsByTagName( "filepath" ).item( 0 );
-        String filePath = filePathElem.getAttribute( "name" );
-        cc.setFilePath( filePath );
-        log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
+        // Element filePathElem = ( Element )root.getElementsByTagName( "filepath" ).item( 0 );
+        // String filePath = filePathElem.getAttribute( "name" );
+        // cc.setFilePath( filePath );
+        // log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
 
         NodeList streamsNL = root.getElementsByTagName( "streams" );
         Element streams = ( Element )streamsNL.item( 0 );
@@ -153,14 +160,15 @@ public class FedoraCommunication extends FedoraHandle
             String streamID = stream.getAttribute( "id" );
 
             MIMETypedStream dstream = fea.getDatastreamDissemination( fedoraPid, streamID, null );
-
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
                     stream.getAttribute( "lang" ),
                     stream.getAttribute( "mimetype" ),
+                    IndexingAlias.getIndexingAlias( indexingAliasName ),
                     dstream.getStream() );
-        }
+            }
+
 
         return cc;
 

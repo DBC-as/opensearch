@@ -22,25 +22,28 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 /** \brief UnitTest for CargoContainerT **/
 
+
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.IndexingAlias;
+import dk.dbc.opensearch.common.types.InputPair;
+
 import fedora.common.policy.DatastreamNamespace;
 import fedora.server.types.gen.Datastream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.*;
-
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.junit.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -48,15 +51,16 @@ import java.util.List;
  */
 public class CargoContainerTest
 {
-    CargoContainer cargo;
 
-    private String format;
-    private String language;
-    private String mimetype;
-    private String submitter;
-    //private InputStream data;
-    private byte[] data;
-    private DataStreamType dsn;
+    Logger log = Logger.getLogger("CargoContainerTest");
+
+    CargoContainer cargo;
+    String format;
+    String language;
+    String mimetype;
+    String submitter;
+    byte[] data;
+    DataStreamType dsn;
     String teststring;
 
 
@@ -77,64 +81,98 @@ public class CargoContainerTest
 
 
     /**
-     *
+     * Tests the basic add functionality of the CargoContainer. This
+     * test reflects a rosy scenario and if this fails, all other
+     * tests in this suite should also fail.
+     * 
      * @throws IOException
      */
     @Test
     public void testAdd() throws IOException
     {
-        CargoContainer cargo = new CargoContainer();
-        assertEquals( 0, (long)cargo.getData().size() );
-
-        cargo.add( dsn, format, submitter, language, mimetype, data );
-        assertEquals( 1, (long)cargo.getData().size() );
+        //CargoContainer cargo = new CargoContainer();
+        assertEquals( 0, cargo.getCargoObjectCount() );
+        long id = cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data );
+        assertTrue( !( id == 0 ) );
+        assertEquals( 1, cargo.getCargoObjectCount() );
     }
 
 
     /**
-     * @throws IOException
+     * 
+     * This test serves two purposes:
+     * 1: test that the length of the byte array that is added matches
+     *    the length of the byte array represented in the CargoObject
+     * 2: test that utf-8 gets represented correctly in that we are
+     *    dependant on the conversion from String to byte array.
      *
+     * @throws IOException
      */
     @Test 
     public void testStreamSizeInContainer() throws IOException
     {
-        cargo.add( dsn, format, submitter, language, mimetype, data );
+
+        cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data );
 
         //UTF-8 uses two bytes per Danish letter
-        int expectedLength = teststring.length() * 2;
+        int expectedLength = teststring.getBytes().length;
 
-        ArrayList< CargoObject > list = cargo.getData();
-        CargoObject co = list.get( 0 );
-        int contentLength = co.getContentLength();
+        ArrayList< CargoObject > list = (ArrayList<CargoObject>)cargo.getCargoObjects();
+
+        // get the length if the data contained in the CargoObject
+        int contentLength = list.get( 0 ).getContentLength();
 
         assertTrue( expectedLength == contentLength );
     }
 
 
+    /** 
+     * It should not be permitted to add empty data streams to the
+     * CargoContainer. This test ensures that it will not be the case
+     * 
+     * @throws IOException
+     */
     @Test(expected = NullPointerException.class)
     public void testStreamCannotBeEmpty() throws IOException
     {
 
         byte[] is = new byte[0];
         CargoContainer cc = new CargoContainer();
-        cc.add( dsn, format, submitter, language, mimetype, is );
 
-        CargoObject co = cc.getData().get( 0 );
-        byte[] list = co.getBytes();
+        //the add method of the CargoContainer should throw a NullPointerException on this call:
+        cc.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, is );
 
-        if( list.length == 0)
-        {
-            throw new NullPointerException();
-        }
+        // CargoObject co = cc.getCargoObjects().get( 0 );
+        // byte[] list = co.getBytes();
+
+        // if( list.length == 0)
+        // {
+        //     throw new NullPointerException();
+        // }
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testNullPointerExceptionWithNoAlias() throws IOException
+    {
+        byte[] is = "abc".getBytes();
+        CargoContainer cc = new CargoContainer();
 
+        //the add method of the CargoContainer should throw a NullPointerException on this call:
+        cc.add( dsn, format, submitter, language, mimetype, is );
+
+    }
+
+    /** 
+     * This test will ensure that the conversion between the String
+     * representation of utf-8 characters and a byte representation of
+     * the same characters will work as expected
+     */
     @Test 
     public void testGetByteArrayPreservesUTF8() throws IOException, UnsupportedEncodingException
     {
-        cargo.add( dsn, format, submitter, language, mimetype, data );
+        cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data );
 
-        ArrayList< CargoObject > aList = cargo.getData();
+        List< CargoObject > aList = cargo.getCargoObjects();
         byte[] listB = aList.get( 0 ).getBytes();
         byte[] sixBytes = new byte[6];
         for( int i = 0; i < listB.length; i++ )
@@ -162,20 +200,59 @@ public class CargoContainerTest
         String str4 = "abc";
         byte[] data4 = str4.getBytes();
 
-        cc.add( dsn, format, submitter, language, mimetype, data1);
-        cc.add( dsn, format, submitter, language, mimetype, data2);
-        cc.add( dsn, format, submitter, language, mimetype, data3);
-        cc.add( dsn, format, submitter, language, mimetype, data4);
+        cc.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data1);
+        cc.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data2);
+        cc.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data3);
+        cc.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data4);
 
         int expectedCount = 4;
-        int actualCount = cc.getItemsCount();
+        int actualCount = cc.getCargoObjectCount();
 
         assertEquals( expectedCount, actualCount );
+        
     }
 
-    @Test public void testGetFirstCargoObject() throws IOException
+
+    @Test 
+    public void testIdenticalIdsForIdenticalInput() throws IOException
+    {
+
+        String str1 = "abc";
+        byte[] data1 = str1.getBytes();
+
+        // String str2 = "abc";
+        // byte[] data2 = str2.getBytes();
+
+        String str3 = "cba";
+        byte[] data3 = str3.getBytes();
+
+        String str4 = "abc";
+        byte[] data4 = str4.getBytes();
+
+        long id1 = cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data1);
+        long id2 = cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data3);
+        long id3 = cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data4);
+        long id4 = cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.Article, data1);
+
+
+        log.debug( String.format( "ids: %s, %s, %s, %s",id1, id2, id3, id4 ) );
+        
+        assertTrue( id1 != id2 );
+        assertTrue( id1 != id3 );
+        assertTrue( id1 == id4 );
+        assertTrue( id2 != id3 );
+        assertTrue( id2 != id4 );
+        assertTrue( id3 != id4 );
+      
+    }
+
+    /** 
+     * Tests the getCargoObject( DataStreamType ) function of the
+     * CargoContainer
+     */
+    @Test
+    public void testLookupCargoObjectWithDataStreamType() throws IOException
     { 
-        CargoContainer cc = new CargoContainer();
         CargoObject co;
         DataStreamType dst1 = DataStreamType.getDataStreamNameFrom( "originalData" );
         DataStreamType dst2 = DataStreamType.getDataStreamNameFrom( "indexableData" );
@@ -185,30 +262,52 @@ public class CargoContainerTest
         String str2 = "abc";
         byte[] data2 = str2.getBytes();
 
-        cc.add( dst1, format, submitter, language, mimetype, data1);
-        cc.add( dst2, format, submitter, language, mimetype, data2);
+        cargo.add( dst1, format, submitter, language, mimetype, IndexingAlias.Article, data1);
+        cargo.add( dst2, format, submitter, language, mimetype, IndexingAlias.Article, data2);
 
-        co = cc.getFirstCargoObject( dst2 );
+        co = cargo.getCargoObject( dst2 );
         assertTrue(data2 == co.getBytes() );
 
-        assertTrue( cc.getFirstCargoObject( dst3 ) == null  );
+        assertTrue( cargo.getCargoObject( dst3 ) == null  );
 
     }
 
-    @Test public void testIndexingAliasSetAndGet() //throws IOException
-    {
-        CargoContainer cc = new CargoContainer();
-        IndexingAlias ia = IndexingAlias.getIndexingAlias( "article" );
-        cc.setIndexingAlias( ia );
-        assertTrue( ia == cc.getIndexingAlias() );
+
+    /** 
+     * Illustrates the API documented 'feature' that given more than
+     * one CargoObject with the same DataStreamType, getCargoObject(
+     * DataStreamType ) will return the first one encountered. Which
+     * should be the last one added.
+     */
+    @Test
+    public void testLookupCargoObjectWithDataStreamTypeReturnsFirst() throws IOException
+    { 
+        CargoObject co;
+        DataStreamType dst1 = DataStreamType.OriginalData;
+        DataStreamType dst2 = DataStreamType.OriginalData;
+        String str1 = "abc";
+        byte[] data1 = str1.getBytes();
+        String str2 = "abc";
+        byte[] data2 = str2.getBytes();
+
+        long id1 = cargo.add( dst1, format, submitter, language, mimetype, IndexingAlias.Article, data1);
+        long id2 = cargo.add( dst2, format, submitter, language, mimetype, IndexingAlias.Article, data2);
+
+        co = cargo.getCargoObject( dst2 );
+
+        log.debug( String.format( "id1 == %s, id2 == %s, co.getId() == %s", id1, id2, co.getId() ) );
+        assertTrue( id2 == co.getId() );
+        assertTrue( id1 != co.getId() );
+
     }
 
 
-    @Test public void testFilePathSetAndGet()
+    @Test 
+    public void testUniqueIdOfCargoObjects() throws IOException
     {
-        CargoContainer cc = new CargoContainer();
-        String testFilePath = "testPath";
-        cc.setFilePath( testFilePath );
-        assertTrue( cc.getFilePath().equals( testFilePath ) );
+        long id1 = cargo.add( DataStreamType.OriginalData, format, submitter, language, mimetype, IndexingAlias.Article, "abc".getBytes() );
+        long id2 = cargo.add( DataStreamType.OriginalData, format, submitter, language, mimetype, IndexingAlias.Article, "abc".getBytes() );
+
+        assertTrue( !( id1 == id2 ) );
     }
 }

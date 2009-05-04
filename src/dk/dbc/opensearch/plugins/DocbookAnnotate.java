@@ -44,19 +44,15 @@ import java.lang.Integer;
 import java.lang.StringBuilder;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
 import javax.xml.xpath.*;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -101,7 +97,7 @@ public class DocbookAnnotate implements IAnnotate
         // our namespace context for evaluating xpath expressions
         
         log.debug( "Retrive docbook xml from CargoContainer" );
-        CargoObject co = cargo.getFirstCargoObject( DataStreamType.OriginalData );
+        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         byte[] b = co.getBytes();
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
@@ -183,7 +179,8 @@ public class DocbookAnnotate implements IAnnotate
         log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
 
         if( numOfRec == 0 ){ // no hits. Make another search without serverchoice
-            String xmlStr = null;
+            @SuppressWarnings("unused")
+			String xmlStr = null;
             queryURL = null;
             try 
             {

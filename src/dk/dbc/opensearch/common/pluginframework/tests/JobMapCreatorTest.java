@@ -30,6 +30,8 @@ import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.components.datadock.DatadockMain;
 import dk.dbc.opensearch.components.pti.PTIMain;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
@@ -171,7 +173,8 @@ public class JobMapCreatorTest
     /**
      * Testing the happy path
      */
-    @Test public void testConstructor() throws Exception
+    @Test @Ignore( "refusing to test empty constructor" )
+    public void testConstructor() throws Exception
     {
         jmc = new JobMapCreator();
     }
@@ -194,7 +197,7 @@ public class JobMapCreatorTest
         String testString2 = "test2";
         String position1 = "1";
         String position2 = "2";
-        HashMap< Pair< String, String >, ArrayList<String> > jobMap;
+        HashMap< InputPair< String, String >, ArrayList<String> > jobMap;
         /**
          * Exepctations
          */
@@ -224,7 +227,7 @@ public class JobMapCreatorTest
         jmc = new JobMapCreator();
         jobMap = jmc.getMap( DatadockMain.class );
         //this tests both the sorting and the building
-        assertTrue(jobMap.get( new Pair<String, String >( testString, testString ) ).get( 0 ) == testString1 );
+        assertTrue(jobMap.get( new InputPair<String, String >( testString, testString ) ).get( 0 ) == testString1 );
         /**
          * Verify
          */
@@ -291,7 +294,7 @@ public class JobMapCreatorTest
         Mockit.setUpMocks( MockDDConfig1.class );
         Mockit.setUpMocks( MockPtiConfig1.class );
 
-        HashMap< Pair< String, String >, ArrayList<String> > jobMap;
+        HashMap< InputPair< String, String >, ArrayList<String> > jobMap;
 
         String test1 = "test1";
         String position = "0";

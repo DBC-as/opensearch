@@ -21,20 +21,22 @@ package dk.dbc.opensearch.common.types;
 */
 
 
-import java.lang.UnsupportedOperationException;
-
 /**
- *  Use this class if you want a Pair class that can be sorted
- *  It sorts on the first element and only considers the second 
- *  if the two first elements are equal.
+ * InputPair
+ * 
+ * If you would like to have sorting done on the InputPair type, please use
+ * dk.dbc.opensearch.common.types.ComparablePair type instead
  */
-
-public class ComparablePair< E extends Comparable< E >, V extends Comparable< V > > implements Comparable, Pair< E, V >
+public class InputPair< E, V > implements Pair< E, V >
 {
+    /**
+     *
+     */
+
     private E first;
     private V second;
 
-    public ComparablePair( E first, V second ) 
+    public InputPair( E first, V second ) 
     {
         this.first = first;
         this.second = second;
@@ -52,22 +54,18 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         return second;
     }
     
-    @Override
-    public boolean equals( Object cPair )
+    
+    public boolean equals( Object obj )
     {
-        if( cPair == null )
+        if(!( obj instanceof InputPair ) )
         {
             return false;
         }
-        else if( ! ( cPair instanceof ComparablePair ) )
+        else if(!( first.equals( ( (InputPair<?, ?>)obj ).getFirst() ) ) )
         {
             return false;
         }
-        else if(!( first.equals( ( (ComparablePair)cPair ).getFirst() ) ) )
-        {
-            return false;
-        }
-        else if(!( second.equals( ( (ComparablePair)cPair ).getSecond() ) ) )
+        else if(!( second.equals( ( (InputPair<?, ?>)obj ).getSecond() ) ) )
         {
             return false;
         }
@@ -80,28 +78,13 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
     
     public String toString()
     {
-        return String.format( "ComparablePair< %s, %s >", first.toString(), second.toString() );
+        return String.format( "Pair< %s, %s >", first.toString(), second.toString() );
     }
     
     
     public int hashCode()
     {
-        return first.hashCode() ^ second.hashCode();
+        return first.hashCode() + second.hashCode();
     }
 
-    public int compareTo( Object pair ){
-        if ( ! ( pair instanceof ComparablePair ) )
-        {
-            throw new UnsupportedOperationException( String.format( "Type %s is not a comparable type", pair.toString() ) );
-        }
-
-        ComparablePair newpair = (ComparablePair)pair;
- 
-        if ( first.equals( newpair.getFirst() ) )
-        {
-                return (int)second.compareTo( (V)newpair.getSecond() );
-        }
-        return (int)first.compareTo( (E)newpair.getFirst() );
-        
-    }
 }

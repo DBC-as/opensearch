@@ -42,6 +42,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
@@ -94,7 +95,7 @@ public class DatadockThread implements Callable<Float>
 
     private CargoContainer cc;
     private IProcessqueue queue;
-    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
     private String result;
     private IEstimate estimate;
@@ -126,7 +127,7 @@ public class DatadockThread implements Callable<Float>
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, HashMap< Pair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, HashMap< InputPair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
 
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
@@ -144,7 +145,7 @@ public class DatadockThread implements Callable<Float>
 
         log.debug( "printing jobMap" );
         log.debug( jobMap.toString() );
-        list = this.jobMap.get( new Pair< String, String >( submitter, format ) );
+        list = this.jobMap.get( new InputPair< String, String >( submitter, format ) );
 
         if( list == null )
         {
@@ -213,14 +214,14 @@ public class DatadockThread implements Callable<Float>
                 case HARVEST:
                     IHarvestable harvestPlugin = (IHarvestable)plugin;
                     cc = harvestPlugin.getCargoContainer( datadockJob );
-                    if( cc.getItemsCount() < 1 )
+                    if( cc.getCargoObjectCount() < 1 )
                     {
                         /**
                          * no data in the cargocontainer, so no
                          * reason to continue
                          */
-                        log.error( String.format( "no data in the cargocontainer for file: %s", cc.getFilePath() ) );
-                        throw new IllegalStateException( String.format( "no data in the cargocontainer for file: %s", cc.getFilePath() ) );
+                        log.error( String.format( "no cargoobjects in the cargocontainer " ) );
+                        throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
                     }
                     //make estimate
                     break;
@@ -235,7 +236,38 @@ public class DatadockThread implements Callable<Float>
             }
         }
 
-        Pair<String, Float> storeDataResponse = fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
+// <<<<<<< .mine
+//         // obtain mimetype and length from CargoContainer
+//         String mimeType = null;
+//         long length = 0;
+//         for( CargoObject co : cc.getCargoObjects() )
+//         {
+//             if( co.getDataStreamName() == DataStreamType.OriginalData )
+//             {
+//                 mimeType = co.getMimeType();
+//             }
+            
+//             length += co.getContentLength();
+//         }
+      
+//         // Store the CargoContainer in the fedora repository
+//         byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
+//         String logm = String.format( "%s inserted", datadockJob.getFormat() );
+
+//         // Beware of this innocent looking log line, it writes the
+//         //binary content of the stored data to the log
+//         String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
+
+//         log.info( String.format( "Submitted data, returning pid %s", pid ) );
+
+//         // push to processqueue job to processqueue and get estimate
+//         queue.push( pid );
+//         Float est = estimate.getEstimate( mimeType, length );
+//         log.debug( String.format( "Got estimate of %s", est ) );
+        
+//         return est;
+// =======
+        Pair< String, Float > storeDataResponse = (InputPair<String, Float>) fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
         return storeDataResponse.getSecond(); 
     }
 }

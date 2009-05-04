@@ -21,7 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import java.util.Comparator;
 
@@ -36,10 +36,10 @@ public class PairComparator_SecondInteger implements Comparator
 {
     public int compare( Object x, Object y )
     {	
-        if( ((Pair< String, Integer >)x).getSecond() < ((Pair< String, Integer >)y).getSecond() )
+        if( ((InputPair< String, Integer >)x).getSecond() < ((InputPair< String, Integer >)y).getSecond() )
         	return -4;
         else
-        	if( ((Pair<String, Integer>)x).getSecond() == ((Pair<String, Integer>)y).getSecond() )
+        	if( ((InputPair<String, Integer>)x).getSecond() == ((InputPair<String, Integer>)y).getSecond() )
         		return 0;
                     
         return 4;

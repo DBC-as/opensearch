@@ -25,10 +25,9 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+//import dk.dbc.opensearch.common.types.IndexingAlias;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -38,7 +37,7 @@ import org.apache.log4j.Logger;
  * which basically consists of a pair (common.types.Pair) of
  * CargoObjectInfo and a byte[]. This class is the access point
  * (through the CargoObjectInfo object) for information about the
- * input stream stored in the byte[]. It is used a
+ * input stream stored in the byte[]. It is used as a
  * complex type by the CargoContainer class.
  */
 public class CargoObject
@@ -46,7 +45,12 @@ public class CargoObject
     /**
      * Internal data structure for the CargoObject class.
      */
-    Pair< CargoObjectInfo, byte[] > pair;
+    //    Pair< CargoObjectInfo, byte[] > pair;
+
+    byte[] data;
+
+    CargoObjectInfo coi;
+
     Logger log = Logger.getLogger( CargoObject.class );
 
     /**
@@ -56,6 +60,12 @@ public class CargoObject
      * is read into a byte[] holding the actual data of the
      * object. The two are stored in a pair
      * (dk.dbc.opensearch.common.types.Pair).
+     * 
+     * The constructor will create an object id on the basis of the
+     * hashcodes of the parts of the CargoContainer. This means that
+     * two identical CargoObjects (i.e. two CargoContainers with
+     * _exactly_ the same input data provided to the constructor) will
+     * have the same id. 
      *
      * @param mimetype
      * @param language
@@ -64,13 +74,44 @@ public class CargoObject
      * @param data
      * @throws IOException
      */
-    public CargoObject( DataStreamType dataStreamName, String mimetype, String language, String submitter, String format, byte[] data ) throws IOException
+    public CargoObject( DataStreamType dataStreamName, 
+                        String mimetype, 
+                        String language, 
+                        String submitter,
+                        String format,
+                        IndexingAlias alias,
+                        byte[] data ) 
+        throws IOException
     {
+
         CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
-        CargoObjectInfo coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format );
+        long id = 0L;
+        id += dataStreamName.hashCode();
+        id += cmt.hashCode(); 
+        id += language.hashCode(); 
+        id += submitter.hashCode(); 
+        id += format.hashCode(); 
+        id += alias.hashCode(); 
+        id += data.hashCode(); 
+        log.debug( String.format( "id for CargoObject = %s", id ) );
+        assert( id != 0 );
+        coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format, alias, id );
+        
+        this.data = data;
         log.debug( String.format( "length of data: %s", data.length ) );
-        pair = new Pair<CargoObjectInfo, byte[] >( coi, data );
+        
+        //pair = new Pair<CargoObjectInfo, byte[] >( coi, data );
     }
+
+    /** 
+     * Returns the globally unique id of the CargoObject 
+     * 
+     * @return the id of the CargoObject
+     */
+    public long getId(){
+        return coi.getId();
+    }
+    
 
     /**
      * gets the name of the datastream (\see:
@@ -80,16 +121,17 @@ public class CargoObject
      */
     public DataStreamType getDataStreamName()
     {
-        return this.pair.getFirst().getDataStreamName();
+        return coi.getDataStreamName();
     }
-    
 
-    /*  public String getDataStreamName( String name )
-        {
-        return this.pair.getFirst().getDataStreamNameFrom( name );
-        }
-    */
-    
+
+    public IndexingAlias getIndexingAlias()
+    {
+        IndexingAlias ret_ia = coi.getIndexingAlias();
+        log.debug( String.format( "Getting IndexingAlias from COI: %s", ret_ia  ) );
+        return ret_ia;
+    }
+
 
     /**
      * Checks if the language of the submitted data is allowed in a
@@ -100,7 +142,7 @@ public class CargoObject
      */
     public boolean checkLanguage( String language )
     {
-        return pair.getFirst().checkLanguage( language );
+        return coi.checkLanguage( language );
     }
 
 
@@ -114,7 +156,7 @@ public class CargoObject
      */
     public boolean validMimetype( String mimetype )
     {
-        return pair.getFirst().validMimetype( mimetype );
+        return coi.validMimetype( mimetype );
     }
 
 
@@ -125,9 +167,9 @@ public class CargoObject
      * @param submitter the submitter to be checked
      * @return True if mimetype is allowed, False otherwise
      */
-    public boolean checkSubmitter( String name ) throws IllegalArgumentException
+    public boolean validSubmitter( String name ) throws IllegalArgumentException
     {
-        return pair.getFirst().checkSubmitter( name );
+        return coi.validSubmitter( name );
     }
 
 
@@ -138,13 +180,13 @@ public class CargoObject
      */
     public int getContentLength()
     {
-        return pair.getSecond().length;
+        return data.length;
     }
 
 
     public String getLang()
     {
-        return pair.getFirst().getLanguage();
+        return coi.getLanguage();
     }
 
 
@@ -155,13 +197,13 @@ public class CargoObject
      */
     public String getFormat()
     {
-        return pair.getFirst().getFormat();
+        return coi.getFormat();
     }
 
     /*
     public String getLanguage()
     {
-        return pair.getFirst().getLanguage();
+        return coi.getLanguage();
     }
     */
 
@@ -173,7 +215,7 @@ public class CargoObject
      */
     public String getMimeType()
     {
-        return pair.getFirst().getMimeType();
+        return coi.getMimeType();
     }
 
 
@@ -185,7 +227,7 @@ public class CargoObject
      */
     public String getSubmitter()
     {
-        return pair.getFirst().getSubmitter();
+        return coi.getSubmitter();
     }
 
 
@@ -196,7 +238,7 @@ public class CargoObject
      */
     public long getTimestamp()
     {
-        return pair.getFirst().getTimestamp();
+        return coi.getTimestamp();
     }
 
 
@@ -207,7 +249,7 @@ public class CargoObject
      */
     public byte[] getBytes()
     {
-        return pair.getSecond();
+        return data;
     }
 
     /**
@@ -216,8 +258,9 @@ public class CargoObject
      */
     public void updateByteArray( byte[] data )
     {
-        Pair<CargoObjectInfo, byte[]> new_pair = new Pair<CargoObjectInfo, byte[]>( pair.getFirst(), data );
-        pair = new_pair;
+        this.data = data;
+        // Pair<CargoObjectInfo, byte[]> new_pair = new Pair<CargoObjectInfo, byte[]>( coi, data );
+        // pair = new_pair;
     }
     
     /**
@@ -227,8 +270,8 @@ public class CargoObject
      * 
      * \todo: this is a duplicate method. Please refactor one of us out.
      */
-    public int getByteArrayLength(){
-        return pair.getSecond().length;
-    }
+    // public int getByteArrayLength(){
+    //     return pair.getSecond().length;
+    // }
 
 }

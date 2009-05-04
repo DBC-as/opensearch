@@ -37,7 +37,7 @@ import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.components.datadock.DatadockMain;
 
 import java.net.URI;
@@ -69,13 +69,13 @@ public class DatadockMainTest
     	datadockmain.init();
     	
     	// Get jobMap listing jobs to be executed using plugins 
-    	HashMap< Pair< String, String >, ArrayList< String > > jobMap = DatadockMain.jobMap;
+    	HashMap< InputPair< String, String >, ArrayList< String > > jobMap = DatadockMain.jobMap;
     	
     	// Get set of jobs specified by submitter and format
-    	Set< Pair< String, String > > keysSet = jobMap.keySet();
+    	Set< InputPair< String, String > > keysSet = jobMap.keySet();
     	
     	// Loop through jobs
-    	for( Pair< String, String > pair : keysSet )
+    	for( InputPair< String, String > pair : keysSet )
     	{
             String submitter = pair.getFirst().toString();
             String format = pair.getSecond().toString();    		

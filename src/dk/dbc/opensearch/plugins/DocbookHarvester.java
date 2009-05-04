@@ -73,8 +73,7 @@ public class DocbookHarvester implements IHarvestable
     private CargoContainer createCargoContainerFromFile() throws PluginException 
     {
     	CargoContainer cargo = new CargoContainer();
-    	cargo.setIndexingAlias( IndexingAlias.Article );
-        cargo.setFilePath( path );
+        //cargo.setFilePath( path );
     	/** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
@@ -94,7 +93,7 @@ public class DocbookHarvester implements IHarvestable
 		}
         
         try {
-			cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, bdata );
+			cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Article, bdata );
 		} catch (IOException ioe) {
 			throw new PluginException( "Could not construct CargoContainer", ioe );
 		}

@@ -28,6 +28,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import dk.dbc.opensearch.common.db.DBConnection;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -99,7 +100,7 @@ public class Processqueue implements IProcessqueue
     }
 
 
-    public Vector< Pair< String, Integer > > popAll() throws SQLException
+    public Vector< InputPair< String, Integer > > popAll() throws SQLException
     {
         log.debug( "Entering Processqueue.popAll()" );
 
@@ -107,7 +108,7 @@ public class Processqueue implements IProcessqueue
         Statement stmt = null;
         ResultSet rs = null;
 
-        Vector<Pair<String, Integer>> jobs = new Vector<Pair<String, Integer>>();
+        Vector< InputPair< String, Integer > > jobs = new Vector< InputPair< String, Integer > >();
 
         try
             {
@@ -121,7 +122,7 @@ public class Processqueue implements IProcessqueue
 
                         log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                        Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
+                        InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
                         jobs.add( pair );
                     }
 
@@ -139,7 +140,7 @@ public class Processqueue implements IProcessqueue
     }
 
 
-    public Vector<Pair<String, Integer>> pop( int maxSize ) throws SQLException
+    public Vector<InputPair<String, Integer>> pop( int maxSize ) throws SQLException
     {
         log.debug( "Entering Processqueue.pop()" );
 
@@ -147,7 +148,7 @@ public class Processqueue implements IProcessqueue
         Statement stmt = null;
         ResultSet rs = null;
 
-        Vector<Pair<String, Integer>> jobs = new Vector<Pair<String, Integer>>();
+        Vector<InputPair<String, Integer>> jobs = new Vector<InputPair<String, Integer>>();
 
         try
             {
@@ -161,7 +162,7 @@ public class Processqueue implements IProcessqueue
 
                         log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                        Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
+                        InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
                         jobs.add( pair );
                     }
 

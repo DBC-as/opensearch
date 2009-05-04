@@ -5,25 +5,25 @@
  */
 package dk.dbc.opensearch.components.datadock;
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/**
+ *   
+ *This file is part of opensearch.
+ *Copyright © 2009, Dansk Bibliotekscenter a/s, 
+ *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+ *
+ *opensearch is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *opensearch is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
@@ -36,6 +36,7 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class DatadockPool
     private IEstimate estimate;
     private IProcessqueue processqueue;
     private int shutDownPollTime;
-    private HashMap< Pair< String, String >, ArrayList< String > > jobMap;
+    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
     private PIDManager PIDmanager;
 
     private int i = 0;
@@ -89,9 +90,9 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, HashMap< Pair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, HashMap< InputPair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
     {
-        log.debug( "Constructor( threadpool, estimat, processqueue, PIDmanager, jobMap ) called" );
+        log.debug( "DatadockPool constructor called" );
 
         this.threadpool = threadpool;
         this.estimate = estimate;
