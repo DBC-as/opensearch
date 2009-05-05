@@ -229,12 +229,14 @@ public class FileHarvestTest {
     }
 
     /**
-     * This test gives the same format twice in the initvectors method to get the 
-     * 
+     * This test gives the same submitter format pair twice to the initVectors
+     * method. Only the first should be put into the submittersFormatsVector.
+     * Can only verify the behaviour in the coverage report. The else case of 
+     * the test only results in a warning in the log.
      */
 
     @Test
-    public void testSubmitterSecondTime() throws Exception
+    public void testSubmitterFormatTwice() throws Exception
     {
         /**
          * setup

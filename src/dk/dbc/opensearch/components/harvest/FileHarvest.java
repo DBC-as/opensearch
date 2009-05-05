@@ -172,7 +172,7 @@ public class FileHarvest implements IHarvester
             }
             else
             {
-                log.error( String.format( "The format: %s with submitter; %s was not added to the vector, the jobs file contains redundant/erronous information", formatAtt, submitterAtt ) );
+                log.warn( String.format( "The format: %s with submitter; %s was not added to the vector, the jobs file contains redundant/erronous information", formatAtt, submitterAtt ) );
             }
     	}
 
