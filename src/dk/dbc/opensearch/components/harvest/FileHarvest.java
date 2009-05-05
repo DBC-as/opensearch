@@ -185,6 +185,7 @@ public class FileHarvest implements IHarvester
         {
             if( submitter.isDirectory() )
             {
+
                 log.debug( String.format( "adding submitter: path='%s'", submitter.getAbsolutePath() ) );
                 submitters.add( new InputPair< File, Long >( submitter, submitter.lastModified() ) );
             }
@@ -229,6 +230,10 @@ public class FileHarvest implements IHarvester
     	}
     }
     
+    /**
+     * \Todo: is a santizer neccesary, when the file names are given by the 
+     * filesystem and therefore never ends with a "/" ? look at bug 8755
+     */
     
     private String sanitize( File file )
     {
@@ -308,6 +313,7 @@ public class FileHarvest implements IHarvester
             }
         }
         
+       // System.out.println( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
         log.debug( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
         
         return jobs;
@@ -316,7 +322,7 @@ public class FileHarvest implements IHarvester
 
     public void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException 
     {
-    	log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
+        log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
     	boolean ok = false;
     	if ( ! destFldr.exists() )
     	{
