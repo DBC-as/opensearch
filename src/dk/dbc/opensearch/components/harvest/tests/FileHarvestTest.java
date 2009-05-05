@@ -30,6 +30,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
+import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.helpers.XMLFileReader;
 
 import javax.xml.stream.*;
 
@@ -48,9 +50,14 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
 import org.xml.sax.SAXException;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
+
+import static org.easymock.classextension.EasyMock.*;
 
 import static org.junit.Assert.*;
 
@@ -62,6 +69,29 @@ public class FileHarvestTest {
     FileHarvest fileHarvest;
     static File harvestdir = new File( "harvesttestdir" );
     static File destDir = new File( "desttestdir" );
+   
+    static File mockFile = createMock( File.class );
+    static NodeList mockNodeList = createMock( NodeList.class );
+    Element mockElement;
+
+    @MockClass( realClass = XMLFileReader.class )
+    public static class MockXMLFileReader
+    {
+    	@Mock public static NodeList getNodeList( File xmlFile, String tagName )
+    	{
+            //	System.out.println( "mockNodeList returned" );
+            return mockNodeList;
+    	}
+    }
+
+    @MockClass( realClass = FileHandler.class )
+    public static class MockFileHandler
+    {
+        @Mock public static File getFile( String path )
+        {
+            return mockFile;
+        }
+    }
 
     @MockClass( realClass = HarvesterConfig.class )
     public static class mockHC
@@ -82,6 +112,7 @@ public class FileHarvestTest {
     @Before public void SetUp() throws Exception 
     { 
 
+        mockElement = createMock( Element.class );
         Mockit.setUpMocks( mockHC.class );
         factory = XMLOutputFactory.newInstance(); 
        
@@ -93,7 +124,14 @@ public class FileHarvestTest {
     }
 
     
-    @After public void TearDown() { }
+    @After public void TearDown() 
+    { 
+        Mockit.tearDownMocks();
+
+        reset( mockFile );
+        reset( mockElement );
+        reset( mockNodeList );
+    }
 
     
    @Ignore
@@ -120,7 +158,7 @@ public class FileHarvestTest {
         harvestdir = new File( "test" );
             fileHarvest = new FileHarvest();
     }
-    
+
 
     @Test 
         public void testConstructor() throws IOException, IllegalArgumentException, ParserConfigurationException, SAXException, ConfigurationException, XMLStreamException
@@ -188,5 +226,83 @@ public class FileHarvestTest {
         //System.out.println( String.format( "length of file: %s", sub1format1File.length() ) );
         
         
+    }
+
+    /**
+     * This test gives the same format twice in the initvectors method to get the 
+     * 
+     */
+
+    @Test
+    public void testSubmitterSecondTime() throws Exception
+    {
+        /**
+         * setup
+         */
+        Mockit.setUpMocks( MockXMLFileReader.class );
+
+        //File system setup
+        
+        File sub1 = new File( harvestdir, "dbc" );
+        sub1.mkdir();
+        sub1.deleteOnExit();
+
+        File format1 = new File( sub1, "docbook_faktalink" );
+        format1.mkdir();
+        format1.deleteOnExit();
+        
+        File file1 = new File( format1, "file1" );
+        file1.deleteOnExit();
+        
+        writer = factory.createXMLStreamWriter( new FileOutputStream( file1 ), "UTF-8" );
+        writer.writeStartDocument("UTF-8", "1.0"); //(encoding, version)
+        writer.writeStartElement("Text");
+        writer.writeCharacters( "testdata" );
+        writer.writeEndElement();
+        writer.writeEndDocument();
+        
+        File file2 = new File( format1, "file2" ); 
+        file2.deleteOnExit();
+        
+        writer = factory.createXMLStreamWriter( new FileOutputStream( file2 ), "UTF-8" );
+        writer.writeStartDocument("UTF-8", "1.0"); //(encoding, version)
+        writer.writeStartElement("Text");
+        writer.writeCharacters( "testdata" );
+        writer.writeEndElement();
+        writer.writeEndDocument();
+
+        /**
+         * Exepctations
+         */
+        expect( mockNodeList.getLength() ).andReturn( 2 );
+        expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "docbook_faktalink" ); //format
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "dbc" ); //submitter
+        expect( mockNodeList.item ( 1 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "docbook_faktalink" ); //format
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "dbc" ); //submitter
+
+        /**
+         * replay
+         */
+        replay( mockFile );
+        replay( mockElement );
+        replay( mockNodeList );
+
+        /**
+         * Do stuff
+         */
+        fileHarvest = new FileHarvest();
+        fileHarvest.start();
+
+        /**
+         * Verify
+         */
+
+        verify( mockElement );
+        verify( mockFile );
+        verify( mockNodeList );
+
+    
     }
 }

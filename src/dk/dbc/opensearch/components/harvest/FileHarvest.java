@@ -31,6 +31,7 @@ import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.os.FileHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -87,6 +88,7 @@ public class FileHarvest implements IHarvester
     private String datadockJobsFilePath;
     private String toHarvestFolder;    
     private String harvestDoneFolder;
+    private int max;
     /**
      * Constructs the FileHarvest class, and starts polling the given path for 
      * files and subsequent file-changes.
@@ -116,8 +118,9 @@ public class FileHarvest implements IHarvester
         //getting path for the jobs file for the building of the submitterformatvector
         datadockJobsFilePath = DatadockConfig.getPath();
         toHarvestFolder = HarvesterConfig.getFolder();
-    	path = new File( toHarvestFolder );
+    	path = FileHandler.getFile( toHarvestFolder );
         harvestDoneFolder = HarvesterConfig.getDoneFolder();
+        max = HarvesterConfig.getMaxToHarvest();
     }
 
     
@@ -152,26 +155,31 @@ public class FileHarvest implements IHarvester
     {
         log.debug( "initvectors() called" );
         
-        File datadockJobsFile = new File( datadockJobsFilePath );
+        File datadockJobsFile = FileHandler.getFile( datadockJobsFilePath );
 	NodeList jobNodeList = XMLFileReader.getNodeList( datadockJobsFile, "job" );
         submittersFormatsVector = new Vector< InputPair< String, String > >();
-    	for( int i = 0; i < jobNodeList.getLength(); i++ )
+    	int jobNodeListLength = jobNodeList.getLength();
+        for( int i = 0; i < jobNodeListLength; i++ )
     	{
             Element pluginElement = (Element)jobNodeList.item( i );		        
             String formatAtt = pluginElement.getAttribute( "format" );
             String submitterAtt = pluginElement.getAttribute( "submitter" );
-            if( ! submittersFormatsVector.contains( formatAtt ) )
+            InputPair< String, String > submitterFormatPair = new InputPair< String, String >( submitterAtt, formatAtt );
+            if( ! submittersFormatsVector.contains( submitterFormatPair ) )
             {
             	log.debug( String.format( "Adding submitter and format to Vector submitterFormatPair: %s and %s", submitterAtt, formatAtt ) );
-            	InputPair< String, String > submitterFormatPair = new InputPair< String, String >( submitterAtt, formatAtt );
             	submittersFormatsVector.add( submitterFormatPair );
+            }
+            else
+            {
+                log.error( String.format( "The format: %s with submitter; %s was not added to the vector, the jobs file contains redundant/erronous information", formatAtt, submitterAtt ) );
             }
     	}
 
 
 
         log.debug( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
-        // System.out.println( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
+        //System.out.println( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
         log.debug( "Submitters:" );        
         for( File submitter : path.listFiles() )
         {
@@ -275,7 +283,7 @@ public class FileHarvest implements IHarvester
         HashSet< InputPair< File, Long > > jobs = new HashSet< InputPair< File, Long > >();
         //String toHarvestFolder = HarvesterConfig.getFolder();
         //String harvestDoneFolder = HarvesterConfig.getDoneFolder();
-        int max = HarvesterConfig.getMaxToHarvest();
+        //int max = HarvesterConfig.getMaxToHarvest();
         log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
         for( InputPair< File, Long > format : formats )
         {	
@@ -291,8 +299,8 @@ public class FileHarvest implements IHarvester
                 String path = job.getPath();
                 String newPath = path.replace( toHarvestFolder, harvestDoneFolder ); 
                 String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
-                File destFldr = new File( destFldrStr );
-                File dest = new File( newPath );               
+                File destFldr = FileHandler.getFile( destFldrStr );
+                File dest = FileHandler.getFile( newPath );               
                 move( job, destFldr, dest );
                 jobs.add( new InputPair< File, Long >( dest, dest.length() )  );
                 i++;
