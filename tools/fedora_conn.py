@@ -13,8 +13,8 @@ class __FedoraError(Exception):
             return repr(self.value)
 
 
-def test_fedora_conn():
-    theurl = 'http://localhost:8080/fedora'
+def test_fedora_conn( servername, port ):
+    theurl = 'http://%s:%s/fedora'%( servername, port )
     req = urllib2.Request(theurl)
     try:
         handle = urllib2.urlopen(req)
@@ -32,15 +32,6 @@ def test_fedora_conn():
             
 
 if __name__ == '__main__':
-    test_fedora_conn()
+    
+    test_fedora_conn( 'localhost', '8080' )
 
-
-"""
-# code for loggin in
-
-try:
-    fedora = urllib.urlopen( 'http://localhost:8080/fedora' )
-except:
-    print 'exception caught'
-
-"""
