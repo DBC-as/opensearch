@@ -20,6 +20,7 @@ config = ET.parse( '../config/config.xml' )
 
 dest = config.findall( '//toharvest' )[0].text
 
+shutil.rmtree( dest )
 shutil.copytree( '/data1/harvest-test', dest )
 
 postgres_setup.main()
