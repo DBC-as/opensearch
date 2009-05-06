@@ -22,7 +22,7 @@ dest = config.findall( '//toharvest' )[0].text
 
 shutil.copytree( '/data1/harvest-test', dest )
 
-postgres_setup.setup()
+postgres_setup.main()
 fedora_conn.test_fedora_conn( 'localhost', '8080' )
 
 
