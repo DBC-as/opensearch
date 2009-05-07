@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="build" default="compile">
+<project name="build">
   
   <tstamp/>
   <property name="now"              value="${DSTAMP}-${TSTAMP}" />
@@ -18,6 +18,7 @@
   <property name="dist.dir"         value="${base.dir}/dist"/>
   <property name="info.dir"         value="${src.dir}/info" />
   <property name="lib.dir"          value="${base.dir}/lib"/>  
+  <property name="tmp.dir"          value="${base.dir}/tmp"/>  
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
   <property name="src.dir"          value="${base.dir}/src"/>
   <property name="opensearch.dir"   value="${src.dir}/dk/dbc/opensearch"/>
@@ -233,24 +234,40 @@
     </jar>
   </target>
   
-
   <target name="_xsd-classes" description="Generate Java source files from the Schemas found in ${xsd.dir}.">
-    <taskdef name="castor-srcgen"
-             classname="org.castor.anttask.CastorCodeGenTask"
-             classpathref="classpath" />
+	    <taskdef name="castor-srcgen"
+	             classname="org.castor.anttask.CastorCodeGenTask"
+	             classpathref="classpath" />
 
-    <delete dir="${xsd_gen.dir}"/>
+	    
+	    <delete dir="${tmp.dir}"/>
+	    <mkdir dir="${tmp.dir}"/>
 
-    <castor-srcgen todir="${src.dir}/"
-                   package="dk.dbc.opensearch.xsd"
-                   types="j2"
-                   warnings="true" >
-      <fileset dir="${xsd.dir}">
-        <include name="*.xsd"/>
-      </fileset>
-    </castor-srcgen>
+	    <castor-srcgen todir="${tmp.dir}/"
+	                   package="dk.dbc.opensearch.xsd"
+	                   types="j2"
+	                   warnings="true" >
+	      <fileset dir="${xsd.dir}">
+	        <include name="*.xsd"/>
+	      </fileset>
+	    </castor-srcgen>
 
-  </target>
+
+	    <copy todir="${xsd_gen.dir}">
+	      <fileset dir="${tmp.dir}/dk/dbc/opensearch/xsd" includes="**/*.java">
+		<different targetdir="${xsd_gen.dir}" ignoreFileTimes="true"/>
+	      </fileset>	      
+	    </copy>
+	    
+	    <!-- remove java files not present in the tmp dir -->
+	    <delete>
+	      <fileset dir="${xsd_gen.dir}" includes="**/*.java">
+		<present present="srconly" targetdir="${tmp.dir}/dk/dbc/opensearch/xsd"/>
+	      </fileset>      
+	    </delete>	    
+	    
+	    <delete dir="${tmp.dir}"/>
+	  </target>
 
   <!--target name="toplevel.compile-xsd" description="compiles xsd"
           depends="toplevel.xsd-classes">
