@@ -259,14 +259,14 @@ public class CargoContainerTest
         DataStreamType dst3 = DataStreamType.getDataStreamNameFrom( "adminData" );
         String str1 = "abc";
         byte[] data1 = str1.getBytes();
-        String str2 = "abc";
-        byte[] data2 = str2.getBytes();
+        // String str2 = "abc";
+        // byte[] data2 = str2.getBytes();
 
         cargo.add( dst1, format, submitter, language, mimetype, IndexingAlias.Article, data1);
-        cargo.add( dst2, format, submitter, language, mimetype, IndexingAlias.Article, data2);
+        cargo.add( dst2, format, submitter, language, mimetype, IndexingAlias.Article, data1);
 
         co = cargo.getCargoObject( dst2 );
-        assertTrue(data2 == co.getBytes() );
+        assertTrue( data1 == co.getBytes() );
 
         assertTrue( cargo.getCargoObject( dst3 ) == null  );
 

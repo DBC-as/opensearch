@@ -195,5 +195,16 @@ public class ComparablePairTest {
         assertTrue( 0 == one.compareTo( two ) );
         assertTrue( 0 == two.compareTo( one ) );
     }
+
+    @Test( expected = UnsupportedOperationException.class ) 
+    public void testCompareToOtherIncompatipleComparablePair()
+    {
+        String test = "string";
+        int testInt = 1;
+        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
+        ComparablePair<Integer, String> two = new ComparablePair<Integer, String>( testInt, test );
+        one.compareTo( two );
+}
+
     
 }

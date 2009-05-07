@@ -63,11 +63,11 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         {
             return false;
         }
-        else if(!( first.equals( ( (ComparablePair)cPair ).getFirst() ) ) )
+        else if( !( first.equals( ( (ComparablePair)cPair ).getFirst() ) ) )
         {
             return false;
         }
-        else if(!( second.equals( ( (ComparablePair)cPair ).getSecond() ) ) )
+        else if( !( second.equals( ( (ComparablePair)cPair ).getSecond() ) ) )
         {
             return false;
         }
@@ -96,6 +96,11 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         }
 
         ComparablePair newpair = (ComparablePair)pair;
+
+        if( !( newpair.getFirst().getClass() == first.getClass() ) )
+        {
+            throw new UnsupportedOperationException( String.format( "Type %s is not a comparable to type %s", newpair.getFirst().getClass(), first.getClass() ) );
+        }
  
         if ( first.equals( newpair.getFirst() ) )
         {
