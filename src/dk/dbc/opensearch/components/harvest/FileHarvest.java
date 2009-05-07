@@ -6,9 +6,9 @@
 package dk.dbc.opensearch.components.harvest;
 
 /**
- *   
+ *
  *This file is part of opensearch.
- *Copyright © 2009, Dansk Bibliotekscenter a/s, 
+ *Copyright © 2009, Dansk Bibliotekscenter a/s,
  *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
  *
  *opensearch is free software: you can redistribute it and/or modify
@@ -53,11 +53,11 @@ import org.xml.sax.SAXException;
  * FileHarvest class. Implements the IHarvester interface and acts as a
  * fileharvester for the datadock. It implements the methods start,
  * shutdown and getJobs. It is an eventdriven class.
- * 
+ *
  * This file harvester assumes some things about path given as an argument:
- * 
+ *
  * The path has to be a directory with the following structure:
- * 
+ *
  * polling path
  * | - submitter1
  * | | -format1
@@ -69,61 +69,52 @@ import org.xml.sax.SAXException;
  * .
  * .
  * .
- * 
+ *
  * There are no restrictions on the number of submitters, formats or
  * jobs - and the jobs can be files or directorys.
- * 
+ *
  * The harvester only returns a job after the second consecutive time
  * it has been found and its filesize is unchanged.
  */
 public class FileHarvest implements IHarvester
 {
     static Logger log = Logger.getLogger( FileHarvest.class );
-    
-    
+
+
     private File path;
     private Vector< InputPair< File, Long > > submitters;
     private Vector< InputPair< File, Long > > formats;
     private Vector< InputPair< String, String > > submittersFormatsVector;
     private String datadockJobsFilePath;
-    private String toHarvestFolder;    
+    private String toHarvestFolder;
     private String harvestDoneFolder;
     private int max;
     /**
-     * Constructs the FileHarvest class, and starts polling the given path for 
+     * Constructs the FileHarvest class, and starts polling the given path for
      * files and subsequent file-changes.
-     * 
+     *
      * @param path The path to the directory to harvest from.
-     * 
+     *
      * @throws IllegalArgumentException if the path given is not a directory.
-     * @throws IOException 
-     * @throws SAXException 
-     * @throws ParserConfigurationException 
-     * @throws ConfigurationException 
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws ConfigurationException
      */
-    public FileHarvest( /*File path*/ ) throws IllegalArgumentException, /*ParserConfigurationException,*/ SAXException, IOException, ConfigurationException 
+    public FileHarvest( ) throws IllegalArgumentException, SAXException, IOException, ConfigurationException
     {
-        //System.out.println(String.format( "Constructor( path='%s' )", path.getAbsolutePath() ) );
-        // log.debug( String.format( "Constructor( path='%s' )", path.getAbsolutePath() ) );
-        
-//         if ( ! path.isDirectory() )
-//         {
-//             throw new IllegalArgumentException( String.format( "'%s' is not a directory !", path.getAbsolutePath() ) );
-//         }
-        
-//         this.path = path;
         this.submitters = new Vector< InputPair< File, Long > >();
         this.formats = new Vector< InputPair< File, Long > >();
 
         //getting path for the jobs file for the building of the submitterformatvector
         datadockJobsFilePath = DatadockConfig.getPath();
         toHarvestFolder = HarvesterConfig.getFolder();
-    	path = FileHandler.getFile( toHarvestFolder );
+        path = FileHandler.getFile( toHarvestFolder );
         harvestDoneFolder = HarvesterConfig.getDoneFolder();
         max = HarvesterConfig.getMaxToHarvest();
     }
 
-    
+
     /**
      * Starts The datadock. It initializes vectors and add found jobs to the application vector.
      */
@@ -131,12 +122,12 @@ public class FileHarvest implements IHarvester
     {
         log.debug( "start() called" );
 
-        initVectors();        
+        initVectors();
         log.debug( "Vectors initialized" );
 
     }
 
-    
+
     /**
      * Shuts down the fileharvester
      */
@@ -144,9 +135,9 @@ public class FileHarvest implements IHarvester
     {
         log.debug( "shutdown() called" );
     }
-    
 
-    
+
+
     /**
      * Private method to initialize the local vectors representing the
      * polling directory.
@@ -154,33 +145,34 @@ public class FileHarvest implements IHarvester
     private void initVectors() throws ParserConfigurationException, SAXException, IOException
     {
         log.debug( "initvectors() called" );
-        
+        //System.out.println( "initvectors() called" );
+
         File datadockJobsFile = FileHandler.getFile( datadockJobsFilePath );
-	NodeList jobNodeList = XMLFileReader.getNodeList( datadockJobsFile, "job" );
+        NodeList jobNodeList = XMLFileReader.getNodeList( datadockJobsFile, "job" );
         submittersFormatsVector = new Vector< InputPair< String, String > >();
-    	int jobNodeListLength = jobNodeList.getLength();
+        int jobNodeListLength = jobNodeList.getLength();
         for( int i = 0; i < jobNodeListLength; i++ )
-    	{
-            Element pluginElement = (Element)jobNodeList.item( i );		        
+        {
+            Element pluginElement = (Element)jobNodeList.item( i );
             String formatAtt = pluginElement.getAttribute( "format" );
             String submitterAtt = pluginElement.getAttribute( "submitter" );
             InputPair< String, String > submitterFormatPair = new InputPair< String, String >( submitterAtt, formatAtt );
             if( ! submittersFormatsVector.contains( submitterFormatPair ) )
             {
-            	log.debug( String.format( "Adding submitter and format to Vector submitterFormatPair: %s and %s", submitterAtt, formatAtt ) );
-            	submittersFormatsVector.add( submitterFormatPair );
+                log.debug( String.format( "Adding submitter and format to Vector submitterFormatPair: %s and %s", submitterAtt, formatAtt ) );
+                submittersFormatsVector.add( submitterFormatPair );
             }
             else
             {
                 log.warn( String.format( "The format: %s with submitter; %s was not added to the vector, the jobs file contains redundant/erronous information", formatAtt, submitterAtt ) );
             }
-    	}
+        }
 
 
 
         log.debug( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
         //System.out.println( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
-        log.debug( "Submitters:" );        
+        log.debug( "Submitters:" );
         for( File submitter : path.listFiles() )
         {
             if( submitter.isDirectory() )
@@ -190,63 +182,68 @@ public class FileHarvest implements IHarvester
                 submitters.add( new InputPair< File, Long >( submitter, submitter.lastModified() ) );
             }
         }
-        
-        log.debug( "formats:" );        
+
+        log.debug( "formats:" );
         for( InputPair<File, Long> submitter : submitters )
         {
-        	File submitterFile = submitter.getFirst();
+            File submitterFile = submitter.getFirst();
             for( File format : submitterFile.listFiles() )
             {
-            	if ( checkSubmitterFormat( submitterFile, format ) )
-            	{
-            		log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
-                        formats.add( new InputPair< File, Long >( format, format.lastModified() ) );
-            	}
+                if ( checkSubmitterFormat( submitterFile, format ) )
+                {
+                    log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
+                    formats.add( new InputPair< File, Long >( format, format.lastModified() ) );
+                }
             }
         }
     }
-    
-    
+
+
     private boolean checkSubmitterFormat( File submitterFile, File formatFile )
     {
-    	String submitterFilePath = sanitize( submitterFile );
-    	String formatFilePath = sanitize( formatFile );
-    	submitterFilePath = submitterFile.getAbsolutePath().substring( submitterFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );    	
-    	log.debug( "FileHarvest.checkSubmitterFormat -> submitter: " + submitterFilePath );    	
-    	formatFilePath = formatFile.getAbsolutePath().substring( formatFile.getAbsolutePath().lastIndexOf( "/") + 1 );
-    	log.debug( "FileHarvest.checkSubmitterFormat -> format: " + formatFilePath );
-    	
-    	InputPair< String, String > pair = new InputPair< String, String >( submitterFilePath, formatFilePath );
-    	boolean contains = submittersFormatsVector.contains( pair );
-    	log.debug( "FileHarvest.checkSubmitterFormat -> contains: " + contains );
-    	if ( contains )
-    	{
-    		return true;
-    	}
-    	else
-    	{
-    		log.debug( "FileHarvest.checkSubmitterFormat -> Vector: " + submittersFormatsVector.toString() );
-    		return false;
-    	}
+        //String submitterFilePath = sanitize( submitterFile );
+        //String formatFilePath = sanitize( formatFile );
+
+        
+
+        String submitterFilePath = submitterFile.getAbsolutePath().substring( submitterFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );
+        log.debug( "FileHarvest.checkSubmitterFormat -> submitter: " + submitterFilePath );
+        String formatFilePath = formatFile.getAbsolutePath().substring( formatFile.getAbsolutePath().lastIndexOf( "/") + 1 );
+        //System.out.println( String.format( "checking: %s %s",submitterFilePath, formatFilePath ) );
+        log.debug( "FileHarvest.checkSubmitterFormat -> format: " + formatFilePath );
+
+        InputPair< String, String > pair = new InputPair< String, String >( submitterFilePath, formatFilePath );
+        boolean contains = submittersFormatsVector.contains( pair );
+        log.debug( "FileHarvest.checkSubmitterFormat -> contains: " + contains );
+        if ( contains )
+        {
+            return true;
+        }
+        else
+        {
+            // System.out.println("FileHarvest.checkSubmitterFormat -> Vector: " + submittersFormatsVector.toString() );
+            log.debug( "FileHarvest.checkSubmitterFormat -> Vector: " + submittersFormatsVector.toString() );
+            return false;
+        }
     }
-    
+
     /**
-     * \Todo: is a santizer neccesary, when the file names are given by the 
+     * \Todo: is a santizer neccesary, when the file names are given by the
      * filesystem and therefore never ends with a "/" ? look at bug 8755
      */
-    
+
     private String sanitize( File file )
     {
-    	if ( file.getAbsolutePath().endsWith( "/" ) )
-    	{
-    		return ( String )file.getAbsolutePath().subSequence( 0 , ( file.getAbsolutePath().length() - 1) );
-    	}
-    	else
-    	{
-    		return file.getAbsolutePath();
-    	}
+        if ( file.getAbsolutePath().endsWith( "/" ) )
+        {
+            return ( String )file.getAbsolutePath().subSequence( 0 , ( file.getAbsolutePath().length() - 1) );
+        }
+        else
+        {
+            return file.getAbsolutePath();
+        }
     }
-    
+
 
     /**
      * getJobs. Locate jobs and returns them.  First off, the
@@ -254,11 +251,11 @@ public class FileHarvest implements IHarvester
      * remained the same as last time it is removed from the
      * applications vector and added to the newJobs vector and
      * returned when the method exits.
-     * 
+     *
      * afterwards it finds new jobs and adds them to the applications
      * vector, and generate a new snapshot of the harvest directory.
-     * @throws ConfigurationException 
-     * 
+     * @throws ConfigurationException
+     *
      * @returns A vector of Datadockjobs containing the necessary information to process the jobs.
      */
     public Vector< DatadockJob > getJobs() throws FileNotFoundException, IOException, ConfigurationException
@@ -272,83 +269,84 @@ public class FileHarvest implements IHarvester
             String parentFile = job.getFirst().getParentFile().getName();
             DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
             log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'", datadockJob.getUri().getRawPath(),
-            		                                                                           datadockJob.getSubmitter(),
-            		                                                                           datadockJob.getFormat() ) );
-            jobs.add( datadockJob );            
+                                      datadockJob.getSubmitter(),
+                                      datadockJob.getFormat() ) );
+            jobs.add( datadockJob );
         }
 
         return jobs;
     }
 
 
-    
+
     private HashSet< InputPair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
-    	log.debug( "Calling FileHarvest.getNewJobs");
+        log.debug( "Calling FileHarvest.getNewJobs");
         HashSet< InputPair< File, Long > > jobs = new HashSet< InputPair< File, Long > >();
         //String toHarvestFolder = HarvesterConfig.getFolder();
         //String harvestDoneFolder = HarvesterConfig.getDoneFolder();
         //int max = HarvesterConfig.getMaxToHarvest();
         log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
         for( InputPair< File, Long > format : formats )
-        {	
+        {
 
             File[] files = format.getFirst().listFiles();
             int l = files.length;
             int i = 0;
             while( i < l && i < max )
 
-            {            	
+            {
 
                 File job = files[i];
                 String path = job.getPath();
-                String newPath = path.replace( toHarvestFolder, harvestDoneFolder ); 
+                String newPath = path.replace( toHarvestFolder, harvestDoneFolder );
                 String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
                 File destFldr = FileHandler.getFile( destFldrStr );
-                File dest = FileHandler.getFile( newPath );               
+                File dest = FileHandler.getFile( newPath );
                 move( job, destFldr, dest );
                 jobs.add( new InputPair< File, Long >( dest, dest.length() )  );
                 i++;
 
             }
         }
-        
-       // System.out.println( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
+
+        // System.out.println( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
         log.debug( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
-        
+
         return jobs;
     }
 
 
-    public void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException 
+    private void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException
     {
         log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
-    	boolean ok = false;
-    	if ( ! destFldr.exists() )
-    	{
-    		ok = destFldr.mkdirs();
-    	}
-    	else
-    	{
-    		ok = true;
-    	}
-    	
-        if ( ok )
+        boolean ok = false;
+        if ( ! destFldr.exists() )
         {
-        	log.debug( "destFldr created: " + destFldr.getPath().toString() );
-        	ok = src.renameTo( dest );
-    	    if ( ! ok )
-        	{
-        		log.warn( String.format( "Could not rename file: %s to %s", src.getAbsolutePath().toString(), dest.getAbsolutePath().toString() ) );
-        		throw new IOException( "IOException thrown in FileHarvest.move: Could not create new file: " + src.getAbsolutePath().toString() );
-        	}
-        	
+            //System.out.println( "hep" );
+            ok = destFldr.mkdirs();
         }
         else
         {
-        	log.warn( "Could not create destination folder for old files: " + destFldr.getAbsolutePath().toString() );
-        	throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
-        
+            ok = true;
+        }
+
+        if ( ok )
+        {
+            log.debug( "destFldr created: " + destFldr.getPath().toString() );
+            ok = src.renameTo( dest );
+            if ( ! ok )
+            {
+                log.warn( String.format( "Could not rename file: %s to %s", src.getAbsolutePath().toString(), dest.getAbsolutePath().toString() ) );
+                throw new IOException( "IOException thrown in FileHarvest.move: Could not create new file: " + src.getAbsolutePath().toString() );
+            }
+
+        }
+        else
+        {
+            log.warn( "Could not create destination folder for old files: " + destFldr.getAbsolutePath().toString() );
+            throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
+
         }
     }
 }
