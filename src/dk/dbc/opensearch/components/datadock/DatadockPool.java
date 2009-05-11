@@ -37,6 +37,8 @@ import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -76,6 +78,7 @@ public class DatadockPool
     private int shutDownPollTime;
     private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
     private PIDManager PIDmanager;
+    private IFedoraCommunication fedoraCom;
 
     private int i = 0;
 
@@ -90,7 +93,7 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, HashMap< InputPair< String, String >, ArrayList< String > > jobMap )throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, HashMap< InputPair< String, String >, ArrayList< String > > jobMap, IFedoraCommunication fedoraCom )throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
@@ -98,7 +101,8 @@ public class DatadockPool
         this.estimate = estimate;
         this.processqueue = processqueue;
         this.PIDmanager = PIDmanager;
-        
+        this.fedoraCom = fedoraCom;
+
         this.jobMap = jobMap;
         log.debug(String.format( "jobMap:%s", jobMap.toString() ));
 
@@ -140,7 +144,7 @@ public class DatadockPool
     
     public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, jobMap ) );
+        return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, jobMap, fedoraCom ) );
     }
 
 

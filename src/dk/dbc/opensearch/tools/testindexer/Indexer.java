@@ -48,38 +48,38 @@ public class Indexer{
 
     public Indexer()throws ServiceException, MalformedURLException, IOException, ConfigurationException
     {
-        fedorahandle = new FedoraHandle();
-        pool = Executors.newFixedThreadPool(1);
+        //        fedorahandle = new FedoraHandle();
+        //pool = Executors.newFixedThreadPool(1);
     }
 
     public void index( URI uri, String submitter, String format ) throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException
     {
-        DatadockJob datadockJob = new DatadockJob( uri, submitter, format);
-        IEstimate e = new Estimate();
-        IProcessqueue p = new Processqueue();
-        jobMap = JobMapCreator.getMap( this.getClass() );
-        DatadockThread ddt = new DatadockThread( datadockJob, e, p, jobMap );
-        FutureTask ft = new FutureTask( ddt );
-        pool.submit( ft );
-        while(! ft.isDone() ){}
+        // DatadockJob datadockJob = new DatadockJob( uri, submitter, format);
+        // IEstimate e = new Estimate();
+        // IProcessqueue p = new Processqueue();
+        // jobMap = JobMapCreator.getMap( this.getClass() );
+        // DatadockThread ddt = new DatadockThread( datadockJob, e, p, jobMap );
+        // FutureTask ft = new FutureTask( ddt );
+        // pool.submit( ft );
+        // while(! ft.isDone() ){}
 
-        Float f = -1f;
+        // Float f = -1f;
 
-        try{
-                f = (Float)ft.get();
-            }
-        catch( ExecutionException ee ){
+        // try{
+        //         f = (Float)ft.get();
+        //     }
+        // catch( ExecutionException ee ){
 
-                // getting exception from thread
-                Throwable cause = ee.getCause();
+        //         // getting exception from thread
+        //         Throwable cause = ee.getCause();
 
-                System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
-                StackTraceElement[] trace = cause.getStackTrace();
-                for( int i = 0; i < trace.length; i++ )
-                    {
-                        System.err.println( trace[i].toString() );
-                    }
-        }
+        //         System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
+        //         StackTraceElement[] trace = cause.getStackTrace();
+        //         for( int i = 0; i < trace.length; i++ )
+        //             {
+        //                 System.err.println( trace[i].toString() );
+        //             }
+        // }
         
         
 

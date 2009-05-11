@@ -1,3 +1,4 @@
+
 /**
  * \file DataDock.java
  * \brief The DataDock class
@@ -28,6 +29,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
@@ -103,7 +105,7 @@ public class DatadockThread implements Callable<Float>
     private String submitter;
     private String format;
     private ArrayList< String > list;
-    private FedoraCommunication fedoraCom;
+    private IFedoraCommunication fedoraCom;
 
 
     /**
@@ -127,7 +129,7 @@ public class DatadockThread implements Callable<Float>
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, HashMap< InputPair< String, String >, ArrayList< String > > jobMap) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, HashMap< InputPair< String, String >, ArrayList< String > > jobMap, IFedoraCommunication fedoraCom ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
 
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
@@ -157,7 +159,7 @@ public class DatadockThread implements Callable<Float>
         queue = processqueue;
 
         this.estimate = estimate;
-        fedoraCom = new FedoraCommunication();
+        this.fedoraCom = fedoraCom;
 
         log.debug( String.format( "DataDock Construction finished" ) );
     }
@@ -236,38 +238,8 @@ public class DatadockThread implements Callable<Float>
             }
         }
 
-// <<<<<<< .mine
-//         // obtain mimetype and length from CargoContainer
-//         String mimeType = null;
-//         long length = 0;
-//         for( CargoObject co : cc.getCargoObjects() )
-//         {
-//             if( co.getDataStreamName() == DataStreamType.OriginalData )
-//             {
-//                 mimeType = co.getMimeType();
-//             }
-            
-//             length += co.getContentLength();
-//         }
-      
-//         // Store the CargoContainer in the fedora repository
-//         byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
-//         String logm = String.format( "%s inserted", datadockJob.getFormat() );
-
-//         // Beware of this innocent looking log line, it writes the
-//         //binary content of the stored data to the log
-//         String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
-
-//         log.info( String.format( "Submitted data, returning pid %s", pid ) );
-
-//         // push to processqueue job to processqueue and get estimate
-//         queue.push( pid );
-//         Float est = estimate.getEstimate( mimeType, length );
-//         log.debug( String.format( "Got estimate of %s", est ) );
+        InputPair< String, Float > storeDataResponse = (InputPair<String, Float>) fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
         
-//         return est;
-// =======
-        Pair< String, Float > storeDataResponse = (InputPair<String, Float>) fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
         return storeDataResponse.getSecond(); 
     }
 }

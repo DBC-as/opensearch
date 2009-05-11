@@ -26,7 +26,7 @@ package dk.dbc.opensearch.components.pti;
  */
 
 
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -77,7 +77,7 @@ import org.xml.sax.SAXException;
  * fedora repository, and index it with compass afterwards. If this
  * was succesfull the estimate values in the statistics db will be updated
  */
-public class PTIThread extends FedoraHandle implements Callable< Long >
+public class PTIThread implements Callable< Long >
 {
     Logger log = Logger.getLogger( PTIThread.class );
 
@@ -87,6 +87,7 @@ public class PTIThread extends FedoraHandle implements Callable< Long >
     private IEstimate estimate;
     private ArrayList< String > list;
     private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    private FedoraCommunication fedoraCommunication;
 
 
     /**
@@ -138,57 +139,21 @@ public class PTIThread extends FedoraHandle implements Callable< Long >
         CargoObject co = null;
         String submitter =  null;
         String format = null;
+        
 
+
+        log.debug( String.format( "Trying to get stream from fedora with pid %s and name %s", fedoraPid, DataStreamType.AdminData.getName() ) );
+       
         try{
-            log.debug( String.format( "Trying to get stream from fedora with pid %s and name %s", fedoraPid, DataStreamType.AdminData.getName() ) );
-            MIMETypedStream ds = super.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
-            byte[] adminStream = ds.getStream();
-            log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-            cc = new CargoContainer();
-
-            ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-            log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-            Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
-            log.debug( String.format( "root element from adminstream == %s", root ) );
-            //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-            NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-            if( indexingAliasElem == null )
-            {
-                log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-            }
-            log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
-            String indexingAliasName = (String)((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-            log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
-            //Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
-            //String filePath = filePathElem.getAttribute( "name" );
-            //cc.setFilePath( filePath );
-            //log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
-
-            NodeList streamsNL = root.getElementsByTagName( "streams" );
-            Element streams = (Element)streamsNL.item(0);
-            NodeList streamNL = streams.getElementsByTagName( "stream" );
-            log.debug( String.format( "Iterating streams in nodelist" ) );
-            for(int i = 0; i < streamNL.getLength(); i++ )
-            {
-                Element stream = (Element)streamNL.item(i);
-                String streamID = stream.getAttribute( "id" );
-                MIMETypedStream dstream = super.fea.getDatastreamDissemination(fedoraPid, streamID, null);
-                cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
-                        stream.getAttribute( "format" ),
-                        stream.getAttribute( "submitter" ),
-                        stream.getAttribute( "lang" ),
-                        stream.getAttribute( "mimetype" ),
-                        IndexingAlias.getIndexingAlias( indexingAliasName ),
-                        dstream.getStream() );
-            }
+            cc = fedoraCommunication.retrieveContainer( fedoraPid );
         }catch( Exception e ){
             log.fatal( String.format( "Caught exception with cause: %s, message: %s", e.getCause(), e.getMessage() ) );
             throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
         }
-
-            co = cc.getCargoObject( DataStreamType.OriginalData );
-            submitter =  co.getSubmitter();
-            format = co.getFormat();
+        
+        co = cc.getCargoObject( DataStreamType.OriginalData );
+        submitter =  co.getSubmitter();
+        format = co.getFormat();
 
         long result = 0l;
         // Get the job from the jobMap

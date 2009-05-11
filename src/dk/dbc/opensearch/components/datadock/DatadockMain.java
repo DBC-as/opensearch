@@ -37,6 +37,8 @@ import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
 import java.io.File;
 import java.io.IOException;
@@ -184,6 +186,7 @@ public class DatadockMain
 
             // Fedora access
             PIDManager PIDmanager = new PIDManager();
+            IFedoraCommunication fedoraCom = new FedoraCommunication();
 
             log.debug( "Starting datadockPool" );
 
@@ -192,7 +195,7 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, jobMap );
+            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, jobMap, fedoraCom );
 
             log.debug( "Starting harvester" );
             
