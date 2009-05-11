@@ -21,9 +21,6 @@ src_dir = os.getcwd()
 middle = ':./'
 #folder = 'tst'
 
-ant_dist = "ant dist"
-ant_pti  = "ant dist_pti"
-ant_data = "ant dist_datadock"
 scp_dist = "scp -rp "
 
 """#########################################
@@ -106,18 +103,16 @@ def __set_copy_to_folder( fldr ):
 
 def __make_dist( dist ):
     global src_dir
-    global ant_dist
     global scp_dist
 
     if src_dir.endswith("tools"):
         src_dir = src_dir.replace("/tools", "" )
-    
-    if dist == 'datadock':
-        runproc = subprocess.Popen( ant_data, shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
-    elif dist == 'pti':
-        runproc = subprocess.Popen( ant_pti,  shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )    
+
+    if dist == 'all':
+        runproc = subprocess.Popen( 'ant dist', shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
     else:
-        runproc = subprocess.Popen( ant_dist, shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
+        dist_target = 'dist_'+dist
+        runproc = subprocess.Popen( 'ant '+dist_target, shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
         
     stdin, stderr = runproc.communicate()
     if not stderr == '':
@@ -182,7 +177,14 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
-    target_list = [ 'datadock', 'pti', 'both' ]
+
+    # The target list... new targets only needs to be added here, but
+    # must comform to this pattern:
+    # ant target-name = dist_[target_list-name]
+    # ie.
+    # target_list-name: datadock, ant target-name: dist_datadock
+
+    target_list = [ 'all', 'datadock', 'pti', 'testindexer' ]
     server_list = [ 'andrus', 'sempu' ]
 
     if options.listserv:
@@ -209,7 +211,11 @@ if __name__ == '__main__':
     
     if len( args ) != 1:
         parser.print_help()
-        sys.exit( "\nPlease specify target" )
+        sys.exit( "\nPlease specify 1 target" )    
+    if args[0] in target_list:
+        __make_dist( args[0] )
+    else:
+        sys.exit( "\nUnknown target "+args[0] )
 
     fldrs = [ 'admin', 'bin', 'config', 'dist', 'lib', 'plugins', 'tools' ]
 
@@ -223,8 +229,6 @@ if __name__ == '__main__':
     if __check_remote_folder_exists( os.path.join( options.folder, "lib" ), options.server ):
         print "folder %s:%s/%s exists, skipping copy of libs"%( options.server, options.folder, "lib" )
         fldrs.remove( "lib" )
-
-    __make_dist( args[0] )
 
     del_dir = __create_copy_dist( fldrs )
 

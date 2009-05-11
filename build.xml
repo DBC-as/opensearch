@@ -93,6 +93,10 @@
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
+    <antcall target="_dist_testindexer">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />
+    </antcall>
   </target> 
 
 
@@ -108,6 +112,14 @@
     <antcall target="_dist_pti">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
+    </antcall>
+  </target>
+
+
+  <target name="dist_testindexer" depends="clean, xsd, compile">
+    <antcall target="_dist_testindexer">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />
     </antcall>
   </target>
 
