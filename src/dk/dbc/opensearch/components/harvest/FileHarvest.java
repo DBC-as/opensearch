@@ -227,22 +227,22 @@ public class FileHarvest implements IHarvester
         }
     }
 
-    /**
-     * \Todo: is a santizer neccesary, when the file names are given by the
-     * filesystem and therefore never ends with a "/" ? look at bug 8755
-     */
+ //    /**
+//      * \Todo: is a santizer neccesary, when the file names are given by the
+//      * filesystem and therefore never ends with a "/" ? look at bug 8755
+//      */
 
-    private String sanitize( File file )
-    {
-        if ( file.getAbsolutePath().endsWith( "/" ) )
-        {
-            return ( String )file.getAbsolutePath().subSequence( 0 , ( file.getAbsolutePath().length() - 1) );
-        }
-        else
-        {
-            return file.getAbsolutePath();
-        }
-    }
+//     private String sanitize( File file )
+//     {
+//         if ( file.getAbsolutePath().endsWith( "/" ) )
+//         {
+//             return ( String )file.getAbsolutePath().subSequence( 0 , ( file.getAbsolutePath().length() - 1) );
+//         }
+//         else
+//         {
+//             return file.getAbsolutePath();
+//         }
+//     }
 
 
     /**
