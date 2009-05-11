@@ -128,7 +128,6 @@ public class Estimate implements IEstimate
         
         return average_time;
     }
-
     
     /**
      * updateEstimate updates the entry in statistics that matches the given mimetype, with the length and time.

@@ -100,6 +100,11 @@ public class Processqueue implements IProcessqueue
     }
 
 
+    /**
+     * Pops all fedorahandles from the processqueue
+     *
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     */
     public Vector< InputPair< String, Integer > > popAll() throws SQLException
     {
         log.debug( "Entering Processqueue.popAll()" );
@@ -140,6 +145,13 @@ public class Processqueue implements IProcessqueue
     }
 
 
+    /**
+     * Pops up to maxSize fedorahandles from the processqueue
+     *
+     * @param maxSize the maximum size of the returned resultset, ie. the maximum number of handles to pop
+     *
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     */
     public Vector<InputPair<String, Integer>> pop( int maxSize ) throws SQLException
     {
         log.debug( "Entering Processqueue.pop()" );
@@ -298,6 +310,13 @@ public class Processqueue implements IProcessqueue
         return rowsUpdated;
     }
 
+    /**
+     * The notDocked method is used to store paths to the files, that we couldnt not store in the repository
+     *
+     * @param The path of the problematic file
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     */
     public void notDocked( String path ) throws ClassNotFoundException, SQLException
     {
         log.debug( String.format( "Entering notDocked( path = '%s')",path ) );
@@ -306,7 +325,7 @@ public class Processqueue implements IProcessqueue
         //log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
         Statement stmt = null;
         stmt = con.createStatement();
-        String sql_query = (  String.format( "INSERT INTO notDocked( path ) "+
+        String sql_query = (  String.format( "INSERT INTO notdocked( path ) "+
                                              "VALUES( %s )", path ) );
     
         try
@@ -323,7 +342,13 @@ public class Processqueue implements IProcessqueue
 
     }
 
-
+    /**
+     * The notIndexed method is used to store queueIDs for indexjobs, that we couldnt not be indexed/
+     *
+     * @param The queueID of the problematic job
+     * @throws ClassNotFoundException if the databasedriver is not found
+     * @throws SQLException if there is something wrong the database connection or the sqlquery
+     */
     public void notIndexed(int queueID ) throws ClassNotFoundException, SQLException
     {
         log.debug( String.format( "Entering notIndexed( queueID = '%s')",queueID ) );
