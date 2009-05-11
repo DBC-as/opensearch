@@ -122,7 +122,7 @@ public class PTIManager
 
         // Checking jobs and commiting jobs
         Vector< CompletedTask > finishedJobs = pool.checkJobs();
-        
+
         for ( CompletedTask task : finishedJobs)
         {            
             InputPair< Long, Integer > pair = (InputPair< Long, Integer >)task.getResult();
