@@ -34,6 +34,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -225,7 +226,7 @@ public class DocbookAnnotate implements IAnnotate
             try {
                 log.debug( "Adding annotation to CargoContainer" );
                 String isolatedDCData = isolateDCData( xmlString );        
-                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", isolatedDCData.getBytes() );
+                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", IndexingAlias.DC, isolatedDCData.getBytes() );
             } catch (IOException ioe) {
                 log.fatal( "Could not add DC data to CargoContainer" );
                 throw new PluginException( "Could not add DC data to CargoContainer", ioe );
