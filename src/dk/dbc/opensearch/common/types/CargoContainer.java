@@ -183,7 +183,8 @@ public class CargoContainer
                                           data );
 
         this.data.add( co );
-        log.debug("cargoObject added to container");
+        log.debug( String.format( "cargoObject with id '%s' added to container", 
+                                  co.getId() ) );
         log.debug( String.format( "number of CargoObjects: %s", 
                                   getCargoObjectCount() ) );
 
@@ -271,6 +272,10 @@ public class CargoContainer
             {
                 ret_co = co;
             }
+        }
+        if( null == ret_co ) {
+            log.error( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
+            throw new NullPointerException( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
         }
         return ret_co;
     }

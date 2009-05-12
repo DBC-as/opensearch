@@ -248,7 +248,9 @@ public class CargoContainerTest
 
     /** 
      * Tests the getCargoObject( DataStreamType ) function of the
-     * CargoContainer
+     * CargoContainer. Even though two identical datastreams are laid
+     * into the same CargoContainer, the getCargoObject will get the
+     * correct one based on the DataStreamType.
      */
     @Test
     public void testLookupCargoObjectWithDataStreamType() throws IOException
@@ -256,11 +258,8 @@ public class CargoContainerTest
         CargoObject co;
         DataStreamType dst1 = DataStreamType.getDataStreamNameFrom( "originalData" );
         DataStreamType dst2 = DataStreamType.getDataStreamNameFrom( "indexableData" );
-        DataStreamType dst3 = DataStreamType.getDataStreamNameFrom( "adminData" );
-        String str1 = "abc";
-        byte[] data1 = str1.getBytes();
-        // String str2 = "abc";
-        // byte[] data2 = str2.getBytes();
+
+        byte[] data1 = "abc".getBytes();
 
         cargo.add( dst1, format, submitter, language, mimetype, IndexingAlias.Article, data1);
         cargo.add( dst2, format, submitter, language, mimetype, IndexingAlias.Article, data1);
@@ -268,8 +267,19 @@ public class CargoContainerTest
         co = cargo.getCargoObject( dst2 );
         assertTrue( data1 == co.getBytes() );
 
-        assertTrue( cargo.getCargoObject( dst3 ) == null  );
 
+    }
+
+
+    /** 
+     * This test expects a NullPointerException to be
+     * thrown if the client tries to lookup a nonexisting datastream
+     * from a cargocontainer
+     */
+    @Test(expected = NullPointerException.class)
+    public void testNullPointerExceptionWithLookupOnNonExistingCargoObject(){
+        DataStreamType dst3 = DataStreamType.getDataStreamNameFrom( "adminData" );
+        cargo.getCargoObject( dst3 );
     }
 
 
