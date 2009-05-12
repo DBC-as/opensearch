@@ -97,8 +97,10 @@ public class PTIManager
         // checking for new jobs
         Vector<InputPair<String, Integer>> newJobs = processqueue.pop( resultsetMaxSize );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
-
+        //System.out.println( "size of newJobs: "+ newJobs.size() );
         // Starting new Jobs
+        //System.out.println( newJobs.get(0).getFirst() );
+        //System.out.println( "newJobs: " + newJobs);
         for( Pair<String, Integer> job : newJobs )
         {
             boolean submitted = false;
@@ -106,6 +108,7 @@ public class PTIManager
             {
                 try
                 {
+                    //          System.out.println( job );
                     pool.submit( job.getFirst(), job.getSecond() );
                     submitted = true;
                     log.debug( String.format( "submitted job: fedorahandle='%s' and queueID='%s'",job.getFirst(), job.getSecond() ) );
@@ -122,7 +125,7 @@ public class PTIManager
 
         // Checking jobs and commiting jobs
         Vector< CompletedTask > finishedJobs = pool.checkJobs();
-
+        // System.out.println( "size of finishedJobs: " + finishedJobs.size() );
         for ( CompletedTask task : finishedJobs)
         {            
             InputPair< Long, Integer > pair = (InputPair< Long, Integer >)task.getResult();

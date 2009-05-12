@@ -99,7 +99,7 @@ public class PTIPool
 
          jobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();
          
-         //should use the config class
+         // \Todo: should use the config class, bug 8782
          
         URL cfgURL = getClass().getResource("/config.xml");
         config = new XMLConfiguration( cfgURL );

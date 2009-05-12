@@ -34,14 +34,19 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.statistics.IEstimate;
+import dk.dbc.opensearch.common.statistics.Estimate;
 
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.NoSuchElementException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-
+import org.compass.core.Compass;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
@@ -67,10 +72,10 @@ public class PTIManagerTest {
     Processqueue mockPQ = createMock( Processqueue.class );
     PTIPool mockPTIPool = createMock( PTIPool.class);
     CompletedTask mockCompletedTask = createMock( CompletedTask.class );
-    Vector<InputPair<String, Integer>> mockNewJobs;
+    //Vector<InputPair<String, Integer>> mockNewJobs;
 
     static FutureTask mockFuture = createMock( FutureTask.class );
-    static CompletedTask hat = new CompletedTask( mockFuture, new InputPair< Long, Integer >( 1l, 1 ) );
+    static CompletedTask dummyTask = new CompletedTask( mockFuture, new InputPair< Long, Integer >( 1l, 1 ) );
     static Vector< CompletedTask > checkJobsVector =  new Vector< CompletedTask >();
 
 
@@ -88,10 +93,20 @@ public class PTIManagerTest {
         }
  
     }
+    ThreadPoolExecutor mockExecutor = createMock( ThreadPoolExecutor.class );
+    Estimate mockEstimate = createMock( Estimate.class );
+    Compass mockCompass = createMock( Compass.class );
+    InputPair< String, Integer > mockInputPair = createMock( InputPair.class );
+
 
     @MockClass( realClass =  PTIPool.class )
     public static class MockPTIPool
     {
+        @Mock public void $init( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair < String, String >, ArrayList< String > > jobMap ) 
+        {
+        
+        }
+
         @Mock public void submit( String fedoraHandle, Integer queueID ) 
         {
             if( queueID == 1 )
@@ -100,10 +115,11 @@ public class PTIManagerTest {
                 throw new RejectedExecutionException( "test" );
             }
         }
+
         @Mock public Vector< CompletedTask > checkJobs()
         {
-            //System.out.println( "hat" );
-            checkJobsVector.add( hat );
+            checkJobsVector.add( dummyTask );
+            //System.out.println( "size of checkJobs: " + checkJobsVector.size() );
             return checkJobsVector;
         }
     
@@ -114,7 +130,7 @@ public class PTIManagerTest {
      *
      */
     @Before public void SetUp() {
-        //mockNewJobs = createMock( Vector<InputPair<String, Integer>>.class );
+
     }
 
     /**
@@ -126,7 +142,11 @@ public class PTIManagerTest {
         reset( mockPQ );
         reset( mockPTIPool );
         reset( mockCompletedTask );
-        // reset();
+        reset( mockInputPair );
+        reset( mockEstimate );
+        reset( mockCompass );
+        reset( mockFuture );
+        reset( mockExecutor );
     }
 
     /**
@@ -179,6 +199,7 @@ public class PTIManagerTest {
         Vector< InputPair< String, Integer > > newJobs = new Vector< InputPair< String, Integer > >();
         newJobs.add( new InputPair< String, Integer >( "test1", 1 ) );
         newJobs.add( new InputPair< String, Integer >( "test2", 2 ) );
+       
 
         Vector< CompletedTask > finishedJobs =  new Vector< CompletedTask >();
         finishedJobs.add( mockCompletedTask );
@@ -193,6 +214,7 @@ public class PTIManagerTest {
         //while loop on newJobs
         mockPTIPool.submit( "test1", 1 );
         mockPTIPool.submit( "test2", 2 );
+
         //out of while loop
         expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
         expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Long, Integer >( 1l, 1 ) );
@@ -205,7 +227,6 @@ public class PTIManagerTest {
         replay( mockPQ );
         replay( mockPTIPool);
         replay( mockCompletedTask );
-        //        replay( mockNewJobs )
             
             /**
          * do stuff
@@ -225,7 +246,6 @@ public class PTIManagerTest {
     /**
      * Tests the handling of the RejectedExecutionException in the update method
      */
-@Ignore
     @Test public void testUpdateMethodRejectedExecutionException() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
     {
     /**
@@ -234,10 +254,11 @@ public class PTIManagerTest {
         Mockit.setUpMocks( MockPTIManagerConfig.class );
         Mockit.setUpMocks( MockPTIPool.class );
         Vector< InputPair< String, Integer > > newJobs = new Vector< InputPair< String, Integer > >();
-        newJobs.add( new InputPair< String, Integer >( "test1", 1 ) );
-        newJobs.add( new InputPair< String, Integer >( "test2", 2 ) );
-
-        System.out.println(checkJobsVector.size());
+        HashMap<InputPair<String,String>,ArrayList<String> > dummyMap = new HashMap();
+       
+        newJobs.add( mockInputPair );
+        newJobs.add( mockInputPair );
+       
         /**
          * expectations
          */
@@ -246,7 +267,20 @@ public class PTIManagerTest {
         //update method
         expect( mockPQ.pop( 2 ) ).andReturn( newJobs );
         //while loop on newJobs
-        
+       
+        expect( mockInputPair.getFirst() ).andReturn( "test" );
+        expect( mockInputPair.getSecond() ).andReturn( 1 ); //provokes exception
+        expect( mockInputPair.getFirst() ).andReturn( "test" );//log warn
+        expect( mockInputPair.getSecond() ).andReturn( 1 );//log warn
+        expect( mockInputPair.getFirst() ).andReturn( "test" );
+        expect( mockInputPair.getSecond() ).andReturn( 2 );
+        expect( mockInputPair.getFirst() ).andReturn( "test" );//log
+        expect( mockInputPair.getSecond() ).andReturn( 2 );//log
+        expect( mockInputPair.getFirst() ).andReturn( "test" );
+        expect( mockInputPair.getSecond() ).andReturn( 2 );
+        expect( mockInputPair.getFirst() ).andReturn( "test" );//log
+        expect( mockInputPair.getSecond() ).andReturn( 2 );//log
+
         //out of while loop
         //expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Long, Integer >( 1l, 1 ) );
         mockPQ.commit( 1 );
@@ -257,12 +291,17 @@ public class PTIManagerTest {
         
         replay( mockPQ );
         replay( mockCompletedTask );
+        replay( mockExecutor );
+        replay( mockEstimate );        
+        replay( mockCompass );
+        //replay( mockMap );
+        replay( mockInputPair);
             
             /**
          * do stuff
          */
-
-        ptiManager = new PTIManager( mockPTIPool, mockPQ );
+        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, dummyMap );
+        ptiManager = new PTIManager( ptiPool, mockPQ );
         ptiManager.update();
 
         /**
@@ -270,6 +309,9 @@ public class PTIManagerTest {
          */
         verify( mockPQ );
         verify( mockCompletedTask );
-
+        verify( mockExecutor );
+        verify( mockEstimate );
+        verify( mockCompass);
+        verify( mockInputPair );
     }
 }
