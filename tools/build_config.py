@@ -91,7 +91,7 @@ def build_config( path ):
     maxpool.text   = config_txt.get( datadock_section, "max_poll_size" )
     keepalive.text = config_txt.get( datadock_section, "keep_alive_time" )
     joblimit.text  = config_txt.get( datadock_section, "job_limit" )
-    datadock.text  = path + "/config/" + config_txt.get( datadock_section, "path" )
+    datadock.text  = path + "/" + config_txt.get( datadock_section, "path" )
 
     #fedora settings
     host   = ET.SubElement( fedora, "host" )
@@ -107,8 +107,10 @@ def build_config( path ):
     #filesystem settings
     trunk   = ET.SubElement( filest, "trunk" )
     plugins = ET.SubElement( filest, "plugins" )
+    xsd     = ET.SubElement( filest, "jobsxsd" )
     trunk.text   = path
     plugins.text = pluginpath
+    xsd.text     = os.path.join( path, "config/jobs.xsd" )
 
     #harvester settings
     toharvestfolder   = ET.SubElement( harvest, "toharvest" )
@@ -156,7 +158,7 @@ def write_config( path, root ):
 def main( path_to_trunk ):
     path = check_trunk( path_to_trunk )
     root = build_config( path )
-    #write_config( path, root )
+    write_config( path, root )
 
 
 if __name__ == '__main__':
