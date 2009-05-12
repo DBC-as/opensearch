@@ -43,7 +43,7 @@
   </target>
   	 
    
-  <target name="compile" depends="clean, xsd">
+  <target name="compile" depends="clean"> <!-- , xsd"> -->
     <antcall target="_compile" />
   </target>
 
@@ -81,7 +81,7 @@
   </target>
 
 
-  <target name="dist" depends="clean, xsd, config_py">
+  <target name="dist" depends="clean, config_py"> <!-- xsd, -->
     <antcall target="compile_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>
@@ -100,7 +100,7 @@
   </target> 
 
 
-  <target name="dist_datadock" depends="clean, xsd, compile">
+  <target name="dist_datadock" depends="clean, compile"> <!-- xsd, "> -->
     <antcall target="_dist_datadock">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
@@ -108,7 +108,7 @@
   </target>
 
 
-  <target name="dist_pti" depends="clean, xsd, compile">
+  <target name="dist_pti" depends="clean, compile">  <!-- xsd, "> -->
     <antcall target="_dist_pti">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
@@ -116,7 +116,7 @@
   </target>
 
 
-  <target name="dist_testindexer" depends="clean, xsd, compile">
+  <target name="dist_testindexer" depends="clean, compile"> <!-- xsd, "> -->
     <antcall target="_dist_testindexer">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />
@@ -182,7 +182,7 @@
   </target>
 
 
-  <target name="fedora" depends="test_Darg, clean, xsd, types, helpers">
+  <target name="fedora" depends="test_Darg, clean, types, helpers">  <!-- xsd, -->
     <antcall target="${arg}_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/fedora" />
       <param name="project.name" value="fedora" />
@@ -274,12 +274,17 @@
       XSD TARGET
   -->
 
-  <target name="xsd">
+  <!-- <target name="xsd"> -->
+  <!--   <antcall target="_xsd-classes" /> -->
+  <!--   <antcall target="_compile"> -->
+  <!--     <param name="project.name" value="xsd" /> -->
+  <!--     <param name="src.dir" value="${xsd_gen.dir}/" /> -->
+  <!--   </antcall> -->
+  <!-- </target> -->
+
+  <target name="xsd-jar">
     <antcall target="_xsd-classes" />
-    <antcall target="_compile">
-      <param name="project.name" value="xsd" />
-      <param name="src.dir" value="${xsd_gen.dir}/" />
-    </antcall>
+    <antcall target="_xsd-jar" />
   </target>
 
 

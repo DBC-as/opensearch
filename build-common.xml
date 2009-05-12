@@ -26,7 +26,7 @@
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
 
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
-  <property name="xsd_gen.dir"      value="${opensearch.dir}/xsd" />
+  <property name="xsd_gen.dir"      value="${tmp.dir}/xsd" />
 
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
   <!--property name="testresults.dir"  value="${base.dir}/test-results"/>
@@ -295,17 +295,25 @@
 	      </fileset>      
 	    </delete>	    
 	    
-	    <delete dir="${tmp.dir}"/>
 	  </target>
 
-  <!--target name="toplevel.compile-xsd" description="compiles xsd"
-          depends="toplevel.xsd-classes">
-    <mkdir dir="${classes.dir}"/>
+  <target name="_xsd-jar" description="compiles xsd and bundles it in a jar file">
+    <mkdir dir="${tmp.dir}/classes"/>
 
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/*">
+    <javac srcdir="${xsd_gen.dir}" destdir="${tmp.dir}/classes">
       <classpath refid="classpath"/>
     </javac>
-  </target-->
+
+    <jar destfile="${lib.dir}/fedora_xsd_classes.jar" 
+         basedir="${tmp.dir}/classes">	    
+      <manifest>    
+        <attribute name="Built-By" value="DBC"/>
+        <attribute name="Implementation-Vendor" value="DBC A/S"/>
+        <attribute name="Implementation-Title" value="Opensearch"/>
+      </manifest>
+    </jar>
+
+  </target>
 
 
   <target name="_doc" description="generates documentation for ${src.dir}">
