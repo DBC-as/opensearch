@@ -154,8 +154,6 @@ public class DatadockThread implements Callable<Float>
             throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
         }
         
-        log.debug( String.format( "list has elements" ) );
-
         queue = processqueue;
 
         this.estimate = estimate;
@@ -211,6 +209,7 @@ public class DatadockThread implements Callable<Float>
             for( String task : list)
             {
                 IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+                log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
                 switch ( plugin.getTaskName() )
                 {
                 case HARVEST:
@@ -230,10 +229,12 @@ public class DatadockThread implements Callable<Float>
                 case ANNOTATE:
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
                     cc = annotatePlugin.getCargoContainer( cc );
-                    //break;
+                    break;
                     //case STORE:
                     //IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     //result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
+                default:
+                    log.warn( String.format( "plugin.getTaskName ('%s') did not match HARVEST or ANNOTATE", plugin.getTaskName() ) );
                 }
             }
         }
