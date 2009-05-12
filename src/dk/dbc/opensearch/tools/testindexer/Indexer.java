@@ -6,9 +6,14 @@
 
 package dk.dbc.opensearch.tools.testindexer;
 
-import org.compass.core.Compass;
+
+
 import dk.dbc.opensearch.common.compass.CompassFactory;
+import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
@@ -19,32 +24,32 @@ import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
 import dk.dbc.opensearch.tools.testindexer.Processqueue;
 
 import java.io.IOException;
+import java.lang.ClassNotFoundException;
+import java.lang.InterruptedException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import org.compass.core.CompassSession;
 
-import javax.xml.rpc.ServiceException;
-
-import org.apache.commons.configuration.ConfigurationException;
 import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
-import org.apache.commons.configuration.ConfigurationException;
-import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.db.IProcessqueue;
-import java.lang.ClassNotFoundException;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import javax.xml.rpc.ServiceException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ExecutionException;
-import java.lang.InterruptedException;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
+import org.compass.core.Compass;
+import org.compass.core.CompassSession;
+import org.compass.core.config.CompassConfiguration;
+import org.compass.core.config.CompassEnvironment;
+import org.compass.core.converter.mapping.xsem.XmlContentMappingConverter;
+import org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter;
+import org.xml.sax.SAXException;
+
 
 public class Indexer{
 
@@ -59,16 +64,29 @@ public class Indexer{
         pool = Executors.newFixedThreadPool(1);
     }
 
-    public void index( URI uri, String submitter, String format, Compass compass ) throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException
+    public void index( URI job, String submitter, String format, URL mappingFile, String indexDir ) 
+        throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException
     {
+        // Compass configuration
+              
+        CompassConfiguration conf = new CompassConfiguration()
+            .addURL( mappingFile )
+            .setSetting( CompassEnvironment.CONNECTION, indexDir )
+            .setSetting( CompassEnvironment.Converter.TYPE, "org.compass.core.converter.mapping.xsem.XmlContentMappingConverter" )
+            .setSetting( CompassEnvironment.Converter.XmlContent.TYPE, "org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter" );
+        
+        Compass compass = conf.buildCompass();
+        
+  
+        // Firstly, the data pointed to by job, is worked on by a datadockThread
 
-        // Firstly, the data pointed to by uri, is worked on by a datadockThread
-
-        DatadockJob datadockJob = new DatadockJob( uri, submitter, format);
+        DatadockJob datadockJob = new DatadockJob( job, submitter, format);
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
         IFedoraCommunication c = new FedoraCommunication();
         jobMap = JobMapCreator.getMap( this.getClass() );
+
+
         
         DatadockThread ddt = new DatadockThread( datadockJob, e, p, jobMap, c );
         FutureTask ft = new FutureTask( ddt );
@@ -98,7 +116,7 @@ public class Indexer{
         log.debug( "Setting up the Compass object" );
         CompassSession session = compass.openSession();
 
-        PTIThread PTIt = new PTIThread( "mockPID", session, e, jobMap);
+        PTIThread PTIt = new PTIThread( "mockPID", session, e, jobMap, c);
         FutureTask ptiFuture = new FutureTask( PTIt );
         pool.submit( ptiFuture );
         while(! ptiFuture.isDone() ){}
@@ -121,6 +139,11 @@ public class Indexer{
             }
         }
 
-        log.debug( String.format( "Indexed file: %s", uri ) );
+        log.debug( String.format( "Indexed file: %s", job ) );
     }
+
+    //private void runDatadock( DatadockJob datadockJob,  ){}
+    //private void runPTI(){}
+        
+
 }

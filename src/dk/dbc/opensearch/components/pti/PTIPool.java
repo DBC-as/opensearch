@@ -59,6 +59,8 @@ import org.compass.core.CompassSession;
 import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassConfigurationFactory;
 
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
 /**
  * \ingroup PTI
@@ -73,10 +75,12 @@ public class PTIPool
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
+    private IFedoraCommunication fedoraCommunication;
     //    private FedoraHandler fedoraHandler;
     private Compass compass;
     private int shutDownPollTime;
     private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    
 
     XMLConfiguration config = null;
     
@@ -88,7 +92,7 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair< String, String>, ArrayList< String > > jobMap ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair< String, String>, ArrayList< String > > jobMap, IFedoraCommunication fedoraCommunication ) throws ConfigurationException
     {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
@@ -96,10 +100,11 @@ public class PTIPool
          this.estimate = estimate;
          this.jobMap = jobMap;
          this.compass = compass;
+         this.fedoraCommunication = fedoraCommunication;
 
          jobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();
          
-         // \Todo: should use the config class, bug 8782
+         // \todo: should use the config class, bug 8782
          
         URL cfgURL = getClass().getResource("/config.xml");
         config = new XMLConfiguration( cfgURL );
@@ -132,7 +137,7 @@ public class PTIPool
         CompassSession session = null;
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
-        return new FutureTask( new PTIThread( fedoraHandle, session, estimate, jobMap ) );
+        return new FutureTask( new PTIThread( fedoraHandle, session, estimate, jobMap, fedoraCommunication ) );
     }
 
     

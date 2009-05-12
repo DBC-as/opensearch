@@ -70,6 +70,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
 /**
  * \ingroup pti
@@ -87,7 +89,7 @@ public class PTIThread implements Callable< Long >
     private IEstimate estimate;
     private ArrayList< String > list;
     private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-    private FedoraCommunication fedoraCommunication;
+    private IFedoraCommunication fedoraCommunication;
 
 
     /**
@@ -99,7 +101,7 @@ public class PTIThread implements Callable< Long >
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
 
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, HashMap< InputPair< String, String >, ArrayList< String > > jobMap ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, HashMap< InputPair< String, String >, ArrayList< String > > jobMap, IFedoraCommunication fedoraCommunication ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         super();
 
@@ -109,7 +111,7 @@ public class PTIThread implements Callable< Long >
         this.estimate = estimate;
         this.session = session;
         this.fedoraPid = fedoraPid;
-
+        this.fedoraCommunication = fedoraCommunication;
         log.debug( "constructor done" );
     }
 

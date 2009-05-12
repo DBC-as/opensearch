@@ -30,6 +30,9 @@ import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
@@ -175,6 +178,7 @@ public class PTIMain
 
             IEstimate estimate = new Estimate();
             IProcessqueue processqueue = new Processqueue();
+            IFedoraCommunication fedoraCommunication = new FedoraCommunication();
 
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
@@ -182,7 +186,7 @@ public class PTIMain
             log.debug( "Starting PTIPool" );
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, jobMap );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, jobMap, fedoraCommunication );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 
