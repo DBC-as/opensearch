@@ -64,6 +64,12 @@
     <antcall target="_compile" />
   </target>
 
+
+  <target name="compile-with-warnings" depends="clean"> <!-- , xsd"> -->
+    <antcall target="_compile-with-warnings" />
+  </target>
+
+
   <target name="compile_project" depends="clean">
     <antcall target="_compile" />
   </target>

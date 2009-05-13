@@ -109,6 +109,24 @@
   </target>
 
 
+  <target name="_compile-with-warnings" description="Target used for all compilation">
+    <mkdir dir="${classes.dir}"/>
+    <echo>
+      Building from '${src.dir}',
+      building project '${project.name}',
+      and putting it all into '${classes.dir}'
+    </echo>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/** testdir/**" debug="on">
+      <classpath refid="classpath"/> 
+      <compilerarg value="-Xlint"/>
+    </javac>
+    <copy todir="${base.dir}/plugins">
+      <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
+    </copy>  
+  </target>
+
+
+
   <target name="_compile-tests" description="builds the tests for the component" >
     <echo>
       Building from '${src.dir}/tests',
