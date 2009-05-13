@@ -78,7 +78,7 @@ public class JobMapCreator
 
         HashMap< InputPair< String, String >, ArrayList<String> > jobMap = new HashMap< InputPair< String, String >, ArrayList<String> >();
         ArrayList<String> sortedPluginList = new ArrayList< String >();
-        List< ComparablePair< String, Integer > > pluginAndPriority = new ArrayList< ComparablePair< String, Integer > >();
+        List< ComparablePair< Integer, String > > priorityAndPlugin = new ArrayList< ComparablePair< Integer, String > >();
 
         log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
         // Set jobFile depending on classType: datadock or pti.
@@ -106,7 +106,7 @@ public class JobMapCreator
         	NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
         	int pluginListLength = pluginList.getLength();
 
-        	pluginAndPriority.clear();
+        	priorityAndPlugin.clear();
         	
         	String plugin;
         	// 35: get the tasks in a List
@@ -117,17 +117,17 @@ public class JobMapCreator
         		plugin = (String)pluginElement.getAttribute( "name" );
         		position = Integer.decode(pluginElement.getAttribute( "position" ) );
 
-        		pluginAndPriority.add( new ComparablePair< String, Integer >( plugin, position ) );
+        		priorityAndPlugin.add( new ComparablePair< Integer, String >( position, plugin ) );
         	}
 
         	// 40: sort the tasks based on the position (order)
-        	Collections.sort( pluginAndPriority ); //, secComp );
+        	Collections.sort( priorityAndPlugin ); //, secComp );
 
         	// 50: put it in a List
         	sortedPluginList.clear();
         	for( int z = 0; z < pluginListLength; z++ )
         	{
-        		plugin = ( (Pair< String, Integer >)pluginAndPriority.get( z ) ).getFirst();
+        		plugin = ( (Pair< Integer, String >)priorityAndPlugin.get( z ) ).getSecond();
         		sortedPluginList.add( plugin );
         	}
 

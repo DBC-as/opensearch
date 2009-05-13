@@ -24,9 +24,15 @@ package dk.dbc.opensearch.common.types;
 import java.lang.UnsupportedOperationException;
 
 /**
- *  Use this class if you want a Pair class that can be sorted
- *  It sorts on the first element and only considers the second 
- *  if the two first elements are equal.
+ *  Use this class if you want a Pair class that can be sorted It
+ * sorts on the first element and only considers the second if the two
+ * first elements are equal. If the client needs sorting on the second
+ * element and not the first, please consider using a
+ * http://java.sun.com/javase/6/docs/api/java/util/Comparator.html
+ * Please bear in mind, that java.lang.Comparable is used to define
+ * the natural sort order of a class. In contrast,
+ * java.util.Comparator is used to define an alternative sort order for
+ * a class.
  */
 
 public class ComparablePair< E extends Comparable< E >, V extends Comparable< V > > implements Comparable, Pair< E, V >
@@ -97,7 +103,7 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
 
         ComparablePair newpair = (ComparablePair)pair;
 
-        if( !( newpair.getFirst().getClass() == first.getClass() ) )
+        if( !( newpair.getFirst().getClass() == first.getClass()) )
         {
             throw new UnsupportedOperationException( String.format( "Type %s is not a comparable to type %s", newpair.getFirst().getClass(), first.getClass() ) );
         }

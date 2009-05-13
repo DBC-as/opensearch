@@ -227,7 +227,9 @@ public class JobMapCreatorTest
         jmc = new JobMapCreator();
         jobMap = jmc.getMap( DatadockMain.class );
         //this tests both the sorting and the building
+        assertTrue(jobMap.get( new InputPair<String, String >( testString, testString ) ).get( 1 ) == testString2 );
         assertTrue(jobMap.get( new InputPair<String, String >( testString, testString ) ).get( 0 ) == testString1 );
+
         /**
          * Verify
          */
