@@ -82,24 +82,14 @@ public class JobMapCreator
     	jobMap = new HashMap< InputPair< String, String >, ArrayList< String > >();
         ArrayList<String> sortedPluginList = new ArrayList< String >();
 
-        //List< ComparablePair< String, Integer > > pluginAndPriority = new ArrayList< ComparablePair< String, Integer > >();
         List< InputPair< String, Integer > > pluginAndPriority = new ArrayList< InputPair< String, Integer > >();
 
         File jobFile = FileHandler.getFile( path );
-        //System.out.println( "jobFile: " + jobFile.getAbsolutePath() );
+
         // Build the jobMap
         log.debug( String.format( "init calling getNodeList with jobFile %s ", jobFile ) );
         NodeList jobNodeList = XMLFileReader.getNodeList( jobFile, "job" );
-        //System.out.println( "listLength: " + jobNodeList.getLength() );
-
-        /*DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-        Document jobDocument = docBuilder.parse( jobFile );
-        Element xmlRoot = jobDocument.getDocumentElement();
-        jobNodeList = xmlRoot.getElementsByTagName( "job" );*/
-        
         int listLength = jobNodeList.getLength();
-        //System.out.println( "listLength: " + listLength );
 
         // For each node read the task name and position        
         Element jobElement;
@@ -117,7 +107,6 @@ public class JobMapCreator
 
             NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
             int pluginListLength = pluginList.getLength();
-            System.out.println( "pluginListLength: " + pluginListLength );
 
             pluginAndPriority.clear();
         	
@@ -133,11 +122,8 @@ public class JobMapCreator
                 pluginAndPriority.add( new InputPair< String, Integer >( plugin, position )  );
             }
             
-            System.out.println( "pluginAndPriority b4: " + pluginAndPriority.toString() );
             // Sort the plugin classname based on the position (order)
             Collections.sort( pluginAndPriority, secComp );
-            //Collections.sort( pluginAndPriority );
-            System.out.println( "pluginAndPriority af: " + pluginAndPriority.toString() );
 
             // Store in sorted list
             sortedPluginList.clear();

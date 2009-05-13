@@ -71,22 +71,22 @@
 
   <!-- TARGETS -->
   <target name="_clean" description="Deletes files created during the build">
-   <delete file="${base.dir}/doxygen-warnings"/>
-   <delete file="${base.dir}/datadock.log"/>
-   <delete file="${config.dir}/config.xml"/>
+    <delete file="${base.dir}/doxygen-warnings"/>
+    <delete file="${base.dir}/datadock.log"/>
+    <delete file="${config.dir}/config.xml"/>
 
-   <delete dir="${api.dir}"/>
-   <delete dir="${build.dir}"/>
-   <delete dir="${dist.dir}"/>
-   <delete dir="${report.dir}"/>    
-   <delete dir="${src.dir}/info"/>
-   <delete dir="${testresults.dir}"/>
-   <delete dir="${xsd_gen.dir}" />
-   <delete dir="${base.dir}/plugins" />
+    <delete dir="${api.dir}"/>
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+    <delete dir="${report.dir}"/>    
+    <delete dir="${src.dir}/info"/>
+    <delete dir="${testresults.dir}"/>
+    <delete dir="${xsd_gen.dir}" />
+    <delete dir="${base.dir}/plugins" />
 
-   <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
-     <arg line="create_test_suite_files.py clean"/>
-   </exec>    
+    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
+      <arg line="create_test_suite_files.py clean"/>
+    </exec>    
   </target>
 
 
@@ -102,10 +102,9 @@
     </javac>
 
     <!-- Copy .plugin files to .../opensearch/.../plugins/ folder -->
-    <!--copy todir="${classes.dir}/dk/dbc/opensearch/plugins"-->  	
-    <copy todir="${base.dir}/plugins">
+    <!--copy todir="${base.dir}/plugins">
       <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
-    </copy>  
+    </copy-->  
   </target>
 
 
