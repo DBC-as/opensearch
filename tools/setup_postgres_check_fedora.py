@@ -5,6 +5,7 @@
 import postgres_setup, fedora_conn
 import build_config
 import shutil
+import os.path
 try:
     import xml.etree.ElementTree as ET
 except ImportError:
@@ -20,7 +21,9 @@ config = ET.parse( '../config/config.xml' )
 
 dest = config.findall( '//toharvest' )[0].text
 
-shutil.rmtree( dest )
+if os.path.exists( dest ):
+    shutil.rmtree( dest )
+
 shutil.copytree( '/data1/harvest-test', dest )
 
 postgres_setup.main()
