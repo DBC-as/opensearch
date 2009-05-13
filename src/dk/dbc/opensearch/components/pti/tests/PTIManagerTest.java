@@ -114,7 +114,6 @@ public class PTIManagerTest {
         {
             if( queueID == 1 )
             {
-                //System.out.println( "submit hat" );
                 throw new RejectedExecutionException( "test" );
             }
         }
@@ -319,4 +318,9 @@ public class PTIManagerTest {
         verify( mockCompass);
         verify( mockInputPair );
     }
+
+    /**
+     * Tests the behaviour of the update method when the finishedjobs contains a 
+     * CompletedTask with a null value 
+     */
 }
