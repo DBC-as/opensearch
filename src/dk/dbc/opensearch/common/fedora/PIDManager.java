@@ -94,7 +94,7 @@ public class PIDManager  extends FedoraHandle
             prefixPIDs = retrievePIDs( prefix );
         }
         
-        String newPID = (String) prefixPIDs.remove( 0 );
+        String newPID = prefixPIDs.remove( 0 );
         pidMap.put( prefix, prefixPIDs );
         
         log.debug( String.format( "returns PID='%s'", newPID ) );

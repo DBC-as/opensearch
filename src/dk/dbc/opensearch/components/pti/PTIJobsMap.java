@@ -17,32 +17,32 @@ import org.xml.sax.SAXException;
 
 public class PTIJobsMap extends JobMapCreator 
 {
-	static Logger log = Logger.getLogger( PTIJobsMap.class );
+    static Logger log = Logger.getLogger( PTIJobsMap.class );
 	
 	
-	private static ArrayList< String > PtiJobsMap = new ArrayList< String >();
+    private static ArrayList< String > PtiJobsMap = new ArrayList< String >();
+	
+    
+    public PTIJobsMap()
+    {
+        System.out.println( "PTIJobsMap constructor called" );
+    }
 	
 	
-	public PTIJobsMap()
+    public static ArrayList< String > getPtiPluginsList( String submitter, String format ) throws ConfigurationException, IllegalArgumentException, IllegalStateException, IOException, SAXException, ParserConfigurationException
+    {
+        String path = PtiConfig.getPath();
+        JobMapCreator.init( path );
+        JobMapCreator.validateJobXmlFile( path );
+	
+        if ( jobMap != null )
+        {
+            PtiJobsMap = jobMap.get( new InputPair< String, String >( submitter, format ) );
+            return PtiJobsMap;
+        }
+        else
 	{
-		System.out.println( "PTIJobsMap constructor called" );
-	}
-	
-	
-	public static ArrayList< String > getPtiPluginsList( String submitter, String format ) throws ConfigurationException, IllegalArgumentException, IllegalStateException, IOException, SAXException, ParserConfigurationException
-	{
-		String path = PtiConfig.getPath();
-		JobMapCreator.init( path );
-		JobMapCreator.validateJobXmlFile( path );
-		
-		if ( jobMap != null )
-		{
-			PtiJobsMap = jobMap.get( new InputPair< String, String >( submitter, format ) );
-			return PtiJobsMap;
-		}
-		else
-		{
-			throw new NullPointerException( "jobMap is null" );
-		}
-	}
+            throw new NullPointerException( "jobMap is null" );
+        }
+    }
 }

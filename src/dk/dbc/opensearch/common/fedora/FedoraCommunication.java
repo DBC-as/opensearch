@@ -188,7 +188,7 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
             log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
         }
         log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
-        String indexingAliasName = (String)((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+        String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
         log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
         //Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
         //String filePath = filePathElem.getAttribute( "name" );

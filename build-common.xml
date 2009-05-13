@@ -23,7 +23,7 @@
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
   <property name="src.dir"          value="${base.dir}/src"/>
   <property name="opensearch.dir"   value="${src.dir}/dk/dbc/opensearch"/>
-  <property name="plugins.dir"      value="${opensearch.dir}/plugins" />
+  <!--property name="plugins.dir"      value="${opensearch.dir}/plugins" /-->
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
 
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
@@ -36,37 +36,37 @@
 
   <!-- CLASSPATH STUFF -->
   <path id="classpath">
-   <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
-   <pathelement location="${classes.dir}" />
-   <pathelement location="${config.dir}" />
-   <pathelement location="${plugins.dir}" />
+    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
+    <pathelement location="${classes.dir}" />
+    <pathelement location="${config.dir}" />
+    <!--pathelement location="${plugins.dir}" /-->
   </path>
 
   <path id="classpath4jar">
-   <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
+    <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
   </path>
 
 
   <!-- libraries used internally by ant is named ant_*.jar -->
   <path id="antlibpath">
-   <fileset dir="${lib.dir}" includes="ant_*.jar"/>
+    <fileset dir="${lib.dir}" includes="ant_*.jar"/>
   </path>
 
   <!-- just for debugging purposes, putting the classpath into a property-->
   <pathconvert targetos="unix" property="cp" refid="classpath">
-   <map from="${classpath}" to="${cp}"/>
+    <map from="${classpath}" to="${cp}"/>
   </pathconvert>
 
   <pathconvert targetos="unix" property="alp" refid="antlibpath">
-   <map from="${antlibpath}}" to="${alp}"/>
+    <map from="${antlibpath}}" to="${alp}"/>
   </pathconvert>
 
   <!-- Enable use of tasks such as <var>, <if><then><else>..., etc.
       Ref. http://ant-contrib.sourceforge.net/tasks/tasks/index.html     -->
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-   <classpath>
-     <pathelement location="lib/ant-contrib.jar"/>
-   </classpath>
+    <classpath>
+      <pathelement location="lib/ant-contrib.jar"/>
+    </classpath>
   </taskdef>
 
   <!-- TARGETS -->
@@ -115,13 +115,14 @@
       building project '${project.name}',
       and putting it all into '${classes.dir}'
     </echo>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/** testdir/**" debug="on">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" 
+           excludes="**/xsd/* **/tests/* Harvest/** testdir/**" debug="on">
       <classpath refid="classpath"/> 
       <compilerarg value="-Xlint"/>
     </javac>
-    <copy todir="${base.dir}/plugins">
+    <!--copy todir="${base.dir}/plugins">
       <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
-    </copy>  
+    </copy-->  
   </target>
 
 

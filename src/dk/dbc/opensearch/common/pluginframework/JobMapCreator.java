@@ -163,8 +163,8 @@ public class JobMapCreator
         }
         catch ( SAXException ex ) 
         {
-        	log.debug( path + " is not valid because ");
-        	log.debug( ex.getMessage() );
+            log.debug( path + " is not valid because ");
+            log.debug( ex.getMessage() );
         }
     }
 }
