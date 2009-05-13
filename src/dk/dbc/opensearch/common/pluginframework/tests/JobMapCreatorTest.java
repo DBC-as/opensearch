@@ -157,10 +157,10 @@ public class JobMapCreatorTest
      */
     @Before public void SetUp() 
     {
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        //        Mockit.setUpMocks( MockXMLFileReader.class );
 
         mockElement = createMock( Element.class );
-        mockNodeList = createMock( NodeList.class );
+        //mockNodeList = createMock( NodeList.class );
     }
 
     
@@ -177,32 +177,99 @@ public class JobMapCreatorTest
     }
     
 
-    @Test
-    @Ignore
-    public void testInit() throws Exception
-    {
-        try
-        {
-            String path = DatadockConfig.getPath();
-            JobMapCreator.init( path );
-        }
-        catch( Exception ex )
-        {
-            throw ex;
-        }
-    }
-    
-
     /**
-     * Testing the happy path
+     * Testing the happy path of init
      */
     @Test 
-    @Ignore( "refusing to test empty constructor" )
-    public void testConstructor() throws Exception
+    public void testInit() throws Exception
     {
-        //jmc = new JobMapCreator();
+        /**
+         * setup
+         */
+        Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockXMLFileReader.class );
+        String path = "test path";
+
+        /**
+         * Expectations
+         */
+        expect( mockNodeList.getLength() ).andReturn( 2 );
+        //outer loop
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement  );
+        expect( mockElement.getAttribute( "submitter" ) ).andReturn( "sub1" );
+        expect( mockElement.getAttribute( "format" ) ).andReturn( "format1" );
+        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.getLength() ).andReturn( 2 );
+        //inner loop
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
+        expect( mockElement.getAttribute( "position" ) ).andReturn( "1" );
+        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
+        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
+        //outer loop
+        expect( mockNodeList.item( 1 ) ).andReturn( mockElement  );
+        expect( mockElement.getAttribute( "submitter" ) ).andReturn( "sub1" );
+        expect( mockElement.getAttribute( "format" ) ).andReturn( "format2" );
+        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.getLength() ).andReturn( 2 );
+        //inner loop
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
+        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
+        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
+        expect( mockElement.getAttribute( "position" ) ).andReturn( "1" );
+        /**
+         * replay
+         */
+        replay( mockNodeList );
+        replay( mockFile );
+        replay( mockElement );
+        /**
+         * Do stuff
+         */
+        JobMapCreator.init( path );
+        /**
+         * verify
+         */
+        verify( mockNodeList );
+        verify( mockFile );
+        verify( mockElement );
     }
-    
+
+    @Test( expected = IllegalStateException.class )
+    public void testEmptyMap() throws ParserConfigurationException, SAXException, IOException
+    {
+        /**
+         * setup
+         */
+        Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockXMLFileReader.class );
+        String path = "test path";
+
+        /**
+         * Expectations
+         */
+        expect( mockNodeList.getLength() ).andReturn( 0 );
+        
+        /**
+         * replay
+         */
+        replay( mockNodeList );
+        replay( mockFile );
+
+        /**
+         * Do stuff
+         */
+        JobMapCreator.init( path );
+        /**
+         * verify
+         */
+        verify( mockNodeList );
+        verify( mockFile );
+
+    }
     
     /**
      * Testing the method that builds the jobmap.
