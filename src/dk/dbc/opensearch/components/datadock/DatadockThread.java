@@ -187,7 +187,7 @@ public class DatadockThread implements Callable< Float >
 
         // Validate plugins
         PluginResolver pluginResolver = new PluginResolver();
-        Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+        /*Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
 
         if( ! missingPlugins.isEmpty() )
         {
@@ -196,48 +196,46 @@ public class DatadockThread implements Callable< Float >
             // kill thread/throw meaningful exception/log message
         }
         else
+        {*/
+        log.debug( String.format( "pluginList classname %s", list.toString() ) );
+        for( String classname : list)
         {
-            log.debug( String.format( "pluginList classname %s", list.toString() ) );
-            for( String classname : list)
-            {
-            	log.debug( "DatadockThread getPlugin 'classname' " + classname );
+            log.debug( "DatadockThread getPlugin 'classname' " + classname );
 
-            	IPluggable plugin = (IPluggable)pluginResolver.getPlugin( classname );
-                log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
-                switch ( plugin.getTaskName() )
-                {
-                    case HARVEST:
-                        log.debug( String.format( "case HARVEST pluginType %s", plugin.getTaskName().toString() ) );
-                        IHarvestable harvestPlugin = (IHarvestable)plugin;
-                        cc = harvestPlugin.getCargoContainer( datadockJob );
-                        if( cc.getCargoObjectCount() < 1 )
-                        {
-                            /**
-                             * no data in the cargocontainer, so no
-                             * reason to continue
-                             */
-                            log.error( String.format( "no cargoobjects in the cargocontainer" ) );
-                            throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
-                        }
-                        //make estimate
-                        break;
-                    case ANNOTATE:
-                        log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getTaskName().toString() ) );
-                        IAnnotate annotatePlugin = (IAnnotate)plugin;
-                        if ( cc == null )
-                        {
-                            //break;
-                            log.error( "DatadockThread call throws NullPointerException, cc is null" );
-                            throw new NullPointerException( "DatadockThread call throws NullPointerException" );
-                        }
-                        cc = annotatePlugin.getCargoContainer( cc );
-                        break;
-                    //case STORE:
+            IPluggable plugin = (IPluggable)pluginResolver.getPlugin( classname );
+            log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
+            switch ( plugin.getTaskName() )
+            {
+                case HARVEST:
+                    log.debug( String.format( "case HARVEST pluginType %s", plugin.getTaskName().toString() ) );
+                    IHarvestable harvestPlugin = (IHarvestable)plugin;
+                    cc = harvestPlugin.getCargoContainer( datadockJob );
+                    if( cc.getCargoObjectCount() < 1 )
+                    {
+                        /**
+                         * no data in the cargocontainer, so no
+                         * reason to continue
+                         */
+                        log.error( String.format( "no cargoobjects in the cargocontainer" ) );
+                        throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
+                    }
+                    //make estimate
+                    break;
+                case ANNOTATE:
+                    log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getTaskName().toString() ) );
+                    IAnnotate annotatePlugin = (IAnnotate)plugin;
+                    if ( cc == null )
+                    {
+                        log.error( "DatadockThread call throws NullPointerException, cc is null" );
+                        throw new NullPointerException( "DatadockThread call throws NullPointerException" );
+                    }
+                    cc = annotatePlugin.getCargoContainer( cc );
+                    break;
+                //case STORE:
                     //IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     //result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
                     default:
                         log.warn( String.format( "plugin.getTaskName ('%s') did not match HARVEST or ANNOTATE", plugin.getTaskName() ) );
-                }
             }
         }
 

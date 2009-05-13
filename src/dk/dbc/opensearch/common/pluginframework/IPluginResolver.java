@@ -70,7 +70,8 @@ public interface IPluginResolver
      * framework concerning the registrations of plugins
      * @throws ParserConfigurationException 
      */
-    Vector<String> validateArgs( String submitter, String format, ArrayList< String > taskList )throws PluginResolverException, ParserConfigurationException;
+    /*Vector<String> validateArgs( String submitter, String format, ArrayList< String > taskList )throws PluginResolverException, ParserConfigurationException;
+     */
     
     
     /**

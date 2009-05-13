@@ -72,7 +72,7 @@ public class PluginResolverTest
     /**
      * The class to mock the PluginFinder
      */
-    @MockClass( realClass = PluginFinder.class )
+    /*@MockClass( realClass = PluginFinder.class )
     public static class ReplacePluginFinder
     {   
       
@@ -89,7 +89,7 @@ public class PluginResolverTest
         
         @Mock 
         public void buildPluginClassNameMap( String path ) {}
-    }
+        }*/
     
     
     /**
@@ -108,7 +108,7 @@ public class PluginResolverTest
     @Before public void setUp() throws Exception 
     {
         Mockit.setUpMocks( ReplacePluginLoader.class );
-        Mockit.setUpMocks( ReplacePluginFinder.class );
+        //Mockit.setUpMocks( ReplacePluginFinder.class );
     } 
     
     
@@ -146,10 +146,11 @@ public class PluginResolverTest
     /**
      * Tests the happy path of the validatArgs method, where an empty vector is returned
      */
+    @Ignore( "validateArgs is deprecated" )
     @Test 
     public void validateArgsTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException, ConfigurationException
     {
-        String submitter = "testSubmitter";
+        /*String submitter = "testSubmitter";
         String format = "testFormat";
         String task1 = "testTask1";
         String task2 = "testTask2";
@@ -161,7 +162,7 @@ public class PluginResolverTest
         PR = new PluginResolver();
 
         Vector<String> noPluginForVector = PR.validateArgs( submitter, format, testTaskList );
-        assertTrue( noPluginForVector.isEmpty() );
+        assertTrue( noPluginForVector.isEmpty() );*/
     }  
     
 
@@ -171,11 +172,11 @@ public class PluginResolverTest
      * when asked to look for the task "throwException". This put it on the vector 
      * to be returned
      */
-    @Ignore
+    @Ignore( "validateArgs is deprecated" )
     @Test
     public void validateArgsNotAllPluginsFoundTest() throws ParserConfigurationException, FileNotFoundException, PluginResolverException, IOException, ConfigurationException
     {
-        String submitter = "testSubmitter";
+        /*String submitter = "testSubmitter";
         String format = "testFormat";
         String task1 = "testTask10";
         String task2 = "testTask20";
@@ -190,7 +191,7 @@ public class PluginResolverTest
         Vector< String > noPluginForVector = PR.validateArgs( submitter, format, testTaskList );
         Iterator< String > iter = noPluginForVector.iterator();
      
-        assertTrue( taskException.equals( (String)iter.next() ) );
+        assertTrue( taskException.equals( (String)iter.next() ) );*/
     }
     
 

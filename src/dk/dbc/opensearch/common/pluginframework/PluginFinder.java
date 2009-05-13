@@ -71,8 +71,8 @@ public class PluginFinder
      * The key in classNameMap is the hash value of the 'name' given by the .plugin 
      * file.
      */
-    private Map< Integer, String > classNameMap;
-    private String path;
+    //private Map< Integer, String > classNameMap;
+    //private String path;
 
     
     /**
@@ -90,13 +90,13 @@ public class PluginFinder
      * @throws ParserConfigurationException 
      * @throws ParserConfigurationException 
      */
-    public PluginFinder( String path ) throws FileNotFoundException, NullPointerException, PluginResolverException, ParserConfigurationException
+    /*public PluginFinder( String path ) throws FileNotFoundException, NullPointerException, PluginResolverException, ParserConfigurationException
     {
         this.path = path;        
         this.classNameMap = new HashMap< Integer, String >();
         
         buildPluginClassNameMap( this.path );       
-    }
+        }*/
 
 
     /**
@@ -107,7 +107,7 @@ public class PluginFinder
      * @throws ParserConfigurationException 
      * @return the name of the plugin class
      **/
-    String getPluginClassName( int key ) throws FileNotFoundException, PluginResolverException, ParserConfigurationException
+    /*String getPluginClassName( int key ) throws FileNotFoundException, PluginResolverException, ParserConfigurationException
     {
         log.debug( String.format( "getting key %s from classnamemap", key ) );
         log.debug( "classNameMap " + classNameMap.toString() );
@@ -131,7 +131,7 @@ public class PluginFinder
         {
             return className;
         }
-    }
+        }*/
     
     
     /**
@@ -141,7 +141,7 @@ public class PluginFinder
      * @throws PluginResolverException if one or more of the found plugins could not be loaded
      * @throws ParserConfigurationException
      */
-    private void buildPluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException, ParserConfigurationException
+    /*private void buildPluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException, ParserConfigurationException
     {
     	DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();      
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -205,7 +205,8 @@ public class PluginFinder
             {
                 Element xmlRoot = pluginDocument.getDocumentElement();
                 NodeList pluginNodeList = xmlRoot.getElementsByTagName( "plugin" );
-                Element pluginElement = (Element) pluginNodeList.item( 0 );/** \todo: NodeList.item( int index ) returns null if outofbounds**/        		
+                Element pluginElement = (Element) pluginNodeList.item( 0 );
+                // \todo: NodeList.item( int index ) returns null if outofbounds        		
                 name = pluginElement.getAttribute( "name" );
                 className = pluginElement.getAttribute( "classname" );        		
                 log.debug( String.format( "Found plugins with classname = %s, used for plugin: %s", className, name ) );
@@ -237,7 +238,7 @@ public class PluginFinder
         
         log.debug( String.format( "Number of registrated plugins: %s ", classNameMap.size() ) );
         log.info( "classNameMap updated" );
-    }
+        }*/
     
     
     /**

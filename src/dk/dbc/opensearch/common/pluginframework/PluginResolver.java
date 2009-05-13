@@ -64,9 +64,6 @@ public class PluginResolver implements IPluginResolver
         {
             pluginClassLoader = new PluginClassLoader();
             PLoader = new PluginLoader( pluginClassLoader );
-            //path = FileSystemConfig.getPluginsPath();
-            
-            //PFinder = new PluginFinder( path );
             
             constructed = true;
             log.info( "PluginResolver constructed" );            
@@ -86,14 +83,8 @@ public class PluginResolver implements IPluginResolver
      * @throws PluginResolverException if key doesnot give a value from the PluginFinder
      * @throws ParserConfigurationException 
      */
-    //public IPluggable getPlugin( String submitter, String format, String name ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException, ParserConfigurationException
     public IPluggable getPlugin( String className ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException, ParserConfigurationException
     {  
-    	//int key = classname.hashCode();
-        //log.debug( String.format( "hashcode: %s generated for key: %s", key, classname ) );
-    	//String pluginClassName = PFinder.getPluginClassName( key );
-        
-        //return PLoader.getPlugin( pluginClassName );
         return PLoader.getPlugin( className );
     }
 
@@ -106,7 +97,7 @@ public class PluginResolver implements IPluginResolver
      * @throws PluginResolverException when there are parser and reader errors from the PluginFinder
      * @throws ParserConfigurationException 
      */
-    public Vector<String> validateArgs( String submitter, String format, ArrayList< String > classNameList ) throws PluginResolverException, ParserConfigurationException
+    /*public Vector<String> validateArgs( String submitter, String format, ArrayList< String > classNameList ) throws PluginResolverException, ParserConfigurationException
     {
         log.debug( String.format( "Validating submitter %s, format %s, and %s", submitter, format, classNameList.toString() ) );
         Vector< String > pluginNotFoundVector = new Vector< String >();
@@ -138,5 +129,5 @@ public class PluginResolver implements IPluginResolver
        
         log.debug( "pluginNotFoundVector size " + pluginNotFoundVector.size() );
         return pluginNotFoundVector;
-    }
+        }*/
 }

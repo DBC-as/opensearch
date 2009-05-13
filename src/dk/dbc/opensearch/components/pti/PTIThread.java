@@ -171,14 +171,8 @@ public class PTIThread implements Callable< Long >
             throw new NullPointerException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
         }
 
-        //50: validate that there exists plugins for all the tasks
-        for ( int i = 0; i < list.size(); i++ )
-        {
-            log.debug( String.format( " plugin to be found: %s", list.get( i ) ) );
-        }
-
         PluginResolver pluginResolver = new PluginResolver();
-        Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+        /*Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
         // Execute the plugins
         if ( ! missingPlugins.isEmpty() )
         {
@@ -192,14 +186,14 @@ public class PTIThread implements Callable< Long >
             log.debug( " kill thread" );
         }
         else
+        {*/
+        log.debug( "Entering switch" );
+        
+        for ( String classname : list )
         {
-            log.debug( "Entering switch" );
-
-            for ( String classname : list )
+            IPluggable plugin = ( IPluggable )pluginResolver.getPlugin( classname );
+            switch ( plugin.getTaskName() )
             {
-                IPluggable plugin = ( IPluggable )pluginResolver.getPlugin( classname );
-                switch ( plugin.getTaskName() )
-                {
                 case PROCESS:
                     log.debug( "calling processerplugin" );
                     IProcesser processPlugin = ( IProcesser )plugin;
@@ -211,10 +205,9 @@ public class PTIThread implements Callable< Long >
                     result = indexPlugin.getProcessTime( cc, session, fedoraPid );
                     //update statistics database
                     break;
-                }
             }
         }
-
+    
         log.debug( result );
 
         return result;
