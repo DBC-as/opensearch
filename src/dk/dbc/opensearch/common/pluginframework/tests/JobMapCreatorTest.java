@@ -178,6 +178,7 @@ public class JobMapCreatorTest
     
 
     @Test
+    @Ignore
     public void testInit() throws Exception
     {
         try
