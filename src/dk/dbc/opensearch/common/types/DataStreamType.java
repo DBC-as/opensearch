@@ -22,12 +22,13 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import org.apache.log4j.Logger;
 
+
 public enum DataStreamType 
 {	
 	OriginalData ( "originalData", "original data" ),
-        DublinCoreData( "dublinCoreData", "dublin core data" ),
-        AdminData( "adminData", "Administration" ),      
-        IndexableData( "indexableData", "data prepared for indexing" );
+	DublinCoreData( "dublinCoreData", "dublin core data" ),
+	AdminData( "adminData", "Administration" ),      
+	IndexableData( "indexableData", "data prepared for indexing" );
 	
 	static Logger log = Logger.getLogger( DataStreamType.class );
 	

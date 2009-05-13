@@ -89,6 +89,8 @@ public class FileHarvest implements IHarvester
     private String toHarvestFolder;
     private String harvestDoneFolder;
     private int max;
+
+
     /**
      * Constructs the FileHarvest class, and starts polling the given path for
      * files and subsequent file-changes.
@@ -101,7 +103,7 @@ public class FileHarvest implements IHarvester
      * @throws ParserConfigurationException
      * @throws ConfigurationException
      */
-    public FileHarvest( ) throws IllegalArgumentException, SAXException, IOException, ConfigurationException
+    public FileHarvest( ) throws IllegalArgumentException, SAXException, IOException, ConfigurationException 
     {
         this.submitters = new Vector< InputPair< File, Long > >();
         this.formats = new Vector< InputPair< File, Long > >();
@@ -124,7 +126,6 @@ public class FileHarvest implements IHarvester
 
         initVectors();
         log.debug( "Vectors initialized" );
-
     }
 
 
@@ -168,11 +169,11 @@ public class FileHarvest implements IHarvester
             }
         }
 
-
-
         log.debug( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
         //System.out.println( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
+
         log.debug( "Submitters:" );
+
         for( File submitter : path.listFiles() )
         {
             if( submitter.isDirectory() )
@@ -278,25 +279,20 @@ public class FileHarvest implements IHarvester
     }
 
 
-
     private HashSet< InputPair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
         log.debug( "Calling FileHarvest.getNewJobs");
         HashSet< InputPair< File, Long > > jobs = new HashSet< InputPair< File, Long > >();
-        //String toHarvestFolder = HarvesterConfig.getFolder();
-        //String harvestDoneFolder = HarvesterConfig.getDoneFolder();
+
         //int max = HarvesterConfig.getMaxToHarvest();
         log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
         for( InputPair< File, Long > format : formats )
         {
-
             File[] files = format.getFirst().listFiles();
             int l = files.length;
             int i = 0;
             while( i < l && i < max )
-
             {
-
                 File job = files[i];
                 String path = job.getPath();
                 String newPath = path.replace( toHarvestFolder, harvestDoneFolder );
@@ -306,7 +302,6 @@ public class FileHarvest implements IHarvester
                 move( job, destFldr, dest );
                 jobs.add( new InputPair< File, Long >( dest, dest.length() )  );
                 i++;
-
             }
         }
 
@@ -340,7 +335,6 @@ public class FileHarvest implements IHarvester
                 log.warn( String.format( "Could not rename file: %s to %s", src.getAbsolutePath().toString(), dest.getAbsolutePath().toString() ) );
                 throw new IOException( "IOException thrown in FileHarvest.move: Could not create new file: " + src.getAbsolutePath().toString() );
             }
-
         }
         else
         {

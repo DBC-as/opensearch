@@ -28,23 +28,18 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -76,7 +71,7 @@ public class DatadockPool
     private IEstimate estimate;
     private IProcessqueue processqueue;
     private int shutDownPollTime;
-    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    //private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
     private PIDManager PIDmanager;
     private IFedoraCommunication fedoraCom;
 
@@ -93,7 +88,7 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, HashMap< InputPair< String, String >, ArrayList< String > > jobMap, IFedoraCommunication fedoraCom )throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, IFedoraCommunication fedoraCom ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
@@ -102,9 +97,6 @@ public class DatadockPool
         this.processqueue = processqueue;
         this.PIDmanager = PIDmanager;
         this.fedoraCom = fedoraCom;
-
-        this.jobMap = jobMap;
-        log.debug(String.format( "jobMap:%s", jobMap.toString() ));
 
         jobs = new Vector< FutureTask >();
 
@@ -144,7 +136,7 @@ public class DatadockPool
     
     public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, jobMap, fedoraCom ) );
+    	return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, fedoraCom ) );
     }
 
 
@@ -175,16 +167,14 @@ public class DatadockPool
                 }
                 catch( ExecutionException ee )
                 {                    
-                    log.fatal( "DatadockPool Exception caught from job" );
-                 
                     // getting exception from thread
                     Throwable cause = ee.getCause();
-                    
-                    log.error( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
+                    log.error( String.format( "DatadockPool checkJobs %s", ee.getMessage() ) );
+                    log.error( String.format( "Exception Caught: '%s' Message: '%s'", cause.getClass() , cause.getMessage() ) );
                     StackTraceElement[] trace = cause.getStackTrace();
                     for( int i = 0; i < trace.length; i++ )
                     {
-                    	log.error( trace[i].toString() );
+                    	log.error( "DatadockPool StackTrace element " + i + " " + trace[i].toString() );
                     }
                 }
                 

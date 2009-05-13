@@ -30,8 +30,6 @@ import java.lang.InstantiationException;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -46,8 +44,6 @@ public class PluginResolver implements IPluginResolver
     static Logger log = Logger.getLogger( PluginResolver.class );
 
     static String path;
-    static DocumentBuilderFactory docBuilderFactory;
-    static DocumentBuilder docBuilder;
     static ClassLoader pluginClassLoader;
     static PluginFinder PFinder;
     static PluginLoader PLoader;
@@ -66,14 +62,11 @@ public class PluginResolver implements IPluginResolver
     {      
         if( ! constructed )
         {
-            docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilder = docBuilderFactory.newDocumentBuilder();
-            
             pluginClassLoader = new PluginClassLoader();
             PLoader = new PluginLoader( pluginClassLoader );
-            path = FileSystemConfig.getPluginsPath();
+            //path = FileSystemConfig.getPluginsPath();
             
-            PFinder = new PluginFinder( docBuilder, path );
+            //PFinder = new PluginFinder( path );
             
             constructed = true;
             log.info( "PluginResolver constructed" );            
@@ -84,21 +77,24 @@ public class PluginResolver implements IPluginResolver
     /**
      * @param submitter, the submitter of the data the plugin works on
      * @param format, the format of the data the plugin works on
-     * @param the task to be solved
+     * @param name, the name of the plugin (see the .plugin files)
      * @returns a plugin matching the key made out of the params  
      * @throws InstantitionException if the PluginLoader cant load the desired plugin
      * @throws FileNotFoundException if the desired plugin file cannot be found
      * @throws IllegalAccessException if the plugin file cant be accessed by the PluginLoader
      * @throws ClassNotFoundException if the class of the plugin cannot be found
      * @throws PluginResolverException if key doesnot give a value from the PluginFinder
+     * @throws ParserConfigurationException 
      */
-    public IPluggable getPlugin( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException
+    //public IPluggable getPlugin( String submitter, String format, String name ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException, ParserConfigurationException
+    public IPluggable getPlugin( String className ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException, ParserConfigurationException
     {  
-    	//int key = ( submitter + format + task ).hashCode();
-    	int key = task.hashCode();
-    	String pluginClassName = PFinder.getPluginClassName( key );
+    	//int key = classname.hashCode();
+        //log.debug( String.format( "hashcode: %s generated for key: %s", key, classname ) );
+    	//String pluginClassName = PFinder.getPluginClassName( key );
         
-        return PLoader.getPlugin( pluginClassName );
+        //return PLoader.getPlugin( pluginClassName );
+        return PLoader.getPlugin( className );
     }
 
     
@@ -108,35 +104,39 @@ public class PluginResolver implements IPluginResolver
      * @param taskList, the tasks to be validated that plugins exists to perform
      * @returns a Vector of tasks there are no plugins to perform og the specified format from the submitter. If it is empty execution can continue in the calling thread
      * @throws PluginResolverException when there are parser and reader errors from the PluginFinder
+     * @throws ParserConfigurationException 
      */
-    public Vector<String> validateArgs( String submitter, String format, ArrayList< String > taskList ) throws PluginResolverException
+    public Vector<String> validateArgs( String submitter, String format, ArrayList< String > classNameList ) throws PluginResolverException, ParserConfigurationException
     {
+        log.debug( String.format( "Validating submitter %s, format %s, and %s", submitter, format, classNameList.toString() ) );
         Vector< String > pluginNotFoundVector = new Vector< String >();
 
         // Loop through list of tasks finding tasks without matching plugin.
-        for( int i = 0; i < taskList.size(); i++ )
+        for( int i = 0; i < classNameList.size(); i++ )
         {
-            String hashSubject = taskList.get( i ).toString();
-            int key = hashSubject.hashCode();
-            log.debug( String.format( "hashcode: %s generated for key: %s", key, hashSubject  ) );            
+            String className = classNameList.get( i ).toString();
+            //int key = className.hashCode();
+            //log.debug( String.format( "hashcode: %s generated for key: %s", key, hashSubject  ) );            
             try
             {
-            	PFinder.getPluginClassName( key );
+            	//PFinder.getPluginClassName( key );
+                PLoader.getPlugin( className );
             }
-            catch( FileNotFoundException fnfe )
+            catch( ClassNotFoundException cnfe )
             {
-            	// Add "missing" plugins to return Vector
-            	pluginNotFoundVector.add( taskList.get( i ) );
-         	}
+            	pluginNotFoundVector.add( classNameList.get( i ) );
+            }
+            catch( InstantiationException ie )
+            {
+                pluginNotFoundVector.add( classNameList.get( i ) );
+            }
+            catch( IllegalAccessException ice )
+            {
+                pluginNotFoundVector.add( classNameList.get( i ) );
+            }
         }
-        
+       
+        log.debug( "pluginNotFoundVector size " + pluginNotFoundVector.size() );
         return pluginNotFoundVector;
-    }
-
-
-    public void clearPluginRegistration()
-    {
-        //clear the classNameMap in PluginFinder
-        PFinder.clearClassNameMap();
     }
 }

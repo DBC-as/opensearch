@@ -5,7 +5,11 @@
 <!--*******************************************************************************************************************************************-->
 <!-- The digitalObject root element contains the object PID, which uniquely identifies the Fedora object  -->
 <!--*******************************************************************************************************************************************-->
-<foxml:digitalObject xmlns:foxml="info:fedora/fedora-system:def/foxml#" PID="demo:999" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-0.xsd">
+<foxml:digitalObject xmlns:foxml="info:fedora/fedora-system:def/foxml#" 
+                     PID="demo:999" 
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                     xsi:schemaLocation="info:fedora/fedora-system:def/foxml# 
+                     http://www.fedora.info/definitions/1/0/foxml1-0.xsd">
 <!---***************************************************************************************************************************************
     FEDORA OBJECT PROPERTIES : non-versionable properties of the digital object
     At ingest, the object MUST have these attributes:

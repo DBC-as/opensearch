@@ -38,27 +38,28 @@ import org.xml.sax.SAXException;
 
 public class XMLFileReader 
 {
-	Logger log = Logger.getLogger( XMLFileReader.class );
+    static Logger log = Logger.getLogger( XMLFileReader.class );
 	
 	
-	public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
-	{
-		DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
+    public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
+    {
+        DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFact.newDocumentBuilder();
         Document admDoc = docBuilder.parse( is );
         Element root = admDoc.getDocumentElement();
         
         return root;
-	}
+    }
 	
 	
-	public static NodeList getNodeList( File xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException
-	{
-		DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+    public static NodeList getNodeList( File xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException
+    {
+        DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
         Document jobDocument = docBuilder.parse( xmlFile );
         Element xmlRoot = jobDocument.getDocumentElement();
+        //NodeList nodeList = xmlRoot.getElementsByTagName( tagName );
 
         return xmlRoot.getElementsByTagName( tagName );
-	}
+    }
 }

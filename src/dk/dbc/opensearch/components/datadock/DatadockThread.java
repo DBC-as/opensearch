@@ -6,8 +6,7 @@
  */
 package dk.dbc.opensearch.components.datadock;
 
-/*
-   
+/*   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -27,7 +26,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
@@ -39,10 +37,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
@@ -52,7 +47,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
@@ -91,13 +85,13 @@ import org.xml.sax.SAXException;
  * process of fedora storing, data processing, indexing and
  * search-capabilities
  */
-public class DatadockThread implements Callable<Float>
+public class DatadockThread implements Callable< Float >
 {
     private Logger log = Logger.getLogger( DatadockThread.class );
 
     private CargoContainer cc;
     private IProcessqueue queue;
-    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    //private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
     private String result;
     private IEstimate estimate;
@@ -129,13 +123,10 @@ public class DatadockThread implements Callable<Float>
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, HashMap< InputPair< String, String >, ArrayList< String > > jobMap, IFedoraCommunication fedoraCom ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCom ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
-        this.jobMap = jobMap;
-        //log.debug(String.format("the jobMap: %s", this.jobMap.toString()));
         this.datadockJob = datadockJob;
 
         // Each pair identifies a plugin by p1:submitter and p2:format
@@ -145,13 +136,11 @@ public class DatadockThread implements Callable<Float>
         log.debug( String.format("submitter: %s, format: %s", submitter, format ) );
         log.debug( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
 
-        log.debug( "printing jobMap" );
-        log.debug( jobMap.toString() );
-        list = this.jobMap.get( new InputPair< String, String >( submitter, format ) );
-
+        list = DatadockJobsMap.getDatadockPluginsList( submitter, format );
+        log.debug( "constructor PluginList " + list.toString() );
         if( list == null )
         {
-            throw new NullPointerException( String.format( "The returned list from the jobmap.get( Pair< %s, %s> ) is null", submitter, format ) );
+            throw new NullPointerException( String.format( "The returned list from the DatadockJobsMap.getDatadockJobsMap( %s, %s ) is null", submitter, format ) );
         }
         
         queue = processqueue;
@@ -191,6 +180,8 @@ public class DatadockThread implements Callable<Float>
      */
     public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException
     {
+        log.debug( "DatadockThread call method called" ); 
+
         // Must be implemented due to class implementing Callable< Float > interface.
         // Method is to be extended when we connect to 'Posthuset'
 
@@ -206,35 +197,46 @@ public class DatadockThread implements Callable<Float>
         }
         else
         {
-            for( String task : list)
+            log.debug( String.format( "pluginList classname %s", list.toString() ) );
+            for( String classname : list)
             {
-                IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+            	log.debug( "DatadockThread getPlugin 'classname' " + classname );
+
+            	IPluggable plugin = (IPluggable)pluginResolver.getPlugin( classname );
                 log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
                 switch ( plugin.getTaskName() )
                 {
-                case HARVEST:
-                    IHarvestable harvestPlugin = (IHarvestable)plugin;
-                    cc = harvestPlugin.getCargoContainer( datadockJob );
-                    if( cc.getCargoObjectCount() < 1 )
-                    {
-                        /**
-                         * no data in the cargocontainer, so no
-                         * reason to continue
-                         */
-                        log.error( String.format( "no cargoobjects in the cargocontainer " ) );
-                        throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
-                    }
-                    //make estimate
-                    break;
-                case ANNOTATE:
-                    IAnnotate annotatePlugin = (IAnnotate)plugin;
-                    cc = annotatePlugin.getCargoContainer( cc );
-                    break;
+                    case HARVEST:
+                        log.debug( String.format( "case HARVEST pluginType %s", plugin.getTaskName().toString() ) );
+                        IHarvestable harvestPlugin = (IHarvestable)plugin;
+                        cc = harvestPlugin.getCargoContainer( datadockJob );
+                        if( cc.getCargoObjectCount() < 1 )
+                        {
+                            /**
+                             * no data in the cargocontainer, so no
+                             * reason to continue
+                             */
+                            log.error( String.format( "no cargoobjects in the cargocontainer" ) );
+                            throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
+                        }
+                        //make estimate
+                        break;
+                    case ANNOTATE:
+                        log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getTaskName().toString() ) );
+                        IAnnotate annotatePlugin = (IAnnotate)plugin;
+                        if ( cc == null )
+                        {
+                            //break;
+                            log.error( "DatadockThread call throws NullPointerException, cc is null" );
+                            throw new NullPointerException( "DatadockThread call throws NullPointerException" );
+                        }
+                        cc = annotatePlugin.getCargoContainer( cc );
+                        break;
                     //case STORE:
                     //IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     //result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
-                default:
-                    log.warn( String.format( "plugin.getTaskName ('%s') did not match HARVEST or ANNOTATE", plugin.getTaskName() ) );
+                    default:
+                        log.warn( String.format( "plugin.getTaskName ('%s') did not match HARVEST or ANNOTATE", plugin.getTaskName() ) );
                 }
             }
         }

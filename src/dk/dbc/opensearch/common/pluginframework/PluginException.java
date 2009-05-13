@@ -29,8 +29,8 @@ import java.lang.Exception;
  * exception. The wrapped (original) exception can be accessed by the
  * getException() method.
  */
-public class PluginException extends Exception {
-
+public class PluginException extends Exception 
+{
 	/**
 	 * 
 	 */
@@ -73,7 +73,8 @@ public class PluginException extends Exception {
 	 * @param msg
 	 *            The reason for the throwing of the Exception
 	 */
-	public PluginException(String msg) {
+	public PluginException( String msg ) 
+	{
 		this.msg = msg;
 		this.e = null;
 	}

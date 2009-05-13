@@ -21,32 +21,40 @@ package dk.dbc.opensearch.common.pluginframework;
  */
 
 
-import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.PtiConfig;
-//import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ComparablePair;
+import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.IllegalArgumentException;
 import java.lang.IllegalStateException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 
 
 /**
@@ -57,11 +65,8 @@ public class JobMapCreator
     static Logger log = Logger.getLogger( JobMapCreator.class );
 
 
-    /**
-     * default constructor \todo : Is it nessecary?
-     */
-    public JobMapCreator() {}
-
+    protected static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    
     
     /**
      * Retrives the map of lists of tasks for all registrated pairs of submitter, format.
@@ -70,123 +75,110 @@ public class JobMapCreator
      * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
      * @throws ConfigurationException 
      */
-
-    public static HashMap< InputPair< String, String >, ArrayList< String > > getMap( Class classType ) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, IllegalStateException, ConfigurationException 
+    public static void init( String path ) throws ParserConfigurationException, SAXException, IOException
     {
-        //System.out.println( String.format( "calling getMap with %s", classType.getName() ) );
-        log.debug( "getMap() called" );
-
-        HashMap< InputPair< String, String >, ArrayList<String> > jobMap = new HashMap< InputPair< String, String >, ArrayList<String> >();
+    	log.debug( "JobMapCreator constructor called" );
+    	
+    	jobMap = new HashMap< InputPair< String, String >, ArrayList< String > >();
         ArrayList<String> sortedPluginList = new ArrayList< String >();
-        List< ComparablePair< Integer, String > > priorityAndPlugin = new ArrayList< ComparablePair< Integer, String > >();
 
-        log.debug( String.format( "Constructor( class='%s' ) called", classType.getName() ) );
-        // Set jobFile depending on classType: datadock or pti.
-        File jobFile = setJobFile( classType );
-        
-        log.debug( String.format( "Retrieving jobmap from file='%s'", jobFile.getPath() ) );
+        //List< ComparablePair< String, Integer > > pluginAndPriority = new ArrayList< ComparablePair< String, Integer > >();
+        List< InputPair< String, Integer > > pluginAndPriority = new ArrayList< InputPair< String, Integer > >();
+
+        File jobFile = FileHandler.getFile( path );
+        //System.out.println( "jobFile: " + jobFile.getAbsolutePath() );
         // Build the jobMap
+        log.debug( String.format( "init calling getNodeList with jobFile %s ", jobFile ) );
         NodeList jobNodeList = XMLFileReader.getNodeList( jobFile, "job" );
+        //System.out.println( "listLength: " + jobNodeList.getLength() );
+
+        /*DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+        Document jobDocument = docBuilder.parse( jobFile );
+        Element xmlRoot = jobDocument.getDocumentElement();
+        jobNodeList = xmlRoot.getElementsByTagName( "job" );*/
+        
         int listLength = jobNodeList.getLength();
-       
-        // 30: For each node read the task name and position        
+        //System.out.println( "listLength: " + listLength );
+
+        // For each node read the task name and position        
         Element jobElement;
         String submitter = "";
         String format = "";
         int position;
-        //PairComparator_SecondInteger secComp = new PairComparator_SecondInteger();
-        
+        PairComparator_SecondInteger secComp = new PairComparator_SecondInteger();
+
         for( int x = 0; x < listLength ; x++ )
         {
-        	jobElement = (Element)jobNodeList.item( x );
+            jobElement = (Element)jobNodeList.item( x );
                 
-        	submitter = jobElement.getAttribute( "submitter" );
-        	format = jobElement.getAttribute( "format" );
+            submitter = jobElement.getAttribute( "submitter" );
+            format = jobElement.getAttribute( "format" );
 
-        	NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
-        	int pluginListLength = pluginList.getLength();
+            NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
+            int pluginListLength = pluginList.getLength();
+            System.out.println( "pluginListLength: " + pluginListLength );
 
-        	priorityAndPlugin.clear();
+            pluginAndPriority.clear();
         	
-        	String plugin;
-        	// 35: get the tasks in a List
-        	for( int y = 0; y < pluginListLength; y++ )
-        	{
-        		Element pluginElement = (Element)pluginList.item( y );
-        		//get the name and position of the task element
-        		plugin = (String)pluginElement.getAttribute( "name" );
-        		position = Integer.decode(pluginElement.getAttribute( "position" ) );
+            String plugin;
+            // Store the classname in a List
+            for( int y = 0; y < pluginListLength; y++ )
+            {
+                Element pluginElement = (Element)pluginList.item( y );
+                plugin = (String)pluginElement.getAttribute( "classname" );
+                position = Integer.decode( pluginElement.getAttribute( "position" ) );
+                
+                //pluginAndPriority.add( new ComparablePair< String, Integer >( plugin, position ) );
+                pluginAndPriority.add( new InputPair< String, Integer >( plugin, position )  );
+            }
+            
+            System.out.println( "pluginAndPriority b4: " + pluginAndPriority.toString() );
+            // Sort the plugin classname based on the position (order)
+            Collections.sort( pluginAndPriority, secComp );
+            //Collections.sort( pluginAndPriority );
+            System.out.println( "pluginAndPriority af: " + pluginAndPriority.toString() );
 
-        		priorityAndPlugin.add( new ComparablePair< Integer, String >( position, plugin ) );
-        	}
+            // Store in sorted list
+            sortedPluginList.clear();
+            for( int z = 0; z < pluginListLength; z++ )
+            {
+                plugin = ( (Pair< String, Integer >)pluginAndPriority.get( z ) ).getFirst();
+                sortedPluginList.add( plugin );
+            }
 
-        	// 40: sort the tasks based on the position (order)
-        	Collections.sort( priorityAndPlugin ); //, secComp );
+            // Put it into the map with  <submitter, format> as key and List as value
+            jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
 
-        	// 50: put it in a List
-        	sortedPluginList.clear();
-        	for( int z = 0; z < pluginListLength; z++ )
-        	{
-        		plugin = ( (Pair< Integer, String >)priorityAndPlugin.get( z ) ).getSecond();
-        		sortedPluginList.add( plugin );
-        	}
-
-        	// 60: Put it into the map with  <submitter, format> as key and List as value
-        	jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
         }
-
-        // Put job into the map with <submitter, format> as key and List as value
-        //jobMap.put( new Pair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
 
         if( jobMap.isEmpty() )
         {
-        	throw new IllegalStateException( String.format( "no jobs found for: %s ", classType.getName() ) );
+            throw new IllegalStateException( String.format( "no jobs found for: %s ", path ) );
         }
-        
-        return jobMap;
     }
-
-    /**
-     * \todo: this method should be package private, but it is not so until we put the 
-     * testfiles in the same package as the files under test... 
-     * @throws ConfigurationException 
-     */
-    public static File setJobFile( Class classType ) throws MalformedURLException, ConfigurationException
+    
+    
+    public static void validateJobXmlFile( String path ) throws IOException, ConfigurationException, SAXException
     {
-    	File jobFile;
-        /** \todo: wouldn't it be better to let the classes that are allowed to call JobMapCreator inherit the same interface and check on that instead? It would make this whole setup _much_ less dependant on classpaths (which notoriously change) and would prevent this class in having to break at runtime because of unrelated changes elsewhere in the project. */
-    	if( classType.getName().equals( "dk.dbc.opensearch.components.datadock.DatadockMain" ) )
+    	SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
+        
+        String xsdPath = FileSystemConfig.getJobsXsdPath();
+        File schemaLocation = new File( xsdPath );
+        Schema schema = factory.newSchema( schemaLocation );
+    
+        Validator validator = schema.newValidator();
+        
+        Source source = new StreamSource( path );
+        
+        try 
         {
-            String datadockJobPath = DatadockConfig.getPath();
-            log.debug( String.format( "DatadockJob path: '%s'", datadockJobPath ) );
-            if ( datadockJobPath != null )
-            {
-            	jobFile = FileHandler.getFile( datadockJobPath );
-            }
-            else
-            {
-            	throw new IllegalArgumentException( "The value of datadockJobPath was null" );
-            }
+            validator.validate( source );
         }
-        else if ( classType.getName().equals( "dk.dbc.opensearch.components.pti.PTIMain" ) )
+        catch ( SAXException ex ) 
         {
-        	String ptiJobPath = PtiConfig.getPath();
-        	log.debug( String.format( "PTIJob path: '%s'", ptiJobPath ) );
-        	if ( ptiJobPath != null)
-        	{
-        		jobFile = FileHandler.getFile( ptiJobPath );
-        	}
-        	else
-        	{
-        		throw new IllegalArgumentException( "the value of ptiJobPath was null" );
-        	}
+        	log.debug( path + " is not valid because ");
+        	log.debug( ex.getMessage() );
         }
-        else
-        {
-            log.error( "wrong class given to JobMapCreator.getMap method" );
-            throw new IllegalArgumentException( String.format( "Unknown class given to the JobMapCreator.getMap method, the class given: %s", classType.getName() ) );          
-        }
-    	
-    	return jobFile;
     }
 }

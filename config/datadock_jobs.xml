@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- List of job to be executed using plugins -->
+<job_list xmlns="info:opensearch.dbc.dk#">
 
-<job_list>
   <job submitter="dbc" format="docbook_faktalink">
-    <plugin name="docbookharvester" position="0"/>
-    <plugin name="docbookannotate" position="1"/>
+    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
+    <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
   </job>
   <job submitter="dbc" format="docbook_forfatterweb">
-    <plugin name="docbookharvester" position="0"/>
-    <plugin name="docbookannotate" position="1"/>
+    <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
+    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
   </job>
   <job submitter="aakb" format="danmarcxchange">
-    <plugin name="marcxchangeharvester" position="0"/>
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
   </job>
   <job submitter="aakb" format="ebsco">
-    <plugin name="marcxchangeharvester" position="0"/>
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
   </job>
   <job submitter="aakb" format="ebrary">
-    <plugin name="marcxchangeharvester" position="0"/>
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
   </job>
   <job submitter="kkb" format="danmarcxchange">
-    <plugin name="marcxchangeharvester" position="0"/>
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
   </job>
   <job submitter="dbc" format="materialevurderinger">
-    <plugin name="docbookharvester" position="0"/>
-    <plugin name="docbookannotate" position="1"/>
+    <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
+    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
   </job>
   <job submitter="dbc" format="dr_forfatteratlas">
-    <plugin name="marcxchangeharvester" position="0"/>
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
   </job>  
   <job submitter="dbc" format="anmeldelser">
-    <plugin name="marcxchangeharvester" position="0"/>
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
   </job>  
   <job submitter="dbc" format="artikler">
-    <plugin name="marcxchangeharvester" position="0"/>
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
   </job>  
   <job submitter="dbc" format="dr_bonanza">
-    <plugin name="dcharvester" position="0"/>
+    <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DCHarvester" position="0"/>
   </job>
+
 </job_list>

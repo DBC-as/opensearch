@@ -41,29 +41,31 @@ import static org.junit.Assert.*;
 public class FileSystemConfigTest
 {
     @MockClass( realClass = AbstractConfiguration.class )
-        public static class MockXMLConf1
-        {
-            @Mock public static String getString( String key )
-            {
-                return "test";
-            }
-        } 
+    public static class MockXMLConf1
+    {
+    	@Mock public static String getString( String key )
+    	{
+    		return "test";
+    	}
+    } 
     
     @MockClass( realClass = AbstractConfiguration.class )
-        public static class MockXMLConf2
-        {
-            @Mock public static String getString( String key )
-            {
-                return "another test/";
-            }
+    public static class MockXMLConf2
+    {
+    	@Mock public static String getString( String key )
+    	{
+    		return "another test/";
         }
+    }
    
-@After
+
+    @After
     public void tearDown()
     {
         Mockit.tearDownMocks();
     }
 
+    
     @Test
     public void testGetConfigPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ConfigurationException
     {
@@ -95,19 +97,32 @@ public class FileSystemConfigTest
         boolean endsWith = plugins.contains( cs ); 
         assertTrue( endsWith );    	
     }
+    
+    
+    @Test
+    public void testJobsXsdPath() throws ConfigurationException
+    {
+    	String xsd = FileSystemConfig.getJobsXsdPath();
+    	
+    	CharSequence cs = "config/jobs.xsd";
+    	boolean endsWith = xsd.contains( cs );
+    	assertTrue( endsWith );
+    }
 
     /**
      * We mock the getString method of the XMLConfiguration class to get a string 
      * without and with "/" as the last character when it is called through
      * the public method getTrunkPath
      */
-@Test public void testSanitize1() throws ConfigurationException
+    @Test 
+    public void testSanitize1() throws ConfigurationException
     {
         Mockit.setUpMocks( MockXMLConf1.class);
 
         String test = FileSystemConfig.getTrunkPath(); 
         assertEquals( test, "test/" ); 
     }
+    
     
     @Test public void testSanitize2() throws ConfigurationException
     {

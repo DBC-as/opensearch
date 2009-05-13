@@ -44,12 +44,12 @@ import org.apache.log4j.Logger;
  */
 public class CargoContainer
 {
-
     Logger log = Logger.getLogger( CargoContainer.class );
 
     /** The internal representation of the data contained in the CargoContainer*/
     private ArrayList< CargoObject > data;
 
+    
     /**
      * Constructor initializes internal representation of data, i.e.,
      * ArrayList of CargoObjects
@@ -60,6 +60,7 @@ public class CargoContainer
         log.debug( String.format( "Constructing new CargoContainer" ) );
     }
 
+    
     /**
      * Add CargoObject to internal data representation.
      *
@@ -73,23 +74,14 @@ public class CargoContainer
      */
     @Deprecated
     public void add( DataStreamType dataStreamName, 
-                     String format, 
-                     String submitter, 
-                     String language, 
-                     String mimetype, 
-                     byte[] data ) 
-        throws IOException, NullPointerException
+                     String format, String submitter, String language, String mimetype, 
+                     byte[] data ) throws IOException, NullPointerException
     {
         log.warn( String.format( "Use of deprecated method" ) );
-        add( dataStreamName, 
-                        format,
-                        submitter, 
-                        language, 
-                        mimetype, 
-                        null,
-                        data );
+        add( dataStreamName, format, submitter, language, mimetype, null, data );
     }
 
+    
     /**
      * Adds a 'datastream' to the CargoContainer; a datastream is any kind of
      * data which, for the duration of the CargoContainer object to which it is
@@ -127,53 +119,47 @@ public class CargoContainer
      *
      * @return a unique id identifying the submitted data
      */
-    public long add( DataStreamType dataStreamName, 
-                    String format, 
-                    String submitter, 
-                    String language, 
-                    String mimetype, 
-                    IndexingAlias alias, 
-                    byte[] data ) 
-        throws IOException
+    public long add( DataStreamType dataStreamName,  
+                     String format, String submitter, String language, String mimetype, 
+                     IndexingAlias alias, 
+                     byte[] data ) throws IOException
     {
-
-
-        if( dataStreamName == null ) 
+    	if( dataStreamName == null ) 
         {
             log.fatal( "dataStreamName cannot be null" );
             throw new NullPointerException( "dataStreamName cannot be null" );
         }
-        if( ( mimetype == null ) || ( mimetype .equals( "" ) ) ) 
+    	else if( ( mimetype == null ) || ( mimetype .equals( "" ) ) ) 
         {
             log.fatal( "mimetype must be specified" );
             throw new NullPointerException( "mimetype must be specified" );
         }
-        if( ( language == null ) || ( language .equals( "" ) ) ) 
+    	else if( ( language == null ) || ( language .equals( "" ) ) ) 
         {
             log.fatal( "language must be specified" );
             throw new NullPointerException( "language must be specified" );
         }
-        if( ( submitter == null ) || ( submitter .equals( "" ) ) ) 
+    	else if( ( submitter == null ) || ( submitter .equals( "" ) ) ) 
         {
             log.fatal( "submitter must be specified" );
             throw new NullPointerException( "submitter must be specified" );
         }
-        if( ( format == null ) || ( format.equals( "" ) ) ) 
+    	else if( ( format == null ) || ( format.equals( "" ) ) ) 
         {
             log.fatal( "format must be specified" );
             throw new NullPointerException( "format must be specified" );
         }
-        if( alias == null ) {
+    	else if( alias == null ) 
+    	{
             log.fatal( "alias must be specified" );
             throw new NullPointerException( "alias must be specified" );
         }
-        if( ( data == null ) || ( data.length <= 0 ) ) 
+    	else if( ( data == null ) || ( data.length <= 0 ) ) 
         {
             log.fatal( "data must be present " );
             throw new NullPointerException( "data must be present " );
         }
         
-
         CargoObject co = new CargoObject( dataStreamName, 
                                           mimetype, 
                                           language, 
@@ -185,8 +171,7 @@ public class CargoContainer
         this.data.add( co );
         log.debug( String.format( "cargoObject with id '%s' added to container", 
                                   co.getId() ) );
-        log.debug( String.format( "number of CargoObjects: %s", 
-                                  getCargoObjectCount() ) );
+        log.debug( String.format( "number of CargoObjects: %s", getCargoObjectCount() ) );
 
         return co.getId();
     }
@@ -200,15 +185,19 @@ public class CargoContainer
      *
      * @return true iff a CargoObject matched the id, false otherwise
      */
-    public boolean hasCargo( long id ){
+    public boolean hasCargo( long id )
+    {
         for( CargoObject co : data )
         {
-            if( co.getId() == id ) {
+            if( co.getId() == id ) 
+            {
                 return true;
             }
         }
+        
         return false;
     }
+    
 
     /**
      * Given a DataStreamTyped, this method returns true if a
@@ -219,13 +208,16 @@ public class CargoContainer
      * @return true iff a CargoObject matched the DataStreamType,
      * false otherwise
      */
-    public boolean hasCargo( DataStreamType type ){
+    public boolean hasCargo( DataStreamType type )
+    {
         for( CargoObject co : data )
         {
-            if( co.getDataStreamName() == type ) {
+            if( co.getDataStreamName() == type ) 
+            {
                 return true;
             }
         }
+        
         return false;
     }
 
@@ -239,7 +231,8 @@ public class CargoContainer
      *
      * @return CargoObject or a null CargoObject if id isn't found
      */
-    public CargoObject getCargoObject( long id ) {
+    public CargoObject getCargoObject( long id ) 
+    {
         CargoObject ret_co = null;
         for( CargoObject co : data )
         {
@@ -248,6 +241,8 @@ public class CargoContainer
                 ret_co = co;
             }
         }
+
+        /** \todo: is it okay to return null? */
         return ret_co;
     }
 
@@ -264,7 +259,9 @@ public class CargoContainer
      *
      * @return The first CargoObject that matches the DataStreamType
      */
-    public CargoObject getCargoObject( DataStreamType type ) {
+    public CargoObject getCargoObject( DataStreamType type ) 
+    {
+    	log.debug( "CargoContainer getCargoObject entering method" ); 
         CargoObject ret_co = null;
         for( CargoObject co : data )
         {
@@ -273,10 +270,13 @@ public class CargoContainer
                 ret_co = co;
             }
         }
-        if( null == ret_co ) {
+
+        if( null == ret_co ) 
+        {
             log.error( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
             throw new NullPointerException( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
         }
+
         return ret_co;
     }
 
@@ -288,7 +288,8 @@ public class CargoContainer
      *
      * @return the count of CargoObjects matching the type
      */
-    public int getCargoObjectCount( DataStreamType type ) {
+    public int getCargoObjectCount( DataStreamType type ) 
+    {
         int count = 0;
         for( CargoObject co : data )
         {
@@ -301,15 +302,18 @@ public class CargoContainer
         return count;
     }
 
+    
     /**
      * Get the total number of CargoObjects in the CargoContainer
      *
      * @return the count of CargoObjects in the CargoContainer
      */
-    public int getCargoObjectCount() {
+    public int getCargoObjectCount() 
+    {
         return data.size();
     }
 
+    
     /**
      * Returns a List of CargoObjects that matches the DataStreamType. If you
      * know that there are only one CargoObject matching the DataStreamType, use
@@ -320,17 +324,19 @@ public class CargoContainer
      *
      * @return a List of CargoObjects or a null List if none were found
      */
-    public List<CargoObject> getCargoObjects(DataStreamType type) {
+    public List<CargoObject> getCargoObjects(DataStreamType type) 
+    {
         List<CargoObject> ret_list = new ArrayList<CargoObject>();
-        for( CargoObject co : data ){
-            if( type == co.getDataStreamName() ) {
+        for( CargoObject co : data )
+        {
+            if( type == co.getDataStreamName() ) 
+            {
                 ret_list.add( co );
             }
         }
 
-        // the returned list must contain the same number of
-        // CargoObjects that getCargoObjectCount(DataStreamType type)
-        // does
+        // the returned list must contain the same number of CargoObjects 
+        // that getCargoObjectCount(DataStreamType type) does
         assert( getCargoObjectCount( type ) == ret_list.size() );
 
         return ret_list;
@@ -344,10 +350,12 @@ public class CargoContainer
      * @return a List of all CargoObjects from the CargoContainer or a null List
      *         object if none are found
      */
-    public List<CargoObject> getCargoObjects() {
+    public List<CargoObject> getCargoObjects() 
+    {
         return data;
     }
 
+    
     /**
      * Given an id of a CargoObject, this method returns the DataStreamType
      * which the CargoObject was registered with
@@ -355,10 +363,11 @@ public class CargoContainer
      * @param id the id to match the CargoObject with
      * @return the DataStreamType of the CargoObject with the specified id
      */
-    public DataStreamType getDataStreamType( long id ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    public DataStreamType getDataStreamType( long id )
+//    {
+//        return null;
+//    }
+
 
     /**
      * Given an id of a CargoObject, this method returns the IndexingAlias
@@ -367,7 +376,8 @@ public class CargoContainer
      * @param id the id to match the CargoObject with
      * @return the alias that is used to index the data in the CargoObject with
      */
-    public IndexingAlias getIndexingAlias( long id ) {
+    public IndexingAlias getIndexingAlias( long id ) 
+    {
         IndexingAlias ret_ia = null;
         log.debug( String.format( "id to test for = %s", id ) );
         for( CargoObject co : data ){
@@ -381,6 +391,7 @@ public class CargoContainer
         return ret_ia;
     }
 
+
     /**
      * Given a DataStreamType of a CargoObject, this method returns the IndexingAlias
      * for the data in the CargoObject
@@ -388,9 +399,11 @@ public class CargoContainer
      * @param dataStreamType the DataStreamType to match the CargoObject with
      * @return the alias that is used to index the data in the CargoObject with
      */
-    public IndexingAlias getIndexingAlias( DataStreamType dataStreamType ) {
+    public IndexingAlias getIndexingAlias( DataStreamType dataStreamType ) 
+    {
         IndexingAlias ret_ia = null;
-        for( CargoObject co : data ){
+        for( CargoObject co : data )
+        {
             if( dataStreamType == co.getDataStreamName() )
             {
                 ret_ia = co.getIndexingAlias();
@@ -399,6 +412,4 @@ public class CargoContainer
 
         return ret_ia;
     }
-
-
 }

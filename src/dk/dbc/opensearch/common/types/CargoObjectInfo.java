@@ -153,6 +153,7 @@ public class CargoObjectInfo
         this.alias = alias;
         this.id = id;
     }
+    
 
     /**
      * Returns the globally unique id of the CargoObject. This method

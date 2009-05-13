@@ -47,21 +47,20 @@ public class DocbookHarvester implements IHarvestable
 {
     Logger log = Logger.getLogger( DocbookHarvester.class );
 
-    //private CargoContainer cargo;
     private String submitter;
     private String format;
     private String path;
 
     private PluginType pluginType = PluginType.HARVEST;
 
+    
     public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
     {
-        //cargo = new CargoContainer();
-        this.path = job.getUri().getPath();
-        this.submitter = job.getSubmitter();
-        this.format = job.getFormat();
-        //cargo.setIndexingAlias( IndexingAlias.Article );
-        return createCargoContainerFromFile();
+    	this.path = job.getUri().getPath();
+    	this.submitter = job.getSubmitter();
+    	this.format = job.getFormat();
+    
+    	return createCargoContainerFromFile();
     }
 
 
@@ -74,17 +73,20 @@ public class DocbookHarvester implements IHarvestable
     {
 
         CargoContainer cargo = new CargoContainer();
-        //cargo.setFilePath( path );
+        
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
         InputStream data;
+
         long id;
         try 
         {
             data = FileHandler.readFile( this.path );
-        } catch (FileNotFoundException fnfe) {
+        } 
+        catch (FileNotFoundException fnfe) 
+        {
             throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
         }
 
@@ -111,6 +113,7 @@ public class DocbookHarvester implements IHarvestable
         return cargo;
     }
 
+    
     public PluginType getTaskName()
     {
         return pluginType;

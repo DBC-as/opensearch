@@ -103,12 +103,14 @@ public class CargoObject
         //pair = new Pair<CargoObjectInfo, byte[] >( coi, data );
     }
 
+    
     /** 
      * Returns the globally unique id of the CargoObject 
      * 
      * @return the id of the CargoObject
      */
-    public long getId(){
+    public long getId()
+    {
         return coi.getId();
     }
     

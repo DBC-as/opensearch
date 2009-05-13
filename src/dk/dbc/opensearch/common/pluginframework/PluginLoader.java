@@ -29,15 +29,16 @@ import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
 
 /**
- * PluginLoader
+ * The PluginLoader class contains one method used for loading plugins.
+ * Essentially it wraps the native, abtstract Java ClassLoader class responsible
+ * for loading classes from a specified class name (see the PluginFinder class
+ * and the .plugin files.)
  */
 public class PluginLoader 
 {
     static Logger log = Logger.getLogger( PluginLoader.class );
     
-    //String pluginPathName = FileSystemConfig.getFileSystemPluginsPath(); // "classes/dk/dbc/opensearch/plugins";
-    //FileHandler fileHandler;
-    //String pluginSubPathName = "build/classes/dk/dbc/opensearch/plugins/";
+    
     ClassLoader cl;
 
 
@@ -53,6 +54,7 @@ public class PluginLoader
     /**
      * Given a qualified class name of the plugin, this method locates the
      * plugin on the classpath and loads and returns the plugin
+     * 
      * @param pluginName the class name of the wanted plugin
      * @return the loaded plugin
      * @throws InstantiationException if the classloader cant sinstantiate the desired plugin
@@ -60,15 +62,20 @@ public class PluginLoader
      * @throws ClassNotFoundException if the specified class cannot found  
      */
     IPluggable getPlugin( String pluginClassName ) throws InstantiationException, IllegalAccessException, ClassNotFoundException
-    {        
-        Class loadedClass = null;
-        //loading the class
-        log.debug( String.format( "The plugin class name: %s", pluginClassName) );
-       
-        loadedClass = cl.loadClass( pluginClassName );
-       
-        IPluggable thePlugin = ( IPluggable )loadedClass.newInstance();
+    {
+        try
+        {
+            Class loadedClass = null;
+        
+            log.debug( String.format( "PluginLoader loading plugin class name '%s'", pluginClassName) );       
+            loadedClass = cl.loadClass( pluginClassName );       
+            IPluggable thePlugin = ( IPluggable )loadedClass.newInstance();
 
-        return thePlugin;
+            return thePlugin;
+        }
+        catch( ClassNotFoundException cnfe )
+        {
+            throw new ClassNotFoundException( String.format( "No value for className: %s ", pluginClassName ) );
+        }
     }
 }

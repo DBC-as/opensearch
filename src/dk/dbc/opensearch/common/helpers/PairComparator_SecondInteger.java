@@ -37,10 +37,16 @@ public class PairComparator_SecondInteger implements Comparator
     public int compare( Object x, Object y )
     {	
         if( ((InputPair< String, Integer >)x).getSecond() < ((InputPair< String, Integer >)y).getSecond() )
-        	return -4;
+        {
+            return -4;
+        }
         else
-        	if( ((InputPair<String, Integer>)x).getSecond() == ((InputPair<String, Integer>)y).getSecond() )
-        		return 0;
+        {
+            if( ((InputPair<String, Integer>)x).getSecond() == ((InputPair<String, Integer>)y).getSecond() )
+            {
+                return 0;
+            }
+        }
                     
         return 4;
     }

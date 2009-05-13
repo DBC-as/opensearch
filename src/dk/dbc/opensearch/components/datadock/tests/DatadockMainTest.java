@@ -28,23 +28,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 /** \brief UnitTest for DatadockManager **/
 
-import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.pluginframework.IAnnotate;
-import dk.dbc.opensearch.common.pluginframework.IHarvestable;
-import dk.dbc.opensearch.common.pluginframework.IPluggable;
-import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DatadockJob;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.components.datadock.DatadockMain;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Vector;
 
 import org.junit.After;
 import org.junit.Before;
@@ -57,10 +41,12 @@ import org.junit.Ignore;
  */
 public class DatadockMainTest 
 {
-    @Before public void Setup() {}
+    @Before 
+    public void Setup() {}
 
     
-    @After public void tearDown() {}
+    @After 
+    public void tearDown() {}
 
     @Ignore( "This method tries to actually connect to the fedora server. No good, should be mocked" )   
     @Test public void testConstructor() throws Exception 
@@ -69,58 +55,58 @@ public class DatadockMainTest
     	datadockmain.init();
     	
     	// Get jobMap listing jobs to be executed using plugins 
-    	HashMap< InputPair< String, String >, ArrayList< String > > jobMap = DatadockMain.jobMap;
+    	//HashMap< InputPair< String, String >, ArrayList< String > > jobMap = DatadockMain.jobMap;
     	
     	// Get set of jobs specified by submitter and format
-    	Set< InputPair< String, String > > keysSet = jobMap.keySet();
+    	//Set< InputPair< String, String > > keysSet = jobMap.keySet();
     	
     	// Loop through jobs
-    	for( InputPair< String, String > pair : keysSet )
-    	{
-            String submitter = pair.getFirst().toString();
-            String format = pair.getSecond().toString();    		
-            URI uri = new URI( DatadockConfig.getPath() ); 
-            DatadockJob job = new DatadockJob( uri, submitter, format );
-    		
-            if( jobMap.containsKey( pair ) )
-    	    {	
-                // Get list of plugins
-                ArrayList< String > list = jobMap.get( pair );
-                    
-                // Validate plugins
-                PluginResolver pluginResolver = new PluginResolver();
-                Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-                    
-                if( ! missingPlugins.isEmpty() )
-                {		
-                    System.out.println( " kill thread" );
-                    throw new Exception( "plugins not found in test" );
-                    // kill thread/throw meaningful exception/log message
-	    	    }
-                else
-                {
-                    CargoContainer cc = null;
-				
-                    for( String task : list)
-                    {	
-                        IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-                        switch ( plugin.getTaskName() )
-                        {	
-                            case HARVEST:
-                                IHarvestable harvestPlugin = (IHarvestable)plugin; 
-                                cc = harvestPlugin.getCargoContainer( job );
-                                break;
-                            case ANNOTATE:
-                                IAnnotate annotatePlugin = (IAnnotate)plugin;
-                                cc = annotatePlugin.getCargoContainer( cc );
-                                break;
-                            case STORE:
-                                IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                                //repositoryStore.storeCargoContainer( cc, job );
-                        }
-                    }
-                }
-            }
-    	}
+//    	for( InputPair< String, String > pair : keysSet )
+//    	{
+//            String submitter = pair.getFirst().toString();
+//            String format = pair.getSecond().toString();    		
+//            URI uri = new URI( DatadockConfig.getPath() ); 
+//            DatadockJob job = new DatadockJob( uri, submitter, format );
+//    		
+//            if( jobMap.containsKey( pair ) )
+//    	    {	
+//                // Get list of plugins
+//                ArrayList< String > list = jobMap.get( pair );
+//                    
+//                // Validate plugins
+//                PluginResolver pluginResolver = new PluginResolver();
+//                Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
+//                    
+//                if( ! missingPlugins.isEmpty() )
+//                {		
+//                    System.out.println( " kill thread" );
+//                    throw new Exception( "plugins not found in test" );
+//                    // kill thread/throw meaningful exception/log message
+//	    	    }
+//                else
+//                {
+//                    CargoContainer cc = null;
+//				
+//                    for( String task : list)
+//                    {	
+//                        IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
+//                        switch ( plugin.getTaskName() )
+//                        {	
+//                            case HARVEST:
+//                                IHarvestable harvestPlugin = (IHarvestable)plugin; 
+//                                cc = harvestPlugin.getCargoContainer( job );
+//                                break;
+//                            case ANNOTATE:
+//                                IAnnotate annotatePlugin = (IAnnotate)plugin;
+//                                cc = annotatePlugin.getCargoContainer( cc );
+//                                break;
+//                            case STORE:
+//                                IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+//                                //repositoryStore.storeCargoContainer( cc, job );
+//                        }
+//                    }
+//                }
+//            }
+//    	}
     }
 }

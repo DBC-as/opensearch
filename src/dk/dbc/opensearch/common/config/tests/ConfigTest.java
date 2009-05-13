@@ -45,13 +45,15 @@ public class ConfigTest
     //Logger logger = Logger.getLogger( ConfigTest.class );
 
     @MockClass( realClass = XMLConfiguration.class )
-        public static class MockXMLConf
+    public static class MockXMLConf
+    {
+        @Mock public void $init( URL url ) throws ConfigurationException
         {
-            @Mock public void $init( URL url ) throws ConfigurationException
-            {
-                throw new ConfigurationException( "meaningful message" );
-            } 
-        }
+            throw new ConfigurationException( "meaningful message" );
+        } 
+    }
+    
+
     /**
      * mix between unit and function test...
      */
@@ -59,6 +61,7 @@ public class ConfigTest
     {
         Mockit.tearDownMocks();  
     }
+
 
     @Test
     public void testConstructor() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ConfigurationException

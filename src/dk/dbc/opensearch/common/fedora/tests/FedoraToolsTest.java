@@ -21,19 +21,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -43,7 +36,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 import org.junit.*;
 
-import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
 import org.apache.log4j.Logger;
 
@@ -54,10 +46,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class FedoraToolsTest
 {
-    private Logger log = Logger.getLogger( "FedoraToolsTest" );
+    //private Logger log = Logger.getLogger( "FedoraToolsTest" );
     
 
-    //private static FedoraTools fedoraToolsMock;
     private CargoContainer cargo;
     private Date now;
     private String timeNow;
@@ -68,11 +59,6 @@ public class FedoraToolsTest
     	now = new Date ( System.currentTimeMillis() );
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
         timeNow = dateFormat.format( now );
-        //fedoraToolsMock = createMock( FedoraTools.class );
-        
-        /*teststring = "æøå";
-        InputStream data = new ByteArrayInputStream( teststring.getBytes( "UTF-8" ) );
-        cargo = new CargoContainer( data, "text/xml", "dk", "stm", "faktalink" );*/
     }
 
 
@@ -94,7 +80,7 @@ public class FedoraToolsTest
     
     private CargoContainer constructCargo( String testStr ) throws IllegalArgumentException, NullPointerException, IOException
     {
-    	InputStream data = new ByteArrayInputStream( testStr.getBytes( "UTF-8" ) );    	
+    	//InputStream data = new ByteArrayInputStream( testStr.getBytes( "UTF-8" ) );    	
     	//CargoContainer ret = new CargoContainer( data, "text/xml", "dk", "stm", "faktalink" );
     	CargoContainer ret = new CargoContainer();
     	

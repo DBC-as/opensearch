@@ -42,16 +42,15 @@ public class DCHarvester implements IHarvestable
 {
     Logger log = Logger.getLogger( DCHarvester.class );
 
-    //private CargoContainer cargo;
     private String submitter;
     private String format;
     private String path;
 
     private PluginType pluginType = PluginType.HARVEST;
 
+
     public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
     {
-        //cargo = new CargoContainer();
         this.path = job.getUri().getPath();
         this.submitter = job.getSubmitter();
         this.format = job.getFormat();
@@ -74,6 +73,7 @@ public class DCHarvester implements IHarvestable
         String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
         InputStream data;
+        
         try {
             data = FileHandler.readFile( path );
             log.debug( String.format( "File: %s has been read",path ) );

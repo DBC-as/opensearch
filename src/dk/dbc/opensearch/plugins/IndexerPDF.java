@@ -45,6 +45,9 @@ public class IndexerPDF implements IIndexer
 
     Logger log = Logger.getLogger( IndexerPDF.class );
 
+    PluginType pluginType = PluginType.INDEX;
+
+
     public long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle ) 
     {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
@@ -141,7 +144,7 @@ public class IndexerPDF implements IIndexer
 
     public PluginType getTaskName()
     {
-        return PluginType.INDEX;
+        return pluginType;
     }
 
 }

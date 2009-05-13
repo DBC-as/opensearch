@@ -95,7 +95,7 @@ public class PTIManager
         log.debug( "update() called" );
 
         // checking for new jobs
-        Vector<InputPair<String, Integer>> newJobs = processqueue.pop( resultsetMaxSize );
+        Vector< InputPair< String, Integer > > newJobs = processqueue.pop( resultsetMaxSize );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
         //System.out.println( "size of newJobs: "+ newJobs.size() );
         // Starting new Jobs

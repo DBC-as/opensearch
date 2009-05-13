@@ -26,45 +26,26 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.types.CPMAlias;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.Integer;
-import java.lang.StringBuilder;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
-// import javax.xml.parsers.DocumentBuilder;
-// import javax.xml.parsers.DocumentBuilderFactory;
-// import javax.xml.parsers.ParserConfigurationException;
-// import javax.xml.rpc.ServiceException;
-// import javax.xml.xpath.*;
-import org.dom4j.dom.DOMElement;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.io.SAXReader;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
-import org.dom4j.DocumentException;
 import org.dom4j.Namespace;
-import org.xml.sax.SAXException;
+import org.dom4j.dom.DOMElement;
+import org.dom4j.io.SAXReader;
 
 
 /**
@@ -73,7 +54,9 @@ import org.xml.sax.SAXException;
 public class DocbookMerger implements IProcesser
 {
     Logger log = Logger.getLogger( DocbookMerger.class );
+
     private PluginType pluginType = PluginType.ANNOTATE;
+
     private  NamespaceContext nsc;
 
 

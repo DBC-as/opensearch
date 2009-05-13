@@ -40,7 +40,6 @@ import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -81,7 +80,7 @@ public class DatadockMain
     static int pollTime;
     static URL cfgURL;
     static String harvestDir;
-    public static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    //public static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
 
     public DatadockMain() {}
@@ -97,13 +96,20 @@ public class DatadockMain
         keepAliveTime = DatadockConfig.getKeepAliveTime();
         harvestDir = HarvesterConfig.getFolder();
 
-        jobMap = JobMapCreator.getMap( this.getClass() );
-        log.debug( String.format( "the map: %s ",jobMap.toString() ));
+        //jobMap = JobMapCreator.getMap( this.getClass() );
+        //log.debug( String.format( "the map: %s ",jobMap.toString() ));
 
         log.debug( String.format( "---> queueSIZE = '%s'", queueSize ) );
     }
 
 
+    // Helper method to avoid static problems in init
+    @SuppressWarnings("unchecked")
+	public Class getClassType()
+    {
+    	return this.getClass();
+    }
+    
     /**
      * The shutdown hook. This method is called when the program catches the kill signal.
      */
@@ -195,7 +201,8 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, jobMap, fedoraCom );
+            //datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, jobMap );
+            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, fedoraCom );
 
             log.debug( "Starting harvester" );
             

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="build">
+
+<project name="build" default="_compile">
   
   <tstamp/>
   <property name="now"              value="${DSTAMP}-${TSTAMP}" />

@@ -34,14 +34,11 @@ import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
-//import dk.dbc.opensearch.common.types.Pair;
 
 import fedora.server.types.gen.MIMETypedStream;
 
@@ -50,7 +47,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -66,7 +62,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -88,7 +83,7 @@ public class PTIThread implements Callable< Long >
     private String fedoraPid;
     private IEstimate estimate;
     private ArrayList< String > list;
-    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    //private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
     private IFedoraCommunication fedoraCommunication;
 
 
@@ -100,14 +95,13 @@ public class PTIThread implements Callable< Long >
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, HashMap< InputPair< String, String >, ArrayList< String > > jobMap, IFedoraCommunication fedoraCommunication ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IFedoraCommunication fedoraCommunication ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         super();
 
         log.debug( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
 
-        this.jobMap = jobMap;
+        //this.jobMap = jobMap;
         this.estimate = estimate;
         this.session = session;
         this.fedoraPid = fedoraPid;
@@ -142,13 +136,22 @@ public class PTIThread implements Callable< Long >
         String submitter =  null;
         String format = null;
         
-
+        /*try
+        {
+            log.debug( String.format( "Trying to get stream from fedora with pid %s and name %s", fedoraPid, DataStreamType.AdminData.getName() ) );
+            MIMETypedStream ds = super.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
+            byte[] adminStream = ds.getStream();
+            log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+            cc = new CargoContainer();
 
         log.debug( String.format( "Trying to get stream from fedora with pid %s and name %s", fedoraPid, DataStreamType.AdminData.getName() ) );
-       
-        try{
+        */
+        try
+        {
             cc = fedoraCommunication.retrieveContainer( fedoraPid );
-        }catch( Exception e ){
+        }
+        catch( Exception e )
+        {
             log.fatal( String.format( "Caught exception with cause: %s, message: %s", e.getCause(), e.getMessage() ) );
             throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
         }
@@ -158,8 +161,10 @@ public class PTIThread implements Callable< Long >
         format = co.getFormat();
 
         long result = 0l;
+        
         // Get the job from the jobMap
-        list = jobMap.get( new InputPair< String, String >( submitter, format ) );
+        //list = jobMap.get( new InputPair< String, String >( submitter, format ) );
+        list = PTIJobsMap.getPtiPluginsList( submitter, format );
         if ( list == null )
         {
             log.fatal( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
@@ -167,14 +172,14 @@ public class PTIThread implements Callable< Long >
         }
 
         //50: validate that there exists plugins for all the tasks
-        PluginResolver pluginResolver = new PluginResolver();
         for ( int i = 0; i < list.size(); i++ )
         {
             log.debug( String.format( " plugin to be found: %s", list.get( i ) ) );
         }
 
+        PluginResolver pluginResolver = new PluginResolver();
         Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-        //60: execute the plugins
+        // Execute the plugins
         if ( ! missingPlugins.isEmpty() )
         {
             Iterator< String > iter = missingPlugins.iterator();
@@ -190,9 +195,9 @@ public class PTIThread implements Callable< Long >
         {
             log.debug( "Entering switch" );
 
-            for ( String task : list )
+            for ( String classname : list )
             {
-                IPluggable plugin = ( IPluggable )pluginResolver.getPlugin( submitter, format, task );
+                IPluggable plugin = ( IPluggable )pluginResolver.getPlugin( classname );
                 switch ( plugin.getTaskName() )
                 {
                 case PROCESS:

@@ -59,9 +59,13 @@ public class IndexerXSEM implements IIndexer
 {
     Logger log = Logger.getLogger( IndexerXSEM.class );
 
+
+    PluginType pluginType = PluginType.INDEX;
+
+
     public PluginType getTaskName()
     {
-        return PluginType.INDEX;
+        return pluginType;
     }
 
 

@@ -230,7 +230,7 @@ public class PTIManagerTest {
         replay( mockPTIPool);
         replay( mockCompletedTask );
             
-            /**
+        /**
          * do stuff
          */
 
@@ -244,6 +244,7 @@ public class PTIManagerTest {
         verify( mockPQ );
         verify( mockCompletedTask );
     }
+
 
     /**
      * Tests the handling of the RejectedExecutionException in the update method
@@ -304,7 +305,7 @@ public class PTIManagerTest {
          * do stuff
          */
         IFedoraCommunication fedoraCommunication = new FedoraCommunication();
-        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, dummyMap, fedoraCommunication );
+        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, fedoraCommunication );
         ptiManager = new PTIManager( ptiPool, mockPQ );
         ptiManager.update();
 

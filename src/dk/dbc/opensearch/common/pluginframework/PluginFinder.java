@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
@@ -50,187 +51,183 @@ import org.xml.sax.SAXException;
 
 
 /**
- * class that handles the creation of the map containing info about the existing
- * plugins. I creates the map, updates when asked to and returns info needed to
- * load specific plugins by the plugin loader
+ * The PluginFinder class handles creation of a map containing info about existing
+ * plugins; this info originates from .plugin files adhering to the xml standard. 
+ * A .plugin file essentially contains 1) the fully qualified name of the class that 
+ * handles files (posts) of a given type, and 2) the type of the plugin, e.g., 
+ * 'harvest', 'annotate', etc. (see PluginType). 
+ * 
+ * In short, the PluginFinder is used in the PluginResolver class to find the name 
+ * of the plugin class, which in turn is used by the PluginLoader class to load a 
+ * given plugin.
  */
 public class PluginFinder
 {
     static Logger log = Logger.getLogger( PluginFinder.class );
 
     /**
-     * classNameMap contains class names of plugins
-     * The key for use in classNamePath: Concatination of submitter, format and task
+     * classNameMap contains class names of plugins of the form
+     * 'dk.dbc.opensearch.plugins.Xxx'.
+     * The key in classNameMap is the hash value of the 'name' given by the .plugin 
+     * file.
      */
     private Map< Integer, String > classNameMap;
-    private DocumentBuilder docBuilder;
-    String path;
+    private String path;
 
     
     /**
-     * builds the map containing the keys and related plugin classes
-     * The keys are made from the name the value is the
-     * className of the plugin that can solve the specified task
+     * The constructor sets the path to the .plugin files and initiates the class name map.
+     * The map containing the keys and related plugin classes is build, where the keys
+     * are the hash values of the 'name' obtained from the .plugin files.
+     * 
      * @param path: the directory to look for the xml files describing the plugins
      * @param docBuilder: the DocumentBuilder used for parsing the xml files
      * @throws IllegalArgumentException when there is no directory or no files in it
      * @throws FileNotFoundException when the upDateClassMapMethod cant find the files
      * @throws ParserConfigurationException
      * @throws PluginResolverException
-     *
-     * \todo: should we hardcode the path?
+     * @throws ParserConfigurationException 
+     * @throws ParserConfigurationException 
+     * @throws ParserConfigurationException 
      */
-    public PluginFinder( DocumentBuilder docBuilder, String path ) throws FileNotFoundException, NullPointerException, PluginResolverException
+    public PluginFinder( String path ) throws FileNotFoundException, NullPointerException, PluginResolverException, ParserConfigurationException
     {
-        this.path = path;
-        this.docBuilder = docBuilder;
-        classNameMap = new HashMap< Integer, String >();
-
-        // call updatePluginClassNameMap to generate the map
-        updatePluginClassNameMap( path );
-       
+        this.path = path;        
+        this.classNameMap = new HashMap< Integer, String >();
+        
+        buildPluginClassNameMap( this.path );       
     }
 
 
     /**
-     * Finds the right plugin class for the specified operation
+     * Finds the right plugin class for the specified operation.
      * @param key, the key to find the classname by
-     * @throws FileNotFoundException no plugin was found for the
-     * given key that is a hashcode made based on the concatinated 
-     * String submitter+format+task
-     * @throws PluginResolverException when there are expections from
-     * parsing and reading plugin xml files which are not nessecarily
-     * show stoppers. See the source to understand the use of it.
+     * @throws FileNotFoundException is thrown when no plugin was found for the given key
+     * @throws PluginResolverException is thrown if parsing or reading .plugin files fails
+     * @throws ParserConfigurationException 
      * @return the name of the plugin class
      **/
-    String getPluginClassName( int key ) throws FileNotFoundException, PluginResolverException
+    String getPluginClassName( int key ) throws FileNotFoundException, PluginResolverException, ParserConfigurationException
     {
+        log.debug( String.format( "getting key %s from classnamemap", key ) );
+        log.debug( "classNameMap " + classNameMap.toString() );
+
         String className = null;
         
-        // check the map is not null
         if( classNameMap.size() < 1 )
         {
-            updatePluginClassNameMap( path );
+            buildPluginClassNameMap( path );
         }
         
-        // search through the map
         className = (String) classNameMap.get( key );
         
-        // if there is no hit, raise exception
+        // If there is no hit, raise exception
         if( className == null )
         {        	
             log.debug( String.format( "No value for key: %s ", key ) );
             throw new FileNotFoundException( String.format( "No value for key: %s ", key ) );
         }
-        
-        return className;
+        else
+        {
+            return className;
+        }
     }
     
     
     /**
-     * creates or updates the classname map with the names of the plugins found
-     * on and loaded from the given path
+     * Builds class name map containing names of the plugins
      *
      * @throws FileNotFoundException if there are no pluginxml files on the given path
      * @throws PluginResolverException if one or more of the found plugins could not be loaded
-     *
+     * @throws ParserConfigurationException
      */
-    private void updatePluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException
+    private void buildPluginClassNameMap( String path ) throws PluginResolverException, FileNotFoundException, ParserConfigurationException
     {
-    	Iterator< String > pluginNameIter = null;
+    	DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();      
+        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 
-        log.debug( String.format( "Clearing map with %s members", classNameMap.size() ) );
-        classNameMap.clear();
+        //log.debug( String.format( "Clearing map with %s members", classNameMap.size() ) );
+        //clearClassNameMap();
 
         log.debug( String.format( "Getting file list from %s", path ) );
-        FilenameFilter[] filterList = { new PluginFileFilter() };
-        
-        Vector<String> xmlPluginFileNames = FileHandler.getFileList( path, filterList, true );     
-        log.debug( String.format( "Number of found plugins: %s ", xmlPluginFileNames.size() ) );
-
-        Vector<ThrownInfo> failedPlugins = new Vector<ThrownInfo>();
+        FilenameFilter[] filterList = { new PluginFileFilter() };        
+        Vector<String> xmlPluginFileNames = FileHandler.getFileList( path, filterList, true );
         if ( xmlPluginFileNames.size() < 1 )
         {
-        	throw new FileNotFoundException( String.format( "No plugin description files at %s ", path ) );
+            throw new FileNotFoundException( String.format( "No plugin description files at %s ", path ) );
         }
+        log.debug( String.format( "Number of found plugins: %s ", xmlPluginFileNames.size() ) );
 
-        pluginNameIter = xmlPluginFileNames.iterator();
-
-        //30: for each pull name and className out of them and build
-        // the key from the name and put it into the map with the className as value
+        Vector<ThrownInfo> failedPlugins = new Vector<ThrownInfo>();    	
+        Iterator< String > pluginNameIter = null;
+    	pluginNameIter = xmlPluginFileNames.iterator();
+    	
+    	// For each plugin name get name and className, build key from the name, and put it into 
+    	// the map with the className as value
         while( pluginNameIter.hasNext() )
         {
-        	boolean couldFormat = false;
-        	String className = null;
-        	String name = null;
-        	int key = 0;
-        	String pluginName = null;;
-        	File pluginFile = null;
-        	Document pluginDocument = null;
+            boolean couldFormat = false;
+            String className = null;
+            String name = null;
+            int key = 0;
+            String pluginName = null;;
+            File pluginFile = null;
+            Document pluginDocument = null;
 
-        	try
-        	{
-        		pluginName = (String)pluginNameIter.next();
-        		pluginFile = FileHandler.getFile( pluginName );
-        		log.debug( String.format( "Building DOM object from file %s", pluginName ) );
-        		pluginDocument = docBuilder.parse( pluginFile );
-        		couldFormat = true;
-        	}
-        	catch( SAXException saxe )
-        	{
-        		couldFormat = false;//dont try to do further work on this file
-        		log.error( String.format( "could not parse pluginxml file: '%s'\nException: %s", pluginName, saxe.getMessage() ) );
-        		failedPlugins.add( new ThrownInfo( saxe, pluginName ) );
-        	}
-        	catch( IOException ioe )
-        	{
-        		couldFormat = false;//dont try to do further work on this file
-        		log.error( String.format( "could not parse pluginxml file: '%s'\nException: %s ", pluginName, ioe.getMessage() ) );
+            try
+            {
+                pluginName = (String)pluginNameIter.next();
+                pluginFile = FileHandler.getFile( pluginName );
+                log.debug( String.format( "Building DOM object from file %s", pluginName ) );
+                pluginDocument = docBuilder.parse( pluginFile );
+                couldFormat = true;
+            }
+            catch( SAXException saxe )
+            {
+                couldFormat = false;
+                log.error( String.format( "Could not parse pluginxml file: '%s'\nException: %s", pluginName, saxe.getMessage() ) );
+                failedPlugins.add( new ThrownInfo( saxe, pluginName ) );
+            }
+            catch( IOException ioe )
+            {
+                couldFormat = false;
+                log.error( String.format( "Could not parse pluginxml file: '%s'\nException: %s ", pluginName, ioe.getMessage() ) );
                 failedPlugins.add( new ThrownInfo( ioe, pluginName ) );
+            }
+            catch( NullPointerException npe )
+            {
+                couldFormat = false;
+                log.error( "Invalid file name in the plugin name list generated by the FileHandler" );
+                failedPlugins.add( new ThrownInfo( npe, pluginName ) );
+            }
+            
+            if( couldFormat )
+            {
+                Element xmlRoot = pluginDocument.getDocumentElement();
+                NodeList pluginNodeList = xmlRoot.getElementsByTagName( "plugin" );
+                Element pluginElement = (Element) pluginNodeList.item( 0 );/** \todo: NodeList.item( int index ) returns null if outofbounds**/        		
+                name = pluginElement.getAttribute( "name" );
+                className = pluginElement.getAttribute( "classname" );        		
+                log.debug( String.format( "Found plugins with classname = %s, used for plugin: %s", className, name ) );
+        	
+                if( xmlRoot.getTagName().equals( "plugins" ) && name != null && className != null )
+                {
+                    key = className.hashCode();
+                    classNameMap.put( key, className );
+                    
+                    log.debug( String.format( "key: %s added to map with the value %s", key, className ) );
+                }
+                else
+                {
+                    log.error( String.format( "Pluginxml file: '%s' is invalid", pluginName ));
+                    failedPlugins.add( new ThrownInfo( new SAXException( "pluginxml file failed to validate" ), pluginName ) );
         	}
-        	catch( NullPointerException npe )
-        	{
-        		couldFormat = false;
-        		log.error( "Invalid file name in the plugin name list generated by the FileHandler" );
-        		failedPlugins.add( new ThrownInfo( npe, pluginName ) );
-        	}
+            }
+        }
 
-        	if( couldFormat )
-        	{
-        		Element xmlRoot = pluginDocument.getDocumentElement();
-
-        		// get the plugin element
-        		NodeList pluginNodeList = xmlRoot.getElementsByTagName( "plugin" );
-
-        		/** \todo: NodeList.item( int index ) returns null if outofbounds**/
-        		Element pluginElement = (Element) pluginNodeList.item( 0 );
-        		
-        		// pull out the values
-        		name = pluginElement.getAttribute( "name" );
-        		className = pluginElement.getAttribute( "classname" );
-        		
-        		log.debug( String.format( "Found plugins with classname=%s, used for plugin: %s", className, name ) );
-        		
-        		// verify that we got string form the xml file
-        		if( xmlRoot.getTagName().equals( "plugins" ) && name != null && className != null )
-        		{
-        			key = name.hashCode();
-        			classNameMap.put( key, className );
-        			
-        			log.debug( String.format( "key: %s added to map with the value %s", key, className ) );
-        		}
-        		else
-        		{
-        			log.error( String.format( "Pluginxml file: '%s' is invalid", pluginName ));
-        			failedPlugins.add( new ThrownInfo( new SAXException( "pluginxml file failed to validate" ), pluginName ) );
-        		}
-        	}
-        }//end .hasNext
-
-        // The vector containing exceptions is larger than 0 throw it in a PluginResolverException 
         if( failedPlugins.size() > 0 )
         {
-            throw new PluginResolverException( failedPlugins, "Exceptions on the plugins");
+            throw new PluginResolverException( failedPlugins, "Exceptions on the plugins" );
         }
         
         if ( classNameMap.size() == 0 )
@@ -247,10 +244,10 @@ public class PluginFinder
      * method for clearing the classNameMap, to force rebuild on next invocation
      * of the getPluginClassName method
      */
-    void clearClassNameMap()
-    {
-        classNameMap.clear();
-        log.info( "classNameMap cleared" );
-    }
+//    void clearClassNameMap()
+//    {
+//        classNameMap.clear();
+//        log.info( "classNameMap cleared" );
+//    }
 
 }

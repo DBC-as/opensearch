@@ -83,26 +83,30 @@ public class Indexer{
         DatadockJob datadockJob = new DatadockJob( job, submitter, format);
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
+
         IFedoraCommunication c = new FedoraCommunication();
-        jobMap = JobMapCreator.getMap( this.getClass() );
+        //jobMap = JobMapCreator.getMap( this.getClass() );
 
 
         
-        DatadockThread ddt = new DatadockThread( datadockJob, e, p, jobMap, c );
+        DatadockThread ddt = new DatadockThread( datadockJob, e, p, c );
         FutureTask ft = new FutureTask( ddt );
         pool.submit( ft );
         while(! ft.isDone() ){}
 
         Float f = -1f;
 
-        try{
+        try
+        {
             f = (Float)ft.get();
         }
-        catch( ExecutionException ee ){
-
+        catch( ExecutionException ee )
+        {
             // getting exception from thread
             Throwable cause = ee.getCause();
-            
+        
+            // After, the data is gone through the datadock, it is indexed through the pti thread
+
             System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
             StackTraceElement[] trace = cause.getStackTrace();
             for( int i = 0; i < trace.length; i++ )
@@ -110,23 +114,24 @@ public class Indexer{
                 System.err.println( trace[i].toString() );
             }
         }
-        
-        // After, the data is gone through the datadock, it is indexed through the pti thread
 
         log.debug( "Setting up the Compass object" );
         CompassSession session = compass.openSession();
 
-        PTIThread PTIt = new PTIThread( "mockPID", session, e, jobMap, c);
+        PTIThread PTIt = new PTIThread( "mockPID", session, e, c );
+
         FutureTask ptiFuture = new FutureTask( PTIt );
         pool.submit( ptiFuture );
         while(! ptiFuture.isDone() ){}
 
         Long l = 0l;
 
-        try{
+        try
+        {
             l = (Long) ptiFuture.get();
         }
-        catch( ExecutionException ee ){
+        catch( ExecutionException ee )
+        {
 
             // getting exception from thread
             Throwable cause = ee.getCause();
@@ -140,6 +145,7 @@ public class Indexer{
         }
 
         log.debug( String.format( "Indexed file: %s", job ) );
+
     }
 
     //private void runDatadock( DatadockJob datadockJob,  ){}

@@ -37,58 +37,73 @@ import org.apache.commons.configuration.ConfigurationException;
  */
 public class FileSystemConfig extends Config
 {
-	public FileSystemConfig() throws ConfigurationException 
-	{
-		super();
-	}
+    public FileSystemConfig() throws ConfigurationException 
+    {
+        super();
+    }
 
 
-	/* Ensuring a '/' at the end of path */
-	private String sanitize( String path )
-	{
-		if( path.endsWith( "/" ) )
-			return path;
-		else
-			return path + "/";
-	}
+    /* Ensuring a '/' at the end of path */
+    private String sanitize( String path )
+    {
+        if ( path.endsWith( "/" ) )
+            return path;
+        else
+            return path + "/";
+    }
 	
 	
-	/* TRUNK */
-	private String getFileSystemTrunkPath()
-	{
-		String ret = config.getString( "filesystem.trunk" );
-		return sanitize( ret );
-	}
+    /* TRUNK */
+    private String getFileSystemTrunkPath()
+    {
+        String ret = config.getString( "filesystem.trunk" );
+        return sanitize( ret );
+    }
 	
 	
-	public static String getTrunkPath() throws ConfigurationException 
-	{
-		FileSystemConfig f = new FileSystemConfig();
-		return f.getFileSystemTrunkPath();
-	} 
+    public static String getTrunkPath() throws ConfigurationException 
+    {
+        FileSystemConfig f = new FileSystemConfig();
+        return f.getFileSystemTrunkPath();
+    } 
 	
 	
-	/* CONFIG.XML PATH */
-	public static String getConfigPath() throws ConfigurationException
-	{
-		FileSystemConfig f = new FileSystemConfig();
-		String ret = f.getFileSystemTrunkPath();
-		
-		return ret + "config/"; 
-	}
+    /* CONFIG.XML PATH */
+    public static String getConfigPath() throws ConfigurationException
+    {
+        FileSystemConfig f = new FileSystemConfig();
+        String ret = f.getFileSystemTrunkPath();
+	
+        return ret + "config/"; 
+    }
 	
 	
-	/* PLUGINS */
-	private String getFileSystemPluginsPath()
-	{
-		String ret = config.getString( "filesystem.plugins" );
-		return sanitize( ret );
-	}
+    /* PLUGINS */
+    private String getFileSystemPluginsPath()
+    {
+        String ret = config.getString( "filesystem.plugins" );
+        return sanitize( ret );
+    }
 	
 	
-	public static String getPluginsPath() throws ConfigurationException
-	{		
-		FileSystemConfig fc = new FileSystemConfig();		
-		return fc.getFileSystemPluginsPath();
-	}
+    public static String getPluginsPath() throws ConfigurationException
+    {		
+        FileSystemConfig fc = new FileSystemConfig();		
+        return fc.getFileSystemPluginsPath();
+    }
+	
+	
+	/* JOBS XSD FILE */
+    private String getFileSystemJobsXsdPath()
+    {
+        String ret = config.getString( "filesystem.jobsxsd" );
+        return sanitize( ret );
+    }
+    
+	
+    public static String getJobsXsdPath() throws ConfigurationException
+    {		
+        FileSystemConfig fc = new FileSystemConfig();		
+        return fc.getFileSystemJobsXsdPath();
+    }
 }

@@ -28,6 +28,8 @@ import java.lang.InstantiationException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 
 /**
  * The pluginframework is accessed through this interface. 
@@ -51,8 +53,9 @@ public interface IPluginResolver
      * \todo: Should we throw different exceptions for the 2 cases 
      * FileNotFoundException covers?  
      * @throws IllegalAccessException 
+     * @throws ParserConfigurationException 
      */
-    IPluggable getPlugin ( String submitter, String format, String task ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException;
+    IPluggable getPlugin ( String classname ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException, ParserConfigurationException;
 
     
     /**
@@ -65,13 +68,14 @@ public interface IPluginResolver
      * If the Vector == null, plugins were found for all the tasks 
      * @throws PluginResolverException, when there are exceptions from the 
      * framework concerning the registrations of plugins
+     * @throws ParserConfigurationException 
      */
-    Vector<String> validateArgs( String submitter, String format, ArrayList< String > taskList )throws PluginResolverException;
+    Vector<String> validateArgs( String submitter, String format, ArrayList< String > taskList )throws PluginResolverException, ParserConfigurationException;
     
     
     /**
      * clears the registrations of plugins and forces an update next time 
      * plugin information is needed
      */    
-    void clearPluginRegistration();
+    //void clearPluginRegistration();
 }

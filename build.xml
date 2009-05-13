@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="targets" default="compile">
+
+<project name="targets" default="compile" >
 
   <import file="build-common.xml" />
 
@@ -43,6 +44,22 @@
   </target>
   	 
    
+  <!--target name="compile" depends="clean, xsd">
+  	<if>
+  	  <equals arg1="${project.name}" arg2="${project.name}" />
+  	  <then>
+  	  	<echo>then</echo>
+  	    <antcall target="_compile">
+  	      <param name="project.name" value="opensearch" />
+  	    </antcall>
+  	  </then>
+  	  <else>
+  	  	<echo>else</echo>
+  	  	<antcall target="_compile" />
+  	  </else>
+  	</if>
+  </target-->
+	
   <target name="compile" depends="clean"> <!-- , xsd"> -->
     <antcall target="_compile" />
   </target>
@@ -254,10 +271,18 @@
   </target-->
 
 
-  <target name="pti" depends="test_Darg, fedora">
+  <target name="pti" depends="test_Darg, fedora, pluginframework, compass">
     <antcall target="${arg}_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/pti" />
       <param name="project.name" value="pti" />
+    </antcall>
+  </target>
+
+
+  <target name="compass" depends="test_Darg, config, os">
+    <antcall target="${arg}_project">
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/compass" />
+      <param name="project.name" value="compass" />
     </antcall>
   </target>
 

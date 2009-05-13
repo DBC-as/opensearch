@@ -14,8 +14,8 @@ main_poll_time:      1000
 rejected_sleep_time: 3000
 shutdown_poll_time:  1000
 queue_size:          20
-core_poll_size:      3
-max_poll_size:       6
+core_poll_size:      1
+max_poll_size:       1
 keep_alive_time:     10
 job_limit:           20
 path:                config/datadock_jobs.xml

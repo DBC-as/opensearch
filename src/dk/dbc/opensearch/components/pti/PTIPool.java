@@ -26,16 +26,12 @@ package dk.dbc.opensearch.components.pti;
  */
 
 
-import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.net.MalformedURLException;
@@ -54,10 +50,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
-import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
-import org.compass.core.config.CompassConfiguration;
-import org.compass.core.config.CompassConfigurationFactory;
 
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
@@ -70,19 +63,18 @@ import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
  */
 public class PTIPool
 {
-    static Logger log = Logger.getLogger("PTIPool");
+    static Logger log = Logger.getLogger( PTIPool.class );
+    
+    
     private Vector< InputPair< FutureTask< PTIThread >, Integer > > jobs;
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
     private IFedoraCommunication fedoraCommunication;
-    //    private FedoraHandler fedoraHandler;
     private Compass compass;
     private int shutDownPollTime;
-    private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-    
 
-    XMLConfiguration config = null;
+
     
     /**
      * Constructs the the PTIPool instance
@@ -92,24 +84,17 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair< String, String>, ArrayList< String > > jobMap, IFedoraCommunication fedoraCommunication ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, IFedoraCommunication fedoraCommunication ) throws ConfigurationException
     {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
          this.threadpool = threadpool;
          this.estimate = estimate;
-         this.jobMap = jobMap;
          this.compass = compass;
          this.fedoraCommunication = fedoraCommunication;
 
-         jobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();
-         
-         // \todo: should use the config class, bug 8782
-         
-        URL cfgURL = getClass().getResource("/config.xml");
-        config = new XMLConfiguration( cfgURL );
-        shutDownPollTime = config.getInt( "pti.shutdown-poll-time" );
-        
+         jobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();         
+         shutDownPollTime = PtiConfig.getShutdownPollTime();         
      }
     
     
@@ -137,7 +122,8 @@ public class PTIPool
         CompassSession session = null;
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
-        return new FutureTask( new PTIThread( fedoraHandle, session, estimate, jobMap, fedoraCommunication ) );
+
+        return new FutureTask( new PTIThread( fedoraHandle, session, estimate, fedoraCommunication ) );
     }
 
     

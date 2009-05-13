@@ -22,10 +22,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import java.lang.ClassLoader;
 
+
 /**
  * A class that extends the ClassLoader, so that its funcitonality can be used
  * ClassLoader is abstract.
  */
-public class PluginClassLoader extends ClassLoader {
+public class PluginClassLoader extends ClassLoader 
+{
   
 }

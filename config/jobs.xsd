@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="info:opensearch.dbc.dk#"
+            xmlns="info:opensearch.dbc.dk#"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+  <xsd:element name="job_list">
+
+    <xsd:annotation>
+      <xsd:documentation/>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="jobType"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+  </xsd:element>
+
+  <!-- complex type declarations -->
+  <xsd:complexType name="jobType">
+    <xsd:sequence>
+      <xsd:element name="job" type="jobProps" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="jobProps">
+    <xsd:sequence>
+      <xsd:element name="plugin" type="pluginType" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="submitter" use="required"/>
+    <xsd:attribute name="format" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="pluginType">
+    <xsd:attribute name="name" use="required"/>
+    <xsd:attribute name="classname" type="xsd:string" use="required"/>
+    <xsd:attribute name="position" type="xsd:int" use="required"/>
+  </xsd:complexType>
+
+</xsd:schema>

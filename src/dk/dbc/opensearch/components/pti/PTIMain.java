@@ -77,28 +77,27 @@ public class PTIMain
     static long keepAliveTime;
     static int pollTime;
     
-    static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    //static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
     
     @SuppressWarnings("unchecked")
 	public static void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
-    	PTIMain pti = new PTIMain();
-    	Class classType = pti.getClassType();
-    	jobMap = JobMapCreator.getMap( classType );
+    	//PTIMain pti = new PTIMain();
+    	//Class classType = pti.getClassType();
+    	//jobMap = JobMapCreator.getMap( classType );
 
         pollTime = PtiConfig.getMainPollTime();
         queueSize = PtiConfig.getQueueSize();
         corePoolSize = PtiConfig.getCorePoolSize();
         maxPoolSize = PtiConfig.getMaxPoolSize();
         keepAliveTime = PtiConfig.getKeepAliveTime();
-
     }
 
 
     // Helper method to avoid static problems in init
-    @SuppressWarnings("unchecked")
-	private Class getClassType()
+    @SuppressWarnings( "unchecked" )
+	public Class getClassType()
     {
     	return this.getClass();
     }
@@ -186,7 +185,8 @@ public class PTIMain
             log.debug( "Starting PTIPool" );
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, jobMap, fedoraCommunication );
+
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, fedoraCommunication );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 
