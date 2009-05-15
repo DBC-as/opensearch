@@ -115,7 +115,7 @@ public class JobMapCreator
             for( int y = 0; y < pluginListLength; y++ )
             {
                 Element pluginElement = (Element)pluginList.item( y );
-                plugin = (String)pluginElement.getAttribute( "classname" );
+                plugin = pluginElement.getAttribute( "classname" );
                 position = Integer.decode( pluginElement.getAttribute( "position" ) );
                 
                 //pluginAndPriority.add( new ComparablePair< String, Integer >( plugin, position ) );
@@ -150,7 +150,7 @@ public class JobMapCreator
     	SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
         
         String xsdPath = FileSystemConfig.getJobsXsdPath();
-        File schemaLocation = new File( xsdPath );
+        File schemaLocation = FileHandler.getFile( xsdPath );
         Schema schema = factory.newSchema( schemaLocation );
     
         Validator validator = schema.newValidator();
