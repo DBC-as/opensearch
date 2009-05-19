@@ -1,11 +1,24 @@
 /**
- * \file Indexer.java
- * \brief The Indexer class
- * \package testindexer;
- */
+   This file is part of opensearch.
+   Copyright © 2009, Dansk Bibliotekscenter a/s,
+   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+
+   opensearch is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   opensearch is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 
 package dk.dbc.opensearch.tools.testindexer;
-
 
 
 import dk.dbc.opensearch.common.compass.CompassFactory;
@@ -17,12 +30,15 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
+import dk.dbc.opensearch.components.pti.PTIJobsMap;
 import dk.dbc.opensearch.components.pti.PTIThread;
 import dk.dbc.opensearch.tools.testindexer.Estimate;
 import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
 import dk.dbc.opensearch.tools.testindexer.Processqueue;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.lang.InterruptedException;
@@ -51,105 +67,174 @@ import org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter;
 import org.xml.sax.SAXException;
 
 
-public class Indexer{
+
+/**
+ * The Indexer class uses a datadockthread and a ptithread, to index a job
+ */
+public class Indexer
+{
 
     Logger log = Logger.getLogger( Indexer.class );
 
     private ExecutorService pool;
     private static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
-    public Indexer()throws ServiceException, MalformedURLException, IOException, ConfigurationException
+    /**
+     * Constructor
+     */
+    public Indexer()throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
-
-        pool = Executors.newFixedThreadPool(1);
+        log.warn( "entering constructor()" );
+        pool = Executors.newFixedThreadPool( 1 );
     }
 
-    public void index( URI job, String submitter, String format, URL mappingFile, String indexDir ) 
-        throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException
+    // FedoraHandle
+    /**
+     * the index method indexes the job 
+     *
+     * @param job
+     * @param submitter
+     * @param format
+     * @param mappingFile
+     * @param indexDir
+     *
+     * @throws ClassNotFoundException
+     * @throws ConfigurationException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws PluginResolverException
+     * @throws SAXException
+     * @throws ServiceException
+     */
+    public void index( URI job, String submitter, String format, URL mappingFile, String indexDir )
+    throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException
     {
-        // Compass configuration
-              
-        CompassConfiguration conf = new CompassConfiguration()
-            .addURL( mappingFile )
-            .setSetting( CompassEnvironment.CONNECTION, indexDir )
-            .setSetting( CompassEnvironment.Converter.TYPE, "org.compass.core.converter.mapping.xsem.XmlContentMappingConverter" )
-            .setSetting( CompassEnvironment.Converter.XmlContent.TYPE, "org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter" );
-        
-        Compass compass = conf.buildCompass();
-        
-  
-        // Firstly, the data pointed to by job, is worked on by a datadockThread
+        log.warn( String.format( "entering index( job=%s, submitter=%s, format=%s, mappingFile=%s, indexDir=%s)",
+                                  job.toString(), submitter, format, mappingFile.toString(), indexDir ) );
 
-        DatadockJob datadockJob = new DatadockJob( job, submitter, format);
+        log.warn( "Configuring Compass" );
+
+        CompassConfiguration conf = new CompassConfiguration()
+        .addURL( mappingFile )
+        .setSetting( CompassEnvironment.CONNECTION, indexDir )
+        .setSetting( CompassEnvironment.Converter.TYPE, "org.compass.core.converter.mapping.xsem.XmlContentMappingConverter" )
+        .setSetting( CompassEnvironment.Converter.XmlContent.TYPE, "org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter" );
+
+        Compass compass = conf.buildCompass();
+        CompassSession session = compass.openSession();
+
+        log.warn( "Create needed instances for indexing" );
+        DatadockJob datadockJob = new DatadockJob( job, submitter, format );
+        // using local estimate, processqueue, fedoracommunication classes
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
-
         IFedoraCommunication c = new FedoraCommunication();
-        //jobMap = JobMapCreator.getMap( this.getClass() );
 
-
+        // \todo:run datadock        
+        runDatadock( datadockJob, e, p, c );
         
-        DatadockThread ddt = new DatadockThread( datadockJob, e, p, c );
-        FutureTask ft = new FutureTask( ddt );
+        // \todo:run pti
+        runPTI( "mock_fedoraPID", session, e, c);
+        
+        log.warn( String.format( "Indexed file: %s", job ) );
+    }
+
+    /**
+     * runPTI runs the job through a pti thread
+     *
+     * @param fedoraPid
+     * @param session
+     * @param estimate
+     * @param fedoraCommunication
+     *
+     * @throws ClassNotFoundException
+     * @throws ConfigurationException
+     * @throws FileNotFoundException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws PluginResolverException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws ServiceException
+     */
+    private void runDatadock( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCommunication )
+    throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    {
+        log.warn( "Entering runDatadock" );
+
+        DatadockThread ddt = new DatadockThread( datadockJob, estimate, processqueue, fedoraCommunication );
+        FutureTask<Float> ft = new FutureTask<Float>( ddt );
         pool.submit( ft );
-        while(! ft.isDone() ){}
+
+        while ( ! ft.isDone() ) {} // Wait until the thread is done
 
         Float f = -1f;
 
         try
         {
-            f = (Float)ft.get();
+            f = ft.get();
         }
-        catch( ExecutionException ee )
+        catch ( ExecutionException ee )
         {
             // getting exception from thread
             Throwable cause = ee.getCause();
-        
-            // After, the data is gone through the datadock, it is indexed through the pti thread
 
             System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
             StackTraceElement[] trace = cause.getStackTrace();
-            for( int i = 0; i < trace.length; i++ )
+            for ( int i = 0; i < trace.length; i++ )
             {
                 System.err.println( trace[i].toString() );
             }
         }
+    }
 
-        log.debug( "Setting up the Compass object" );
-        CompassSession session = compass.openSession();
+    /**
+     * runPTI runs the job through a pti thread
+     *
+     * @param fedoraPid
+     * @param session
+     * @param estimate
+     * @param fedoraCommunication
+     *
+     * @throws ClassNotFoundException
+     * @throws ConfigurationException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws ServiceException
+     */
+    private void runPTI( String fedoraPid,  CompassSession session, IEstimate estimate, IFedoraCommunication fedoraCommunication )
+    throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException
+    {
+        log.warn( "Entering runPTI" );
 
-        PTIThread PTIt = new PTIThread( "mockPID", session, e, c );
+        // run the PTI thread
 
-        FutureTask ptiFuture = new FutureTask( PTIt );
+        PTIThread PTIt = new PTIThread( fedoraPid, session, estimate, fedoraCommunication );
+
+        FutureTask<Long> ptiFuture = new FutureTask<Long>( PTIt );
         pool.submit( ptiFuture );
-        while(! ptiFuture.isDone() ){}
+        while ( ! ptiFuture.isDone() ) {} // Wait until the thread is done
 
         Long l = 0l;
 
         try
         {
-            l = (Long) ptiFuture.get();
+            l = ptiFuture.get();
         }
-        catch( ExecutionException ee )
+        catch ( ExecutionException ee )
         {
-
             // getting exception from thread
             Throwable cause = ee.getCause();
-            
+
             System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
             StackTraceElement[] trace = cause.getStackTrace();
-            for( int i = 0; i < trace.length; i++ )
+            for ( int i = 0; i < trace.length; i++ )
             {
                 System.err.println( trace[i].toString() );
             }
         }
-
-        log.debug( String.format( "Indexed file: %s", job ) );
-
     }
-
-    //private void runDatadock( DatadockJob datadockJob,  ){}
-    //private void runPTI(){}
-        
-
 }
+
+

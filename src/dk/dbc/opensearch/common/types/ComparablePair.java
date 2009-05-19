@@ -110,9 +110,9 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
  
         if ( first.equals( newpair.getFirst() ) )
         {
-                return (int)second.compareTo( (V)newpair.getSecond() );
+            return second.compareTo( (V)newpair.getSecond() );
         }
-        return (int)first.compareTo( (E)newpair.getFirst() );
+        return first.compareTo( (E)newpair.getFirst() );
         
     }
 }

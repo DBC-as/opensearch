@@ -22,7 +22,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import dk.dbc.opensearch.common.types.InputPair;
-
+import dk.dbc.opensearch.common.types.Pair;
 import java.util.Comparator;
 
 
@@ -31,10 +31,10 @@ import java.util.Comparator;
  * of Pair<String, Object>. Sorting on the first element, the String in
  * the Pair
  */
-public class PairComparator_FirstString implements Comparator
+public class PairComparator_FirstString implements Comparator<InputPair< String, Integer >>
 {
-    public int compare( Object x, Object y )
+    public int compare( InputPair< String, Integer > x, InputPair< String, Integer > y )
     {
-        return ((InputPair< String, Object >) x).getFirst().compareTo( ( (InputPair<String, Object>)y).getFirst() );
+        return ( x ).getFirst().compareTo( ( y ).getFirst() );
     }
 }

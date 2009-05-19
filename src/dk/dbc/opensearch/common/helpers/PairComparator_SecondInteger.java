@@ -22,7 +22,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import dk.dbc.opensearch.common.types.InputPair;
-
+import dk.dbc.opensearch.common.types.Pair;
 import java.util.Comparator;
 
 
@@ -32,17 +32,17 @@ import java.util.Comparator;
  * Is made a class on its on and not an inner class to prepare the JobMapCreator 
  * class to become static. See todo in JobMapCreator
  */
-public class PairComparator_SecondInteger implements Comparator
+public class PairComparator_SecondInteger implements Comparator<InputPair< String, Integer >>
 {
-    public int compare( Object x, Object y )
+    public int compare( InputPair< String, Integer > x, InputPair< String, Integer > y )
     {	
-        if( ((InputPair< String, Integer >)x).getSecond() < ((InputPair< String, Integer >)y).getSecond() )
+        if( ( x ).getSecond() < ( y ).getSecond() )
         {
             return -4;
         }
         else
         {
-            if( ((InputPair<String, Integer>)x).getSecond() == ((InputPair<String, Integer>)y).getSecond() )
+            if( ( x ).getSecond() == ( y ).getSecond() )
             {
                 return 0;
             }

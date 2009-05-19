@@ -66,7 +66,7 @@ public class DatadockPool
     static Logger log = Logger.getLogger( DatadockPool.class );
     
     
-    private Vector< FutureTask > jobs;
+    private Vector< FutureTask<Float> > jobs;
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
@@ -98,7 +98,8 @@ public class DatadockPool
         this.PIDmanager = PIDmanager;
         this.fedoraCom = fedoraCom;
 
-        jobs = new Vector< FutureTask >();
+        jobs = new Vector<FutureTask< Float >>();
+        //        jobs = new Vector< FutureTask >();
 
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
     }
@@ -125,7 +126,7 @@ public class DatadockPool
 
         log.debug( String.format( "counter = %s", ++i  ) );
 
-        FutureTask future = getTask( datadockJob );
+        FutureTask<Float> future = getTask( datadockJob );
         
         threadpool.submit( future );
         //log.debug(String.format("Future is null is: %s ", future == null));        
@@ -134,9 +135,9 @@ public class DatadockPool
     }
 
     
-    public FutureTask getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public FutureTask<Float> getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-    	return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, fedoraCom ) );
+    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraCom ) );
     }
 
 
@@ -179,7 +180,7 @@ public class DatadockPool
                 }
                 
                 log.debug( "DatadockPool adding to finished jobs" );
-                finishedJobs.add( new CompletedTask( job, f ) );
+                finishedJobs.add( new CompletedTask<Float>( job, f ) );
             }
         }
         

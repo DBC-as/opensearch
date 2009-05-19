@@ -191,7 +191,7 @@ public class PTIThread implements Callable< Long >
         
         for ( String classname : list )
         {
-            IPluggable plugin = ( IPluggable )pluginResolver.getPlugin( classname );
+            IPluggable plugin = pluginResolver.getPlugin( classname );
             switch ( plugin.getTaskName() )
             {
                 case PROCESS:

@@ -147,7 +147,7 @@ public class RUBHarvester implements IHarvestable{
         String lang = language.item(0).getNodeValue();
 
         try {
-			cargoContainer.add( DataStreamType.DublinCoreData, format, submitter, lang, mimetype, xmlBytes );
+			cargoContainer.add( DataStreamType.DublinCoreData, format, submitter, lang, mimetype, IndexingAlias.None, xmlBytes );
 		} catch (IOException ioe) {
 			throw new PluginException( "Could not construct CargoContainer", ioe );
 		}

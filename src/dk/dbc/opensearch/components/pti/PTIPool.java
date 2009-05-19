@@ -66,7 +66,7 @@ public class PTIPool
     static Logger log = Logger.getLogger( PTIPool.class );
     
     
-    private Vector< InputPair< FutureTask< PTIThread >, Integer > > jobs;
+    private Vector< InputPair< FutureTask< Long >, Integer > > jobs;
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
@@ -93,7 +93,7 @@ public class PTIPool
          this.compass = compass;
          this.fedoraCommunication = fedoraCommunication;
 
-         jobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();         
+         jobs = new Vector< InputPair< FutureTask< Long >, Integer > >();         
          shutDownPollTime = PtiConfig.getShutdownPollTime();         
      }
     
@@ -109,21 +109,21 @@ public class PTIPool
     {
     	log.debug( String.format( "submit( fedoraHandle='%s', queueID='%s' )", fedoraHandle, queueID ) );
     
-        FutureTask future = getTask( fedoraHandle );
+        FutureTask<Long> future = getTask( fedoraHandle );
         threadpool.submit( future );
-        InputPair pair = new InputPair< FutureTask< PTIThread >, Integer >( future, queueID );
+        InputPair< FutureTask< Long >, Integer > pair = new InputPair< FutureTask< Long >, Integer >( future, queueID );
         jobs.add( pair );
     }
     
     
-    public  FutureTask getTask( String fedoraHandle ) throws ConfigurationException , ClassNotFoundException, ServiceException, MalformedURLException, IOException
+    public FutureTask<Long> getTask( String fedoraHandle ) throws ConfigurationException , ClassNotFoundException, ServiceException, MalformedURLException, IOException
     {
         log.debug( "GetTask called" );        
         CompassSession session = null;
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
 
-        return new FutureTask( new PTIThread( fedoraHandle, session, estimate, fedoraCommunication ) );
+        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, fedoraCommunication ) );
     }
 
     
@@ -136,12 +136,12 @@ public class PTIPool
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Vector<CompletedTask> checkJobs() throws InterruptedException 
+    public Vector<CompletedTask<InputPair< Long, Integer > > > checkJobs() throws InterruptedException 
     {
         log.debug( "checkJobs() called" );
     
-        Vector<CompletedTask> finishedJobs = new Vector<CompletedTask>();
-        for( InputPair<FutureTask<PTIThread>, Integer> jobpair : jobs )        
+        Vector<CompletedTask<InputPair< Long, Integer > > > finishedJobs = new Vector<CompletedTask<InputPair< Long, Integer > > >();
+        for( InputPair<FutureTask<Long>, Integer> jobpair : jobs )        
         {
             FutureTask job = jobpair.getFirst();
             Integer queueID = jobpair.getSecond();
@@ -169,20 +169,20 @@ public class PTIPool
                         }                   
                 }
                 log.debug( String.format( "adding (queueID='%s') to finished jobs", queueID ) );
-                InputPair pair = new InputPair< Long, Integer >( l, queueID );
-                finishedJobs.add( new CompletedTask( job, pair ) );
+                InputPair< Long, Integer > pair = new InputPair< Long, Integer >( l, queueID );
+                finishedJobs.add( new CompletedTask<InputPair< Long, Integer >>( job, pair ) );
             }
         }
 
-        for( CompletedTask finishedJob : finishedJobs )
+        for( CompletedTask<InputPair< Long, Integer >> finishedJob : finishedJobs )
         {
              log.debug( "Removing Job" );            
              
-             InputPair< Long, Integer > finishedpair = (InputPair) finishedJob.getResult();
+             InputPair< Long, Integer > finishedpair =  finishedJob.getResult();
              log.debug( String.format( "Removing Job queueID='%s'", finishedpair.getSecond() ) );
              
-             Vector< InputPair< FutureTask< PTIThread >, Integer > > removeableJobs = new Vector< InputPair< FutureTask< PTIThread >, Integer > >();
-             for( InputPair< FutureTask< PTIThread >, Integer > job : jobs )
+             Vector< InputPair< FutureTask<Long>, Integer > > removeableJobs = new Vector< InputPair< FutureTask<Long>, Integer > >();
+             for( InputPair< FutureTask<Long>, Integer > job : jobs )
              {
                 Integer queueID = job.getSecond();
                 if( queueID.equals( finishedpair.getSecond() ) )
@@ -209,7 +209,7 @@ public class PTIPool
         while( activeJobs )
         {
             activeJobs = false;
-            for( InputPair<FutureTask<PTIThread>, Integer> jobpair : jobs )
+            for( InputPair<FutureTask<Long>, Integer> jobpair : jobs )
             {
                 FutureTask job = jobpair.getFirst(); 
                 if( ! job.isDone() )

@@ -202,7 +202,7 @@ public class DatadockThread implements Callable< Float >
         {
             log.debug( "DatadockThread getPlugin 'classname' " + classname );
 
-            IPluggable plugin = (IPluggable)pluginResolver.getPlugin( classname );
+            IPluggable plugin = pluginResolver.getPlugin( classname );
             log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
             switch ( plugin.getTaskName() )
             {
@@ -239,7 +239,7 @@ public class DatadockThread implements Callable< Float >
             }
         }
 
-        InputPair< String, Float > storeDataResponse = (InputPair<String, Float>) fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
+        InputPair< String, Float > storeDataResponse = fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
         
         return storeDataResponse.getSecond(); 
     }

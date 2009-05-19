@@ -117,8 +117,8 @@ public class FedoraTools
         pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
         pLastModifiedDate.setVALUE(timeNow);
 
-        Property[] props = new Property[] { (Property) pState, (Property) pLabel, (Property) pOwner,
-                                            (Property) pCreatedDate, (Property) pLastModifiedDate };
+        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
+                                            pCreatedDate, pLastModifiedDate };
         op.setProperty(props);
 
         log.debug( "Properties set, constructing the DigitalObject" );
@@ -136,7 +136,7 @@ public class FedoraTools
         PairComparator_SecondInteger secondComp = new PairComparator_SecondInteger();
 
         // Constructing list with datastream indexes and id
-        ArrayList< Pair < String, Integer > > lst = new  ArrayList< Pair < String, Integer > >();
+        ArrayList< InputPair < String, Integer > > lst = new  ArrayList< InputPair < String, Integer > >();
         for(int i = 0; i < cargo_count; i++){
             CargoObject c = cargo.getCargoObjects().get( i );
             lst.add( new InputPair< String, Integer >( c.getDataStreamName().getName(), i ) );
@@ -147,15 +147,15 @@ public class FedoraTools
         // Add a number to the id according to the number of datastreams with this datastreamname
         int j = 0;
         DataStreamType dsn = null;
-        ArrayList< Pair < String, Integer > > lst2 = new  ArrayList< Pair < String, Integer > >();
+        ArrayList< InputPair < String, Integer > > lst2 = new  ArrayList< InputPair < String, Integer > >();
         for( Pair< String, Integer > p : lst){
-            if( dsn != DataStreamType.getDataStreamNameFrom( (String) p.getFirst() ) ){
+            if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) ){
                 j = 0;
             }
             else{
                 j += 1;
             }
-            dsn = DataStreamType.getDataStreamNameFrom( (String) p.getFirst() );
+            dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
             lst2.add( new InputPair< String, Integer >( p.getFirst() + "." + j , p.getSecond() ) );
         }
         
@@ -193,7 +193,7 @@ public class FedoraTools
         	streams.appendChild( (Node) stream );
         }
         
-        root.appendChild( (Node) streams );
+        root.appendChild( streams );
         
         // Transform document to xml string
         Source source = new DOMSource((Node) root );

@@ -28,9 +28,9 @@ import org.apache.log4j.Logger;
 public enum IndexingAlias 
 {
     Article ( "article", "the docbook/ting xml alias" ),
-    Danmarcxchange ( "danmarcxchange", "alias for marc posts" ),
-    DC ( "dc","data from DR in Dublin Core format" ),
-    None( "none", "Non-indexable content" );
+        Danmarcxchange ( "danmarcxchange", "alias for marc posts" ),
+        DC ( "dc","data from DR in Dublin Core format" ),
+        None( "none", "Non-indexable content" );
 
     static Logger log = Logger.getLogger( IndexingAlias.class );
 
