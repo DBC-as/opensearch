@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -255,7 +256,9 @@ public class CargoContainerTest
     @Test
     public void testLookupCargoObjectWithDataStreamType() throws IOException
     { 
-        CargoObject co;
+        CargoObject co1;
+        CargoObject co2;
+
         DataStreamType dst1 = DataStreamType.getDataStreamNameFrom( "originalData" );
         DataStreamType dst2 = DataStreamType.getDataStreamNameFrom( "indexableData" );
 
@@ -264,10 +267,9 @@ public class CargoContainerTest
         cargo.add( dst1, format, submitter, language, mimetype, IndexingAlias.Article, data1);
         cargo.add( dst2, format, submitter, language, mimetype, IndexingAlias.Article, data1);
 
-        co = cargo.getCargoObject( dst2 );
-        assertTrue( data1 == co.getBytes() );
-
-
+        co1 = cargo.getCargoObject( dst2 );
+        co2 = cargo.getCargoObject( dst2 );
+        assertTrue( Arrays.equals( co1.getBytes(), co2.getBytes() ) );
     }
 
 
@@ -320,4 +322,45 @@ public class CargoContainerTest
 
         assertTrue( !( id1 == id2 ) );
     }
+
+    @Test public void testRemoveCargoObject() throws IOException
+    {
+        long id = cargo.add( DataStreamType.OriginalData, 
+                              format, 
+                              submitter, 
+                              language, 
+                              mimetype, 
+                              IndexingAlias.Article, 
+                              "abc".getBytes() );
+        
+        assertTrue( cargo.remove( id ) );
+    }
+
+    @Test public void testTryRemoveNonexistingId() throws IOException
+    {
+        long id = cargo.add( DataStreamType.OriginalData, 
+                              format, 
+                              submitter, 
+                              language, 
+                              mimetype, 
+                              IndexingAlias.Article, 
+                              "abc".getBytes() );
+        id++;
+        assertTrue( ! cargo.remove( id ) );
+    }
+
+    @Test public void testTryRemoveNonexistingCargoObject() throws IOException
+    {
+        long id = cargo.add( DataStreamType.OriginalData, 
+                              format, 
+                              submitter, 
+                              language, 
+                              mimetype, 
+                              IndexingAlias.Article, 
+                              "abc".getBytes() );
+        
+        assertTrue( cargo.remove( id ) );
+        assertTrue( ! cargo.remove( id ) );
+    }
+
 }

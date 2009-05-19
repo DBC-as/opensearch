@@ -176,6 +176,27 @@ public class CargoContainer
         return co.getId();
     }
 
+    /**
+     * Given an id, this method removes a CargoObject from the
+     * CargoContainer. If the id can be found, and the object can be
+     * deleted, this method returns true, all other scenarios will
+     * return false.
+     * 
+     * @param id of the data to be removed from the CargoContainer
+     * @returns true iff the referenced data could be deleted from the CargoContainer, false otherwise
+     */
+    public boolean remove( long id )
+    {
+        if( ! this.hasCargo( id ) ) {
+            log.warn( String.format( "No CargoObject with id %s", id ) );
+            return false;
+        }
+        else
+        {
+            return this.data.remove( this.getCargoObject( id ) );
+        }
+        
+    }
 
     /**
      * Given an id, this method returns true if a CargoObject with the

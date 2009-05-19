@@ -47,9 +47,9 @@ public class CargoObject
      */
     //    Pair< CargoObjectInfo, byte[] > pair;
 
-    byte[] data;
+    private final byte[] data;
 
-    CargoObjectInfo coi;
+    private final CargoObjectInfo coi;
 
     Logger log = Logger.getLogger( CargoObject.class );
 
@@ -114,27 +114,6 @@ public class CargoObject
         return coi.getId();
     }
     
-
-    /**
-     * gets the name of the datastream (\see:
-     * dk.dbc.opensearch.common.types.DataStreamNames)
-     * 
-     * @return the enum value of the name of the Datastream
-     */
-    public DataStreamType getDataStreamName()
-    {
-        return coi.getDataStreamName();
-    }
-
-
-    public IndexingAlias getIndexingAlias()
-    {
-        IndexingAlias ret_ia = coi.getIndexingAlias();
-        log.debug( String.format( "Getting IndexingAlias from COI: %s", ret_ia  ) );
-        return ret_ia;
-    }
-
-
     /**
      * Checks if the language of the submitted data is allowed in a
      * CargoObject
@@ -172,6 +151,27 @@ public class CargoObject
     public boolean validSubmitter( String name ) throws IllegalArgumentException
     {
         return coi.validSubmitter( name );
+    }
+
+
+
+    /**
+     * gets the name of the datastream (\see:
+     * dk.dbc.opensearch.common.types.DataStreamNames)
+     * 
+     * @return the enum value of the name of the Datastream
+     */
+    public DataStreamType getDataStreamName()
+    {
+        return coi.getDataStreamName();
+    }
+
+
+    public IndexingAlias getIndexingAlias()
+    {
+        IndexingAlias ret_ia = coi.getIndexingAlias();
+        log.debug( String.format( "Getting IndexingAlias from COI: %s", ret_ia  ) );
+        return ret_ia;
     }
 
 
@@ -251,18 +251,7 @@ public class CargoObject
      */
     public byte[] getBytes()
     {
-        return data;
-    }
-
-    /**
-     * Handle with care
-     * Overwrites the existing data with new data given in the byte[]
-     */
-    public void updateByteArray( byte[] data )
-    {
-        this.data = data;
-        // Pair<CargoObjectInfo, byte[]> new_pair = new Pair<CargoObjectInfo, byte[]>( coi, data );
-        // pair = new_pair;
+        return data.clone();
     }
     
     /**

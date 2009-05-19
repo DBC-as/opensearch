@@ -35,6 +35,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import javax.xml.namespace.NamespaceContext;
 
@@ -119,7 +120,23 @@ public class DocbookMerger implements IProcesser
         String new_original_data = new_document.asXML();
         log.debug( String.format( "Original xml: %s", new String( orig.getBytes() ) ) );
         log.debug( "Adding annotated data to CargoContainer, overwriting original data" );
-        orig.updateByteArray( new_original_data.getBytes() );
+        // orig.updateByteArray( new_original_data.getBytes() );
+        cargo.remove( orig.getId() );
+        try
+        {
+        cargo.add( orig.getDataStreamName(), 
+                   orig.getFormat(), 
+                   orig.getSubmitter(),
+                   orig.getLang(),
+                   orig.getMimeType(),
+                   orig.getIndexingAlias(),
+                   new_original_data.getBytes() );
+        }
+        catch( IOException ioe )
+        {
+            log.error( String.format( "Could not add to CargoContainer",ioe.getMessage() ) );
+            throw new PluginException( String.format( "Could not add to CargoContainer",ioe.getMessage() ) );
+        }
         // } catch (IOException ioe) {
         //     log.fatal( "Could not add Annotation data to CargoContainer" );
         //     throw new PluginException( "Could not add Annotation data to CargoContainer", ioe );
