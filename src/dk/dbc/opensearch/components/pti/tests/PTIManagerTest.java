@@ -203,7 +203,7 @@ public class PTIManagerTest {
         newJobs.add( new InputPair< String, Integer >( "test2", 2 ) );
        
 
-        Vector< CompletedTask > finishedJobs =  new Vector< CompletedTask >();
+        Vector< CompletedTask<InputPair<Long, Integer>> > finishedJobs =  new Vector< CompletedTask<InputPair<Long, Integer>> >();
         finishedJobs.add( mockCompletedTask );
 
         /**
