@@ -257,7 +257,7 @@ public class FileHarvestTest {
         sub1.deleteOnExit();
 
 
-        File format1 = new File( sub1, "docbook_faktalink" );
+        File format1 = new File( sub1, "faktalink" );
         format1.mkdir();
         format1.deleteOnExit();
 
@@ -348,7 +348,7 @@ public class FileHarvestTest {
         sub1.mkdir();
         sub1.deleteOnExit();
 
-        File format1 = new File( sub1, "docbook_faktalink" );
+        File format1 = new File( sub1, "faktalink" );
         format1.mkdir();
         format1.deleteOnExit();
 
