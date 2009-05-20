@@ -18,11 +18,12 @@ def login():
     except:
         print "I am unable to connect to the database."
        
-    return conn.cursor()
+    return conn
 
 
 def _open_and_execute( cursor, sqlfile ):
     td = open( sqlfile, 'r' ).read()
+    print "trying to execute %s with %s"%( sqlfile, cursor )
     try:
         cursor.execute( td )
     except Exception, e:
@@ -40,8 +41,9 @@ def teardown_setup( cursor ):
     
 
 def main():
-    cursor = login()
-    teardown_setup( cursor )
+    conn = login()
+    teardown_setup( conn.cursor() )
+    conn.commit()
 
 # def setup():
 #     global src_dir
