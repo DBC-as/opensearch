@@ -24,7 +24,6 @@
   </job>
   <job submitter="dbc" format="materialevurderinger">
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
-    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
   </job>
   <job submitter="dbc" format="dr_forfatteratlas">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
