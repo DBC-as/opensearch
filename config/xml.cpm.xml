@@ -5,7 +5,7 @@
 
 <compass-core-mapping>
 
-  <xml-object alias="article">
+  <xml-object alias="article" sub-index="opensearch-index">
     <xml-id
         name="id"
         xpath="/ting:container/docbook:article/docbook:title"/>
@@ -61,7 +61,7 @@
   </xml-object>
 
 
-  <xml-object alias="dc">
+  <xml-object alias="dc" sub-index="opensearch-index">
     <xml-id
         name="id"
         xpath="/ting:container/ting:dc/dc:title"/>
@@ -116,7 +116,7 @@
 
 
   </xml-object>
-<xml-object alias="danmarcxchange"> 
+<xml-object alias="danmarcxchange" sub-index="opensearch-index"> 
     <xml-id
         name="ac.identifier"
         xpath="/*/*/*/*[@tag='001']/*[@code='a']"
