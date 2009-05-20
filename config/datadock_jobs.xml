@@ -2,11 +2,11 @@
 
 <job_list xmlns="info:opensearch.dbc.dk#">
 
-  <job submitter="dbc" format="docbook_faktalink">
+  <job submitter="dbc" format="faktalink">
     <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
   </job>
-  <job submitter="dbc" format="docbook_forfatterweb">
+  <job submitter="dbc" format="forfatterweb">
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
     <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
   </job>

@@ -223,6 +223,7 @@ public class DocbookAnnotate implements IAnnotate
             queryURL = null;
             try 
             {
+                //uhm, per instructions above, this is not a query with_out_ serverchoice, is it?
                 queryURL = formURL( title, serverChoice );
                 xmlStr = httpGet( queryURL );
             } 
@@ -353,6 +354,7 @@ public class DocbookAnnotate implements IAnnotate
         String preTitle = "?version=1.1&operation=searchRetrieve&query=dc.title+%3D+%28%22";
         String postTitle = "%22%29";
 
+        //using docbook forfatterweb, the following lines will cause the webservice to (wrongly) return 0 results
         String preServerChoice = "+and+cql.serverChoice+%3D+%28";
         String postServerChoice = "%29";
 
@@ -360,7 +362,7 @@ public class DocbookAnnotate implements IAnnotate
         String postRecords = "&recordSchema=dc&stylesheet=default.xsl&recordPacking=string";
 
         String queryURL;
-        if( serverChoice == "" ){
+        if( serverChoice.equals( "" ) ){
             queryURL = baseURL + preTitle + title + postTitle +
                 preRecords + maxRecords + postRecords;
         }
