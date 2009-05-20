@@ -224,7 +224,7 @@ public class DocbookAnnotate implements IAnnotate
             try 
             {
                 //uhm, per instructions above, this is not a query with_out_ serverchoice, is it?
-                queryURL = formURL( title, serverChoice );
+                queryURL = formURL( title, "" );
                 xmlStr = httpGet( queryURL );
             } 
             catch (IOException ioe) 
