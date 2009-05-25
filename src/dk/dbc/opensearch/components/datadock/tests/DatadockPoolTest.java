@@ -75,7 +75,9 @@ import mockit.Mockit;
 
 
 /**
- *
+ * This unittest does not test the getTask method, since this methods has 
+ * conditionals and are creating new complex objects. The method is mocked 
+ * through a mockclass for this test.
  */
 public class DatadockPoolTest extends TestCase
 {
@@ -345,108 +347,140 @@ public class DatadockPoolTest extends TestCase
         verify( mockFuture );
     }
 
-
-    @Ignore
     @Test
-    public void testCheckJobs_isDoneError() throws Exception
-    {
-        //         Mockit.setUpMocks( MockDatadockPool.class );
+    public void testCheckJobs_isDoneError() throws IOException, ConfigurationException, ClassNotFoundException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, InterruptedException, ExecutionException
+    { 
+      
+        /**
+         * setup
+         */
+        Mockit.setUpMocks( MockDatadockPool.class );
+        File tmpFile = File.createTempFile("opensearch-unittest","" );
+        FileWriter fstream = new FileWriter( tmpFile );
+        BufferedWriter out = new BufferedWriter(fstream);
+        out.write("Hello Java");
+        out.close();
 
-        //         mockFedoraHandler = createMock( FedoraHandler.class );
-        //         mockEstimate = createMock( Estimate.class );
-        //         mockProcessqueue = createMock( Processqueue.class );
-        //         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
-        //         mockFutureTask = createMock( FutureTask.class );
+        tmpFile.deleteOnExit();
+        URI testURI = tmpFile.toURI();
+        /**
+         * expectations
+         */
+        //submit method
+        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        expect( mockDatadockJob.getFormat() ).andReturn( "test" );
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        mockDatadockJob.setPID( "test" );
+        //getTask is called and the method is mocked to return mockFuture
+        expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
+        //submit method 2nd call
+        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        expect( mockDatadockJob.getFormat() ).andReturn( "test" );
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        mockDatadockJob.setPID( "test" );
+        //getTask is called and the method is mocked to return mockFuture
+        expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
+        //calling checkJobs
+        expect( mockFuture.isDone() ).andReturn( true );
+        expect( mockFuture.get() ).andThrow( new ExecutionException( new Throwable( "test exception" ) ) );
+        expect( mockFuture.isDone() ).andReturn( true );
+        expect( mockFuture.get() ).andReturn( 10f );
+        /**
+         * replay
+         */
+        replay( mockThreadPoolExecutor );
+        replay( mockEstimate );
+        replay( mockProcessqueue );
+        replay( mockPIDManager );
+        replay( mockFedoraCommunication );
+        replay( mockDatadockJob );
+        replay( mockFuture );
 
-        //         String testSubmitter = "testSubmitter";
-        //         String testFormat = "testFormat";
-        //         File tmpFile = File.createTempFile("opensearch-unittest","" );
-        //         FileWriter fstream = new FileWriter( tmpFile );
-        //         BufferedWriter out = new BufferedWriter(fstream);
-        //         out.write("Hello Java");
-        //         out.close();
-
-        //         tmpFile.deleteOnExit();
-        //         URI testURI = tmpFile.toURI();
-
-        //         datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraHandler);
-        //         datadockJob = new DatadockJob( testURI, testSubmitter, testFormat);
-
-        //         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFutureTask );
-        //         replay( mockThreadPoolExecutor );
-
-        //         expect( mockFuture.isDone() ).andReturn( true );
-        //         expect( mockFuture.get() ).andThrow( new ExecutionException( new Throwable( "test exception" ) ) );
-        //         replay( mockFuture );
-
-        //         //
-        //         datadockPool.submit( datadockJob );
-        //         datadockPool.checkJobs();
-        //         //
-
-        //         verify( mockFuture );
-        //         verify( mockThreadPoolExecutor );
-
-        //         reset( mockFedoraHandler );
-        //         reset( mockEstimate );
-        //         reset( mockProcessqueue );
-        //         reset( mockThreadPoolExecutor );
-        //         reset( mockFutureTask );
-        //         reset( mockFuture );
-
-        //         Mockit.restoreAllOriginalDefinitions();
+        /**
+         * do stuff
+         */
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool.submit( mockDatadockJob );
+        datadockPool.submit( mockDatadockJob );
+        Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
+        assertTrue( checkedJobs.size() == 2 );
+      
+        /**
+         * verify
+         */
+        verify( mockThreadPoolExecutor );
+        verify( mockEstimate );
+        verify( mockProcessqueue );
+        verify( mockPIDManager );
+        verify( mockFedoraCommunication );
+        verify( mockDatadockJob );
+        verify( mockFuture );
     }
 
 
-    @Ignore
     @Test
-    public void testShutdown() throws Exception
+    public void testShutdown() throws IOException, ConfigurationException, ClassNotFoundException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, InterruptedException, ExecutionException
     {
-        //         Mockit.setUpMocks( MockDatadockPool.class );
 
-        //         mockFedoraHandler = createMock( FedoraHandler.class );
-        //         mockEstimate = createMock( Estimate.class );
-        //         mockProcessqueue = createMock( Processqueue.class );
-        //         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
-        //         mockFutureTask = createMock( FutureTask.class );
+        /**
+         * setup
+         */
+        Mockit.setUpMocks( MockDatadockPool.class );
+        File tmpFile = File.createTempFile("opensearch-unittest","" );
+        FileWriter fstream = new FileWriter( tmpFile );
+        BufferedWriter out = new BufferedWriter(fstream);
+        out.write("Hello Java");
+        out.close();
+        tmpFile.deleteOnExit();
+        URI testURI = tmpFile.toURI();
+        
+        /**
+         * expectations
+         */
+        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        expect( mockDatadockJob.getFormat() ).andReturn( "test" );
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        mockDatadockJob.setPID( "test" );
+        //getTask is called and the method is mocked to return mockFuture
+        expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
+        //calling shutdown
+        expect( mockFuture.isDone() ).andReturn( false );
+        expect( mockFuture.isDone() ).andReturn( false );
+        expect( mockFuture.isDone() ).andReturn( true );
 
-        //         String testSubmitter = "testSubmitter";
-        //         String testFormat = "testFormat";
-        //         File tmpFile = File.createTempFile("opensearch-unittest","" );
-        //         FileWriter fstream = new FileWriter( tmpFile );
-        //         BufferedWriter out = new BufferedWriter(fstream);
-        //         out.write("Hello Java");
-        //         out.close();
+        /**
+         * replay
+         */
+        replay( mockThreadPoolExecutor );
+        replay( mockEstimate );
+        replay( mockProcessqueue );
+        replay( mockPIDManager );
+        replay( mockFedoraCommunication );
+        replay( mockDatadockJob );
+        replay( mockFuture );
 
-        //         tmpFile.deleteOnExit();
-        //         URI testURI = tmpFile.toURI();
+        /**
+         * do stuff
+         */
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool.submit( mockDatadockJob );
+        datadockPool.shutdown();
 
-        //         datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraHandler);
-        //         datadockJob = new DatadockJob( testURI, testSubmitter, testFormat);
-
-        //         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFutureTask );
-        //         replay( mockThreadPoolExecutor );
-
-        //         expect( mockFuture.isDone() ).andReturn( false );
-        //         expect( mockFuture.isDone() ).andReturn( true );
-
-        //         replay( mockFuture );
-
-        //         //
-        //         datadockPool.submit( datadockJob );
-        //         datadockPool.shutdown();
-        //         //
-
-        //         verify( mockThreadPoolExecutor );
-        //         verify( mockFuture );
-
-        //         reset( mockFedoraHandler );
-        //         reset( mockEstimate );
-        //         reset( mockProcessqueue );
-        //         reset( mockThreadPoolExecutor );
-        //         reset( mockFutureTask );
-        //         reset( mockFuture );
-
-        //         Mockit.restoreAllOriginalDefinitions();
+        /**
+         * verify
+         */
+        verify( mockThreadPoolExecutor );
+        verify( mockEstimate );
+        verify( mockProcessqueue );
+        verify( mockPIDManager );
+        verify( mockFedoraCommunication );
+        verify( mockDatadockJob );
+        verify( mockFuture );
     }
 }
