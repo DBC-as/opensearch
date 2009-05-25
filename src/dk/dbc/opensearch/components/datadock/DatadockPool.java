@@ -189,7 +189,7 @@ public class DatadockPool
             log.debug( String.format( "Removing Job Vector< FutureTask > jobs size: %s", jobs.size() ) );
             jobs.remove( finishedJob.getFuture() );
         }
-        System.out.println( "Size of finishedJobs: " + finishedJobs.size() );
+        
         return finishedJobs;
     }
 
