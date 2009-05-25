@@ -4,7 +4,7 @@
  * \package tests
  */
 
-package dk.dbc.opensearch.common.pluginframework.tests;
+//package dk.dbc.opensearch.common.pluginframework.tests;
 
 /*
    
@@ -26,7 +26,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.pluginframework.PluginFinder;
+/* import dk.dbc.opensearch.common.pluginframework.PluginFinder;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.XmlFileFilter;
 import dk.dbc.opensearch.common.types.ThrownInfo;
@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.xml.sax.SAXException;*/
 
 
 /**
@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
  * it would take that there are plugin files to be found, they are of valid format but
  * somehow none of them are registrered in the classNameMap
  */
-public class PluginFinderTest 
+                                    /*public class PluginFinderTest 
 {
     static File mockFile = createMock( File.class );
     static Vector< String > mockVector = createMock( Vector.class );
@@ -93,13 +93,13 @@ public class PluginFinderTest
         }
     }
 
-
+                                    */
     /**
      *
      */
-    @Before 
+    /*    @Before 
     public void setUp() 
-    {
+    {*/
 //        mockIterator = createMock( Iterator.class );
 //        //mockDocBuilder = createMock( DocumentBuilder.class );
 //        mockDocument = createMock( Document.class );
@@ -108,13 +108,13 @@ public class PluginFinderTest
 //        mockNodeList = createMock( NodeList.class );
 //
 //        Mockit.redefineMethods( FileHandler.class, MockFileHandler.class );
-    }
+    //    }
 
     
     /**
      *
      */
-    @After
+/* @After
     public void tearDown() 
     {
 //        reset( mockIterator );
@@ -133,7 +133,7 @@ public class PluginFinderTest
     public void test()
     {
     	//to be deleted
-    }
+        }*/
     /**
      * Test that the finder is constructed and that the classNameMap
      * is build correctly. The updatePluginClassMap method is
@@ -834,4 +834,4 @@ public class PluginFinderTest
 //        verify( mockNodeList );
 //        verify( mockFile );
 //    }
-}
+//}

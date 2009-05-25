@@ -29,7 +29,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginID;
-import dk.dbc.opensearch.common.pluginframework.PluginFinder;
+//import dk.dbc.opensearch.common.pluginframework.PluginFinder;
 import dk.dbc.opensearch.common.pluginframework.PluginLoader;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.ThrownInfo;

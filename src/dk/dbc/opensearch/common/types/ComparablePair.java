@@ -57,6 +57,7 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
     {
         return second;
     }
+
     
     @Override
     public boolean equals( Object cPair )
@@ -95,7 +96,9 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         return first.hashCode() ^ second.hashCode();
     }
 
-    public int compareTo( Object pair ){
+
+    public int compareTo( Object pair )
+    {
         if ( ! ( pair instanceof ComparablePair ) )
         {
             throw new UnsupportedOperationException( String.format( "Type %s is not a comparable type", pair.toString() ) );
@@ -112,7 +115,7 @@ public class ComparablePair< E extends Comparable< E >, V extends Comparable< V 
         {
             return second.compareTo( (V)newpair.getSecond() );
         }
+
         return first.compareTo( (E)newpair.getFirst() );
-        
     }
 }

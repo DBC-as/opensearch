@@ -3,7 +3,7 @@
  * \brief the class that handles the pluginclassmap
  * \package pluginframework
  */
-package dk.dbc.opensearch.common.pluginframework;
+//package dk.dbc.opensearch.common.pluginframework;
 
 /*
    
@@ -25,7 +25,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.os.PluginFileFilter;
+/*import dk.dbc.opensearch.common.os.PluginFileFilter;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.ThrownInfo;
@@ -48,7 +48,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+*/
 
 /**
  * The PluginFinder class handles creation of a map containing info about existing
@@ -61,9 +61,9 @@ import org.xml.sax.SAXException;
  * of the plugin class, which in turn is used by the PluginLoader class to load a 
  * given plugin.
  */
-public class PluginFinder
-{
-    static Logger log = Logger.getLogger( PluginFinder.class );
+//public class PluginFinder
+                                    //{
+                                    //    static Logger log = Logger.getLogger( PluginFinder.class );
 
     /**
      * classNameMap contains class names of plugins of the form
@@ -251,4 +251,4 @@ public class PluginFinder
 //        log.info( "classNameMap cleared" );
 //    }
 
-}
+                                    //}

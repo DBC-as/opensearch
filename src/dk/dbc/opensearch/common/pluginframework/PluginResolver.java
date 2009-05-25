@@ -45,7 +45,7 @@ public class PluginResolver implements IPluginResolver
 
     static String path;
     static ClassLoader pluginClassLoader;
-    static PluginFinder PFinder;
+    //static PluginFinder PFinder;
     static PluginLoader PLoader;
     static boolean constructed = false;
     
