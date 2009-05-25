@@ -36,6 +36,9 @@ import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
 import dk.dbc.opensearch.components.datadock.DatadockPool;
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+import dk.dbc.opensearch.common.fedora.PIDManager;
+import dk.dbc.opensearch.common.config.DatadockConfig;
 
 import junit.framework.TestCase;
 
@@ -79,6 +82,9 @@ public class DatadockPoolTest extends TestCase
     DatadockJob datadockJob;
     DatadockPool datadockPool;
     DatadockThread datadockThread;
+    FedoraCommunication mockFedoraCommunication;
+    PIDManager mockPIDManager;
+
     /**
      * After each test the mock are reset
      */
@@ -88,7 +94,7 @@ public class DatadockPoolTest extends TestCase
     @Ignore
     @MockClass( realClass = DatadockPool.class )
     public static class MockDatadockPool
-    {
+    { 
     	@Mock(invocations = 1)
     	public static FutureTask getTask( DatadockJob datadockjob )
     	{
@@ -96,10 +102,55 @@ public class DatadockPoolTest extends TestCase
         }
     }
 
-    @Ignore
-    @Test public void testConstructor()
+    @Before public void setUp()
     {
-        //        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraHandler);
+        mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
+        mockEstimate = createMock( Estimate.class);
+        mockProcessqueue = createMock( Processqueue.class );
+        mockPIDManager = createMock( PIDManager.class );
+        mockFedoraCommunication = createMock( FedoraCommunication.class );
+    }   
+
+
+    @After public void tearDown()
+    {
+        Mockit.tearDownMocks();
+        reset( mockThreadPoolExecutor );
+        reset( mockEstimate );
+        reset( mockProcessqueue );
+        reset( mockPIDManager );
+        reset( mockFedoraCommunication );
+    }
+
+    @Test public void testConstructor() throws ConfigurationException
+    {
+        /**
+         * setup
+         */
+        /**
+         * expectations
+         */
+        /**
+         * replay
+         */
+        replay( mockThreadPoolExecutor );
+        replay( mockEstimate );
+        replay( mockProcessqueue );
+        replay( mockPIDManager );
+        replay( mockFedoraCommunication );
+        /**
+         * do stuff
+         */
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        /**
+         * verify
+         */
+        verify( mockThreadPoolExecutor );
+       verify( mockEstimate );
+        verify( mockProcessqueue );
+        verify( mockPIDManager );
+        verify( mockFedoraCommunication );
+
     }
 
 
