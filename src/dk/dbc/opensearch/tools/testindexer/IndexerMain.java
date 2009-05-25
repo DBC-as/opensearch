@@ -1,20 +1,20 @@
 /**
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+   This file is part of opensearch.
+   Copyright © 2009, Dansk Bibliotekscenter a/s,
+   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   opensearch is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   opensearch is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -37,37 +37,150 @@ import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassEnvironment;
 import org.compass.core.converter.mapping.xsem.XmlContentMappingConverter;
 import org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter;
+import java.util.ArrayList;
+import java.io.FileNotFoundException;
 
-
+/**
+ * The main class for the testindexer. Provides parsing of commandline
+ * properties and arguments.
+ */
 public class IndexerMain{
 
+    /**
+     * The Main method
+     */
     static public void main(String[] args) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
+        // Validating properties
 
-        
-        URI job;
-        String submitter;
-        String format;
-        URL mappingFile;
-        String indexDir;
-        
-        // test instances
-        job  = new File("/home/shm/opensearch/kode/trunk/dist/artb9.xml").toURI();
-        submitter = "dbc";
-        format = "artikler";
-        mappingFile = new File("/home/shm/opensearch/kode/trunk/dist/xml.cpm.xml").toURL();
-        indexDir = "/home/shm/opensearch/kode/trunk/INDEXXX";
-
-        // the indexer
-        Indexer indexer = new Indexer();
-        try{
-            indexer.index( job, submitter, format, mappingFile, indexDir );
-        }catch(Exception e){
-            System.err.println( "Caught error: " + e.getMessage() );
-            e.printStackTrace();
+        // submitter
+        String submitter = System.getProperty( "submitter" );
+        if ( submitter == null ){
+            System.err.println( "submitter option must be specified");
+            System.err.println( usage() );
             System.exit(1);
         }
-        
-        System.out.println( "Indexing done");    
+
+        // format
+        String format = System.getProperty( "format" );
+        if ( format == null ){
+            System.err.println( "format option must be specified");
+            System.err.println( usage() );
+            System.exit(1);
+        }
+
+        // mapping
+        String mappingString = System.getProperty( "mapping" );
+        if (mappingString == null ){
+            System.err.println( "mapping option must be specified");
+            System.err.println( usage() );
+            System.exit(1);
+        }
+        File mappingFile = new File( mappingString );
+        if (! mappingFile.exists()){
+            System.err.println( String.format ( "mappingfile: %s, does not exist", mappingString ) );
+            System.err.println( usage() );
+            System.exit(1);
+        }
+        URL mapping = mappingFile.toURI().toURL();
+
+        // index dir
+        String indexDir = System.getProperty( "index" );
+        if ( indexDir == null ){
+            System.err.println( "index option must be specified");
+            System.err.println( usage() );
+            System.exit(1);
+        }
+
+        // Validating arguments
+        ArrayList<String> jobs = new ArrayList<String>();
+
+        for( String arg: args ){
+            File jobfile = new File(arg);
+            if( ! jobfile.exists() ){
+                System.err.println( String.format( "Cannot find : %s, directory or file does not exist", arg ) );
+                System.exit(1);
+            }
+            if( jobfile.isDirectory() ){
+                jobs.addAll( listFiles( jobfile ) );
+            }
+            else{// isfile
+                jobs.add( arg );
+            }
+        }
+
+        if( jobs.isEmpty() ){
+            System.err.println( "no files to index" );
+            System.err.println( usage() );
+            System.exit(1);
+        }
+
+        // starting indexing
+        System.out.println( "Starting indexing");
+        System.out.println( String.format( "submitter: %s", submitter ) );
+        System.out.println( String.format( "format:    %s", format ) );
+        System.out.println( String.format( "mapping:   %s", mapping.toString() ) );
+        System.out.println( String.format( "indexDir:  %s", indexDir ) );
+
+        System.out.println( "Indexing the following files:" );
+        for( String j : jobs){
+            System.out.println( " "+ j );
+        }
+
+        Indexer indexer = new Indexer();
+        System.out.println("--------------------");
+        for( String j : jobs){
+            try{
+                indexer.index( new File( j ).toURI(), submitter, format, mapping, indexDir );
+                System.out.println( String.format( "indexed: %s", j ) );
+            }catch(Exception e){
+                System.err.println( "Caught error during indexing: " + e.getMessage() );
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+        System.out.println("--------------------");
+        System.out.println( "Indexing done");
+        System.exit(0);
+    }
+
+    /**
+     * Returns the files recursively found in root directory
+     *
+     * @param root. The root directory to start from
+     *
+     * @return a ArrayList with the names af the found files
+     *
+     * @throws FileNotFoundException if the root is not a directory.
+     */
+    private static ArrayList<String> listFiles( File root ) throws FileNotFoundException
+    {
+        ArrayList<String> jobs = new ArrayList<String>();
+        if(! root.isDirectory() ){
+            throw new FileNotFoundException( String.format( "%s is not i directory", root) );
+        }
+        File[] files = root.listFiles();
+        for( File f: files){
+            if( f.isFile() ){
+                jobs.add( f.toString() );
+            }
+            else{
+                jobs.addAll( listFiles( f ) );
+            }
+        }
+        return jobs;
+    }
+
+    private static String usage(){
+        String usage = "usage:\n\n";
+        usage += " java -jar -Dsubmitter=[submitter] -Dformat=[format] -Dmapping=[mapping] -Dindex=[index] OpenSearch_TESTINDEXER [index targets]\n\n";
+        usage += " [submitter]      The submitter (used to find the right mapping in the mappingfile)\n";
+        usage += " [format]         The format (used to find the right mapping in the mappingfile)\n";
+        usage += " [mapping]        The mappingfile to use\n";
+        usage += " [index]          The index directory to write the index to\n";
+        usage += " [index targets]  The files or directorys to index\n";
+        return usage;
     }
 }
+
+

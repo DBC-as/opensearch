@@ -84,11 +84,10 @@ public class Indexer
      */
     public Indexer()throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
-        log.warn( "entering constructor()" );
+        log.debug( "entering constructor()" );
         pool = Executors.newFixedThreadPool( 1 );
     }
 
-    // FedoraHandle
     /**
      * the index method indexes the job 
      *
@@ -110,10 +109,10 @@ public class Indexer
     public void index( URI job, String submitter, String format, URL mappingFile, String indexDir )
     throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException
     {
-        log.warn( String.format( "entering index( job=%s, submitter=%s, format=%s, mappingFile=%s, indexDir=%s)",
+        log.debug( String.format( "entering index( job=%s, submitter=%s, format=%s, mappingFile=%s, indexDir=%s)",
                                   job.toString(), submitter, format, mappingFile.toString(), indexDir ) );
 
-        log.warn( "Configuring Compass" );
+        log.debug( "Configuring Compass" );
 
         CompassConfiguration conf = new CompassConfiguration()
         .addURL( mappingFile )
@@ -124,20 +123,21 @@ public class Indexer
         Compass compass = conf.buildCompass();
         CompassSession session = compass.openSession();
 
-        log.warn( "Create needed instances for indexing" );
-        DatadockJob datadockJob = new DatadockJob( job, submitter, format );
+
+        log.debug( "Create needed instances for indexing" );
+        DatadockJob datadockJob = new DatadockJob( job, submitter, format, "Mock_fedoraPID" );
         // using local estimate, processqueue, fedoracommunication classes
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
         IFedoraCommunication c = new FedoraCommunication();
 
-        // \todo:run datadock        
         runDatadock( datadockJob, e, p, c );
+
+        log.debug( "datadock finshed, starting the pti" );
         
-        // \todo:run pti
         runPTI( "mock_fedoraPID", session, e, c);
         
-        log.warn( String.format( "Indexed file: %s", job ) );
+        log.debug( String.format( "Indexed file: %s", job ) );
     }
 
     /**
@@ -159,16 +159,19 @@ public class Indexer
      * @throws ServiceException
      */
     private void runDatadock( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCommunication )
-    throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+        throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        log.warn( "Entering runDatadock" );
-
+        log.debug( "Entering runDatadock" );
+        
         DatadockThread ddt = new DatadockThread( datadockJob, estimate, processqueue, fedoraCommunication );
         FutureTask<Float> ft = new FutureTask<Float>( ddt );
+        
+
         pool.submit( ft );
 
+        log.debug( "Datadock job commited to threadpool.... waiting for it to return" );
         while ( ! ft.isDone() ) {} // Wait until the thread is done
-
+       
         Float f = -1f;
 
         try
@@ -180,13 +183,15 @@ public class Indexer
             // getting exception from thread
             Throwable cause = ee.getCause();
 
-            System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
+            System.err.println( String.format( "Exception Caught in runDatadock: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
             StackTraceElement[] trace = cause.getStackTrace();
             for ( int i = 0; i < trace.length; i++ )
             {
+                
                 System.err.println( trace[i].toString() );
             }
         }
+        log.debug( String.format( "Datadock ended... returned %s", f ) );
     }
 
     /**
@@ -206,7 +211,7 @@ public class Indexer
     private void runPTI( String fedoraPid,  CompassSession session, IEstimate estimate, IFedoraCommunication fedoraCommunication )
     throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException
     {
-        log.warn( "Entering runPTI" );
+        log.debug( "Entering runPTI" );
 
         // run the PTI thread
 
@@ -214,6 +219,8 @@ public class Indexer
 
         FutureTask<Long> ptiFuture = new FutureTask<Long>( PTIt );
         pool.submit( ptiFuture );
+     
+        log.debug( "PTI job commited to threadpool.... waiting for it to return" );
         while ( ! ptiFuture.isDone() ) {} // Wait until the thread is done
 
         Long l = 0l;
@@ -227,13 +234,14 @@ public class Indexer
             // getting exception from thread
             Throwable cause = ee.getCause();
 
-            System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
+            System.err.println( String.format( "Exception Caught runPTI: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
             StackTraceElement[] trace = cause.getStackTrace();
             for ( int i = 0; i < trace.length; i++ )
             {
                 System.err.println( trace[i].toString() );
             }
         }
+        log.debug( String.format( "PTI ended... returned %s", l ) );
     }
 }
 

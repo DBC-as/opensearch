@@ -67,7 +67,9 @@ public class FedoraCommunication implements IFedoraCommunication{
 
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException{
         this.cc = cc;
-        return null;
+        
+        return new InputPair<String, Float>( datadockJob.getPID(), -1.0f );
+        
     }
 
     public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException{
