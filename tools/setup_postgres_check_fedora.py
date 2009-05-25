@@ -24,7 +24,7 @@ dest = config.findall( '//toharvest' )[0].text
 if os.path.exists( dest ):
     shutil.rmtree( dest )
 
-shutil.copytree( '/data1/harvest-test', dest )
+shutil.copytree( '/data1/harvest-kanon', dest )
 
 postgres_setup.main()
 fedora_conn.test_fedora_conn( 'localhost', '8080' )
