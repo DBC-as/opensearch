@@ -1,1 +1,0 @@
-psql -c "SELECT COUNT (*) FROM processqueue;"
