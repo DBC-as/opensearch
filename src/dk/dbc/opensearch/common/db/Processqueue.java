@@ -1,29 +1,24 @@
 /**
- * \file Processqueue.java
- * \brief The Processqueue class
- * \package tools
- */
-package dk.dbc.opensearch.common.db;
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+   This file is part of opensearch.
+   Copyright © 2009, Dansk Bibliotekscenter a/s,
+   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   opensearch is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   opensearch is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+package dk.dbc.opensearch.common.db;
 
 
 import dk.dbc.opensearch.common.db.DBConnection;
@@ -43,7 +38,7 @@ import org.apache.log4j.Logger;
 
 /**
  * \ingroup tools
- * \brief The Processqueue class handles all communication to the processqueue
+ * \brief The Processqueue class handles all communication to the processqueue table
  */
 public class Processqueue implements IProcessqueue
 {
@@ -86,16 +81,16 @@ public class Processqueue implements IProcessqueue
         log.debug( String.format( "query database with %s ", sql_query ) );
 
         try
-            {
-                stmt.executeUpdate( sql_query );
-                con.commit();
-            }
+        {
+            stmt.executeUpdate( sql_query );
+            con.commit();
+        }
         finally
-            {
-                // Close database connection
-                stmt.close();
-                con.close();
-            }
+        {
+            // Close database connection
+            stmt.close();
+            con.close();
+        }
         log.info( String.format( "fedorahandle=%s pushed to queue", fedorahandle ) );
     }
 
@@ -105,7 +100,7 @@ public class Processqueue implements IProcessqueue
      *
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public Vector< InputPair< String, Integer > > popAll() throws SQLException
+    public Vector<InputPair<String, Integer>> popAll() throws SQLException
     {
         log.debug( "Entering Processqueue.popAll()" );
 
@@ -113,33 +108,33 @@ public class Processqueue implements IProcessqueue
         Statement stmt = null;
         ResultSet rs = null;
 
-        Vector< InputPair< String, Integer > > jobs = new Vector< InputPair< String, Integer > >();
+        Vector<InputPair<String, Integer>> jobs = new Vector<InputPair<String, Integer>>();
 
         try
+        {
+            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+            rs = stmt.executeQuery("SELECT * from get_all_posts()");
+
+            while( rs.next() )
             {
-                stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-                rs = stmt.executeQuery("SELECT * from get_all_posts()");
+                String fedoraHandle = rs.getString( "fedorahandle" );
+                int queueID = rs.getInt( "queueID" );
 
-                while( rs.next() )
-                    {
-                        String fedoraHandle = rs.getString( "fedorahandle" );
-                        int queueID = rs.getInt( "queueID" );
+                log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                        log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
-
-                        InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
-                        jobs.add( pair );
-                    }
-
-                con.commit();
+                InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
+                jobs.add( pair );
             }
+
+            rs.close();
+            con.commit();
+        }
         finally
-            {
-                // Close database connection
-                rs.close();
-                stmt.close();
-                con.close();
-            }
+        {
+            // Close database connection
+            stmt.close();
+            con.close();
+        }
 
         return jobs;
     }
@@ -163,30 +158,30 @@ public class Processqueue implements IProcessqueue
         Vector<InputPair<String, Integer>> jobs = new Vector<InputPair<String, Integer>>();
 
         try
+        {
+            stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+            rs = stmt.executeQuery( String.format( "SELECT * from get_posts( %s )", maxSize ) );
+
+            while( rs.next() )
             {
-                stmt = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-                rs = stmt.executeQuery( String.format( "SELECT * from get_posts( %s)", maxSize ) );
+                String fedoraHandle = rs.getString( "fedorahandle" );
+                int queueID = rs.getInt( "queueID" );
 
-                while( rs.next() )
-                    {
-                        String fedoraHandle = rs.getString( "fedorahandle" );
-                        int queueID = rs.getInt( "queueID" );
+                log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                        log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
-
-                        InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
-                        jobs.add( pair );
-                    }
-
-                con.commit();
+                InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
+                jobs.add( pair );
             }
+
+            rs.close();
+            con.commit();
+        }
         finally
-            {
-                // Close database connection
-                rs.close();
-                stmt.close();
-                con.close();
-            }
+        {
+            // Close database connection
+            stmt.close();
+            con.close();
+        }
         return jobs;
     }
 
@@ -214,23 +209,22 @@ public class Processqueue implements IProcessqueue
 
         // remove element from queue ie. delete row from processqueue table
         try
+        {
+            stmt = con.createStatement();
+            rowsRemoved = stmt.executeUpdate( sql_query );
+
+            if( rowsRemoved == 0 )
             {
-                stmt = con.createStatement();
-                rowsRemoved = stmt.executeUpdate( sql_query );
-
-                if( rowsRemoved == 0 )
-                    {
-                        throw new NoSuchElementException( "The queueID does not match a popped element." );
-                    }
-
-                con.commit();
+                throw new NoSuchElementException( "The queueID does not match a popped element." );
             }
+
+            con.commit();
+        }
         finally
-            {
-                // Close database connection
-                stmt.close();
-                con.close();
-            }
+        {// Close database connection
+            stmt.close();
+            con.close();
+        }
         log.info( String.format( "Element with queueID=%s is commited",queueID ) );
     }
 
@@ -255,23 +249,22 @@ public class Processqueue implements IProcessqueue
 
         // restore element in queue ie. update queueID in row from processqueue table
         try
+        {
+            stmt = con.createStatement();
+            rowsRemoved = stmt.executeUpdate( sql_query );
+
+            if( rowsRemoved == 0 )
             {
-                stmt = con.createStatement();
-                rowsRemoved = stmt.executeUpdate( sql_query );
-
-                if( rowsRemoved == 0 )
-                    {
-                        throw new NoSuchElementException( "The queueID does not match a popped element." );
-                    }
-
-                con.commit();
+                throw new NoSuchElementException( "The queueID does not match a popped element." );
             }
+            con.commit();
+        }
         finally
-            {
-                // Close database connection
-                stmt.close();
-                con.close();
-            }
+        {
+            // Close database connection
+            stmt.close();
+            con.close();
+        }
         log.info( String.format( "Element with queueID=%s is rolled back",queueID ) );
     }
 
@@ -296,24 +289,27 @@ public class Processqueue implements IProcessqueue
         Statement stmt = con.createStatement();
         int rowsUpdated = 0;
         try
-            {
-                rowsUpdated = stmt.executeUpdate( sql_query );
-            }
+        {
+            rowsUpdated = stmt.executeUpdate( sql_query );
+            con.commit();
+        }
         finally
-            {
-                // Close database connection
-                stmt.close();
-                con.close();
-            }
+        {
+            // Close database connection
+            stmt.close();
+            con.close();
+        }
         log.info(String.format("Updated %S processes from active to not active" , rowsUpdated ));
 
         return rowsUpdated;
     }
 
+
     /**
      * The notDocked method is used to store paths to the files, that we couldnt not store in the repository
      *
      * @param The path of the problematic file
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
@@ -323,29 +319,30 @@ public class Processqueue implements IProcessqueue
         Connection con = DBConnection.getConnection();
 
         //log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
-        Statement stmt = null;
-        stmt = con.createStatement();
+        Statement stmt = con.createStatement();
+
         String sql_query = (  String.format( "INSERT INTO notdocked( path ) "+
                                              "VALUES( %s )", path ) );
-    
-        try
-            {
-                stmt.executeUpdate( sql_query );
-                con.commit();
-            }
-        finally
-            {
-                // Close database connection
-                stmt.close();
-                con.close();
-            }
 
+        try
+        {
+            stmt.executeUpdate( sql_query );
+            con.commit();
+        }
+        finally
+        {
+            // Close database connection
+            stmt.close();
+            con.close();
+        }
     }
+
 
     /**
      * The notIndexed method is used to store queueIDs for indexjobs, that we couldnt not be indexed/
      *
      * @param The queueID of the problematic job
+     *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
@@ -358,31 +355,32 @@ public class Processqueue implements IProcessqueue
 
         ResultSet rs = null;
         Statement stmt_get = con.createStatement();
+        Statement stmt_insert = con.createStatement();
         int rowsSelected = 0;
 
         try{
-
             stmt_get = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
             rs = stmt_get.executeQuery( sql_query );
-            while( rs.next() ){
-                String fedoraHandle = rs.getString( "fedorahandle" );
-                int qid = rs.getInt( "queueID" );
-                Statement stmt_insert = con.createStatement();
-                sql_query = String.format( "INSERT INTO notindexed( queueid, fedorahandle ) VALUES( %s, '%s' )", qid, fedoraHandle );
-                stmt_insert.executeUpdate( sql_query );
-
-                commit( qid );
-                stmt_insert.close();
+            try{
+                while( rs.next() ){
+                    String fedoraHandle = rs.getString( "fedorahandle" );
+                    int qid = rs.getInt( "queueID" );
+                    sql_query = String.format( "INSERT INTO notindexed( queueid, fedorahandle ) VALUES( %s, '%s' )", qid, fedoraHandle );
+                    stmt_insert.executeUpdate( sql_query );
+                    commit( qid );
+                }
+                con.commit();
+            }
+            finally
+            {
+                rs.close();
             }
         }
         finally
-            {
-                // Close database connection
-                con.commit();
-                stmt_get.close();
-                con.close();
-            }
-
+        {// Close database connection
+            stmt_insert.close();
+            stmt_get.close();
+            con.close();
+        }
     }
-
 }
