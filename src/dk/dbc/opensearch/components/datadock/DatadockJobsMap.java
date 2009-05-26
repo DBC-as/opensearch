@@ -32,7 +32,7 @@ public class DatadockJobsMap extends JobMapCreator
 
     public static ArrayList< String > getDatadockPluginsList( String submitter, String format ) throws ConfigurationException, IllegalArgumentException, IllegalStateException, IOException, SAXException, ParserConfigurationException
     {
-        if( !initiated || datadockJobMap.isEmpty() )
+        if( !initiated )
         {
             // System.out.println( "initiating" );
             String path = DatadockConfig.getPath();
