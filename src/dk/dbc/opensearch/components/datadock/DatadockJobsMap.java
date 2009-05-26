@@ -34,24 +34,14 @@ public class DatadockJobsMap extends JobMapCreator
     {
         if( !initiated )
         {
-            // System.out.println( "initiating" );
+            //System.out.println( "initiating" );
             String path = DatadockConfig.getPath();
             JobMapCreator.validateJobXmlFile( path );
             JobMapCreator.init( path );
 
-            // is this possible, wont the init method throw an IllegalStateException?
-            if( jobMap == null )
-            {
-                throw new NullPointerException( "jobMap is null" );
-            }
             datadockJobMap = jobMap;
             initiated = true;
         }
-   //      else
-//         {
-//             System.out.println( "already initiated" );
-//         }
-
 
         datadockPluginsList = datadockJobMap.get( new InputPair< String, String >( submitter, format ) );
         return datadockPluginsList;

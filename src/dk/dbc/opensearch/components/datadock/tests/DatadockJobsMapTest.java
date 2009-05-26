@@ -222,7 +222,13 @@ public class DatadockJobsMapTest {
         
         assertTrue ( aList.size() == 2 );        
         assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
-        assertTrue ( aList.get( 1 ).equals( pluginString1 ) );        
+        assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
+        
+        aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );      
+
+        assertTrue ( aList.size() == 2 );        
+        assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
+        assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
 
         /**
          * verify

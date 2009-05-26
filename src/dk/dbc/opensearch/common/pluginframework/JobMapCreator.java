@@ -138,6 +138,11 @@ public class JobMapCreator
 
         }
 
+        if( jobMap == null )
+        {
+            throw new NullPointerException( String.format( "the map is null when created from file: %s", path ) );
+        }
+
         if( jobMap.isEmpty() )
         {
             throw new IllegalStateException( String.format( "no jobs found for: %s ", path ) );
