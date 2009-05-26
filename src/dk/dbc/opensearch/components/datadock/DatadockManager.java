@@ -113,6 +113,7 @@ public class DatadockManager
         
         //checking jobs
         Vector<CompletedTask> finishedJobs = pool.checkJobs();
+       
     }
     
     
