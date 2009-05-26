@@ -238,8 +238,13 @@ public class JobMapCreatorTest
         verify( mockElement );
     }
 
+    /**
+     * provokes an IllegalStateException by giving a NodeList with Length 0
+     * so that the jobMap will be empty
+     */
+
     @Test( expected = IllegalStateException.class )
-    public void testEmptyMap() throws ParserConfigurationException, SAXException, IOException
+    public void testEmptyMapInInitMethod() throws ParserConfigurationException, SAXException, IOException
     {
         /**
          * setup
@@ -271,63 +276,6 @@ public class JobMapCreatorTest
 
     }
     
-    /**
-     * Testing the method that builds the jobmap.
-     * We mock the setJobFile method in the JobMapCreator
-     * happy path.
-     */
-    @Test 
-    @Ignore
-    public void testGetMapMethod() throws Exception 
-    {
-        /**
-         * Setup
-         */
-//        Mockit.setUpMocks( MockJobMapCreator.class ); //mocks the getFile method only
-//
-//        String testString = "test";
-//        String testString1 = "test1";
-//        String testString2 = "test2";
-//        String position1 = "1";
-//        String position2 = "2";
-//        HashMap< InputPair< String, String >, ArrayList<String> > jobMap;
-//        /**
-//         * Exepctations
-//         */
-//        expect( mockFile.getPath() ).andReturn( "unittestPath" ); //logging
-//        expect( mockNodeList.getLength() ).andReturn( 1 ); //outer loop
-//        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString ).times( 2 );
-//        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-//        expect( mockNodeList.getLength() ).andReturn( 2 ); //inner loop
-//        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );        
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString2 );
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position2 );
-//        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( testString1 );
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position1 );
-//        
-//        /**
-//         * replay
-//         */
-//        replay( mockFile );
-//        replay( mockElement );
-//        replay( mockNodeList );
-//
-//        /**
-//         * Do stuff
-//         */
-//        jmc = new JobMapCreator();
-//        jobMap = jmc.getMap( DatadockMain.class );
-//        //this tests both the sorting and the building
-//        assertTrue(jobMap.get( new InputPair<String, String >( testString, testString ) ).get( 0 ) == testString1 );
-//        /**
-//         * Verify
-//         */
-//        verify( mockFile );
-//        verify( mockElement );
-//        verify( mockNodeList );
-    }
     
     /**
      * Provokes the IllegalStateException by returning a NodeList with length 0
