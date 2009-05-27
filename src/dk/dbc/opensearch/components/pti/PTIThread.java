@@ -26,8 +26,7 @@ package dk.dbc.opensearch.components.pti;
  */
 
 
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
@@ -38,17 +37,11 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
-import fedora.server.types.gen.MIMETypedStream;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,13 +53,8 @@ import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
 /**
  * \ingroup pti
@@ -163,7 +151,6 @@ public class PTIThread implements Callable< Long >
         long result = 0l;
         
         // Get the job from the jobMap
-        //list = jobMap.get( new InputPair< String, String >( submitter, format ) );
         list = PTIJobsMap.getPtiPluginsList( submitter, format );
         if ( list == null )
         {

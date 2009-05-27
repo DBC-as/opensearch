@@ -26,10 +26,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -40,14 +37,12 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Vector;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -91,7 +86,6 @@ public class DatadockThread implements Callable< Float >
 
     private CargoContainer cc;
     private IProcessqueue queue;
-    //private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
     private String result;
     private IEstimate estimate;
