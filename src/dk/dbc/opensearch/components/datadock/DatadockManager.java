@@ -93,7 +93,6 @@ public class DatadockManager
       
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
 
-        // \Todo: [Bug 8842] Clean up this loop, it obviously not needed. 
         for( int i = 0; i < registeredJobs.size(); i++ )
         {
         	DatadockJob job = registeredJobs.get( 0 );
