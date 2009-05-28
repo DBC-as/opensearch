@@ -181,6 +181,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <antcall target="_coverage-test" />
   </target>
 
+  <target name="coverage-report-html" depends="coverage-test">
+    <antcall target="_coverage-report-html" />
+  </target>
 
   <target name="coverage-report-xml" depends="coverage-test">
     <antcall target="_coverage-report-xml" />
