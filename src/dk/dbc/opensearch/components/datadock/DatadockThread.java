@@ -131,12 +131,11 @@ public class DatadockThread implements Callable< Float >
         log.debug( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
 
         list = DatadockJobsMap.getDatadockPluginsList( submitter, format );
-        log.debug( "constructor PluginList " + list.toString() );
         if( list == null )
         {
             throw new NullPointerException( String.format( "The returned list from the DatadockJobsMap.getDatadockJobsMap( %s, %s ) is null", submitter, format ) );
         }
-        
+        log.debug( "constructor PluginList " + list.toString() );
         queue = processqueue;
 
         this.estimate = estimate;

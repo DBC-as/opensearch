@@ -224,14 +224,14 @@ public class DatadockThreadTest {
      * Testing the throwing of the NullPointerException in the constructor
      */
 
-    @Test(expected = NullPointerException.class )
+    @Test( expected = NullPointerException.class )
     public void testConstructorNPException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, /*NullPointerException,*/ PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         //System.out.println( "2");
         //Setup
         Mockit.setUpMocks( MockDDJobsMapNP.class );
-        testArrayList.add( "testplugin1" );
-        testArrayList.add( "testplugin2" );
+        //testArrayList.add( "testplugin1" );
+        //testArrayList.add( "testplugin2" );
         //System.out.println( testArrayList.toString() );
         //expectations
         expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
