@@ -197,7 +197,10 @@ public class DatadockThread implements Callable< Float >
             log.debug( "DatadockThread getPlugin 'classname' " + classname );
 
             IPluggable plugin = pluginResolver.getPlugin( classname );
-            log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
+            //System.out.println( plugin.getClass() );
+            //System.out.println( "hep" + plugin.getTaskName() );            
+log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
+            
             switch ( plugin.getTaskName() )
             {
                 case HARVEST:
@@ -218,6 +221,7 @@ public class DatadockThread implements Callable< Float >
                 case ANNOTATE:
                     log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getTaskName().toString() ) );
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
+
                     if ( cc == null )
                     {
                         log.error( "DatadockThread call throws NullPointerException, cc is null" );
