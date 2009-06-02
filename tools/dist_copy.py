@@ -203,7 +203,7 @@ if __name__ == '__main__':
     # target_list-name: datadock, ant target-name: dist_datadock
 
     target_list = [ 'all', 'datadock', 'pti', 'testindexer' ]
-    server_list = [ 'andrus', 'sempu' ]
+    server_list = [ 'andrus','rausu','sempu','tacora','visoke' ]
 
     if options.listserv:
         print "Available servers to copy to:"
