@@ -37,6 +37,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <property name="classes.dir"      value="${build.dir}/classes"/>
   <property name="config.dir"       value="${base.dir}/config" />
   <property name="dist.dir"         value="${base.dir}/dist"/>
+  <property name="distdatadock.dir" value="${dist.dir}/datadock" />
+  <property name="distpti.dir"      value="${dist.dir}/pti" />
   <property name="info.dir"         value="${src.dir}/info" />
   <property name="lib.dir"          value="${base.dir}/lib"/>  
   <property name="tests.dir"        value="${base.dir}/tests" />
@@ -208,7 +210,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       Building jar file for DATADOCK
    </echo>
    <!-- Create the distribution directory -->
-   <mkdir dir="${dist.dir}"/>
+   <mkdir dir="${distdatadock.dir}"/>
+   <mkdir dir="${distdatadock}/config" />
 
    <pathconvert property="jar_classpath" pathsep=" ../lib/">
      <path refid="classpath4jar" />
@@ -288,38 +291,36 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   
   <target name="_xsd-classes" description="Generate Java source files from the Schemas found in ${xsd.dir}.">
-	    <taskdef name="castor-srcgen"
-	             classname="org.castor.anttask.CastorCodeGenTask"
-	             classpathref="classpath" />
-
+    <taskdef name="castor-srcgen"
+             classname="org.castor.anttask.CastorCodeGenTask"
+             classpathref="classpath" />
 	    
-	    <delete dir="${tmp.dir}"/>
-	    <mkdir dir="${tmp.dir}"/>
+    <delete dir="${tmp.dir}"/>
+    <mkdir dir="${tmp.dir}"/>
+    
+    <castor-srcgen todir="${tmp.dir}/"
+                   package="dk.dbc.opensearch.xsd"
+                   types="j2"
+                   warnings="true" >
+      <fileset dir="${xsd.dir}">
+        <include name="*.xsd"/>
+      </fileset>
+    </castor-srcgen>
 
-	    <castor-srcgen todir="${tmp.dir}/"
-	                   package="dk.dbc.opensearch.xsd"
-	                   types="j2"
-	                   warnings="true" >
-	      <fileset dir="${xsd.dir}">
-	        <include name="*.xsd"/>
-	      </fileset>
-	    </castor-srcgen>
-
-
-	    <copy todir="${xsd_gen.dir}">
-	      <fileset dir="${tmp.dir}/dk/dbc/opensearch/xsd" includes="**/*.java">
-		<different targetdir="${xsd_gen.dir}" ignoreFileTimes="true"/>
-	      </fileset>	      
-	    </copy>
+    <copy todir="${xsd_gen.dir}">
+      <fileset dir="${tmp.dir}/dk/dbc/opensearch/xsd" includes="**/*.java">
+        <different targetdir="${xsd_gen.dir}" ignoreFileTimes="true"/>
+      </fileset>	      
+    </copy>
 	    
-	    <!-- remove java files not present in the tmp dir -->
-	    <delete>
-	      <fileset dir="${xsd_gen.dir}" includes="**/*.java">
-		<present present="srconly" targetdir="${tmp.dir}/dk/dbc/opensearch/xsd"/>
-	      </fileset>      
-	    </delete>	    
-	    
-	  </target>
+    <!-- remove java files not present in the tmp dir -->
+    <delete>
+      <fileset dir="${xsd_gen.dir}" includes="**/*.java">
+        <present present="srconly" targetdir="${tmp.dir}/dk/dbc/opensearch/xsd"/>
+      </fileset>      
+    </delete>	    
+  </target>
+
 
   <target name="_xsd-jar" description="compiles xsd and bundles it in a jar file">
     <mkdir dir="${tmp.dir}/classes"/>
@@ -385,7 +386,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
             don't instrument the test classes.
         -->
         <include name="**/*.class" />
-        <exclude name="**/tests/*" />
+        <!--exclude name="**/tests/*" /-->
         <exclude name="**/xsd/**/*.class" />
         <exclude name="**/*Main*.class"/>
       </fileset>
@@ -415,14 +416,15 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
       <!-- Performing the test -->
       <batchtest fork="yes" todir="${testresults.dir}">
-        <fileset dir="${src.dir}" includes="**/tests/*Test.java"/>
+        <fileset dir="${tests.dir}" includes="**/*Test.java"/>
       </batchtest>
     </junit>
   </target>
 
 
   <target name="_coverage-report-html" depends="_coverage-test">
-    <cobertura-report destdir="${testresults.dir}/cobertura/html" datafile="${instrumented.dir}/cobertura.ser">
+    <cobertura-report destdir="${testresults.dir}/cobertura/html" 
+                      datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
       </fileset>
