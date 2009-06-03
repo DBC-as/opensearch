@@ -2,7 +2,7 @@
  * \brief UnitTest for PluginFileFilter 
  */
 
-package dk.dbc.opensearch.common.os.tests;
+package dk.dbc.opensearch.common.os;
 
 /*
    

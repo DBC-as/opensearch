@@ -4,7 +4,7 @@
  * \package tests;
  */
 
-package dk.dbc.opensearch.common.types.tests;
+package dk.dbc.opensearch.common.types;
 
 /*
    

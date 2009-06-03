@@ -1,5 +1,5 @@
 /** \brief UnitTest for Pair */
-package dk.dbc.opensearch.common.types.tests;
+package dk.dbc.opensearch.common.types;
 
 /*
    

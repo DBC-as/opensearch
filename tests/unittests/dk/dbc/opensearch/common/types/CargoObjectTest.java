@@ -1,6 +1,6 @@
 /** \brief UnitTest for CargoObject */
 
-package dk.dbc.opensearch.common.types.tests;
+package dk.dbc.opensearch.common.types;
 
 /**
  *
