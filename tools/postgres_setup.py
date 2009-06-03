@@ -22,40 +22,52 @@
 
 
 import os
+import psycopg2
 import subprocess
-
 
 src_dir = os.getcwd()
 
-import psycopg2
+import logging as log
+
+log.basicConfig( level = log.DEBUG,
+                format = '%(asctime)s %(levelname)s %(message)s' )
+log.getLogger( '' )
+
 
 def login():
+    '''handles the login to the database and, if successful, returns a
+    connection object'''
     usern = os.environ.get( 'USER' )
+    conn = None
 
     try:
         conn = psycopg2.connect( "dbname='%s' user='%s' password='%s'"%( usern, usern, usern))
-    except:
-        print "I am unable to connect to the database."
+    except psycopg2.InterfaceError, ife:
+        log.fatal( ife.message )
+        sys.exit( "I am unable to connect to the database; %s"%( ife.message )
        
     return conn
 
 
 def _open_and_execute( cursor, sqlfile ):
     td = open( sqlfile, 'r' ).read()
-    print "trying to execute %s with %s"%( sqlfile, cursor )
+    log.debug( "trying to execute %s with %s"%( sqlfile, cursor ) )
     try:
         cursor.execute( td )
-    except Exception, e:
-        print "Cannot execute sqlcommand: %s"%(e)
+    except psycopg2.ProgrammingError, pe:
+        sys.exit( "Cannot execute sqlcommand '%s': %s"%( td, pe.message ) )
 
 
 def teardown_setup( cursor ):
-
+    '''Performs a teardown and subsequent setup of the database. This
+    method holds an internal list of sql files to execute in a given
+    order
+    '''
     _open_and_execute( cursor, '../admin/teardown.sql' )
 
-    init_db = [ 'processqueue_init', 'statistics_init', 'not_indexed', 'not_docked' ]
+    _init_db = [ 'processqueue_init', 'statistics_init', 'not_indexed', 'not_docked' ]
 
-    for sql in init_db:
+    for sql in _init_db:
         _open_and_execute( cursor, '../admin/'+sql+'.sql' )
     
 
@@ -64,16 +76,6 @@ def main():
     teardown_setup( conn.cursor() )
     conn.commit()
 
-# def setup():
-#     global src_dir
-
-#     if src_dir.endswith("tools"):
-#         src_dir = src_dir.replace("tools", "admin" )
-
-#     runproc = subprocess.Popen( 'psql -f teardown.sql', shell=True, cwd=src_dir ) 
-#     runproc.communicate()[ 0 ]
-#     runproc = subprocess.Popen( 'psql -f init.sql', shell=True, cwd=src_dir )    
-#     runproc.communicate()[ 0 ]
 
 if __name__ == "__main__":
     main()
