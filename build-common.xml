@@ -437,8 +437,14 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <cobertura-report format="xml" 
                       destdir="${testresults.dir}/cobertura/xml" 
                       datafile="${instrumented.dir}/cobertura.ser">
-      <fileset dir="${src.dir}">
+      <!--fileset dir="${src.dir}">
         <include name="**/*.java"/>
+      </fileset-->
+      <fileset dir="${src.dir}">
+        <include name="**/*.java" />
+      </fileset>
+      <fileset dir="${unittests.dir}">
+        <include name="**/*.java" />
       </fileset>
     </cobertura-report>
   </target>
