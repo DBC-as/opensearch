@@ -42,6 +42,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <property name="info.dir"         value="${src.dir}/info" />
   <property name="lib.dir"          value="${base.dir}/lib"/>  
   <property name="tests.dir"        value="${base.dir}/tests" />
+  <property name="unittests.dir"    value="${tests.dir}/unittests" />
   <property name="tmp.dir"          value="${base.dir}/tmp"/>  
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
   <property name="src.dir"          value="${base.dir}/src"/>
@@ -416,7 +417,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
       <!-- Performing the test -->
       <batchtest fork="yes" todir="${testresults.dir}">
-        <fileset dir="${tests.dir}" includes="**/*Test.java"/>
+        <fileset dir="${unittests.dir}" includes="**/*Test.java"/>
       </batchtest>
     </junit>
   </target>
@@ -433,7 +434,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
   <target name="_coverage-report-xml" depends="_coverage-test">
-    <cobertura-report format="xml" destdir="${testresults.dir}/cobertura/xml" datafile="${instrumented.dir}/cobertura.ser">
+    <cobertura-report format="xml" 
+                      destdir="${testresults.dir}/cobertura/xml" 
+                      datafile="${instrumented.dir}/cobertura.ser">
       <fileset dir="${src.dir}">
         <include name="**/*.java"/>
       </fileset>
