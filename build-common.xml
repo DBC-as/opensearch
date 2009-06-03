@@ -39,19 +39,17 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <property name="dist.dir"         value="${base.dir}/dist"/>
   <property name="info.dir"         value="${src.dir}/info" />
   <property name="lib.dir"          value="${base.dir}/lib"/>  
+  <property name="tests.dir"        value="${base.dir}/tests" />
   <property name="tmp.dir"          value="${base.dir}/tmp"/>  
   <property name="report.dir"       value="${doc.dir}/coverage-report"/>
   <property name="src.dir"          value="${base.dir}/src"/>
   <property name="opensearch.dir"   value="${src.dir}/dk/dbc/opensearch"/>
-  <!--property name="plugins.dir"      value="${opensearch.dir}/plugins" /-->
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
 
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
   <property name="xsd_gen.dir"      value="${tmp.dir}/xsd" />
 
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
-  <!--property name="testresults.dir"  value="${base.dir}/test-results"/>
-  <property name="report.dir"       value="${doc.dir}/coverage-report"/-->
  
 
   <!-- CLASSPATH STUFF -->
@@ -59,7 +57,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
     <pathelement location="${classes.dir}" />
     <pathelement location="${config.dir}" />
-    <!--pathelement location="${plugins.dir}" /-->
   </path>
 
   <path id="classpath4jar">
@@ -140,11 +137,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       <classpath refid="classpath"/> 
       <compilerarg value="-Xlint"/>
     </javac>
-    <!--copy todir="${base.dir}/plugins">
-      <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
-    </copy-->  
   </target>
-
 
 
   <target name="_compile-tests" description="builds the tests for the component" >
@@ -153,17 +146,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       building project '${project.name}.tests',
       and putting it all into '${classes.dir}'
     </echo>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" includes="**/tests/*" debug="on">
+    <javac srcdir="${tests.dir}" destdir="${classes.dir}" debug="on">
       <classpath refid="classpath"/>
     </javac>
   </target>
   
-  
-  <!--target name="py_suite" >
-    <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
-      <arg line="create_test_suite_files.py make"/>
-    </exec>
-  </target-->
   
   <target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
@@ -181,9 +168,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
            haltonfailure="true">
       <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
       
-      <!-- <classpath location="${instrumented.dir}" /> -->
       <classpath location="${classes.dir}" />
-      <!-- <classpath refid="cobertura.classpath" /> -->
 
       <formatter type="plain" usefile="no"/>
       <!-- uncomment the line below when this should be use with a cruisecontrol build server-->
@@ -192,7 +177,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
       <batchtest todir="${testresults.dir}">
         <fileset dir="${classes.dir}" >
-          <include name="**/tests/*Test.class"/>
+          <include name="**/*Test.class"/>
         </fileset>
       </batchtest>
     </junit>
@@ -200,7 +185,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
   <target name="_test-single"
-          description="Run a single unittest using\nant -Dtest='dk.dbc.opensearch.common.fedora.tests.MyTest' test-single" depends="py_config">
+          description="Run a single unittest using\nant -Dtest='dk.dbc.opensearch.common.fedora.MyTest' test-single" 
+          depends="py_config">
     <junit fork="yes"
            forkmode="once"
            printsummary="on"
@@ -214,7 +200,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       <test name="${test}"/>
     </junit>
   </target>
-
 
 
   <target name="_dist_datadock"
