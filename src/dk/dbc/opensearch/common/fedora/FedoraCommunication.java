@@ -185,6 +185,9 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
         if( indexingAliasElem == null )
         {
+            /**
+             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878 
+             */
             log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
         }
         log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
@@ -199,7 +202,9 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         Element streams = (Element)streamsNL.item(0);
         NodeList streamNL = streams.getElementsByTagName( "stream" );
         log.debug( String.format( "Iterating streams in nodelist" ) );
-        for(int i = 0; i < streamNL.getLength(); i++ )
+        
+        int streamNLLength = streamNL.getLength();
+        for(int i = 0; i < streamNLLength; i++ )
         {
             Element stream = (Element)streamNL.item(i);
             String streamID = stream.getAttribute( "id" );
