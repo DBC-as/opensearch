@@ -95,19 +95,19 @@ public class DatadockManager
 
         for( int i = 0; i < registeredJobs.size(); i++ )
         {
-        	DatadockJob job = registeredJobs.get( 0 );
+            DatadockJob job = registeredJobs.get( 0 );
         
             // execute jobs
-        	try
-        	{
-        		pool.submit( job );
-        		registeredJobs.remove( 0 );
-        		log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
-	        }
-        	catch( RejectedExecutionException re )
-        	{
-        		log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );	           	
-        	}
+            try
+            {
+                pool.submit( job );
+                registeredJobs.remove( 0 );
+                log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
+	    }
+            catch( RejectedExecutionException re )
+            {
+                log.debug( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );	           	
+            }
         }
         
         //checking jobs
