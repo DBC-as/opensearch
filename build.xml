@@ -140,8 +140,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />
     </antcall>
+    <antcall target="_dist_readindex">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_READINDEX.jar" />
+    </antcall>
   </target> 
-
 
   <target name="dist_datadock" depends="clean, compile"> <!-- xsd, "> -->
     <antcall target="_dist_datadock">
@@ -166,6 +169,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </antcall>
   </target>
 
+  <target name="dist_readindex" depends="clean, compile"> <!-- xsd, "> -->
+    <antcall target="_dist_readindex">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_READINDEX.jar" />
+    </antcall>
+  </target>
 
   <target name="doc">
     <antcall target="_doc" />

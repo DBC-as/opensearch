@@ -66,7 +66,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <fileset dir="${lib.dir}" includes="*.jar" excludes="ant.jar"/>
   </path>
 
-
   <!-- libraries used internally by ant is named ant_*.jar -->
   <path id="antlibpath">
     <fileset dir="${lib.dir}" includes="ant_*.jar"/>
@@ -290,7 +289,36 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </jar>
   </target>
 
-  
+
+  <target name="_dist_readindex"
+          description="generates jar file _readindex.jar" >
+    <echo>
+      Building jar file for readindex
+    </echo>
+    
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}"/>
+    
+    <pathconvert property="jar_classpath" pathsep=" ../lib/">
+      <path refid="classpath4jar" />
+      <flattenmapper />
+    </pathconvert>
+    
+    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
+    <jar destfile="${dist.dir}/${dist.jar}_READINDEX.jar" 
+         basedir="${classes.dir}">	    
+      <manifest>    
+        <attribute name="Built-By" value="DBC"/>
+        <attribute name="Implementation-Vendor" value="DBC A/S"/>
+        <attribute name="Implementation-Title" value="Opensearch"/>
+        <attribute name="Implementation-Version" value="0.3"/>
+        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
+        <attribute name="Main-Class" value="dk.dbc.opensearch.tools.readindex.ReadIndexMain" />
+      </manifest>
+    </jar>
+  </target>
+    
+
   <target name="_xsd-classes" description="Generate Java source files from the Schemas found in ${xsd.dir}.">
     <taskdef name="castor-srcgen"
              classname="org.castor.anttask.CastorCodeGenTask"
