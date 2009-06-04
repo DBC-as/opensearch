@@ -387,7 +387,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
             don't instrument the test classes.
         -->
         <include name="**/*.class" />
-        <!--exclude name="**/tests/*" /-->
+        <exclude name="**/*Test*.class" />
         <exclude name="**/xsd/**/*.class" />
         <exclude name="**/*Main*.class"/>
       </fileset>
