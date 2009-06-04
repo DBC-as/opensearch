@@ -41,10 +41,17 @@ middle = ':./'
 
 scp_dist = "scp -rp "
 
+import logging as log
+
+log.basicConfig( level = log.DEBUG,
+                format = '%(asctime)s %(levelname)s %(message)s' )
+log.getLogger( '' )
+
+
 """#########################################
    Functions for copying files to distribute
    #########################################"""
-def __test_file( f ):
+def _test_file( f ):
     if f.startswith( 'ant' ) and f.endswith( '.jar' ):
         return False
     elif f.startswith( '.' ) or f.startswith( 'tmp_' ):
@@ -53,24 +60,28 @@ def __test_file( f ):
         return False
     elif f in files:
         return False
+    elif os.path.isdir( f ):
+        return False
     else:
         return True    
 
 
-def __cp_fldr( src, dst ):
+def _cp_fldr( src, dst ):
     if not os.path.exists( dst ):
         os.mkdir( dst )
 
     files = os.listdir( src )
     for f in files:
-        if __test_file( f ):
-            shutil.copy2( src + f, dst + f )
+        log.debug( "testing '%s' (is it a dir? %s)"%( f, os.path.isdir( os.path.join( src, f ) ) ) )
+        if _test_file( os.path.join( src, f ) ) :
+            shutil.copy2( os.path.join( src, f ), os.path.join( dst, f ) )
 
-def __cp_tree( src, dst ):
+
+def _cp_tree( src, dst ):
     shutil.copytree( src, dst, symlinks=False )
 
 
-def __create_copy_dist( fldrs ):
+def _create_copy_dist( fldrs ):
     cur_dir = os.getcwd()
 
     # Create tmp dir. Suffix used for deletion later
@@ -91,9 +102,9 @@ def __create_copy_dist( fldrs ):
         dst = tmp_dir + '/' + name + '/' 
         if name in fldrs:
             #NOTE: name is not used....
-            __cp_fldr( src, dst )
+            _cp_fldr( src, dst )
         elif name in trees:
-            __cp_tree( src, dst )
+            _cp_tree( src, dst )
             
     return suffix
 
@@ -102,24 +113,24 @@ def __create_copy_dist( fldrs ):
     Functions for setting server and copying folder to server
     #########################################################"""
 
-def __set_copy_from_folder( fldr ):
+def _set_copy_from_folder( fldr ):
     global scp_dist
     scp_dist += fldr + '/* '
 
 
-def __set_copy_to_server( srv ):
+def _set_copy_to_server( srv ):
     global scp_dist
     if srv != '':
         server = srv        
     scp_dist += server
 
 
-def __set_copy_to_folder( fldr ):
+def _set_copy_to_folder( fldr ):
     global scp_dist 
     scp_dist += middle + fldr
 
 
-def __make_dist( dist ):
+def _make_dist( dist ):
     global src_dir
     global scp_dist
 
@@ -137,43 +148,44 @@ def __make_dist( dist ):
         raise Exception( stderr )
    
    
-def __copy_dist():
-    print scp_dist
+def _copy_dist():
+    log.debug( "scp_dist=%s"%( scp_dist ) )
     os.system( scp_dist )
 
 
-def __check_conn( copy_server ):
-    print 'testing connection to server'
+def _check_conn( copy_server ):
+    log.debug( 'testing connection to server' )
     cmd = ''
     try:
         "snmap -p22 %s | grep 'open  ssh'"%copy_server
     except:
-        raise Error( 'nmap does not seem to be installed on your box' )
+        log.warn( 'nmap does not seem to be installed on your box, could not determine whether I can ssh to %s'%( copy_server ) )
 
     test = os.system( cmd )
     if test == '':
         sys.exit( "ssh on %s does not seem to be running" )
 
 
-def __check_remote_folder_exists( remote_folder, server ):
-    print "testing if remote folder exists"
+def _check_remote_folder_exists( remote_folder, server ):
     cmd = "ssh %s 'stat %s'"%( server, remote_folder )
+    log.debug( "testing if remote folder exists with cmd '%s'"%( cmd ) )
     runproc = subprocess.Popen( cmd, shell=True, stdin=PIPE, stderr=PIPE )
 
     ret = runproc.communicate()
 
     if ret[1] != '':
+        log.info( "remote folder '%s' apparently does not exist on %s"%( remote_folder, server ) )
         return False
     else:
         return True
 
-def __create_remote_folder( folder_name, server ):
-    print "testing if remote folder exists"
+
+def _create_remote_folder( folder_name, server ):
+    log.debug( "Creating remote folder %s on %s", folder_name, server )
     cmd = "ssh %s 'mkdir %s'"%( server, folder_name )
     runproc = subprocess.Popen( cmd, shell=True, stdin=PIPE, stderr=PIPE )
 
     ret = runproc.communicate()
-
 
 
 if __name__ == '__main__':    
@@ -203,7 +215,7 @@ if __name__ == '__main__':
     # target_list-name: datadock, ant target-name: dist_datadock
 
     target_list = [ 'all', 'datadock', 'pti', 'testindexer' ]
-    server_list = [ 'andrus','rausu','sempu','tacora','visoke' ]
+    server_list = [ 'andrus','rausu','sempu','tacora','visoke', 'localhost' ]
 
     if options.listserv:
         print "Available servers to copy to:"
@@ -222,16 +234,19 @@ if __name__ == '__main__':
         print "\n".join( server_list ) + "\n"
         parser.print_help()
         sys.exit()
+#     elif options.server == 'localhost':
+#         global scp_dist
+#         scp_dist = "cp -rp "
 
     if options.folder is None:
         parser.error( "please specify (existing) folder on remote host to copy to.\nUse -h to see available options" )
-    #__check_conn( options.server )
+    #_check_conn( options.server )
     
     if len( args ) != 1:
         parser.print_help()
         sys.exit( "\nPlease specify 1 target" )    
     if args[0] in target_list:
-        __make_dist( args[0] )
+        _make_dist( args[0] )
     else:
         sys.exit( "\nUnknown target "+args[0] )
 
@@ -239,20 +254,20 @@ if __name__ == '__main__':
 
     print fldrs
 
-    if not __check_remote_folder_exists( os.path.join( options.folder ), options.server ):
+    if not _check_remote_folder_exists( os.path.join( options.folder ), options.server ):
         print( "remote folder %s does not exist. Creating it"% options.folder )
-        __create_remote_folder( options.folder, options.server )
+        _create_remote_folder( options.folder, options.server )
         
 
-    if __check_remote_folder_exists( os.path.join( options.folder, "lib" ), options.server ):
+    if _check_remote_folder_exists( os.path.join( options.folder, "lib" ), options.server ):
         print "folder %s:%s/%s exists, skipping copy of libs"%( options.server, options.folder, "lib" )
         fldrs.remove( "lib" )
 
-    del_dir = __create_copy_dist( fldrs )
+    del_dir = _create_copy_dist( fldrs )
 
-    __set_copy_from_folder( del_dir )
-    __set_copy_to_server( options.server )
-    __set_copy_to_folder( options.folder )
+    _set_copy_from_folder( del_dir )
+    _set_copy_to_server( options.server )
+    _set_copy_to_folder( options.folder )
 
     print """
     Creating jar(s): """ + args[0] + """
@@ -261,7 +276,7 @@ if __name__ == '__main__':
     to remote folder:""" + options.folder
 
     try:
-        __copy_dist()
+        _copy_dist()
     except:
         raise Error( "Unable to copy to " + server + " - check connection!" )
 
