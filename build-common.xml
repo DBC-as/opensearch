@@ -211,8 +211,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       Building jar file for DATADOCK
    </echo>
    <!-- Create the distribution directory -->
-   <mkdir dir="${distdatadock.dir}"/>
-   <mkdir dir="${distdatadock}/config" />
+   <mkdir dir="${dist.dir}"/>
+   <!-- <mkdir dir="${distdatadock}/config" /> -->
 
    <pathconvert property="jar_classpath" pathsep=" ../lib/">
      <path refid="classpath4jar" />
