@@ -22,12 +22,16 @@ package dk.dbc.opensearch.tools.testindexer;
 
 
 import dk.dbc.opensearch.common.compass.CompassFactory;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.io.File;
+import java.util.ArrayList;
 
 import javax.xml.rpc.ServiceException;
 
@@ -37,111 +41,157 @@ import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassEnvironment;
 import org.compass.core.converter.mapping.xsem.XmlContentMappingConverter;
 import org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter;
-import java.util.ArrayList;
-import java.io.FileNotFoundException;
+import org.compass.core.CompassSession;
+import dk.dbc.opensearch.tools.testindexer.Estimate;
+import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
+import dk.dbc.opensearch.tools.testindexer.Processqueue;
+import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.statistics.IEstimate;
+import dk.dbc.opensearch.common.types.DatadockJob;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The main class for the testindexer. Provides parsing of commandline
  * properties and arguments.
  */
-public class IndexerMain{
+public class IndexerMain
+{
 
     /**
      * The Main method
      */
-    static public void main(String[] args) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    static public void main( String[] args ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         // Validating properties
 
         // submitter
         String submitter = System.getProperty( "submitter" );
-        if ( submitter == null ){
-            System.err.println( "submitter option must be specified");
+        if ( submitter == null )
+        {
+            System.err.println( "submitter option must be specified" );
             System.err.println( usage() );
-            System.exit(1);
+            System.exit( 1 );
         }
 
         // format
         String format = System.getProperty( "format" );
-        if ( format == null ){
-            System.err.println( "format option must be specified");
+        if ( format == null )
+        {
+            System.err.println( "format option must be specified" );
             System.err.println( usage() );
-            System.exit(1);
+            System.exit( 1 );
         }
 
         // mapping
         String mappingString = System.getProperty( "mapping" );
-        if (mappingString == null ){
-            System.err.println( "mapping option must be specified");
+        if ( mappingString == null )
+        {
+            System.err.println( "mapping option must be specified" );
             System.err.println( usage() );
-            System.exit(1);
+            System.exit( 1 );
         }
         File mappingFile = new File( mappingString );
-        if (! mappingFile.exists()){
-            System.err.println( String.format ( "mappingfile: %s, does not exist", mappingString ) );
+        if ( ! mappingFile.exists() )
+        {
+            System.err.println( String.format( "mappingfile: %s, does not exist", mappingString ) );
             System.err.println( usage() );
-            System.exit(1);
+            System.exit( 1 );
         }
         URL mapping = mappingFile.toURI().toURL();
 
         // index dir
         String indexDir = System.getProperty( "index" );
-        if ( indexDir == null ){
-            System.err.println( "index option must be specified");
+        if ( indexDir == null )
+        {
+            System.err.println( "index option must be specified" );
             System.err.println( usage() );
-            System.exit(1);
+            System.exit( 1 );
         }
 
         // Validating arguments
         ArrayList<String> jobs = new ArrayList<String>();
 
-        for( String arg: args ){
-            File jobfile = new File(arg);
-            if( ! jobfile.exists() ){
+        for ( String arg: args )
+        {
+            File jobfile = new File( arg );
+            if ( ! jobfile.exists() )
+            {
                 System.err.println( String.format( "Cannot find : %s, directory or file does not exist", arg ) );
-                System.exit(1);
+                System.exit( 1 );
             }
-            if( jobfile.isDirectory() ){
+            if ( jobfile.isDirectory() )
+            {
                 jobs.addAll( listFiles( jobfile ) );
             }
-            else{// isfile
+            else // isfile
+            {
                 jobs.add( arg );
             }
         }
 
-        if( jobs.isEmpty() ){
+        if ( jobs.isEmpty() )
+        {
             System.err.println( "no files to index" );
             System.err.println( usage() );
-            System.exit(1);
+            System.exit( 1 );
         }
 
         // starting indexing
-        System.out.println( "Starting indexing");
+        System.out.println( "Starting indexing" );
         System.out.println( String.format( "submitter: %s", submitter ) );
         System.out.println( String.format( "format:    %s", format ) );
         System.out.println( String.format( "mapping:   %s", mapping.toString() ) );
         System.out.println( String.format( "indexDir:  %s", indexDir ) );
 
         System.out.println( "Indexing the following files:" );
-        for( String j : jobs){
-            System.out.println( " "+ j );
+        for ( String j : jobs )
+        {
+            System.out.println( " " + j );
         }
 
-        Indexer indexer = new Indexer();
-        System.out.println("--------------------");
-        for( String j : jobs){
-            try{
-                indexer.index( new File( j ).toURI(), submitter, format, mapping, indexDir );
+
+
+        // Configuring Compass
+        Compass compass = buildCompass( mapping, indexDir );
+
+        IEstimate e = new Estimate();
+        IProcessqueue p = new Processqueue();
+        IFedoraCommunication c = new FedoraCommunication();
+        ExecutorService pool = Executors.newFixedThreadPool( 1 );
+        Indexer indexer = new Indexer( compass, e, p, c, pool );
+
+        System.out.println( "--------------------" );
+        for ( String j : jobs )
+        {
+            try
+            {
+                DatadockJob datadockJob = new DatadockJob( new File( j ).toURI(), submitter, format, "Mock_fedoraPID" );
+                indexer.index( datadockJob );
                 System.out.println( String.format( "indexed: %s", j ) );
-            }catch(Exception e){
-                System.err.println( "Caught error during indexing: " + e.getMessage() );
-                e.printStackTrace();
-                System.exit(1);
+            }
+            catch ( ExecutionException ee )
+            {
+                // getting exception from thread
+                Throwable cause = ee.getCause();
+
+                System.err.println( String.format( "Exception Caught: '%s'\n'%s'", cause.getClass() , cause.getMessage() ) );
+                StackTraceElement[] trace = cause.getStackTrace();
+                for ( int i = 0; i < trace.length; i++ )
+                {
+                    System.err.println( trace[i].toString() );
+                }
+            }
+            catch ( Exception exc )
+            {
+                System.err.println( "Caught error during indexing: " + exc.getMessage() );
+                exc.printStackTrace();
+                System.exit( 1 );
             }
         }
-        System.out.println("--------------------");
-        System.out.println( "Indexing done");
-        System.exit(0);
+        System.out.println( "--------------------" );
+        System.out.println( "Indexing done" );
+        System.exit( 0 );
     }
 
     /**
@@ -156,22 +206,42 @@ public class IndexerMain{
     private static ArrayList<String> listFiles( File root ) throws FileNotFoundException
     {
         ArrayList<String> jobs = new ArrayList<String>();
-        if(! root.isDirectory() ){
-            throw new FileNotFoundException( String.format( "%s is not i directory", root) );
+        if ( ! root.isDirectory() )
+        {
+            throw new FileNotFoundException( String.format( "%s is not i directory", root ) );
         }
         File[] files = root.listFiles();
-        for( File f: files){
-            if( f.isFile() ){
+        for ( File f: files )
+        {
+            if ( f.isFile() )
+            {
                 jobs.add( f.toString() );
             }
-            else{
+            else
+            {
                 jobs.addAll( listFiles( f ) );
             }
         }
         return jobs;
     }
 
-    private static String usage(){
+    /**
+     *
+     */
+    private static Compass buildCompass( URL mappingFile, String indexDir){
+        CompassConfiguration conf = new CompassConfiguration()
+            .addURL( mappingFile )
+            .setSetting( CompassEnvironment.CONNECTION, indexDir )
+            .setSetting( CompassEnvironment.Converter.TYPE, "org.compass.core.converter.mapping.xsem.XmlContentMappingConverter" )
+            .setSetting( CompassEnvironment.Converter.XmlContent.TYPE, "org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter" );
+
+        Compass compass = conf.buildCompass();
+        return compass;
+    }
+
+
+    private static String usage()
+    {
         String usage = "usage:\n\n";
         usage += " java -jar -Dsubmitter=[submitter] -Dformat=[format] -Dmapping=[mapping] -Dindex=[index] OpenSearch_TESTINDEXER [index targets]\n\n";
         usage += " [submitter]      The submitter (used to find the right mapping in the mappingfile)\n";
@@ -182,5 +252,6 @@ public class IndexerMain{
         return usage;
     }
 }
+
 
 
