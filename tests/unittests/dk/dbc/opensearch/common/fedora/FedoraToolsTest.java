@@ -33,6 +33,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import dk.dbc.opensearch.common.fedora.FedoraTools;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.IndexingAlias;
+import dk.dbc.opensearch.common.types.DataStreamType;
 
 import org.junit.*;
 
@@ -81,9 +83,10 @@ public class FedoraToolsTest
     
     private CargoContainer constructCargo( String testStr ) throws IllegalArgumentException, NullPointerException, IOException
     {
-    	//InputStream data = new ByteArrayInputStream( testStr.getBytes( "UTF-8" ) );    	
+    	byte[] cargoBytes =  testStr.getBytes( "UTF-8" );    	
     	//CargoContainer ret = new CargoContainer( data, "text/xml", "dk", "stm", "faktalink" );
     	CargoContainer ret = new CargoContainer();
+    ret.add( DataStreamType.getDataStreamNameFrom( "originalData" ), "text/xml", "dbc", "eng", "test", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
     	
     	return ret;
     }
@@ -99,7 +102,7 @@ public class FedoraToolsTest
         String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         		"<digitalObject xmlns=\"info:fedora/fedora-system:def/foxml#\" VERSION=\"1.1\"><objectProperties><property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"Active\"/><property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"label_1\"/><property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"user\"/><property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\"" + timeNow + "\"/><property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\"" + timeNow + "\"/></objectProperties><datastream ID=\"itemId_1\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\"><datastreamVersion ID=\"itemId_1.0\" LABEL=\"itemId_1 [text/xml]\" CREATED=\"" + timeNow + "+01:00\" MIMETYPE=\"itemId_1 [text/xml]\" SIZE=\"6\"><contentDigest DIGEST=\"w6bDuMOl\"/><binaryContent>w6bDuMOl</binaryContent></datastreamVersion></datastream></digitalObject>";
 
-        //assertEquals( expected, bStr );
+        assertEquals( expected, bStr );
 
         
         String expected1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
