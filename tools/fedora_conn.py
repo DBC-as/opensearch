@@ -24,12 +24,6 @@
 import urllib2
 import sys
 
-# class __FedoraError(Exception):
-#     def __init__(self, value):
-#         self.value = value
-#         def __str__(self):
-#             return repr(self.value)
-
 
 def test_fedora_conn( servername, port ):
     theurl = 'http://%s:%s/fedora'%( servername, port )
@@ -37,22 +31,16 @@ def test_fedora_conn( servername, port ):
     try:                               
         handle = urllib2.urlopen(req)
     except urllib2.HTTPError, her:
-        sys.exit( "Could not connect to fedora at '%s' : '%s' (http status code '%s')"%( her.url, her.msg, her.code ) )
+
+        if her.code == 401:
+            print her.headers
+            print her.headers['www-authenticate']
+            print 'FEDORA IS UP AND RUNNING!'
+            sys.exit( 0 )
+        else:
+            sys.exit( "Could not connect to fedora at '%s' : '%s' (http status code '%s')"%( her.url, her.msg, her.code ) )
     except urllib2.URLError, uer:
         sys.exit( "Could not connect to fedora at '%s' : '%s' (urllib error code '%s')"%( theurl, uer.reason[1], uer.reason[0] ) )
-#     except IOError, e:
-#         if hasattr(e, 'code'):
-#             if e.code != 401:
-#                 __FedoraError, 'This should not happen. Authentication error expected'
-#                 print e.code            
-#             elif e.code == 401:
-#                 print e.headers
-#                 print e.headers['www-authenticate']
-#                 print 'FEDORA IS UP AND RUNNING!'
-#         else:
-#             raise __FedoraError, 'FEDORA IS NOT UP AND RUNNING!'
-            
-urllib2.URLError
 
 if __name__ == '__main__':
     
