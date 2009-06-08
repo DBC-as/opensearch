@@ -44,7 +44,7 @@ def login():
         conn = psycopg2.connect( "dbname='%s' user='%s' password='%s'"%( usern, usern, usern))
     except psycopg2.InterfaceError, ife:
         log.fatal( ife.message )
-        sys.exit( "I am unable to connect to the database; %s"%( ife.message )
+        sys.exit( "I am unable to connect to the database; %s"%( ife.message ) )
        
     return conn
 
