@@ -36,8 +36,10 @@ def test_fedora_conn( servername, port ):
     req = urllib2.Request(theurl)
     try:                               
         handle = urllib2.urlopen(req)
+    except urllib2.HTTPError, her:
+        sys.exit( "Could not connect to fedora at '%s' : '%s' (http status code '%s')"%( her.url, her.msg, her.code ) )
     except urllib2.URLError, uer:
-        sys.exit( "Could not connect to fedora at %s: '%s' (urllib error code '%s')"%( theurl, uer.reason[1], uer.reason[0] ) )
+        sys.exit( "Could not connect to fedora at '%s' : '%s' (urllib error code '%s')"%( theurl, uer.reason[1], uer.reason[0] ) )
 #     except IOError, e:
 #         if hasattr(e, 'code'):
 #             if e.code != 401:
