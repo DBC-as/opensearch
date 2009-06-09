@@ -194,7 +194,7 @@ if __name__ == '__main__':
 
     from optparse import OptionParser
     
-    parser = OptionParser( usage="%prog [options] ant_target" )
+    parser = OptionParser( usage="%prog [options] -d|--dest destination_folder ant_target" )
 
     parser.add_option( "--ls", dest="listserv", action="store_true",
                        default=False, help="List available servers" )
@@ -215,7 +215,7 @@ if __name__ == '__main__':
     # target_list-name: datadock, ant target-name: dist_datadock
 
     target_list = [ 'all', 'datadock', 'pti', 'testindexer' ]
-    server_list = [ 'andrus','rausu','sempu','tacora','visoke', 'localhost' ]
+    server_list = [ 'andrus','rausu','sempu','tacora','visoke' ] #, 'localhost' ]
 
     if options.listserv:
         print "Available servers to copy to:"
