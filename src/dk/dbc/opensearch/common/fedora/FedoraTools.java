@@ -69,7 +69,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-
+/**
+ * The FedoraTools class handles all conversions between
+ * CargoContainers and Fedora Digital Objects; represented as xml
+ * streams in byte arrays. See IFedoraTools for more information on
+ * how to use this class.
+ */
 public class FedoraTools 
 {
     static Logger log = Logger.getLogger( FedoraTools.class );
@@ -221,9 +226,7 @@ public class FedoraTools
             dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
         }
 
-        log.debug( "Successfully contructed datastreams for each CargoObject in the CargoContainer" );
-
-        log.debug( String.format( "Successfully contructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
+        log.debug( String.format( "Successfully constructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
 
         // add the streams to the digital object
         dot.setDatastream( dsArray );
@@ -252,7 +255,7 @@ public class FedoraTools
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
        
-        log.debug( String.format( "contructing datastream from cargoobject format=%s, submitter=%s, mimetype=%s, contentlength=%s",co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength() ) );
+        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
 
         /** \todo: VERSIONABLE should be configurable in some way */
         boolean versionable = false;
