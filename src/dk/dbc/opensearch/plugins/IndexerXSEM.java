@@ -95,8 +95,7 @@ public class IndexerXSEM implements IIndexer
 
         // Construct doc and Start Transaction
         log.debug( "Starting transaction on running CompassSession" );
-
-        log.debug( String.format( "Trying to read CargoContainer data from .getData into a dom4j.Document type" ) );
+        log.debug( String.format( "Trying to read CargoContainer (pid= %s ) data from .getData into a dom4j.Document type", fedoraHandle ) );
         SAXReader saxReader = new SAXReader();
 
         CPMAlias cpmAlias = null;
