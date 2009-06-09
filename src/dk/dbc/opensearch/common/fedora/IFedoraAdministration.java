@@ -1,7 +1,10 @@
 /**
- * @file   IFedoraAdm.java
+ * @file   IFedoraAdministration.java
  * @brief  interface for interacting with the Fedora Commons repository
  */
+
+package dk.dbc.opensearch.common.fedora;
+
 /**
    This file is part of opensearch.
    Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -20,8 +23,6 @@
    You should have received a copy of the GNU General Public License
    along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-package dk.dbc.opensearch.common.fedora;
 
 import java.util.ArrayList;
 import java.util.Date;
