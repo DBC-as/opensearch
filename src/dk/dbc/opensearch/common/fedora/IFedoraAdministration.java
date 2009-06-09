@@ -30,7 +30,7 @@ import java.util.Date;
 import dk.dbc.opensearch.xsd.DigitalObject;
 
 
-public interface IFedoraAdm
+public interface IFedoraAdministration
 {
     /**
      * method to delete DigitalObjects for good, based on their pids
