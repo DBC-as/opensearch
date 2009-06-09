@@ -278,7 +278,15 @@ public class FileHarvest implements IHarvester
         return jobs;
     }
 
-
+    /** 
+     * Returns a HashSet of InputPairs with file objects. The size of
+     * the HashSet is determined by the getMaxToHarvest configuration
+     * values, which has no default.
+     * \todo: make getMaxToHarvest default to something sane
+     * 
+     * 
+     * @return 
+     */
     private HashSet< InputPair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
         log.debug( "Calling FileHarvest.getNewJobs");
