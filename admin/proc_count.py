@@ -56,7 +56,10 @@ def process_queue_count():
 
     rows = cur.fetchall()
     print "number of jobs not indexed: %s"%( len( rows) )
+    if len( rows ) != 0:
+        for job in rows:
+            print " id for job: %s"%( job[1] )
 
-    return len( rows )
+    #return len( rows )
 
 process_queue_count()
