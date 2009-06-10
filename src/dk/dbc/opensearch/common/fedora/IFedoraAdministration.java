@@ -4,7 +4,6 @@
  */
 
 package dk.dbc.opensearch.common.fedora;
-
 /**
    This file is part of opensearch.
    Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -24,8 +23,14 @@ package dk.dbc.opensearch.common.fedora;
    along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 import java.util.ArrayList;
 import java.util.Date;
+
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.DataStreamType;
+
 
 import dk.dbc.opensearch.xsd.DigitalObject;
 
@@ -33,84 +38,56 @@ import dk.dbc.opensearch.xsd.DigitalObject;
 public interface IFedoraAdministration
 {
     /**
-     * method to delete DigitalObjects for good, based on their pids
-     * @param pids, the list of pids to be removed
-     * @param start tells what the minimum date should be to qualify for removeal, optional
-     * @param end tells what the maximum date should be to qualify for removeal, optinal
-     * @return true if all specified DigitalObjects are removed from the base
+     * method to delete a DigitalObject for good, based on the pid
+     * @param pid, the identifier of the object to be removed
+     * @return true if the object was removed
      */
-    public boolean removeDOsWithPids( ArrayList<String> pids, Date start, Date end );
+    public boolean deleteDO( String pid );
 
-    /**
-     * method to delete DigitalObjects for good, based on submitter, format, date, 
-     * @param submitter, the owner of the objects, 
-     * @param format, the format of the content of the DOs to be removed, optional
-     * @param start, the minimum date to qualify for removal optional
-     * @param end, the maximum date to qualify for removal, optional
-     * @return true if all the specified DOs was removed
-     */
-    public boolean removeDOs( String submitter, String format, Date start, Date end );
-
-    /**
+     /**
      * method for setting the delete flag on DigitalObjects
-     * @param pids, the list of pids to be removed
-     * @param since tells what the minimum date should be to qualify for removeal, optional
-     * @param until tells what the maximum date should be to qualify for removeal, optinal
-     * @return true if all specified DigitalObjects are hidden
+     * @param pid, the identifier of the object to be marked as delete 
+     * @return true if the DigitalObject is marked
      */
-    public boolean hideDOsWithPids( ArrayList<String> pids, Date start, Date end );
+    public boolean markAsDeleteDO( String pid );
 
     /**
-     * method for getting the pids of DigitalObjects
-     * @param submitter, the owner of the objects, 
-     * @param format, the format of the content of the DOs to get pid from, optional
-     * @param start, the minimum date to qualify for pid retrieval, optional
-     * @param end, the maximum date to qualify for pid retrieval, optional
-     * @return ArrayList<String> containing the pids of the specified DOs
-     * */
-    public ArrayList<String> getDOPids( String submitter, String format, Date start, Date end );
-
-    /**
-     * method for getting DigitalObjects based on their pids
-     * @param pidList contains the pids of the DOs to be retrieved
-     * @return ArrayList<DigitalObject> containing the specified DOs
+     * method for getting a DigitalObject in a CargoContainer based on its pid
+     * @param pid, the identifier of the object to get
+     * @return the CargoContainer representing the DigitalObject
      */
-    public ArrayList<DigitalObject> getDOsWithPids( ArrayList<String> pidList);
-
-    /**
-     * method for getting DigitalObjects based on submitter, format and a date interval
-     * @param submitter, the owner of the objects, 
-     * @param format, the format of the content of the DOs to be retrieved, optional
-     * @param start, the minimum date to qualify for retrieval, optional
-     * @param end, the maximum date to qualify for retrieval, optional
-     * @return an ArrayList<DigitalObject> of the DOs matching the arguments
-     */
-    public ArrayList<DigitalObject> getDOs( String submitter, String format, Date start, Date end );
-
-    /**
-     * method for modifying a DigitalObject with a certain pid
-     * @param pid specifies the pid to search for
-     * @param args is a list of modifications and the arguments belonging to them 
-     * to be performed on the DO \todo: how is this done the best way? Bug 8901
-     * @return true if the modifications succeded
-     */
-    public boolean modifyDOsWithPid( ArrayList<String> pids, ArrayList<String> args ); 
-    
-    /**
-     * method for modifying a DigitalObject with a certain pid
-     * @param pid specifies the pid to search for
-     * @param args is a list of modifications and the arguments belonging to them 
-     * to be performed on the DO \todo: how is this done the best way? Bug 8901
-     * @param start, the minimum date to have to qualify for modification
-     * @param end, the maximum date to have to qualify for modification
-     * @return true if the modifications succeded
-     */
-    public boolean modifyDOs( String submitter, String format , ArrayList<String> args );
+    public CargoContainer getDO( String pid );
 
     /**
      * method for storing a DigitalObject in the Fedora base
-     * @param theDO the DigitalObject to store
-     * @return true if the DigitalObject is stored
+     * @param theCC the CargoContainer to store
+     * @return true if the CargoContainer is stored
      */
-    public boolean storeDO( DigitalObject theDO );
+    public boolean storeCC( CargoContainer theCC );
+    /**
+     * method to retrive a DataStream from a DigitalObject
+     * @param pid, identifies the DO
+     * @param streamtype, the name of the DataStream to get
+     * @return a CargoObject containing a DataStream
+     */
+    public CargoObject getDataStream( String pid, DataStreamType streamtype );
+
+    /**
+     * method for saving a Datastream to a DigitalObject
+     * @param stream, the DataStream to save to a DigitalObject
+     * @param pid, the identifier of the object to save the dastream to
+     * @param overwrite, tells whether to overwrite if there is a 
+     * DataStream of the same type present
+     * @return true if the operation succeded
+     */
+    public boolean saveDataStream( CargoObject stream, String pid, boolean overwrite );
+
+    /**
+     * method for storing removing a datastream form a DigitalObject in the Fedora base
+     * @param pid, the indentifier of the object to remove from
+     * @param streamtype, the type of the stream to remove
+     * @param streamPid, the identifier of the stream to remove
+     * @return true if the stream was removed
+     */
+    public boolean removeDataStream( String pid, DataStreamType streamtype, String stramPid );
 }
