@@ -134,7 +134,7 @@ public class DatadockPool
     }
 
     
-    public FutureTask<Float> getTask( DatadockJob datadockJob )throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public FutureTask<Float> getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
     	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraCom ) );
     }

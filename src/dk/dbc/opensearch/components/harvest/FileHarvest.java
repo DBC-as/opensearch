@@ -103,7 +103,7 @@ public class FileHarvest implements IHarvester
      * @throws ParserConfigurationException
      * @throws ConfigurationException
      */
-    public FileHarvest( ) throws IllegalArgumentException, SAXException, IOException, ConfigurationException 
+    public FileHarvest( ) throws IllegalArgumentException, SAXException, IOException, ConfigurationException, FileNotFoundException
     {
         this.submitters = new Vector< InputPair< File, Long > >();
         this.formats = new Vector< InputPair< File, Long > >();
@@ -111,7 +111,15 @@ public class FileHarvest implements IHarvester
         //getting path for the jobs file for the building of the submitterformatvector
         datadockJobsFilePath = DatadockConfig.getPath();
         toHarvestFolder = HarvesterConfig.getFolder();
+
         path = FileHandler.getFile( toHarvestFolder );
+        if ( ! path.exists() )
+        {
+            String errMsg = String.format( "Harvest folder '%s' does not exist!", path );
+            log.error( "FileHarvest: " + errMsg );
+            throw new FileNotFoundException( errMsg );
+        }
+
         harvestDoneFolder = HarvesterConfig.getDoneFolder();
         max = HarvesterConfig.getMaxToHarvest();
     }

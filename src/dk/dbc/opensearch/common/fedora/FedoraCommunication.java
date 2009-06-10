@@ -113,8 +113,8 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
      */
 
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
-        {
-            log.debug( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
+    {
+        log.debug( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
 
         // obtain mimetype and length from CargoContainer
         String mimeType = null;

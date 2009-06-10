@@ -24,6 +24,7 @@ import dk.dbc.opensearch.common.helpers.PairComparator_FirstString;
 import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
@@ -135,37 +136,48 @@ public class FedoraTools
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
 
-        
         log.debug( "Constructing adminstream" );
         PairComparator_FirstString firstComp = new PairComparator_FirstString();
         PairComparator_SecondInteger secondComp = new PairComparator_SecondInteger();
 
         // Constructing list with datastream indexes and id
         ArrayList< InputPair < String, Integer > > lst = new  ArrayList< InputPair < String, Integer > >();
-        for(int i = 0; i < cargo_count; i++){
+        //ArrayList< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
+        for(int i = 0; i < cargo_count; i++)
+        {
             CargoObject c = cargo.getCargoObjects().get( i );
             lst.add( new InputPair< String, Integer >( c.getDataStreamName().getName(), i ) );
+            //lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
         }
         
         Collections.sort( lst, firstComp);
+        //Collections.sort( lst );
 
         // Add a number to the id according to the number of datastreams with this datastreamname
         int j = 0;
         DataStreamType dsn = null;
-        ArrayList< InputPair < String, Integer > > lst2 = new  ArrayList< InputPair < String, Integer > >();
-        for( Pair< String, Integer > p : lst){
-            if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) ){
+        ArrayList< InputPair < String, Integer > > lst2 = new ArrayList< InputPair < String, Integer > >();
+        //ArrayList< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
+        for( Pair<String, Integer> p : lst)
+        {
+            if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) )
+            {
                 j = 0;
             }
-            else{
+            else
+            {
                 j += 1;
             }
+
             dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
             lst2.add( new InputPair< String, Integer >( p.getFirst() + "." + j , p.getSecond() ) );
+            //lst2.add( new ComparablePair<Integer, String>( p.getSecond(), j + "." + p.getFirst() ) );
         }
         
         lst2.add( new InputPair< String, Integer >( DataStreamType.AdminData.getName(), lst2.size() ) );
-        Collections.sort( lst2, secondComp);
+        //lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
+        Collections.sort( lst2, secondComp );
+        //Collections.sort( lst2 );
         
         // Constructing adm stream
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -189,11 +201,13 @@ public class FedoraTools
 
         	Element stream = admStream.createElement( "stream" );
         	stream.setAttribute( "id", lst2.get( i ).getFirst() );
+                //stream.setAttribute( "id", lst2.get( i ).getSecond() );
         	stream.setAttribute( "lang", c.getLang() );
         	stream.setAttribute( "format", c.getFormat() );
         	stream.setAttribute( "mimetype", c.getMimeType() );
         	stream.setAttribute( "submitter", c.getSubmitter() );
         	stream.setAttribute( "index", Integer.toString( lst2.get( i ).getSecond() ) );
+                //stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
         	stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
         	streams.appendChild( (Node) stream );
         }
@@ -224,6 +238,7 @@ public class FedoraTools
         {
             CargoObject c = cargo.getCargoObjects().get( i );
             dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
+            //dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getSecond() );
         }
 
         log.debug( String.format( "Successfully constructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
@@ -236,7 +251,7 @@ public class FedoraTools
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
         Marshaller m = new Marshaller(outW); // IOException
         m.marshal(dot); // throws MarshallException, ValidationException
-        //        log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
+        //log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
         byte[] ret = out.toByteArray();
 
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );

@@ -166,7 +166,7 @@ public class DatadockMain
      * The datadocks main method.
      * Starts the datadock and starts the datadockManager.
      */
-    static public void main(String[] args)
+    static public void main(String[] args) throws Throwable
     {
     	log.debug( "DatadockMain main called" );
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
@@ -201,14 +201,12 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            //datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, jobMap );
             datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, fedoraCom );
 
             log.debug( "Starting harvester" );
             
             // harvester;
-            //File harvestDirectory = FileHandler.getFile( harvestDir ); absolete
-            IHarvester harvester = new FileHarvest( /*harvestDirectory*/ );
+            IHarvester harvester = new FileHarvest();
 
             log.debug( "Starting the manager" );
             // Starting the manager
@@ -220,10 +218,11 @@ public class DatadockMain
             daemonize();
             addDaemonShutdownHook();
         }
-        catch (Throwable e)
+        catch ( Throwable e )
         {
             System.out.println( "Startup failed." + e );
             log.fatal( "Startup failed.", e);
+            throw e;
         }
         finally
         {
@@ -244,13 +243,13 @@ public class DatadockMain
                 /**
                  * \todo: dont we want to get the trace?
                  */
-                log.error("InterruptedException caught in mainloop: "  + ie);
-                log.error("  " + ie.getMessage() );
+                log.error( "InterruptedException caught in mainloop: "  + ie );
+                log.error( "  " + ie.getMessage() );
             }
             catch( RuntimeException re )
             {
-                log.error("RuntimeException caught in mainloop: " + re);
-                log.error("  " + re.getCause().getMessage() );
+                log.error( "RuntimeException caught in mainloop: " + re );
+                log.error( "  " + re.getCause().getMessage() );
                 throw re;
             }
             catch( Exception e )
@@ -258,7 +257,7 @@ public class DatadockMain
                 /**
                  * \todo: dont we want to get the trace?
                  */
-                log.error("Exception caught in mainloop: " + e.toString() );
+                log.error( "Exception caught in mainloop: " + e.toString() );
             }
         }
     }

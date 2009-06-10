@@ -259,7 +259,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   </target>
 
 
-  <target name="pluginframework" depends="test_Darg, types, os">
+  <target name="pluginframework" depends="test_Darg, types, os, helpers">
     <antcall target="${arg}_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/pluginframework" />
       <param name="project.name" value="pluginframework" />

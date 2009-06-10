@@ -79,7 +79,7 @@ public class DatadockManager
     }
 
     
-    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
     {
         log.debug( "DatadockManager update called" );
       
@@ -111,8 +111,7 @@ public class DatadockManager
         }
         
         //checking jobs
-        Vector<CompletedTask> finishedJobs = pool.checkJobs();
-       
+        Vector<CompletedTask> finishedJobs = pool.checkJobs();       
     }
     
     

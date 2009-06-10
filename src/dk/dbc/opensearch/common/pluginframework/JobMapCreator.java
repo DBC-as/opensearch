@@ -27,7 +27,6 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ComparablePair;
-import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,8 +81,6 @@ public class JobMapCreator
     	jobMap = new HashMap< InputPair< String, String >, ArrayList< String > >();
         ArrayList<String> sortedPluginList = new ArrayList< String >();
 
-        List< InputPair< String, Integer > > pluginAndPriority = new ArrayList< InputPair< String, Integer > >();
-
         File jobFile = FileHandler.getFile( path );
 
         // Build the jobMap
@@ -91,12 +88,15 @@ public class JobMapCreator
         NodeList jobNodeList = XMLFileReader.getNodeList( jobFile, "job" );
         int listLength = jobNodeList.getLength();
 
+        //List< InputPair< String, Integer > > pluginAndPriority = new ArrayList< InputPair< String, Integer > >();
+        List< ComparablePair< Integer, String > > pluginAndPriority = new ArrayList< ComparablePair< Integer, String > >();
+
         // For each node read the task name and position        
         Element jobElement;
         String submitter = "";
         String format = "";
         int position;
-        PairComparator_SecondInteger secComp = new PairComparator_SecondInteger();
+        //PairComparator_SecondInteger secComp = new PairComparator_SecondInteger();
 
         for( int x = 0; x < listLength ; x++ )
         {
@@ -109,7 +109,7 @@ public class JobMapCreator
             int pluginListLength = pluginList.getLength();
 
             pluginAndPriority.clear();
-        	
+
             String plugin;
             // Store the classname in a List
             for( int y = 0; y < pluginListLength; y++ )
@@ -117,25 +117,26 @@ public class JobMapCreator
                 Element pluginElement = (Element)pluginList.item( y );
                 plugin = pluginElement.getAttribute( "classname" );
                 position = Integer.decode( pluginElement.getAttribute( "position" ) );
-                
-                //pluginAndPriority.add( new ComparablePair< String, Integer >( plugin, position ) );
-                pluginAndPriority.add( new InputPair< String, Integer >( plugin, position )  );
+                pluginAndPriority.add( new ComparablePair< Integer, String >( position, plugin ) );
+                //pluginAndPriority.add( new InputPair< String, Integer >( plugin, position )  );
             }
             
             // Sort the plugin classname based on the position (order)
-            Collections.sort( pluginAndPriority, secComp );
+            //Collections.sort( pluginAndPriority, secComp );
+            Collections.sort( pluginAndPriority );
 
             // Store in sorted list
             sortedPluginList.clear();
             for( int z = 0; z < pluginListLength; z++ )
             {
-                plugin = ( (Pair< String, Integer >)pluginAndPriority.get( z ) ).getFirst();
+                //plugin = ( (Pair<String, Integer>)pluginAndPriority.get( z ) ).getSecond();
+                plugin = ( (Pair<Integer, String>)pluginAndPriority.get( z ) ).getSecond();
                 sortedPluginList.add( plugin );
             }
 
             // Put it into the map with  <submitter, format> as key and List as value
             jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
-
+            //System.out.println( jobMap.toString() );
         }
 
         if( jobMap.isEmpty() )
