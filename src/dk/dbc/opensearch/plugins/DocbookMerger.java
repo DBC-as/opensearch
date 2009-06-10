@@ -1,28 +1,28 @@
 /**
  * \file DocbookMerger.java
- * \brief The DocbookMerger class
+ * \brief A class that merges docbook format with dublin core into one xml document
  * \package plugins;
  */
 package dk.dbc.opensearch.plugins;
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+/**
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   This file is part of opensearch.
+   Copyright © 2009, Dansk Bibliotekscenter a/s,
+   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   opensearch is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+   opensearch is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -47,6 +47,7 @@ import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
+import java.util.List;
 
 
 /**
@@ -75,11 +76,26 @@ public class DocbookMerger implements IProcesser
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
 
-        log.debug( "Entered getCargoContainer( CargoContainer cargo )" );
-
-        CargoObject dc = cargo.getCargoObject( DataStreamType.DublinCoreData );
-
+        log.debug( String.format( "Entered getCargoContainer, streams in container: %s", cargo.getCargoObjectCount() ) );
+        CargoObject dc = null;
         Element annotation = null;
+        if( cargo.hasCargo( DataStreamType.DublinCoreData ) )
+        {
+            dc = cargo.getCargoObject( DataStreamType.DublinCoreData );
+            byte[] dc_data_bytes = dc.getBytes();
+            ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_data_bytes );
+
+            Document dc_doc = null;
+            try{
+                SAXReader reader = new SAXReader();
+                dc_doc = reader.read( dc_is );
+            }catch( DocumentException docex){
+                log.fatal( String.format( "Could not read the dublin core inputstream into a Document: '%s'", docex ) );
+                throw new PluginException( "Could not read the dublin core inputstream into a Document", docex );
+            }
+            annotation = dc_doc.getRootElement();
+        }
+
 
         CargoObject orig = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -87,7 +103,6 @@ public class DocbookMerger implements IProcesser
         ByteArrayInputStream is = new ByteArrayInputStream( orig_bytes );
         Document doc = null;
 
-        
         try{
             SAXReader reader = new SAXReader();
             doc = reader.read( is );
@@ -98,10 +113,21 @@ public class DocbookMerger implements IProcesser
 
         Element root = doc.getRootElement();
 
+        List<Namespace> ns_list = annotation.additionalNamespaces();
+        ns_list.add( annotation.getNamespace() );
+
+        ns_list.add( root.getNamespace() );
+
         Namespace ns = new Namespace( "ting", "http://www.dbc.dk/ting/");
 
         Element tingElement = new DOMElement( "container", ns );
-        
+
+        for( Namespace ns_from_list : ns_list ){
+            //adds namespaces from the Dublin Core Document and the old original data
+            log.debug( String.format( "Appending namespace %s", ns_from_list ) );
+            tingElement.add( ns_from_list );
+        }
+
         DocumentFactory factory = new DocumentFactory();
 
         Document new_document = factory.createDocument();
@@ -111,7 +137,7 @@ public class DocbookMerger implements IProcesser
         Element new_root = new_document.getRootElement();
 
         if( dc != null) {
-            log.debug( String.format( "CargoContainer has no annotation data" ) );
+            log.debug( String.format( "Adding  annotation data to new xml" ) );
             new_root.add( annotation );
         }
 
@@ -119,18 +145,25 @@ public class DocbookMerger implements IProcesser
 
         String new_original_data = new_document.asXML();
         log.debug( String.format( "Original xml: %s", new String( orig.getBytes() ) ) );
-        log.debug( "Adding annotated data to CargoContainer, overwriting original data" );
+        log.debug( String.format( "New xml: %s", new_original_data ) );
+        log.debug( String.format( "Adding annotated data to CargoContainer with alias '%s', overwriting original data", orig.getIndexingAlias() ) );
         // orig.updateByteArray( new_original_data.getBytes() );
-        cargo.remove( orig.getId() );
+        log.debug( String.format( "Removing data with id %s", orig.getId() ) );
+        if( ! cargo.remove( orig.getId() ) ) {
+            log.warn( String.format( "Could not remove data with id %s", orig.getId() ) );
+        }
+
+        long new_id = 0;
+
         try
         {
-        cargo.add( orig.getDataStreamName(), 
-                   orig.getFormat(), 
-                   orig.getSubmitter(),
-                   orig.getLang(),
-                   orig.getMimeType(),
-                   orig.getIndexingAlias(),
-                   new_original_data.getBytes() );
+            new_id = cargo.add( orig.getDataStreamName(),
+                                orig.getFormat(),
+                                orig.getSubmitter(),
+                                orig.getLang(),
+                                orig.getMimeType(),
+                                orig.getIndexingAlias(),
+                                new_original_data.getBytes() );
         }
         catch( IOException ioe )
         {
@@ -143,7 +176,7 @@ public class DocbookMerger implements IProcesser
         // }
 
         // changeme
-        log.debug( String.format( "New xml data: %s", new String( orig.getBytes() ) ) );
+        log.debug( String.format( "New xml data: %s", new String( cargo.getCargoObject( new_id ).getBytes() ) ) );
         return cargo;
 
     }

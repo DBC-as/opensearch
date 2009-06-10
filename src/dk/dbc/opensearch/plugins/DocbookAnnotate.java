@@ -276,7 +276,7 @@ public class DocbookAnnotate implements IAnnotate
                 log.debug( "Adding annotation to CargoContainer" );
                 String isolatedDCData = isolateDCData( xmlString );   
                 /** \todo: use of deprecated method from CargoContainer */
-                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", IndexingAlias.DC, isolatedDCData.getBytes() );
+                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", IndexingAlias.None, isolatedDCData.getBytes() );
             } 
             catch (IOException ioe) 
             {

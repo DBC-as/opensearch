@@ -51,7 +51,7 @@ public class CargoObject
 
     private final CargoObjectInfo coi;
 
-    Logger log = Logger.getLogger( CargoObject.class );
+    private Logger log = Logger.getLogger( CargoObject.class );
 
     /**
      * Constructor for the CargoObject class. Here an object of the
@@ -74,7 +74,7 @@ public class CargoObject
      * @param data
      * @throws IOException
      */
-    public CargoObject( DataStreamType dataStreamName, 
+    CargoObject( DataStreamType dataStreamName, 
                         String mimetype, 
                         String language, 
                         String submitter,

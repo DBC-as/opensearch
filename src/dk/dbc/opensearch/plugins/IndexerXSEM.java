@@ -53,6 +53,7 @@ import org.dom4j.Element;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
+import dk.dbc.opensearch.common.types.DataStreamType;
 
 
 public class IndexerXSEM implements IIndexer
@@ -116,128 +117,138 @@ public class IndexerXSEM implements IIndexer
         log.info( "cpmAlias constructed" );
         for( CargoObject co : list )
         {
-            //String format = co.getFormat();
-            //format = "article";
-            //log.debug( String.format( "format of CargoObject: %s", format ) );
-            String indexingAlias = co.getIndexingAlias().getName();
-            boolean isValidAlias = false;
-            try {
-                isValidAlias = cpmAlias.isValidAlias( indexingAlias );
-            } catch ( ParserConfigurationException pce ) {
-                log.fatal( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
-                throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
-            } catch ( SAXException se ) {
-                log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
-                throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
-            } catch (IOException ioe) {
-                log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
-                throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
-            // }catch(Exception e){
-            //     log.fatal("exp: %s with message %s thrown");
-            //     StackTraceElement[] trace = e.getStackTrace();
-            //     for( int i = 0; i < trace.length; i++ )
-            //     {
-            //         log.fatal( trace[i].toString() );
-            //     }
-            }
 
-            if( ! isValidAlias )
-            {
-                log.fatal( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
-                throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
+            if( ! ( co.getDataStreamName() == DataStreamType.OriginalData ) ) {
+                log.info( String.format( "Not indexing data with datastreamtype '%s'",co.getDataStreamName() ) );
             }
-            else
-            {
-                byte[] bytes = co.getBytes();
-                log.debug( String.format( "altered xml: %s", new String( bytes ) ) );
-                ByteArrayInputStream is = new ByteArrayInputStream( bytes );
-                Document doc = null;
+            else {
+
+                //String format = co.getFormat();
+                //format = "article";
+                //log.debug( String.format( "format of CargoObject: %s", format ) );
+                String indexingAlias = co.getIndexingAlias().getName();
+                boolean isValidAlias = false;
                 try {
-                    doc = saxReader.read( is );
-                } catch (DocumentException de) {
-                    log.fatal( String.format( "While parsing xml: %s, I caught exception from SAX Parsing : %s", new String( co.getBytes() ), de.getMessage() ) );
-                    throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
+                    isValidAlias = cpmAlias.isValidAlias( indexingAlias );
+                } catch ( ParserConfigurationException pce ) {
+                    log.fatal( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
+                    throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
+                } catch ( SAXException se ) {
+                    log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
+                    throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
+                } catch (IOException ioe) {
+                    log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
+                    throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
+                    // }catch(Exception e){
+                    //     log.fatal("exp: %s with message %s thrown");
+                    //     StackTraceElement[] trace = e.getStackTrace();
+                    //     for( int i = 0; i < trace.length; i++ )
+                    //     {
+                    //         log.fatal( trace[i].toString() );
+                    //     }
                 }
-                /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
-                HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
-                log.debug( String.format( "Initializing new fields for the index" ) );
-                fieldMap.put( "fedoraPid", fedoraHandle );
-                fieldMap.put( "original_format", co.getFormat() );
 
-                Element root = doc.getRootElement();
-
-                for( String key : fieldMap.keySet() )
+                if( ! isValidAlias )
                 {
-                    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
-                    Element newElement = new DOMElement( key ).addText( fieldMap.get( key ) );
-                    root.add( newElement );
+                    log.fatal( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
+                    throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
                 }
-
-                // this log line is _very_ verbose, but useful in a tight situation
-                log.debug( String.format( "Constructing AliasedXmlObject from Document. RootElement:\n%s", doc.getRootElement().asXML() ) );
-
-                /** \todo: Dom4jAliasedXmlObject constructor might throw some unknown exception */
-                AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( indexingAlias, doc.getRootElement() );
-                //AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( co.getFormat(), doc.getRootElement() );
-                log.info( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
-
-                // getting transaction object and saving index
-                log.debug( String.format( "Getting transaction object" ) );
-                CompassTransaction trans = null;
-
-                try
+                else
                 {
-                    log.debug( "Beginning transaction" );
-                    trans = session.beginTransaction();
-                }catch( CompassException ce )
-                {
-                    log.fatal( String.format( "Could not initiate transaction on the CompassSession" ) );
-                    throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
+                    byte[] bytes = co.getBytes();
+                    log.debug( String.format( "altered xml: %s", new String( bytes ) ) );
+                    ByteArrayInputStream is = new ByteArrayInputStream( bytes );
+                    Document doc = null;
+                    try {
+                        doc = saxReader.read( is );
+                    } catch (DocumentException de) {
+                        log.fatal( String.format( "While parsing xml: %s, I caught exception from SAX Parsing : %s", new String( co.getBytes() ), de.getMessage() ) );
+                        throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
+                    }
+                    /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
+                    HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
+                    log.debug( String.format( "Initializing new fields for the index" ) );
+                    fieldMap.put( "fedoraPid", fedoraHandle );
+                    fieldMap.put( "original_format", co.getFormat() );
+
+                    Element root = doc.getRootElement();
+
+                    for( String key : fieldMap.keySet() )
+                    {
+                        log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
+                        Element newElement = new DOMElement( key ).addText( fieldMap.get( key ) );
+                        root.add( newElement );
+                    }
+
+                    // this log line is _very_ verbose, but useful in a tight situation
+                    log.debug( String.format( "Constructing AliasedXmlObject from Document (pid = %s) with alias = %s. RootElement:\n%s", fedoraHandle, indexingAlias, doc.getRootElement().asXML() ) );
+
+                    /** \todo: Dom4jAliasedXmlObject constructor might throw some unknown exception */
+                    AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( indexingAlias, doc.getRootElement() );
+                    //AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( co.getFormat(), doc.getRootElement() );
+                    log.info( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
+
+                    // getting transaction object and saving index
+                    log.debug( String.format( "Getting transaction object" ) );
+                    CompassTransaction trans = null;
+
+                    try
+                    {
+                        log.debug( "Beginning transaction" );
+                        trans = session.beginTransaction();
+                    }catch( CompassException ce )
+                    {
+                        log.fatal( String.format( "Could not initiate transaction on the CompassSession" ) );
+                        throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
+                    }
+
+                    //log.info( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
+                    //session.save( xmlObject );
+                    //log.debug( String.format( "Xml Object saved to index" ) );
+
+                    /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
+                    //HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
+                    //log.debug( String.format( "Initializing new fields for the index" ) );
+                    //fieldMap.put( "fedoraPid", fedoraHandle );
+                    //fieldMap.put( "original_format", co.getFormat() );
+
+                    //for( String key : fieldMap.keySet() )
+                    //{
+                    //    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
+                    //    LuceneProperty newField = new LuceneProperty( new Field( key, new StringReader( fieldMap.get( key ) ) ) );
+                    //    resource.addProperty( newField );
+                    //}
+
+                    try
+                    {
+                        log.debug( String.format( "Saving Compass Resource '%s' with new fields to index", xmlObject.getAlias() ) );
+                        session.save( xmlObject );
+                    }
+                    catch( CompassException ce ){
+                        log.fatal( String.format( "Could not save index object (alias=%s, pid=%s) to index. Cause: %s, message: %s, xml='''%s''' ",
+                                                  xmlObject.getAlias(), fedoraHandle, ce.getCause(), ce.getMessage(), doc.getRootElement().asXML() ) );
+                        throw new PluginException( String.format( "Could not save index object to index. Cause: %s, message: %s ",
+                                                                  ce.getCause(), ce.getMessage() ), ce );
+                    }
+
+                    log.debug( "Committing index on transaction" );
+
+                    trans.commit();
+
+                    /** todo: does trans.wasCommitted have any side-effects? Such as waiting for the transaction to finish before returning?*/
+                    log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );
+                    session.close();
+
+                    log.info( String.format( "Document indexed and stored with Compass" ) );
+
+                    log.debug( "Obtain processtime, and writing statistics into the database" );
+
+                    processTime += finishTime.getTime() - co.getTimestamp();
+
+                    updateEstimationDB(  co, processTime );
                 }
-
-                //log.info( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
-                //session.save( xmlObject );
-                //log.debug( String.format( "Xml Object saved to index" ) );
-
-                /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
-                //HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
-                //log.debug( String.format( "Initializing new fields for the index" ) );
-                //fieldMap.put( "fedoraPid", fedoraHandle );
-                //fieldMap.put( "original_format", co.getFormat() );
-
-                //for( String key : fieldMap.keySet() )
-                //{
-                //    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
-                //    LuceneProperty newField = new LuceneProperty( new Field( key, new StringReader( fieldMap.get( key ) ) ) );
-                //    resource.addProperty( newField );
-                //}
-
-                try
-                {
-                    log.debug( String.format( "Saving Compass Resource '%s' with new fields to index", xmlObject.getAlias() ) );
-                    session.save( xmlObject );
-                }
-                catch( CompassException ce ){
-                    log.fatal( String.format( "Could not save index object to index. Cause: %s, message: %s ", ce.getCause(), ce.getMessage() ) );
-                    throw new PluginException( String.format( "Could not save index object to index. Cause: %s, message: %s ", ce.getCause(), ce.getMessage() ), ce );
-                }
-
-                log.debug( "Committing index on transaction" );
-
-                trans.commit();
-
-                /** todo: does trans.wasCommitted have any side-effects? Such as waiting for the transaction to finish before returning?*/
-                log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );
-                session.close();
-
-                log.info( String.format( "Document indexed and stored with Compass" ) );
-
-                log.debug( "Obtain processtime, and writing statistics into the database" );
-
-                processTime += finishTime.getTime() - co.getTimestamp();
-
-                updateEstimationDB(  co, processTime );
             }
+
         }
 
         return processTime;
