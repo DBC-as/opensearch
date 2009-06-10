@@ -123,9 +123,6 @@ public class IndexerXSEM implements IIndexer
             }
             else {
 
-                //String format = co.getFormat();
-                //format = "article";
-                //log.debug( String.format( "format of CargoObject: %s", format ) );
                 String indexingAlias = co.getIndexingAlias().getName();
                 boolean isValidAlias = false;
                 try {
@@ -139,13 +136,6 @@ public class IndexerXSEM implements IIndexer
                 } catch (IOException ioe) {
                     log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
                     throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
-                    // }catch(Exception e){
-                    //     log.fatal("exp: %s with message %s thrown");
-                    //     StackTraceElement[] trace = e.getStackTrace();
-                    //     for( int i = 0; i < trace.length; i++ )
-                    //     {
-                    //         log.fatal( trace[i].toString() );
-                    //     }
                 }
 
                 if( ! isValidAlias )
@@ -201,10 +191,6 @@ public class IndexerXSEM implements IIndexer
                         log.fatal( String.format( "Could not initiate transaction on the CompassSession" ) );
                         throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
                     }
-
-                    //log.info( String.format( "Saving aliased xml object with alias %s to the index", xmlObject.getAlias() ) );
-                    //session.save( xmlObject );
-                    //log.debug( String.format( "Xml Object saved to index" ) );
 
                     /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
                     //HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
