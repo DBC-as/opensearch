@@ -33,10 +33,21 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 
 
 import dk.dbc.opensearch.xsd.DigitalObject;
-
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import java.rmi.RemoteException;
+import java.net.MalformedURLException;
+import org.exolab.castor.xml.MarshalException;
+import javax.xml.rpc.ServiceException;
+import org.exolab.castor.xml.ValidationException;
+import java.text.ParseException;
+import javax.xml.transform.TransformerException;
 
 public interface IFedoraAdministration
 {
+    //public IFedoraAdministration();
+    
     /**
      * method to delete a DigitalObject for good, based on the pid
      * @param pid, the identifier of the object to be removed
@@ -56,21 +67,23 @@ public interface IFedoraAdministration
      * @param pid, the identifier of the object to get
      * @return the CargoContainer representing the DigitalObject
      */
-    public CargoContainer getDO( String pid );
+    public CargoContainer getDO( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
 
     /**
      * method for storing a DigitalObject in the Fedora base
      * @param theCC the CargoContainer to store
-     * @return true if the CargoContainer is stored
+     * @param label, the label to put on the DigitalObject
+     * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public boolean storeCC( CargoContainer theCC );
+    public String storeCC( CargoContainer theCC, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException;
     /**
-     * method to retrive a DataStream from a DigitalObject
+     * method to retrive all DataStreams of a DataStreamType from a DigitalObject
      * @param pid, identifies the DO
-     * @param streamtype, the name of the DataStream to get
-     * @return a CargoObject containing a DataStream
+     * @param streamtype, the name of type of the DataStream to get
+     * @return anArrayList of CargoObjects eachcontaining a DataStream,
+     * is empty if there are no DataStreams of the streamtype
      */
-    public CargoObject getDataStream( String pid, DataStreamType streamtype );
+    public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
 
     /**
      * method for saving a Datastream to a DigitalObject
