@@ -136,12 +136,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
-  </target> 
-
-  <target name="dist-aux" depends="clean, config_py"> <!-- xsd, -->
-    <antcall target="compile-tests_project">
-      <param name="project.name" value="dist/*.jar" />
-    </antcall>
     <antcall target="_dist_testindexer">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />
@@ -149,10 +143,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <antcall target="_dist_readindex">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_READINDEX.jar" />
-    </antcall>
-    <antcall target="_dist_indexchecker">
-      <param name="src.dir" value="${src.dir}" />
-      <param name="project.name" value="dist/${dist.jar}_INDEXCHECKER.jar" />
     </antcall>
   </target> 
 
@@ -163,12 +153,14 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </antcall>
   </target>
 
+
   <target name="dist_pti" depends="clean, compile">  <!-- xsd, "> -->
     <antcall target="_dist_pti">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
     </antcall>
   </target>
+
 
   <target name="dist_testindexer" depends="clean, compile"> <!-- xsd, "> -->
     <antcall target="_dist_testindexer">
@@ -183,14 +175,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       <param name="project.name" value="dist/${dist.jar}_READINDEX.jar" />
     </antcall>
   </target>
-
-  <target name="dist_indexchecker" depends="clean, compile-tests"> <!-- xsd, "> -->
-    <antcall target="_dist_indexchecker">
-      <param name="src.dir" value="${src.dir}" />
-      <param name="project.name" value="dist/${dist.jar}_INDEXCHECKER.jar" />
-    </antcall>
-  </target>
-
 
   <target name="doc">
     <antcall target="_doc" />
