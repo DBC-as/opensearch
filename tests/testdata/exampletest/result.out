@@ -1,0 +1,277 @@
+
+Number of documents in index: 3
+
+Document number: 0
+Field: stored/uncompressed,indexed,omitNorms<alias:danmarcxchange>
+Values: danmarcxchange
+Field: stored/uncompressed,indexed,omitNorms<$/danmarcxchange/ac.identifier:03281698>
+Values: 03281698
+Field: stored/uncompressed,indexed,tokenized<dc.title:Huset>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.title:Kbh.>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.title:Huset>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.title:København>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.title:Huset>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.title:Grundejer-bladet>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.title:Grundejertidende>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.title:Grundejerbladet>
+Values: Huset, Kbh., Huset, København, Huset, Grundejer-bladet, Grundejertidende, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.creator:Ejendomsforeningen Danmark>
+Values: Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening
+Field: stored/uncompressed,indexed,tokenized<dc.creator:Kjøbenhavns Grundejerforening>
+Values: Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening
+Field: stored/uncompressed,indexed,tokenized<dc.subject:333.323 209 489>
+Values: 333.323 209 489, 33.956
+Field: stored/uncompressed,indexed,tokenized<dc.subject:33.956>
+Values: 333.323 209 489, 33.956
+Field: stored/uncompressed,indexed,tokenized<dc.description:Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.]>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Heri indgået, Grundejer-bladet, Heri indgået, Grundejertidende, Særnummer, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.description:Heri indgået>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Heri indgået, Grundejer-bladet, Heri indgået, Grundejertidende, Særnummer, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.description:Grundejer-bladet>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Heri indgået, Grundejer-bladet, Heri indgået, Grundejertidende, Særnummer, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.description:Heri indgået>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Heri indgået, Grundejer-bladet, Heri indgået, Grundejertidende, Særnummer, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.description:Grundejertidende>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Heri indgået, Grundejer-bladet, Heri indgået, Grundejertidende, Særnummer, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.description:Særnummer>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Heri indgået, Grundejer-bladet, Heri indgået, Grundejertidende, Særnummer, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.description:Grundejerbladet>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Heri indgået, Grundejer-bladet, Heri indgået, Grundejertidende, Særnummer, Grundejerbladet
+Field: stored/uncompressed,indexed,tokenized<dc.publisher:Ejendomsforeningen Danmark>
+Values: Ejendomsforeningen Danmark
+Field: stored/uncompressed,indexed,tokenized<dc.contributor:Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.]>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.]
+Field: stored/uncompressed,indexed,tokenized<dc.date:1969>
+Values: 1969, [1969]-
+Field: stored/uncompressed,indexed,tokenized<dc.date:[1969]->
+Values: 1969, [1969]-
+Field: stored/uncompressed,indexed,tokenized<dc.type:Tidsskrift>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.type:a>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.type:xx>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.identifier:0109-1034>
+Values: 0109-1034
+Field: stored/uncompressed,indexed,tokenized<dc.language:Dansk>
+Values: Dansk, dan
+Field: stored/uncompressed,indexed,tokenized<dc.language:dan>
+Values: Dansk, dan
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Huset>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Ejendomsforeningen Danmark>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Kjøbenhavns Grundejerforening>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:33.956>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Bolig- og grundejerforeninger>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.]>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Kbh. Ejendomsforeningen Danmark>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:1969>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Tidsskrift>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:ISSN: 0109-1034>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Dansk>
+Values: Huset, Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening, 33.956, Bolig- og grundejerforeninger, Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.], Kbh. Ejendomsforeningen Danmark, 1969, Tidsskrift, ISSN: 0109-1034, Dansk
+Field: stored/uncompressed,indexed<title:Huset>
+Values: Huset
+Field: stored/uncompressed,indexed<creator:Ejendomsforeningen Danmark>
+Values: Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening
+Field: stored/uncompressed,indexed<creator:Kjøbenhavns Grundejerforening>
+Values: Ejendomsforeningen Danmark, Kjøbenhavns Grundejerforening
+Field: stored/uncompressed,indexed<subject:33.956>
+Values: 33.956, Bolig- og grundejerforeninger
+Field: stored/uncompressed,indexed<subject:Bolig- og grundejerforeninger>
+Values: 33.956, Bolig- og grundejerforeninger
+Field: stored/uncompressed,indexed<description:Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.]>
+Values: Tidligere udgivet: Kbh. : Kjøbenhavns Grundejerforening ... [et al.]
+Field: stored/uncompressed,indexed<publisher:Kbh. Ejendomsforeningen Danmark>
+Values: Kbh. Ejendomsforeningen Danmark
+Field: stored/uncompressed,indexed<date:1969>
+Values: 1969
+Field: stored/uncompressed,indexed<type:Tidsskrift>
+Values: Tidsskrift
+Field: stored/uncompressed,indexed<identifier:ISSN: 0109-1034>
+Values: ISSN: 0109-1034
+Field: stored/uncompressed,indexed<language:Dansk>
+Values: Dansk
+Field: stored/uncompressed,indexed<fedoraPid:mock_fedoraPID>
+Values: mock_fedoraPID
+Field: stored/uncompressed,indexed<original_format:danmarcxchange>
+Values: danmarcxchange
+Field: stored/uncompressed,indexed,omitNorms<$/uid:danmarcxchange#03281698#>
+Values: danmarcxchange#03281698#
+
+Document number: 1
+Field: stored/uncompressed,indexed,omitNorms<alias:danmarcxchange>
+Values: danmarcxchange
+Field: stored/uncompressed,indexed,omitNorms<$/danmarcxchange/ac.identifier:05912776>
+Values: 05912776
+Field: stored/uncompressed,indexed,tokenized<dc.title:Grønt miljø>
+Values: Grønt miljø
+Field: stored/uncompressed,indexed,tokenized<dc.creator:Landsforeningen Danske Anlægsgartnermestre>
+Values: Landsforeningen Danske Anlægsgartnermestre, Danske Anlægsgartnermestre, Landsforeningen, LDA
+Field: stored/uncompressed,indexed,tokenized<dc.creator:Danske Anlægsgartnermestre, Landsforeningen>
+Values: Landsforeningen Danske Anlægsgartnermestre, Danske Anlægsgartnermestre, Landsforeningen, LDA
+Field: stored/uncompressed,indexed,tokenized<dc.creator:LDA>
+Values: Landsforeningen Danske Anlægsgartnermestre, Danske Anlægsgartnermestre, Landsforeningen, LDA
+Field: stored/uncompressed,indexed,tokenized<dc.subject:712>
+Values: 712, 63.5105
+Field: stored/uncompressed,indexed,tokenized<dc.subject:63.5105>
+Values: 712, 63.5105
+Field: stored/uncompressed,indexed,tokenized<dc.description:Fortsættelse af: Anlægsgartneren>
+Values: Fortsættelse af: Anlægsgartneren
+Field: stored/uncompressed,indexed,tokenized<dc.publisher:Landsforeningen Danske Anlægsgartnermestre>
+Values: Landsforeningen Danske Anlægsgartnermestre
+Field: stored/uncompressed,indexed,tokenized<dc.date:1983>
+Values: 1983, [1983]-
+Field: stored/uncompressed,indexed,tokenized<dc.date:[1983]->
+Values: 1983, [1983]-
+Field: stored/uncompressed,indexed,tokenized<dc.type:Tidsskrift>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.type:a>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.type:xx>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.identifier:0108-4755>
+Values: 0108-4755
+Field: stored/uncompressed,indexed,tokenized<dc.language:Dansk>
+Values: Dansk, dan
+Field: stored/uncompressed,indexed,tokenized<dc.language:dan>
+Values: Dansk, dan
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Grønt miljø>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Landsforeningen Danske Anlægsgartnermestre>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:63.5105>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Vanløse Landsforeningen Danske Anlægsgartnermestre>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:1983>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Tidsskrift>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:ISSN: 0108-4755>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Dansk>
+Values: Grønt miljø, Landsforeningen Danske Anlægsgartnermestre, 63.5105, , Vanløse Landsforeningen Danske Anlægsgartnermestre, 1983, Tidsskrift, ISSN: 0108-4755, Dansk
+Field: stored/uncompressed,indexed<title:Grønt miljø>
+Values: Grønt miljø
+Field: stored/uncompressed,indexed<creator:Landsforeningen Danske Anlægsgartnermestre>
+Values: Landsforeningen Danske Anlægsgartnermestre
+Field: stored/uncompressed,indexed<subject:63.5105>
+Values: 63.5105, 
+Field: stored/uncompressed,indexed<subject:>
+Values: 63.5105, 
+Field: stored/uncompressed,indexed<publisher:Vanløse Landsforeningen Danske Anlægsgartnermestre>
+Values: Vanløse Landsforeningen Danske Anlægsgartnermestre
+Field: stored/uncompressed,indexed<date:1983>
+Values: 1983
+Field: stored/uncompressed,indexed<type:Tidsskrift>
+Values: Tidsskrift
+Field: stored/uncompressed,indexed<identifier:ISSN: 0108-4755>
+Values: ISSN: 0108-4755
+Field: stored/uncompressed,indexed<language:Dansk>
+Values: Dansk
+Field: stored/uncompressed,indexed<fedoraPid:mock_fedoraPID>
+Values: mock_fedoraPID
+Field: stored/uncompressed,indexed<original_format:danmarcxchange>
+Values: danmarcxchange
+Field: stored/uncompressed,indexed,omitNorms<$/uid:danmarcxchange#05912776#>
+Values: danmarcxchange#05912776#
+
+Document number: 2
+Field: stored/uncompressed,indexed,omitNorms<alias:danmarcxchange>
+Values: danmarcxchange
+Field: stored/uncompressed,indexed,omitNorms<$/danmarcxchange/ac.identifier:03216799>
+Values: 03216799
+Field: stored/uncompressed,indexed,tokenized<dc.title:Gymnasieskolen - København>
+Values: Gymnasieskolen - København, Gymnasieskolen, medlemsblad for Gymnasieskolernes Lærerforening
+Field: stored/uncompressed,indexed,tokenized<dc.title:Gymnasieskolen>
+Values: Gymnasieskolen - København, Gymnasieskolen, medlemsblad for Gymnasieskolernes Lærerforening
+Field: stored/uncompressed,indexed,tokenized<dc.title:medlemsblad for Gymnasieskolernes Lærerforening>
+Values: Gymnasieskolen - København, Gymnasieskolen, medlemsblad for Gymnasieskolernes Lærerforening
+Field: stored/uncompressed,indexed,tokenized<dc.creator:Gymnasieskolernes Lærerforening>
+Values: Gymnasieskolernes Lærerforening, GL
+Field: stored/uncompressed,indexed,tokenized<dc.creator:GL>
+Values: Gymnasieskolernes Lærerforening, GL
+Field: stored/uncompressed,indexed,tokenized<dc.subject:331.881 137 309 489>
+Values: 331.881 137 309 489, 37.3905
+Field: stored/uncompressed,indexed,tokenized<dc.subject:37.3905>
+Values: 331.881 137 309 489, 37.3905
+Field: stored/uncompressed,indexed,tokenized<dc.publisher:GL, Gymnasieskolernes Lærerforening>
+Values: GL, Gymnasieskolernes Lærerforening
+Field: stored/uncompressed,indexed,tokenized<dc.date:1916>
+Values: 1916, [1916]-
+Field: stored/uncompressed,indexed,tokenized<dc.date:[1916]->
+Values: 1916, [1916]-
+Field: stored/uncompressed,indexed,tokenized<dc.type:Tidsskrift>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.type:a>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.type:xx>
+Values: Tidsskrift, a, xx
+Field: stored/uncompressed,indexed,tokenized<dc.identifier:0017-5927>
+Values: 0017-5927
+Field: stored/uncompressed,indexed,tokenized<dc.language:Dansk>
+Values: Dansk, dan
+Field: stored/uncompressed,indexed,tokenized<dc.language:dan>
+Values: Dansk, dan
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Gymnasieskolernes Lærerforening>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:37.3905>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Kbh. GL, Gymnasieskolernes Lærerforening>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:1916>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Tidsskrift>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:ISSN: 0017-5927>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed,tokenized<cql.anyIndex:Dansk>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening, Gymnasieskolernes Lærerforening, 37.3905, , Kbh. GL, Gymnasieskolernes Lærerforening, 1916, Tidsskrift, ISSN: 0017-5927, Dansk
+Field: stored/uncompressed,indexed<title:Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening>
+Values: Gymnasieskolen medlemsblad for Gymnasieskolernes Lærerforening
+Field: stored/uncompressed,indexed<creator:Gymnasieskolernes Lærerforening>
+Values: Gymnasieskolernes Lærerforening
+Field: stored/uncompressed,indexed<subject:37.3905>
+Values: 37.3905, 
+Field: stored/uncompressed,indexed<subject:>
+Values: 37.3905, 
+Field: stored/uncompressed,indexed<publisher:Kbh. GL, Gymnasieskolernes Lærerforening>
+Values: Kbh. GL, Gymnasieskolernes Lærerforening
+Field: stored/uncompressed,indexed<date:1916>
+Values: 1916
+Field: stored/uncompressed,indexed<type:Tidsskrift>
+Values: Tidsskrift
+Field: stored/uncompressed,indexed<identifier:ISSN: 0017-5927>
+Values: ISSN: 0017-5927
+Field: stored/uncompressed,indexed<language:Dansk>
+Values: Dansk
+Field: stored/uncompressed,indexed<fedoraPid:mock_fedoraPID>
+Values: mock_fedoraPID
+Field: stored/uncompressed,indexed<original_format:danmarcxchange>
+Values: danmarcxchange
+Field: stored/uncompressed,indexed,omitNorms<$/uid:danmarcxchange#03216799#>
+Values: danmarcxchange#03216799#
+
