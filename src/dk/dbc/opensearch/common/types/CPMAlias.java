@@ -22,6 +22,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import dk.dbc.opensearch.common.config.CompassConfig;
+import dk.dbc.opensearch.common.helpers.XMLFileReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,20 +52,21 @@ public class CPMAlias
     
     public CPMAlias() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
     {    	
-    	docBuilderFactory = DocumentBuilderFactory.newInstance();
-        docBuilder = docBuilderFactory.newDocumentBuilder();
+        log.debug( "Entering CPMAlias constructor" );
+        /*docBuilderFactory = DocumentBuilderFactory.newInstance();
+        docBuilder = docBuilderFactory.newDocumentBuilder();*/
         xsemFile = CompassConfig.getXSEMPath();
         log.debug( String.format( "Parsing XSEM file: %s", xsemFile ) );
         log.debug( String.format( "File %s exists: %s", xsemFile, (new File( xsemFile ).exists() ) ) );
-        cpmDocument = docBuilder.parse( xsemFile );
-        Element xmlRoot = cpmDocument.getDocumentElement();
-        cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );
+        /*cpmDocument = docBuilder.parse( xsemFile );
+        Element xmlRoot = cpmDocument.getDocumentElement();*/
+        cpmNodeList = XMLFileReader.getNodeList( xsemFile, "xml-object" );
+        //cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );
     }
     
 
     public boolean isValidAlias( String alias ) throws ParserConfigurationException, SAXException, IOException
-    {
-        
+    {        
         for( int i = 0; i < cpmNodeList.getLength(); i++ )
         {
             Element aliasNode = (Element)cpmNodeList.item( i );

@@ -61,4 +61,35 @@ public class XMLFileReader
 
         return xmlRoot.getElementsByTagName( tagName );
     }
+
+    
+    public static NodeList getNodeList( String xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException
+    {
+        log.debug( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, tagName ) );
+        try
+        {
+            DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+            Document jobDocument = docBuilder.parse( xmlFile );
+            Element xmlRoot = jobDocument.getDocumentElement();
+
+            log.debug( "getNodeList done" );
+            return xmlRoot.getElementsByTagName( tagName );
+        }
+        catch( ParserConfigurationException pce )
+        {
+            log.error( String.format( "Could not parse xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + pce );
+            throw pce;
+        }
+        catch( SAXException se )
+        {
+            log.error( String.format( "SAXException caught parsing xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + se );
+            throw se;
+        }
+        catch( IOException ioe )
+        {
+            log.error( String.format( "IOException caught parsing xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + ioe );
+            throw ioe;
+        }
+    }
 }

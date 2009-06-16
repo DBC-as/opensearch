@@ -33,6 +33,7 @@ import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -124,16 +125,6 @@ public class PTIThread implements Callable< Long >
         String submitter =  null;
         String format = null;
         
-        /*try
-        {
-            log.debug( String.format( "Trying to get stream from fedora with pid %s and name %s", fedoraPid, DataStreamType.AdminData.getName() ) );
-            MIMETypedStream ds = super.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
-            byte[] adminStream = ds.getStream();
-            log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-            cc = new CargoContainer();
-
-        log.debug( String.format( "Trying to get stream from fedora with pid %s and name %s", fedoraPid, DataStreamType.AdminData.getName() ) );
-        */
         try
         {
             cc = fedoraCommunication.retrieveContainer( fedoraPid );
@@ -175,27 +166,33 @@ public class PTIThread implements Callable< Long >
         else
         {*/
         log.debug( "Entering switch" );
-        
+        log.debug( "PluginsList: " + list.toString() );
         for ( String classname : list )
         {
+            log.debug( "PTIThread running through plugins list" );
             IPluggable plugin = pluginResolver.getPlugin( classname );
-            switch ( plugin.getTaskName() )
-            {
+            log.debug( "PTIThread plugin resolved" );
+            PluginType taskName = plugin.getTaskName();
+            log.debug( "PTIThread taskName: " + taskName );
+            switch ( taskName )
+            {                
                 case PROCESS:
                     log.debug( "calling processerplugin" );
                     IProcesser processPlugin = ( IProcesser )plugin;
                     cc = processPlugin.getCargoContainer( cc );
+                    log.debug( "PTIThread PROCESS plugin done" );
                     break;
                 case INDEX:
                     log.debug( "calling indexerplugin" );
                     IIndexer indexPlugin = ( IIndexer )plugin;
                     result = indexPlugin.getProcessTime( cc, session, fedoraPid, estimate );
+                    log.debug( "PTIThread INDEX plugin done" );
                     //update statistics database
                     break;
             }
         }
     
-        log.debug( result );
+        log.debug( "PTIThread done with result: " + result );
 
         return result;
     }

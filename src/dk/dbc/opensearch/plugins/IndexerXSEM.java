@@ -121,10 +121,10 @@ public class IndexerXSEM implements IIndexer
             log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
             throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
         } 
-        catch (IOException ioe) 
+        catch ( IOException ioe )
         {
-            log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
-            throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
+            log.fatal( String.format( "First: Could not open or read XSEM mappings file" ), ioe );
+            throw new PluginException( String.format( "First exception Could not open or read XSEM mappings file" ), ioe );
         }
         log.info( "cpmAlias constructed" );
 
@@ -140,15 +140,18 @@ public class IndexerXSEM implements IIndexer
                 boolean isValidAlias = false;
                 try {
                     isValidAlias = cpmAlias.isValidAlias( indexingAlias );
-                } catch ( ParserConfigurationException pce ) {
+                } 
+                catch ( ParserConfigurationException pce ) {
                     log.fatal( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
                     throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
-                } catch ( SAXException se ) {
+                } 
+                catch ( SAXException se ) {
                     log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
                     throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
-                } catch (IOException ioe) {
-                    log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
-                    throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
+                } 
+                catch (IOException ioe) {
+                    log.fatal( String.format( "Second: Could not open or read XSEM mappings file" ), ioe );
+                    throw new PluginException( String.format( "Second Exception Could not open or read XSEM mappings file" ), ioe );
                 }
 
                 if( ! isValidAlias )
