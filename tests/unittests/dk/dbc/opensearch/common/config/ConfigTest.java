@@ -83,7 +83,7 @@ public class ConfigTest
 
 
     @Test( expected = ConfigurationException.class )
-        public void testConstructor2() throws ConfigurationException
+    public void testConstructor2() throws ConfigurationException
     {
         Mockit.setUpMocks( MockXMLConf.class );
 
