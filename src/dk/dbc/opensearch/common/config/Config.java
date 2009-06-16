@@ -70,7 +70,7 @@ public class Config
     {
         try 
         {
-            log.debug( String.format( "Creating config XMLConfiguration object from '%s'", cfgURL.ToString() ) );
+            log.debug( String.format( "Creating config XMLConfiguration object from '%s'", cfgURL ) );
             config = new XMLConfiguration( cfgURL );
         } 
         catch ( ConfigurationException e ) 
