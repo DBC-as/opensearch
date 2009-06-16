@@ -26,9 +26,9 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.compass.core.CompassSession;
-
+import dk.dbc.opensearch.common.statistics.IEstimate;
 
 public interface IIndexer extends IPluggable
 {
-    long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException, ConfigurationException;//, CompassException, ParserConfigurationException, SAXException, IOException;
+    long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle, IEstimate estimate ) throws PluginException, ConfigurationException;//, CompassException, ParserConfigurationException, SAXException, IOException;
 }

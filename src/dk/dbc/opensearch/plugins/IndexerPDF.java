@@ -21,6 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -48,7 +49,7 @@ public class IndexerPDF implements IIndexer
     PluginType pluginType = PluginType.INDEX;
 
 
-    public long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle ) 
+    public long getProcessTime( CargoContainer cargo, CompassSession session, String fedoraHandle, IEstimate estimate ) 
     {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         byte[] data = co.getBytes();

@@ -24,7 +24,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CPMAlias;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -70,12 +70,12 @@ public class IndexerXSEM implements IIndexer
     }
 
 
-    public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException, ConfigurationException
+    public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle, IEstimate estimate ) throws PluginException, ConfigurationException
     {
         long processTime = 0;
         try
         {
-            processTime = getProcessTime( session, cargo, fedoraHandle );
+            processTime = getProcessTime( session, cargo, fedoraHandle, estimate );
         }
         catch( CompassException ce )
         {
@@ -86,7 +86,7 @@ public class IndexerXSEM implements IIndexer
     }
 
 
-    private long getProcessTime( CompassSession session, CargoContainer cc, String fedoraHandle ) throws PluginException, CompassException, ConfigurationException
+    private long getProcessTime( CompassSession session, CargoContainer cc, String fedoraHandle, IEstimate estimate ) throws PluginException, CompassException, ConfigurationException
     {
         long processTime = 0;
         Date finishTime = new Date();
@@ -231,7 +231,7 @@ public class IndexerXSEM implements IIndexer
 
                     processTime += finishTime.getTime() - co.getTimestamp();
 
-                    updateEstimationDB(  co, processTime );
+                    updateEstimationDB(  co, processTime, estimate );
                 }
             }
 
@@ -274,15 +274,14 @@ public class IndexerXSEM implements IIndexer
     /**
      *
      */
-    private void updateEstimationDB( CargoObject co, long processTime ) throws PluginException
+    private void updateEstimationDB( CargoObject co, long processTime, IEstimate estimate ) throws PluginException
     {
-        Estimate est = null;
+        
 
         // updating the database with the new estimations
         try
         {
-            est = new Estimate();
-            est.updateEstimate( co.getMimeType(), co.getContentLength(), processTime );
+            estimate.updateEstimate( co.getMimeType(), co.getContentLength(), processTime );
 
             log.info( String.format("Updated estimate with mimetype = %s, streamlength = %s, processtime = %s",
                                     co.getMimeType(), co.getContentLength(), processTime ) );
@@ -291,11 +290,6 @@ public class IndexerXSEM implements IIndexer
         {
             log.fatal( String.format( "Could not update database with estimation %s", processTime ), sqle );
             throw new PluginException( String.format( "Could not update database with estimation %s", processTime ), sqle );
-        }
-        catch( ConfigurationException ce )
-        {
-            log.fatal( "Estimate could not be setup correctly", ce );
-            throw new PluginException( "Estimate could not be setup correctly", ce );
         }
         catch( ClassNotFoundException cnfe )
         {

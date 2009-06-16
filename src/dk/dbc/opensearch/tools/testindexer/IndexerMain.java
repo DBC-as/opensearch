@@ -150,8 +150,6 @@ public class IndexerMain
             System.out.println( " " + j );
         }
 
-
-
         // Configuring Compass
         Compass compass = buildCompass( mapping, indexDir );
 

@@ -189,7 +189,7 @@ public class PTIThread implements Callable< Long >
                 case INDEX:
                     log.debug( "calling indexerplugin" );
                     IIndexer indexPlugin = ( IIndexer )plugin;
-                    result = indexPlugin.getProcessTime( cc, session, fedoraPid );
+                    result = indexPlugin.getProcessTime( cc, session, fedoraPid, estimate );
                     //update statistics database
                     break;
             }

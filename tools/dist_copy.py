@@ -137,7 +137,7 @@ def _make_dist( dist ):
     if src_dir.endswith("tools"):
         src_dir = src_dir.replace("/tools", "" )
 
-    if dist == 'all':
+    if dist == 'both':
         runproc = subprocess.Popen( 'ant dist', shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
     else:
         dist_target = 'dist_'+dist
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     # ie.
     # target_list-name: datadock, ant target-name: dist_datadock
 
-    target_list = [ 'all', 'datadock', 'pti', 'testindexer' ]
+    target_list = [ 'both', 'datadock', 'pti' ]
     server_list = [ 'andrus','rausu','sempu','tacora','visoke' ] #, 'localhost' ]
 
     if options.listserv:
