@@ -29,8 +29,6 @@ import org.apache.log4j.Logger;
 
 
 /**
- * @author mro
- * 
  * Super (or base) class for the config classes. Hence: 
  * 	 
  *       DO NOT ALTER THIS CLASS IF IT CAN BE AVOIDED!!!
@@ -56,29 +54,30 @@ import org.apache.log4j.Logger;
  */
 public class Config 
 {
-	Logger log = Logger.getLogger( Config.class );
+    Logger log = Logger.getLogger( Config.class );
 	
 	
-	URL cfgURL = getClass().getResource( "/config.xml" );
-	static XMLConfiguration config;
+    URL cfgURL = getClass().getResource( "/config.xml" );
+    static XMLConfiguration config;
     
 
-	/**
-	 * Essential method providing access to the solution's config file.
-	 * 
-	 * @throws ConfigurationException
-	 */
-	public Config() throws ConfigurationException
-	{
-		try 
-		{
-			config = new XMLConfiguration( cfgURL );
-		} 
-		catch ( ConfigurationException e ) 
-		{
-			log.fatal( "ConfigurationException caught in class Config:" );
-			log.fatal( e.getStackTrace().toString() );
-			throw e;
-		}
-	}
+    /**
+     * Essential method providing access to the solution's config file.
+     * 
+     * @throws ConfigurationException
+     */
+    public Config() throws ConfigurationException
+    {
+        try 
+        {
+            log.debug( String.format( "Creating config XMLConfiguration object from '%s'", cfgURL.ToString() ) );
+            config = new XMLConfiguration( cfgURL );
+        } 
+        catch ( ConfigurationException e ) 
+        {
+            log.fatal( "ConfigurationException caught in class Config:" );
+            log.fatal( e.getStackTrace().toString() );
+            throw e;
+        }
+    }
 }
