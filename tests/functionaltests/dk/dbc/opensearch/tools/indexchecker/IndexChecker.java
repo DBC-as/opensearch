@@ -86,6 +86,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import java.util.Collections;
 
 
 /**
@@ -373,6 +374,8 @@ public class IndexChecker
                 }
             }
         }
+
+        Collections.sort( returnList );
         return returnList;
     }
 

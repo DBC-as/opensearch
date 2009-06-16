@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
  * The purpose of the datadockJob is to hold the information about a
  * job for the datadock. it provides get and set methods
  */
-public class DatadockJob 
+public class DatadockJob implements Comparable<DatadockJob>
 {    
     Logger log = Logger.getLogger( DatadockJob.class );
  
@@ -43,7 +43,6 @@ public class DatadockJob
     private String submitter;
     private String format;
     private String PID;
-
     
     /**
      * Constructor. initializes the DatadockJob
@@ -82,6 +81,12 @@ public class DatadockJob
     }
     
     
+    public int compareTo( DatadockJob datadockJob){
+        int result = uri.toString().compareTo( datadockJob.getUri().toString() );
+        return result;
+
+
+    }
     /**
      * Gets the uri object from the job
      * @return The URI of the job
