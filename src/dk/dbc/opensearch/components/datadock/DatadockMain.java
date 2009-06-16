@@ -1,12 +1,12 @@
 /**
  * \file DatadockMain.java
- * \brief The DatadockMain class
- * \package datadock;
+ * \brief The main entry point for the datadock application
+ * \package dk.dbc.opensearch.components.datadock;
  */
 package dk.dbc.opensearch.components.datadock;
 
-/*
-   
+
+/** 
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -25,11 +25,15 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.PIDManager;
+import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -40,6 +44,7 @@ import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -80,15 +85,15 @@ public class DatadockMain
     static int pollTime;
     static URL cfgURL;
     static String harvestDir;
-    //public static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
 
 
     public DatadockMain() {}
     
     
-    public void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException
+    public static void init() throws ConfigurationException 
     {
     	log.debug( "DatadockMain init called" );
+
     	pollTime = DatadockConfig.getMainPollTime();
         queueSize = DatadockConfig.getQueueSize();
         corePoolSize = DatadockConfig.getCorePoolSize();
@@ -96,19 +101,17 @@ public class DatadockMain
         keepAliveTime = DatadockConfig.getKeepAliveTime();
         harvestDir = HarvesterConfig.getFolder();
 
-        //jobMap = JobMapCreator.getMap( this.getClass() );
-        //log.debug( String.format( "the map: %s ",jobMap.toString() ));
-
         log.debug( String.format( "---> queueSIZE = '%s'", queueSize ) );
     }
 
 
     // Helper method to avoid static problems in init
-    @SuppressWarnings("unchecked")
-	public Class getClassType()
+    @SuppressWarnings( "unchecked" )
+    public Class getClassType()
     {
     	return this.getClass();
     }
+
     
     /**
      * The shutdown hook. This method is called when the program catches the kill signal.
@@ -168,15 +171,14 @@ public class DatadockMain
      */
     static public void main(String[] args) throws Throwable
     {
+        Log4jConfiguration.configure( "log4j_datadock.xml" );
     	log.debug( "DatadockMain main called" );
+
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         try
         {
-            DatadockMain datadockmain = new DatadockMain();
-            log.debug( "DatadockMain main called" );
-            
-            datadockmain.init();
+            init();
 
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender( startupAppender );

@@ -58,7 +58,6 @@ public class XMLFileReader
         DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
         Document jobDocument = docBuilder.parse( xmlFile );
         Element xmlRoot = jobDocument.getDocumentElement();
-        //NodeList nodeList = xmlRoot.getElementsByTagName( tagName );
 
         return xmlRoot.getElementsByTagName( tagName );
     }

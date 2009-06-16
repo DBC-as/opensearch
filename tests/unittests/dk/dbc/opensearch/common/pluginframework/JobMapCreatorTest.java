@@ -183,7 +183,7 @@ public class JobMapCreatorTest
      * Testing the happy path of init
      */
     @Test 
-    public void testInit() throws Exception
+    public void testInit() throws ParserConfigurationException, SAXException, IOException
     {
         /**
          * setup
@@ -240,11 +240,57 @@ public class JobMapCreatorTest
         verify( mockElement );
     }
 
+
+    @Test( expected = IllegalStateException.class )
+    public void testInitEqualPositions() throws ParserConfigurationException, SAXException, IOException, IllegalStateException
+    {
+        /**
+         * setup
+         */
+        Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockXMLFileReader.class );
+        String path = "test path";
+
+        /**
+         * Expectations
+         */
+        expect( mockNodeList.getLength() ).andReturn( 1 );
+        //outer loop
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement  );
+        expect( mockElement.getAttribute( "submitter" ) ).andReturn( "sub1" );
+        expect( mockElement.getAttribute( "format" ) ).andReturn( "format1" );
+        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.getLength() ).andReturn( 2 );
+        //inner loop
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
+        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
+        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
+        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
+        /**
+         * replay
+         */
+        replay( mockNodeList );
+        replay( mockFile );
+        replay( mockElement );
+        /**
+         * Do stuff
+         */
+        JobMapCreator.init( path );
+        /**
+         * verify
+         */
+        verify( mockNodeList );
+        verify( mockFile );
+        verify( mockElement );
+    }
+
+
     /**
      * provokes an IllegalStateException by giving a NodeList with Length 0
      * so that the jobMap will be empty
      */
-
     @Test( expected = IllegalStateException.class )
     public void testEmptyMapInInitMethod() throws ParserConfigurationException, SAXException, IOException
     {

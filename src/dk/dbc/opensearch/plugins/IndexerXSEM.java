@@ -1,23 +1,28 @@
+/**
+ * \file IndexerXSEM.java
+ * \brief Indexing using xsem
+ * \package dk.dbc.opensearch.plugins;
+ */
 package dk.dbc.opensearch.plugins;
 
-/*
 
-  This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
-  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+/**
+This file is part of opensearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s,
+Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-  opensearch is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+opensearch is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  opensearch is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+opensearch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -102,23 +107,31 @@ public class IndexerXSEM implements IIndexer
         CPMAlias cpmAlias = null;
         log.debug( String.format( "number of streams in cc: %s", cc.getCargoObjectCount() ) );
         List< CargoObject > list = cc.getCargoObjects();
-        try {
+        try 
+        {
             cpmAlias = new CPMAlias();
-        } catch( ParserConfigurationException pce ) {
+        } 
+        catch( ParserConfigurationException pce ) 
+        {
             log.fatal( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
             throw new PluginException( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
-        } catch (SAXException se) {
+        } 
+        catch (SAXException se) 
+        {
             log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
             throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
-        } catch (IOException ioe) {
+        } 
+        catch (IOException ioe) 
+        {
             log.fatal( String.format( "Could not open or read XSEM mappings file" ), ioe );
             throw new PluginException( String.format( "Could not open or read XSEM mappings file" ), ioe );
         }
         log.info( "cpmAlias constructed" );
+
         for( CargoObject co : list )
         {
-
-            if( ! ( co.getDataStreamName() == DataStreamType.OriginalData ) ) {
+            if( ! ( co.getDataStreamName() == DataStreamType.OriginalData ) ) 
+            {
                 log.info( String.format( "Not indexing data with datastreamtype '%s'",co.getDataStreamName() ) );
             }
             else {

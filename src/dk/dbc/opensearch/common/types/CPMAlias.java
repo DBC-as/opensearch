@@ -23,6 +23,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import dk.dbc.opensearch.common.config.CompassConfig;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -38,6 +40,8 @@ import org.xml.sax.SAXException;
 
 public class CPMAlias
 {
+    Logger log = Logger.getLogger( this.getClass() );
+
     DocumentBuilderFactory docBuilderFactory;
     DocumentBuilder docBuilder;
     Document cpmDocument;
@@ -50,6 +54,8 @@ public class CPMAlias
     	docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilder = docBuilderFactory.newDocumentBuilder();
         xsemFile = CompassConfig.getXSEMPath();
+        log.debug( String.format( "Parsing XSEM file: %s", xsemFile ) );
+        log.debug( String.format( "File %s exists: %s", xsemFile, (new File( xsemFile ).exists() ) ) );
         cpmDocument = docBuilder.parse( xsemFile );
         Element xmlRoot = cpmDocument.getDocumentElement();
         cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );

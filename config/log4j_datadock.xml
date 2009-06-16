@@ -13,6 +13,7 @@
   
   <!--appender class="org.apache.log4j.ConsoleAppender" name="RootConsoleAppender">
     <param name="Threshold" value="fatal"/>
+    <param name="File" value="pti.log" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss},%p,%c,%t,%C{1},%M %m%n"/>
     </layout>

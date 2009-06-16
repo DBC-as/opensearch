@@ -34,7 +34,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
                           ant test
                           ...
   	     
-             2) ant project -Darg="target"
+             2) ant project -Darg="target" DOES NOT WORK FOR NOW!!!
                 Examples: ant config -Darg="compile"
                           ant datadock -Darg="test"
                           ...
@@ -156,6 +156,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </antcall>
   </target> 
 
+
   <target name="dist_datadock" depends="clean, compile"> <!-- xsd, "> -->
     <antcall target="_dist_datadock">
       <param name="src.dir" value="${src.dir}" />
@@ -177,12 +178,14 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </antcall>
   </target>
 
+
   <target name="dist_readindex" depends="clean, compile"> <!-- xsd, "> -->
     <antcall target="_dist_readindex">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_READINDEX.jar" />
     </antcall>
   </target>
+
 
   <target name="dist_indexchecker" depends="clean, compile-tests"> <!-- xsd, "> -->
     <antcall target="_dist_indexchecker">
@@ -206,9 +209,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <antcall target="_coverage-test" />
   </target>
 
+
   <target name="coverage-report-html" depends="coverage-test">
     <antcall target="_coverage-report-html" />
   </target>
+
 
   <target name="coverage-report-xml" depends="coverage-test">
     <antcall target="_coverage-report-xml" />

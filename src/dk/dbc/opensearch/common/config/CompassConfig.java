@@ -6,8 +6,7 @@
 
 package dk.dbc.opensearch.common.config;
 
-/*
-   
+/**
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -31,24 +30,21 @@ import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
- * @author mro
- * 
  * Sub class of Config providing access to compass settings in the 
  * configuration file. Method names should be explanatory enough.
  * 
  * See super class Config for description of methodology.
- *
  */
 public class CompassConfig extends Config
 {    
     public CompassConfig() throws ConfigurationException 
     {
-		super();
-	}
+        super();
+    }
 
 
     /* CONFIG PATH */
-	private String getCompassConfigPath()
+    private String getCompassConfigPath()
     {
         String ret = config.getString( "compass.configpath" );
         return ret;

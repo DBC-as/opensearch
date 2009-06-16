@@ -5,8 +5,8 @@
  */
 package dk.dbc.opensearch.components.pti;
 
+
 /**
- *   
  *This file is part of opensearch.
  *Copyright © 2009, Dansk Bibliotekscenter a/s, 
  *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -27,10 +27,12 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.compass.CompassFactory;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
@@ -45,8 +47,6 @@ import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
@@ -67,6 +67,7 @@ import org.xml.sax.SAXException;
 public class PTIMain
 {
     static Logger log = Logger.getLogger("PTIMain");
+
     static protected boolean shutdownRequested = false;
     static PTIPool ptiPool = null;
     static PTIManager ptiManager = null;
@@ -77,16 +78,10 @@ public class PTIMain
     static long keepAliveTime;
     static int pollTime;
     
-    //static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-
     
     @SuppressWarnings("unchecked")
-	public static void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException, ConfigurationException
+    public static void init() throws ConfigurationException
     {
-    	//PTIMain pti = new PTIMain();
-    	//Class classType = pti.getClassType();
-    	//jobMap = JobMapCreator.getMap( classType );
-
         pollTime = PtiConfig.getMainPollTime();
         queueSize = PtiConfig.getQueueSize();
         corePoolSize = PtiConfig.getCorePoolSize();
@@ -159,8 +154,11 @@ public class PTIMain
      * The PTIs main method.
      * Starts the PTI and starts the PTIManager.
      */
-    static public void main(String[] args)
+    static public void main(String[] args) throws Throwable
     {
+        Log4jConfiguration.configure( "log4j_pti.xml" );
+        log.debug( "PTIMain main called" );
+        
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         try
@@ -197,10 +195,11 @@ public class PTIMain
             addDaemonShutdownHook();
 
         }
-        catch (Throwable e)
+        catch ( Throwable e )
         {
             System.out.println("Startup failed." + e);
             log.fatal("Startup failed.",e);
+            throw e;
         }
         finally
         {

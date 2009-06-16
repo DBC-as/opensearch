@@ -6,24 +6,23 @@
 package dk.dbc.opensearch.components.pti;
 
 /**
- *  
- *This file is part of opensearch.
- *Copyright © 2009, Dansk Bibliotekscenter a/s, 
- *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
- *
- *opensearch is free software: you can redistribute it and/or modify
- *it under the terms of the GNU General Public License as published by
- *the Free Software Foundation, either version 3 of the License, or
- *(at your option) any later version.
- *
- *opensearch is distributed in the hope that it will be useful,
- *but WITHOUT ANY WARRANTY; without even the implied warranty of
- *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *GNU General Public License for more details.
- *
- *You should have received a copy of the GNU General Public License
- *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
+This file is part of opensearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s, 
+Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+
+opensearch is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+opensearch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 import dk.dbc.opensearch.common.config.PtiConfig;
@@ -54,6 +53,7 @@ import org.compass.core.CompassSession;
 
 import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+
 
 /**
  * \ingroup PTI
@@ -136,11 +136,11 @@ public class PTIPool
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Vector<CompletedTask<InputPair< Long, Integer > > > checkJobs() throws InterruptedException 
+    public Vector<CompletedTask<InputPair<Long, Integer> >> checkJobs() throws InterruptedException 
     {
         log.debug( "checkJobs() called" );
     
-        Vector<CompletedTask<InputPair< Long, Integer > > > finishedJobs = new Vector<CompletedTask<InputPair< Long, Integer > > >();
+        Vector<CompletedTask<InputPair<Long, Integer>>> finishedJobs = new Vector<CompletedTask<InputPair<Long, Integer>>>();
         for( InputPair<FutureTask<Long>, Integer> jobpair : jobs )        
         {
             FutureTask job = jobpair.getFirst();

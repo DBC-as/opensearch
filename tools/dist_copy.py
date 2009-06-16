@@ -44,7 +44,7 @@ scp_dist = "scp -rp "
 import logging as log
 
 log.basicConfig( level = log.DEBUG,
-                format = '%(asctime)s %(levelname)s %(message)s' )
+                 format = '%(asctime)s %(levelname)s %(message)s' )
 log.getLogger( '' )
 
 
@@ -121,7 +121,7 @@ def _set_copy_from_folder( fldr ):
 def _set_copy_to_server( srv ):
     global scp_dist
     if srv != '':
-        server = srv        
+        server = srv
     scp_dist += server
 
 
@@ -140,8 +140,8 @@ def _make_dist( dist ):
     if dist == 'both':
         runproc = subprocess.Popen( 'ant dist', shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
     else:
-        dist_target = 'dist_'+dist
-        runproc = subprocess.Popen( 'ant '+dist_target, shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
+        dist_target = 'dist_' + dist # target in build.xml
+        runproc = subprocess.Popen( 'ant ' + dist_target, shell=True, cwd=src_dir, stdin=PIPE, stderr=PIPE )
         
     stdin, stderr = runproc.communicate()
     if not stderr == '':
@@ -245,10 +245,11 @@ if __name__ == '__main__':
     if len( args ) != 1:
         parser.print_help()
         sys.exit( "\nPlease specify 1 target" )    
+
     if args[0] in target_list:
         _make_dist( args[0] )
     else:
-        sys.exit( "\nUnknown target "+args[0] )
+        sys.exit( "\nUnknown target " + args[0] )
 
     fldrs = [ 'admin', 'bin', 'config', 'dist', 'lib', 'plugins', 'tools' ]
 
@@ -256,8 +257,7 @@ if __name__ == '__main__':
 
     if not _check_remote_folder_exists( os.path.join( options.folder ), options.server ):
         print( "remote folder %s does not exist. Creating it"% options.folder )
-        _create_remote_folder( options.folder, options.server )
-        
+        _create_remote_folder( options.folder, options.server )        
 
     if _check_remote_folder_exists( os.path.join( options.folder, "lib" ), options.server ):
         print "folder %s:%s/%s exists, skipping copy of libs"%( options.server, options.folder, "lib" )

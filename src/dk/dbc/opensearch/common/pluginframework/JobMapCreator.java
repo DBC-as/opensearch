@@ -74,7 +74,7 @@ public class JobMapCreator
      * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
      * @throws ConfigurationException 
      */
-    public static void init( String path ) throws ParserConfigurationException, SAXException, IOException
+    public static void init( String path ) throws ParserConfigurationException, SAXException, IOException, IllegalStateException
     {
     	log.debug( "JobMapCreator constructor called" );
     	
@@ -110,6 +110,7 @@ public class JobMapCreator
 
             pluginAndPriority.clear();
 
+            ArrayList<Integer> testPosition = new ArrayList<Integer>();
             String plugin;
             // Store the classname in a List
             for( int y = 0; y < pluginListLength; y++ )
@@ -117,6 +118,19 @@ public class JobMapCreator
                 Element pluginElement = (Element)pluginList.item( y );
                 plugin = pluginElement.getAttribute( "classname" );
                 position = Integer.decode( pluginElement.getAttribute( "position" ) );
+
+                // Internal test of position values of _jobs.xml file's job nodes: No two position
+                // may have the same value.
+                if ( ! testPosition.contains( position ) )
+                {
+                    testPosition.add( position );
+                }
+                else 
+                {
+                    String msg = "Two position values in a job node from a *_jobs.xml are equal!";
+                    throw new IllegalStateException( msg );
+                }
+
                 pluginAndPriority.add( new ComparablePair< Integer, String >( position, plugin ) );
                 //pluginAndPriority.add( new InputPair< String, Integer >( plugin, position )  );
             }
