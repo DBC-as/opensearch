@@ -26,11 +26,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+import dk.dbc.opensearch.common.compass.CPMAlias;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.types.CPMAlias;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 
@@ -113,17 +113,17 @@ public class IndexerXSEM implements IIndexer
         } 
         catch( ParserConfigurationException pce ) 
         {
-            log.fatal( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
+            log.fatal( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" + pce ) );
             throw new PluginException( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
         } 
         catch (SAXException se) 
         {
-            log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
+            log.fatal( String.format( "Could not parse XSEM mappings file" + se ) );
             throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
         } 
         catch ( IOException ioe )
         {
-            log.fatal( String.format( "First: Could not open or read XSEM mappings file" ), ioe );
+            log.fatal( String.format( "First: Could not open or read XSEM mappings file: " + ioe ) );
             throw new PluginException( String.format( "First exception Could not open or read XSEM mappings file" ), ioe );
         }
         log.info( "cpmAlias constructed" );

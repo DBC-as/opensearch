@@ -1,10 +1,4 @@
-/**
- * 
- */
-package dk.dbc.opensearch.common.config;
-
-/*
-   
+/*   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -23,12 +17,16 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * 
+ */
+package dk.dbc.opensearch.common.config;
+
+
 import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
- * @author mro
- * 
  * Sub class of Config providing access to file system settings in the 
  * configuration file. Method names should be explanatory enough.
  * 

@@ -44,7 +44,7 @@ rejected_sleep_time:     3000
 shutdown_poll_time:      1000
 queue_resultset_maxsize: 20
 queue_size:              20
-core_poll_size:          3
-max_poll_size:           6
+core_poll_size:          1 
+max_poll_size:           1 
 keep_alive_time:         10
 path:                    config/pti_jobs.xml

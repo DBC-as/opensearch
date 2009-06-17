@@ -1,7 +1,4 @@
-package dk.dbc.opensearch.common.types;
-
-/*
-   
+/*   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -20,8 +17,12 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package dk.dbc.opensearch.common.compass;
 
+
+import dk.dbc.opensearch.common.compass.CompassEntityResolver;
 import dk.dbc.opensearch.common.config.CompassConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 
 import java.io.File;
@@ -41,7 +42,7 @@ import org.xml.sax.SAXException;
 
 public class CPMAlias
 {
-    Logger log = Logger.getLogger( this.getClass() );
+    Logger log = Logger.getLogger( CPMAlias.class );
 
     DocumentBuilderFactory docBuilderFactory;
     DocumentBuilder docBuilder;
@@ -51,19 +52,23 @@ public class CPMAlias
 
     
     public CPMAlias() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
-    {    	
+    {
         log.debug( "Entering CPMAlias constructor" );
-        /*docBuilderFactory = DocumentBuilderFactory.newInstance();
-        docBuilder = docBuilderFactory.newDocumentBuilder();*/
         xsemFile = CompassConfig.getXSEMPath();
         log.debug( String.format( "Parsing XSEM file: %s", xsemFile ) );
         log.debug( String.format( "File %s exists: %s", xsemFile, (new File( xsemFile ).exists() ) ) );
-        /*cpmDocument = docBuilder.parse( xsemFile );
-        Element xmlRoot = cpmDocument.getDocumentElement();*/
-        cpmNodeList = XMLFileReader.getNodeList( xsemFile, "xml-object" );
+        
+        String publicId = "http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd";
+        String path = FileSystemConfig.getConfigPath();
+        String systemId = "file://" + path + "compass-core-mapping-2.0.dtd";
+        System.out.println( systemId );
+        CompassEntityResolver cer = new CompassEntityResolver( publicId, systemId );
+           
+        cpmNodeList = XMLFileReader.getNodeList( xsemFile, "xml-object", cer );
+        log.debug( "XMLFileReader returned node list" );
         //cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );
     }
-    
+
 
     public boolean isValidAlias( String alias ) throws ParserConfigurationException, SAXException, IOException
     {        

@@ -336,7 +336,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   </target>
 
 
-  <target name="compass" depends="test_Darg, config, os">
+  <target name="compass" depends="test_Darg, config, os, helpers">
     <antcall target="${arg}_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/compass" />
       <param name="project.name" value="compass" />

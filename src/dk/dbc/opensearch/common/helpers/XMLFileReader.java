@@ -21,6 +21,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+
+import dk.dbc.opensearch.common.config.FileSystemConfig;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -32,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -63,13 +67,15 @@ public class XMLFileReader
     }
 
     
-    public static NodeList getNodeList( String xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException
+    public static NodeList getNodeList( String xmlFile, String tagName, EntityResolver er ) throws ParserConfigurationException, SAXException, IOException
     {
         log.debug( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, tagName ) );
+        
         try
         {
             DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+            docBuilder.setEntityResolver( er );
             Document jobDocument = docBuilder.parse( xmlFile );
             Element xmlRoot = jobDocument.getDocumentElement();
 
@@ -88,7 +94,7 @@ public class XMLFileReader
         }
         catch( IOException ioe )
         {
-            log.error( String.format( "IOException caught parsing xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + ioe );
+            log.error( String.format( "IOException caught parsing xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + "Exception messag: " + ioe );
             throw ioe;
         }
     }
