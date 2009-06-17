@@ -1,10 +1,4 @@
-/**
- * @file   IFedoraAdministration.java
- * @brief  interface for interacting with the Fedora Commons repository
- */
-
-package dk.dbc.opensearch.common.fedora;
-/**
+/*
    This file is part of opensearch.
    Copyright © 2009, Dansk Bibliotekscenter a/s,
    Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -23,6 +17,12 @@ package dk.dbc.opensearch.common.fedora;
    along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file   IFedoraAdministration.java
+ * \brief  interface for interacting with the Fedora Commons repository
+ */
+package dk.dbc.opensearch.common.fedora;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +34,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 
 import dk.dbc.opensearch.xsd.DigitalObject;
 import java.io.IOException;
+import java.io.File;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import java.rmi.RemoteException;
@@ -51,9 +52,10 @@ public interface IFedoraAdministration
     /**
      * method to delete a DigitalObject for good, based on the pid
      * @param pid, the identifier of the object to be removed
-     * @return true if the object was removed
+     * @param force, tells whether to purge the object even if it 
+     * breaks dependencies to other objects
      */
-    public boolean deleteDO( String pid );
+    public void deleteDO( String pid, boolean force ) throws RemoteException;
 
      /**
      * method for setting the delete flag on DigitalObjects
@@ -86,6 +88,14 @@ public interface IFedoraAdministration
     public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
 
     /**
+     * method for getting a datastream identified by its streamID
+     * @param streamID, the identifier of the datastream to be retrieved
+     * @param pid, the identifier of the object to get the stream from
+     * @return CargoContainer with the datastream
+     */
+    public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
+
+    /**
      * method for saving a Datastream to a DigitalObject
      * @param stream, the DataStream to save to a DigitalObject
      * @param pid, the identifier of the object to save the dastream to
@@ -93,7 +103,22 @@ public interface IFedoraAdministration
      * DataStream of the same type present
      * @return true if the operation succeded
      */
-    public boolean saveDataStream( CargoObject stream, String pid, boolean overwrite );
+    public String addDataStreamToObject( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean overwrite )throws RemoteException, MalformedURLException;
+
+    /**
+     * method for modifying an existing datastream in a DigitalObject
+     * @param theFile, the file to be added as a stream to the specified object
+     * @param sID the id of the datastream to be modified
+     * @param pid the id of the object to get a datastream updated
+     * @param the label of the updated stream
+     * @param versionable, tells whether to keep track of old version of the stream
+     * @param mimetype, the mimetype of the stream
+     * @param breakDependencies tells whether to update the datastream or not
+     * if the operation breaks dependencies with other objects
+     * @return the checksum of the datastream...
+     */
+
+    public String modifyDataStream( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException;
 
     /**
      * method for storing removing a datastream form a DigitalObject in the Fedora base
@@ -102,5 +127,5 @@ public interface IFedoraAdministration
      * @param streamPid, the identifier of the stream to remove
      * @return true if the stream was removed
      */
-    public boolean removeDataStream( String pid, DataStreamType streamtype, String stramPid );
+    public boolean removeDataStream( String pid, DataStreamType streamtype, String streamID );
 }

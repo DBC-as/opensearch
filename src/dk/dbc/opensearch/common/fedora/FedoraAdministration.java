@@ -1,10 +1,4 @@
-/**
- * @file   FedoraAdministration.java
- * @brief  The class for administrating the Fedora Commons repository
- */
-
-package dk.dbc.opensearch.common.fedora;
-/**
+/*
    This file is part of opensearch.
    Copyright © 2009, Dansk Bibliotekscenter a/s,
    Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -23,14 +17,23 @@ package dk.dbc.opensearch.common.fedora;
    along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file   FedoraAdministration.java
+ * \brief  The class for administrating the Fedora Commons repository
+ */
+
+package dk.dbc.opensearch.common.fedora;
+
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.net.URL;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -84,11 +87,14 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     /**
      * method to delete a DigitalObject for good, based on the pid
      * @param pid, the identifier of the object to be removed
-     * @return true if the object was removed
+     * @param force, tells whether to purge the object even if it
+     * breaks dependencies to other objects
      */
-    public boolean deleteDO( String pid )
+    public void deleteDO( String pid, boolean force ) throws RemoteException
     {
-        return true;
+        String logm = "";
+        super.fem.purgeObject( pid, logm, force );
+
     }
 
     /**
@@ -186,9 +192,9 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         {
             returnVal = pid;
         }
-       
+
         return returnVal;
-       
+
     }
 
     /**
@@ -208,16 +214,16 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
         Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
-        
+
         log.debug( String.format( "root element from adminstream == %s", root ) );
-        
+
         //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-        
+
         NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
         if( indexingAliasElem == null )
         {
             /**
-             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878 
+             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
              */
             log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
         }
@@ -225,7 +231,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         NodeList streamsNL = root.getElementsByTagName( "streams" );
         Element streams = (Element)streamsNL.item(0);
         NodeList streamNL = streams.getElementsByTagName( "stream" );
-        log.debug( "iterating streams in nodelist to get the right streamtypes" );
+        log.debug( "iterating streams in nodelist to get the right streamtype" );
 
         int length = streamNL.getLength();
         for( int i = 0; i < length; i++ )
@@ -239,13 +245,13 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
                 MIMETypedStream dstream = super.fea.getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
-                cc.add( streamtype, 
-                                             stream.getAttribute( "mimetype" ), 
-                                             stream.getAttribute( "lang" ), 
-                                             stream.getAttribute( "submitter" ), 
-                                             stream.getAttribute( "format" ), 
-                                             IndexingAlias.getIndexingAlias( indexingAliasName ), 
-                                             bytestream );
+                cc.add( streamtype,
+                        stream.getAttribute( "mimetype" ),
+                        stream.getAttribute( "lang" ),
+                        stream.getAttribute( "submitter" ),
+                        stream.getAttribute( "format" ),
+                        IndexingAlias.getIndexingAlias( indexingAliasName ),
+                        bytestream );
             }
         }
 
@@ -253,19 +259,117 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         return cc;
     }
 
-    //create another method for getting a datastream form a DO identified by the StreamID.
+    //create another method for getting a datastream form a DO identified by the streamID.
 
     /**
-     * method for saving a Datastream to a DigitalObject
-     * @param stream, the DataStream to save to a DigitalObject
-     * @param pid, the identifier of the object to save the dastream to
-     * @param overwrite, tells whether to overwrite if there is a
-     * DataStream of the same type present
-     * @return true if the operation succeded
+     * method for getting a datastream identified by its streamID
+     * @param streamID, the identifier of the datastream to be retrieved
+     * @param pid, the identifier of the object to get the stream from
+     * @return CargoContainer with the datastream
      */
-    public boolean saveDataStream( CargoObject stream, String pid, boolean overwrite )
+
+    public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException
     {
-        return true;
+        CargoContainer cc = new CargoContainer();
+        //get the adminstream
+        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        byte[] adminStream = ds.getStream();
+        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+
+        log.debug( String.format( "root element from adminstream == %s", root ) );
+
+        //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+
+        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        if( indexingAliasElem == null )
+        {
+            /**
+             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
+             */
+            log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+        }
+        String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+        NodeList streamsNL = root.getElementsByTagName( "streams" );
+        Element streams = (Element)streamsNL.item(0);
+        NodeList streamNL = streams.getElementsByTagName( "stream" );
+        log.debug( "iterating streams in nodelist to get info" );
+
+        int length = streamNL.getLength();
+        for( int i = 0; i < length; i++ )
+        {
+            Element stream = (Element)streamNL.item(i);
+            String idOfStream = stream.getAttribute( "id" );
+            if( streamID.equals( idOfStream ) )
+            {
+                //build the CargoObject and add it to the list
+                MIMETypedStream dstream = super.fea.getDatastreamDissemination( pid, streamID, null );
+                byte[] bytestream = dstream.getStream();
+
+                cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
+                        stream.getAttribute( "mimetype" ),
+                        stream.getAttribute( "lang" ),
+                        stream.getAttribute( "submitter" ),
+                        stream.getAttribute( "format" ),
+                        IndexingAlias.getIndexingAlias( indexingAliasName ),
+                        bytestream );
+            }
+        }
+        return cc;
+    }
+    /**
+     * method for saving a Datastream to a DigitalObject
+     * @param theFile, the file to save as a DataStream in a specified DigitalObject
+     * @param sID the id of the stream, if null is given, the method returns a sID
+     * @param pid, the identifier of the object to save the datastream to
+     * @param label the label to give the stream
+     * @param versionable, tells whether to keep track of old versions or not
+     * @param overwrite, tells whether to overwrite if the datastream exists
+     * @return the dataStreamID of the added stream
+     */
+    public String addDataStreamToObject( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean overwrite ) throws RemoteException, MalformedURLException
+    {
+        String logm = "";
+
+        //make the file into an URL
+        URL theURL = theFile.toURI().toURL();
+        String[] altIDs;
+
+
+        //addDataStream
+
+        logm =String.format( "added %s to the digitalobject with pid: %s", theFile.getAbsolutePath(), pid );
+
+
+        String returnedSID = super.fem.addDatastream( pid, sID, new String[] {}, label, versionable, mimetype, null, theURL.getPath(), "M", "A", null, null, logm );
+
+            return returnedSID;
+
+    }
+    /**
+     * method for modifying an existing dataStream in a DigitalObject
+     * @param theFile, the file to be added as a stream to the specified object
+     * @param sID the id of the datastream to be modified
+     * @param pid the id of the object to get a datastream updated
+     * @param the label of the updated stream
+     * @param versionable, tells whether to keep track of old version of the stream
+     * @param mimetype, the mimetype of the stream
+     * @param breakDependencies tells whether to update the datastream or not
+     * if the operation breaks dependencies with other objects
+     * @return the checksum of the datastream...
+     */
+
+    public String modifyDataStream( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException
+    { 
+        String logm =String.format( "modified the digitalobject with pid: %s", pid );
+        String[] altIDs;
+        //make the file into an URL
+        URL theURL = theFile.toURI().toURL();
+        super.fem.modifyDatastreamByReference( pid, sID, new String[] {}, label,  mimetype, null, theURL.getPath(), null, null, logm, breakDependencies );
+        return "";
+
     }
 
     /**
@@ -275,9 +379,8 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @param streamPid, the identifier of the stream to remove
      * @return true if the stream was removed
      */
-    public boolean removeDataStream( String pid, DataStreamType streamtype, String stramPid )
+    public boolean removeDataStream( String pid, DataStreamType streamtype, String streamID )
     {
         return true;
     }
-
 }
