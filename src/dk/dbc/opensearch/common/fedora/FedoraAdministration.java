@@ -81,7 +81,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     public FedoraAdministration()throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         super();
-        //        this.fedoraCommunication = fedoraCommunication;
+        pidManager = new PIDManager();
         log.debug( "constructed" );
     }
     /**
@@ -89,6 +89,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @param pid, the identifier of the object to be removed
      * @param force, tells whether to purge the object even if it
      * breaks dependencies to other objects
+     * @throws RemoteException if something on the serverside goes wrong.
      */
     public void deleteDO( String pid, boolean force ) throws RemoteException
     {
@@ -111,6 +112,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * method for getting a DigitalObject in a CargoContainer based on its pid
      * @param pid, the identifier of the object to get
      * @return the CargoContainer representing the DigitalObject
+     * @throws RemoteException if something on the serverside goes wrong.
      */
     public CargoContainer getDO( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
     {
@@ -225,6 +227,8 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
             /**
              * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
              */
+            System.out.println("no indexing alias");
+
             log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
         }
         String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
@@ -234,22 +238,27 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         log.debug( "iterating streams in nodelist to get the right streamtype" );
 
         int length = streamNL.getLength();
+        System.out.println( String.format( "NodeList is %s long", length ) );
         for( int i = 0; i < length; i++ )
         {
             Element stream = (Element)streamNL.item(i);
             String typeOfStream = stream.getAttribute( "streamNameType" );
+            System.out.println( String.format( "got streamType: %s", typeOfStream ) );
             if( typeOfStream.equals( streamtype.getName() ) )
             {
+
+                System.out.println( "got the right streamType" );
                 //build the CargoObject and add it to the list
                 String streamID = stream.getAttribute( "id");
+                System.out.println( String.format( "streamid: %s", streamID ) );
                 MIMETypedStream dstream = super.fea.getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( streamtype,
-                        stream.getAttribute( "mimetype" ),
+                        stream.getAttribute( "format" ),
                         stream.getAttribute( "lang" ),
                         stream.getAttribute( "submitter" ),
-                        stream.getAttribute( "format" ),
+                        stream.getAttribute( "mimetype" ),
                         IndexingAlias.getIndexingAlias( indexingAliasName ),
                         bytestream );
             }
@@ -309,10 +318,10 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
-                        stream.getAttribute( "mimetype" ),
+                        stream.getAttribute( "format" ),
                         stream.getAttribute( "lang" ),
                         stream.getAttribute( "submitter" ),
-                        stream.getAttribute( "format" ),
+                        stream.getAttribute( "mimetype" ),
                         IndexingAlias.getIndexingAlias( indexingAliasName ),
                         bytestream );
             }
@@ -337,6 +346,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         URL theURL = theFile.toURI().toURL();
         String[] altIDs;
 
+        //get the adminstream and modify it...
 
         //addDataStream
 

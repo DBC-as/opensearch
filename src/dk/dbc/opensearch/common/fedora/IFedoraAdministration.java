@@ -67,7 +67,8 @@ public interface IFedoraAdministration
     /**
      * method for getting a DigitalObject in a CargoContainer based on its pid
      * @param pid, the identifier of the object to get
-     * @return the CargoContainer representing the DigitalObject
+     * @return the CargoContainer representing the DigitalObject, 
+     * null if the object is not there
      */
     public CargoContainer getDO( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
 
