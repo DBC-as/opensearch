@@ -22,19 +22,15 @@ package dk.dbc.opensearch.common.compass;
 
 import dk.dbc.opensearch.common.compass.CompassEntityResolver;
 import dk.dbc.opensearch.common.config.CompassConfig;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -44,9 +40,7 @@ public class CPMAlias
 {
     Logger log = Logger.getLogger( CPMAlias.class );
 
-    DocumentBuilderFactory docBuilderFactory;
-    DocumentBuilder docBuilder;
-    Document cpmDocument;
+
     String xsemFile;
     NodeList cpmNodeList;
 
@@ -55,18 +49,14 @@ public class CPMAlias
     {
         log.debug( "Entering CPMAlias constructor" );
         xsemFile = CompassConfig.getXSEMPath();
-        log.debug( String.format( "Parsing XSEM file: %s", xsemFile ) );
-        log.debug( String.format( "File %s exists: %s", xsemFile, (new File( xsemFile ).exists() ) ) );
         
-        String publicId = "http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd";
-        String path = FileSystemConfig.getConfigPath();
-        String systemId = "file://" + path + "compass-core-mapping-2.0.dtd";
-        System.out.println( systemId );
-        CompassEntityResolver cer = new CompassEntityResolver( publicId, systemId );
+        String publicUrl = CompassConfig.getHttpUrl();
+        String dtdPath = CompassConfig.getDTDPath();
+        String systemUrl = "file://" + dtdPath;
+        CompassEntityResolver cer = new CompassEntityResolver( publicUrl, systemUrl );
            
         cpmNodeList = XMLFileReader.getNodeList( xsemFile, "xml-object", cer );
         log.debug( "XMLFileReader returned node list" );
-        //cpmNodeList = xmlRoot.getElementsByTagName( "xml-object" );
     }
 
 

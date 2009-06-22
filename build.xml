@@ -34,7 +34,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
                           ant test
                           ...
   	     
-             2) ant project -Darg="target" DOES NOT WORK FOR NOW!!!
+             2) ant project -Darg="target" NB! TARGET='test' DOES NOT WORK FOR NOW!!!
                 Examples: ant config -Darg="compile"
                           ant datadock -Darg="test"
                           ...
@@ -99,8 +99,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <antcall target="_compile-tests" />
   </target>
 
-   <target name="compile-tests_project" depends="compile_project">
-    <antcall target="_compile-tests" />
+   <target name="compile-tests_project"> <!-- depends="compile_project"-->
+    <antcall target="_compile-tests_project" />
   </target>
 
 
@@ -138,7 +138,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </antcall>
   </target> 
 
+
   <target name="dist-aux" depends="clean, config_py"> <!-- xsd, -->
+    <antcall target="compile_project">
+      <param name="project.name" value="dist/*.jar" />
+    </antcall>
     <antcall target="compile-tests_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>
@@ -241,128 +245,229 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   <!-- ANT TARGETS -->  
   <target name="config" depends="test_Darg, clean">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/config" />
       <param name="project.name" value="config" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/config" />
+          <param name="project.name" value="config" />
+        </antcall>
+      </then>
+    </if>
   </target>
 
 
   <target name="db" depends="test_Darg, clean, types">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/db" />
       <param name="project.name" value="db" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/db" />
+          <param name="project.name" value="db" />
+        </antcall>
+      </then>
+    </if>
   </target>
 
 
   <target name="fedora" depends="test_Darg, clean, db, statistics, types, helpers">  <!-- xsd, -->
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/fedora" />
       <param name="project.name" value="fedora" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/fedora" />
+          <param name="project.name" value="fedora" />
+        </antcall>
+      </then>
+    </if>
   </target>
 
 
   <target name="helpers" depends="test_Darg, types, os">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/helpers" />
       <param name="project.name" value="helpers" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/helpers" />
+          <param name="project.name" value="helpers" />
+        </antcall>
+      </then>
+    </if>
   </target>
 
 
   <target name="os" depends="test_Darg">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/os" />
-      <param name="project.name" value="os" /> 
+      <param name="project.name" value="os" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/os" />
+          <param name="project.name" value="os" />
+        </antcall>
+      </then>
+    </if>
   </target>
 
 
-  <target name="pluginframework" depends="test_Darg, types, os, helpers">
-    <antcall target="${arg}_project">
+  <target name="pluginframework" depends="test_Darg, types, os, helpers, statistics">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/pluginframework" />
       <param name="project.name" value="pluginframework" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/pluginframework" />
+          <param name="project.name" value="pluginframework" />
+        </antcall>
+      </then>
+    </if>
   </target>
 
 
   <target name="statistics" depends="test_Darg, db">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/statistics" />
       <param name="project.name" value="statistics" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/statistics" />
+          <param name="project.name" value="statistics" />
+         </antcall>
+       </then>
+     </if>
   </target>
 
 
   <target name="types" depends="test_Darg, clean, config">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/types" />
       <param name="project.name" value="types" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/types" />
+          <param name="project.name" value="types" />
+         </antcall>
+       </then>
+     </if>
   </target>
 
 
-  <target name="datadock" depends="test_Darg, fedora, os">
-    <antcall target="${arg}_project">
+  <target name="datadock" depends="test_Darg, fedora, os, pluginframework, harvest, plugins">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/datadock" />
       <param name="project.name" value="datadock" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/components/datadock" />
+          <param name="project.name" value="datadock" />
+         </antcall>
+       </then>
+     </if>
   </target>
 
 
   <target name="harvest" depends="test_Darg, helpers">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/harvest" />
       <param name="project.name" value="harvest" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/components/harvest" />
+          <param name="project.name" value="harvest" />
+         </antcall>
+       </then>
+     </if>
   </target>
 
 
-  <!--target name="lantern">
-    <antcall target="${arg}">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/lantern" />
-      <param name="project.name" value="lantern" />
-    </antcall>
-  </target-->
-
-
   <target name="pti" depends="test_Darg, fedora, pluginframework, compass">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/pti" />
       <param name="project.name" value="pti" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/components/pti" />
+          <param name="project.name" value="pti" />
+         </antcall>
+       </then>
+     </if>
   </target>
 
 
   <target name="compass" depends="test_Darg, config, os, helpers">
-    <antcall target="${arg}_project">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/compass" />
       <param name="project.name" value="compass" />
     </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/compass" />
+          <param name="project.name" value="compass" />
+         </antcall>
+       </then>
+     </if>
   </target>
 
 
-  <target name="plugins" depends="test_Darg, pluginframework, helpers, statistics">
-    <antcall target="${arg}_project">
+  <target name="plugins" depends="test_Darg, pluginframework, helpers, statistics, compass">
+    <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/plugins" />
       <param name="project.name" value="plugins" />
-    </antcall> 
+    </antcall>
+    <if>
+      <equals arg1="${arg}" arg2="test"/>
+      <then>
+        <antcall target="${arg}_project">
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/plugins" />
+          <param name="project.name" value="plugins" />
+         </antcall>
+       </then>
+     </if>
   </target>
 
 
   <!--
       XSD TARGET
   -->
-
-  <!-- <target name="xsd"> -->
-  <!--   <antcall target="_xsd-classes" /> -->
-  <!--   <antcall target="_compile"> -->
-  <!--     <param name="project.name" value="xsd" /> -->
-  <!--     <param name="src.dir" value="${xsd_gen.dir}/" /> -->
-  <!--   </antcall> -->
-  <!-- </target> -->
 
   <target name="xsd-jar">
     <antcall target="_xsd-classes" />

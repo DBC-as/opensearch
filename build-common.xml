@@ -116,7 +116,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       building project '${project.name}',
       and putting it all into '${classes.dir}'
     </echo>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/** testdir/**" debug="on">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/**" debug="on">
       <classpath refid="classpath"/>
     </javac>
 
@@ -144,15 +144,27 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   <target name="_compile-tests" description="builds the tests for the component" >
     <echo>
-      Building from '${src.dir}/tests',
-      building project '${project.name}.tests',
+      Building from '${tests.dir}',
+      building project '${project.name}',
       and putting it all into '${classes.dir}'
     </echo>
     <javac srcdir="${tests.dir}" destdir="${classes.dir}" debug="on">
       <classpath refid="classpath"/>
     </javac>
   </target>
-  
+ 
+
+  <target name="_compile-tests_project" description="builds the tests for the component" >
+    <echo>
+      Building from '${src.dir}',
+      building project '${project.name}',
+      and putting it all into '${classes.dir}'
+    </echo>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
   
   <target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">

@@ -1,11 +1,4 @@
 /**
- * \file FileHarvest.java
- * \brief The FileHarvest class
- * \package components.harvest;
- */
-package dk.dbc.opensearch.components.harvest;
-
-/**
  *
  *This file is part of opensearch.
  *Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -24,6 +17,14 @@ package dk.dbc.opensearch.components.harvest;
  *You should have received a copy of the GNU General Public License
  *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * \file FileHarvest.java
+ * \brief The FileHarvest class
+ * \package components.harvest;
+ */
+
+package dk.dbc.opensearch.components.harvest;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
@@ -236,23 +237,6 @@ public class FileHarvest implements IHarvester
         }
     }
 
- //    /**
-//      * \Todo: is a santizer neccesary, when the file names are given by the
-//      * filesystem and therefore never ends with a "/" ? look at bug 8755
-//      */
-
-//     private String sanitize( File file )
-//     {
-//         if ( file.getAbsolutePath().endsWith( "/" ) )
-//         {
-//             return ( String )file.getAbsolutePath().subSequence( 0 , ( file.getAbsolutePath().length() - 1) );
-//         }
-//         else
-//         {
-//             return file.getAbsolutePath();
-//         }
-//     }
-
 
     /**
      * getJobs. Locate jobs and returns them.  First off, the
@@ -277,7 +261,8 @@ public class FileHarvest implements IHarvester
             String grandParentFile = job.getFirst().getParentFile().getParentFile().getName();
             String parentFile = job.getFirst().getParentFile().getName();
             DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
-            log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'", datadockJob.getUri().getRawPath(),
+            log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'", 
+                                      datadockJob.getUri().getRawPath(),
                                       datadockJob.getSubmitter(),
                                       datadockJob.getFormat() ) );
             jobs.add( datadockJob );
@@ -285,6 +270,7 @@ public class FileHarvest implements IHarvester
 
         return jobs;
     }
+
 
     /** 
      * Returns a HashSet of InputPairs with file objects. The size of

@@ -4,6 +4,8 @@
 [compass]
 configpath: compass.cfg.xml
 xsempath:   xml.cpm.xml
+dtdpath:    compass-core-mapping-2.0.dtd
+httpurl:    http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd
 
 [database]
 driver: org.postgresql.Driver

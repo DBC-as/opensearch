@@ -53,7 +53,7 @@ public class CompassEntityResolver implements EntityResolver
     {
         log.debug( String.format( "Entering resolveEntity with publicId: '%s' and systemId: '%s'", publicId, systemId ) );
 
-        if ( this.publicUrl != null && this.systemUrl != null )
+        if ( this.systemUrl != null && systemId.equals( publicUrl ) )
         {
             log.debug( String.format( "returning new InputSource( systemUrl: '%s' ); publicId: '%s'", systemUrl, publicId ) );
             return new InputSource( this.systemUrl );

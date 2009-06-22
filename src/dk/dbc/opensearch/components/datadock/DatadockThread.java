@@ -1,11 +1,3 @@
-
-/**
- * \file DataDock.java
- * \brief The DataDock class
- * \package datadock
- */
-package dk.dbc.opensearch.components.datadock;
-
 /*   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
@@ -24,6 +16,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
+/**
+ * \file DataDock.java
+ * \brief The DataDock class
+ * \package datadock
+ */
+package dk.dbc.opensearch.components.datadock;
+
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
@@ -173,32 +174,21 @@ public class DatadockThread implements Callable< Float >
      */
     public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException
     {
-        log.debug( "DatadockThread call method called" ); 
-
         // Must be implemented due to class implementing Callable< Float > interface.
         // Method is to be extended when we connect to 'Posthuset'
 
+        log.debug( "DatadockThread call method called" );
+
         // Validate plugins
         PluginResolver pluginResolver = new PluginResolver();
-        /*Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
 
-        if( ! missingPlugins.isEmpty() )
-        {
-            log.error( "Thread killed due to invalid plugin call");
-            log.error( String.format( "couldnt find the following plugins: %s", missingPlugins.toString() ) );
-            // kill thread/throw meaningful exception/log message
-        }
-        else
-        {*/
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
         for( String classname : list)
         {
             log.debug( "DatadockThread getPlugin 'classname' " + classname );
 
             IPluggable plugin = pluginResolver.getPlugin( classname );
-            //System.out.println( plugin.getClass() );
-            //System.out.println( "hep" + plugin.getTaskName() );            
-log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
+            log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
             
             switch ( plugin.getTaskName() )
             {
@@ -206,12 +196,8 @@ log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
                     log.debug( String.format( "case HARVEST pluginType %s", plugin.getTaskName().toString() ) );
                     IHarvestable harvestPlugin = (IHarvestable)plugin;
                     cc = harvestPlugin.getCargoContainer( datadockJob );
-                    if( cc.getCargoObjectCount() < 1 )
+                    if( cc.getCargoObjectCount() < 1 ) // no data in the cargocontainer, so no reason to continue
                     {
-                        /**
-                         * no data in the cargocontainer, so no
-                         * reason to continue
-                         */
                         log.error( String.format( "no cargoobjects in the cargocontainer" ) );
                         throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
                     }

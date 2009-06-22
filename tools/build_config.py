@@ -76,9 +76,14 @@ def build_config( path ):
     # compass settings
     configpath = ET.SubElement( compass, "configpath" )
     xsempath   = ET.SubElement( compass, "xsempath" )
+    dtdpath    = ET.SubElement( compass, "dtdpath" )
+    httpurl    = ET.SubElement( compass, "httpurl" )
     compass_section = "compass"
-    configpath.text = path + "/config/" + config_txt.get( compass_section, "configpath" )
-    xsempath.text   = path + "/config/" + config_txt.get( compass_section, "xsempath" )
+    config = "/config/"
+    configpath.text = path + config + config_txt.get( compass_section, "configpath" )
+    xsempath.text   = path + config + config_txt.get( compass_section, "xsempath" )
+    dtdpath.text    = path + config + config_txt.get( compass_section, "dtdpath" )
+    httpurl.text   = config_txt.get( compass_section, "httpurl" )
 
     # database settings
     driver = ET.SubElement( db, "driver" )

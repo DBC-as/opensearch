@@ -1,11 +1,3 @@
-/**
- * \file JobMapCreatorTest.java
- * \brief UnitTest for JobMapCreator
- */
-
-package dk.dbc.opensearch.common.pluginframework;
-
-
 /*   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
@@ -26,10 +18,18 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+/**
+ * \file JobMapCreatorTest.java
+ * \brief UnitTest for JobMapCreator
+ */
+
+package dk.dbc.opensearch.common.pluginframework;
+
+
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
-import dk.dbc.opensearch.components.datadock.DatadockMain;
-import dk.dbc.opensearch.components.pti.PTIMain;
+//import dk.dbc.opensearch.components.datadock.DatadockMain;
+//import dk.dbc.opensearch.components.pti.PTIMain;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ComparablePair;
