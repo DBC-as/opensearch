@@ -85,7 +85,7 @@ public class DatadockMain
     static long keepAliveTime;
     static int pollTime;
     static URL cfgURL;
-    static String harvestDir;
+    //static String harvestDir;
 
 
     public DatadockMain() {}
@@ -100,7 +100,7 @@ public class DatadockMain
         corePoolSize = DatadockConfig.getCorePoolSize();
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
-        harvestDir = HarvesterConfig.getFolder();
+        //harvestDir = HarvesterConfig.getFolder();
 
         log.debug( String.format( "---> queueSIZE = '%s'", queueSize ) );
     }

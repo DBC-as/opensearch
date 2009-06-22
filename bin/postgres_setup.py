@@ -56,7 +56,7 @@ def _open_and_execute( cursor, sqlfile ):
     try:
         cursor.execute( td )
     except psycopg2.ProgrammingError, pe:
-        sys.exit( "Cannot execute sqlcommand '%s': %s"%( td, pe.message ) )
+        sys.exit( "Cannot execute sqlcommand '%s'\nReason: %s"%( td, pe.message ) )
 
 
 def teardown_setup( cursor ):

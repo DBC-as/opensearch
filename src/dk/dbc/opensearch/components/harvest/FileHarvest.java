@@ -109,10 +109,10 @@ public class FileHarvest implements IHarvester
         this.submitters = new Vector< InputPair< File, Long > >();
         this.formats = new Vector< InputPair< File, Long > >();
 
-        //getting path for the jobs file for the building of the submitterformatvector
+        // Getting path for the jobs file for the building of the submitterformatvector
         datadockJobsFilePath = DatadockConfig.getPath();
-        toHarvestFolder = HarvesterConfig.getFolder();
 
+        toHarvestFolder = HarvesterConfig.getFolder();
         path = FileHandler.getFile( toHarvestFolder );
         if ( ! path.exists() )
         {
@@ -122,6 +122,14 @@ public class FileHarvest implements IHarvester
         }
 
         harvestDoneFolder = HarvesterConfig.getDoneFolder();
+        File harvestDonePath = FileHandler.getFile( harvestDoneFolder );
+        if ( ! harvestDonePath.exists() )
+        {
+            String errMsg = String.format( "'Harvest done folder' '%s' does not exist!", harvestDonePath );
+            log.error( "FileHarvest: " + errMsg );
+            throw new FileNotFoundException( errMsg );
+        }
+
         max = HarvesterConfig.getMaxToHarvest();
     }
 
@@ -155,7 +163,6 @@ public class FileHarvest implements IHarvester
     private void initVectors() throws ParserConfigurationException, SAXException, IOException
     {
         log.debug( "initvectors() called" );
-        //System.out.println( "initvectors() called" );
 
         File datadockJobsFile = FileHandler.getFile( datadockJobsFilePath );
         NodeList jobNodeList = XMLFileReader.getNodeList( datadockJobsFile, "job" );
@@ -179,8 +186,6 @@ public class FileHarvest implements IHarvester
         }
 
         log.debug( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
-        //System.out.println( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
-
         log.debug( "Submitters:" );
 
         for( File submitter : path.listFiles() )
@@ -211,15 +216,9 @@ public class FileHarvest implements IHarvester
 
     private boolean checkSubmitterFormat( File submitterFile, File formatFile )
     {
-        //String submitterFilePath = sanitize( submitterFile );
-        //String formatFilePath = sanitize( formatFile );
-
-        
-
         String submitterFilePath = submitterFile.getAbsolutePath().substring( submitterFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );
         log.debug( "FileHarvest.checkSubmitterFormat -> submitter: " + submitterFilePath );
         String formatFilePath = formatFile.getAbsolutePath().substring( formatFile.getAbsolutePath().lastIndexOf( "/") + 1 );
-        //System.out.println( String.format( "checking: %s %s",submitterFilePath, formatFilePath ) );
         log.debug( "FileHarvest.checkSubmitterFormat -> format: " + formatFilePath );
 
         InputPair< String, String > pair = new InputPair< String, String >( submitterFilePath, formatFilePath );
@@ -231,7 +230,6 @@ public class FileHarvest implements IHarvester
         }
         else
         {
-            // System.out.println("FileHarvest.checkSubmitterFormat -> Vector: " + submittersFormatsVector.toString() );
             log.debug( "FileHarvest.checkSubmitterFormat -> Vector: " + submittersFormatsVector.toString() );
             return false;
         }

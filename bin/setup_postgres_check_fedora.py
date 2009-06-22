@@ -22,9 +22,13 @@
 
 
 import postgres_setup, fedora_conn
-import build_config
 import shutil
 import os.path
+import sys
+sys.path.append( "../tools/" )
+import build_config
+
+
 try:
     import xml.etree.ElementTree as ET
 except ImportError:
