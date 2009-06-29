@@ -39,12 +39,13 @@ import org.apache.log4j.Logger;
 /**
  * FedoraStore act as the plugin communication link with the fedora base. The
  * only function of this (abstract) class is to establish the SOAP communication
- * layer.
+ * layer and facilitate file uploads.
  */
 public abstract class FedoraHandle
 {
     protected FedoraAPIM fem;
     protected FedoraAPIA fea;
+    protected FedoraClient fc;
 
     Logger log = Logger.getLogger( FedoraHandle.class );
 
@@ -68,7 +69,7 @@ public abstract class FedoraHandle
 
         log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
 
-        FedoraClient fc = new FedoraClient( fedora_base_url, user, pass );
+        fc = new FedoraClient( fedora_base_url, user, pass );
         fea = fc.getAPIA();
         fem = fc.getAPIM();
 

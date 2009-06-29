@@ -1,20 +1,20 @@
 /*
-   This file is part of opensearch.
-   Copyright © 2009, Dansk Bibliotekscenter a/s,
-   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-   opensearch is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-   opensearch is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
@@ -27,16 +27,27 @@ package dk.dbc.opensearch.common.fedora;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.StringWriter;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.net.URL;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.rpc.ServiceException;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerConfigurationException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -45,7 +56,11 @@ import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
-import dk.dbc.opensearch.xsd.DigitalObject;
+import dk.dbc.opensearch.xsd.Datastream;
+import dk.dbc.opensearch.xsd.DatastreamVersion;
+import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
+import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
+import dk.dbc.opensearch.xsd.types.StateType;
 
 import fedora.server.types.gen.MIMETypedStream;
 import org.exolab.castor.xml.MarshalException;
@@ -53,8 +68,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.exolab.castor.xml.ValidationException;
@@ -85,13 +102,13 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         log.debug( "constructed" );
     }
     /**
-     * method to delete a DigitalObject for good, based on the pid
+     * method to delete an object for good, based on the pid
      * @param pid, the identifier of the object to be removed
      * @param force, tells whether to purge the object even if it
      * breaks dependencies to other objects
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public void deleteDO( String pid, boolean force ) throws RemoteException
+    public void deleteObject( String pid, boolean force ) throws RemoteException
     {
         String logm = "";
         super.fem.purgeObject( pid, logm, force );
@@ -99,22 +116,22 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     }
 
     /**
-     * method for setting the delete flag on DigitalObjects
+     * method for setting the delete flag on an object
      * @param pid, the identifier of the object to be marked as delete
      * @return true if the DigitalObject is marked
      */
-    public boolean markAsDeleteDO( String pid )
+    public boolean markObjectWithDelete( String pid )
     {
         return true;
     }
 
     /**
-     * method for getting a DigitalObject in a CargoContainer based on its pid
+     * method for getting an object in a CargoContainer based on its pid
      * @param pid, the identifier of the object to get
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getDO( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
+    public CargoContainer getObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
     {
 
         log.debug( String.format( "entering getDO( '%s' )", pid ) );
@@ -172,9 +189,9 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     }
 
     /**
-     * method for storing a DigitalObject in the Fedora base
+     * method for storing an object in the Fedora base
      * @param theCC the CargoContainer to store
-     * @param label, the label to put on the DigitalObject
+     * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
     public String storeCC( CargoContainer theCC, String label ) throws MalformedURLException, RemoteException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException
@@ -200,8 +217,8 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     }
 
     /**
-     * method to retrive all DataStreams of a DataStreamType from a DigitalObject
-     * @param pid, identifies the DO
+     * method to retrive all DataStreams of a DataStreamType from an object
+     * @param pid, identifies the object
      * @param streamtype, the name of the type of DataStream to get
      * @return a CargoContainer of CargoObjects each containing a DataStream,
      * is null if there are no DataStreams of the streamtype.
@@ -329,37 +346,116 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         return cc;
     }
     /**
-     * method for saving a Datastream to a DigitalObject
-     * @param theFile, the file to save as a DataStream in a specified DigitalObject
-     * @param sID the id of the stream, if null is given, the method returns a sID
+     * method for adding a Datastream to an object
+     * @param theFile, the file to save as a DataStream in a specified object
      * @param pid, the identifier of the object to save the datastream to
      * @param label the label to give the stream
      * @param versionable, tells whether to keep track of old versions or not
      * @param overwrite, tells whether to overwrite if the datastream exists
      * @return the dataStreamID of the added stream
      */
-    public String addDataStreamToObject( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean overwrite ) throws RemoteException, MalformedURLException
+    public String addDataStreamToObject( File theFile, String pid, String label, boolean versionable, String mimetype, boolean overwrite, String format, String lang, String submitter, DataStreamType dsn ) throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException
     {
+        String sID = null;
         String logm = "";
+        String adminLogm = "";
+        String dsnName = dsn.getName();
+      
+        //10: get the adminstream
+        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        byte[] adminStream = ds.getStream();
+        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
-        //make the file into an URL
-        URL theURL = theFile.toURI().toURL();
-        String[] altIDs;
+        log.debug( String.format( "root element from adminstream == %s", root ) );
 
-        //get the adminstream and modify it...
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document admStream = builder.newDocument();
 
-        //addDataStream
+        Element newRoot = (Element)admStream.importNode( (Node)root, true );
+        //Element newRoot = admStream.getDocumentElement();
 
-        logm =String.format( "added %s to the digitalobject with pid: %s", theFile.getAbsolutePath(), pid );
+        NodeList streamsNL = newRoot.getElementsByTagName( "streams" );
+        Element streams = (Element)streamsNL.item( 0 );
+        NodeList streamNL = streams.getElementsByTagName( "stream" );
+        //iterate streamNL to get num of streams with dsnName as streamNameType
 
+        Element oldStream;
+        int count = 0;
+        int streamNLLength = streamNL.getLength();
+        
+        //need to loop streams to get num of this type to create valid id
+        for( int i = 0; i < streamNLLength; i++ )
+        {
+            oldStream = (Element)streamNL.item( i );
+            if( oldStream.getAttribute( "streamNameType" ).equals( dsnName ) )
+            {
+                count++;
+            }
+        }
 
-        String returnedSID = super.fem.addDatastream( pid, sID, new String[] {}, label, versionable, mimetype, null, theURL.getPath(), "M", "A", null, null, logm );
+        // 14: create a streamId
+        if( sID == null )
+        {
+            sID = dsnName + "." + count;
+        }
+        Element stream = admStream.createElement( "stream" );
+        
+        stream.setAttribute( "id", sID );
+        stream.setAttribute( "lang",lang );
+        stream.setAttribute( "format", format );
+        stream.setAttribute( "mimetype", mimetype );
+        stream.setAttribute( "submitter",submitter );
+        stream.setAttribute( "index", String.valueOf( count ) );
+        stream.setAttribute( "streamNameType" , dsnName );
+        
+        // 15:add data for the new stream
+        streams.appendChild( (Node) stream );
 
-            return returnedSID;
+        // 18: make it into a String
+        Source source = new DOMSource((Node) newRoot );
+        StringWriter stringWriter = new StringWriter();
+        File admFile = new File( "admFile" );
+        admFile.deleteOnExit();
+
+        Result result = new StreamResult( admFile );
+        Result stringResult = new StreamResult( stringWriter );//debug
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.transform(source, result);
+        transformer.transform(source, stringResult);
+        //debug
+        String admStreamString = stringWriter.getBuffer().toString();
+        System.out.println( admStreamString );
+
+        // 20:use modify by reference
+        String adminLabel= "admin [text/xml]";
+        String adminMime = "text/xml";
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
+        String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
+        adminLogm = "admin stream updated with added stream data" + timeNow;
+
+        //upload the admFile
+        String admLocation = super.fc.uploadFile( admFile );
+
+        super.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+
+        //upload the content 
+
+        String dsLocation = super.fc.uploadFile( theFile );
+ 
+        logm = String.format( "added %s to the object with pid: %s", dsLocation, pid );
+
+        String returnedSID = super.fem.addDatastream( pid, sID, new String[] {}, label, versionable, mimetype, null, dsLocation, "M", "A", null, null, logm );
+
+        return returnedSID;
 
     }
     /**
-     * method for modifying an existing dataStream in a DigitalObject
+     * method for modifying an existing dataStream in an object
      * @param theFile, the file to be added as a stream to the specified object
      * @param sID the id of the datastream to be modified
      * @param pid the id of the object to get a datastream updated
@@ -371,26 +467,165 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @return the checksum of the datastream...
      */
 
-    public String modifyDataStream( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException
-    { 
-        String logm =String.format( "modified the digitalobject with pid: %s", pid );
+    public String modifyDataStream(File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException
+    {
+        String logm = String.format( "modified the object with pid: %s", pid );
         String[] altIDs;
-        //make the file into an URL
-        URL theURL = theFile.toURI().toURL();
-        super.fem.modifyDatastreamByReference( pid, sID, new String[] {}, label,  mimetype, null, theURL.getPath(), null, null, logm, breakDependencies );
+
+        String dsLocation = super.fc.uploadFile( theFile );
+
+        super.fem.modifyDatastreamByReference( pid, sID, new String[] {}, label,  mimetype, null, dsLocation, null, null, logm, breakDependencies );
         return "";
 
     }
 
     /**
-     * method for storing removing a datastream form a DigitalObject in the Fedora base
+     * method for storing removing a datastream form an object in the Fedora base
      * @param pid, the indentifier of the object to remove from
-     * @param streamtype, the type of the stream to remove
-     * @param streamPid, the identifier of the stream to remove
+     * @param sID, the identifier of the stream to remove
+     * @param breakDependencies tells whether to break data contracts/dependencies
+     * @param startDate, the earlyist date to remove stream versions from, can be null
+     * @param endDate, the latest date to remove stream versions to, can be null
      * @return true if the stream was removed
      */
-    public boolean removeDataStream( String pid, DataStreamType streamtype, String streamID )
+    public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException
     {
-        return true;
+        
+       
+       
+        String adminLogm = "";
+
+        //10: get the adminstream to modify
+        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        byte[] adminStream = ds.getStream();
+        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        Element rootOld = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+
+        log.debug( String.format( "root element from adminstream == %s", rootOld ) );
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document admStream = builder.newDocument();
+        //get indexingAlias
+        NodeList indexingAliasElemOld = rootOld.getElementsByTagName( "indexingalias" );
+        Node indexingAliasNodeOld = indexingAliasElemOld.item( 0 );
+        
+        //make root and indexingAlias part of the new document
+        Element root = (Element)admStream.importNode( (Node)rootOld, false );
+        Node indexingAliasNode = admStream.importNode( indexingAliasNodeOld, true ); 
+
+        //append the indexingAlias to the root
+        root.appendChild( indexingAliasNode );
+
+        NodeList streamsNLOld = rootOld.getElementsByTagName( "streams" );
+        Element streamsOld = (Element)streamsNLOld.item( 0 );
+        Element streams = (Element)admStream.importNode( (Node)streamsOld, false );
+        root.appendChild( (Node)streams );       
+
+        NodeList streamNLOld = streamsOld.getElementsByTagName( "stream" );
+        //need to loop streams to get the type and index of the stream to be purged
+        int purgeIndex = -1;
+        String purgeStreamTypeName = "";
+        Element oldStream;
+        int streamNLLength = streamNLOld.getLength();
+        for( int i = 0; i < streamNLLength; i++ )
+        {
+            oldStream = (Element)streamNLOld.item( i );
+            if( oldStream.getAttribute( "id" ).equals( sID ) )
+            {
+                purgeIndex = Integer.valueOf( oldStream.getAttribute( "index" ) );
+                purgeStreamTypeName = oldStream.getAttribute( "streamTypeName" );
+            }
+        }
+
+        //need to loop streams again to get the streams to be moved to the admStream
+        String currentStreamTypeName;
+        int currentIndex;
+        int newVal;
+        for( int i = 0; i < streamNLLength; i++ )
+        {
+            oldStream = (Element)streamNLOld.item( i );
+            //if not the stream to purge, import to admStream
+            if( !oldStream.getAttribute( "id" ).equals( sID) )
+            {
+                Element stream = (Element)admStream.importNode( (Node)oldStream, true );
+                //modify the index of the stream, if of same StreamType and index has higher value
+                currentStreamTypeName = stream.getAttribute( "streamTypeName" );
+                if( currentStreamTypeName.equals( purgeStreamTypeName ) )
+                {
+                    currentIndex = Integer.valueOf( stream.getAttribute( "index" ) );
+                    if( currentIndex > purgeIndex )
+                    {
+                        newVal = currentIndex - 1;
+                        stream.setAttribute( "index", Integer.toString( newVal) );
+                    }
+                }
+
+                streams.appendChild( (Node) stream );
+            }
+        }
+
+        // 14: create a streamId
+        // if( sID == null )
+//         {
+//             sID = dsnName + "." + count;
+//         }
+//         Element stream = admStream.createElement( "stream" );
+        
+//         stream.setAttribute( "id", sID );
+//         stream.setAttribute( "lang",lang );
+//         stream.setAttribute( "format", format );
+//         stream.setAttribute( "mimetype", mimetype );
+//         stream.setAttribute( "submitter",submitter );
+//         stream.setAttribute( "index", String.valueOf( count ) );
+//         stream.setAttribute( "streamNameType" , dsnName );
+        
+//         // 15:add data for the new stream
+//         streams.appendChild( (Node) stream );
+
+        // 18: make the admin info into a File ( and a String for current debug)
+        Source source = new DOMSource((Node) root );
+        StringWriter stringWriter = new StringWriter();
+        File admFile = new File( "admFile" );
+        admFile.deleteOnExit();
+
+        Result result = new StreamResult( admFile );
+        Result stringResult = new StreamResult( stringWriter );//debug
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.transform(source, result);
+        transformer.transform(source, stringResult);
+        //debug
+        String admStreamString = stringWriter.getBuffer().toString();
+        System.out.println( admStreamString );
+
+        // 20:use modify by reference
+        String adminLabel= "admin [text/xml]";
+        String adminMime = "text/xml";
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
+        String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
+        adminLogm = "admin stream updated with added stream data" + timeNow;
+
+        //upload the admFile
+        String admLocation = super.fc.uploadFile( admFile );
+
+        super.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+
+        boolean retval = false;
+        String logm = String.format( "removed stream %s from object %s", sID, pid );
+
+        /**
+         * \Todo: find out why the return val is String[] and not String. bug 9046
+         */
+        String[] stamp = super.fem.purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
+        if( stamp != null )
+        {
+            retval = true;
+        }
+        return retval;
+    
     }
+
 }

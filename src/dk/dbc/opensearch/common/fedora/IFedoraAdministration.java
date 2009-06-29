@@ -43,48 +43,52 @@ import org.exolab.castor.xml.MarshalException;
 import javax.xml.rpc.ServiceException;
 import org.exolab.castor.xml.ValidationException;
 import java.text.ParseException;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 public interface IFedoraAdministration
 {
     //public IFedoraAdministration();
     
-    /**
-     * method to delete a DigitalObject for good, based on the pid
-     * @param pid, the identifier of the object to be removed
-     * @param force, tells whether to purge the object even if it 
-     * breaks dependencies to other objects
-     */
-    public void deleteDO( String pid, boolean force ) throws RemoteException;
-
      /**
-     * method for setting the delete flag on DigitalObjects
-     * @param pid, the identifier of the object to be marked as delete 
+     * method to delete an object for good, based on the pid
+     * @param pid, the identifier of the object to be removed
+     * @param force, tells whether to purge the object even if it
+     * breaks dependencies to other objects
+     * @throws RemoteException if something on the serverside goes wrong.
+     */
+    public void deleteObject( String pid, boolean force ) throws RemoteException;
+
+   
+    /**
+     * method for setting the delete flag on an object
+     * @param pid, the identifier of the object to be marked as delete
      * @return true if the DigitalObject is marked
      */
-    public boolean markAsDeleteDO( String pid );
+    public boolean markObjectWithDelete( String pid );
 
-    /**
-     * method for getting a DigitalObject in a CargoContainer based on its pid
+  /**
+     * method for getting an object in a CargoContainer based on its pid
      * @param pid, the identifier of the object to get
-     * @return the CargoContainer representing the DigitalObject, 
-     * null if the object is not there
+     * @return the CargoContainer representing the DigitalObject
+     * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getDO( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
+    public CargoContainer getObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
 
     /**
-     * method for storing a DigitalObject in the Fedora base
+     * method for storing an object in the Fedora base
      * @param theCC the CargoContainer to store
-     * @param label, the label to put on the DigitalObject
+     * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
     public String storeCC( CargoContainer theCC, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException;
-    /**
-     * method to retrive all DataStreams of a DataStreamType from a DigitalObject
-     * @param pid, identifies the DO
-     * @param streamtype, the name of type of the DataStream to get
-     * @return anArrayList of CargoObjects eachcontaining a DataStream,
-     * is empty if there are no DataStreams of the streamtype
+   
+  /**
+     * method to retrive all DataStreams of a DataStreamType from an object
+     * @param pid, identifies the object
+     * @param streamtype, the name of the type of DataStream to get
+     * @return a CargoContainer of CargoObjects each containing a DataStream,
+     * is null if there are no DataStreams of the streamtype.
      */
     public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
 
@@ -96,18 +100,19 @@ public interface IFedoraAdministration
      */
     public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
 
-    /**
-     * method for saving a Datastream to a DigitalObject
-     * @param stream, the DataStream to save to a DigitalObject
-     * @param pid, the identifier of the object to save the dastream to
-     * @param overwrite, tells whether to overwrite if there is a 
-     * DataStream of the same type present
-     * @return true if the operation succeded
+     /**
+     * method for adding a Datastream to an object
+     * @param theFile, the file to save as a DataStream in a specified object
+     * @param pid, the identifier of the object to save the datastream to
+     * @param label the label to give the stream
+     * @param versionable, tells whether to keep track of old versions or not
+     * @param overwrite, tells whether to overwrite if the datastream exists
+     * @return the dataStreamID of the added stream
      */
-    public String addDataStreamToObject( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean overwrite )throws RemoteException, MalformedURLException;
+    public String addDataStreamToObject( File theFile, String pid, String label, boolean versionable, String mimetype, boolean overwrite, String format, String lang, String submitter, DataStreamType dsn )throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException;
 
-    /**
-     * method for modifying an existing datastream in a DigitalObject
+   /**
+     * method for modifying an existing dataStream in an object
      * @param theFile, the file to be added as a stream to the specified object
      * @param sID the id of the datastream to be modified
      * @param pid the id of the object to get a datastream updated
@@ -119,14 +124,16 @@ public interface IFedoraAdministration
      * @return the checksum of the datastream...
      */
 
-    public String modifyDataStream( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException;
+    public String modifyDataStream( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException;
 
-    /**
-     * method for storing removing a datastream form a DigitalObject in the Fedora base
+      /**
+     * method for storing removing a datastream form an object in the Fedora base
      * @param pid, the indentifier of the object to remove from
-     * @param streamtype, the type of the stream to remove
-     * @param streamPid, the identifier of the stream to remove
+     * @param sID, the identifier of the stream to remove
+     * @param breakDependencies tells whether to break data contracts/dependencies
+     * @param startDate, the earlyist date to remove stream versions from, can be null
+     * @param endDate, the latest date to remove stream versions to, can be null
      * @return true if the stream was removed
      */
-    public boolean removeDataStream( String pid, DataStreamType streamtype, String streamID );
+    public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException;
 }
