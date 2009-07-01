@@ -28,7 +28,8 @@ public enum DataStreamType
 	OriginalData ( "originalData", "original data" ),
 	DublinCoreData( "dublinCoreData", "dublin core data" ),
 	AdminData( "adminData", "Administration" ),      
-	IndexableData( "indexableData", "data prepared for indexing" );
+            IndexableData( "indexableData", "data prepared for indexing" ),
+        RELSEXT( "RELS-EXT", "relationship expressions" );
 	
 	static Logger log = Logger.getLogger( DataStreamType.class );
 	

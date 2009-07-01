@@ -62,6 +62,7 @@ import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
 import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
 import dk.dbc.opensearch.xsd.types.StateType;
 
+import fedora.server.types.gen.RelationshipTuple;
 import fedora.server.types.gen.MIMETypedStream;
 import org.exolab.castor.xml.MarshalException;
 
@@ -480,7 +481,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     }
 
     /**
-     * method for storing removing a datastream form an object in the Fedora base
+     * method for removing a datastream form an object in the Fedora base
      * @param pid, the indentifier of the object to remove from
      * @param sID, the identifier of the stream to remove
      * @param breakDependencies tells whether to break data contracts/dependencies
@@ -489,10 +490,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @return true if the stream was removed
      */
     public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException
-    {
-        
-       
-       
+    {    
         String adminLogm = "";
 
         //10: get the adminstream to modify
@@ -567,24 +565,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
             }
         }
 
-        // 14: create a streamId
-        // if( sID == null )
-//         {
-//             sID = dsnName + "." + count;
-//         }
-//         Element stream = admStream.createElement( "stream" );
-        
-//         stream.setAttribute( "id", sID );
-//         stream.setAttribute( "lang",lang );
-//         stream.setAttribute( "format", format );
-//         stream.setAttribute( "mimetype", mimetype );
-//         stream.setAttribute( "submitter",submitter );
-//         stream.setAttribute( "index", String.valueOf( count ) );
-//         stream.setAttribute( "streamNameType" , dsnName );
-        
-//         // 15:add data for the new stream
-//         streams.appendChild( (Node) stream );
-
         // 18: make the admin info into a File ( and a String for current debug)
         Source source = new DOMSource((Node) root );
         StringWriter stringWriter = new StringWriter();
@@ -628,4 +608,47 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     
     }
 
+ /**
+     * method for adding a relation to an object
+     * @param pid, the identifier of the object to add the realtion to
+     * @param predicate, the predicate of the relation to add
+     * @param targetPid, the object to relate the object to, can be a literal
+     * @param literal, true if the targetPid is a literal
+     * @param datatype, the datatype of the literal, optional
+     * @return true if the relation was added
+     */
+ public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException
+    {
+        return super.fem.addRelationship( pid, predicate, targetPid, literal, datatype );
+    }
+ 
+    /**
+     * method to check whether an object has a RELS-EXT Datastream
+     * @param pid, the identifier of the object in question
+     * @return true only if the object has a RELS-EXT Datastream
+     */
+    public boolean objectHasRELSEXT( String pid) throws RemoteException
+    {
+        RelationshipTuple[] reltup = super.fem.getRelationships( pid, null );
+        
+        for( int i = 0; i < reltup.length; i++ )
+        {
+            System.out.println( reltup[ i ].getSubject() );
+            System.out.println( reltup[ i ].getPredicate() );
+            System.out.println( reltup[ i ].getObject() );
+        }
+
+        if( reltup.length > 0 )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public boolean removeRelation( String pid, String predicate, String targetPid, boolean isLiteral, String datatype ) throws RemoteException
+    {
+        return super.fem.purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
+    }
 }

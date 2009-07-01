@@ -127,7 +127,7 @@ public interface IFedoraAdministration
     public String modifyDataStream( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException;
 
       /**
-     * method for storing removing a datastream form an object in the Fedora base
+     * method for removing a datastream form an object in the Fedora base
      * @param pid, the indentifier of the object to remove from
      * @param sID, the identifier of the stream to remove
      * @param breakDependencies tells whether to break data contracts/dependencies
@@ -136,4 +136,22 @@ public interface IFedoraAdministration
      * @return true if the stream was removed
      */
     public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException;
+
+    /**
+     * method for adding a relation to an object
+     * @param pid, the identifier of the object to add the realtion to
+     * @param predicate, the predicate of the relation to add
+     * @param targetPid, the object to relate the object to, can be a literal
+     * @param literal, true if the targetPid is a literal
+     * @param datatype, the datatype of the literal, optional
+     * @return true if the relation was added
+     */
+    public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException;
+
+    /**
+     * method to check whether an object has a RELS-EXT Datastream
+     * @param pid, the identifier of the object in question
+     * @return true only if the object has a RELS-EXT Datastream
+     */
+    public boolean objectHasRELSEXT( String pid) throws RemoteException;
 }
