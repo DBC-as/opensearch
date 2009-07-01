@@ -66,7 +66,7 @@ public class FileSystemConfig extends Config
     } 
 	
 	
-    /* CONFIG.XML PATH */
+    /* CONFIG PATH */
     public static String getConfigPath() throws ConfigurationException
     {
         FileSystemConfig f = new FileSystemConfig();

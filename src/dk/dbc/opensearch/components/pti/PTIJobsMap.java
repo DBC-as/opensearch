@@ -24,35 +24,21 @@ public class PTIJobsMap extends JobMapCreator
     private static ArrayList< String > ptiPluginsList = new ArrayList< String >();
     private static HashMap< InputPair< String, String >, ArrayList< String > > ptiJobMap;
 
-    public PTIJobsMap()
-    {
-        //System.out.println( "PTIJobsMap constructor called" );
-    }
+    public PTIJobsMap() {}
 
 
     public static ArrayList< String > getPtiPluginsList( String submitter, String format ) throws ConfigurationException, IllegalArgumentException, IllegalStateException, IOException, SAXException, ParserConfigurationException
     {
-
         if( !initiated || ptiJobMap.isEmpty() )
         {
-            //System.out.println( "initiating" );
             String path = PtiConfig.getPath();
-            JobMapCreator.validateJobXmlFile( path );
+            JobMapCreator.validateXsdJobXmlFile( path );
+            JobMapCreator.validateJobXmlFilePosition( path );
             JobMapCreator.init( path );
 
-            // is this possible, wont the init method throw an IllegalStateException
-            if( jobMap == null )
-            {
-                throw new NullPointerException( "jobMap is null" );
-            }
             ptiJobMap = jobMap;
             initiated = true;
         }
-        // else
-//         {
-//             System.out.println( "already initiated" );
-//         }
-
 
         ptiPluginsList = ptiJobMap.get( new InputPair< String, String >( submitter, format ) );
         return ptiPluginsList;

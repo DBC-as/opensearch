@@ -1,12 +1,3 @@
-/**
- * \file DatadockMainTest.java
- * \brief The DatadockManagerTest class
- * \package tests;
- */
-
-package dk.dbc.opensearch.components.datadock;
-
-
 /*   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
@@ -25,6 +16,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
+/**
+ * \file DatadockMainTest.java
+ * \brief The DatadockManagerTest class
+ * \package tests;
+ */
+
+package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.components.datadock.DatadockMain;

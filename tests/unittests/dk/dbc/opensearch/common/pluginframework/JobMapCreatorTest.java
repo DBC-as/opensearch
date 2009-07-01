@@ -26,21 +26,24 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
+import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.PtiConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
-//import dk.dbc.opensearch.components.datadock.DatadockMain;
-//import dk.dbc.opensearch.components.pti.PTIMain;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.PtiConfig;
+import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -242,6 +245,7 @@ public class JobMapCreatorTest
 
 
     @Test( expected = IllegalStateException.class )
+    @Ignore ( "init() does not throw IllegatStateException anymore!" )
     public void testInitEqualPositions() throws ParserConfigurationException, SAXException, IOException, IllegalStateException
     {
         /**
@@ -321,7 +325,6 @@ public class JobMapCreatorTest
          */
         verify( mockNodeList );
         verify( mockFile );
-
     }
     
     
@@ -498,11 +501,11 @@ public class JobMapCreatorTest
     /**
      * Giving the setJobFile a class other than DatadockMain and PTIMain
      */
-     @Test( expected= IllegalArgumentException.class )
-     @Ignore
-     public void testSetJobFileException3() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
-     {
-    	 /**
+    @Test( expected = IllegalArgumentException.class )
+    @Ignore
+    public void testSetJobFileException3() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
+    {
+        /**
          * Setup
          */
         
@@ -522,5 +525,35 @@ public class JobMapCreatorTest
         /**
          * Verify
          */      
-     }
+    }
+
+    
+    @Test( expected = IllegalStateException.class )
+    public void testValidateJobXmlPosition() throws ParserConfigurationException, SAXException, IOException, IllegalStateException, ConfigurationException
+    {
+        String datadockStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<job_list xmlns=\"info:opensearch.dbc.dk#\">" +
+              "<job submitter=\"dbc\" format=\"faktalink\">" +
+                "<plugin name=\"docbookharvester\" classname=\"dk.dbc.opensearch.plugins.DocbookHarvester\" position=\"0\"/>" + 
+                "<plugin name=\"docbookannotate\" classname=\"dk.dbc.opensearch.plugins.DocbookAnnotate\" position=\"0\"/>" + 
+              "</job>" +
+            "</job_list>";
+        
+        String path = FileSystemConfig.getConfigPath() + "test.xml";
+        
+        BufferedWriter out = new BufferedWriter( new FileWriter( path ) );
+        out.write( datadockStr );
+        out.close();
+
+        try
+        {
+            JobMapCreator.validateJobXmlFilePosition( path );
+        }
+        catch ( IllegalStateException ise )
+        {
+            File file = new File( path );
+            file.delete();
+            throw new IllegalStateException( ise.getMessage() );
+        }
+    }    
 }

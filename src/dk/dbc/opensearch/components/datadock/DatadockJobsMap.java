@@ -24,19 +24,16 @@ public class DatadockJobsMap extends JobMapCreator
     private static ArrayList< String > datadockPluginsList = new ArrayList< String >();
     private static HashMap< InputPair< String, String >, ArrayList< String > > datadockJobMap;
 
-    public DatadockJobsMap()
-    {
-        //System.out.println( "DatadockJobsMap constructor called" );
-    }
+    public DatadockJobsMap() {}
 
 
     public static ArrayList< String > getDatadockPluginsList( String submitter, String format ) throws ConfigurationException, IllegalArgumentException, IllegalStateException, IOException, SAXException, ParserConfigurationException
     {
         if( !initiated )
         {
-            //System.out.println( "initiating" );
             String path = DatadockConfig.getPath();
-            JobMapCreator.validateJobXmlFile( path );
+            JobMapCreator.validateXsdJobXmlFile( path );
+            JobMapCreator.validateJobXmlFilePosition( path );
             JobMapCreator.init( path );
 
             datadockJobMap = jobMap;

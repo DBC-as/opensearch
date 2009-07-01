@@ -1,12 +1,3 @@
-/**
- * \file FileHarvestTest.java
- * \brief The PTIJobsMapTest class
- * \package dk.dbc.opensearch.components.pti;
- */
-
-package dk.dbc.opensearch.components.pti;
-
-
 /*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -25,6 +16,14 @@ package dk.dbc.opensearch.components.pti;
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/**
+ * \file FileHarvestTest.java
+ * \brief The PTIJobsMapTest class
+ * \package dk.dbc.opensearch.components.pti;
+ */
+
+package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.components.pti.PTIJobsMap;
@@ -100,8 +99,8 @@ public class PTIJobsMapTest
     @MockClass( realClass = JobMapCreator.class )
     public static class MockJobMapCreator
     {
-        @Mock public void validateJobXmlFile( String path )
-       {
+        @Mock public void validateXsdJobXmlFile( String path )
+        {
         
         }
     }
@@ -111,7 +110,10 @@ public class PTIJobsMapTest
      *
      */
     @Before 
-    public void SetUp() { }
+    public void SetUp() 
+    { 
+
+    }
 
 
     /**
@@ -134,7 +136,6 @@ public class PTIJobsMapTest
     @Test( expected = IllegalStateException.class ) 
     public void testGetPtiPluginsListIllegalStateException() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     { 
-        //  System.out.println( "1" );
         /**
          * setup
          */
@@ -149,7 +150,7 @@ public class PTIJobsMapTest
         /**
          * Expectations
          */
-        expect( mockNodeList.getLength() ).andReturn( 0 );
+        expect( mockNodeList.getLength() ).andReturn( 0 ).times( 2 );
 
         /**
          * replay
@@ -171,12 +172,11 @@ public class PTIJobsMapTest
 
     }
 
-    
+
     @Test 
     public void testGetPtiPluginsList() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
-        //System.out.println( "2" );
-        /**
+         /**
          * setup
          */
         Mockit.setUpMocks( MockPtiConfig.class );
@@ -194,6 +194,12 @@ public class PTIJobsMapTest
         /**
          * Expectations
          */
+        //validatePosition
+        expect( mockNodeList.getLength() ).andReturn( 1 );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.getLength() ).andReturn( 0 );
+
         expect( mockNodeList.getLength() ).andReturn( 1 );
         //outer loop in JobMapCreator
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
