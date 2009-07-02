@@ -1,4 +1,4 @@
-/*
+/**
    This file is part of opensearch.
    Copyright © 2009, Dansk Bibliotekscenter a/s,
    Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -46,6 +46,14 @@ import java.text.ParseException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
+/**
+ * The purpose of the FedoraAdministration API is to provide a wrapper
+ * around the communication with the Fedora Commons digital
+ * repository. Objects are stored using the CargoContainer datatype
+ * and objects are retrieved in this form.
+ *
+ */
+
 public interface IFedoraAdministration
 {
     //public IFedoraAdministration();
@@ -61,30 +69,35 @@ public interface IFedoraAdministration
 
    
     /**
-     * method for setting the delete flag on an object
+     * method for setting the delete flag on a designated digital object
      * @param pid, the identifier of the object to be marked as delete
      * @return true if the DigitalObject is marked
      */
-    public boolean markObjectWithDelete( String pid );
+    public boolean markObjectAsDeleted( String pid );
 
   /**
-     * method for getting an object in a CargoContainer based on its pid
+     * method for getting data from a DigitalObject in a
+     * CargoContainer based on a pid.
      * @param pid, the identifier of the object to get
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
+    public CargoContainer getDigitalObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
 
     /**
-     * method for storing an object in the Fedora base
+     * method for storing data (in the form of a CargoContainer) in
+     * the Fedora base
      * @param theCC the CargoContainer to store
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public String storeCC( CargoContainer theCC, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException;
+    public String storeCargoContainer( CargoContainer theCC, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException;
    
   /**
-     * method to retrive all DataStreams of a DataStreamType from an object
+     * method to retrive all DataStreams of a DataStreamType from a
+     * DigitalObject. The data is returned in a CargoContainer. Note
+     * that the returned CargoContainer will not be identical with the
+     * CargoContainer used for initially storing the data.
      * @param pid, identifies the object
      * @param streamtype, the name of the type of DataStream to get
      * @return a CargoContainer of CargoObjects each containing a DataStream,
@@ -94,6 +107,7 @@ public interface IFedoraAdministration
 
     /**
      * method for getting a datastream identified by its streamID
+     * //todo: more information is needed on what a streamID is.
      * @param streamID, the identifier of the datastream to be retrieved
      * @param pid, the identifier of the object to get the stream from
      * @return CargoContainer with the datastream
