@@ -121,7 +121,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @param pid, the identifier of the object to be marked as delete
      * @return true if the DigitalObject is marked
      */
-    public boolean markObjectWithDelete( String pid )
+    public boolean markObjectAsDeleted( String pid )
     {
         return true;
     }
@@ -132,7 +132,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
+    public CargoContainer getDigitalObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
     {
 
         log.debug( String.format( "entering getDO( '%s' )", pid ) );
@@ -195,7 +195,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public String storeCC( CargoContainer theCC, String label ) throws MalformedURLException, RemoteException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException
+    public String storeCargoContainer( CargoContainer theCC, String label ) throws MalformedURLException, RemoteException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException
     {
         log.debug( "entering storeCC" );
 
