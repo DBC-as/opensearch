@@ -26,10 +26,12 @@ package dk.dbc.opensearch.common.fedora;
 
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.File;
 import java.io.StringWriter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -51,7 +53,9 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.types.IndexingAlias;
@@ -59,7 +63,13 @@ import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
 import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
+import dk.dbc.opensearch.xsd.DigitalObject;
+import dk.dbc.opensearch.xsd.ObjectProperties;
+import dk.dbc.opensearch.xsd.Property;
+import dk.dbc.opensearch.xsd.PropertyType;
 import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
+import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
+import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
 import dk.dbc.opensearch.xsd.types.StateType;
 
 import fedora.server.types.gen.RelationshipTuple;
@@ -75,6 +85,8 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import java.text.ParseException;
 import javax.xml.transform.TransformerException;
@@ -82,10 +94,10 @@ import javax.xml.transform.TransformerException;
 public class FedoraAdministration extends FedoraHandle implements IFedoraAdministration
 {
 
-    Logger log = Logger.getLogger( FedoraAdministration.class );
-    //private FedoraCommunication fedoraCommunication;
+    static Logger log = Logger.getLogger( FedoraAdministration.class );
     private PIDManager pidManager;
-
+    protected static final SimpleDateFormat dateFormat =
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
     /**
      * The constructor initalizes the super class FedoraHandle which
      * handles the initiation of the connection with the fedora base
@@ -204,7 +216,11 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         String submitter = theCC.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
         //get a pid for the object
         String pid = pidManager.getNextPID( submitter );
-        byte[] foxml = FedoraTools.constructFoxml( theCC, pid, label );
+        //construct the foxml
+
+
+
+        byte[] foxml = constructFoxml( theCC, pid, label );
         String logm = String.format( "%s inserted", label );
 
         String returnPid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
@@ -355,15 +371,15 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @param overwrite, tells whether to overwrite if the datastream exists
      * @return the dataStreamID of the added stream
      */
-    public String addDataStreamToObject( File theFile, String pid, String label, boolean versionable, String mimetype, boolean overwrite, String format, String lang, String submitter, DataStreamType dsn ) throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException
+    public String addDataStreamToObject( CargoObject cargo, String pid, boolean versionable, boolean overwrite ) throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException
     {
         String sID = null;
         String logm = "";
         String adminLogm = "";
-        String dsnName = dsn.getName();
-      
+        String dsnName = cargo.getDataStreamName().getName();
+
         //10: get the adminstream
-        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
@@ -387,7 +403,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         Element oldStream;
         int count = 0;
         int streamNLLength = streamNL.getLength();
-        
+
         //need to loop streams to get num of this type to create valid id
         for( int i = 0; i < streamNLLength; i++ )
         {
@@ -404,15 +420,15 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
             sID = dsnName + "." + count;
         }
         Element stream = admStream.createElement( "stream" );
-        
+
         stream.setAttribute( "id", sID );
-        stream.setAttribute( "lang",lang );
-        stream.setAttribute( "format", format );
-        stream.setAttribute( "mimetype", mimetype );
-        stream.setAttribute( "submitter",submitter );
+        stream.setAttribute( "lang", cargo.getLang() );
+        stream.setAttribute( "format", cargo.getFormat() );
+        stream.setAttribute( "mimetype", cargo.getMimeType() );
+        stream.setAttribute( "submitter", cargo.getSubmitter() );
         stream.setAttribute( "index", String.valueOf( count ) );
         stream.setAttribute( "streamNameType" , dsnName );
-        
+
         // 15:add data for the new stream
         streams.appendChild( (Node) stream );
 
@@ -435,7 +451,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
         String adminMime = "text/xml";
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
+        //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
         String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
@@ -444,39 +460,49 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         super.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
-        //upload the content 
-
+        //upload the content
+        //byte[] to File
+        File theFile = new File( "tempFile" );
+        theFile.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream( theFile );
+        fos.write( cargo.getBytes() );
+        fos.flush();
+        fos.close();
         String dsLocation = super.fc.uploadFile( theFile );
- 
+
         logm = String.format( "added %s to the object with pid: %s", dsLocation, pid );
 
-        String returnedSID = super.fem.addDatastream( pid, sID, new String[] {}, label, versionable, mimetype, null, dsLocation, "M", "A", null, null, logm );
+        String returnedSID = super.fem.addDatastream( pid, sID, new String[] {}, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
 
         return returnedSID;
 
     }
     /**
      * method for modifying an existing dataStream in an object
-     * @param theFile, the file to be added as a stream to the specified object
+     * @param cargo, the CargoObject containing the data to modify with
      * @param sID the id of the datastream to be modified
      * @param pid the id of the object to get a datastream updated
-     * @param the label of the updated stream
      * @param versionable, tells whether to keep track of old version of the stream
-     * @param mimetype, the mimetype of the stream
      * @param breakDependencies tells whether to update the datastream or not
      * if the operation breaks dependencies with other objects
      * @return the checksum of the datastream...
      */
 
-    public String modifyDataStream(File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException
+    public String modifyDataStream( CargoObject cargo, String sID, String pid, boolean versionable, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException
     {
         String logm = String.format( "modified the object with pid: %s", pid );
         String[] altIDs;
+        File theFile = new File( "tempFile" );
+        theFile.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream( theFile );
+        fos.write( cargo.getBytes() );
+        fos.flush();
+        fos.close();
 
         String dsLocation = super.fc.uploadFile( theFile );
 
-        super.fem.modifyDatastreamByReference( pid, sID, new String[] {}, label,  mimetype, null, dsLocation, null, null, logm, breakDependencies );
-        return "";
+        return super.fem.modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
+
 
     }
 
@@ -490,7 +516,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @return true if the stream was removed
      */
     public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException
-    {    
+    {
         String adminLogm = "";
 
         //10: get the adminstream to modify
@@ -509,10 +535,10 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         //get indexingAlias
         NodeList indexingAliasElemOld = rootOld.getElementsByTagName( "indexingalias" );
         Node indexingAliasNodeOld = indexingAliasElemOld.item( 0 );
-        
+
         //make root and indexingAlias part of the new document
         Element root = (Element)admStream.importNode( (Node)rootOld, false );
-        Node indexingAliasNode = admStream.importNode( indexingAliasNodeOld, true ); 
+        Node indexingAliasNode = admStream.importNode( indexingAliasNodeOld, true );
 
         //append the indexingAlias to the root
         root.appendChild( indexingAliasNode );
@@ -520,7 +546,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         NodeList streamsNLOld = rootOld.getElementsByTagName( "streams" );
         Element streamsOld = (Element)streamsNLOld.item( 0 );
         Element streams = (Element)admStream.importNode( (Node)streamsOld, false );
-        root.appendChild( (Node)streams );       
+        root.appendChild( (Node)streams );
 
         NodeList streamNLOld = streamsOld.getElementsByTagName( "stream" );
         //need to loop streams to get the type and index of the stream to be purged
@@ -584,7 +610,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
         String adminMime = "text/xml";
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
+        //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
         String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
@@ -605,10 +631,10 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
             retval = true;
         }
         return retval;
-    
+
     }
 
- /**
+    /**
      * method for adding a relation to an object
      * @param pid, the identifier of the object to add the realtion to
      * @param predicate, the predicate of the relation to add
@@ -617,11 +643,11 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @param datatype, the datatype of the literal, optional
      * @return true if the relation was added
      */
- public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException
+    public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException
     {
         return super.fem.addRelationship( pid, predicate, targetPid, literal, datatype );
     }
- 
+
     /**
      * method to check whether an object has a RELS-EXT Datastream
      * @param pid, the identifier of the object in question
@@ -630,7 +656,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     public boolean objectHasRELSEXT( String pid) throws RemoteException
     {
         RelationshipTuple[] reltup = super.fem.getRelationships( pid, null );
-        
+
         for( int i = 0; i < reltup.length; i++ )
         {
             System.out.println( reltup[ i ].getSubject() );
@@ -651,4 +677,339 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     {
         return super.fem.purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
     }
+
+    /**
+     * method for constructing the foxml to ingest
+     * @param cargo, the CargoContainer to ingest
+     * @param nextPid, the pid of the object to create
+     * @param label, the label of the object, most often the format of the original data
+     * @return a byte[] to ingest
+     */
+    static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    {
+        log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
+
+        Date now = new Date(System.currentTimeMillis());
+        return constructFoxml(cargo, nextPid, label, now);
+    }
+
+    /**
+     * method for constructing the foxml to ingest
+     * @param cargo, the CargoContainer to ingest
+     * @param nextPid, the pid of the object to create
+     * @param label, the label of the object, most often the format of the original data
+     * @param now, the time of creation of the foxml
+     * @return a byte[] to ingest
+     */
+    static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    {
+        log.debug( String.format( "constructFoxml( cargo, nexPid='%s', label='%s', now) called", nextPid, label ) );
+
+        // Setting properties
+        ObjectProperties op = new ObjectProperties();
+
+        Property pState = new Property();
+        pState.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
+        pState.setVALUE("Active");
+
+        Property pLabel = new Property();
+        pLabel.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
+        pLabel.setVALUE(label);
+
+        PropertyType pOwner = new Property();
+        pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+        /** \todo: set correct value for owner of the Digital Object*/
+        pOwner.setVALUE( "user" );
+
+
+        // createdDate
+        String timeNow = dateFormat.format(now);
+        Property pCreatedDate = new Property();
+        pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
+        pCreatedDate.setVALUE(timeNow);
+
+        // lastModifiedDate
+        Property pLastModifiedDate = new Property();
+        pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
+        pLastModifiedDate.setVALUE(timeNow);
+
+        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
+                                            pCreatedDate, pLastModifiedDate };
+        op.setProperty(props);
+
+        log.debug( "Properties set, constructing the DigitalObject" );
+        DigitalObject dot = new DigitalObject();
+        dot.setObjectProperties(op);
+        dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
+        dot.setPID( nextPid );
+
+        int cargo_count = cargo.getCargoObjectCount();
+        log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
+
+        log.debug( "Constructing adminstream" );
+    
+        // Constructing list with datastream indexes and id
+    
+        ArrayList< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
+        for(int i = 0; i < cargo_count; i++)
+        {
+            CargoObject c = cargo.getCargoObjects().get( i );
+          
+            lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
+        }
+
+    
+        Collections.sort( lst );
+
+        // Add a number to the id according to the number of datastreams with this datastreamname
+        int j = 0;
+        DataStreamType dsn = null;
+       
+        ArrayList< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
+        for( Pair<String, Integer> p : lst)
+        {
+            if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) )
+            {
+                j = 0;
+            }
+            else
+            {
+                j += 1;
+            }
+
+            dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
+    
+            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
+        }
+
+     
+        lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
+     
+        Collections.sort( lst2 );
+
+        // Constructing adm stream
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        Document admStream = builder.newDocument();
+        Element root = admStream.createElement( "admin-stream" );
+
+        Element indexingaliasElem = admStream.createElement( "indexingalias" );
+        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
+        root.appendChild( (Node)indexingaliasElem );
+        //Element filePathElem = admStream.createElement( "filepath" );
+        //filePathElem.setAttribute( "name", cargo.getFilePath() );
+        //root.appendChild( (Node)filePathElem );
+
+        Node streams = admStream.createElement( "streams" );
+
+        for(int i = 0; i < cargo_count; i++)
+        {
+            CargoObject c = cargo.getCargoObjects().get( i );
+
+            Element stream = admStream.createElement( "stream" );
+         
+            stream.setAttribute( "id", lst2.get( i ).getSecond() );
+            stream.setAttribute( "lang", c.getLang() );
+            stream.setAttribute( "format", c.getFormat() );
+            stream.setAttribute( "mimetype", c.getMimeType() );
+            stream.setAttribute( "submitter", c.getSubmitter() );
+            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
+            stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
+            streams.appendChild( (Node) stream );
+        }
+
+        root.appendChild( streams );
+
+        // Transform document to xml string
+        Source source = new DOMSource((Node) root );
+        StringWriter stringWriter = new StringWriter();
+        Result result = new StreamResult(stringWriter);
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.transform(source, result);
+        String admStreamString = stringWriter.getBuffer().toString();
+        log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
+
+        // add the adminstream to the cargoContainer
+        byte[] byteAdmArray = admStreamString.getBytes();
+        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
+       
+
+        log.debug( "Constructing foxml byte[] from cargoContainer" );
+        cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
+
+        log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
+        Datastream[] dsArray = new Datastream[ cargo_count ];
+        for(int i = 0; i < cargo_count; i++)
+        {
+            CargoObject c = cargo.getCargoObjects().get( i );
+           
+            dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
+        }
+
+        log.debug( String.format( "Successfully constructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
+
+        // add the streams to the digital object
+        dot.setDatastream( dsArray );
+
+        log.debug( "Marshalling the digitalObject to a byte[]" );
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
+        Marshaller m = new Marshaller(outW); // IOException
+        m.marshal(dot); // throws MarshallException, ValidationException
+    
+        byte[] ret = out.toByteArray();
+
+        log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
+        return ret;
+    }
+
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String itemID ) throws java.text.ParseException, IOException
+    {
+        Date timestamp = new Date( System.currentTimeMillis() );
+        String timeNow = dateFormat.format( timestamp );
+
+        return constructDatastream( co, timeNow, itemID );
+    }
+
+    /**
+     * constructDatastream creates a Datastream object on the basis of a CargoObject
+     *
+     * @param co the CargoObject from which to get the data
+     * @param timeNow
+     * @param itemID
+     *
+     * @return A datastream suitable for ingestion into the DigitalObject
+     */
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String timeNow,
+                                                   String itemID ) throws java.text.ParseException, IOException
+    {
+        return constructDatastream( co, timeNow, itemID, false, false, false );
+    }
+
+    /**
+     * Control Group: the approach used by the Datastream to represent or encapsulate the content as one of four types or control groups:
+     *    - Internal XML Content - the content is stored as XML
+     *      in-line within the digital object XML file
+     *    - Managed Content - the content is stored in the repository
+     *      and the digital object XML maintains an internal
+     *      identifier that can be used to retrieve the content from
+     *      storage
+     *    - Externally Referenced Content (not yet implemented) - the
+     *      content is stored outside the repository and the digital
+     *      object XML maintains a URL that can be dereferenced by the
+     *      repository to retrieve the content from a remote
+     *      location. While the datastream content is stored outside of
+     *      the Fedora repository, at runtime, when an access request
+     *      for this type of datastream is made, the Fedora repository
+     *      will use this URL to get the content from its remote
+     *      location, and the Fedora repository will mediate access to
+     *      the content. This means that behind the scenes, Fedora will
+     *      grab the content and stream in out the the client
+     *      requesting the content as if it were served up directly by
+     *      Fedora. This is a good way to create digital objects that
+     *      point to distributed content, but still have the repository
+     *      in charge of serving it up.
+     *    - Redirect Referenced Content (not supported)- the content
+     *      is stored outside the repository and the digital object
+     *      XML maintains a URL that is used to redirect the client
+     *      when an access request is made. The content is not
+     *      streamed through the repository. This is beneficial when
+     *      you want a digital object to have a Datastream that is
+     *      stored and served by some external service, and you want
+     *      the repository to get out of the way when it comes time to
+     *      serve the content up. A good example is when you want a
+     *      Datastream to be content that is stored and served by a
+     *      streaming media server. In such a case, you would want to
+     *      pass control to the media server to actually stream the
+     *      content to a client (e.g., video streaming), rather than
+     *      have Fedora in the middle re-streaming the content out.
+     */
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String timeNow,
+                                                   String itemID,
+                                                   boolean versionable,
+                                                   boolean externalData,
+                                                   boolean inlineData ) throws ParseException
+    {
+        int srcLen = co.getContentLength();
+        byte[] ba = co.getBytes();
+
+        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
+
+        DatastreamTypeCONTROL_GROUPType controlGroup = null;
+        if( (! externalData ) && ( ! inlineData ) && ( co.getMimeType() == "text/xml" ) )
+        {
+            //Managed content
+            controlGroup = DatastreamTypeCONTROL_GROUPType.M;
+        }
+        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) {
+            //Inline content
+            controlGroup = DatastreamTypeCONTROL_GROUPType.X;
+        }
+        // else if( ( externalData ) && ( ! inlineData ) ){
+        //     /**
+        //      * external data cannot be inline, and this is regarded as
+        //      * a client error, but we assume that the client wanted
+        //      * the content referenced; we log a warning and proceed
+        //      */
+        //     log.warn( String.format( "Both externalData and inlineData was set to true, they are mutually exclusive, and we assume that the content should be an external reference" ) );
+        //     controlGroup = DatastreamTypeCONTROL_GROUPType.E;
+        // }
+
+        // datastreamElement
+        Datastream dataStreamElement = new Datastream();
+
+        dataStreamElement.setCONTROL_GROUP( controlGroup );
+
+        dataStreamElement.setID( itemID );
+
+        /**
+         * \todo: State type defaults to active. Client should interact with
+         * datastream after this method if it wants something else
+         */
+        dataStreamElement.setSTATE( StateType.A );
+        dataStreamElement.setVERSIONABLE( versionable );
+
+        // datastreamVersionElement
+        String itemId_version = itemID+".0";
+
+        DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
+
+        dataStreamVersionElement.setCREATED( dateFormat.parse( timeNow ) );
+
+        dataStreamVersionElement.setID( itemId_version );
+
+        DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
+
+        //ContentDigest binaryContent = new ContentDigest();
+
+        dVersTypeChoice.setBinaryContent( ba );
+
+        dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
+
+        String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
+        dataStreamVersionElement.setLABEL(mimeLabel);
+        String mimeFormatted = String.format("%s", co.getMimeType());
+        dataStreamVersionElement.setMIMETYPE( mimeFormatted );
+
+        long lengthFormatted = (long) srcLen;
+
+        dataStreamVersionElement.setSIZE( lengthFormatted );
+
+        DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
+        dataStreamElement.setDatastreamVersion( dsvArray );
+
+        log.debug( String.format( "Datastream element is valid=%s", dataStreamElement.isValid() ) );
+
+        return dataStreamElement;
+    }
+
+
+
+
+
 }

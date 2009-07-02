@@ -116,29 +116,27 @@ public interface IFedoraAdministration
 
      /**
      * method for adding a Datastream to an object
-     * @param theFile, the file to save as a DataStream in a specified object
+     * @param cargo, the data to be added to the object
      * @param pid, the identifier of the object to save the datastream to
-     * @param label the label to give the stream
      * @param versionable, tells whether to keep track of old versions or not
      * @param overwrite, tells whether to overwrite if the datastream exists
      * @return the dataStreamID of the added stream
      */
-    public String addDataStreamToObject( File theFile, String pid, String label, boolean versionable, String mimetype, boolean overwrite, String format, String lang, String submitter, DataStreamType dsn )throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException;
+    public String addDataStreamToObject( CargoObject cargo, String pid, boolean versionable, boolean overwrite ) throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException;
+
 
    /**
      * method for modifying an existing dataStream in an object
-     * @param theFile, the file to be added as a stream to the specified object
+     * @param cargo, the CargoObject holding the data to update the object with
      * @param sID the id of the datastream to be modified
      * @param pid the id of the object to get a datastream updated
-     * @param the label of the updated stream
      * @param versionable, tells whether to keep track of old version of the stream
-     * @param mimetype, the mimetype of the stream
      * @param breakDependencies tells whether to update the datastream or not
      * if the operation breaks dependencies with other objects
      * @return the checksum of the datastream...
      */
+    public String modifyDataStream( CargoObject cargo, String sID, String pid, boolean versionable, boolean breakdependencies ) throws RemoteException, MalformedURLException, IOException;
 
-    public String modifyDataStream( File theFile, String sID, String pid, String label, boolean versionable, String mimetype, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException;
 
       /**
      * method for removing a datastream form an object in the Fedora base
