@@ -1,27 +1,25 @@
 package dk.dbc.opensearch.common.fedora;
 
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-                                    //import dk.dbc.opensearch.common.helpers.PairComparator_FirstString;
-                                    //import dk.dbc.opensearch.common.helpers.PairComparator_SecondInteger;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
@@ -76,20 +74,25 @@ import org.xml.sax.SAXException;
  * streams in byte arrays. See IFedoraTools for more information on
  * how to use this class.
  */
-public class FedoraTools 
+public class FedoraTools
 {
     static Logger log = Logger.getLogger( FedoraTools.class );
+
+    protected static final SimpleDateFormat dateFormat =
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
+
+
 
 
     public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
-    	log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
-    
+        log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
+
         Date now = new Date(System.currentTimeMillis());
         return constructFoxml(cargo, nextPid, label, now);
     }
 
-    
+
     public static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
         log.debug( String.format( "constructFoxml( cargo, nexPid='%s', label='%s', now) called", nextPid, label ) );
@@ -112,7 +115,6 @@ public class FedoraTools
 
 
         // createdDate
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
         String timeNow = dateFormat.format(now);
         Property pCreatedDate = new Property();
         pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
@@ -131,7 +133,7 @@ public class FedoraTools
         DigitalObject dot = new DigitalObject();
         dot.setObjectProperties(op);
         dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
-        dot.setPID( nextPid ); 
+        dot.setPID( nextPid );
 
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
@@ -149,7 +151,7 @@ public class FedoraTools
             //lst.add( new InputPair< String, Integer >( c.getDataStreamName().getName(), i ) );
             lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
         }
-        
+
         //Collections.sort( lst, firstComp);
         Collections.sort( lst );
 
@@ -173,28 +175,28 @@ public class FedoraTools
             //lst2.add( new InputPair<String, Integer>( p.getFirst() + "." + j , p.getSecond() ) );
             lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
         }
-        
+
         //lst2.add( new InputPair< String, Integer >( DataStreamType.AdminData.getName(), lst2.size() ) );
         lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
         //Collections.sort( lst2, secondComp );
         Collections.sort( lst2 );
-        
+
         // Constructing adm stream
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
 
         Document admStream = builder.newDocument();
         Element root = admStream.createElement( "admin-stream" );
-        
+
         Element indexingaliasElem = admStream.createElement( "indexingalias" );
         indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
         root.appendChild( (Node)indexingaliasElem );
         //Element filePathElem = admStream.createElement( "filepath" );
         //filePathElem.setAttribute( "name", cargo.getFilePath() );
         //root.appendChild( (Node)filePathElem );
-        
+
         Node streams = admStream.createElement( "streams" );
-        
+
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getCargoObjects().get( i );
@@ -211,13 +213,13 @@ public class FedoraTools
             stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
             streams.appendChild( (Node) stream );
         }
-        
+
         root.appendChild( streams );
-        
+
         // Transform document to xml string
         Source source = new DOMSource((Node) root );
         StringWriter stringWriter = new StringWriter();
-        Result result = new StreamResult(stringWriter); 
+        Result result = new StreamResult(stringWriter);
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         transformer.transform(source, result);
@@ -238,14 +240,14 @@ public class FedoraTools
         {
             CargoObject c = cargo.getCargoObjects().get( i );
             //dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
-            dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getSecond() );
+            dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
         }
 
         log.debug( String.format( "Successfully constructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
 
         // add the streams to the digital object
         dot.setDatastream( dsArray );
-  
+
         log.debug( "Marshalling the digitalObject to a byte[]" );
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
@@ -258,41 +260,109 @@ public class FedoraTools
         return ret;
     }
 
-    
+
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String itemID ) throws java.text.ParseException, IOException
+    {
+        Date timestamp = new Date( System.currentTimeMillis() );
+        String timeNow = dateFormat.format( timestamp );
+
+        return constructDatastream( co, timeNow, itemID );
+    }
+
     /**
-     * constructDatastream creates a Datastream object on the basis of the
-     * information and data found in the Pair of CargoObjectInfo and List<Byte>.
+     * constructDatastream creates a Datastream object on the basis of a CargoObject
+     *
+     * @param co the CargoObject from which to get the data
+     * @param timeNow
+     * @param itemID
      *
      * @return A datastream suitable for ingestion into the DigitalObject
      */
-    private static Datastream constructDatastream(CargoObject co, SimpleDateFormat dateFormat, String timeNow, String itemID ) throws java.text.ParseException, IOException
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String timeNow,
+                                                   String itemID ) throws java.text.ParseException, IOException
+    {
+        return constructDatastream( co, timeNow, itemID, false, false, false );
+    }
+
+    /**
+    * Control Group: the approach used by the Datastream to represent or encapsulate the content as one of four types or control groups:
+    *    - Internal XML Content - the content is stored as XML
+    *      in-line within the digital object XML file
+    *    - Managed Content - the content is stored in the repository
+    *      and the digital object XML maintains an internal
+    *      identifier that can be used to retrieve the content from
+    *      storage
+    *    - Externally Referenced Content (not yet implemented) - the
+    *      content is stored outside the repository and the digital
+    *      object XML maintains a URL that can be dereferenced by the
+    *      repository to retrieve the content from a remote
+    *      location. While the datastream content is stored outside of
+    *      the Fedora repository, at runtime, when an access request
+    *      for this type of datastream is made, the Fedora repository
+    *      will use this URL to get the content from its remote
+    *      location, and the Fedora repository will mediate access to
+    *      the content. This means that behind the scenes, Fedora will
+    *      grab the content and stream in out the the client
+    *      requesting the content as if it were served up directly by
+    *      Fedora. This is a good way to create digital objects that
+    *      point to distributed content, but still have the repository
+    *      in charge of serving it up.
+    *    - Redirect Referenced Content (not supported)- the content
+    *      is stored outside the repository and the digital object
+    *      XML maintains a URL that is used to redirect the client
+    *      when an access request is made. The content is not
+    *      streamed through the repository. This is beneficial when
+    *      you want a digital object to have a Datastream that is
+    *      stored and served by some external service, and you want
+    *      the repository to get out of the way when it comes time to
+    *      serve the content up. A good example is when you want a
+    *      Datastream to be content that is stored and served by a
+    *      streaming media server. In such a case, you would want to
+    *      pass control to the media server to actually stream the
+    *      content to a client (e.g., video streaming), rather than
+    *      have Fedora in the middle re-streaming the content out.
+    */
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String timeNow,
+                                                   String itemID,
+                                                   boolean versionable,
+                                                   boolean externalData,
+                                                   boolean inlineData ) throws ParseException
     {
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
-       
+
         log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
 
-        /** \todo: VERSIONABLE should be configurable in some way */
-        boolean versionable = false;
-
-        /**
-         * \todo: if the datastream is external, dsLocation should be
-         * configurable
-         */
-
-        /** \todo: We always use Managed as control group... This should change/be refactored */
         DatastreamTypeCONTROL_GROUPType controlGroup = null;
-        controlGroup = DatastreamTypeCONTROL_GROUPType.M;
+        if( (! externalData ) && ( ! inlineData ) && ( co.getMimeType() == "text/xml" ) )
+        {
+            //Managed content
+            controlGroup = DatastreamTypeCONTROL_GROUPType.M;
+        }
+        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) {
+            //Inline content
+            controlGroup = DatastreamTypeCONTROL_GROUPType.X;
+        }
+        // else if( ( externalData ) && ( ! inlineData ) ){
+        //     /**
+        //      * external data cannot be inline, and this is regarded as
+        //      * a client error, but we assume that the client wanted
+        //      * the content referenced; we log a warning and proceed
+        //      */
+        //     log.warn( String.format( "Both externalData and inlineData was set to true, they are mutually exclusive, and we assume that the content should be an external reference" ) );
+        //     controlGroup = DatastreamTypeCONTROL_GROUPType.E;
+        // }
 
         // datastreamElement
         Datastream dataStreamElement = new Datastream();
 
-        /** \todo: CONTROL_GROUP should be configurable in some way */
         dataStreamElement.setCONTROL_GROUP( controlGroup );
 
-
-        System.out.println("itemID "+itemID);
         dataStreamElement.setID( itemID );
+
         /**
          * \todo: State type defaults to active. Client should interact with
          * datastream after this method if it wants something else
@@ -305,15 +375,15 @@ public class FedoraTools
 
         DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
 
-        dataStreamVersionElement.setCREATED(dateFormat.parse( timeNow ) );
+        dataStreamVersionElement.setCREATED( dateFormat.parse( timeNow ) );
 
-        dataStreamVersionElement.setID(itemId_version);
+        dataStreamVersionElement.setID( itemId_version );
 
         DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
 
         //ContentDigest binaryContent = new ContentDigest();
 
-        dVersTypeChoice.setBinaryContent(ba);
+        dVersTypeChoice.setBinaryContent( ba );
 
         dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
 
@@ -325,12 +395,96 @@ public class FedoraTools
         long lengthFormatted = (long) srcLen;
 
         dataStreamVersionElement.setSIZE( lengthFormatted );
-        
+
         DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
         dataStreamElement.setDatastreamVersion( dsvArray );
 
         log.debug( String.format( "Datastream element is valid=%s", dataStreamElement.isValid() ) );
 
         return dataStreamElement;
+    }
+
+
+    /**
+     * Initializes and returns a DigitalObject with no
+     * DataStreams. This method defaults the timestamp to
+     * System.currentTimeMillis
+     *
+     * @param state one of: Active, Inactive or Deleted
+     * - Active: The object is published and available.
+     * - Inactive: The object is not publicly available.
+     * - Deleted: The object is deleted, and should not be available
+     *            to anyone. It is still in the repository, and special
+     *            administration tools should be able to resurrect it.
+     * @param label A descriptive label of the Digitial Object
+     * @param owner The (system) name of the owner of the Digital
+     * Object. Please note that this has nothing to do with the
+     * ownership of the material (although the names can and may
+     * coincide).
+     *
+     * @return a DigitalObject with no DataStreams
+     */
+    private static DigitalObject initDigitalObject( String state,
+                                                    String label,
+                                                    String owner,
+                                                    String pid )
+    {
+        Date timestamp = new Date( System.currentTimeMillis() );
+        return initDigitalObject( state, label, owner, pid, timestamp );
+    }
+
+    /**
+     * Initializes and returns a DigitalObject with no
+     * DataStreams.
+     * @see initDigitalObject( String, String, String ) for more info
+     * @param state one of Active, Inactive or Deleted
+     * @param label description of the DigitalObject
+     * @param owner (System) owner of the DigitalObject
+     * @param timestamp overrides the default (now) timestamp
+     *
+     * @return a DigitalObject with no DataStreams
+     */
+    private static DigitalObject initDigitalObject( String state,
+                                                    String label,
+                                                    String owner,
+                                                    String pid,
+                                                    Date timestamp )
+    {
+        //ObjectProperties holds all the Property types
+        ObjectProperties op = new ObjectProperties();
+
+        Property pState = new Property();
+        pState.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE );
+        pState.setVALUE( state );
+
+        Property pLabel = new Property();
+        pLabel.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL );
+        pLabel.setVALUE( label );
+
+        PropertyType pOwner = new Property();
+        pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+        pOwner.setVALUE( owner );
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
+        String timeNow = dateFormat.format( timestamp );
+        Property pCreatedDate = new Property();
+        pCreatedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE );
+        pCreatedDate.setVALUE( timeNow );
+
+        // Upon creation, the last modified date == created date
+        Property pLastModifiedDate = new Property();
+        pLastModifiedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE );
+        pLastModifiedDate.setVALUE( timeNow );
+
+        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
+                                            pCreatedDate, pLastModifiedDate };
+        op.setProperty( props );
+
+        DigitalObject dot = new DigitalObject();
+        dot.setObjectProperties(op);
+        dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
+        dot.setPID( pid );
+
+        return dot;
     }
 }
