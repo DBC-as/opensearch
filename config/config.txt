@@ -8,8 +8,10 @@ dtdpath:    compass-core-mapping-2.0.dtd
 httpurl:    http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd
 
 [database]
-driver: org.postgresql.Driver
-url:    jdbc:postgresql:
+user:     
+password: 
+driver:   org.postgresql.Driver
+url:      jdbc:postgresql:
 
 [datadock]
 main_poll_time:      1000

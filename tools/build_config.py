@@ -49,9 +49,6 @@ def check_trunk( args ):
 
 
 def build_config( path ):
-    # this will probably not work for cruisecontrol user
-    usern = os.environ.get( 'USER' )
-
     #pluginpath = os.path.join( path, "build/classes/dk/dbc/opensearch/plugins" )
     pluginpath = os.path.join( path, "plugins" )
 
@@ -91,10 +88,18 @@ def build_config( path ):
     user   = ET.SubElement( db, "userID" )
     passwd = ET.SubElement( db, "passwd" )
     database_section = "database"
+    # this will probably not work for cruisecontrol user
+    usern = config_txt.get( database_section, "user" )
+    if len( usern ) == 0:
+        usern = os.environ.get( "USER" )
     driver.text = config_txt.get( database_section, "driver" )
     url.text    = config_txt.get( database_section, "url" ) + usern 
     user.text   = usern
-    passwd.text = usern
+    password = config_txt.get( database_section, "password" )
+    if len( password ) == 0:
+        passwd.text = usern
+    else:
+        passwd.text = password
 
     # datadock settings
     poll      = ET.SubElement( dd, "main-poll-time" )
