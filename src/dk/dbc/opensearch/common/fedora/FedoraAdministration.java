@@ -1096,8 +1096,19 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     }
 
 
+
+
+    /** 
+     * Constructing a Datastream with a default timestamp (
+     * System.currentTimeMillis )
+     * 
+     * @param co 
+     * @param itemID 
+     * 
+     * @return 
+     */    
     private static Datastream constructDatastream( CargoObject co,
-                                                   String itemID ) throws java.text.ParseException, 
+                                                   String itemID ) throws ParseException, 
                                                                           IOException
     {
         Date timestamp = new Date( System.currentTimeMillis() );
@@ -1117,8 +1128,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      */
     private static Datastream constructDatastream( CargoObject co,
                                                    String timeNow,
-                                                   String itemID ) throws java.text.ParseException, 
-                                                                          IOException
+                                                   String itemID ) throws ParseException 
     {
         return constructDatastream( co, timeNow, itemID, false, false, false );
     }
