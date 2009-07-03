@@ -45,13 +45,13 @@ import org.exolab.castor.xml.ValidationException;
 import java.text.ParseException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-
+import fedora.server.types.gen.RelationshipTuple;
 /**
  * The purpose of the FedoraAdministration API is to provide a wrapper
  * around the communication with the Fedora Commons digital
  * repository. Objects are stored using the CargoContainer datatype
  * and objects are retrieved in this form.
- *
+ * Parts of objects (Datastreams) are worked with as CargoObjects 
  */
 
 public interface IFedoraAdministration
@@ -112,7 +112,7 @@ public interface IFedoraAdministration
      * @param pid, the identifier of the object to get the stream from
      * @return CargoContainer with the datastream
      */
-    public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
+    // public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
 
      /**
      * method for adding a Datastream to an object
@@ -161,9 +161,15 @@ public interface IFedoraAdministration
     public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException;
 
     /**
-     * method to check whether an object has a RELS-EXT Datastream
-     * @param pid, the identifier of the object in question
-     * @return true only if the object has a RELS-EXT Datastream
+     * method for getting the relationships an object has
+     * @param pid, the object to get relations for
+     * @param predicate, the predicate to search for, null means all
+     * @return RelationshipTuple[] containing the following for each relationship found:
+     * String subject, the object this method was called on
+     * String predicate, 
+     * String object, the target of the predicate
+     * boolean isLiteral, tells if the object is a literal and not a pid
+     * String datatype, tells what datatype to pass the object as if it is a literal
      */
-    public boolean objectHasRELSEXT( String pid) throws RemoteException;
+    public RelationshipTuple[] getRelationships( String pid, String predicate) throws RemoteException;
 }

@@ -37,7 +37,7 @@ import java.text.SimpleDateFormat;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.net.URL;
+//import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -74,8 +74,14 @@ import dk.dbc.opensearch.xsd.types.StateType;
 
 import fedora.server.types.gen.RelationshipTuple;
 import fedora.server.types.gen.MIMETypedStream;
-import org.exolab.castor.xml.MarshalException;
+import fedora.server.types.gen.ComparisonOperator;
+import fedora.server.types.gen.Condition;
+import fedora.server.types.gen.FieldSearchQuery;
+import fedora.server.types.gen.FieldSearchResult;
+import fedora.server.types.gen.ObjectFields;
 
+import org.exolab.castor.xml.MarshalException;
+import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -649,30 +655,82 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     }
 
     /**
-     * method to check whether an object has a RELS-EXT Datastream
-     * @param pid, the identifier of the object in question
-     * @return true only if the object has a RELS-EXT Datastream
+     * method for getting the relationships an object has
+     * @param pid, the object to get relations for
+     * @param predicate, the predicate to search for, null means all
+     * @return RelationshipTuple[] containing the following for each relationship found:
+     * String subject, the object this method was called on
+     * String predicate, 
+     * String object, the target of the predicate
+     * boolean isLiteral, tells if the object is a literal and not a pid
+     * String datatype, tells what datatype to pass the object as if it is a literal
      */
-    public boolean objectHasRELSEXT( String pid) throws RemoteException
+    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws RemoteException
     {
-        RelationshipTuple[] reltup = super.fem.getRelationships( pid, null );
-
-        for( int i = 0; i < reltup.length; i++ )
-        {
-            System.out.println( reltup[ i ].getSubject() );
-            System.out.println( reltup[ i ].getPredicate() );
-            System.out.println( reltup[ i ].getObject() );
-        }
-
-        if( reltup.length > 0 )
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return super.fem.getRelationships( pid, predicate);
     }
+
+    /**
+     * method to see if an object has a relationship to another object
+     * Its a filtered version of the method getRelationships
+     * @param subject, the pid of the object in question
+     * @param predicate, the relationship in queation
+     * @param target, the target of the predicate
+     * @param isLiteral, true if the target is not an object in the base
+     * @return true if the relationship exists
+     */
+    public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws RemoteException
+    {
+        RelationshipTuple[] rt = super.fem.getRelationships( subject, predicate );
+        int rtLength = rt.length;
+        for( int i = 0; i < rtLength; i++ )
+        {
+            if( rt[ i ].getObject().equals( target ) && rt[ i ].isIsLiteral() == isLiteral )
+            {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    /**
+     * method for finding pids of objects based on object properties
+     * @param property, the property to match
+     * @param operator, the operator to apply, "has", "eq", "lt", "le","gt" and "ge" are valid
+     * @param value, the value the property adheres to
+     * @return an array o pids of the matching objects
+     */
+    public String[] findObjectPids( String property, String operator, String value ) throws RemoteException
+    {
+
+        String[] resultFields = {"pid"};
+        NonNegativeInteger maxResults = new NonNegativeInteger( "1000" );
+        // \Todo: check needed on the operator
+        ComparisonOperator comp = ComparisonOperator.fromString( operator ); 
+        Condition cond = new Condition();
+        cond.setProperty( property );
+        cond.setOperator( comp );
+        cond.setValue( value );
+        Condition[] condArray = { cond };
+        FieldSearchQuery fsq = new FieldSearchQuery();
+        fsq.setConditions( condArray );
+        FieldSearchResult fsr = super.fea.findObjects( resultFields, maxResults, fsq );
+        ObjectFields[] objectFields = fsr.getResultList();
+        int ofLength = objectFields.length;
+        String[] pids = new String[ ofLength ];
+
+        for( int i = 0; i < ofLength; i++ )
+        {
+            pids[ i ] = objectFields[ i ].getPid(); 
+        }
+        return pids;
+
+    }
+
+
+
+
     public boolean removeRelation( String pid, String predicate, String targetPid, boolean isLiteral, String datatype ) throws RemoteException
     {
         return super.fem.purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
