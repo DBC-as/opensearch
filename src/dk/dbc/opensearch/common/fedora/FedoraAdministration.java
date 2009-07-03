@@ -671,7 +671,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     }
 
     /**
-     * method to see if an object has a relationship to another object
+     * method to see if an object has a certain relationship to another object
      * Its a filtered version of the method getRelationships
      * @param subject, the pid of the object in question
      * @param predicate, the relationship in queation

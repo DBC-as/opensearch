@@ -56,7 +56,6 @@ import fedora.server.types.gen.RelationshipTuple;
 
 public interface IFedoraAdministration
 {
-    //public IFedoraAdministration();
     
      /**
      * method to delete an object for good, based on the pid
@@ -105,7 +104,7 @@ public interface IFedoraAdministration
      */
     public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
 
-    /**
+    /*
      * method for getting a datastream identified by its streamID
      * //todo: more information is needed on what a streamID is.
      * @param streamID, the identifier of the datastream to be retrieved
@@ -171,5 +170,25 @@ public interface IFedoraAdministration
      * boolean isLiteral, tells if the object is a literal and not a pid
      * String datatype, tells what datatype to pass the object as if it is a literal
      */
-    public RelationshipTuple[] getRelationships( String pid, String predicate) throws RemoteException;
+    public RelationshipTuple[] getRelationships( String pid, String predicate) throws RemoteException; 
+ /**
+     * method to see if an object has a certain relationship to another object
+     * Its a filtered version of the method getRelationships
+     * @param subject, the pid of the object in question
+     * @param predicate, the relationship in queation
+     * @param target, the target of the predicate
+     * @param isLiteral, true if the target is not an object in the base
+     * @return true if the relationship exists
+     */
+    public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws RemoteException;
+
+    
+    /**
+     * method for finding pids of objects based on object properties
+     * @param property, the property to match
+     * @param operator, the operator to apply, "has","eq","lt","le","gt" and "ge" are valid
+     * @param value, the value the property adheres to
+     * @return an array o pids of the matching objects
+     */
+    public String[] findObjectPids( String property, String operator, String value ) throws RemoteException;
 }
