@@ -96,29 +96,38 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import java.text.ParseException;
 import javax.xml.transform.TransformerException;
+import dk.dbc.opensearch.common.types.InputPair;
 
 public class FedoraAdministration extends FedoraHandle implements IFedoraAdministration
 {
 
     static Logger log = Logger.getLogger( FedoraAdministration.class );
-    private PIDManager pidManager;
+    // private PIDManager pidManager;
     protected static final SimpleDateFormat dateFormat =
         new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
+
+    final PIDManager pidManager = new PIDManager();
     /**
      * The constructor initalizes the super class FedoraHandle which
      * handles the initiation of the connection with the fedora base
      *
-     * @throws ConfigurationException  Thrown if the FedoraHandler Couldn't be initialized. @see FedoraHandle
-     * @throws IOException Thrown if the FedoraHandler Couldn't be initialized properly. @see FedoraHandle
-     * @throws MalformedURLException Thrown if the FedoraHandler Couldn't be initialized properly. @see FedoraHandle
-     * @throws ServiceException Thrown if the FedoraHandler Couldn't be initialized properly. @see FedoraHandle
+     * @throws ConfigurationException Thrown if the FedoraHandler
+     * Couldn't be initialized. @see FedoraHandle
+     * @throws IOException Thrown if the FedoraHandler Couldn't be
+     * initialized properly. @see FedoraHandle
+     * @throws MalformedURLException Thrown if the FedoraHandler
+     * Couldn't be initialized properly. @see FedoraHandle
+     * @throws ServiceException Thrown if the FedoraHandler Couldn't
+     * be initialized properly. @see FedoraHandle
      */
 
-    public FedoraAdministration()throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public FedoraAdministration() throws ConfigurationException, 
+                                         IOException, 
+                                         MalformedURLException, 
+                                         ServiceException
     {
         super();
-        pidManager = new PIDManager();
-        log.debug( "constructed" );
+        // pidManager = new PIDManager();
     }
     /**
      * method to delete an object for good, based on the pid
@@ -150,50 +159,64 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getDigitalObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
+    public CargoContainer getDigitalObject( String pid ) throws IOException, 
+                                                                ParserConfigurationException, 
+                                                                RemoteException, 
+                                                                SAXException
     {
 
-        log.debug( String.format( "entering getDO( '%s' )", pid ) );
+        log.trace( String.format( "entering getDO( '%s' )", pid ) );
 
-        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
-        byte[] adminStream = ds.getStream();
-        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
+
+        // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        // byte[] adminStream = ds.getStream();
+        // if( adminStream == null ) 
+        // {
+        //     log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
+        //     throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
+        // } 
+        // log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
+
+
+        // ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        // log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        // Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+
+        // log.debug( String.format( "root element from adminstream == %s", root ) );
+
+        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+
+        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        // if( indexingAliasElem == null )
+        // {
+        //     /**
+        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
+        //      */
+        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+        // }
+        // log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
+
+        // //Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
+        // //String filePath = filePathElem.getAttribute( "name" );
+        // //cc.setFilePath( filePath );
+        // //log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
+
+        // NodeList streamsNL = root.getElementsByTagName( "streams" );
+        // Element streams = (Element)streamsNL.item(0);
+        // NodeList streamNL = streams.getElementsByTagName( "stream" );
+
+        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
+        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+
+        log.debug( String.format( "Iterating streams in nodelist" ) );
 
         CargoContainer cc = new CargoContainer();
 
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
-
-        log.debug( String.format( "root element from adminstream == %s", root ) );
-
-        //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-
-        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-        if( indexingAliasElem == null )
-        {
-            /**
-             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-             */
-            log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-        }
-        log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
-        String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
-        //Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
-        //String filePath = filePathElem.getAttribute( "name" );
-        //cc.setFilePath( filePath );
-        //log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
-
-        NodeList streamsNL = root.getElementsByTagName( "streams" );
-        Element streams = (Element)streamsNL.item(0);
-        NodeList streamNL = streams.getElementsByTagName( "stream" );
-        log.debug( String.format( "Iterating streams in nodelist" ) );
-
-        int streamNLLength = streamNL.getLength();
+        int streamNLLength = aliasAndStreamNL.getSecond().getLength();
         for(int i = 0; i < streamNLLength; i++ )
         {
-            Element stream = (Element)streamNL.item(i);
+            Element stream = (Element)aliasAndStreamNL.getSecond().item(i);
             String streamID = stream.getAttribute( "id" );
             MIMETypedStream dstream = super.fea.getDatastreamDissemination( pid, streamID, null);
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
@@ -215,16 +238,13 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      */
     public String storeCargoContainer( CargoContainer theCC, String label ) throws MalformedURLException, RemoteException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException
     {
-        log.debug( "entering storeCC" );
+        log.trace( "entering storeCC" );
 
         String returnVal = null;
-        //get a submitter from the cc
+
         String submitter = theCC.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
-        //get a pid for the object
+
         String pid = pidManager.getNextPID( submitter );
-        //construct the foxml
-
-
 
         byte[] foxml = constructFoxml( theCC, pid, label );
         String logm = String.format( "%s inserted", label );
@@ -233,10 +253,15 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         if( pid.equals( returnPid ) )
         {
             returnVal = pid;
+        }else
+        {
+            log.warn( String.format( "Pid '%s' does not equal expected pid '%s'", returnPid, pid ) );
+            /** \todo: should we do more than this? If we got a pid
+             * back, it means that we succeded, so what if it's not
+             * the expected one?*/
         }
 
         return returnVal;
-
     }
 
     /**
@@ -248,40 +273,47 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      */
     public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException
     {
+        log.trace( String.format( "Entering getDataStreamsOfType()" ) );
         CargoContainer cc = new CargoContainer();
-        //get the adminstream
-        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
-        byte[] adminStream = ds.getStream();
-        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
-        log.debug( String.format( "root element from adminstream == %s", root ) );
+        Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
 
-        //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+        // //retrieve the adminstream
+        // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        // byte[] adminStream = ds.getStream();
+        // log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        // ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        // log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        // Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
-        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-        if( indexingAliasElem == null )
-        {
-            /**
-             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-             */
-            System.out.println("no indexing alias");
+        // log.debug( String.format( "root element from adminstream == %s", root ) );
 
-            log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-        }
-        String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-        NodeList streamsNL = root.getElementsByTagName( "streams" );
-        Element streams = (Element)streamsNL.item(0);
-        NodeList streamNL = streams.getElementsByTagName( "stream" );
+        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+
+        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        // if( indexingAliasElem == null )
+        // {
+        //     /**
+        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
+        //      */
+        //     System.out.println("no indexing alias");
+
+        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+        // }
+        // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+        // NodeList streamsNL = root.getElementsByTagName( "streams" );
+        // Element streams = (Element)streamsNL.item(0);
+        // NodeList streamNL = streams.getElementsByTagName( "stream" );
+        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
+        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+
         log.debug( "iterating streams in nodelist to get the right streamtype" );
 
-        int length = streamNL.getLength();
+        int length = aliasAndStreamNL.getSecond().getLength();
         System.out.println( String.format( "NodeList is %s long", length ) );
         for( int i = 0; i < length; i++ )
         {
-            Element stream = (Element)streamNL.item(i);
+            Element stream = (Element)aliasAndStreamNL.getSecond().item(i);
             String typeOfStream = stream.getAttribute( "streamNameType" );
             System.out.println( String.format( "got streamType: %s", typeOfStream ) );
             if( typeOfStream.equals( streamtype.getName() ) )
@@ -320,36 +352,42 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException
     {
         CargoContainer cc = new CargoContainer();
-        //get the adminstream
-        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
-        byte[] adminStream = ds.getStream();
-        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
-        log.debug( String.format( "root element from adminstream == %s", root ) );
+        Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
 
-        //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+        // //get the adminstream
+        // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        // byte[] adminStream = ds.getStream();
+        // log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        // ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        // log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        // Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
-        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-        if( indexingAliasElem == null )
-        {
-            /**
-             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-             */
-            log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-        }
-        String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-        NodeList streamsNL = root.getElementsByTagName( "streams" );
-        Element streams = (Element)streamsNL.item(0);
-        NodeList streamNL = streams.getElementsByTagName( "stream" );
+        // log.debug( String.format( "root element from adminstream == %s", root ) );
+
+        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+
+        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        // if( indexingAliasElem == null )
+        // {
+        //     /**
+        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
+        //      */
+        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+        // }
+        // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+        // NodeList streamsNL = root.getElementsByTagName( "streams" );
+        // Element streams = (Element)streamsNL.item(0);
+        // NodeList streamNL = streams.getElementsByTagName( "stream" );
+
+        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
+        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
         log.debug( "iterating streams in nodelist to get info" );
 
-        int length = streamNL.getLength();
+        int length = aliasAndStreamNL.getSecond().getLength();
         for( int i = 0; i < length; i++ )
         {
-            Element stream = (Element)streamNL.item(i);
+            Element stream = (Element)aliasAndStreamNL.getSecond().item(i);
             String idOfStream = stream.getAttribute( "id" );
             if( streamID.equals( idOfStream ) )
             {
@@ -384,7 +422,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         String adminLogm = "";
         String dsnName = cargo.getDataStreamName().getName();
 
-        //10: get the adminstream
         MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
@@ -405,6 +442,11 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         Element streams = (Element)streamsNL.item( 0 );
         NodeList streamNL = streams.getElementsByTagName( "stream" );
         //iterate streamNL to get num of streams with dsnName as streamNameType
+
+        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+
+        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
 
         Element oldStream;
         int count = 0;
@@ -761,45 +803,48 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      */
     static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
-        log.debug( String.format( "constructFoxml( cargo, nexPid='%s', label='%s', now) called", nextPid, label ) );
+        log.trace( String.format( "Entering constructFoxml( cargo, nexPid='%s', label='%s', now )", nextPid, label ) );
 
-        // Setting properties
-        ObjectProperties op = new ObjectProperties();
+        DigitalObject dot = initDigitalObject( "Active", label, "dbc", nextPid, now );
 
-        Property pState = new Property();
-        pState.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
-        pState.setVALUE("Active");
+        String timeNow = dateFormat.format( now );
 
-        Property pLabel = new Property();
-        pLabel.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
-        pLabel.setVALUE(label);
+        // // Setting properties
+        // ObjectProperties op = new ObjectProperties();
 
-        PropertyType pOwner = new Property();
-        pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
-        /** \todo: set correct value for owner of the Digital Object*/
-        pOwner.setVALUE( "user" );
+        // Property pState = new Property();
+        // pState.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
+        // pState.setVALUE("Active");
+
+        // Property pLabel = new Property();
+        // pLabel.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
+        // pLabel.setVALUE(label);
+
+        // PropertyType pOwner = new Property();
+        // pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+        // /** \todo: set correct value for owner of the Digital Object*/
+        // pOwner.setVALUE( "user" );
 
 
-        // createdDate
-        String timeNow = dateFormat.format(now);
-        Property pCreatedDate = new Property();
-        pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
-        pCreatedDate.setVALUE(timeNow);
+        // // createdDate
+        // Property pCreatedDate = new Property();
+        // pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
+        // pCreatedDate.setVALUE(timeNow);
 
-        // lastModifiedDate
-        Property pLastModifiedDate = new Property();
-        pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
-        pLastModifiedDate.setVALUE(timeNow);
+        // // lastModifiedDate
+        // Property pLastModifiedDate = new Property();
+        // pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
+        // pLastModifiedDate.setVALUE(timeNow);
 
-        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
-                                            pCreatedDate, pLastModifiedDate };
-        op.setProperty(props);
+        // Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
+        //                                     pCreatedDate, pLastModifiedDate };
+        // op.setProperty(props);
 
-        log.debug( "Properties set, constructing the DigitalObject" );
-        DigitalObject dot = new DigitalObject();
-        dot.setObjectProperties(op);
-        dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
-        dot.setPID( nextPid );
+        // log.debug( "Properties set, constructing the DigitalObject" );
+        // DigitalObject dot = new DigitalObject();
+        // dot.setObjectProperties(op);
+        // dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
+        // dot.setPID( nextPid );
 
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
@@ -819,7 +864,8 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     
         Collections.sort( lst );
 
-        // Add a number to the id according to the number of datastreams with this datastreamname
+        // Add a number to the id according to the number of
+        // datastreams with this datastreamname
         int j = 0;
         DataStreamType dsn = null;
        
@@ -913,9 +959,9 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         log.debug( "Marshalling the digitalObject to a byte[]" );
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-        java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
-        Marshaller m = new Marshaller(outW); // IOException
-        m.marshal(dot); // throws MarshallException, ValidationException
+        java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter( out );
+        Marshaller m = new Marshaller( outW ); // IOException
+        m.marshal( dot ); // throws MarshallException, ValidationException
     
         byte[] ret = out.toByteArray();
 
@@ -923,8 +969,136 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         return ret;
     }
 
+    private InputPair< NodeList, NodeList > getAdminStream( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
+    {
+        MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        byte[] adminStream = ds.getStream();
+        if( adminStream == null ) 
+        {
+            log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
+            throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
+        } 
+        log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
+
+        CargoContainer cc = new CargoContainer();
+
+        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+
+        log.debug( String.format( "root element from adminstream == %s", root ) );
+
+        //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+
+        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        if( indexingAliasElem == null )
+        {
+            /**
+             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
+             */
+            log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+        }
+        log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
+        // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+        // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+
+        NodeList streamsNL = root.getElementsByTagName( "streams" );
+        Element streams = (Element)streamsNL.item(0);
+
+        InputPair< NodeList, NodeList > nodelists = 
+            new InputPair< NodeList, NodeList >( indexingAliasElem, 
+                                                 streams.getElementsByTagName( "stream" ) );
+        return nodelists;
+    }
+       
+
+    /**
+     * Initializes and returns a DigitalObject with no
+     * DataStreams. This method defaults the timestamp to
+     * System.currentTimeMillis
+     *
+     * @param state one of: Active, Inactive or Deleted
+     * - Active: The object is published and available.
+     * - Inactive: The object is not publicly available.
+     * - Deleted: The object is deleted, and should not be available
+     *            to anyone. It is still in the repository, and special
+     *            administration tools should be able to resurrect it.
+     * @param label A descriptive label of the Digitial Object
+     * @param owner The (system) name of the owner of the Digital
+     * Object. Please note that this has nothing to do with the
+     * ownership of the material (although the names can and may
+     * coincide).
+     *
+     * @return a DigitalObject with no DataStreams
+     */
+    private static DigitalObject initDigitalObject( String state,
+                                                    String label,
+                                                    String owner,
+                                                    String pid )
+    {
+        Date timestamp = new Date( System.currentTimeMillis() );
+        return initDigitalObject( state, label, owner, pid, timestamp );
+    }
+
+    /**
+     * Initializes and returns a DigitalObject with no
+     * DataStreams.
+     * @see initDigitalObject( String, String, String ) for more info
+     * @param state one of Active, Inactive or Deleted
+     * @param label description of the DigitalObject
+     * @param owner (System) owner of the DigitalObject
+     * @param timestamp overrides the default (now) timestamp
+     *
+     * @return a DigitalObject with no DataStreams
+     */
+    private static DigitalObject initDigitalObject( String state,
+                                                    String label,
+                                                    String owner,
+                                                    String pid,
+                                                    Date timestamp )
+    {
+        //ObjectProperties holds all the Property types
+        ObjectProperties op = new ObjectProperties();
+
+        Property pState = new Property();
+        pState.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE );
+        pState.setVALUE( state );
+
+        Property pLabel = new Property();
+        pLabel.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL );
+        pLabel.setVALUE( label );
+
+        PropertyType pOwner = new Property();
+        pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+        pOwner.setVALUE( owner );
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
+        String timeNow = dateFormat.format( timestamp );
+        Property pCreatedDate = new Property();
+        pCreatedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE );
+        pCreatedDate.setVALUE( timeNow );
+
+        // Upon creation, the last modified date == created date
+        Property pLastModifiedDate = new Property();
+        pLastModifiedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE );
+        pLastModifiedDate.setVALUE( timeNow );
+
+        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
+                                            pCreatedDate, pLastModifiedDate };
+        op.setProperty( props );
+
+        DigitalObject dot = new DigitalObject();
+        dot.setObjectProperties(op);
+        dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
+        dot.setPID( pid );
+
+        return dot;
+    }
+
+
     private static Datastream constructDatastream( CargoObject co,
-                                                   String itemID ) throws java.text.ParseException, IOException
+                                                   String itemID ) throws java.text.ParseException, 
+                                                                          IOException
     {
         Date timestamp = new Date( System.currentTimeMillis() );
         String timeNow = dateFormat.format( timestamp );
@@ -943,7 +1117,8 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      */
     private static Datastream constructDatastream( CargoObject co,
                                                    String timeNow,
-                                                   String itemID ) throws java.text.ParseException, IOException
+                                                   String itemID ) throws java.text.ParseException, 
+                                                                          IOException
     {
         return constructDatastream( co, timeNow, itemID, false, false, false );
     }
@@ -1065,9 +1240,4 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         return dataStreamElement;
     }
-
-
-
-
-
 }
