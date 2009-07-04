@@ -494,7 +494,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         transformer.transform(source, stringResult);
         //debug
         String admStreamString = stringWriter.getBuffer().toString();
-        System.out.println( admStreamString );
+        System.out.println( String.format( "printing new adminstream: %s", admStreamString ) );
 
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
@@ -653,7 +653,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         transformer.transform(source, stringResult);
         //debug
         String admStreamString = stringWriter.getBuffer().toString();
-        System.out.println( admStreamString );
+        System.out.println( String.format( "printing new adminstream: %s", admStreamString ) );
 
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
@@ -746,7 +746,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     public String[] findObjectPids( String property, String operator, String value ) throws RemoteException
     {
 
-        String[] resultFields = {"pid"};
+        String[] resultFields = {"pid", "title"};
         NonNegativeInteger maxResults = new NonNegativeInteger( "1000" );
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( operator ); 
@@ -764,7 +764,13 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         for( int i = 0; i < ofLength; i++ )
         {
-            pids[ i ] = objectFields[ i ].getPid(); 
+           //  String title = "";
+//             String[] titleArray = objectFields[ i ].getTitle();
+//             for( int j = 0; j < titleArray.length; j++ )
+//             {
+//                 title = title + titleArray[ j ];
+//             }
+            pids[ i ] = objectFields[ i ].getPid();// + title;
         }
         return pids;
 

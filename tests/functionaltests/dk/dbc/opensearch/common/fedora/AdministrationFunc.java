@@ -57,11 +57,11 @@ public class AdministrationFunc {
         testGetDataStreamsOfType( pid );
                  System.out.println( "*** kalder modify ***" );
                  testModifyDataStream( pid );
-        //         System.out.println( "*** kalder remove ***" );
-        //         testRemoveDataStream( pid );
-        //         System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
-        //         testGetDataStreamsOfType( pid );
-        //testDeleteObject( pid );
+                System.out.println( "*** kalder remove ***" );
+                testRemoveDataStream( pid );
+                System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
+                testGetDataStreamsOfType( pid );
+        testDeleteObject( pid );
 
 
     }
