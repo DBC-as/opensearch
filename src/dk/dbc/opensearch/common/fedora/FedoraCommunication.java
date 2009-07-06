@@ -102,14 +102,14 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
      * @throws ClassNotFoundException if the database could not be initialised in the Estimation class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      * @throws IOException Thrown if the FedoraHandler Couldn't be initialized properly. \see FedoraHandle.
-     * @throws MarshalException Thrown if something went wrong during the marshalling of the cargoiContainer.
-     * @throws ParseException Thrown if the construction of the Foxml went wrong. \see FedoraTools
-     * @throws ParserConfigurationException Thrown if the construction of the Foxml went wrong. \see FedoraTools
-     * @throws SAXException  Thrown if the construction of the Foxml went wrong. \see FedoraTools
+     * @throws MarshalException Thrown if something went wrong during the marshalling of the cargoContainer.
+     * @throws ParseException Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
+     * @throws ParserConfigurationException Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
+     * @throws SAXException  Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
      * @throws SQLException if something went wrong communicating with the database, either through the queue or estimate. \IProcessqueue, \see IEstimate.
      * @throws RemoteException Thrown if the fedora repository is unreachable
-     * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraTools
-     * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraTools
+     * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
+     * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
      */
 
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
@@ -130,7 +130,7 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         }
       
         // Store the CargoContainer in the fedora repository
-        byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
+        byte[] foxml = FedoraAdministration.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
 
         // Beware of this innocent looking log line, it writes the
@@ -162,8 +162,9 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
      * @throws ParserConfigurationException Thrown if the construction of the xml went wrong. \see FedoraTools
      * @throws RemoteException Thrown if the fedora repository is unreachable
      * @throws SAXException  Thrown if the construction of the xml went wrong. \see FedoraTools
+     * @deprecated Use the FedoraAdministration.getDigitalObject( String pid ) method instead
      */
-
+    @Deprecated
     public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
     {
         log.debug( String.format( "entering retrieveContainer( '%s' )", fedoraPid ) );

@@ -97,6 +97,9 @@ import org.exolab.castor.xml.ValidationException;
 import java.text.ParseException;
 import javax.xml.transform.TransformerException;
 import dk.dbc.opensearch.common.types.InputPair;
+import org.apache.commons.lang.NotImplementedException;
+import java.io.OutputStreamWriter;
+import java.io.ByteArrayOutputStream;
 
 
 public class FedoraAdministration extends FedoraHandle implements IFedoraAdministration
@@ -108,6 +111,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
 
     final PIDManager pidManager = new PIDManager();
+
     /**
      * The constructor initalizes the super class FedoraHandle which
      * handles the initiation of the connection with the fedora base
@@ -121,7 +125,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      * @throws ServiceException Thrown if the FedoraHandler Couldn't
      * be initialized properly. @see FedoraHandle
      */
-
     public FedoraAdministration() throws ConfigurationException, 
                                          IOException, 
                                          MalformedURLException, 
@@ -144,6 +147,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
     }
 
+
     /**
      * method for setting the delete flag on an object
      * @param pid, the identifier of the object to be marked as delete
@@ -151,7 +155,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      */
     public boolean markObjectAsDeleted( String pid )
     {
-        return true;
+        throw new NotImplementedException( "Lazyboy, not implemented yet." );
     }
 
     /**
@@ -168,7 +172,13 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         log.trace( String.format( "entering getDO( '%s' )", pid ) );
 
-        Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
+        //Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
+
+        Element adminStream = getAdminStream( pid );
+        
+        NodeList streamNodeList = getStreamNodes( adminStream );
+
+        String indexingAlias = getIndexingAlias( adminStream );
 
         // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         // byte[] adminStream = ds.getStream();
@@ -207,17 +217,17 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         // Element streams = (Element)streamsNL.item(0);
         // NodeList streamNL = streams.getElementsByTagName( "stream" );
 
-        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
-        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+        //String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
+        //log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
 
         log.debug( String.format( "Iterating streams in nodelist" ) );
 
         CargoContainer cc = new CargoContainer();
 
-        int streamNLLength = aliasAndStreamNL.getSecond().getLength();
+        int streamNLLength = streamNodeList.getLength();
         for(int i = 0; i < streamNLLength; i++ )
         {
-            Element stream = (Element)aliasAndStreamNL.getSecond().item(i);
+            Element stream = (Element)streamNodeList.item(i);
             String streamID = stream.getAttribute( "id" );
             MIMETypedStream dstream = super.fea.getDatastreamDissemination( pid, streamID, null);
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
@@ -225,7 +235,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
                     stream.getAttribute( "submitter" ),
                     stream.getAttribute( "lang" ),
                     stream.getAttribute( "mimetype" ),
-                    IndexingAlias.getIndexingAlias( indexingAliasName ),
+                    IndexingAlias.getIndexingAlias( indexingAlias ),
                     dstream.getStream() );
         }
         return cc;
@@ -277,7 +287,12 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         log.trace( String.format( "Entering getDataStreamsOfType()" ) );
         CargoContainer cc = new CargoContainer();
 
-        Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
+        //Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
+        Element adminStream = getAdminStream( pid );
+        
+        NodeList streamNodeList = getStreamNodes( adminStream );
+
+        String indexingAlias = getIndexingAlias( adminStream );
 
         // //retrieve the adminstream
         // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
@@ -305,25 +320,22 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         // NodeList streamsNL = root.getElementsByTagName( "streams" );
         // Element streams = (Element)streamsNL.item(0);
         // NodeList streamNL = streams.getElementsByTagName( "stream" );
-        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
-        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+        //        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
+        // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
 
         log.debug( "iterating streams in nodelist to get the right streamtype" );
 
-        int length = aliasAndStreamNL.getSecond().getLength();
-        System.out.println( String.format( "NodeList is %s long", length ) );
+        int length = streamNodeList.getLength();
+
         for( int i = 0; i < length; i++ )
         {
-            Element stream = (Element)aliasAndStreamNL.getSecond().item(i);
+            Element stream = (Element)streamNodeList.item(i);
             String typeOfStream = stream.getAttribute( "streamNameType" );
-            System.out.println( String.format( "got streamType: %s", typeOfStream ) );
             if( typeOfStream.equals( streamtype.getName() ) )
             {
 
-                System.out.println( "got the right streamType" );
                 //build the CargoObject and add it to the list
                 String streamID = stream.getAttribute( "id");
-                System.out.println( String.format( "streamid: %s", streamID ) );
                 MIMETypedStream dstream = super.fea.getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
@@ -332,7 +344,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
                         stream.getAttribute( "lang" ),
                         stream.getAttribute( "submitter" ),
                         stream.getAttribute( "mimetype" ),
-                        IndexingAlias.getIndexingAlias( indexingAliasName ),
+                        IndexingAlias.getIndexingAlias( indexingAlias ),
                         bytestream );
             }
         }
@@ -354,7 +366,13 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     {
         CargoContainer cc = new CargoContainer();
 
-        Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
+        //Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
+        Element adminStream = getAdminStream( pid );
+        
+        NodeList streamNodeList = getStreamNodes( adminStream );
+
+        String indexingAlias = getIndexingAlias( adminStream );
+
 
         // //get the adminstream
         // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
@@ -381,14 +399,14 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         // Element streams = (Element)streamsNL.item(0);
         // NodeList streamNL = streams.getElementsByTagName( "stream" );
 
-        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
-        log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+        // String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
+        // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
         log.debug( "iterating streams in nodelist to get info" );
 
-        int length = aliasAndStreamNL.getSecond().getLength();
+        int length = streamNodeList.getLength();
         for( int i = 0; i < length; i++ )
         {
-            Element stream = (Element)aliasAndStreamNL.getSecond().item(i);
+            Element stream = (Element)streamNodeList.item(i);
             String idOfStream = stream.getAttribute( "id" );
             if( streamID.equals( idOfStream ) )
             {
@@ -401,7 +419,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
                         stream.getAttribute( "lang" ),
                         stream.getAttribute( "submitter" ),
                         stream.getAttribute( "mimetype" ),
-                        IndexingAlias.getIndexingAlias( indexingAliasName ),
+                        IndexingAlias.getIndexingAlias( indexingAlias ),
                         bytestream );
             }
         }
@@ -976,7 +994,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         return ret;
     }
 
-    private InputPair< NodeList, NodeList > getAdminStream( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
+    private Element getAdminStream( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
     {
         MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
@@ -995,29 +1013,83 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
 
-        //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
+        return root;
+        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
 
-        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+        // if( indexingAliasElem == null )
+        // {
+        //     /**
+        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
+        //      */
+        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+        // }
+        // log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
+        // // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
+        // // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+
+        // NodeList streamsNL = root.getElementsByTagName( "streams" );
+        // Element streams = (Element)streamsNL.item(0);
+
+        // InputPair< NodeList, NodeList > nodelists = 
+        //     new InputPair< NodeList, NodeList >( indexingAliasElem, 
+        //                                          streams.getElementsByTagName( "stream" ) );
+        // return nodelists;
+
+    }
+
+    private String getIndexingAlias( Element adminStream )
+    {
+        NodeList indexingAliasElem = adminStream.getElementsByTagName( "indexingalias" );
         if( indexingAliasElem == null )
         {
-            /**
-             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-             */
+            /** \todo: this if statement doesnt skip anything. What should we do? bug: 8878 */
             log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
         }
-        log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
-        // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-        // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
+        String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
 
-        NodeList streamsNL = root.getElementsByTagName( "streams" );
+        return indexingAliasName;
+    }
+
+
+    private NodeList getStreamNodes( Element adminStream )
+    {
+        NodeList streamsNL = adminStream.getElementsByTagName( "streams" );
         Element streams = (Element)streamsNL.item(0);
+        NodeList streamNL = streams.getElementsByTagName( "stream" );
 
-        InputPair< NodeList, NodeList > nodelists = 
-            new InputPair< NodeList, NodeList >( indexingAliasElem, 
-                                                 streams.getElementsByTagName( "stream" ) );
-        return nodelists;
+        return streamNL;
     }
        
+    /** 
+     * Serializes a DigitalObject into a byte[] containing the
+     * serialized xml document.
+     *
+     * Through the serializing functionality provided by the castor
+     * framework, the DigitalObject is validated before serialized. If
+     * something is amiss with the object structure and castor finds
+     * out in time, a ValidationException will be thrown. If castor is
+     * unable, for other reasons, to serialize the object, a
+     * MarshallException will be thrown.
+     * 
+     * @param dot the DigitalObject to be serialized
+     * 
+     * @return a byte[] containing the (xml-) serialized form of the DigitalObject
+     */
+    public static byte[] DigitalObjectAsByteArray( DigitalObject dot )throws IOException, MarshalException, ValidationException//, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    {
+        log.debug( "Marshalling the digitalObject to a byte[]" );
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputStreamWriter outW = new OutputStreamWriter(out);
+        Marshaller m = new Marshaller( outW ); // IOException
+        m.marshal(dot); // throws MarshallException, ValidationException
+        //log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
+        byte[] ret = out.toByteArray();
+
+        log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
+        return ret;
+
+    }
 
     /**
      * Initializes and returns a DigitalObject with no

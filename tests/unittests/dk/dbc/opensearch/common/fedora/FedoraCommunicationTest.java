@@ -129,8 +129,8 @@ public class FedoraCommunicationTest
         }
     }
 
-    @MockClass( realClass = FedoraTools.class )
-    public static class MockFedoraTools
+    @MockClass( realClass = FedoraAdministration.class )
+    public static class MockFedoraAdministration
     {
         @Mock public byte[] constructFoxml( CargoContainer cargo, String nextPid, String label )
         {
@@ -201,7 +201,7 @@ public class FedoraCommunicationTest
     {
         Mockit.setUpMocks( MockFedoraClient.class );
         Mockit.setUpMocks( MockFedoraConfig.class );
-        Mockit.setUpMocks( MockFedoraTools.class );
+        Mockit.setUpMocks( MockFedoraAdministration.class );
         ArrayList<CargoObject> COList = new ArrayList<CargoObject>();
         COList.add( mockCO );
         COList.add( mockCO );

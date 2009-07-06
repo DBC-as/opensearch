@@ -76,199 +76,199 @@ import org.xml.sax.SAXException;
  */
 public class FedoraTools
 {
-    static Logger log = Logger.getLogger( FedoraTools.class );
+    // static Logger log = Logger.getLogger( FedoraTools.class );
 
-    protected static final SimpleDateFormat dateFormat =
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
-
-
+    // protected static final SimpleDateFormat dateFormat =
+    //     new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
 
 
-    public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
-    {
-        log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
-
-        Date now = new Date(System.currentTimeMillis());
-        return constructFoxml(cargo, nextPid, label, now);
-    }
 
 
-    public static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
-    {
-        log.debug( String.format( "constructFoxml( cargo, nexPid='%s', label='%s', now) called", nextPid, label ) );
+    // public static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    // {
+    //     log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
 
-        // Setting properties
-        ObjectProperties op = new ObjectProperties();
-
-        Property pState = new Property();
-        pState.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
-        pState.setVALUE("Active");
-
-        Property pLabel = new Property();
-        pLabel.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
-        pLabel.setVALUE(label);
-
-        PropertyType pOwner = new Property();
-        pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
-        /** \todo: set correct value for owner of the Digital Object*/
-        pOwner.setVALUE( "user" );
+    //     Date now = new Date(System.currentTimeMillis());
+    //     return constructFoxml(cargo, nextPid, label, now);
+    // }
 
 
-        // createdDate
-        String timeNow = dateFormat.format(now);
-        Property pCreatedDate = new Property();
-        pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
-        pCreatedDate.setVALUE(timeNow);
+    // public static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    // {
+    //     log.debug( String.format( "constructFoxml( cargo, nexPid='%s', label='%s', now) called", nextPid, label ) );
 
-        // lastModifiedDate
-        Property pLastModifiedDate = new Property();
-        pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
-        pLastModifiedDate.setVALUE(timeNow);
+    //     // Setting properties
+    //     ObjectProperties op = new ObjectProperties();
 
-        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
-                                            pCreatedDate, pLastModifiedDate };
-        op.setProperty(props);
+    //     Property pState = new Property();
+    //     pState.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
+    //     pState.setVALUE("Active");
 
-        log.debug( "Properties set, constructing the DigitalObject" );
-        DigitalObject dot = new DigitalObject();
-        dot.setObjectProperties(op);
-        dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
-        dot.setPID( nextPid );
+    //     Property pLabel = new Property();
+    //     pLabel.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
+    //     pLabel.setVALUE(label);
 
-        int cargo_count = cargo.getCargoObjectCount();
-        log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
-
-        log.debug( "Constructing adminstream" );
-        //PairComparator_FirstString firstComp = new PairComparator_FirstString();
-        //PairComparator_SecondInteger secondComp = new PairComparator_SecondInteger();
-
-        // Constructing list with datastream indexes and id
-        //ArrayList< InputPair < String, Integer > > lst = new  ArrayList< InputPair < String, Integer > >();
-        ArrayList< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
-        for(int i = 0; i < cargo_count; i++)
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-            //lst.add( new InputPair< String, Integer >( c.getDataStreamName().getName(), i ) );
-            lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
-        }
-
-        //Collections.sort( lst, firstComp);
-        Collections.sort( lst );
-
-        // Add a number to the id according to the number of datastreams with this datastreamname
-        int j = 0;
-        DataStreamType dsn = null;
-        //ArrayList< InputPair < String, Integer > > lst2 = new ArrayList< InputPair < String, Integer > >();
-        ArrayList< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
-        for( Pair<String, Integer> p : lst)
-        {
-            if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) )
-            {
-                j = 0;
-            }
-            else
-            {
-                j += 1;
-            }
-
-            dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
-            //lst2.add( new InputPair<String, Integer>( p.getFirst() + "." + j , p.getSecond() ) );
-            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
-        }
-
-        //lst2.add( new InputPair< String, Integer >( DataStreamType.AdminData.getName(), lst2.size() ) );
-        lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
-        //Collections.sort( lst2, secondComp );
-        Collections.sort( lst2 );
-
-        // Constructing adm stream
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        Document admStream = builder.newDocument();
-        Element root = admStream.createElement( "admin-stream" );
-
-        Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-        root.appendChild( (Node)indexingaliasElem );
-        //Element filePathElem = admStream.createElement( "filepath" );
-        //filePathElem.setAttribute( "name", cargo.getFilePath() );
-        //root.appendChild( (Node)filePathElem );
-
-        Node streams = admStream.createElement( "streams" );
-
-        for(int i = 0; i < cargo_count; i++)
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-
-            Element stream = admStream.createElement( "stream" );
-            //stream.setAttribute( "id", lst2.get( i ).getFirst() );
-            stream.setAttribute( "id", lst2.get( i ).getSecond() );
-            stream.setAttribute( "lang", c.getLang() );
-            stream.setAttribute( "format", c.getFormat() );
-            stream.setAttribute( "mimetype", c.getMimeType() );
-            stream.setAttribute( "submitter", c.getSubmitter() );
-            //stream.setAttribute( "index", Integer.toString( lst2.get( i ).getSecond() ) );
-            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-            stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
-            streams.appendChild( (Node) stream );
-        }
-
-        root.appendChild( streams );
-
-        // Transform document to xml string
-        Source source = new DOMSource((Node) root );
-        StringWriter stringWriter = new StringWriter();
-        Result result = new StreamResult(stringWriter);
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.transform(source, result);
-        String admStreamString = stringWriter.getBuffer().toString();
-        log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
-
-        // add the adminstream to the cargoContainer
-        byte[] byteAdmArray = admStreamString.getBytes();
-        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
-        //cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
-
-        log.debug( "Constructing foxml byte[] from cargoContainer" );
-        cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
-
-        log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
-        Datastream[] dsArray = new Datastream[ cargo_count ];
-        for(int i = 0; i < cargo_count; i++)
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-            //dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
-            dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
-        }
-
-        log.debug( String.format( "Successfully constructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
-
-        // add the streams to the digital object
-        dot.setDatastream( dsArray );
-
-        log.debug( "Marshalling the digitalObject to a byte[]" );
-        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-        java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
-        Marshaller m = new Marshaller(outW); // IOException
-        m.marshal(dot); // throws MarshallException, ValidationException
-        //log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
-        byte[] ret = out.toByteArray();
-
-        log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
-        return ret;
-    }
+    //     PropertyType pOwner = new Property();
+    //     pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+    //     /** \todo: set correct value for owner of the Digital Object*/
+    //     pOwner.setVALUE( "user" );
 
 
-    private static Datastream constructDatastream( CargoObject co,
-                                                   String itemID ) throws java.text.ParseException, IOException
-    {
-        Date timestamp = new Date( System.currentTimeMillis() );
-        String timeNow = dateFormat.format( timestamp );
+    //     // createdDate
+    //     String timeNow = dateFormat.format(now);
+    //     Property pCreatedDate = new Property();
+    //     pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
+    //     pCreatedDate.setVALUE(timeNow);
 
-        return constructDatastream( co, timeNow, itemID );
-    }
+    //     // lastModifiedDate
+    //     Property pLastModifiedDate = new Property();
+    //     pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
+    //     pLastModifiedDate.setVALUE(timeNow);
+
+    //     Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
+    //                                         pCreatedDate, pLastModifiedDate };
+    //     op.setProperty(props);
+
+    //     log.debug( "Properties set, constructing the DigitalObject" );
+    //     DigitalObject dot = new DigitalObject();
+    //     dot.setObjectProperties(op);
+    //     dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
+    //     dot.setPID( nextPid );
+
+    //     int cargo_count = cargo.getCargoObjectCount();
+    //     log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
+
+    //     log.debug( "Constructing adminstream" );
+    //     //PairComparator_FirstString firstComp = new PairComparator_FirstString();
+    //     //PairComparator_SecondInteger secondComp = new PairComparator_SecondInteger();
+
+    //     // Constructing list with datastream indexes and id
+    //     //ArrayList< InputPair < String, Integer > > lst = new  ArrayList< InputPair < String, Integer > >();
+    //     ArrayList< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
+    //     for(int i = 0; i < cargo_count; i++)
+    //     {
+    //         CargoObject c = cargo.getCargoObjects().get( i );
+    //         //lst.add( new InputPair< String, Integer >( c.getDataStreamName().getName(), i ) );
+    //         lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
+    //     }
+
+    //     //Collections.sort( lst, firstComp);
+    //     Collections.sort( lst );
+
+    //     // Add a number to the id according to the number of datastreams with this datastreamname
+    //     int j = 0;
+    //     DataStreamType dsn = null;
+    //     //ArrayList< InputPair < String, Integer > > lst2 = new ArrayList< InputPair < String, Integer > >();
+    //     ArrayList< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
+    //     for( Pair<String, Integer> p : lst)
+    //     {
+    //         if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) )
+    //         {
+    //             j = 0;
+    //         }
+    //         else
+    //         {
+    //             j += 1;
+    //         }
+
+    //         dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
+    //         //lst2.add( new InputPair<String, Integer>( p.getFirst() + "." + j , p.getSecond() ) );
+    //         lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
+    //     }
+
+    //     //lst2.add( new InputPair< String, Integer >( DataStreamType.AdminData.getName(), lst2.size() ) );
+    //     lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
+    //     //Collections.sort( lst2, secondComp );
+    //     Collections.sort( lst2 );
+
+    //     // Constructing adm stream
+    //     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    //     DocumentBuilder builder = factory.newDocumentBuilder();
+
+    //     Document admStream = builder.newDocument();
+    //     Element root = admStream.createElement( "admin-stream" );
+
+    //     Element indexingaliasElem = admStream.createElement( "indexingalias" );
+    //     indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
+    //     root.appendChild( (Node)indexingaliasElem );
+    //     //Element filePathElem = admStream.createElement( "filepath" );
+    //     //filePathElem.setAttribute( "name", cargo.getFilePath() );
+    //     //root.appendChild( (Node)filePathElem );
+
+    //     Node streams = admStream.createElement( "streams" );
+
+    //     for(int i = 0; i < cargo_count; i++)
+    //     {
+    //         CargoObject c = cargo.getCargoObjects().get( i );
+
+    //         Element stream = admStream.createElement( "stream" );
+    //         //stream.setAttribute( "id", lst2.get( i ).getFirst() );
+    //         stream.setAttribute( "id", lst2.get( i ).getSecond() );
+    //         stream.setAttribute( "lang", c.getLang() );
+    //         stream.setAttribute( "format", c.getFormat() );
+    //         stream.setAttribute( "mimetype", c.getMimeType() );
+    //         stream.setAttribute( "submitter", c.getSubmitter() );
+    //         //stream.setAttribute( "index", Integer.toString( lst2.get( i ).getSecond() ) );
+    //         stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
+    //         stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
+    //         streams.appendChild( (Node) stream );
+    //     }
+
+    //     root.appendChild( streams );
+
+    //     // Transform document to xml string
+    //     Source source = new DOMSource((Node) root );
+    //     StringWriter stringWriter = new StringWriter();
+    //     Result result = new StreamResult(stringWriter);
+    //     TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    //     Transformer transformer = transformerFactory.newTransformer();
+    //     transformer.transform(source, result);
+    //     String admStreamString = stringWriter.getBuffer().toString();
+    //     log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
+
+    //     // add the adminstream to the cargoContainer
+    //     byte[] byteAdmArray = admStreamString.getBytes();
+    //     cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
+    //     //cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", byteAdmArray );
+
+    //     log.debug( "Constructing foxml byte[] from cargoContainer" );
+    //     cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
+
+    //     log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
+    //     Datastream[] dsArray = new Datastream[ cargo_count ];
+    //     for(int i = 0; i < cargo_count; i++)
+    //     {
+    //         CargoObject c = cargo.getCargoObjects().get( i );
+    //         //dsArray[i] = constructDatastream( c, dateFormat, timeNow, lst2.get( i ).getFirst() );
+    //         dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
+    //     }
+
+    //     log.debug( String.format( "Successfully constructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
+
+    //     // add the streams to the digital object
+    //     dot.setDatastream( dsArray );
+
+    //     log.debug( "Marshalling the digitalObject to a byte[]" );
+    //     java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+    //     java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter(out);
+    //     Marshaller m = new Marshaller(outW); // IOException
+    //     m.marshal(dot); // throws MarshallException, ValidationException
+    //     //log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
+    //     byte[] ret = out.toByteArray();
+
+    //     log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
+    //     return ret;
+    // }
+
+
+    // private static Datastream constructDatastream( CargoObject co,
+    //                                                String itemID ) throws java.text.ParseException, IOException
+    // {
+    //     Date timestamp = new Date( System.currentTimeMillis() );
+    //     String timeNow = dateFormat.format( timestamp );
+
+    //     return constructDatastream( co, timeNow, itemID );
+    // }
 
     /**
      * constructDatastream creates a Datastream object on the basis of a CargoObject
@@ -279,12 +279,12 @@ public class FedoraTools
      *
      * @return A datastream suitable for ingestion into the DigitalObject
      */
-    private static Datastream constructDatastream( CargoObject co,
-                                                   String timeNow,
-                                                   String itemID ) throws java.text.ParseException, IOException
-    {
-        return constructDatastream( co, timeNow, itemID, false, false, false );
-    }
+    // private static Datastream constructDatastream( CargoObject co,
+    //                                                String timeNow,
+    //                                                String itemID ) throws java.text.ParseException, IOException
+    // {
+    //     return constructDatastream( co, timeNow, itemID, false, false, false );
+    // }
 
     /**
     * Control Group: the approach used by the Datastream to represent or encapsulate the content as one of four types or control groups:
@@ -324,85 +324,85 @@ public class FedoraTools
     *      content to a client (e.g., video streaming), rather than
     *      have Fedora in the middle re-streaming the content out.
     */
-    private static Datastream constructDatastream( CargoObject co,
-                                                   String timeNow,
-                                                   String itemID,
-                                                   boolean versionable,
-                                                   boolean externalData,
-                                                   boolean inlineData ) throws ParseException
-    {
-        int srcLen = co.getContentLength();
-        byte[] ba = co.getBytes();
+    // private static Datastream constructDatastream( CargoObject co,
+    //                                                String timeNow,
+    //                                                String itemID,
+    //                                                boolean versionable,
+    //                                                boolean externalData,
+    //                                                boolean inlineData ) throws ParseException
+    // {
+    //     int srcLen = co.getContentLength();
+    //     byte[] ba = co.getBytes();
 
-        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
+    //     log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
 
-        DatastreamTypeCONTROL_GROUPType controlGroup = null;
-        if( (! externalData ) && ( ! inlineData ) && ( co.getMimeType() == "text/xml" ) )
-        {
-            //Managed content
-            controlGroup = DatastreamTypeCONTROL_GROUPType.M;
-        }
-        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) {
-            //Inline content
-            controlGroup = DatastreamTypeCONTROL_GROUPType.X;
-        }
-        // else if( ( externalData ) && ( ! inlineData ) ){
-        //     /**
-        //      * external data cannot be inline, and this is regarded as
-        //      * a client error, but we assume that the client wanted
-        //      * the content referenced; we log a warning and proceed
-        //      */
-        //     log.warn( String.format( "Both externalData and inlineData was set to true, they are mutually exclusive, and we assume that the content should be an external reference" ) );
-        //     controlGroup = DatastreamTypeCONTROL_GROUPType.E;
-        // }
+    //     DatastreamTypeCONTROL_GROUPType controlGroup = null;
+    //     if( (! externalData ) && ( ! inlineData ) && ( co.getMimeType() == "text/xml" ) )
+    //     {
+    //         //Managed content
+    //         controlGroup = DatastreamTypeCONTROL_GROUPType.M;
+    //     }
+    //     else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) {
+    //         //Inline content
+    //         controlGroup = DatastreamTypeCONTROL_GROUPType.X;
+    //     }
+    //     // else if( ( externalData ) && ( ! inlineData ) ){
+    //     //     /**
+    //     //      * external data cannot be inline, and this is regarded as
+    //     //      * a client error, but we assume that the client wanted
+    //     //      * the content referenced; we log a warning and proceed
+    //     //      */
+    //     //     log.warn( String.format( "Both externalData and inlineData was set to true, they are mutually exclusive, and we assume that the content should be an external reference" ) );
+    //     //     controlGroup = DatastreamTypeCONTROL_GROUPType.E;
+    //     // }
 
-        // datastreamElement
-        Datastream dataStreamElement = new Datastream();
+    //     // datastreamElement
+    //     Datastream dataStreamElement = new Datastream();
 
-        dataStreamElement.setCONTROL_GROUP( controlGroup );
+    //     dataStreamElement.setCONTROL_GROUP( controlGroup );
 
-        dataStreamElement.setID( itemID );
+    //     dataStreamElement.setID( itemID );
 
-        /**
-         * \todo: State type defaults to active. Client should interact with
-         * datastream after this method if it wants something else
-         */
-        dataStreamElement.setSTATE( StateType.A );
-        dataStreamElement.setVERSIONABLE( versionable );
+    //     /**
+    //      * \todo: State type defaults to active. Client should interact with
+    //      * datastream after this method if it wants something else
+    //      */
+    //     dataStreamElement.setSTATE( StateType.A );
+    //     dataStreamElement.setVERSIONABLE( versionable );
 
-        // datastreamVersionElement
-        String itemId_version = itemID+".0";
+    //     // datastreamVersionElement
+    //     String itemId_version = itemID+".0";
 
-        DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
+    //     DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
 
-        dataStreamVersionElement.setCREATED( dateFormat.parse( timeNow ) );
+    //     dataStreamVersionElement.setCREATED( dateFormat.parse( timeNow ) );
 
-        dataStreamVersionElement.setID( itemId_version );
+    //     dataStreamVersionElement.setID( itemId_version );
 
-        DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
+    //     DatastreamVersionTypeChoice dVersTypeChoice = new DatastreamVersionTypeChoice();
 
-        //ContentDigest binaryContent = new ContentDigest();
+    //     //ContentDigest binaryContent = new ContentDigest();
 
-        dVersTypeChoice.setBinaryContent( ba );
+    //     dVersTypeChoice.setBinaryContent( ba );
 
-        dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
+    //     dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
 
-        String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
-        dataStreamVersionElement.setLABEL(mimeLabel);
-        String mimeFormatted = String.format("%s", co.getMimeType());
-        dataStreamVersionElement.setMIMETYPE( mimeFormatted );
+    //     String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
+    //     dataStreamVersionElement.setLABEL(mimeLabel);
+    //     String mimeFormatted = String.format("%s", co.getMimeType());
+    //     dataStreamVersionElement.setMIMETYPE( mimeFormatted );
 
-        long lengthFormatted = (long) srcLen;
+    //     long lengthFormatted = (long) srcLen;
 
-        dataStreamVersionElement.setSIZE( lengthFormatted );
+    //     dataStreamVersionElement.setSIZE( lengthFormatted );
 
-        DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
-        dataStreamElement.setDatastreamVersion( dsvArray );
+    //     DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
+    //     dataStreamElement.setDatastreamVersion( dsvArray );
 
-        log.debug( String.format( "Datastream element is valid=%s", dataStreamElement.isValid() ) );
+    //     log.debug( String.format( "Datastream element is valid=%s", dataStreamElement.isValid() ) );
 
-        return dataStreamElement;
-    }
+    //     return dataStreamElement;
+    // }
 
 
     /**
@@ -424,14 +424,14 @@ public class FedoraTools
      *
      * @return a DigitalObject with no DataStreams
      */
-    private static DigitalObject initDigitalObject( String state,
-                                                    String label,
-                                                    String owner,
-                                                    String pid )
-    {
-        Date timestamp = new Date( System.currentTimeMillis() );
-        return initDigitalObject( state, label, owner, pid, timestamp );
-    }
+    // private static DigitalObject initDigitalObject( String state,
+    //                                                 String label,
+    //                                                 String owner,
+    //                                                 String pid )
+    // {
+    //     Date timestamp = new Date( System.currentTimeMillis() );
+    //     return initDigitalObject( state, label, owner, pid, timestamp );
+    // }
 
     /**
      * Initializes and returns a DigitalObject with no
@@ -444,47 +444,47 @@ public class FedoraTools
      *
      * @return a DigitalObject with no DataStreams
      */
-    private static DigitalObject initDigitalObject( String state,
-                                                    String label,
-                                                    String owner,
-                                                    String pid,
-                                                    Date timestamp )
-    {
-        //ObjectProperties holds all the Property types
-        ObjectProperties op = new ObjectProperties();
+    // private static DigitalObject initDigitalObject( String state,
+    //                                                 String label,
+    //                                                 String owner,
+    //                                                 String pid,
+    //                                                 Date timestamp )
+    // {
+    //     //ObjectProperties holds all the Property types
+    //     ObjectProperties op = new ObjectProperties();
 
-        Property pState = new Property();
-        pState.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE );
-        pState.setVALUE( state );
+    //     Property pState = new Property();
+    //     pState.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE );
+    //     pState.setVALUE( state );
 
-        Property pLabel = new Property();
-        pLabel.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL );
-        pLabel.setVALUE( label );
+    //     Property pLabel = new Property();
+    //     pLabel.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL );
+    //     pLabel.setVALUE( label );
 
-        PropertyType pOwner = new Property();
-        pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
-        pOwner.setVALUE( owner );
+    //     PropertyType pOwner = new Property();
+    //     pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+    //     pOwner.setVALUE( owner );
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
-        String timeNow = dateFormat.format( timestamp );
-        Property pCreatedDate = new Property();
-        pCreatedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE );
-        pCreatedDate.setVALUE( timeNow );
+    //     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
+    //     String timeNow = dateFormat.format( timestamp );
+    //     Property pCreatedDate = new Property();
+    //     pCreatedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE );
+    //     pCreatedDate.setVALUE( timeNow );
 
-        // Upon creation, the last modified date == created date
-        Property pLastModifiedDate = new Property();
-        pLastModifiedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE );
-        pLastModifiedDate.setVALUE( timeNow );
+    //     // Upon creation, the last modified date == created date
+    //     Property pLastModifiedDate = new Property();
+    //     pLastModifiedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE );
+    //     pLastModifiedDate.setVALUE( timeNow );
 
-        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
-                                            pCreatedDate, pLastModifiedDate };
-        op.setProperty( props );
+    //     Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
+    //                                         pCreatedDate, pLastModifiedDate };
+    //     op.setProperty( props );
 
-        DigitalObject dot = new DigitalObject();
-        dot.setObjectProperties(op);
-        dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
-        dot.setPID( pid );
+    //     DigitalObject dot = new DigitalObject();
+    //     dot.setObjectProperties(op);
+    //     dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
+    //     dot.setPID( pid );
 
-        return dot;
-    }
+    //     return dot;
+    // }
 }
