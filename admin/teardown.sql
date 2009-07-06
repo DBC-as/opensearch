@@ -17,11 +17,9 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 -- drops the tables functions and sequences
-
-DROP SEQUENCE processqueue_sequence;
-DROP TABLE processqueue CASCADE;
-DROP TABLE statistics CASCADE;
-DROP TABLE notindexed CASCADE;
-DROP TABLE notdocked CASCADE;
+DROP SEQUENCE IF EXISTS processqueue_sequence;
+DROP TABLE IF EXISTS processqueue CASCADE;
+DROP TABLE IF EXISTS statistics CASCADE;
+DROP TABLE IF EXISTS notindexed CASCADE;
+DROP TABLE IF EXISTS notdocked CASCADE;
