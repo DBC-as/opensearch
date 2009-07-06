@@ -45,6 +45,8 @@ import org.custommonkey.xmlunit.*;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import java.util.HashMap;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.apache.commons.codec.binary.Base64;
+import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
 
 
 /**
@@ -56,10 +58,12 @@ public class FedoraAdministrationTest// extends XMLTestCase
     CargoContainer cargo;
     String origStr;
 
+    static String utf8Str = "æøå";
     static Date now = new Date ( System.currentTimeMillis() );
     static String timeNow = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" )).format( now );
     static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<digitalObject xmlns=\"info:fedora/fedora-system:def/foxml#\" VERSION=\"1.1\" PID=\"dbc:1\"><objectProperties><property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"Active\"/><property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"label_1\"/><property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/><property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\"" + timeNow + "\"/><property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\"" + timeNow + "\"/></objectProperties><datastream ID=\"originalData.0\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\"><datastreamVersion ID=\"originalData.0.0\" LABEL=\"test [text/xml]\" CREATED=\"" + timeNow + "+02:00\" MIMETYPE=\"text/xml\" SIZE=\"6\"><binaryContent>w6bDuMOl</binaryContent></datastreamVersion></datastream><datastream ID=\"adminData\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\"><datastreamVersion ID=\"adminData.0\" LABEL=\"admin [text/xml]\" CREATED=\"" + timeNow + "+02:00\" MIMETYPE=\"text/xml\" SIZE=\"247\"><binaryContent>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48YWRtaW4tc3RyZWFtPjxpbmRleGluZ2FsaWFzIG5hbWU9ImFydGljbGUiLz48c3RyZWFtcz48c3RyZWFtIGZvcm1hdD0idGVzdCIgaWQ9Im9yaWdpbmFsRGF0YS4wIiBpbmRleD0iMCIgbGFuZz0iZW5nIiBtaW1ldHlwZT0idGV4dC94bWwiIHN0cmVhbU5hbWVUeXBlPSJvcmlnaW5hbERhdGEiIHN1Ym1pdHRlcj0iZGJjIi8+PC9zdHJlYW1zPjwvYWRtaW4tc3RyZWFtPg==</binaryContent></datastreamVersion></datastream></digitalObject>";
+
 
     @BeforeClass
     public static void SetupClass()
@@ -73,7 +77,7 @@ public class FedoraAdministrationTest// extends XMLTestCase
     @Before
     public void SetUp() throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException
     {
-        byte[] cargoBytes =  "æøå".getBytes( "UTF-8" );
+        byte[] cargoBytes =  utf8Str.getBytes( "UTF-8" );
         cargo = new CargoContainer( );
         cargo.add( DataStreamType.getDataStreamNameFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
         byte[] b = FedoraAdministration.constructFoxml( cargo, "dbc:1", "label_1", now );
@@ -87,41 +91,72 @@ public class FedoraAdministrationTest// extends XMLTestCase
         cargo = null;
     }
 
+    /** 
+     * The following tests aims at validating that the fields in the
+     * objectProperties are set correctly. The xpath expressions are
+     * somewhat naive and relies on a specific ordering of the
+     * elements which - luckily - is preserved by the serialization in
+     * the constructFoxml method.
+     * 
+     * The first test validates the serialization itself. Failure in
+     * this test does not imply that the subsequent XMLAsserts should
+     * fail.
+     */
     @Test public void testDigitalObjectSerialization() throws SAXException, IOException
     {
         XMLAssert.assertXMLEqual( "Comparing test xml to control xml", expected, origStr );
     }
 
+    /** 
+     * Tests that the correct pid was inserted in the digital object properties
+     */
     @Test
     public void testCorrectPIDInsertion() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( "dbc:1", "/x:digitalObject[1]/@PID", origStr);
     }
 
+    /** 
+     * Tests that the correct state was inserted in the digital object properties
+     */
     @Test
     public void testState() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( "Active", "/x:digitalObject[1]/x:objectProperties[1]/x:property[1]/@VALUE", origStr );
     }
 
+    /** 
+     * Tests that the correct label was inserted in the digital object properties
+     */
     @Test
     public void testLabel() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( "label_1", "/x:digitalObject[1]/x:objectProperties[1]/x:property[2]/@VALUE", origStr );
     }
 
+    /** 
+     * Tests that the correct owner was inserted in the digital object properties
+     */
     @Test
     public void testOwner() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( "dbc", "/x:digitalObject[1]/x:objectProperties[1]/x:property[3]/@VALUE", origStr );
     }
 
+    /** 
+     * Tests that the correct timestamp was inserted in the digital
+     * object properties. The format of the datestring is internally
+     * validated (by the serialization framework).
+     */
     @Test
     public void testTimestamp() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( timeNow, "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", origStr );
     }
 
+    /** 
+     * Tests that the datastream id is set to the first added cargoobject
+     */
     @Test
     public void testDatastreamID() throws SAXException, IOException, XpathException
     {
@@ -129,67 +164,47 @@ public class FedoraAdministrationTest// extends XMLTestCase
 
     }
 
+    /** 
+     * A test that really serves two purposes, but in one test because
+     * if one fails, both fails.  The first test ensures that the
+     * binary data was written to the digital object, the second, that
+     * the encoding of the string was correct.
+     * 
+     */
     @Test
     public void testBinaryContent() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathExists( "/x:digitalObject[1]/x:datastream[1]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );
+
+        byte[] encodedBytes  = Base64.encodeBase64( utf8Str.getBytes() );
+        XMLAssert.assertXpathEvaluatesTo( new String( encodedBytes ), "/x:digitalObject[1]/x:datastream[1]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );
     }
 
-    @Ignore
-    @Test public void testConstructFoxmlValidation_1() throws IllegalArgumentException, NullPointerException, IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException
+    @Test 
+    public void testControlGroup() throws SAXException, IOException, XpathException
     {
+        XMLAssert.assertXpathEvaluatesTo( DatastreamTypeCONTROL_GROUPType.M.toString(), "/x:digitalObject[1]/x:datastream[1]/@CONTROL_GROUP", origStr );
+    }
 
-        byte[] b = FedoraAdministration.constructFoxml( cargo, "dbc:1", "label_1", now );
-        String origStr = new String( b );
+    @Test 
+    public void testHasAdminStreamInDigitalObjectAfterSerialization() throws SAXException, IOException, XpathException
+    {
+        XMLAssert.assertXpathEvaluatesTo( "adminData", "/x:digitalObject[1]/x:datastream[2]/@ID", origStr );
 
+    }
 
-        //        System.out.println( String.format( "the expected string: %s", expected ) );
-        //assertEquals( expected, origStr );
+    @Test 
+    public void testCorrectAdminStream() throws SAXException, IOException, XpathException
+    {
+        
+        String adminOrig = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48YWRtaW4tc3RyZWFtPjxpbmRleGluZ2FsaWFzIG5hbWU9ImFydGljbGUiLz48c3RyZWFtcz48c3RyZWFtIGZvcm1hdD0idGVzdCIgaWQ9Im9yaWdpbmFsRGF0YS4wIiBpbmRleD0iMCIgbGFuZz0iZW5nIiBtaW1ldHlwZT0idGV4dC94bWwiIHN0cmVhbU5hbWVUeXBlPSJvcmlnaW5hbERhdGEiIHN1Ym1pdHRlcj0iZGJjIi8+PC9zdHJlYW1zPjwvYWRtaW4tc3RyZWFtPg==";
 
-        String expected2 = "\"/>"+
-            "<property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\"";
+        System.out.println( String.format( "ADMINDATA: %s", new String( Base64.decodeBase64( adminOrig.getBytes() ) ) ) );
 
-        String expected3= "\"/>"+
-            "</objectProperties><datastream ID=\"originalData.0\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\">"+
-            "<datastreamVersion ID=\"originalData.0.0\" LABEL=\"test [text/xml]\" CREATED=\"";
+        String adminDataString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><admin-stream><indexingalias name=\"article\"/><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"eng\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
 
-        String expected4 = " MIMETYPE=\"text/xml\" SIZE=\"6\">"+
-            "<binaryContent>w6bDuMOl</binaryContent></datastreamVersion></datastream>" +
-            "<datastream ID=\"adminData\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=" +
-            "\"false\"><datastreamVersion ID=\"adminData.0\" LABEL=\"admin [text/xml]\"" +
-            " CREATED=";
-        String expected5 =" MIMETYPE=\"text/xml\" SIZE=\"247\"><binaryContent>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48YWRtaW4tc3RyZWFtPjxpbmRleGluZ2FsaWFzIG5hbWU9ImFydGljbGUiLz48c3RyZWFtcz48c3RyZWFtIGZvcm1hdD0idGVzdCIgaWQ9Im9yaWdpbmFsRGF0YS4wIiBpbmRleD0iMCIgbGFuZz0iZW5nIiBtaW1ldHlwZT0idGV4dC94bWwiIHN0cmVhbU5hbWVUeXBlPSJvcmlnaW5hbERhdGEiIHN1Ym1pdHRlcj0iZGJjIi8+PC9zdHJlYW1zPjwvYWRtaW4tc3RyZWFtPg==</binaryContent></datastreamVersion></datastream></digitalObject>";
-
-        String date1;
-        String date2;
-        String date3;
-
-
-
-        if ( origStr.indexOf( expected2 ) == 0 || origStr.indexOf( expected2 ) == -1 ){
-            fail( "Wrong return value from FedoraTools.constructFoxml. returned xml started or couldnt find expected2" );
-        }
-        // isolate date1 and remove i from origStr
-        date1 = origStr.substring( 0, origStr.indexOf( expected2 ) );
-        origStr = origStr.substring( origStr.indexOf( expected2 ), origStr.length() );
-
-        if ( origStr.indexOf( expected3 ) == 0 || origStr.indexOf( expected3 ) == -1 ){
-            fail( "Wrong return value from FedoraTools.constructFoxml. returned xml started or couldnt find expected3" );
-        }
-        // isolate date2 and remove expected2 from origStr
-        origStr = origStr.substring( expected2.length(), origStr.length() );
-        date2 = origStr.substring( 0, origStr.indexOf( expected3 ) );
-        origStr = origStr.substring( origStr.indexOf( expected3 ), origStr.length() );
-
-        if ( origStr.indexOf( expected4 ) == 0 || origStr.indexOf( expected4 ) == -1 ){
-            fail( "Wrong return value from FedoraTools.constructFoxml. returned xml started or couldnt find expected4" );
-        }
-        // isolate date3 and remove expected3 from origStr
-        origStr = origStr.substring( expected3.length(), origStr.length() );
-        date3 = origStr.substring( 0, origStr.indexOf( expected4 ) );
-        origStr = origStr.substring( origStr.indexOf( expected4 ), origStr.length() );
-        assertEquals( expected4, origStr );
-
-
+        byte[] encodedBytes  = Base64.encodeBase64( adminDataString.getBytes() );
+        XMLAssert.assertXpathEvaluatesTo( new String( encodedBytes ), "/x:digitalObject[1]/x:datastream[2]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );
+        
     }
 }

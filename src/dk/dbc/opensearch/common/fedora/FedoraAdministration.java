@@ -100,6 +100,7 @@ import dk.dbc.opensearch.common.types.InputPair;
 import org.apache.commons.lang.NotImplementedException;
 import java.io.OutputStreamWriter;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 
 public class FedoraAdministration extends FedoraHandle implements IFedoraAdministration
@@ -834,51 +835,13 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         String timeNow = dateFormat.format( now );
 
-        // // Setting properties
-        // ObjectProperties op = new ObjectProperties();
-
-        // Property pState = new Property();
-        // pState.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_STATE);
-        // pState.setVALUE("Active");
-
-        // Property pLabel = new Property();
-        // pLabel.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_LABEL);
-        // pLabel.setVALUE(label);
-
-        // PropertyType pOwner = new Property();
-        // pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
-        // /** \todo: set correct value for owner of the Digital Object*/
-        // pOwner.setVALUE( "user" );
-
-
-        // // createdDate
-        // Property pCreatedDate = new Property();
-        // pCreatedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE);
-        // pCreatedDate.setVALUE(timeNow);
-
-        // // lastModifiedDate
-        // Property pLastModifiedDate = new Property();
-        // pLastModifiedDate.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE);
-        // pLastModifiedDate.setVALUE(timeNow);
-
-        // Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
-        //                                     pCreatedDate, pLastModifiedDate };
-        // op.setProperty(props);
-
-        // log.debug( "Properties set, constructing the DigitalObject" );
-        // DigitalObject dot = new DigitalObject();
-        // dot.setObjectProperties(op);
-        // dot.setVERSION(DigitalObjectTypeVERSIONType.VALUE_0);
-        // dot.setPID( nextPid );
-
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
 
-        log.debug( "Constructing adminstream" );
     
         // Constructing list with datastream indexes and id
     
-        ArrayList< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
+        List< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getCargoObjects().get( i );
@@ -894,7 +857,7 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         int j = 0;
         DataStreamType dsn = null;
        
-        ArrayList< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
+        List< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
         for( Pair<String, Integer> p : lst)
         {
             if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) )
@@ -916,39 +879,40 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
      
         Collections.sort( lst2 );
 
-        // Constructing adm stream
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        log.debug( "Constructing adminstream" );
 
-        Document admStream = builder.newDocument();
-        Element root = admStream.createElement( "admin-stream" );
+        // // Constructing adm stream
+        // DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // DocumentBuilder builder = factory.newDocumentBuilder();
 
-        Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-        root.appendChild( (Node)indexingaliasElem );
-        //Element filePathElem = admStream.createElement( "filepath" );
-        //filePathElem.setAttribute( "name", cargo.getFilePath() );
-        //root.appendChild( (Node)filePathElem );
+        // Document admStream = builder.newDocument();
+        // Element root = admStream.createElement( "admin-stream" );
 
-        Node streams = admStream.createElement( "streams" );
+        // Element indexingaliasElem = admStream.createElement( "indexingalias" );
+        // indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
+        // root.appendChild( (Node)indexingaliasElem );
 
-        for(int i = 0; i < cargo_count; i++)
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
+        // Node streams = admStream.createElement( "streams" );
 
-            Element stream = admStream.createElement( "stream" );
+        // for(int i = 0; i < cargo_count; i++)
+        // {
+        //     CargoObject c = cargo.getCargoObjects().get( i );
+
+        //     Element stream = admStream.createElement( "stream" );
          
-            stream.setAttribute( "id", lst2.get( i ).getSecond() );
-            stream.setAttribute( "lang", c.getLang() );
-            stream.setAttribute( "format", c.getFormat() );
-            stream.setAttribute( "mimetype", c.getMimeType() );
-            stream.setAttribute( "submitter", c.getSubmitter() );
-            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-            stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
-            streams.appendChild( (Node) stream );
-        }
+        //     stream.setAttribute( "id", lst2.get( i ).getSecond() );
+        //     stream.setAttribute( "lang", c.getLang() );
+        //     stream.setAttribute( "format", c.getFormat() );
+        //     stream.setAttribute( "mimetype", c.getMimeType() );
+        //     stream.setAttribute( "submitter", c.getSubmitter() );
+        //     stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
+        //     stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
+        //     streams.appendChild( (Node) stream );
+        // }
 
-        root.appendChild( streams );
+        // root.appendChild( streams );
+
+        Element root = constructAdminStream( cargo, lst2 );
 
         // Transform document to xml string
         Source source = new DOMSource((Node) root );
@@ -993,6 +957,45 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
         return ret;
     }
+
+    private static Element constructAdminStream( CargoContainer cargo, List< ComparablePair<Integer, String> > lst2 ) throws ParserConfigurationException
+    {
+        // Constructing adm stream
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        Document admStream = builder.newDocument();
+        Element root = admStream.createElement( "admin-stream" );
+
+        Element indexingaliasElem = admStream.createElement( "indexingalias" );
+        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
+        root.appendChild( (Node)indexingaliasElem );
+
+        Node streams = admStream.createElement( "streams" );
+
+        int counter = cargo.getCargoObjectCount();
+
+        for(int i = 0; i < counter; i++)
+        {
+            CargoObject c = cargo.getCargoObjects().get( i );
+
+            Element stream = admStream.createElement( "stream" );
+         
+            stream.setAttribute( "id", lst2.get( i ).getSecond() );
+            stream.setAttribute( "lang", c.getLang() );
+            stream.setAttribute( "format", c.getFormat() );
+            stream.setAttribute( "mimetype", c.getMimeType() );
+            stream.setAttribute( "submitter", c.getSubmitter() );
+            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
+            stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
+            streams.appendChild( (Node) stream );
+        }
+
+        root.appendChild( streams );
+
+        return root;
+    }
+
 
     private Element getAdminStream( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
     {
