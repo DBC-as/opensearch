@@ -24,6 +24,27 @@
 
 package dk.dbc.opensearch.common.fedora;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.ComparablePair;
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.fedora.PIDManager;
+import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.types.IndexingAlias;
+
+import dk.dbc.opensearch.xsd.Datastream;
+import dk.dbc.opensearch.xsd.DatastreamVersion;
+import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
+import dk.dbc.opensearch.xsd.DigitalObject;
+import dk.dbc.opensearch.xsd.ObjectProperties;
+import dk.dbc.opensearch.xsd.Property;
+import dk.dbc.opensearch.xsd.PropertyType;
+import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
+import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
+import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
+import dk.dbc.opensearch.xsd.types.StateType;
+
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
@@ -51,27 +72,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerConfigurationException;
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.ComparablePair;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.fedora.PIDManager;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-
-import dk.dbc.opensearch.xsd.Datastream;
-import dk.dbc.opensearch.xsd.DatastreamVersion;
-import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
-import dk.dbc.opensearch.xsd.DigitalObject;
-import dk.dbc.opensearch.xsd.ObjectProperties;
-import dk.dbc.opensearch.xsd.Property;
-import dk.dbc.opensearch.xsd.PropertyType;
-import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
-import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
-import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
-import dk.dbc.opensearch.xsd.types.StateType;
-
 import fedora.server.types.gen.RelationshipTuple;
 import fedora.server.types.gen.MIMETypedStream;
 import fedora.server.types.gen.ComparisonOperator;
@@ -97,6 +97,7 @@ import org.exolab.castor.xml.ValidationException;
 import java.text.ParseException;
 import javax.xml.transform.TransformerException;
 import dk.dbc.opensearch.common.types.InputPair;
+
 
 public class FedoraAdministration extends FedoraHandle implements IFedoraAdministration
 {

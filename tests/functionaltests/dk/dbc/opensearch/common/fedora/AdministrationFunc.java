@@ -20,8 +20,8 @@ import fedora.server.errors.ObjectNotInLowlevelStorageException;
 /**
  *class for testing the functionality of the FedoraAdminstration class
  */
-public class AdministrationFunc {
-
+public class AdministrationFunc 
+{
     static FedoraAdministration fa;
 
     public static void main( String[] args )
@@ -44,27 +44,33 @@ public class AdministrationFunc {
 
         System.out.println( "*** kalder teestStoreCC ***" );
         String pid = testStoreCC();
+
         System.out.println( "*** kalder get ***" );
         testGetObject( pid );
+
         System.out.println( "*** kalder testFindObjects ***" );
         testFindObjectPids();
 
         System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
+
         System.out.println( "*** kalder add ***" );
         testAddDataStreamToObject( pid );
+
         System.out.println( "*** kalder getDataStreamsOfType anden gang ***" );
         testGetDataStreamsOfType( pid );
-                 System.out.println( "*** kalder modify ***" );
-                 testModifyDataStream( pid );
-                System.out.println( "*** kalder remove ***" );
-                testRemoveDataStream( pid );
-                System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
-                testGetDataStreamsOfType( pid );
+
+        System.out.println( "*** kalder modify ***" );
+        testModifyDataStream( pid );
+
+        System.out.println( "*** kalder remove ***" );
+        testRemoveDataStream( pid );
+        
+        System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
+        testGetDataStreamsOfType( pid );
         testDeleteObject( pid );
-
-
     }
+
 
     static void testFindObjectPids()
     {
@@ -72,7 +78,7 @@ public class AdministrationFunc {
         String[] pids = null;
         try
         {
-            pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration"  );
+            pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration" );
         }
         catch( RemoteException re )
         {
@@ -108,7 +114,8 @@ public class AdministrationFunc {
 
     }
 
-      static void testModifyDataStream( String pid )
+
+    static void testModifyDataStream( String pid )
         {
              CargoObject cargo = null;
         try
