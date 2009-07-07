@@ -8,8 +8,10 @@ dtdpath:    compass-core-mapping-2.0.dtd
 httpurl:    http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd
 
 [database]
-user:                           # leave unassigned if user is 'os user'
-password:                       # leave unassigned if pswd is 'os user'
+# leave unassigned if user is 'os user'
+user:                           
+# leave unassigned if pswd is 'os user'
+password:                       
 driver:   org.postgresql.Driver
 url:      jdbc:postgresql:
 
