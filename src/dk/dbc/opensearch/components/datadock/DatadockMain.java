@@ -194,7 +194,7 @@ public class DatadockMain
             IProcessqueue processqueue = new Processqueue();
 
             // Fedora access
-            PIDManager PIDmanager = new PIDManager();
+            //PIDManager PIDmanager = new PIDManager();
             IFedoraCommunication fedoraCom = new FedoraCommunication();
 
             log.debug( "Starting datadockPool" );
@@ -204,7 +204,7 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, PIDmanager, fedoraCom );
+            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, fedoraCom );
 
             log.debug( "Starting harvester" );
             

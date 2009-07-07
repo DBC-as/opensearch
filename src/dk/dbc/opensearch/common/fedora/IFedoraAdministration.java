@@ -81,7 +81,7 @@ public interface IFedoraAdministration
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getDigitalObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
+    public CargoContainer getDigitalObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ServiceException;
 
     /**
      * method for storing data (in the form of a CargoContainer) in
@@ -102,7 +102,7 @@ public interface IFedoraAdministration
      * @return a CargoContainer of CargoObjects each containing a DataStream,
      * is null if there are no DataStreams of the streamtype.
      */
-    public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
+    public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException, ServiceException;
 
     /*
      * method for getting a datastream identified by its streamID

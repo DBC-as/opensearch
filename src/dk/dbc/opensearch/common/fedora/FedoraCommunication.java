@@ -65,7 +65,8 @@ import org.apache.commons.lang.NotImplementedException;
  * FedoraCommunication has methods to facilitate storing and
  * retrieving of CargoContainers in the fedora Repository
  */
-public class FedoraCommunication extends FedoraHandle implements IFedoraCommunication 
+public class FedoraCommunication //extends FedoraHandle
+implements IFedoraCommunication 
 {
 
     Logger log = Logger.getLogger( FedoraCommunication.class );
@@ -81,7 +82,7 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
      */
     public FedoraCommunication() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException
     {
-        super();
+        //super();
         log.debug( "constructor() called" );
     }
 
@@ -137,7 +138,7 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         byte[] foxml = FedoraAdministration.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
 
-        String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
+        String pid = FedoraHandle.HANDLE.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
 
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
@@ -149,10 +150,43 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         return new InputPair<String, Float>( pid, est );
     }
 
-    public String storeContainer( CargoContainer cargo )throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
+    public String storeContainer( CargoContainer cargo )throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException
     {
 
-        throw new NotImplementedException( "Not just yet" );
+        log.trace( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
+
+        if( cargo.getCargoObjectCount() == 0 ) {
+            log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
+            throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
+        } 
+
+        // obtain mimetype and length from CargoContainer
+        String mimeType = null;
+        String format = null;
+        String submitter = null;
+
+        long length = 0;
+        for( CargoObject co : cargo.getCargoObjects() )
+        {
+            if( co.getDataStreamName() == DataStreamType.OriginalData )
+            {
+                mimeType = co.getMimeType();
+                format = co.getFormat();
+                submitter = co.getSubmitter();
+            }
+            
+            length += co.getContentLength();
+        }
+      
+        // Store the CargoContainer in the fedora repository
+        byte[] foxml = FedoraAdministration.constructFoxml( cargo, PIDManager.PIDMANAGER.getNextPID( submitter ), format );
+        String logm = String.format( "%s inserted", format );
+
+        String pid = FedoraHandle.HANDLE.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
+
+        log.info( String.format( "Submitted data, returning pid %s", pid ) );
+
+        return pid;
 
     }
     
@@ -177,7 +211,7 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
     {
         log.debug( String.format( "entering retrieveContainer( '%s' )", fedoraPid ) );
 
-        MIMETypedStream ds = super.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.HANDLE.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
 
@@ -217,7 +251,7 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         {
             Element stream = (Element)streamNL.item(i);
             String streamID = stream.getAttribute( "id" );
-            MIMETypedStream dstream = super.fea.getDatastreamDissemination(fedoraPid, streamID, null);
+            MIMETypedStream dstream = FedoraHandle.HANDLE.fea.getDatastreamDissemination(fedoraPid, streamID, null);
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),

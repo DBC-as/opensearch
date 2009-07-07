@@ -23,7 +23,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.PIDManager;
+//import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -66,7 +66,7 @@ public class DatadockPool
     private IProcessqueue processqueue;
     private int shutDownPollTime;
     //private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-    private PIDManager PIDmanager;
+    //private PIDManager PIDmanager;
     private IFedoraCommunication fedoraCom;
 
     private int i = 0;
@@ -82,14 +82,13 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, PIDManager PIDmanager, IFedoraCommunication fedoraCom ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCom ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
         this.threadpool = threadpool;
         this.estimate = estimate;
         this.processqueue = processqueue;
-        this.PIDmanager = PIDmanager;
         this.fedoraCom = fedoraCom;
 
         jobs = new Vector<FutureTask< Float >>();
@@ -116,7 +115,7 @@ public class DatadockPool
                                   datadockJob.getUri().getRawPath(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
 
         // Get fedoraPID for job and adding it to the datadockJob.
-        datadockJob.setPID( PIDmanager.getNextPID( datadockJob.getSubmitter() ) );
+        //datadockJob.setPID( PIDmanager.getNextPID( datadockJob.getSubmitter() ) );
 
         log.debug( String.format( "counter = %s", ++i  ) );
 

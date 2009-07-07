@@ -35,29 +35,39 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
+import java.net.MalformedURLException;
+import java.io.IOException;
 
-
-/**
- * FedoraStore act as the plugin communication link with the fedora base. The
- * only function of this (abstract) class is to establish the SOAP communication
- * layer and facilitate file uploads.
- */
-public abstract class FedoraHandle
+public enum FedoraHandle
 {
+    HANDLE;
+    
     protected FedoraAPIM fem;
     protected FedoraAPIA fea;
     protected FedoraClient fc;
-
     Logger log = Logger.getLogger( FedoraHandle.class );
 
-    /**
-     * The constructor handles the initiation of the connection with the
-     * fedora base
-     *
-     * @throws ServiceException
-     * @throws ConfigurationException 
-     */
-    public FedoraHandle() throws ServiceException, java.net.MalformedURLException, java.io.IOException, ConfigurationException
+    private boolean hackinitialization = false;
+
+    FedoraHandle()
+    {
+        if(! hackinitialization ) {
+            try {
+				init();
+			} catch (ConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+    }
+
+    private void init() throws ConfigurationException, ServiceException, IOException
     {
         String fedora_base_url;
 
@@ -74,5 +84,63 @@ public abstract class FedoraHandle
         fea = fc.getAPIA();
         fem = fc.getAPIM();
 
+        hackinitialization = true;
+        
     }
+
+    public FedoraAPIA getAPIA() throws ServiceException
+    {
+        return fea;
+    }
+
+    public FedoraAPIM getAPIM()
+    {
+        return fem;
+    }
+
 }
+
+
+
+/**
+ * FedoraStore act as the plugin communication link with the fedora base. The
+ * only function of this (abstract) class is to establish the SOAP communication
+ * layer and facilitate file uploads.
+ */
+/*public abstract class FedoraHandle
+{
+    protected FedoraAPIM fem;
+    protected FedoraAPIA fea;
+    protected FedoraClient fc;
+
+    Logger log = Logger.getLogger( FedoraHandle.class );
+*/
+
+    /**
+     * The constructor handles the initiation of the connection with the
+     * fedora base
+     *
+     * @throws ServiceException
+     * @throws ConfigurationException 
+     */
+    /*  public FedoraHandle() throws ServiceException, java.net.MalformedURLException, java.io.IOException, ConfigurationException
+    {
+        String fedora_base_url;
+
+        String host = FedoraConfig.getHost();
+        String port = FedoraConfig.getPort();
+        String user = FedoraConfig.getUser();
+        String pass = FedoraConfig.getPassPhrase();
+
+        fedora_base_url  = String.format( "http://%s:%s/fedora", host, port );
+
+        log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
+
+        fc = new FedoraClient( fedora_base_url, user, pass );
+        fea = fc.getAPIA();
+        fem = fc.getAPIM();
+
+        }
+}
+    */
+
