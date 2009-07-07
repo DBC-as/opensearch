@@ -1,12 +1,3 @@
-/**
- * \file DatadockPoolTest.java
- * \brief The DatadockPoolTest class
- * \package tests;
- */
-
-package dk.dbc.opensearch.components.datadock;
-
-
 /*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -25,6 +16,9 @@ package dk.dbc.opensearch.components.datadock;
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
+package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.Processqueue;
@@ -95,7 +89,7 @@ public class DatadockPoolTest extends TestCase
     DatadockPool datadockPool;
     DatadockThread datadockThread;
     FedoraCommunication mockFedoraCommunication;
-    PIDManager mockPIDManager;
+    //PIDManager mockPIDManager;
 
 
     /**
@@ -118,7 +112,7 @@ public class DatadockPoolTest extends TestCase
         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
         mockEstimate = createMock( Estimate.class);
         mockProcessqueue = createMock( Processqueue.class );
-        mockPIDManager = createMock( PIDManager.class );
+        //mockPIDManager = createMock( PIDManager.class );
         mockFedoraCommunication = createMock( FedoraCommunication.class );
         mockDatadockJob = createMock( DatadockJob.class );
         //mockUri = createMock( URI.class );
@@ -132,11 +126,12 @@ public class DatadockPoolTest extends TestCase
         reset( mockThreadPoolExecutor );
         reset( mockEstimate );
         reset( mockProcessqueue );
-        reset( mockPIDManager );
+        //reset( mockPIDManager );
         reset( mockFedoraCommunication );
         reset( mockDatadockJob );
         reset( mockFuture );
     }
+
 
     @Test public void testConstructor() throws ConfigurationException
     {
@@ -152,30 +147,29 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockPIDManager );
+        //replay( mockPIDManager );
         replay( mockFedoraCommunication );
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraCommunication );
         /**
          * verify
          */
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockPIDManager );
+        //verify( mockPIDManager );
         verify( mockFedoraCommunication );
 
     }
 
+    
     @Test public void testSubmit() throws IOException, ConfigurationException, ClassNotFoundException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
     {
-
         /**
          * setup
          */
-
         Mockit.setUpMocks( MockDatadockPool.class );
         File tmpFile = File.createTempFile("opensearch-unittest","" );
         FileWriter fstream = new FileWriter( tmpFile );
@@ -191,9 +185,9 @@ public class DatadockPoolTest extends TestCase
         expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
-        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
-        mockDatadockJob.setPID( "test" );
+        //expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        //expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        //mockDatadockJob.setPID( "test" );
         //calling getTask with the getTask method mocked
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
 
@@ -203,7 +197,7 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockPIDManager );
+        //replay( mockPIDManager );
         replay( mockFedoraCommunication );
         replay( mockDatadockJob );
         replay( mockFuture );
@@ -211,7 +205,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraCommunication );
         datadockPool.submit( mockDatadockJob );
         /**
          * verify
@@ -219,13 +213,11 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockPIDManager );
+        //verify( mockPIDManager );
         verify( mockFedoraCommunication );
         verify( mockDatadockJob );
         verify( mockFuture );
-
     }
-
 
 
     @Test
@@ -249,9 +241,9 @@ public class DatadockPoolTest extends TestCase
         expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
-        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
-        mockDatadockJob.setPID( "test" );
+        //expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        //expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        //mockDatadockJob.setPID( "test" );
         //getTask is called and the method is mocked to return mockFuture
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
         //calling checkJobs
@@ -263,7 +255,7 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockPIDManager );
+        //replay( mockPIDManager );
         replay( mockFedoraCommunication );
         replay( mockDatadockJob );
         replay( mockFuture );
@@ -271,7 +263,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraCommunication );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 0 );
@@ -281,17 +273,17 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockPIDManager );
+        //verify( mockPIDManager );
         verify( mockFedoraCommunication );
         verify( mockDatadockJob );
         verify( mockFuture );
 
     }
 
+
     @Test
     public void testCheckJobs_isDoneTrue() throws IOException, ConfigurationException, ClassNotFoundException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, InterruptedException, ExecutionException
     {
-
         /**
          * setup
          */
@@ -310,9 +302,9 @@ public class DatadockPoolTest extends TestCase
         expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
-        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
-        mockDatadockJob.setPID( "test" );
+        //expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        //expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        //mockDatadockJob.setPID( "test" );
         //getTask is called and the method is mocked to return mockFuture
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
         //calling checkJobs
@@ -324,7 +316,7 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockPIDManager );
+        //replay( mockPIDManager );
         replay( mockFedoraCommunication );
         replay( mockDatadockJob );
         replay( mockFuture );
@@ -332,7 +324,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraCommunication );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 1 );
@@ -342,16 +334,16 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockPIDManager );
+        //verify( mockPIDManager );
         verify( mockFedoraCommunication );
         verify( mockDatadockJob );
         verify( mockFuture );
     }
 
+
     @Test
     public void testCheckJobs_isDoneError() throws IOException, ConfigurationException, ClassNotFoundException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, InterruptedException, ExecutionException
-    { 
-      
+    {      
         /**
          * setup
          */
@@ -371,18 +363,18 @@ public class DatadockPoolTest extends TestCase
         expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
-        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
-        mockDatadockJob.setPID( "test" );
+        //expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        //expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        //mockDatadockJob.setPID( "test" );
         //getTask is called and the method is mocked to return mockFuture
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
         //submit method 2nd call
         expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
-        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
-        mockDatadockJob.setPID( "test" );
+        //expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        //expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        //mockDatadockJob.setPID( "test" );
         //getTask is called and the method is mocked to return mockFuture
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
         //calling checkJobs
@@ -396,7 +388,7 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockPIDManager );
+        //replay( mockPIDManager );
         replay( mockFedoraCommunication );
         replay( mockDatadockJob );
         replay( mockFuture );
@@ -404,7 +396,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraCommunication );
         datadockPool.submit( mockDatadockJob );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
@@ -416,7 +408,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockPIDManager );
+        //verify( mockPIDManager );
         verify( mockFedoraCommunication );
         verify( mockDatadockJob );
         verify( mockFuture );
@@ -426,7 +418,6 @@ public class DatadockPoolTest extends TestCase
     @Test
     public void testShutdown() throws IOException, ConfigurationException, ClassNotFoundException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, InterruptedException, ExecutionException
     {
-
         /**
          * setup
          */
@@ -445,9 +436,9 @@ public class DatadockPoolTest extends TestCase
         expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
-        expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
-        mockDatadockJob.setPID( "test" );
+        //expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
+        //expect( mockPIDManager.getNextPID( "test" ) ).andReturn( "test" );
+        //mockDatadockJob.setPID( "test" );
         //getTask is called and the method is mocked to return mockFuture
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
         //calling shutdown
@@ -461,7 +452,7 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockPIDManager );
+        //replay( mockPIDManager );
         replay( mockFedoraCommunication );
         replay( mockDatadockJob );
         replay( mockFuture );
@@ -469,7 +460,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockPIDManager, mockFedoraCommunication );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraCommunication );
         datadockPool.submit( mockDatadockJob );
         datadockPool.shutdown();
 
@@ -479,7 +470,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockPIDManager );
+        //verify( mockPIDManager );
         verify( mockFedoraCommunication );
         verify( mockDatadockJob );
         verify( mockFuture );

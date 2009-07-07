@@ -283,7 +283,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   </target>
 
 
-  <target name="fedora" depends="test_Darg, clean, db, statistics, types, helpers">  <!-- xsd, -->
+  <target name="fedora" depends="test_Darg, clean, db, statistics, helpers">  <!-- xsd, -->
     <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/fedora" />
       <param name="project.name" value="fedora" />
