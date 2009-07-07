@@ -146,7 +146,7 @@ implements IFedoraAdministration
     {
         String logm = "";
         //super.fem.purgeObject( pid, logm, force );
-        FedoraHandle.HANDLE.fem.purgeObject( pid, logm, force );
+        FedoraHandle.fem.purgeObject( pid, logm, force );
     }
 
 
@@ -192,7 +192,7 @@ implements IFedoraAdministration
         {
             Element stream = (Element)streamNodeList.item(i);
             String streamID = stream.getAttribute( "id" );
-            MIMETypedStream dstream = FedoraHandle.HANDLE.fea.getDatastreamDissemination( pid, streamID, null);
+            MIMETypedStream dstream = FedoraHandle.fea.getDatastreamDissemination( pid, streamID, null);
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
@@ -210,7 +210,7 @@ implements IFedoraAdministration
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public String storeCargoContainer( CargoContainer theCC, String label ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException
+    public String storeCargoContainer( CargoContainer theCC, String label ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
     {
         log.trace( "entering storeCC" );
 
@@ -218,12 +218,12 @@ implements IFedoraAdministration
 
         String submitter = theCC.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
 
-        String pid = PIDManager.PIDMANAGER.getNextPID( submitter );
+        String pid = PIDManager.getInstance().getNextPID( submitter );
 
         byte[] foxml = constructFoxml( theCC, pid, label );
         String logm = String.format( "%s inserted", label );
 
-        String returnPid = FedoraHandle.HANDLE.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
+        String returnPid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
         if( pid.equals( returnPid ) )
         {
             returnVal = pid;
@@ -270,7 +270,7 @@ implements IFedoraAdministration
 
                 //build the CargoObject and add it to the list
                 String streamID = stream.getAttribute( "id");
-                MIMETypedStream dstream = FedoraHandle.HANDLE.fea.getDatastreamDissemination( pid, streamID, null );
+                MIMETypedStream dstream = FedoraHandle.fea.getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( streamtype,
@@ -317,7 +317,7 @@ implements IFedoraAdministration
             if( streamID.equals( idOfStream ) )
             {
                 //build the CargoObject and add it to the list
-                MIMETypedStream dstream = FedoraHandle.HANDLE.fea.getDatastreamDissemination( pid, streamID, null );
+                MIMETypedStream dstream = FedoraHandle.fea.getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
@@ -347,7 +347,7 @@ implements IFedoraAdministration
         String adminLogm = "";
         String dsnName = cargo.getDataStreamName().getName();
 
-        MIMETypedStream ds = FedoraHandle.HANDLE.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
@@ -429,9 +429,9 @@ implements IFedoraAdministration
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
         //upload the admFile
-        String admLocation = FedoraHandle.HANDLE.fc.uploadFile( admFile );
+        String admLocation = FedoraHandle.fc.uploadFile( admFile );
 
-        FedoraHandle.HANDLE.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        FedoraHandle.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
         //upload the content
         //byte[] to File
@@ -441,11 +441,11 @@ implements IFedoraAdministration
         fos.write( cargo.getBytes() );
         fos.flush();
         fos.close();
-        String dsLocation = FedoraHandle.HANDLE.fc.uploadFile( theFile );
+        String dsLocation = FedoraHandle.fc.uploadFile( theFile );
 
         logm = String.format( "added %s to the object with pid: %s", dsLocation, pid );
 
-        String returnedSID = FedoraHandle.HANDLE.fem.addDatastream( pid, sID, new String[] {}, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
+        String returnedSID = FedoraHandle.fem.addDatastream( pid, sID, new String[] {}, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
 
         return returnedSID;
 
@@ -472,9 +472,9 @@ implements IFedoraAdministration
         fos.flush();
         fos.close();
 
-        String dsLocation = FedoraHandle.HANDLE.fc.uploadFile( theFile );
+        String dsLocation = FedoraHandle.fc.uploadFile( theFile );
 
-        return FedoraHandle.HANDLE.fem.modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
+        return FedoraHandle.fem.modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
 
 
     }
@@ -493,7 +493,7 @@ implements IFedoraAdministration
         String adminLogm = "";
 
         //10: get the adminstream to modify
-        MIMETypedStream ds = FedoraHandle.HANDLE.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
@@ -588,9 +588,9 @@ implements IFedoraAdministration
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
         //upload the admFile
-        String admLocation = FedoraHandle.HANDLE.fc.uploadFile( admFile );
+        String admLocation = FedoraHandle.fc.uploadFile( admFile );
 
-        FedoraHandle.HANDLE.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        FedoraHandle.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
         boolean retval = false;
         String logm = String.format( "removed stream %s from object %s", sID, pid );
@@ -598,7 +598,7 @@ implements IFedoraAdministration
         /**
          * \Todo: find out why the return val is String[] and not String. bug 9046
          */
-        String[] stamp = FedoraHandle.HANDLE.fem.purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
+        String[] stamp = FedoraHandle.fem.purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
         if( stamp != null )
         {
             retval = true;
@@ -618,7 +618,7 @@ implements IFedoraAdministration
      */
     public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException
     {
-        return FedoraHandle.HANDLE.fem.addRelationship( pid, predicate, targetPid, literal, datatype );
+        return FedoraHandle.fem.addRelationship( pid, predicate, targetPid, literal, datatype );
     }
 
     /**
@@ -634,7 +634,7 @@ implements IFedoraAdministration
      */
     public RelationshipTuple[] getRelationships( String pid, String predicate ) throws RemoteException
     {
-        return FedoraHandle.HANDLE.fem.getRelationships( pid, predicate);
+        return FedoraHandle.fem.getRelationships( pid, predicate);
     }
 
     /**
@@ -648,7 +648,7 @@ implements IFedoraAdministration
      */
     public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws RemoteException
     {
-        RelationshipTuple[] rt = FedoraHandle.HANDLE.fem.getRelationships( subject, predicate );
+        RelationshipTuple[] rt = FedoraHandle.fem.getRelationships( subject, predicate );
         int rtLength = rt.length;
         for( int i = 0; i < rtLength; i++ )
         {
@@ -682,7 +682,7 @@ implements IFedoraAdministration
         Condition[] condArray = { cond };
         FieldSearchQuery fsq = new FieldSearchQuery();
         fsq.setConditions( condArray );
-        FieldSearchResult fsr = FedoraHandle.HANDLE.fea.findObjects( resultFields, maxResults, fsq );
+        FieldSearchResult fsr = FedoraHandle.fea.findObjects( resultFields, maxResults, fsq );
         ObjectFields[] objectFields = fsr.getResultList();
         int ofLength = objectFields.length;
         String[] pids = new String[ ofLength ];
@@ -706,7 +706,7 @@ implements IFedoraAdministration
 
     public boolean removeRelation( String pid, String predicate, String targetPid, boolean isLiteral, String datatype ) throws RemoteException
     {
-        return FedoraHandle.HANDLE.fem.purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
+        return FedoraHandle.fem.purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
     }
 
     /**
@@ -874,7 +874,7 @@ implements IFedoraAdministration
                                                         ServiceException, 
                                                         SAXException
     {
-        MIMETypedStream ds = FedoraHandle.HANDLE.getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
 
         byte[] adminStream = ds.getStream();
         if( adminStream == null ) 
@@ -893,29 +893,8 @@ implements IFedoraAdministration
         log.debug( String.format( "root element from adminstream == %s", root ) );
 
         return root;
-        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-
-        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-        // if( indexingAliasElem == null )
-        // {
-        //     /**
-        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-        //      */
-        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-        // }
-        // log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
-        // // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-        // // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
-
-        // NodeList streamsNL = root.getElementsByTagName( "streams" );
-        // Element streams = (Element)streamsNL.item(0);
-
-        // InputPair< NodeList, NodeList > nodelists = 
-        //     new InputPair< NodeList, NodeList >( indexingAliasElem, 
-        //                                          streams.getElementsByTagName( "stream" ) );
-        // return nodelists;
-
     }
+
 
     private String getIndexingAlias( Element adminStream )
     {

@@ -1,21 +1,20 @@
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+/*   
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package dk.dbc.opensearch.common.fedora;
@@ -24,7 +23,6 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.config.PidManagerConfig;
 
 import java.util.HashMap;
-//import java.util.Vector;
 import java.util.Arrays;
 
 import java.io.IOException;
@@ -41,29 +39,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public enum PIDManager{
-    PIDMANAGER;
+public class PIDManager
+{
+    static Logger log = Logger.getLogger( PIDManager.class );
 
     private Stack<String> pidList;
     private HashMap<String, Stack<String>> pidMap;
     private NonNegativeInteger numPIDs;
 
-    static Logger log = Logger.getLogger( PIDManager.class );
 
-    PIDManager()
-    {
-    	try {
-			init();
-		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-    
-    private void init() throws ConfigurationException
+    private static PIDManager INSTANCE;
+
+
+    private PIDManager() throws ConfigurationException
     {
         numPIDs =  new NonNegativeInteger( PidManagerConfig.getNumberOfPidsToRetrieve() );
     }
+
+
+    public static PIDManager getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        System.out.println( "getInstance" );
+        if ( INSTANCE == null )
+        {
+            INSTANCE = new PIDManager();
+        }
+
+        return INSTANCE;
+    }
+
 
     public String getNextPID( String prefix ) throws ServiceException, RemoteException
     {
@@ -83,7 +87,7 @@ public enum PIDManager{
 
         Stack<String> pidStack = new Stack<String>();
 
-        List< String > pidlist = new ArrayList< String >( Arrays.asList( FedoraHandle.HANDLE.fem.getNextPID( numPIDs, prefix ) ) );
+        List< String > pidlist = new ArrayList< String >( Arrays.asList( FedoraHandle.fem.getNextPID( numPIDs, prefix ) ) );
 
         log.debug( String.format( "Got pidlist=%s", pidlist.toString() ) );
 

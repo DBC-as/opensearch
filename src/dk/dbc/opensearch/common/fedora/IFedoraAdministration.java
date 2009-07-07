@@ -24,28 +24,32 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-
-
 import dk.dbc.opensearch.xsd.DigitalObject;
+
+import fedora.server.types.gen.RelationshipTuple;
+
 import java.io.IOException;
 import java.io.File;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
-import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.net.MalformedURLException;
-import org.exolab.castor.xml.MarshalException;
-import javax.xml.rpc.ServiceException;
-import org.exolab.castor.xml.ValidationException;
+import java.rmi.RemoteException;
 import java.text.ParseException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import fedora.server.types.gen.RelationshipTuple;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.SAXException;
+
+
 /**
  * The purpose of the FedoraAdministration API is to provide a wrapper
  * around the communication with the Fedora Commons digital
@@ -53,7 +57,6 @@ import fedora.server.types.gen.RelationshipTuple;
  * and objects are retrieved in this form.
  * Parts of objects (Datastreams) are worked with as CargoObjects 
  */
-
 public interface IFedoraAdministration
 {
     
@@ -90,7 +93,7 @@ public interface IFedoraAdministration
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public String storeCargoContainer( CargoContainer theCC, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException;
+    public String storeCargoContainer( CargoContainer theCC, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException;
    
   /**
      * method to retrive all DataStreams of a DataStreamType from a

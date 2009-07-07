@@ -18,10 +18,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-/**
- *
- */
-
 package dk.dbc.opensearch.common.fedora;
 
 
@@ -31,43 +27,28 @@ import fedora.client.FedoraClient;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
 
+import java.net.MalformedURLException;
+import java.io.IOException;
+
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import java.net.MalformedURLException;
-import java.io.IOException;
 
-public enum FedoraHandle
+
+public class FedoraHandle
 {
-    HANDLE;
-    
-    protected FedoraAPIM fem;
-    protected FedoraAPIA fea;
-    protected FedoraClient fc;
     Logger log = Logger.getLogger( FedoraHandle.class );
 
-    private boolean hackinitialization = false;
+    protected static FedoraAPIM fem;
+    protected static FedoraAPIA fea;
+    protected static FedoraClient fc;
 
-    FedoraHandle()
-    {
-        if(! hackinitialization ) {
-            try {
-				init();
-			} catch (ConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-    }
 
-    private void init() throws ConfigurationException, ServiceException, IOException
+    private static FedoraHandle INSTANCE;
+
+
+    private FedoraHandle() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String fedora_base_url;
 
@@ -83,21 +64,30 @@ public enum FedoraHandle
         fc = new FedoraClient( fedora_base_url, user, pass );
         fea = fc.getAPIA();
         fem = fc.getAPIM();
-
-        hackinitialization = true;
-        
     }
 
-    public FedoraAPIA getAPIA() throws ServiceException
+
+    public static FedoraHandle getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        if ( INSTANCE == null )
+        {
+            INSTANCE = new FedoraHandle();
+        }
+
+        return INSTANCE;
+    }
+
+
+    public static FedoraAPIA getAPIA() throws ServiceException
     {
         return fea;
     }
 
-    public FedoraAPIM getAPIM()
+
+    public static FedoraAPIM getAPIM()
     {
         return fem;
     }
-
 }
 
 

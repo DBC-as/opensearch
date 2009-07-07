@@ -87,10 +87,10 @@ public interface IFedoraCommunication{
      * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraTools
      */
 
-    public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException;
+    public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
     
 
-    public String storeContainer( CargoContainer cc ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException;
+    public String storeContainer( CargoContainer cc ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
     
 
 
