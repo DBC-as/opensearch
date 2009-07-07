@@ -28,20 +28,25 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   <target name="help">
 	<echo>
-  	  Usage: There are two ways to use this ant build script:		     
+  	  Usage: There are threewo ways to use this ant build script:		     
              1) ant target
                 Examples: ant compile
                           ant test
                           ...
   	     
-             2) ant project -Darg="target" NB! TARGET='test' DOES NOT WORK FOR NOW!!!
+             2) ant project -Darg="target" 
                 Examples: ant config -Darg="compile"
                           ant datadock -Darg="test"
                           ...
               
              3) ant test-single -Dtest="project"
                 Examples: ant test-single -Dtest="dk.dbc.opensearch.common.os.FileFilterTest"
-                          ant test-single -Dtest="dk.dbc.opensearch.components.datadock.DatadockManagerTest"                          
+                          ant test-single -Dtest="dk.dbc.opensearch.components.datadock.DatadockManagerTest"
+                          ...
+             
+             4) ant functionaltests -Darg="classname"
+                Examples: ant functionaltests -Darg="dk.dbc.opensearch.common.fedora.AdministrationFunc"
+                          ant functionaltests -Darg="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain"
                           ...
 
 	  where 'target' options are the "usual", e.g., compile, test, etc.,
@@ -478,6 +483,18 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <!--
       EXPERIMENTAL TARGETS
   -->
+
+  <target name="functionaltests">
+    <echo>tests</echo>
+    <antcall target="compile-tests">
+      <param name="project.name" value="${arg}" />
+    </antcall>
+    <echo>${arg}</echo>
+    <antcall target="_test_functionaltests">
+      <param name="classname" value="${arg}" />
+      <param name="project.name" value="test" />
+    </antcall>
+  </target>
   
   <target name="chokoladekage">
     <input message="Er det fredag?"

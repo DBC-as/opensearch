@@ -837,7 +837,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
-
     
         // Constructing list with datastream indexes and id
     
@@ -848,7 +847,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
           
             lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
         }
-
     
         Collections.sort( lst );
 
@@ -873,7 +871,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
     
             lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
         }
-
      
         lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
      

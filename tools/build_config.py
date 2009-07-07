@@ -39,7 +39,7 @@ from time import strftime, gmtime
 def check_trunk( args ):
     path = str()
     if len( args ) != 2:#"tools" in os.listdir( path ):
-        sys.exit( "please specify location of the trunk as argument to the program") #run this program from the root of the trunk" )
+        sys.exit( "please specify location of the trunk as argument to the program (try '../')") #run this program from the root of the trunk" )
     else:
         path = args[1]
         path = os.path.abspath( path )

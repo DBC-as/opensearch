@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import fedora.server.errors.ObjectNotInLowlevelStorageException;
 
+
 /**
  *class for testing the functionality of the FedoraAdminstration class
  */
@@ -63,12 +64,12 @@ public class AdministrationFunc
         System.out.println( "*** kalder modify ***" );
         testModifyDataStream( pid );
 
-        System.out.println( "*** kalder remove ***" );
+        /*System.out.println( "*** kalder remove ***" );
         testRemoveDataStream( pid );
         
         System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
         testGetDataStreamsOfType( pid );
-        testDeleteObject( pid );
+        testDeleteObject( pid );*/
     }
 
 
@@ -88,8 +89,8 @@ public class AdministrationFunc
         {
             System.out.println( pids[ i ] );
         }
-
     }
+
 
     static void testRemoveDataStream( String pid )
     {
@@ -165,6 +166,7 @@ public class AdministrationFunc
         {
             e.printStackTrace();
         }
+
         System.out.println( String.format( "got the id: %s from the addDataStreamToObject method", retID ) );
 
     }
@@ -191,8 +193,9 @@ public class AdministrationFunc
         {
             System.out.println( String.format( "fandt %s strøm(me) med id %s", count, streamID ) );
         }
-
     }
+
+
     static void testGetDataStreamsOfType( String pid )
     {
         CargoContainer cc = new CargoContainer();
@@ -217,6 +220,7 @@ public class AdministrationFunc
         }
     }
 
+
     static void testMarkObjectWithDelete( String pid )
     {
         boolean result = false;
@@ -225,6 +229,8 @@ public class AdministrationFunc
         System.out.println( result );
 
     }
+
+
     static void testDeleteObject( String pid )
     {
         try
@@ -301,7 +307,6 @@ public class AdministrationFunc
     /**
      * Helper methods
      */
-
     //method for creating a CargoObject
     static CargoObject createCargoObject( int job )throws IllegalArgumentException, NullPointerException, IOException
     {
@@ -335,6 +340,7 @@ public class AdministrationFunc
         return ret;
     }
 
+
     //method for creating an XML file
     static File createTestXMLFile()
     {
@@ -358,6 +364,7 @@ public class AdministrationFunc
         {
             e.printStackTrace();
         }
+
         return theFile;
     }
 }
