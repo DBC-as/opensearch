@@ -27,7 +27,7 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.fedora.FedoraTools;
+//import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -160,7 +160,7 @@ public class FedoraCommunicationTest
         mockEstimate = createMock( Estimate.class );
         mockCO = createMock( CargoObject.class );
         mockNodeList = createMock( NodeList.class );     
-   mockMTStream = createMock( MIMETypedStream.class );
+        mockMTStream = createMock( MIMETypedStream.class );
     }
 
     /**
@@ -207,6 +207,7 @@ public class FedoraCommunicationTest
         COList.add( mockCO );
 
         //expectations
+        expect( mockCC.getCargoObjectCount() ).andReturn( COList.size() );
         expect( mockCC.getCargoObjects() ).andReturn( COList );
         expect( mockCO.getDataStreamName() ).andReturn( DataStreamType.OriginalData );
         expect( mockCO.getMimeType() ).andReturn( "mimeType" );
@@ -297,5 +298,29 @@ public class FedoraCommunicationTest
         verify( mockMTStream );
         verify( mockCC );
         verify( mockFea );
+    }
+
+
+    @Test (expected = IllegalStateException.class)
+    public void testEmptyCargoContainerShouldNotBeStored() throws ConfigurationException, IOException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, SAXException, SQLException, TransformerException, ValidationException
+    {
+        Mockit.setUpMocks( MockFedoraClient.class );
+        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockFedoraAdministration.class );
+
+
+
+        expect( mockDatadockJob.getPID() ).andReturn( "PID" );
+        expect( mockDatadockJob.getFormat() ).andReturn( "format" ).times( 2 );
+        replay( mockDatadockJob );
+
+        CargoContainer cc = new CargoContainer();
+        fc = new FedoraCommunication();
+        InputPair<String, Float> result = fc.storeContainer( cc, mockDatadockJob, mockProcessqueue, mockEstimate);
+
+        System.out.println( String.format( "%s", result.getFirst() ) );
+        System.out.println( String.format( "%s", result.getSecond() ) );
+
+        assertTrue( cc.getCargoObjectCount() == 0 );
     }
 }

@@ -22,42 +22,33 @@ package dk.dbc.opensearch.tools.testindexer;
 
 /** \brief UnitTest for FedoraCommunication */
 
-import static org.junit.Assert.*;
-import org.junit.*;
+
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-//import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-//import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-//import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-
 import dk.dbc.opensearch.common.types.DatadockJob;
-
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
 
-import static org.easymock.classextension.EasyMock.*;
-import static org.junit.Assert.*;
-import org.junit.*;
-
-
-// import mockit.Mock;
-// import mockit.MockClass;
-// import mockit.Mockit;
-
+import java.io.IOException;
+import java.lang.ClassNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import dk.dbc.opensearch.common.types.InputPair;
-import java.lang.ClassNotFoundException;
-import java.io.IOException;
-import org.exolab.castor.xml.MarshalException;
-import java.text.ParseException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 import java.sql.SQLException;
+import java.text.ParseException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import static org.easymock.classextension.EasyMock.*;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.*;
+import static org.junit.Assert.*;
+import org.xml.sax.SAXException;
+
 
 /**
  * 

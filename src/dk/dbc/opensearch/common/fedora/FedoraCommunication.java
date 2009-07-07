@@ -26,7 +26,7 @@ import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 //import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-import dk.dbc.opensearch.common.fedora.FedoraTools;
+//import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -114,7 +114,12 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
 
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
     {
-        log.debug( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
+        log.trace( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
+
+        if( cc.getCargoObjectCount() == 0 ) {
+            log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
+            throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
+        } 
 
         // obtain mimetype and length from CargoContainer
         String mimeType = null;
@@ -133,8 +138,6 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         byte[] foxml = FedoraAdministration.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
 
-        // Beware of this innocent looking log line, it writes the
-        //binary content of the stored data to the log
         String pid = super.fem.ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
 
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
@@ -144,8 +147,6 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         Float est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est ) );
         
-
-
         return new InputPair<String, Float>( pid, est );
     }
 

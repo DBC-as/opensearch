@@ -23,7 +23,7 @@ import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-import dk.dbc.opensearch.common.fedora.FedoraTools;
+//import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;

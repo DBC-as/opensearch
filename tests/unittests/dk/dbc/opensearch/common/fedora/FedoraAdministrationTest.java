@@ -197,10 +197,6 @@ public class FedoraAdministrationTest// extends XMLTestCase
     public void testCorrectAdminStream() throws SAXException, IOException, XpathException
     {
         
-        String adminOrig = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48YWRtaW4tc3RyZWFtPjxpbmRleGluZ2FsaWFzIG5hbWU9ImFydGljbGUiLz48c3RyZWFtcz48c3RyZWFtIGZvcm1hdD0idGVzdCIgaWQ9Im9yaWdpbmFsRGF0YS4wIiBpbmRleD0iMCIgbGFuZz0iZW5nIiBtaW1ldHlwZT0idGV4dC94bWwiIHN0cmVhbU5hbWVUeXBlPSJvcmlnaW5hbERhdGEiIHN1Ym1pdHRlcj0iZGJjIi8+PC9zdHJlYW1zPjwvYWRtaW4tc3RyZWFtPg==";
-
-        System.out.println( String.format( "ADMINDATA: %s", new String( Base64.decodeBase64( adminOrig.getBytes() ) ) ) );
-
         String adminDataString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><admin-stream><indexingalias name=\"article\"/><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"eng\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
 
         byte[] encodedBytes  = Base64.encodeBase64( adminDataString.getBytes() );
