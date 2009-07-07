@@ -358,12 +358,12 @@ def get_import_candidates( import_statement, imports_dict, qualification_ns="" )
             log.debug( "returning return_list=%s"%( return_list ) )
             return return_list
 
-def get_import_dict( java_file_list ):
+def get_import_dict( java_file_list, src="src" ):
     import_dict = ImportDict()
     
     for i in java_file_list:
         import_dict.insert( os.path.split( os.path.abspath( i ) ) [1].split( '.' )[0], \
-                            os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ) )
+                            os.path.split( get_root_folder( i, src ) )[0].replace( '/', '.' ) )
     return import_dict
 
 def get_import_list( java_file_list ):
@@ -376,17 +376,18 @@ def get_import_list( java_file_list ):
                             os.path.split( os.path.abspath( i ) ) [1].split( '.' )[0] )
     return import_list
 
-def get_package_list( java_file_list ):
+def get_package_list( java_file_list, src="src" ):
     package_list = []
     for i in java_file_list:
-        package_list.append( os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ) )
+        package_list.append( os.path.split( get_root_folder( i, src ) )[0].replace( '/', '.' ) )
     return set(package_list)
 
 
 def main( arguments, options):
+    src_name = os.path.basename( options.src )
 
     if options.check_packages:
-        pkgs = get_package_list( get_java_files( options.src ) )
+        pkgs = get_package_list( get_java_files( options.src ), src_name )
 
         # the following loop checks and fixes wrong package names in the
         # path given through options.src
@@ -397,7 +398,7 @@ def main( arguments, options):
             ofo.close()
 
             new_java_stmt = check_and_fix_package_name( java_stmt , \
-                             os.path.split( get_root_folder( i ) )[0].replace( '/', '.' ), \
+                             os.path.split( get_root_folder( i, src_name ) )[0].replace( '/', '.' ), \
                              options.reallydoit )
 
             if new_java_stmt is not None:
@@ -414,7 +415,7 @@ def main( arguments, options):
                     fo.close()
 
     if options.check_imports:
-        imps = get_import_dict( get_java_files( options.src ) )
+        imps = get_import_dict( get_java_files( options.src ), src_name )
         print "checking imports"
         
         for i in get_java_files( options.src ):

@@ -30,7 +30,7 @@ package dk.dbc.opensearch.components.harvest;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.os.FileHandler;
 

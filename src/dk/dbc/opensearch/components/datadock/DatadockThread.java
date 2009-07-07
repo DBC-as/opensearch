@@ -18,11 +18,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-/**
- * \file DataDock.java
- * \brief The DataDock class
- * \package datadock
- */
 package dk.dbc.opensearch.components.datadock;
 
 
@@ -36,7 +31,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.FileNotFoundException;

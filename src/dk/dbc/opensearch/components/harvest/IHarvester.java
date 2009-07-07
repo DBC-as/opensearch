@@ -1,10 +1,3 @@
-/**
- * \file Harvester.java
- * \brief The Harvester class
- * \package harvest;
- */
-package dk.dbc.opensearch.components.harvest;
-
 /*
    
 This file is part of opensearch.
@@ -25,8 +18,10 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package dk.dbc.opensearch.components.harvest;
 
-import dk.dbc.opensearch.common.types.DatadockJob;
+
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

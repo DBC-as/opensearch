@@ -28,7 +28,7 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.datadock.DatadockManager;
 import dk.dbc.opensearch.components.datadock.DatadockPool;

@@ -1,11 +1,3 @@
-/**
- * \file DatadockJobTest.java
- * \brief The DatadockJobTest class
- * \package tests;
- */
-
-package dk.dbc.opensearch.common.types;
-
 /*
    
 This file is part of opensearch.
@@ -26,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package dk.dbc.opensearch.components.datadock;
+
+
 import java.net.URI;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import java.net.URISyntaxException;
 
 /** \brief UnitTest for DatadockJob **/

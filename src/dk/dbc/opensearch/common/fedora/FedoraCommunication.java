@@ -1,4 +1,4 @@
-/**
+/*
    This file is part of opensearch.
    Copyright © 2009, Dansk Bibliotekscenter a/s,
    Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -17,9 +17,7 @@
    along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 package dk.dbc.opensearch.common.fedora;
-
 
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
@@ -33,7 +31,7 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -61,6 +59,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.apache.commons.lang.NotImplementedException;
 
 /**
  * FedoraCommunication has methods to facilitate storing and
@@ -149,6 +148,14 @@ public class FedoraCommunication extends FedoraHandle implements IFedoraCommunic
         
         return new InputPair<String, Float>( pid, est );
     }
+
+    public String storeContainer( CargoContainer cargo )throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
+    {
+
+        throw new NotImplementedException( "Not just yet" );
+
+    }
+    
 
     /**
      * The retrieveContainer method retrieves a digital obejct

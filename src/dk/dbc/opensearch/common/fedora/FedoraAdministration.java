@@ -181,46 +181,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         String indexingAlias = getIndexingAlias( adminStream );
 
-        // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
-        // byte[] adminStream = ds.getStream();
-        // if( adminStream == null ) 
-        // {
-        //     log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
-        //     throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
-        // } 
-        // log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
-
-
-        // ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        // log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        // Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
-
-        // log.debug( String.format( "root element from adminstream == %s", root ) );
-
-        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-
-        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-        // if( indexingAliasElem == null )
-        // {
-        //     /**
-        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-        //      */
-        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-        // }
-        // log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
-
-        // //Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
-        // //String filePath = filePathElem.getAttribute( "name" );
-        // //cc.setFilePath( filePath );
-        // //log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
-
-        // NodeList streamsNL = root.getElementsByTagName( "streams" );
-        // Element streams = (Element)streamsNL.item(0);
-        // NodeList streamNL = streams.getElementsByTagName( "stream" );
-
-        //String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
-        //log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
-
         log.debug( String.format( "Iterating streams in nodelist" ) );
 
         CargoContainer cc = new CargoContainer();
@@ -295,35 +255,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         String indexingAlias = getIndexingAlias( adminStream );
 
-        // //retrieve the adminstream
-        // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
-        // byte[] adminStream = ds.getStream();
-        // log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        // ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        // log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        // Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
-
-        // log.debug( String.format( "root element from adminstream == %s", root ) );
-
-        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-
-        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-        // if( indexingAliasElem == null )
-        // {
-        //     /**
-        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-        //      */
-        //     System.out.println("no indexing alias");
-
-        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-        // }
-        // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-        // NodeList streamsNL = root.getElementsByTagName( "streams" );
-        // Element streams = (Element)streamsNL.item(0);
-        // NodeList streamNL = streams.getElementsByTagName( "stream" );
-        //        String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
-        // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
-
         log.debug( "iterating streams in nodelist to get the right streamtype" );
 
         int length = streamNodeList.getLength();
@@ -374,34 +305,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
 
         String indexingAlias = getIndexingAlias( adminStream );
 
-
-        // //get the adminstream
-        // MIMETypedStream ds = super.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
-        // byte[] adminStream = ds.getStream();
-        // log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        // ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        // log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        // Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
-
-        // log.debug( String.format( "root element from adminstream == %s", root ) );
-
-        // //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-
-        // NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
-        // if( indexingAliasElem == null )
-        // {
-        //     /**
-        //      * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878
-        //      */
-        //     log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-        // }
-        // String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
-        // NodeList streamsNL = root.getElementsByTagName( "streams" );
-        // Element streams = (Element)streamsNL.item(0);
-        // NodeList streamNL = streams.getElementsByTagName( "stream" );
-
-        // String indexingAliasName = ((Element)aliasAndStreamNL.getFirst().item( 0 )).getAttribute( "name" );
-        // log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
         log.debug( "iterating streams in nodelist to get info" );
 
         int length = streamNodeList.getLength();
@@ -877,37 +780,6 @@ public class FedoraAdministration extends FedoraHandle implements IFedoraAdminis
         Collections.sort( lst2 );
 
         log.debug( "Constructing adminstream" );
-
-        // // Constructing adm stream
-        // DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        // DocumentBuilder builder = factory.newDocumentBuilder();
-
-        // Document admStream = builder.newDocument();
-        // Element root = admStream.createElement( "admin-stream" );
-
-        // Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        // indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-        // root.appendChild( (Node)indexingaliasElem );
-
-        // Node streams = admStream.createElement( "streams" );
-
-        // for(int i = 0; i < cargo_count; i++)
-        // {
-        //     CargoObject c = cargo.getCargoObjects().get( i );
-
-        //     Element stream = admStream.createElement( "stream" );
-         
-        //     stream.setAttribute( "id", lst2.get( i ).getSecond() );
-        //     stream.setAttribute( "lang", c.getLang() );
-        //     stream.setAttribute( "format", c.getFormat() );
-        //     stream.setAttribute( "mimetype", c.getMimeType() );
-        //     stream.setAttribute( "submitter", c.getSubmitter() );
-        //     stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-        //     stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
-        //     streams.appendChild( (Node) stream );
-        // }
-
-        // root.appendChild( streams );
 
         Element root = constructAdminStream( cargo, lst2 );
 

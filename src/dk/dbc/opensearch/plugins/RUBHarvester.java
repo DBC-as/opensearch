@@ -29,7 +29,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;

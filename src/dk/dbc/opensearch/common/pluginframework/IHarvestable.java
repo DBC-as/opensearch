@@ -1,5 +1,3 @@
-package dk.dbc.opensearch.common.pluginframework;
-
 /*
    
 This file is part of opensearch.
@@ -20,9 +18,11 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package dk.dbc.opensearch.common.pluginframework;
+
 
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.IOException;
 

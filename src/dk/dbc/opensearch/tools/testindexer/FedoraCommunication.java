@@ -30,7 +30,7 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -51,6 +51,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.apache.commons.lang.NotImplementedException;
 
 
 /**
@@ -75,4 +76,13 @@ public class FedoraCommunication implements IFedoraCommunication{
     public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException{
         return cc;
     }
+
+
+    public String storeContainer( CargoContainer cargo )throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
+    {
+
+        throw new NotImplementedException( "Not just yet" );
+
+    }
+
 }

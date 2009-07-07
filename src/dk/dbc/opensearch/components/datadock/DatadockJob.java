@@ -1,11 +1,3 @@
-/**
- * \file DatadockJob.java
- * \brief The DatadockJob class
- * \package types;
- */
-
-package dk.dbc.opensearch.common.types;
-
 /*
    
 This file is part of opensearch.
@@ -25,6 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+package dk.dbc.opensearch.components.datadock;
 
 
 import java.net.URI;

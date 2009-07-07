@@ -17,18 +17,12 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * \file DatadockManager.java
- * \brief The DatadockManager class
- * \package datadock;
- */
-
 package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
 import java.io.FileNotFoundException;

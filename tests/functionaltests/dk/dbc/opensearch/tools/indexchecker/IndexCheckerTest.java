@@ -25,7 +25,7 @@ package dk.dbc.opensearch.tools.indexchecker;
 
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.tools.readindex.ReadIndex;
 
 import java.io.BufferedReader;

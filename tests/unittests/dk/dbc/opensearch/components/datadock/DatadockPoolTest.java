@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
 import dk.dbc.opensearch.components.datadock.DatadockPool;

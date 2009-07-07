@@ -37,7 +37,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
