@@ -20,23 +20,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-//import dk.dbc.opensearch.common.fedora.FedoraTools;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.rmi.RemoteException;
@@ -49,7 +38,6 @@ import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
@@ -59,8 +47,8 @@ import org.exolab.castor.xml.ValidationException;
  * retrieving of CargoContainers in the fedora Repository
  */
 
-public interface IFedoraCommunication{
-
+public interface IFedoraCommunication
+{
     /**
      * storeContainer Stores the cargoContainer in the repository, and
      * returns a pair, where the first element is the fedoraPid, and
@@ -86,13 +74,11 @@ public interface IFedoraCommunication{
      * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraTools
      * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraTools
      */
-
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
     
 
     public String storeContainer( CargoContainer cc ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
     
-
 
     /**
      * The retrieveContainer method retrieves a digital obejct
@@ -107,7 +93,8 @@ public interface IFedoraCommunication{
      * @throws ParserConfigurationException Thrown if the construction of the xml went wrong. \see FedoraTools
      * @throws RemoteException Thrown if the fedora repository is unreachable
      * @throws SAXException  Thrown if the construction of the xml went wrong. \see FedoraTools
+     * @throws ServiceException 
+     * @throws ConfigurationException 
      */
-
-    public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException;
+    public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, ServiceException;
 }

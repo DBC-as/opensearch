@@ -5,17 +5,21 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.rmi.RemoteException;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileOutputStream;
 
+import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import fedora.server.errors.ObjectNotInLowlevelStorageException;
+
+import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
@@ -25,14 +29,14 @@ public class AdministrationFunc
 {
     static FedoraAdministration fa;
 
-    public static void main( String[] args )
+    
+    public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-
         runTests();
-
     }
+    
 
-    static void runTests()
+    static void runTests() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         try
         {
@@ -73,9 +77,8 @@ public class AdministrationFunc
     }
 
 
-    static void testFindObjectPids()
+    static void testFindObjectPids() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-
         String[] pids = null;
         try
         {
@@ -231,7 +234,7 @@ public class AdministrationFunc
     }
 
 
-    static void testDeleteObject( String pid )
+    static void testDeleteObject( String pid ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         try
         {
@@ -243,6 +246,7 @@ public class AdministrationFunc
             re.printStackTrace();
             return;
         }
+
         System.out.println( String.format( "Object with pid: %s deleted", pid ) );
     }
 

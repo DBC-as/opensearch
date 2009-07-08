@@ -17,31 +17,29 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.config.PidManagerConfig;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 
 import java.util.HashMap;
-import java.util.Arrays;
+import java.util.Stack;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import java.util.Stack;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class PIDManager
 {
-    static Logger log = Logger.getLogger( PIDManager.class );
+    private static Logger log = Logger.getLogger( PIDManager.class );
 
     private Stack<String> pidList;
     private HashMap<String, Stack<String>> pidMap;
@@ -52,16 +50,17 @@ public class PIDManager
 
 
     private PIDManager() throws ConfigurationException
-    {
+    {	
+    	pidList = new Stack<String>();
+    	pidMap = new HashMap<String, Stack<String>>();    	
         numPIDs =  new NonNegativeInteger( PidManagerConfig.getNumberOfPidsToRetrieve() );
     }
 
 
     public static PIDManager getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        System.out.println( "getInstance" );
         if ( INSTANCE == null )
-        {
+        {	
             INSTANCE = new PIDManager();
         }
 
@@ -69,29 +68,28 @@ public class PIDManager
     }
 
 
-    public String getNextPID( String prefix ) throws ServiceException, RemoteException
-    {
-
-        if( ! ( pidMap.containsKey( prefix ) ||  pidMap.get( prefix ).empty() ) ) {
-            pidMap.put( prefix, retrievePIDStack( prefix ) );
+    public String getNextPID( String prefix ) throws ServiceException, ConfigurationException, MalformedURLException, IOException
+    {	
+        if( ! ( pidMap.containsKey( prefix ) ) ||  pidMap.get( prefix ).empty() )  
+        {
+        	pidMap.put( prefix, retrievePIDStack( prefix ) );
         }
 
-        return pidMap.get( prefix ).pop();
+    	return pidMap.get( prefix ).pop();        
     }
 
     
-    private Stack<String> retrievePIDStack( String prefix ) throws ServiceException, RemoteException
+    private Stack<String> retrievePIDStack( String prefix ) throws ServiceException, ConfigurationException, MalformedURLException, IOException
     {
         log.trace( String.format( "Entering retrievePIDs(prefix='%s')", prefix ) );
-        log.debug( String.format( "Calling through FedoraHandle.HANDLE.dem.getNextPID( %s, %s)", numPIDs, prefix ) );
+        log.debug( String.format( "Calling through FedoraHandle.getInstance().getAPIM().getNextPID( %s, %s)", numPIDs, prefix ) );
 
         Stack<String> pidStack = new Stack<String>();
 
-        List< String > pidlist = new ArrayList< String >( Arrays.asList( FedoraHandle.fem.getNextPID( numPIDs, prefix ) ) );
-
-        log.debug( String.format( "Got pidlist=%s", pidlist.toString() ) );
-
-        for( String pid : pidList ){
+        String[] pids = FedoraHandle.getInstance().getAPIM().getNextPID( numPIDs, prefix );        
+        log.debug( String.format( "Got pidlist=%s", pids.toString() ) );
+        for( String pid : pids )
+        { 	
             pidStack.push( pid );
         }
 

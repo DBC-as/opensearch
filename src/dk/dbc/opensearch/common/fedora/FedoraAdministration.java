@@ -17,12 +17,9 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * \file   FedoraAdministration.java
- * \brief  The class for administrating the Fedora Commons repository
- */
 
 package dk.dbc.opensearch.common.fedora;
+
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -32,7 +29,6 @@ import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.types.IndexingAlias;
-
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
 import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
@@ -45,21 +41,23 @@ import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
 import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
 import dk.dbc.opensearch.xsd.types.StateType;
 
-import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.List;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.StringWriter;
-
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-//import java.net.URL;
-
+import javax.xml.transform.TransformerException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.rpc.ServiceException;
@@ -71,6 +69,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import fedora.server.types.gen.RelationshipTuple;
 import fedora.server.types.gen.MIMETypedStream;
@@ -85,68 +84,44 @@ import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
-import java.text.ParseException;
-import javax.xml.transform.TransformerException;
-import dk.dbc.opensearch.common.types.InputPair;
-import org.apache.commons.lang.NotImplementedException;
-import java.io.OutputStreamWriter;
-import java.io.ByteArrayOutputStream;
-import java.util.List;
 
 
-public class FedoraAdministration //extends FedoraHandle 
-implements IFedoraAdministration
+public class FedoraAdministration implements IFedoraAdministration
 {
-
     static Logger log = Logger.getLogger( FedoraAdministration.class );
-    // private PIDManager pidManager;
-    protected static final SimpleDateFormat dateFormat =
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-    //final PIDManager pidManager = new PIDManager();
+ 
+    protected static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
 
     /**
-     * The constructor initalizes the super class FedoraHandle which
-     * handles the initiation of the connection with the fedora base
-     *
-     * @throws ConfigurationException Thrown if the FedoraHandler
-     * Couldn't be initialized. @see FedoraHandle
-     * @throws IOException Thrown if the FedoraHandler Couldn't be
-     * initialized properly. @see FedoraHandle
-     * @throws MalformedURLException Thrown if the FedoraHandler
-     * Couldn't be initialized properly. @see FedoraHandle
-     * @throws ServiceException Thrown if the FedoraHandler Couldn't
-     * be initialized properly. @see FedoraHandle
      */
-    public FedoraAdministration() throws ConfigurationException, 
-                                         IOException, 
-                                         MalformedURLException, 
-                                         ServiceException
-    {
-        //super();
-        // pidManager = new PIDManager();
-    }
+    public FedoraAdministration() {}
+
+
     /**
      * method to delete an object for good, based on the pid
      * @param pid, the identifier of the object to be removed
      * @param force, tells whether to purge the object even if it
      * breaks dependencies to other objects
-     * @throws RemoteException if something on the serverside goes wrong.
+     * @throws IOException 
+     * @throws ServiceException 
+     * @throws MalformedURLException 
      */
-    public void deleteObject( String pid, boolean force ) throws RemoteException
+    public void deleteObject( String pid, boolean force ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
         String logm = "";
-        //super.fem.purgeObject( pid, logm, force );
-        FedoraHandle.fem.purgeObject( pid, logm, force );
+        FedoraHandle.getInstance().getAPIM().purgeObject( pid, logm, force );
     }
 
 
@@ -160,6 +135,7 @@ implements IFedoraAdministration
         throw new NotImplementedException( "Lazyboy, not implemented yet." );
     }
 
+
     /**
      * method for getting an object in a CargoContainer based on its pid
      * @param pid, the identifier of the object to get
@@ -170,9 +146,9 @@ implements IFedoraAdministration
                                                                 ParserConfigurationException, 
                                                                 RemoteException,
                                                                 ServiceException,
-                                                                SAXException
+                                                                SAXException, 
+                                                                ConfigurationException
     {
-
         log.trace( String.format( "entering getDO( '%s' )", pid ) );
 
         //Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
@@ -192,7 +168,7 @@ implements IFedoraAdministration
         {
             Element stream = (Element)streamNodeList.item(i);
             String streamID = stream.getAttribute( "id" );
-            MIMETypedStream dstream = FedoraHandle.fea.getDatastreamDissemination( pid, streamID, null);
+            MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null);
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
@@ -201,8 +177,10 @@ implements IFedoraAdministration
                     IndexingAlias.getIndexingAlias( indexingAlias ),
                     dstream.getStream() );
         }
+
         return cc;
     }
+
 
     /**
      * method for storing an object in the Fedora base
@@ -217,7 +195,7 @@ implements IFedoraAdministration
         String returnVal = null;
 
         String submitter = theCC.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
-
+        
         String pid = PIDManager.getInstance().getNextPID( submitter );
 
         byte[] foxml = constructFoxml( theCC, pid, label );
@@ -227,7 +205,8 @@ implements IFedoraAdministration
         if( pid.equals( returnPid ) )
         {
             returnVal = pid;
-        }else
+        }
+        else
         {
             log.warn( String.format( "Pid '%s' does not equal expected pid '%s'", returnPid, pid ) );
             /** \todo: should we do more than this? If we got a pid
@@ -238,6 +217,7 @@ implements IFedoraAdministration
         return returnVal;
     }
 
+
     /**
      * method to retrive all DataStreams of a DataStreamType from an object
      * @param pid, identifies the object
@@ -245,7 +225,7 @@ implements IFedoraAdministration
      * @return a CargoContainer of CargoObjects each containing a DataStream,
      * is null if there are no DataStreams of the streamtype.
      */
-    public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException, ServiceException
+    public CargoContainer getDataStreamsOfType( String pid, DataStreamType streamtype ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException, ServiceException, ConfigurationException
     {
         log.trace( String.format( "Entering getDataStreamsOfType()" ) );
         CargoContainer cc = new CargoContainer();
@@ -270,7 +250,7 @@ implements IFedoraAdministration
 
                 //build the CargoObject and add it to the list
                 String streamID = stream.getAttribute( "id");
-                MIMETypedStream dstream = FedoraHandle.fea.getDatastreamDissemination( pid, streamID, null );
+                MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( streamtype,
@@ -283,20 +263,18 @@ implements IFedoraAdministration
             }
         }
 
-
         return cc;
     }
 
-    //create another method for getting a datastream form a DO identified by the streamID.
 
+    //create another method for getting a datastream form a DO identified by the streamID.
     /**
      * method for getting a datastream identified by its streamID
      * @param streamID, the identifier of the datastream to be retrieved
      * @param pid, the identifier of the object to get the stream from
      * @return CargoContainer with the datastream
      */
-
-    public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ServiceException, ParserConfigurationException, SAXException
+    public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ServiceException, ParserConfigurationException, SAXException, ConfigurationException
     {
         CargoContainer cc = new CargoContainer();
 
@@ -317,7 +295,7 @@ implements IFedoraAdministration
             if( streamID.equals( idOfStream ) )
             {
                 //build the CargoObject and add it to the list
-                MIMETypedStream dstream = FedoraHandle.fea.getDatastreamDissemination( pid, streamID, null );
+                MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
@@ -329,8 +307,11 @@ implements IFedoraAdministration
                         bytestream );
             }
         }
+
         return cc;
     }
+
+
     /**
      * method for adding a Datastream to an object
      * @param theFile, the file to save as a DataStream in a specified object
@@ -339,15 +320,18 @@ implements IFedoraAdministration
      * @param versionable, tells whether to keep track of old versions or not
      * @param overwrite, tells whether to overwrite if the datastream exists
      * @return the dataStreamID of the added stream
+     * @throws ServiceException 
+     * @throws TransformerFactoryConfigurationError 
+     * @throws DOMException 
      */
-    public String addDataStreamToObject( CargoObject cargo, String pid, boolean versionable, boolean overwrite ) throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException
+    public String addDataStreamToObject( CargoObject cargo, String pid, boolean versionable, boolean overwrite ) throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException, ConfigurationException, ServiceException, DOMException, TransformerFactoryConfigurationError
     {
         String sID = null;
         String logm = "";
         String adminLogm = "";
         String dsnName = cargo.getDataStreamName().getName();
 
-        MIMETypedStream ds = FedoraHandle.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
@@ -392,6 +376,7 @@ implements IFedoraAdministration
         {
             sID = dsnName + "." + count;
         }
+
         Element stream = admStream.createElement( "stream" );
 
         stream.setAttribute( "id", sID );
@@ -429,9 +414,9 @@ implements IFedoraAdministration
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
         //upload the admFile
-        String admLocation = FedoraHandle.fc.uploadFile( admFile );
+        String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
 
-        FedoraHandle.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
         //upload the content
         //byte[] to File
@@ -441,15 +426,17 @@ implements IFedoraAdministration
         fos.write( cargo.getBytes() );
         fos.flush();
         fos.close();
-        String dsLocation = FedoraHandle.fc.uploadFile( theFile );
+        String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
 
         logm = String.format( "added %s to the object with pid: %s", dsLocation, pid );
 
-        String returnedSID = FedoraHandle.fem.addDatastream( pid, sID, new String[] {}, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
+        String returnedSID = FedoraHandle.getInstance().getAPIM().addDatastream( pid, sID, new String[] {}, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
 
         return returnedSID;
 
     }
+
+
     /**
      * method for modifying an existing dataStream in an object
      * @param cargo, the CargoObject containing the data to modify with
@@ -459,12 +446,13 @@ implements IFedoraAdministration
      * @param breakDependencies tells whether to update the datastream or not
      * if the operation breaks dependencies with other objects
      * @return the checksum of the datastream...
+     * @throws ServiceException 
+     * @throws ConfigurationException 
      */
-
-    public String modifyDataStream( CargoObject cargo, String sID, String pid, boolean versionable, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException
+    public String modifyDataStream( CargoObject cargo, String sID, String pid, boolean versionable, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException, ConfigurationException, ServiceException
     {
         String logm = String.format( "modified the object with pid: %s", pid );
-        String[] altIDs;
+        //String[] altIDs;
         File theFile = new File( "tempFile" );
         theFile.deleteOnExit();
         FileOutputStream fos = new FileOutputStream( theFile );
@@ -472,12 +460,13 @@ implements IFedoraAdministration
         fos.flush();
         fos.close();
 
-        String dsLocation = FedoraHandle.fc.uploadFile( theFile );
+        String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
 
-        return FedoraHandle.fem.modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
+        return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
 
 
     }
+
 
     /**
      * method for removing a datastream form an object in the Fedora base
@@ -487,13 +476,15 @@ implements IFedoraAdministration
      * @param startDate, the earlyist date to remove stream versions from, can be null
      * @param endDate, the latest date to remove stream versions to, can be null
      * @return true if the stream was removed
+     * @throws ServiceException 
+     * @throws ConfigurationException 
      */
-    public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException
+    public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException, ConfigurationException, ServiceException
     {
         String adminLogm = "";
 
         //10: get the adminstream to modify
-        MIMETypedStream ds = FedoraHandle.fea.getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
@@ -588,9 +579,9 @@ implements IFedoraAdministration
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
         //upload the admFile
-        String admLocation = FedoraHandle.fc.uploadFile( admFile );
+        String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
 
-        FedoraHandle.fem.modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
         boolean retval = false;
         String logm = String.format( "removed stream %s from object %s", sID, pid );
@@ -598,7 +589,7 @@ implements IFedoraAdministration
         /**
          * \Todo: find out why the return val is String[] and not String. bug 9046
          */
-        String[] stamp = FedoraHandle.fem.purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
+        String[] stamp = FedoraHandle.getInstance().getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
         if( stamp != null )
         {
             retval = true;
@@ -606,6 +597,7 @@ implements IFedoraAdministration
         return retval;
 
     }
+
 
     /**
      * method for adding a relation to an object
@@ -615,11 +607,16 @@ implements IFedoraAdministration
      * @param literal, true if the targetPid is a literal
      * @param datatype, the datatype of the literal, optional
      * @return true if the relation was added
+     * @throws IOException 
+     * @throws ServiceException 
+     * @throws MalformedURLException 
+     * @throws ConfigurationException 
      */
-    public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException
+    public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        return FedoraHandle.fem.addRelationship( pid, predicate, targetPid, literal, datatype );
+        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetPid, literal, datatype );
     }
+
 
     /**
      * method for getting the relationships an object has
@@ -631,11 +628,16 @@ implements IFedoraAdministration
      * String object, the target of the predicate
      * boolean isLiteral, tells if the object is a literal and not a pid
      * String datatype, tells what datatype to pass the object as if it is a literal
+     * @throws IOException 
+     * @throws ServiceException 
+     * @throws MalformedURLException 
+     * @throws ConfigurationException 
      */
-    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws RemoteException
+    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        return FedoraHandle.fem.getRelationships( pid, predicate);
+        return FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate);
     }
+
 
     /**
      * method to see if an object has a certain relationship to another object
@@ -645,10 +647,14 @@ implements IFedoraAdministration
      * @param target, the target of the predicate
      * @param isLiteral, true if the target is not an object in the base
      * @return true if the relationship exists
+     * @throws IOException 
+     * @throws ServiceException 
+     * @throws MalformedURLException 
+     * @throws ConfigurationException 
      */
-    public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws RemoteException
+    public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        RelationshipTuple[] rt = FedoraHandle.fem.getRelationships( subject, predicate );
+        RelationshipTuple[] rt = FedoraHandle.getInstance().getAPIM().getRelationships( subject, predicate );
         int rtLength = rt.length;
         for( int i = 0; i < rtLength; i++ )
         {
@@ -657,9 +663,11 @@ implements IFedoraAdministration
                 return true;
             }
         }
+
         return false;
 
     }
+
 
     /**
      * method for finding pids of objects based on object properties
@@ -668,7 +676,7 @@ implements IFedoraAdministration
      * @param value, the value the property adheres to
      * @return an array o pids of the matching objects
      */
-    public String[] findObjectPids( String property, String operator, String value ) throws RemoteException
+    public String[] findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
 
         String[] resultFields = {"pid", "title"};
@@ -682,32 +690,25 @@ implements IFedoraAdministration
         Condition[] condArray = { cond };
         FieldSearchQuery fsq = new FieldSearchQuery();
         fsq.setConditions( condArray );
-        FieldSearchResult fsr = FedoraHandle.fea.findObjects( resultFields, maxResults, fsq );
+        FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
         ObjectFields[] objectFields = fsr.getResultList();
         int ofLength = objectFields.length;
         String[] pids = new String[ ofLength ];
 
         for( int i = 0; i < ofLength; i++ )
         {
-           //  String title = "";
-//             String[] titleArray = objectFields[ i ].getTitle();
-//             for( int j = 0; j < titleArray.length; j++ )
-//             {
-//                 title = title + titleArray[ j ];
-//             }
-            pids[ i ] = objectFields[ i ].getPid();// + title;
+            pids[ i ] = objectFields[ i ].getPid();
         }
+
         return pids;
-
     }
 
 
-
-
-    public boolean removeRelation( String pid, String predicate, String targetPid, boolean isLiteral, String datatype ) throws RemoteException
+    public boolean removeRelation( String pid, String predicate, String targetPid, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        return FedoraHandle.fem.purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
+        return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
     }
+
 
     /**
      * method for constructing the foxml to ingest
@@ -723,6 +724,7 @@ implements IFedoraAdministration
         Date now = new Date(System.currentTimeMillis());
         return constructFoxml(cargo, nextPid, label, now);
     }
+
 
     /**
      * method for constructing the foxml to ingest
@@ -743,8 +745,7 @@ implements IFedoraAdministration
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
     
-        // Constructing list with datastream indexes and id
-    
+        // Constructing list with datastream indexes and id    
         List< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
         for(int i = 0; i < cargo_count; i++)
         {
@@ -797,8 +798,7 @@ implements IFedoraAdministration
 
         // add the adminstream to the cargoContainer
         byte[] byteAdmArray = admStreamString.getBytes();
-        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
-       
+        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );       
 
         log.debug( "Constructing foxml byte[] from cargoContainer" );
         cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
@@ -828,6 +828,7 @@ implements IFedoraAdministration
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
         return ret;
     }
+
 
     private static Element constructAdminStream( CargoContainer cargo, List< ComparablePair<Integer, String> > lst2 ) throws ParserConfigurationException
     {
@@ -872,16 +873,18 @@ implements IFedoraAdministration
                                                         ParserConfigurationException, 
                                                         RemoteException, 
                                                         ServiceException, 
-                                                        SAXException
+                                                        SAXException, 
+                                                        ConfigurationException
     {
-        MIMETypedStream ds = FedoraHandle.fea.getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
 
         byte[] adminStream = ds.getStream();
         if( adminStream == null ) 
         {
             log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
             throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
-        } 
+        }
+ 
         log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
 
         CargoContainer cc = new CargoContainer();
@@ -919,6 +922,7 @@ implements IFedoraAdministration
         return streamNL;
     }
        
+
     /** 
      * Serializes a DigitalObject into a byte[] containing the
      * serialized xml document.
@@ -934,7 +938,7 @@ implements IFedoraAdministration
      * 
      * @return a byte[] containing the (xml-) serialized form of the DigitalObject
      */
-    public static byte[] DigitalObjectAsByteArray( DigitalObject dot )throws IOException, MarshalException, ValidationException//, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    public static byte[] DigitalObjectAsByteArray( DigitalObject dot ) throws IOException, MarshalException, ValidationException
     {
         log.debug( "Marshalling the digitalObject to a byte[]" );
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -945,9 +949,10 @@ implements IFedoraAdministration
         byte[] ret = out.toByteArray();
 
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
-        return ret;
 
+        return ret;
     }
+
 
     /**
      * Initializes and returns a DigitalObject with no
@@ -976,6 +981,7 @@ implements IFedoraAdministration
         Date timestamp = new Date( System.currentTimeMillis() );
         return initDigitalObject( state, label, owner, pid, timestamp );
     }
+
 
     /**
      * Initializes and returns a DigitalObject with no
@@ -1033,8 +1039,6 @@ implements IFedoraAdministration
     }
 
 
-
-
     /** 
      * Constructing a Datastream with a default timestamp (
      * System.currentTimeMillis )
@@ -1044,15 +1048,14 @@ implements IFedoraAdministration
      * 
      * @return 
      */    
-    private static Datastream constructDatastream( CargoObject co,
-                                                   String itemID ) throws ParseException, 
-                                                                          IOException
+    private static Datastream constructDatastream( CargoObject co, String itemID ) throws ParseException, IOException
     {
         Date timestamp = new Date( System.currentTimeMillis() );
         String timeNow = dateFormat.format( timestamp );
 
         return constructDatastream( co, timeNow, itemID );
     }
+
 
     /**
      * constructDatastream creates a Datastream object on the basis of a CargoObject
@@ -1069,6 +1072,7 @@ implements IFedoraAdministration
     {
         return constructDatastream( co, timeNow, itemID, false, false, false );
     }
+
 
     /**
      * Control Group: the approach used by the Datastream to represent or encapsulate the content as one of four types or control groups:
@@ -1126,19 +1130,11 @@ implements IFedoraAdministration
             //Managed content
             controlGroup = DatastreamTypeCONTROL_GROUPType.M;
         }
-        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) {
+        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) 
+            {
             //Inline content
             controlGroup = DatastreamTypeCONTROL_GROUPType.X;
         }
-        // else if( ( externalData ) && ( ! inlineData ) ){
-        //     /**
-        //      * external data cannot be inline, and this is regarded as
-        //      * a client error, but we assume that the client wanted
-        //      * the content referenced; we log a warning and proceed
-        //      */
-        //     log.warn( String.format( "Both externalData and inlineData was set to true, they are mutually exclusive, and we assume that the content should be an external reference" ) );
-        //     controlGroup = DatastreamTypeCONTROL_GROUPType.E;
-        // }
 
         // datastreamElement
         Datastream dataStreamElement = new Datastream();

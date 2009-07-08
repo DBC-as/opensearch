@@ -1,21 +1,22 @@
 /*
-   This file is part of opensearch.
-   Copyright © 2009, Dansk Bibliotekscenter a/s,
-   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-   opensearch is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-   opensearch is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 package dk.dbc.opensearch.common.fedora;
 
@@ -23,8 +24,6 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-//import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -61,12 +60,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.apache.commons.lang.NotImplementedException;
 
+
 /**
  * FedoraCommunication has methods to facilitate storing and
  * retrieving of CargoContainers in the fedora Repository
  */
-public class FedoraCommunication //extends FedoraHandle
-implements IFedoraCommunication 
+public class FedoraCommunication implements IFedoraCommunication 
 {
 
     Logger log = Logger.getLogger( FedoraCommunication.class );
@@ -204,14 +203,16 @@ implements IFedoraCommunication
      * @throws ParserConfigurationException Thrown if the construction of the xml went wrong. \see FedoraTools
      * @throws RemoteException Thrown if the fedora repository is unreachable
      * @throws SAXException  Thrown if the construction of the xml went wrong. \see FedoraTools
+     * @throws ServiceException 
+     * @throws ConfigurationException 
      * @deprecated Use the FedoraAdministration.getDigitalObject( String pid ) method instead
      */
     @Deprecated
-    public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
+    public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, ServiceException
     {
         log.debug( String.format( "entering retrieveContainer( '%s' )", fedoraPid ) );
 
-        MIMETypedStream ds = FedoraHandle.fea.getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
+        MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
 
@@ -251,7 +252,7 @@ implements IFedoraCommunication
         {
             Element stream = (Element)streamNL.item(i);
             String streamID = stream.getAttribute( "id" );
-            MIMETypedStream dstream = FedoraHandle.fea.getDatastreamDissemination(fedoraPid, streamID, null);
+            MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination(fedoraPid, streamID, null);
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
