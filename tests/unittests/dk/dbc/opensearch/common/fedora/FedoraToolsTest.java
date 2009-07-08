@@ -21,7 +21,7 @@ package dk.dbc.opensearch.common.fedora;
 
 
 
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
@@ -52,7 +52,7 @@ import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
 /**
  *
  */
-public class FedoraAdministrationTest// extends XMLTestCase
+public class FedoraToolsTest// extends XMLTestCase
 {
 
     CargoContainer cargo;
@@ -80,7 +80,7 @@ public class FedoraAdministrationTest// extends XMLTestCase
         byte[] cargoBytes =  utf8Str.getBytes( "UTF-8" );
         cargo = new CargoContainer( );
         cargo.add( DataStreamType.getDataStreamNameFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
-        byte[] b = FedoraAdministration.constructFoxml( cargo, "dbc:1", "label_1", now );
+        byte[] b = FedoraTools.constructFoxml( cargo, "dbc:1", "label_1", now );
         origStr = new String( b );
 
     }

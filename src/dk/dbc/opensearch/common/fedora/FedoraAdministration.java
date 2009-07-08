@@ -198,7 +198,7 @@ public class FedoraAdministration implements IFedoraAdministration
         
         String pid = PIDManager.getInstance().getNextPID( submitter );
 
-        byte[] foxml = constructFoxml( theCC, pid, label );
+        byte[] foxml = FedoraTools.constructFoxml( theCC, pid, label );
         String logm = String.format( "%s inserted", label );
 
         String returnPid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
@@ -276,7 +276,7 @@ public class FedoraAdministration implements IFedoraAdministration
      */
 
 
-    public CargoContainer getDataStream( String pid, String streamID ) throws MalformedURLException, IOException, RemoteException, ServiceException, ParserConfigurationException, SAXException
+    public CargoContainer getDataStream( String pid, String streamID ) throws MalformedURLException, IOException, RemoteException, ServiceException, ParserConfigurationException, SAXException, ConfigurationException
     {
         CargoContainer cc = new CargoContainer();
 
@@ -710,166 +710,6 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
     }
-
-
-    /**
-     * method for constructing the foxml to ingest
-     * @param cargo, the CargoContainer to ingest
-     * @param nextPid, the pid of the object to create
-     * @param label, the label of the object, most often the format of the original data
-     * @return a byte[] to ingest
-     */
-    static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
-    {
-        log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
-
-        Date now = new Date(System.currentTimeMillis());
-        return constructFoxml(cargo, nextPid, label, now);
-    }
-
-
-    /**
-     * method for constructing the foxml to ingest
-     * @param cargo, the CargoContainer to ingest
-     * @param nextPid, the pid of the object to create
-     * @param label, the label of the object, most often the format of the original data
-     * @param now, the time of creation of the foxml
-     * @return a byte[] to ingest
-     */
-    static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
-    {
-        log.trace( String.format( "Entering constructFoxml( cargo, nexPid='%s', label='%s', now )", nextPid, label ) );
-
-        DigitalObject dot = FedoraTools.initDigitalObject( "Active", label, "dbc", nextPid, now );
-
-        String timeNow = dateFormat.format( now );
-
-        int cargo_count = cargo.getCargoObjectCount();
-        log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
-    
-        // Constructing list with datastream indexes and id    
-        List< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
-        for(int i = 0; i < cargo_count; i++)
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-          
-            lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
-        }
-    
-        Collections.sort( lst );
-
-        // Add a number to the id according to the number of
-        // datastreams with this datastreamname
-        int j = 0;
-        DataStreamType dsn = null;
-       
-        List< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
-        for( Pair<String, Integer> p : lst)
-        {
-            if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) )
-            {
-                j = 0;
-            }
-            else
-            {
-                j += 1;
-            }
-
-            dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
-    
-            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
-        }
-     
-        lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
-     
-        Collections.sort( lst2 );
-
-        log.debug( "Constructing adminstream" );
-
-        Element root = constructAdminStream( cargo, lst2 );
-
-        // Transform document to xml string
-        Source source = new DOMSource((Node) root );
-        StringWriter stringWriter = new StringWriter();
-        Result result = new StreamResult(stringWriter);
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.transform(source, result);
-        String admStreamString = stringWriter.getBuffer().toString();
-        log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
-
-        // add the adminstream to the cargoContainer
-        byte[] byteAdmArray = admStreamString.getBytes();
-        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );       
-
-        log.debug( "Constructing foxml byte[] from cargoContainer" );
-        cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
-
-        log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
-        Datastream[] dsArray = new Datastream[ cargo_count ];
-        for(int i = 0; i < cargo_count; i++)
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-           
-            dsArray[i] = FedoraTools.constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
-        }
-
-        log.debug( String.format( "Successfully constructed datastreams from the CargoContainer. length of datastream[]='%s'", dsArray.length ) );
-
-        // add the streams to the digital object
-        dot.setDatastream( dsArray );
-
-        log.debug( "Marshalling the digitalObject to a byte[]" );
-        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-        java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter( out );
-        Marshaller m = new Marshaller( outW ); // IOException
-        m.marshal( dot ); // throws MarshallException, ValidationException
-    
-        byte[] ret = out.toByteArray();
-
-        log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
-        return ret;
-    }
-
-
-    private static Element constructAdminStream( CargoContainer cargo, List< ComparablePair<Integer, String> > lst2 ) throws ParserConfigurationException
-    {
-        // Constructing adm stream
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        Document admStream = builder.newDocument();
-        Element root = admStream.createElement( "admin-stream" );
-        
-        Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-        root.appendChild( (Node)indexingaliasElem );
-
-        Node streams = admStream.createElement( "streams" );
-
-        int counter = cargo.getCargoObjectCount();
-
-        for(int i = 0; i < counter; i++)
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-
-            Element stream = admStream.createElement( "stream" );
-         
-            stream.setAttribute( "id", lst2.get( i ).getSecond() );
-            stream.setAttribute( "lang", c.getLang() );
-            stream.setAttribute( "format", c.getFormat() );
-            stream.setAttribute( "mimetype", c.getMimeType() );
-            stream.setAttribute( "submitter", c.getSubmitter() );
-            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-            stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
-            streams.appendChild( (Node) stream );
-        }
-
-        root.appendChild( streams );
-
-        return root;
-    }
-
 
     private Element getAdminStream( String pid ) throws IOException, 
                                                         ParserConfigurationException, 

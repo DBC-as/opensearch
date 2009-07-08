@@ -101,13 +101,13 @@ public class FedoraCommunication implements IFedoraCommunication
      * @throws ConfigurationException if the FedoraHandler could not be initialized. \see dk.dbc.opensearch.tools.FedoraHandler
      * @throws IOException Thrown if the FedoraHandler Couldn't be initialized properly. \see FedoraHandle.
      * @throws MarshalException Thrown if something went wrong during the marshalling of the cargoContainer.
-     * @throws ParseException Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
-     * @throws ParserConfigurationException Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
-     * @throws SAXException  Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
+     * @throws ParseException Thrown if the construction of the Foxml went wrong. \see FedoraTools
+     * @throws ParserConfigurationException Thrown if the construction of the Foxml went wrong. \see FedoraTools
+     * @throws SAXException  Thrown if the construction of the Foxml went wrong. \see FedoraTools
      * @throws SQLException if something went wrong communicating with the database, either through the queue or estimate. \IProcessqueue, \see IEstimate.
      * @throws RemoteException Thrown if the fedora repository is unreachable
-     * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
-     * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraAdministration
+     * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraTools
+     * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraTools
      */
 
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ConfigurationException, ServiceException
@@ -133,7 +133,7 @@ public class FedoraCommunication implements IFedoraCommunication
         }
       
         // Store the CargoContainer in the fedora repository
-        byte[] foxml = FedoraAdministration.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
+        byte[] foxml = FedoraTools.constructFoxml( cc, datadockJob.getPID(), datadockJob.getFormat() );
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
 
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
@@ -178,7 +178,7 @@ public class FedoraCommunication implements IFedoraCommunication
         }
       
         // Store the CargoContainer in the fedora repository
-        byte[] foxml = FedoraAdministration.constructFoxml( cargo, PIDManager.getInstance().getNextPID( submitter ), format );
+        byte[] foxml = FedoraTools.constructFoxml( cargo, PIDManager.getInstance().getNextPID( submitter ), format );
         String logm = String.format( "%s inserted", format );
 
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
