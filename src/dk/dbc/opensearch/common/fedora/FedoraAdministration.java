@@ -110,7 +110,7 @@ implements IFedoraAdministration
     static Logger log = Logger.getLogger( FedoraAdministration.class );
     // private PIDManager pidManager;
     protected static final SimpleDateFormat dateFormat =
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     //final PIDManager pidManager = new PIDManager();
 
@@ -1009,7 +1009,7 @@ implements IFedoraAdministration
         pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
         pOwner.setVALUE( owner );
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
         String timeNow = dateFormat.format( timestamp );
         Property pCreatedDate = new Property();
         pCreatedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_CREATEDDATE );

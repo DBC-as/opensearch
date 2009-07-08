@@ -60,7 +60,7 @@ public class FedoraAdministrationTest// extends XMLTestCase
 
     static String utf8Str = "æøå";
     static Date now = new Date ( System.currentTimeMillis() );
-    static String timeNow = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" )).format( now );
+    static String timeNow = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" )).format( now );
     static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<digitalObject xmlns=\"info:fedora/fedora-system:def/foxml#\" VERSION=\"1.1\" PID=\"dbc:1\"><objectProperties><property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"Active\"/><property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"label_1\"/><property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/><property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\"" + timeNow + "\"/><property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\"" + timeNow + "\"/></objectProperties><datastream ID=\"originalData.0\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\"><datastreamVersion ID=\"originalData.0.0\" LABEL=\"test [text/xml]\" CREATED=\"" + timeNow + "+02:00\" MIMETYPE=\"text/xml\" SIZE=\"6\"><binaryContent>w6bDuMOl</binaryContent></datastreamVersion></datastream><datastream ID=\"adminData\" CONTROL_GROUP=\"M\" STATE=\"A\" VERSIONABLE=\"false\"><datastreamVersion ID=\"adminData.0\" LABEL=\"admin [text/xml]\" CREATED=\"" + timeNow + "+02:00\" MIMETYPE=\"text/xml\" SIZE=\"247\"><binaryContent>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48YWRtaW4tc3RyZWFtPjxpbmRleGluZ2FsaWFzIG5hbWU9ImFydGljbGUiLz48c3RyZWFtcz48c3RyZWFtIGZvcm1hdD0idGVzdCIgaWQ9Im9yaWdpbmFsRGF0YS4wIiBpbmRleD0iMCIgbGFuZz0iZW5nIiBtaW1ldHlwZT0idGV4dC94bWwiIHN0cmVhbU5hbWVUeXBlPSJvcmlnaW5hbERhdGEiIHN1Ym1pdHRlcj0iZGJjIi8+PC9zdHJlYW1zPjwvYWRtaW4tc3RyZWFtPg==</binaryContent></datastreamVersion></datastream></digitalObject>";
 
@@ -151,6 +151,7 @@ public class FedoraAdministrationTest// extends XMLTestCase
     @Test
     public void testTimestamp() throws SAXException, IOException, XpathException
     {
+        System.out.println( String.format( "%s", timeNow ) );
         XMLAssert.assertXpathEvaluatesTo( timeNow, "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", origStr );
     }
 
