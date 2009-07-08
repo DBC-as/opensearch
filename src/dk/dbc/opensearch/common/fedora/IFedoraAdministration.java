@@ -114,7 +114,7 @@ public interface IFedoraAdministration
      * @param pid, the identifier of the object to get the stream from
      * @return CargoContainer with the datastream
      */
-    // public CargoContainer getDataStream( String streamID, String pid ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException;
+    public CargoContainer getDataStream( String pid, String streamID ) throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException, ServiceException;
 
 
      /**
