@@ -57,7 +57,7 @@ public class PIDManager
     }
 
 
-    public static PIDManager getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public static synchronized PIDManager getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         if ( INSTANCE == null )
         {	

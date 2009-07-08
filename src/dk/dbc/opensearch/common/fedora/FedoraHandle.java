@@ -67,7 +67,7 @@ public class FedoraHandle
     }
 
 
-    public static FedoraHandle getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public static synchronized FedoraHandle getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         if ( INSTANCE == null )
         {
