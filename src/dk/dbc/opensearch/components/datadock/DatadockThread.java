@@ -209,8 +209,8 @@ public class DatadockThread implements Callable< Float >
                     log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getTaskName().toString() ) );
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
 
-                    if ( cc == null )
-                    {
+                   if ( cc == null )
+                   {
                         log.error( "DatadockThread call throws NullPointerException, cc is null" );
                         throw new NullPointerException( "DatadockThread call throws NullPointerException" );
                     }

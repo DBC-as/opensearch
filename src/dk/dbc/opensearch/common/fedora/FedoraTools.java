@@ -19,12 +19,14 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
+
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.Pair;
+
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
 import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
@@ -47,6 +49,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Collections;
+
+import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -109,8 +115,7 @@ public class FedoraTools
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
         return ret;
     }
-    
-    
+
     /**
      * method for constructing the foxml to ingest
      * @param cargo, the CargoContainer to ingest
@@ -145,23 +150,23 @@ public class FedoraTools
 
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
-    
-        // Constructing list with datastream indexes and id    
+
+        // Constructing list with datastream indexes and id
         List< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getCargoObjects().get( i );
-          
+
             lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
         }
-    
+
         Collections.sort( lst );
 
         // Add a number to the id according to the number of
         // datastreams with this datastreamname
         int j = 0;
         DataStreamType dsn = null;
-       
+
         List< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
         for( Pair<String, Integer> p : lst)
         {
@@ -175,12 +180,12 @@ public class FedoraTools
             }
 
             dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
-    
+
             lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
         }
-     
+
         lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
-     
+
         Collections.sort( lst2 );
 
         log.debug( "Constructing adminstream" );
@@ -199,7 +204,7 @@ public class FedoraTools
 
         // add the adminstream to the cargoContainer
         byte[] byteAdmArray = admStreamString.getBytes();
-        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );       
+        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
 
         log.debug( "Constructing foxml byte[] from cargoContainer" );
         cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
@@ -209,7 +214,7 @@ public class FedoraTools
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getCargoObjects().get( i );
-           
+
             dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
         }
 
@@ -223,7 +228,7 @@ public class FedoraTools
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter( out );
         Marshaller m = new Marshaller( outW ); // IOException
         m.marshal( dot ); // throws MarshallException, ValidationException
-    
+
         byte[] ret = out.toByteArray();
 
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
@@ -239,7 +244,7 @@ public class FedoraTools
 
         Document admStream = builder.newDocument();
         Element root = admStream.createElement( "admin-stream" );
-        
+
         Element indexingaliasElem = admStream.createElement( "indexingalias" );
         indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
         root.appendChild( (Node)indexingaliasElem );
@@ -253,7 +258,7 @@ public class FedoraTools
             CargoObject c = cargo.getCargoObjects().get( i );
 
             Element stream = admStream.createElement( "stream" );
-         
+
             stream.setAttribute( "id", lst2.get( i ).getSecond() );
             stream.setAttribute( "lang", c.getLang() );
             stream.setAttribute( "format", c.getFormat() );
@@ -290,9 +295,9 @@ public class FedoraTools
      * @return a DigitalObject with no DataStreams
      */
     static DigitalObject initDigitalObject( String state,
-                                                    String label,
-                                                    String owner,
-                                                    String pid )
+                                            String label,
+                                            String owner,
+                                            String pid )
     {
         Date timestamp = new Date( System.currentTimeMillis() );
         return initDigitalObject( state, label, owner, pid, timestamp );
@@ -311,10 +316,10 @@ public class FedoraTools
      * @return a DigitalObject with no DataStreams
      */
     static DigitalObject initDigitalObject( String state,
-                                                    String label,
-                                                    String owner,
-                                                    String pid,
-                                                    Date timestamp )
+                                            String label,
+                                            String owner,
+                                            String pid,
+                                            Date timestamp )
     {
         //ObjectProperties holds all the Property types
         ObjectProperties op = new ObjectProperties();
@@ -364,9 +369,9 @@ public class FedoraTools
      *
      * @return
      */
-     static Datastream constructDatastream( CargoObject co,
-                                            String itemID ) throws ParseException,
-                                                                   IOException
+    static Datastream constructDatastream( CargoObject co,
+                                           String itemID ) throws ParseException,
+                                                                  IOException
     {
         Date timestamp = new Date( System.currentTimeMillis() );
         String timeNow = dateFormat.format( timestamp );
@@ -384,9 +389,9 @@ public class FedoraTools
      *
      * @return A datastream suitable for ingestion into the DigitalObject
      */
-     static Datastream constructDatastream( CargoObject co,
-                                                   String timeNow,
-                                                   String itemID ) throws ParseException
+    static Datastream constructDatastream( CargoObject co,
+                                           String timeNow,
+                                           String itemID ) throws ParseException
     {
         return constructDatastream( co, timeNow, itemID, false, false, false );
     }
@@ -430,12 +435,12 @@ public class FedoraTools
      *      content to a client (e.g., video streaming), rather than
      *      have Fedora in the middle re-streaming the content out.
      */
-     static Datastream constructDatastream( CargoObject co,
-                                                   String timeNow,
-                                                   String itemID,
-                                                   boolean versionable,
-                                                   boolean externalData,
-                                                   boolean inlineData ) throws ParseException
+    static Datastream constructDatastream( CargoObject co,
+                                           String timeNow,
+                                           String itemID,
+                                           boolean versionable,
+                                           boolean externalData,
+                                           boolean inlineData ) throws ParseException
     {
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();

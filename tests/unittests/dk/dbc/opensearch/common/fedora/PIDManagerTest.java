@@ -27,15 +27,22 @@ import java.net.MalformedURLException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.junit.*;
 
+import static org.junit.Assert.*;
+import org.junit.*;
 
 public class PIDManagerTest
 {
-    @Test
-    public void getNextPIDTest() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+
+    @Test ( expected=IllegalStateException.class )
+    public void testPrefixMustBeSpecified() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String pid = PIDManager.getInstance().getNextPID( "" );
-        System.out.println( "PIDManagerTest pid: " + pid ); 
+    }
+
+    @Test ( expected=IllegalStateException.class ) 
+    public void testFedoraConnectionMustBePresent() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        PIDManager.getInstance().getNextPID( "a:1" );
     }
 }

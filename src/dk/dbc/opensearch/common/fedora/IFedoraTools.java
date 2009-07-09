@@ -24,7 +24,6 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.xsd.DigitalObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
-
 /** 
  *  The FedoraTools API specifies the operations that can be
  *  performed in and with Digital Objects. A Digital Object consists
@@ -58,6 +57,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
  */
 public interface IFedoraTools
 {
+
 
     /** 
      * Given a CargoContainer, this method examines the contained

@@ -68,7 +68,7 @@ public class PIDManager
     }
 
 
-    public String getNextPID( String prefix ) throws ServiceException, ConfigurationException, MalformedURLException, IOException
+    public String getNextPID( String prefix ) throws ServiceException, ConfigurationException, MalformedURLException, IOException, IllegalStateException
     {	
     	if( ! ( pidMap.containsKey( prefix ) ) ||  pidMap.get( prefix ).empty() )  
         {
@@ -80,30 +80,33 @@ public class PIDManager
     }
 
     
-    private Stack<String> retrievePIDStack( String prefix ) throws ServiceException, ConfigurationException, MalformedURLException, IOException
+    private Stack<String> retrievePIDStack( String prefix ) throws ServiceException, ConfigurationException, MalformedURLException, IOException, IllegalStateException
     {
-        log.trace( String.format( "Entering retrievePIDs(prefix='%s')", prefix ) );
+        log.trace( "Entering retrievePIDStack( String prefix )" );
+        if( prefix == null || prefix.isEmpty() )
+        {
+            log.error( "Prefix was not specified, and I have no default, exiting" );
+            throw new IllegalStateException( "Prefix was not specified, and I have no default, exiting" );
+        }
+
         log.debug( String.format( "Calling through FedoraHandle.getInstance().getAPIM().getNextPID( %s, %s)", numPIDs, prefix ) );
 
         Stack<String> pidStack = new Stack<String>();
-        System.out.println( "retrievePIDStack prefix: " + prefix );
+
         fedora.server.management.FedoraAPIM fem = FedoraHandle.getInstance().getAPIM();
-        if ( numPIDs == null ) { System.out.println( "numPIDS is null" ); }
-        if ( prefix == null ) { System.out.println( "prefix is null" ); }
         
         String[] pids = fem.getNextPID( numPIDs, prefix );
         
-        //String[] pids = FedoraHandle.getInstance().getAPIM().getNextPID( numPIDs, prefix );
         if ( pids == null )
         {
-        	System.out.println( "pids is null" );
+            log.error( "Could not retrieve pids from Fedora repository" );
+            throw new IllegalStateException( "Could not retrieve pids from Fedora repository" );
         }
-        System.out.println( String.format( "Got pidlist=%s", pids.toString() ) );
+
         log.debug( String.format( "pidList length: %s -- Got pidlist=%s", pids.length, pids.toString() ) );        
         for( String pid : pids )
         { 	
-        	System.out.println( "pid: " + pid );
-        	log.debug( "PIDManager pid: " + pid );
+            log.debug( String.format( "pushing pid '%s' onto pidstack", pid ) );
             pidStack.push( pid );
         }
 

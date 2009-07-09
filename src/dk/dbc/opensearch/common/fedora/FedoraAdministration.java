@@ -200,7 +200,12 @@ public class FedoraAdministration implements IFedoraAdministration
 
         byte[] foxml = FedoraTools.constructFoxml( theCC, pid, label );
         String logm = String.format( "%s inserted", label );
-
+        //If the XML document specifies a pid, it will be assigned to
+        //the digital object provided that 1. it conforms to the
+        //Fedora pid Syntax, 2. it uses a namespace that matches the
+        //"retainPIDs" value configured for the repository, and 3. it
+        //does not collide with an existing pid of an object in the
+        //repository.
         String returnPid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
         if( pid.equals( returnPid ) )
         {
@@ -476,9 +481,9 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param pid, the indentifier of the object to remove from
      * @param sID, the identifier of the stream to remove
      * @param breakDependencies tells whether to break data contracts/dependencies
-     * @param startDate, the earlyist date to remove stream versions from, can be null
+     * @param startDate, the earlist date to remove stream versions from, can be null
      * @param endDate, the latest date to remove stream versions to, can be null
-     * @return true if the stream was removed
+     * @return true iff the stream was successfully removed, false otherwise
      * @throws ServiceException 
      * @throws ConfigurationException 
      */
