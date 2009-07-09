@@ -70,12 +70,13 @@ public class PIDManager
 
     public String getNextPID( String prefix ) throws ServiceException, ConfigurationException, MalformedURLException, IOException
     {	
-        if( ! ( pidMap.containsKey( prefix ) ) ||  pidMap.get( prefix ).empty() )  
+    	if( ! ( pidMap.containsKey( prefix ) ) ||  pidMap.get( prefix ).empty() )  
         {
         	pidMap.put( prefix, retrievePIDStack( prefix ) );
         }
-
-    	return pidMap.get( prefix ).pop();        
+        
+    	String ret = pidMap.get( prefix ).pop(); 
+    	return ret;         
     }
 
     
@@ -85,98 +86,27 @@ public class PIDManager
         log.debug( String.format( "Calling through FedoraHandle.getInstance().getAPIM().getNextPID( %s, %s)", numPIDs, prefix ) );
 
         Stack<String> pidStack = new Stack<String>();
-
-        String[] pids = FedoraHandle.getInstance().getAPIM().getNextPID( numPIDs, prefix );        
-        log.debug( String.format( "Got pidlist=%s", pids.toString() ) );
+        System.out.println( "retrievePIDStack prefix: " + prefix );
+        fedora.server.management.FedoraAPIM fem = FedoraHandle.getInstance().getAPIM();
+        if ( numPIDs == null ) { System.out.println( "numPIDS is null" ); }
+        if ( prefix == null ) { System.out.println( "prefix is null" ); }
+        
+        String[] pids = fem.getNextPID( numPIDs, prefix );
+        
+        //String[] pids = FedoraHandle.getInstance().getAPIM().getNextPID( numPIDs, prefix );
+        if ( pids == null )
+        {
+        	System.out.println( "pids is null" );
+        }
+        System.out.println( String.format( "Got pidlist=%s", pids.toString() ) );
+        log.debug( String.format( "pidList length: %s -- Got pidlist=%s", pids.length, pids.toString() ) );        
         for( String pid : pids )
         { 	
+        	System.out.println( "pid: " + pid );
+        	log.debug( "PIDManager pid: " + pid );
             pidStack.push( pid );
         }
 
         return pidStack;
     }
 }
-
-
-
-// public class PIDManager// extends FedoraHandle 
-// {
-//     static Logger log = Logger.getLogger( PIDManager.class );
-    
-//     HashMap <String, Vector<String>> pidMap;
-//     NonNegativeInteger numPIDs;
-
-
-//     /**
-//      * Constructor for the PIDManager. Gets fedora connection inforamtion from configuration
-//      */
-//     public PIDManager() throws ConfigurationException, ServiceException, java.net.MalformedURLException, java.io.IOException
-//     {
-//     	//super();
-    	
-//         log.debug( "Constructor() called" );
-     
-//         numPIDs =  new NonNegativeInteger( PidManagerConfig.getNumberOfPidsToRetrieve() );
-//         pidMap = new HashMap <String, Vector< String > >();
-//     }
-
-
-//     /**
-//      * this Method provides a new PID for a digital object to store it
-//      * in the repository.
-//      * 
-//      * @param prefix The prefix for the new PID
-//      * 
-//      * @returns The next PID
-//      */
-//     public String getNextPID( String prefix ) throws MalformedURLException, ServiceException, RemoteException, IOException
-//     {
-//         log.debug( String.format( "getNextPid(prefix='%s') called", prefix ) );
-
-//         Vector< String > prefixPIDs = null;
-        
-//         if( pidMap.containsKey( prefix ) ) // checks whether we already retrieved PIDs
-//         {   
-//             prefixPIDs = pidMap.get( prefix );
-            
-//             if( prefixPIDs.isEmpty() ) // checks if there are any PIDs left
-//             { 
-//                 log.debug( "Used all the PIDs, retrieving new PIDs" );
-//                 prefixPIDs = retrievePIDs( prefix );                
-//             }   
-
-//             pidMap.remove( prefix );
-//         }
-//         else
-//         {
-//             log.debug( "No PIDs for this namespace, retrieving new PIDs" );
-//             prefixPIDs = retrievePIDs( prefix );
-//         }
-        
-//         String newPID = prefixPIDs.remove( 0 );
-//         pidMap.put( prefix, prefixPIDs );
-        
-//         log.debug( String.format( "returns PID='%s'", newPID ) );
-//         return newPID;
-//     }    
-
-    
-//     /**
-//      * Method for retrieving new PIDs from the fedoraRepository
-//      * 
-//      * @param prefix The prefix for the new PID
-//      * 
-//      * @returns a vector containing new PIDs for the given namespace
-//      */
-//     private Vector< String > retrievePIDs( String prefix ) throws MalformedURLException, ServiceException, RemoteException, IOException
-//     {
-//         log.debug( String.format( "retrievePIDs(prefix='%s') called", prefix ) );
-//         log.debug( String.format( "Calling through FedoraHandle.HANDLE.dem.getNextPID( %s, %s)", numPIDs, prefix ) );
-
-//         Vector< String > pidlist = new Vector< String >( Arrays.asList( FedoraHandle.HANDLE.fem.getNextPID( numPIDs, prefix ) ) );
-
-//         log.debug( String.format( "Got pidlist=%s",pidlist.toString() ) );
-
-//         return pidlist;
-//     }
-// }

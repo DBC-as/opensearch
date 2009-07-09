@@ -1,5 +1,6 @@
 package dk.dbc.opensearch.common.fedora;
 
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.IndexingAlias;
@@ -55,6 +56,10 @@ public class AdministrationFunc
 
         System.out.println( "*** kalder testFindObjects ***" );
         testFindObjectPids();
+        
+        System.out.println( "*** kalder testDeleteObjects ***" );
+        String[] labels = { "materialevurderinger" };
+        testDeleteObjectPids( labels, 50 );
 
         System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
@@ -68,12 +73,12 @@ public class AdministrationFunc
         System.out.println( "*** kalder modify ***" );
         testModifyDataStream( pid );
 
-        /*System.out.println( "*** kalder remove ***" );
+        System.out.println( "*** kalder remove ***" );
         testRemoveDataStream( pid );
         
         System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
         testGetDataStreamsOfType( pid );
-        testDeleteObject( pid );*/
+        testDeleteObject( pid );
     }
 
 
@@ -92,6 +97,33 @@ public class AdministrationFunc
         {
             System.out.println( pids[ i ] );
         }
+    }
+    
+    
+    static void testDeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {	
+    	for ( String str : labels )
+    	{
+    		for ( int i = 0; i < runsPerLabel; i++ )
+    		{
+		        String[] pids = null;
+		        try
+		        {
+		            //pids = fa.findObjectPids( "label", "eq", "materialevurderinger" );
+		        	pids = fa.findObjectPids( "label", "eq", str );
+		        }
+		        catch( RemoteException re )
+		        {
+		            re.printStackTrace();
+		        }
+		        System.out.println( "testDeleteObjectPids - pids.length: " + pids.length );
+		        for( int j = 0; j < pids.length; j++ )
+		        {
+		            System.out.println( pids[ j ] );
+		            testDeleteObject( pids[ j ] );
+		        }
+    		}
+    	}
     }
 
 
@@ -269,11 +301,11 @@ public class AdministrationFunc
         String submitter = coList.get( 0 ).getSubmitter();
         System.out.println( String.format( "trying to store CargoContainer with submitter: %s", submitter ) );
 
-        String label = "testObject for testing FedoraAdministration";
+        String format = "testObject for testing FedoraAdministration";
         String pid = "";
         try
         {
-            pid = fa.storeCargoContainer( cc, label );
+            pid = fa.storeCargoContainer( cc, submitter, format );
         }
         catch( Exception e)
         {
@@ -285,6 +317,7 @@ public class AdministrationFunc
         return pid;
     }
 
+    
     //method for testing the getObject method
     static void testGetObject( String pid)
     {
@@ -294,7 +327,9 @@ public class AdministrationFunc
 
         try
         {
-            cc = fa.getDigitalObject( pid );
+        	FedoraAdministration fa = new FedoraAdministration();
+            //cc = FedoraAdministration.retrieveCargoContainer( pid );
+        	cc = fa.retrieveCargoContainer( pid );
         }
         catch( Exception e )
         {
@@ -305,7 +340,6 @@ public class AdministrationFunc
         String submitter = coList.get( 0 ).getSubmitter();
         System.out.println( String.format( "got CargoContainer with submitter: %s", submitter ) );
     }
-
 
 
     /**

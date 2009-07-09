@@ -77,7 +77,7 @@ public interface IFedoraCommunication
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
     
 
-    public String storeContainer( CargoContainer cc ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
+    //public String storeContainer( CargoContainer cc ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
     
 
     /**

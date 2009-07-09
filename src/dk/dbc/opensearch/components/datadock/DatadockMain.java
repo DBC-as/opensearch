@@ -28,39 +28,28 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.config.HarvesterConfig;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.PIDManager;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.db.Processqueue;
+//import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+//import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
-import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -195,7 +184,8 @@ public class DatadockMain
 
             // Fedora access
             //PIDManager PIDmanager = new PIDManager();
-            IFedoraCommunication fedoraCom = new FedoraCommunication();
+            //IFedoraCommunication fedoraCom = new FedoraCommunication();
+            FedoraAdministration fedoraAdministration = new FedoraAdministration();
 
             log.debug( "Starting datadockPool" );
 
@@ -204,7 +194,7 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, fedoraCom );
+            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, fedoraAdministration );
 
             log.debug( "Starting harvester" );
             

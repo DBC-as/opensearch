@@ -1,30 +1,28 @@
 /**
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
 package dk.dbc.opensearch.tools.testindexer;
 
-/** \brief UnitTest for Indexer */
-
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
@@ -63,7 +61,7 @@ public class InderxerTest
 
     IEstimate mockEstimate;
     IProcessqueue mockProcessqueue;
-    IFedoraCommunication mockFedoraCommunication;
+    FedoraAdministration mockFedoraAdministration;
     Compass mockCompass;
     CompassSession mockSession;
     ThreadPoolExecutor mockThreadPoolExecutor;
@@ -71,18 +69,19 @@ public class InderxerTest
     static FutureTask mockFutureDatadock = createMock( FutureTask.class );
     static FutureTask mockFuturePTI = createMock( FutureTask.class );
 
+    
     @MockClass( realClass = Indexer.class )
     public static class MockIndexer
     {
-
         @Mock( invocations = 1 )
-        public static FutureTask getDatadockTask( DatadockJob datadockjob, IEstimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCommunication )
+        public static FutureTask getDatadockTask( DatadockJob datadockjob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration )
         {
             return mockFutureDatadock;
         }
 
+        
         @Mock( invocations = 1 )
-        public static FutureTask getPTITask( String fedoraPID, CompassSession session, IEstimate estimate, IFedoraCommunication fedoraCommunication )
+        public static FutureTask getPTITask( String fedoraPID, CompassSession session, IEstimate estimate, FedoraAdministration fedoraAdministration )
         {
             return mockFuturePTI;
         }
@@ -96,7 +95,7 @@ public class InderxerTest
     {
         mockEstimate = createMock( IEstimate.class );
         mockProcessqueue = createMock( IProcessqueue.class );
-        mockFedoraCommunication = createMock( IFedoraCommunication.class );
+        mockFedoraAdministration = createMock( FedoraAdministration.class );
         mockCompass = createMock( Compass.class );
         mockSession = createMock( CompassSession.class );
         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
@@ -130,7 +129,7 @@ public class InderxerTest
         replay( mockThreadPoolExecutor );
         replay( mockFuturePTI );
 
-        Indexer testIndexer = new Indexer( mockCompass, mockEstimate, mockProcessqueue, mockFedoraCommunication, mockThreadPoolExecutor );
+        Indexer testIndexer = new Indexer( mockCompass, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockThreadPoolExecutor );
         testIndexer.index( datadockJob );
 
         verify( mockCompass );
@@ -142,7 +141,7 @@ public class InderxerTest
         Mockit.tearDownMocks();
         reset( mockEstimate );
         reset( mockProcessqueue );
-        reset( mockFedoraCommunication );
+        reset( mockFedoraAdministration );
         reset( mockCompass );
         reset( mockSession );
         reset( mockFutureDatadock );

@@ -24,12 +24,13 @@ package dk.dbc.opensearch.tools.indexchecker;
 import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.CompassConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.tools.readindex.ReadIndex;
 import dk.dbc.opensearch.tools.testindexer.Estimate;
 import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
@@ -134,7 +135,6 @@ public class IndexChecker
             }
         }
 
-
         for ( File f: testFolders )
         {
             if ( f.isDirectory() && ! ".svn".equals( f.getName() ) )
@@ -142,13 +142,14 @@ public class IndexChecker
                 System.out.println("NAME: "+ f.getName() );
                 
                 int spaces = testNameLength + 5 - f.getName().length();
-                System.out.print( String.format( " Running test: %s", f.getName() ) );
+                System.out.println( String.format( " Running test: %s", f.getName() ) );
 
                 for ( int i = 0; i < spaces ;i++ )
                 {
                     System.out.print( " " );
                 }
-
+                System.out.println();
+                
                 boolean testresult = runTest( f );
                 if ( testresult )
                 {
@@ -209,6 +210,7 @@ public class IndexChecker
                 resultFile = f;
             }
         }
+        
         if ( resultFile == null )
         {
             throw new FileNotFoundException( String.format( "Couldn't find result.out file in %s", testFolder ) );
@@ -241,11 +243,12 @@ public class IndexChecker
         // setup classes needed for indexing
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
-        IFedoraCommunication c = new FedoraCommunication();
+        System.out.println( "IndexChecker b4 FedoraAdministration is constructed" );
+        FedoraAdministration fedoraAdministration = new FedoraAdministration();
         ReadIndex readIndex = new ReadIndex();
         ExecutorService pool = Executors.newFixedThreadPool( 1 );
 
-        Indexer indexer = new Indexer( compass, e, p, c, pool );
+        Indexer indexer = new Indexer( compass, e, p, fedoraAdministration, pool );
 
         //index the jobs
         for ( DatadockJob job: jobs )
@@ -369,7 +372,7 @@ public class IndexChecker
                             String job = j.getName();
                             returnList.add( new DatadockJob( j.toURI() , submitter, form, "Mock_fedoraPID" ) );
                             }
-                            }
+                        }
                     }
                 }
             }

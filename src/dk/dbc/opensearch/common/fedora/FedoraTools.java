@@ -19,25 +19,12 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-import java.util.Collections;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.Result;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import java.io.StringWriter;
-import javax.xml.transform.TransformerException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import dk.dbc.opensearch.common.types.IndexingAlias;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.xsd.Datastream;
 import dk.dbc.opensearch.xsd.DatastreamVersion;
 import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
@@ -52,37 +39,46 @@ import dk.dbc.opensearch.xsd.types.StateType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Collections;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Result;
+import javax.xml.transform.TransformerException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import dk.dbc.opensearch.common.types.Pair;
 
 
 /**
  *
  */
-public class FedoraTools {
-
+public class FedoraTools 
+{
     static Logger log = Logger.getLogger( FedoraTools.class );
-    protected static final SimpleDateFormat dateFormat =
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    
+    
+    protected static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
 
     /**
@@ -112,8 +108,9 @@ public class FedoraTools {
 
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
         return ret;
-
     }
+    
+    
     /**
      * method for constructing the foxml to ingest
      * @param cargo, the CargoContainer to ingest
@@ -121,7 +118,7 @@ public class FedoraTools {
      * @param label, the label of the object, most often the format of the original data
      * @return a byte[] to ingest
      */
-    static byte[] constructFoxml(CargoContainer cargo, String nextPid, String label) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
         log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
 
@@ -129,6 +126,7 @@ public class FedoraTools {
         return constructFoxml(cargo, nextPid, label, now);
     }
 
+    
     /**
      * method for constructing the foxml to ingest
      * @param cargo, the CargoContainer to ingest
@@ -300,7 +298,8 @@ public class FedoraTools {
         return initDigitalObject( state, label, owner, pid, timestamp );
     }
 
-    /**
+    
+    /** 
      * Initializes and returns a DigitalObject with no
      * DataStreams.
      * @see initDigitalObject( String, String, String ) for more info
@@ -355,6 +354,7 @@ public class FedoraTools {
         return dot;
     }
 
+    
     /**
      * Constructing a Datastream with a default timestamp (
      * System.currentTimeMillis )
@@ -373,6 +373,7 @@ public class FedoraTools {
 
         return constructDatastream( co, timeNow, itemID );
     }
+     
 
     /**
      * constructDatastream creates a Datastream object on the basis of a CargoObject
@@ -390,6 +391,7 @@ public class FedoraTools {
         return constructDatastream( co, timeNow, itemID, false, false, false );
     }
 
+     
     /**
      * Control Group: the approach used by the Datastream to represent or encapsulate the content as one of four types or control groups:
      *    - Internal XML Content - the content is stored as XML

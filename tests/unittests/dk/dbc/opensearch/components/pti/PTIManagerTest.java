@@ -1,12 +1,3 @@
-/**
- * file PTIManagerTest.java
- * \brief the PTIManagerTest class
- * \package tests; 
- */
-
-package dk.dbc.opensearch.components.pti;
-
-
 /*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -27,16 +18,18 @@ package dk.dbc.opensearch.components.pti;
 */
 
 
+package dk.dbc.opensearch.components.pti;
+
+
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.components.pti.PTIManager;
 import dk.dbc.opensearch.components.pti.PTIPool;
 
@@ -74,8 +67,7 @@ public class PTIManagerTest
     Processqueue mockPQ = createMock( Processqueue.class );
     PTIPool mockPTIPool = createMock( PTIPool.class);
     CompletedTask mockCompletedTask = createMock( CompletedTask.class );
-    //Vector<InputPair<String, Integer>> mockNewJobs;
-
+    
     static FutureTask mockFuture = createMock( FutureTask.class );
     static CompletedTask dummyTask = new CompletedTask( mockFuture, new InputPair< Long, Integer >( 1l, 1 ) );
     static Vector< CompletedTask > checkJobsVector =  new Vector< CompletedTask >();
@@ -306,8 +298,8 @@ public class PTIManagerTest
             /**
          * do stuff
          */
-        IFedoraCommunication fedoraCommunication = new FedoraCommunication();
-        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, fedoraCommunication );
+        FedoraAdministration fedoraAdministration = new FedoraAdministration();
+        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, fedoraAdministration );
         ptiManager = new PTIManager( ptiPool, mockPQ );
         ptiManager.update();
 

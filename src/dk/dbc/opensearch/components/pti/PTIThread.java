@@ -28,7 +28,8 @@
 package dk.dbc.opensearch.components.pti;
 
 
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
@@ -74,8 +75,8 @@ public class PTIThread implements Callable< Long >
     private String fedoraPid;
     private IEstimate estimate;
     private ArrayList< String > list;
-    //private HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-    private IFedoraCommunication fedoraCommunication;
+    //private IFedoraCommunication fedoraCommunication;
+    private FedoraAdministration fedoraAdministration;
 
 
     /**
@@ -86,7 +87,7 @@ public class PTIThread implements Callable< Long >
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IFedoraCommunication fedoraCommunication ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, FedoraAdministration fedoraAdministration ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         super();
 
@@ -96,7 +97,8 @@ public class PTIThread implements Callable< Long >
         this.estimate = estimate;
         this.session = session;
         this.fedoraPid = fedoraPid;
-        this.fedoraCommunication = fedoraCommunication;
+        //this.fedoraCommunication = fedoraCommunication;
+        this.fedoraAdministration = fedoraAdministration;
         log.debug( "constructor done" );
     }
 
@@ -123,13 +125,17 @@ public class PTIThread implements Callable< Long >
     {
         log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
         CargoContainer cc = null;
+        CargoContainer cc2 = null;
         CargoObject co = null;
         String submitter =  null;
         String format = null;
         
         try
         {
-            cc = fedoraCommunication.retrieveContainer( fedoraPid );
+            System.out.println( "PTIThread -> fedoraPid: " + fedoraPid );
+            //cc = fedoraCommunication.retrieveContainer( fedoraPid );
+            //FedoraAdministration fa = new FedoraAdministration();
+            cc = fedoraAdministration.retrieveCargoContainer( fedoraPid );
         }
         catch( Exception e )
         {
@@ -152,21 +158,7 @@ public class PTIThread implements Callable< Long >
         }
 
         PluginResolver pluginResolver = new PluginResolver();
-        /*Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-        // Execute the plugins
-        if ( ! missingPlugins.isEmpty() )
-        {
-            Iterator< String > iter = missingPlugins.iterator();
-            while ( iter.hasNext() )
-            {
-                log.debug( String.format( "no plugin for task: %s", ( String )iter.next() ) );
-            }
-
-
-            log.debug( " kill thread" );
-        }
-        else
-        {*/
+        
         log.debug( "Entering switch" );
         log.debug( "PluginsList: " + list.toString() );
         for ( String classname : list )

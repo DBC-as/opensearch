@@ -27,6 +27,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+//import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
@@ -51,9 +53,6 @@ import org.apache.log4j.Logger;
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-
 
 /**
  * \ingroup PTI
@@ -70,7 +69,8 @@ public class PTIPool
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
-    private IFedoraCommunication fedoraCommunication;
+    //private IFedoraCommunication fedoraCommunication;
+    private FedoraAdministration fedoraAdministration;
     private Compass compass;
     private int shutDownPollTime;
 
@@ -84,14 +84,15 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, IFedoraCommunication fedoraCommunication ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, FedoraAdministration fedoraAdministration ) throws ConfigurationException
     {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
          this.threadpool = threadpool;
          this.estimate = estimate;
          this.compass = compass;
-         this.fedoraCommunication = fedoraCommunication;
+         //this.fedoraCommunication = fedoraCommunication;
+         this.fedoraAdministration = fedoraAdministration;
 
          jobs = new Vector< InputPair< FutureTask< Long >, Integer > >();         
          shutDownPollTime = PtiConfig.getShutdownPollTime();         
@@ -123,7 +124,7 @@ public class PTIPool
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
 
-        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, fedoraCommunication ) );
+        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, fedoraAdministration ) );
     }
 
     
@@ -186,7 +187,9 @@ public class PTIPool
              {
                 Integer queueID = job.getSecond();
                 if( queueID.equals( finishedpair.getSecond() ) )
+                {
                     removeableJobs.add( job );
+                }
              }
              
              jobs.removeAll( removeableJobs );

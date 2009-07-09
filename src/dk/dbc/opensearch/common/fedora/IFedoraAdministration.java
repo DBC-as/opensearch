@@ -51,8 +51,7 @@ import org.xml.sax.SAXException;
  * Parts of objects (Datastreams) are worked with as CargoObjects 
  */
 public interface IFedoraAdministration
-{
-    
+{    
     /**
      * method to delete an object for good, based on the pid
      * @param pid, the identifier of the object to be removed
@@ -81,7 +80,7 @@ public interface IFedoraAdministration
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getDigitalObject( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ServiceException, ConfigurationException;
+    //public CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ServiceException, ConfigurationException;
 
 
     /**
@@ -91,7 +90,7 @@ public interface IFedoraAdministration
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public String storeCargoContainer( CargoContainer theCC, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException;
+    //public String storeCargoContainer( CargoContainer cargo, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException;
 
    
     /**
@@ -138,13 +137,13 @@ public interface IFedoraAdministration
      * @param breakDependencies tells whether to update the datastream or not
      * if the operation breaks dependencies with other objects
      * @return the checksum of the datastream...
- * @throws ServiceException 
- * @throws ConfigurationException 
+     * @throws ServiceException 
+     * @throws ConfigurationException 
      */
     public String modifyDataStream( CargoObject cargo, String sID, String pid, boolean versionable, boolean breakdependencies ) throws RemoteException, MalformedURLException, IOException, ConfigurationException, ServiceException;
 
 
-      /**
+    /**
      * method for removing a datastream form an object in the Fedora base
      * @param pid, the indentifier of the object to remove from
      * @param sID, the identifier of the stream to remove
@@ -157,6 +156,7 @@ public interface IFedoraAdministration
      */
     public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException, ConfigurationException, ServiceException;
 
+    
     /**
      * method for adding a relation to an object
      * @param pid, the identifier of the object to add the realtion to
@@ -172,6 +172,7 @@ public interface IFedoraAdministration
      */
     public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 
+    
     /**
      * method for getting the relationships an object has
      * @param pid, the object to get relations for
@@ -187,8 +188,12 @@ public interface IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
+    
+    
     public RelationshipTuple[] getRelationships( String pid, String predicate) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException; 
- /**
+    
+    
+    /**
      * method to see if an object has a certain relationship to another object
      * Its a filtered version of the method getRelationships
      * @param subject, the pid of the object in question
@@ -196,10 +201,10 @@ public interface IFedoraAdministration
      * @param target, the target of the predicate
      * @param isLiteral, true if the target is not an object in the base
      * @return true if the relationship exists
- * @throws IOException 
- * @throws ServiceException 
- * @throws MalformedURLException 
- * @throws ConfigurationException 
+     * @throws IOException 
+     * @throws ServiceException 
+     * @throws MalformedURLException 
+     * @throws ConfigurationException 
      */
     public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 

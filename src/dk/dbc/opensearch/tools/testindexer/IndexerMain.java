@@ -46,6 +46,7 @@ import dk.dbc.opensearch.tools.testindexer.Estimate;
 import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
 import dk.dbc.opensearch.tools.testindexer.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
@@ -155,9 +156,10 @@ public class IndexerMain
 
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
-        IFedoraCommunication c = new FedoraCommunication();
+        //IFedoraCommunication c = new FedoraCommunication();
+        FedoraAdministration fedoraAdministration = new FedoraAdministration();
         ExecutorService pool = Executors.newFixedThreadPool( 1 );
-        Indexer indexer = new Indexer( compass, e, p, c, pool );
+        Indexer indexer = new Indexer( compass, e, p, fedoraAdministration, pool );
 
         System.out.println( "--------------------" );
         for ( String j : jobs )

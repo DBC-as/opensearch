@@ -21,36 +21,25 @@
 package dk.dbc.opensearch.tools.testindexer;
 
 
-//import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
-import dk.dbc.opensearch.components.pti.PTIJobsMap;
 import dk.dbc.opensearch.components.pti.PTIThread;
-import dk.dbc.opensearch.tools.testindexer.Estimate;
-import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
-import dk.dbc.opensearch.tools.testindexer.Processqueue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
 import java.lang.InterruptedException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,10 +49,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
-import org.compass.core.config.CompassConfiguration;
-import org.compass.core.config.CompassEnvironment;
-import org.compass.core.converter.mapping.xsem.XmlContentMappingConverter;
-import org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter;
 import org.xml.sax.SAXException;
 
 
@@ -72,32 +57,36 @@ import org.xml.sax.SAXException;
  */
 public class Indexer
 {
-
     Logger log = Logger.getLogger( Indexer.class );
+    
 
     private static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
     private ExecutorService pool;
     private CompassSession session;
     private IEstimate e;
     private IProcessqueue p;
-    private IFedoraCommunication c;
+    //private IFedoraCommunication c;
+    private FedoraAdministration fedoraAdministration;
     private Compass compass;
     private FutureTask<Long> ptiFuture;
     private FutureTask<Float> datadockFuture;
 
+    
     /**
      * Constructor
      */
-    public Indexer( Compass compass, IEstimate e, IProcessqueue p, IFedoraCommunication c, ExecutorService pool ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public Indexer( Compass compass, IEstimate e, IProcessqueue p, FedoraAdministration fedoraAdministration, ExecutorService pool ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
+    	System.out.println( "Indexer Constructor" );    	
         log.debug( "entering constructor()" );
         this.pool = pool;
         this.compass = compass;
         this.e = e;
         this.p = p;
-        this.c = c;
+        this.fedoraAdministration = fedoraAdministration;
     }
 
+    
     /**
      * the index method indexes the job
      *
@@ -116,21 +105,21 @@ public class Indexer
      * @throws SAXException
      * @throws ServiceException
      */
-    public void index( DatadockJob datadockJob )
-        throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException, ExecutionException
+    public void index( DatadockJob datadockJob ) throws ParserConfigurationException, SAXException, IOException, ConfigurationException, ClassNotFoundException, PluginResolverException, ServiceException, InterruptedException, ExecutionException
     {
         log.debug( String.format( "entering index( datadockJob[ job=%s, submitter=%s, format=%s ] )",
                                   datadockJob.getUri().toString(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
 
         CompassSession session = compass.openSession();
 
-        runDatadock( datadockJob, e, p, c );
+        runDatadock( datadockJob, e, p, fedoraAdministration );
         log.debug( "datadock finshed, starting the pti" );
 
-        runPTI( "mock_fedoraPID", session, e, c);
+        runPTI( "mock_fedoraPID", session, e, fedoraAdministration );
         log.debug( String.format( "Indexed file: %s", datadockJob.getUri().toString() ) );
     }
 
+    
     /**
      * runPTI runs the job through a pti thread
      *
@@ -149,11 +138,10 @@ public class Indexer
      * @throws SAXException
      * @throws ServiceException
      */
-    private void runDatadock( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCommunication )
-        throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, ExecutionException
+    private void runDatadock( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, ExecutionException
     {
         log.debug( "Entering runDatadock" );
-        FutureTask<Float> ft = getDatadockTask( datadockJob, estimate, processqueue, fedoraCommunication );
+        FutureTask<Float> ft = getDatadockTask( datadockJob, estimate, processqueue, fedoraAdministration );
 
         pool.submit( ft );
 
@@ -167,6 +155,7 @@ public class Indexer
         log.debug( String.format( "Datadock ended... returned %s", f ) );
     }
 
+    
     /**
      * runPTI runs the job through a pti thread
      *
@@ -181,13 +170,12 @@ public class Indexer
      * @throws IOException
      * @throws ServiceException
      */
-    private void runPTI( String fedoraPid,  CompassSession session, IEstimate estimate, IFedoraCommunication fedoraCommunication )
-        throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException, ExecutionException
+    private void runPTI( String fedoraPid,  CompassSession session, IEstimate estimate, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException, ExecutionException
     {
         log.debug( "Entering runPTI" );
 
         // run the PTI thread
-        ptiFuture = getPTITask( fedoraPid, session, estimate, fedoraCommunication );
+        ptiFuture = getPTITask( fedoraPid, session, estimate, fedoraAdministration );
         pool.submit( ptiFuture );
 
         log.debug( "PTI job commited to threadpool.... waiting for it to return" );
@@ -199,24 +187,25 @@ public class Indexer
         log.debug( String.format( "PTI ended... returned %s", l ) );
     }
 
+    
     /**
      *
      */
-    public FutureTask<Float> getDatadockTask( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCommunication ) throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public FutureTask<Float> getDatadockTask( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        DatadockThread ddt = new DatadockThread( datadockJob, estimate, processqueue, fedoraCommunication );
+        DatadockThread ddt = new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration );
         FutureTask<Float> datadockFuture = new FutureTask<Float>( ddt );
         return datadockFuture;
     }
 
+    
     /**
      *
      */
-    public FutureTask<Long> getPTITask( String fedoraPid, CompassSession session, IEstimate estimate, IFedoraCommunication fedoraCommunication ) throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException
+    public FutureTask<Long> getPTITask( String fedoraPid, CompassSession session, IEstimate estimate, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException
     {
-        PTIThread PTIt = new PTIThread( fedoraPid, session, estimate, fedoraCommunication );
+        PTIThread PTIt = new PTIThread( fedoraPid, session, estimate, fedoraAdministration );
         FutureTask<Long> ptiFuture = new FutureTask<Long>( PTIt );
         return ptiFuture;
     }
-
 }

@@ -21,40 +21,22 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.ComparablePair;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.xsd.Datastream;
-import dk.dbc.opensearch.xsd.DatastreamVersion;
-import dk.dbc.opensearch.xsd.DatastreamVersionTypeChoice;
-import dk.dbc.opensearch.xsd.DigitalObject;
-import dk.dbc.opensearch.xsd.ObjectProperties;
-import dk.dbc.opensearch.xsd.Property;
-import dk.dbc.opensearch.xsd.PropertyType;
-import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
-import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
-import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
-import dk.dbc.opensearch.xsd.types.StateType;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.List;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 import javax.xml.transform.TransformerException;
@@ -79,13 +61,11 @@ import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
 
-import org.exolab.castor.xml.MarshalException;
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
-
 import org.apache.commons.lang.NotImplementedException;
-import org.exolab.castor.xml.Marshaller;
+import org.apache.log4j.Logger;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -97,6 +77,10 @@ import org.xml.sax.SAXException;
 import java.io.FileNotFoundException;
 
 
+/**
+ * This class contains methods for carrying out operations on object in 
+ * the Fedora-Commons Repository.
+ */
 public class FedoraAdministration implements IFedoraAdministration
 {
     static Logger log = Logger.getLogger( FedoraAdministration.class );
@@ -143,33 +127,29 @@ public class FedoraAdministration implements IFedoraAdministration
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer getDigitalObject( String pid ) throws IOException, 
-                                                                ParserConfigurationException, 
-                                                                RemoteException,
-                                                                ServiceException,
-                                                                SAXException, 
-                                                                ConfigurationException
+    public CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException
     {
         log.trace( String.format( "entering getDO( '%s' )", pid ) );
-
-        //Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
-
+        System.out.println( "retrieveCargoContainer 1" );
         Element adminStream = getAdminStream( pid );
-        
+        System.out.println( "retrieveCargoContainer 2" );
         NodeList streamNodeList = getStreamNodes( adminStream );
-
+        System.out.println( "retrieveCargoContainer 3" );
         String indexingAlias = getIndexingAlias( adminStream );
 
         log.debug( String.format( "Iterating streams in nodelist" ) );
-
+        System.out.println( "4" );
         CargoContainer cc = new CargoContainer();
 
         int streamNLLength = streamNodeList.getLength();
+        System.out.println( "streamNodeList length: " + streamNodeList.getLength() );
         for(int i = 0; i < streamNLLength; i++ )
-        {
+        {	System.out.println( "for løkke" );
             Element stream = (Element)streamNodeList.item(i);
             String streamID = stream.getAttribute( "id" );
+            System.out.println( "5" );
             MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null);
+            System.out.println( "after fedoraHandle" );
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
@@ -189,9 +169,28 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public String storeCargoContainer( CargoContainer theCC, String label ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
+    public static synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
     {
-        log.trace( "entering storeCC" );
+    	log.trace( "Entering storeContainer( CargoContainer )" );
+    	System.out.println( "FedoraAdministration storeCargoContainer" );
+        if( cargo.getCargoObjectCount() == 0 ) 
+        {
+            log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
+            throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
+        } 
+        
+        System.out.println( "submitter: " + submitter );
+        String nextPid = PIDManager.getInstance().getNextPID( submitter );
+        byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
+        
+        String logm = String.format( "%s inserted", format );        
+        String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
+        
+        log.info( String.format( "Submitted data, returning pid %s", pid ) );        
+        return pid;
+    }
+        
+     /*   log.trace( "entering storeCC" );
 
         String returnVal = null;
 
@@ -210,13 +209,13 @@ public class FedoraAdministration implements IFedoraAdministration
         else
         {
             log.warn( String.format( "Pid '%s' does not equal expected pid '%s'", returnPid, pid ) );
-            /** \todo: should we do more than this? If we got a pid
-             * back, it means that we succeded, so what if it's not
-             * the expected one?*/
+            // \todo: should we do more than this? If we got a pid
+            // * back, it means that we succeded, so what if it's not
+            // * the expected one?
         }
 
         return returnVal;
-    }
+    }*/
 
 
     /**
@@ -275,8 +274,6 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param pid, the identifier of the object to get the stream from
      * @return CargoContainer with the datastream
      */
-
-
     public CargoContainer getDataStream( String pid, String streamID ) throws MalformedURLException, IOException, RemoteException, ServiceException, ParserConfigurationException, SAXException, ConfigurationException
     {
         CargoContainer cc = new CargoContainer();
@@ -314,6 +311,7 @@ public class FedoraAdministration implements IFedoraAdministration
         return cc;
     }
 
+    
     /**
      * method for adding a Datastream to an object
      * see bug 8898
@@ -438,7 +436,6 @@ public class FedoraAdministration implements IFedoraAdministration
         String returnedSID = FedoraHandle.getInstance().getAPIM().addDatastream( pid, sID, new String[] {}, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
 
         return returnedSID;
-
     }
 
 
@@ -471,8 +468,6 @@ public class FedoraAdministration implements IFedoraAdministration
         // String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
 
         return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
-
-
     }
 
 
@@ -602,8 +597,8 @@ public class FedoraAdministration implements IFedoraAdministration
         {
             retval = true;
         }
+        
         return retval;
-
     }
 
 
@@ -673,7 +668,6 @@ public class FedoraAdministration implements IFedoraAdministration
         }
 
         return false;
-
     }
 
 
@@ -686,9 +680,8 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     public String[] findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-
-        String[] resultFields = {"pid", "title"};
-        NonNegativeInteger maxResults = new NonNegativeInteger( "1000" );
+        String[] resultFields = { "pid", "title" };
+        NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( operator ); 
         Condition cond = new Condition();
@@ -734,6 +727,7 @@ public class FedoraAdministration implements IFedoraAdministration
         return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
     }
 
+    
     /** 
      * returns the administration stream of a given DigitalObject from
      * the fedora repository
@@ -742,18 +736,23 @@ public class FedoraAdministration implements IFedoraAdministration
      * 
      * @return the administration stream as an Element
      */
-    private Element getAdminStream( String pid ) throws IOException, 
+    private static Element getAdminStream( String pid ) throws IOException, 
                                                         ParserConfigurationException, 
                                                         RemoteException, 
                                                         ServiceException, 
                                                         SAXException, 
                                                         ConfigurationException
-    {
-        MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
-
-        byte[] adminStream = ds.getStream();
+    {	System.out.println( "getAdminstream 1" );
+    	try
+    	{
+        System.out.println( "FEDORAADM. fedoraPid: " + pid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
+        
+    	MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        byte[] adminStream = ds.getStream();        
+        System.out.println( "getAdminstream 2" );
         if( adminStream == null ) 
-        {
+        {	
+            System.out.println( "adminStream is null" );
             log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
             throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
         }
@@ -761,14 +760,21 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
 
         CargoContainer cc = new CargoContainer();
-
+        System.out.println( "getAdminstream 3" );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        System.out.println( "getDocumentElement" );
         Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
-
+        
         return root;
+    	}
+    	catch ( Exception ex )
+    	{
+    		System.out.println( "Exception in getDatastreamDissemination: " + ex.getMessage() + ex.getCause() );
+    		throw new IOException("test");
+    	}
     }
 
 
@@ -779,7 +785,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * 
      * @return the indexingalias
      */
-    private String getIndexingAlias( Element adminStream )
+    private static String getIndexingAlias( Element adminStream )
     {
         NodeList indexingAliasElem = adminStream.getElementsByTagName( "indexingalias" );
         if( indexingAliasElem == null )
@@ -801,7 +807,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * 
      * @return the elements as a NodeList
      */
-    private NodeList getStreamNodes( Element adminStream )
+    private static NodeList getStreamNodes( Element adminStream )
     {
         NodeList streamsNL = adminStream.getElementsByTagName( "streams" );
         Element streams = (Element)streamsNL.item(0);
@@ -810,6 +816,7 @@ public class FedoraAdministration implements IFedoraAdministration
         return streamNL;
     }
 
+    
     /** 
      * Returns a reference to a resource uploadable to Fedora. This
      * method creates a unique name for the temporary file. If you for

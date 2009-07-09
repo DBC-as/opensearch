@@ -17,11 +17,6 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * \file PTIMain.java
- * \brief The PTIMain class
- * \package pti;
- */
 
 package dk.dbc.opensearch.components.pti;
 
@@ -29,12 +24,13 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.db.Processqueue;
+//import dk.dbc.opensearch.common.fedora.FedoraCommunication;
+//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+//import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
-
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
@@ -175,7 +171,8 @@ public class PTIMain
 
             IEstimate estimate = new Estimate();
             IProcessqueue processqueue = new Processqueue();
-            IFedoraCommunication fedoraCommunication = new FedoraCommunication();
+            //IFedoraCommunication fedoraCommunication = new FedoraCommunication();
+            FedoraAdministration fedoraAdministration = new FedoraAdministration();
 
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
@@ -184,7 +181,7 @@ public class PTIMain
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
 
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, fedoraCommunication );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, fedoraAdministration );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 

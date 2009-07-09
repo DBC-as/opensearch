@@ -22,7 +22,9 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -31,8 +33,10 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -82,15 +86,18 @@ public class DatadockThread implements Callable< Float >
 
     private CargoContainer cc;
     private IProcessqueue queue;
-
-    private String result;
     private IEstimate estimate;
+    
     private DatadockJob datadockJob;
     private String submitter;
     private String format;
     private ArrayList< String > list;
-    private IFedoraCommunication fedoraCom;
-
+    
+    //private IFedoraCommunication fedoraCom;
+    private FedoraAdministration fedoraAdministration;
+    
+    private String result;
+    
 
     /**
      *\todo: Wheet out in the Exceptions
@@ -113,7 +120,7 @@ public class DatadockThread implements Callable< Float >
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraCommunication fedoraCom ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
@@ -135,7 +142,7 @@ public class DatadockThread implements Callable< Float >
         queue = processqueue;
 
         this.estimate = estimate;
-        this.fedoraCom = fedoraCom;
+        this.fedoraAdministration = fedoraAdministration;
 
         log.debug( String.format( "DataDock Construction finished" ) );
     }
@@ -217,8 +224,35 @@ public class DatadockThread implements Callable< Float >
             }
         }
 
-        InputPair< String, Float > storeDataResponse = fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
+        //obtain mimetype and length from CargoContainer
+        String mimeType = null;
+        String format = null;
+        String submitter = null;
+        long length = 0;
         
-        return storeDataResponse.getSecond(); 
+        for( CargoObject co : cc.getCargoObjects() )
+        {
+            if( co.getDataStreamName() == DataStreamType.OriginalData )
+            {
+                mimeType = co.getMimeType();
+                format = co.getFormat();
+                submitter = co.getSubmitter();
+            }
+            
+            length += co.getContentLength();
+        }
+
+        //InputPair< String, Float > storeDataResponse = fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
+        System.out.println( String.format( "DatadockThread b4 storeCC: submitter %s; format: %s", submitter, format ) );
+        //String pid = fedoraAdministration.storeCargoContainer( cc, submitter, format ); //, label ); //datadockJob, queue, estimate );
+        String pid = FedoraAdministration.storeCargoContainer( cc, submitter, format );
+        
+        //push to processqueue job to processqueue and get estimate
+        queue.push( pid );
+        Float est = estimate.getEstimate( mimeType, length );
+        log.debug( String.format( "Got estimate of %s", est ) );
+        return est;
+        //return new InputPair<String, Float>( pid, est );
+        //return storeDataResponse.getSecond(); 
     }
 }

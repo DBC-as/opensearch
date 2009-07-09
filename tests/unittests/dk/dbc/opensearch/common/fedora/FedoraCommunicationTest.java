@@ -20,14 +20,11 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-/** \brief UnitTest for FedoraCommunication */
-//import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-//import dk.dbc.opensearch.common.fedora.FedoraHandle;
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.statistics.Estimate;
-//import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -70,12 +67,12 @@ import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
 import org.junit.*;
 
+
 /**
  *
  */
 public class FedoraCommunicationTest
 {
-
     FedoraCommunication fc;
 
     CargoContainer mockCC;
@@ -89,6 +86,7 @@ public class FedoraCommunicationTest
     static FedoraAPIM mockFem = createMock( FedoraAPIM.class );
     static Element mockElement = createMock( Element.class );
 
+    
     @MockClass( realClass = FedoraClient.class )
     public static class MockFedoraClient
     {
@@ -108,6 +106,7 @@ public class FedoraCommunicationTest
         }
     }
 
+    
     @MockClass( realClass = FedoraConfig.class )
     public static class MockFedoraConfig
     {
@@ -129,6 +128,7 @@ public class FedoraCommunicationTest
         }
     }
 
+    
     @MockClass( realClass = FedoraTools.class )
     public static class MockFedoraTools
     {
@@ -140,6 +140,7 @@ public class FedoraCommunicationTest
         }
     }
 
+    
     @MockClass( realClass = XMLFileReader.class )
     public static class MockXMLFileReader
     {
@@ -150,6 +151,7 @@ public class FedoraCommunicationTest
 
     }
 
+    
     /**
      *
      */
@@ -163,6 +165,7 @@ public class FedoraCommunicationTest
         mockMTStream = createMock( MIMETypedStream.class );
     }
 
+    
     /**
      *
      */
@@ -179,9 +182,9 @@ public class FedoraCommunicationTest
         reset( mockElement );
         reset( mockNodeList );
         reset( mockMTStream );
-
     }
 
+    
     /**
      * Testing the happy path of the constructor, the only path, since the
      * super class is being mocked...
@@ -191,8 +194,8 @@ public class FedoraCommunicationTest
         Mockit.setUpMocks( MockFedoraClient.class );
         Mockit.setUpMocks( MockFedoraConfig.class );
         fc = new FedoraCommunication();
-
     }
+    
 
     /**
      * Testing the happy path of the storeContainer method
@@ -241,12 +244,13 @@ public class FedoraCommunicationTest
         verify( mockEstimate );
         verify( mockFem );
         verify( mockFea );
-
     }
 
+    
     /**
      * Tests the happy path of the retrieveContainer method
      */
+    @Ignore
     @Test
     public void testRetrieveContainer() throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, MalformedURLException, ServiceException
     {
@@ -287,10 +291,9 @@ public class FedoraCommunicationTest
         replay( mockFea );
         
         //do stuff
-        fc = new FedoraCommunication();
-        CargoContainer cc = fc.retrieveContainer( "pid" );
+        FedoraAdministration fa = new FedoraAdministration();
+        CargoContainer cc = fa.retrieveCargoContainer( "pid" );
         assertTrue( cc.getCargoObjectCount() == 1 );
-
 
         //verify
         verify( mockElement );

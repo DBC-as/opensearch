@@ -21,11 +21,8 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -34,9 +31,6 @@ import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 
-import fedora.client.FedoraClient;
-import fedora.server.access.FedoraAPIA;
-import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.MIMETypedStream;
 
 import java.io.ByteArrayInputStream;
@@ -58,7 +52,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.apache.commons.lang.NotImplementedException;
 
 
 /**
@@ -68,7 +61,7 @@ import org.apache.commons.lang.NotImplementedException;
 public class FedoraCommunication implements IFedoraCommunication 
 {
 
-    Logger log = Logger.getLogger( FedoraCommunication.class );
+    private static Logger log = Logger.getLogger( FedoraCommunication.class );
 
     /**
      * The constructor initalizes the super class FedoraHandle which
@@ -79,9 +72,9 @@ public class FedoraCommunication implements IFedoraCommunication
      * @throws MalformedURLException Thrown if the FedoraHandler Couldn't be initialized properly. @see FedoraHandle
      * @throws ServiceException Thrown if the FedoraHandler Couldn't be initialized properly. @see FedoraHandle
      */
-    public FedoraCommunication() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException
+    public FedoraCommunication()
     {
-        log.debug( "constructor() called" );
+        log.debug( "FedoraCommunication constructor() called" );
     }
 
     /**
@@ -109,7 +102,7 @@ public class FedoraCommunication implements IFedoraCommunication
      * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraTools
      * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraTools
      */
-
+    @Deprecated
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ConfigurationException, ServiceException
     {
         log.trace( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
@@ -137,7 +130,6 @@ public class FedoraCommunication implements IFedoraCommunication
         String logm = String.format( "%s inserted", datadockJob.getFormat() );
 
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
-
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
         // push to processqueue job to processqueue and get estimate
@@ -149,18 +141,19 @@ public class FedoraCommunication implements IFedoraCommunication
     }
 
 
-    public String storeContainer( CargoContainer cargo )throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException
+    @Deprecated
+    public static synchronized String storeContainer( CargoContainer cargo, String submitter, String format )throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException
     {
+        log.trace( "Entering storeContainer( CargoContainer )" );
 
-        log.trace( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
-
-        if( cargo.getCargoObjectCount() == 0 ) {
+        if( cargo.getCargoObjectCount() == 0 ) 
+        {
             log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
             throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
         } 
 
         // obtain mimetype and length from CargoContainer
-        String mimeType = null;
+        /*String mimeType = null;
         String format = null;
         String submitter = null;
 
@@ -175,18 +168,16 @@ public class FedoraCommunication implements IFedoraCommunication
             }
             
             length += co.getContentLength();
-        }
+        }*/
       
         // Store the CargoContainer in the fedora repository
         byte[] foxml = FedoraTools.constructFoxml( cargo, PIDManager.getInstance().getNextPID( submitter ), format );
         String logm = String.format( "%s inserted", format );
 
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
-
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
         return pid;
-
     }
     
 
@@ -211,7 +202,7 @@ public class FedoraCommunication implements IFedoraCommunication
     public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, ServiceException
     {
         log.debug( String.format( "entering retrieveContainer( '%s' )", fedoraPid ) );
-
+        System.out.println( "FEDORACOM. fedoraPid: " + fedoraPid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
@@ -224,24 +215,16 @@ public class FedoraCommunication implements IFedoraCommunication
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
 
-        //Element indexingAliasElem = (Element)root.getElementsByTagName( "indexingalias" );
-
-        NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
+             NodeList indexingAliasElem = root.getElementsByTagName( "indexingalias" );
         if( indexingAliasElem == null )
         {
-            /**
-             * \Todo: this if statement doesnt skip anything. What should we do? bug: 8878 
-             */
+            // \Todo: this if statement doesnt skip anything. What should we do? bug: 8878             
             log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
         }
         log.debug( String.format( "indexingAliasElem == %s", indexingAliasElem.item(0) ) );
         String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
         log.debug( String.format( "Got indexingAlias = %s", indexingAliasName ) );
-        //Element filePathElem = (Element)root.getElementsByTagName( "filepath" ).item( 0 );
-        //String filePath = filePathElem.getAttribute( "name" );
-        //cc.setFilePath( filePath );
-        //log.info( String.format( "The filepath of the file to index: %s ", filePath ) );
-
+     
         NodeList streamsNL = root.getElementsByTagName( "streams" );
         Element streams = (Element)streamsNL.item(0);
         NodeList streamNL = streams.getElementsByTagName( "stream" );
@@ -261,6 +244,7 @@ public class FedoraCommunication implements IFedoraCommunication
                     IndexingAlias.getIndexingAlias( indexingAliasName ),
                     dstream.getStream() );
         }
+        
         return cc;
     }
 }

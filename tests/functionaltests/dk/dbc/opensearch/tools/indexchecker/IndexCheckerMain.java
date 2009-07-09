@@ -22,6 +22,7 @@ package dk.dbc.opensearch.tools.indexchecker;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -57,8 +58,8 @@ import org.xml.sax.SAXException;
  */
 public class IndexCheckerMain
 {
-
     private static IndexChecker indexChecker;
+    
 
     /**
      * The main method of the IndexChecker application
@@ -66,8 +67,6 @@ public class IndexCheckerMain
     static public void main( String[] args )
     {
         // Validating properties
-
-        // mode
         String mode = System.getProperty( "mode" );
         if ( mode == null )
         {
@@ -128,6 +127,7 @@ public class IndexCheckerMain
         System.exit( 0 );
     }
 
+    
     /**
      * Creates a new result.out file in the specified jobFolder
      *
@@ -149,7 +149,6 @@ public class IndexCheckerMain
      */
     private static void create( File orgFolder ) throws ClassNotFoundException, ConfigurationException, ExecutionException, InterruptedException, IOException, ParserConfigurationException, PluginResolverException, SAXException, ServiceException, TransformerConfigurationException, TransformerException, URISyntaxException
     {
-
         File tmpFolder = indexChecker.getTmpFolder();
         String subIndexName = indexChecker.modifyMapping( tmpFolder ); // modifying xsem file
         File xsemPath = new File( new File( tmpFolder.getAbsolutePath(), "xml.cpm.xml" ).getAbsolutePath() );
@@ -159,9 +158,10 @@ public class IndexCheckerMain
 
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
-        IFedoraCommunication c = new FedoraCommunication();
+        //IFedoraCommunication c = new FedoraCommunication();
+        FedoraAdministration fedoraAdministration = new FedoraAdministration();
         ExecutorService pool = Executors.newFixedThreadPool( 1 );
-        Indexer indexer = new Indexer( compass, e, p, c, pool );
+        Indexer indexer = new Indexer( compass, e, p, fedoraAdministration, pool );
         ReadIndex reader = new ReadIndex();
 
         // Index the jobfiles
@@ -186,6 +186,7 @@ public class IndexCheckerMain
         out.close();
     }
 
+    
     /**
      * The help string for this application
      */
