@@ -94,6 +94,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import java.io.FileNotFoundException;
 
 
 public class FedoraAdministration implements IFedoraAdministration
@@ -411,7 +412,7 @@ public class FedoraAdministration implements IFedoraAdministration
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
         String adminMime = "text/xml";
-        //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
+
         String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
@@ -422,13 +423,15 @@ public class FedoraAdministration implements IFedoraAdministration
 
         //upload the content
         //byte[] to File
-        File theFile = new File( "tempFile" );
-        theFile.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream( theFile );
-        fos.write( cargo.getBytes() );
-        fos.flush();
-        fos.close();
-        String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
+        String dsLocation = createFedoraResource( cargo );
+        // File tempFile = File.createTempFile( timeNow, "tmp" );
+        // //File theFile = new File( "tempFile" );
+        // tempFile.deleteOnExit();
+        // FileOutputStream fos = new FileOutputStream( tempFile );
+        // fos.write( cargo.getBytes() );
+        // fos.flush();
+        // fos.close();
+        // String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( tempFile );
 
         logm = String.format( "added %s to the object with pid: %s", dsLocation, pid );
 
@@ -455,14 +458,17 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         String logm = String.format( "modified the object with pid: %s", pid );
         //String[] altIDs;
-        File theFile = new File( "tempFile" );
-        theFile.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream( theFile );
-        fos.write( cargo.getBytes() );
-        fos.flush();
-        fos.close();
 
-        String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
+        String dsLocation = createFedoraResource( cargo );
+
+        // File theFile = new File( "tempFile" );
+        // theFile.deleteOnExit();
+        // FileOutputStream fos = new FileOutputStream( theFile );
+        // fos.write( cargo.getBytes() );
+        // fos.flush();
+        // fos.close();
+
+        // String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
 
         return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
 
@@ -706,11 +712,36 @@ public class FedoraAdministration implements IFedoraAdministration
     }
 
 
+    /** 
+     * Deletes the specified relationship. This method will remove the
+     * specified relationship(s) from the RELS-EXT datastream. If the
+     * Resource Index is enabled, this will also delete the
+     * corresponding triples from the Resource Index.
+     * 
+     * If the object has state "Active" this method will fail. It is
+     * only allowed on Inactive and Deleted objects.
+     * 
+     * @param pid fedora pid
+     * @param predicate relation on the object to remove
+     * @param targetPid referenced fedora pid
+     * @param isLiteral set if the referenced rdf node is a Literal ( see http://www.w3.org/TR/rdf-concepts/#section-Literals)
+     * @param datatype datatype of the Literal, if any. If none should be specified, submit an empty String
+     * 
+     * @return true iff the relationship could be removed from the object, false otherwise
+     */
     public boolean removeRelation( String pid, String predicate, String targetPid, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
     }
 
+    /** 
+     * returns the administration stream of a given DigitalObject from
+     * the fedora repository
+     * 
+     * @param pid the fedora pid of a digital object
+     * 
+     * @return the administration stream as an Element
+     */
     private Element getAdminStream( String pid ) throws IOException, 
                                                         ParserConfigurationException, 
                                                         RemoteException, 
@@ -741,6 +772,13 @@ public class FedoraAdministration implements IFedoraAdministration
     }
 
 
+    /** 
+     * Returns the indexing alias from the administration stream
+     * \todo: this method should not be allowed to return null. 
+     * @param adminStream the administration stream
+     * 
+     * @return the indexingalias
+     */
     private String getIndexingAlias( Element adminStream )
     {
         NodeList indexingAliasElem = adminStream.getElementsByTagName( "indexingalias" );
@@ -755,6 +793,14 @@ public class FedoraAdministration implements IFedoraAdministration
     }
 
 
+    /** 
+     * Returns all the elements representing streams in the
+     * administration stream as a NodeList
+     * 
+     * @param adminStream the administration stream
+     * 
+     * @return the elements as a NodeList
+     */
     private NodeList getStreamNodes( Element adminStream )
     {
         NodeList streamsNL = adminStream.getElementsByTagName( "streams" );
@@ -762,5 +808,44 @@ public class FedoraAdministration implements IFedoraAdministration
         NodeList streamNL = streams.getElementsByTagName( "stream" );
 
         return streamNL;
+    }
+
+    /** 
+     * Returns a reference to a resource uploadable to Fedora. This
+     * method creates a unique name for the temporary file. If you for
+     * some reason needs to give your own, use createFedoraResource(
+     * CargoContainer cargo, String prefix ), where prefix will be the
+     * filename prefix
+     * 
+     * @param cargo The data to be uploaded
+     * 
+     * @return a dsLocation suitable for Fedora uploads
+     */
+    private String createFedoraResource( CargoObject cargo ) throws IOException, FileNotFoundException, ConfigurationException, ServiceException
+    {
+        String timeStamp = dateFormat.format( new Date( System.currentTimeMillis() ) ) +
+            Long.toString( cargo.getId() );
+        return createFedoraResource( cargo, timeStamp );
+    }
+
+    /** 
+     * 
+     * 
+     * @param cargo The data to be uploaded
+     * @param prefix the prefix of the filename
+     * 
+     * @return a dsLocation suitable for Fedora uploads
+     */
+    private String createFedoraResource( CargoObject cargo, String prefix)throws IOException, FileNotFoundException, ConfigurationException, ServiceException
+    {
+        File tempFile = File.createTempFile( prefix, "tmp" );
+        tempFile.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream( tempFile );
+        fos.write( cargo.getBytes() );
+        fos.flush();
+        fos.close();
+        String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( tempFile );
+
+        return dsLocation;
     }
 }
