@@ -41,6 +41,7 @@ public class PIDManager
 {
     private static Logger log = Logger.getLogger( PIDManager.class );
 
+
     private Stack<String> pidList;
     private HashMap<String, Stack<String>> pidMap;
     private NonNegativeInteger numPIDs;

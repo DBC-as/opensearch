@@ -25,7 +25,6 @@ import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.CompassConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;

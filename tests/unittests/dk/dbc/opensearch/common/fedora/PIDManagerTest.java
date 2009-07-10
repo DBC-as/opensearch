@@ -27,9 +27,9 @@ import java.net.MalformedURLException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
-
 import static org.junit.Assert.*;
 import org.junit.*;
+
 
 public class PIDManagerTest
 {
@@ -39,6 +39,7 @@ public class PIDManagerTest
     {
         String pid = PIDManager.getInstance().getNextPID( "" );
     }
+
 
     @Test ( expected=IllegalStateException.class ) 
     public void testFedoraConnectionMustBePresent() throws ConfigurationException, ServiceException, MalformedURLException, IOException
