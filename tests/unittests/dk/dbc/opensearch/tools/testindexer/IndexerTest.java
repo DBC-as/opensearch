@@ -56,9 +56,8 @@ import org.xml.sax.SAXException;
 /**
  *
  */
-public class InderxerTest
+public class IndexerTest
 {
-
     IEstimate mockEstimate;
     IProcessqueue mockProcessqueue;
     FedoraAdministration mockFedoraAdministration;
@@ -74,14 +73,14 @@ public class InderxerTest
     public static class MockIndexer
     {
         @Mock( invocations = 1 )
-        public static FutureTask getDatadockTask( DatadockJob datadockjob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration )
+        public static FutureTask getDatadockTask( DatadockJob datadockjob, IEstimate estimate, IProcessqueue processqueue )
         {
             return mockFutureDatadock;
         }
 
         
         @Mock( invocations = 1 )
-        public static FutureTask getPTITask( String fedoraPID, CompassSession session, IEstimate estimate, FedoraAdministration fedoraAdministration )
+        public static FutureTask getPTITask( String fedoraPID, CompassSession session, IEstimate estimate )
         {
             return mockFuturePTI;
         }

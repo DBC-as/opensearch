@@ -1,11 +1,3 @@
-/**
- * \file OpensearchNamespaceContext.java
- * \brief The OpensearchNamespaceContext class
- * \package helpers;
- */
-
-package dk.dbc.opensearch.common.helpers;
-
 /*
    
 This file is part of opensearch.
@@ -27,6 +19,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+package dk.dbc.opensearch.common.helpers;
+
+
 import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
@@ -46,21 +41,26 @@ public class OpensearchNamespaceContext implements NamespaceContext
      * @param prefix a String giving the prefix of the namespace for which to search 
      * @return the uri of the namespace that has the given prefix
      */
-    public String getNamespaceURI( String prefix ){
+    public String getNamespaceURI( String prefix )
+    {
         String uri = null;
-        if ( prefix.equals( "docbook" ) ){
+        if ( prefix.equals( "docbook" ) )
+        {
             uri = "http://docbook.org/ns/docbook";
         }
+        
         return uri;
     }
 
     
-    public Iterator< String > getPrefixes( String val ) {
+    public Iterator< String > getPrefixes( String val ) 
+    {
         throw new NotImplementedException( "getPrefixes( String val) has not yet been implemented" );
         //return ( Iterator< String > ) null;
     }
 
-    public String getPrefix( String uri ){
+    public String getPrefix( String uri )
+    {
         throw new NotImplementedException( "getPrefix( String uri ) has not yet been implemented" );
         //return new String();
     }

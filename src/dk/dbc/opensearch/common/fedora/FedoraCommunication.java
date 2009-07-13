@@ -27,7 +27,7 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
+//import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -102,7 +102,7 @@ public class FedoraCommunication implements IFedoraCommunication
      * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraTools
      * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraTools
      */
-    @Deprecated
+    /*@Deprecated
     public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ConfigurationException, ServiceException
     {
         log.trace( "Entering storeContainer(CargoContainer, datadockJob, queue, estimate)" );
@@ -138,10 +138,10 @@ public class FedoraCommunication implements IFedoraCommunication
         log.debug( String.format( "Got estimate of %s", est ) );
         
         return new InputPair<String, Float>( pid, est );
-    }
+    }*/
 
 
-    @Deprecated
+    /*@Deprecated
     public static synchronized String storeContainer( CargoContainer cargo, String submitter, String format )throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException
     {
         log.trace( "Entering storeContainer( CargoContainer )" );
@@ -153,7 +153,7 @@ public class FedoraCommunication implements IFedoraCommunication
         } 
 
         // obtain mimetype and length from CargoContainer
-        /*String mimeType = null;
+        / *String mimeType = null;
         String format = null;
         String submitter = null;
 
@@ -168,7 +168,7 @@ public class FedoraCommunication implements IFedoraCommunication
             }
             
             length += co.getContentLength();
-        }*/
+        }* /
       
         // Store the CargoContainer in the fedora repository
         byte[] foxml = FedoraTools.constructFoxml( cargo, PIDManager.getInstance().getNextPID( submitter ), format );
@@ -178,7 +178,7 @@ public class FedoraCommunication implements IFedoraCommunication
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
         return pid;
-    }
+    }*/
     
 
     /**
@@ -198,7 +198,7 @@ public class FedoraCommunication implements IFedoraCommunication
      * @throws ConfigurationException 
      * @deprecated Use the FedoraAdministration.getDigitalObject( String pid ) method instead
      */
-    @Deprecated
+    /*@Deprecated
     public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, ServiceException
     {
         log.debug( String.format( "entering retrieveContainer( '%s' )", fedoraPid ) );
@@ -246,5 +246,5 @@ public class FedoraCommunication implements IFedoraCommunication
         }
         
         return cc;
-    }
+    }*/
 }

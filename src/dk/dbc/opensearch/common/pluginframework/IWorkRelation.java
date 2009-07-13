@@ -1,6 +1,6 @@
-/*
+/*   
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Copyright © 2009, Dansk Bibliotekscenter a/s, 
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
   opensearch is free software: you can redistribute it and/or modify
@@ -21,14 +21,11 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-public enum PluginType
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
+
+
+public interface IWorkRelation extends IPluggable
 {
-    HARVEST,
-    ANNOTATE,
-    WORKRELATION,
-    GETESTIMATE,
-    STORE,
-    INDEX,
-    PROCESS,
-    RETRIEVE;
+    CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException;
 }

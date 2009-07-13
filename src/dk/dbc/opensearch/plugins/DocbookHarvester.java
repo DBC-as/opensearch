@@ -1,7 +1,4 @@
-package dk.dbc.opensearch.plugins;
-
 /*
-
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -19,6 +16,9 @@ package dk.dbc.opensearch.plugins;
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
+package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -71,7 +71,6 @@ public class DocbookHarvester implements IHarvestable
      */
     private CargoContainer createCargoContainerFromFile() throws PluginException
     {
-
         CargoContainer cargo = new CargoContainer();
         
         /** \todo: hardcoded values for mimetype, langugage and data type */
@@ -102,11 +101,14 @@ public class DocbookHarvester implements IHarvestable
         {
             id = cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Article, bdata );
             log.info( String.format( "Added data to the cargocontainer. Id = %s", id ) );
-        } catch (IOException ioe) {
+        } 
+        catch (IOException ioe) 
+        {
             throw new PluginException( "Could not construct CargoContainer", ioe );
         }
 
-        if( ! cargo.hasCargo( dataStreamName ) ) {
+        if( ! cargo.hasCargo( dataStreamName ) ) 
+        {
             throw new PluginException( new IllegalStateException( String.format( "Failed to construct CargoContainer with data in it (id = %s)", id ) ) );
         }
         

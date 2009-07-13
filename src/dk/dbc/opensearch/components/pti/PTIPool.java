@@ -1,11 +1,4 @@
 /**
- * \file PTIPool.java
- * \brief The PTIPool class
- * \package pti;
- */
-package dk.dbc.opensearch.components.pti;
-
-/**
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -25,10 +18,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+package dk.dbc.opensearch.components.pti;
+
+
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-//import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
@@ -69,11 +63,8 @@ public class PTIPool
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
-    //private IFedoraCommunication fedoraCommunication;
-    private FedoraAdministration fedoraAdministration;
     private Compass compass;
     private int shutDownPollTime;
-
 
     
     /**
@@ -84,16 +75,13 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, FedoraAdministration fedoraAdministration ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass ) throws ConfigurationException
     {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
          this.threadpool = threadpool;
          this.estimate = estimate;
          this.compass = compass;
-         //this.fedoraCommunication = fedoraCommunication;
-         this.fedoraAdministration = fedoraAdministration;
-
          jobs = new Vector< InputPair< FutureTask< Long >, Integer > >();         
          shutDownPollTime = PtiConfig.getShutdownPollTime();         
      }
@@ -124,7 +112,7 @@ public class PTIPool
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
 
-        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, fedoraAdministration ) );
+        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate ) );
     }
 
     
@@ -149,7 +137,6 @@ public class PTIPool
             if( job.isDone() )
             {
                 Long l = null;
-                //log.fatal( "Catched exception from job" );
                 try
                 {
                     log.debug( "Checking job" );
@@ -165,25 +152,26 @@ public class PTIPool
                     log.error( String.format( "Exception Caught: '%s'" , re.getMessage() ) );
                     StackTraceElement[] expStack =  re.getStackTrace();
                     for( int i = 0; i < expStack.length; i++ )
-                        {
-                            log.error( String.format( "Trace element %s : %s", i, expStack[i].toString() ) );
-                        }                   
+                    {
+                        log.error( String.format( "Trace element %s : %s", i, expStack[i].toString() ) );
+                    }                   
                 }
+
                 log.debug( String.format( "adding (queueID='%s') to finished jobs", queueID ) );
                 InputPair< Long, Integer > pair = new InputPair< Long, Integer >( l, queueID );
                 finishedJobs.add( new CompletedTask<InputPair< Long, Integer >>( job, pair ) );
             }
         }
 
-        for( CompletedTask<InputPair< Long, Integer >> finishedJob : finishedJobs )
+        for( CompletedTask<InputPair<Long, Integer >> finishedJob : finishedJobs )
         {
              log.debug( "Removing Job" );            
              
-             InputPair< Long, Integer > finishedpair =  finishedJob.getResult();
+             InputPair<Long, Integer> finishedpair =  finishedJob.getResult();
              log.debug( String.format( "Removing Job queueID='%s'", finishedpair.getSecond() ) );
              
-             Vector< InputPair< FutureTask<Long>, Integer > > removeableJobs = new Vector< InputPair< FutureTask<Long>, Integer > >();
-             for( InputPair< FutureTask<Long>, Integer > job : jobs )
+             Vector<InputPair<FutureTask<Long>, Integer>> removeableJobs = new Vector<InputPair<FutureTask<Long>, Integer>>();
+             for( InputPair<FutureTask<Long>, Integer> job : jobs )
              {
                 Integer queueID = job.getSecond();
                 if( queueID.equals( finishedpair.getSecond() ) )
@@ -216,7 +204,9 @@ public class PTIPool
             {
                 FutureTask job = jobpair.getFirst(); 
                 if( ! job.isDone() )
+                {
                     activeJobs = true;
+                }
             }
         }
     }

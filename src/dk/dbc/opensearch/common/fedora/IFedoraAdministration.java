@@ -74,26 +74,6 @@ public interface IFedoraAdministration
 
 
     /**
-     * method for getting data from a DigitalObject in a
-     * CargoContainer based on a pid.
-     * @param pid, the identifier of the object to get
-     * @return the CargoContainer representing the DigitalObject
-     * @throws RemoteException if something on the serverside goes wrong.
-     */
-    //public CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ServiceException, ConfigurationException;
-
-
-    /**
-     * method for storing data (in the form of a CargoContainer) in
-     * the Fedora base
-     * @param theCC the CargoContainer to store
-     * @param label, the label to put on the object
-     * @return the pid of the object in the repository, null if unsuccesfull
-     */
-    //public String storeCargoContainer( CargoContainer cargo, String label )throws MalformedURLException, RemoteException, IOException, SAXException, MarshalException, ServiceException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException;
-
-   
-    /**
      * method to retrive all DataStreams of a DataStreamType from a
      * DigitalObject. The data is returned in a CargoContainer. Note
      * that the returned CargoContainer will not be identical with the
@@ -188,8 +168,6 @@ public interface IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    
-    
     public RelationshipTuple[] getRelationships( String pid, String predicate) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException; 
     
     

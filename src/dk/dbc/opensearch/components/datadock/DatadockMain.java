@@ -18,22 +18,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-/**
- * \file DatadockMain.java
- * \brief The main entry point for the datadock application
- * \package dk.dbc.opensearch.components.datadock;
- */
-
 package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-//import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
@@ -64,17 +54,15 @@ public class DatadockMain
 {
     static Logger log = Logger.getLogger( DatadockMain.class );
 
+
     static protected boolean shutdownRequested = false;
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
-
     static int queueSize;
     static int corePoolSize;
     static int maxPoolSize;
     static long keepAliveTime;
     static int pollTime;
-    static URL cfgURL;
-    //static String harvestDir;
 
 
     public DatadockMain() {}
@@ -89,7 +77,6 @@ public class DatadockMain
         corePoolSize = DatadockConfig.getCorePoolSize();
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
-        //harvestDir = HarvesterConfig.getFolder();
 
         log.debug( String.format( "---> queueSIZE = '%s'", queueSize ) );
     }
@@ -182,11 +169,6 @@ public class DatadockMain
             IEstimate estimate = new Estimate();
             IProcessqueue processqueue = new Processqueue();
 
-            // Fedora access
-            //PIDManager PIDmanager = new PIDManager();
-            //IFedoraCommunication fedoraCom = new FedoraCommunication();
-            FedoraAdministration fedoraAdministration = new FedoraAdministration();
-
             log.debug( "Starting datadockPool" );
 
             // datadockpool
@@ -194,7 +176,7 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue, fedoraAdministration );
+            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue );
 
             log.debug( "Starting harvester" );
             

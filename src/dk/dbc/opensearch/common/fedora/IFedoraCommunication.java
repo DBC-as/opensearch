@@ -20,26 +20,16 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.text.ParseException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 
 /**
@@ -74,10 +64,7 @@ public interface IFedoraCommunication
      * @throws TransformerException Thrown if the construction of the Foxml went wrong. \see FedoraTools
      * @throws ValidationExceptiom Thrown if the construction of the Foxml went wrong. \see FedoraTools
      */
-    public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
-    
-
-    //public String storeContainer( CargoContainer cc ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
+    //public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, ServiceException, ConfigurationException;
     
 
     /**
@@ -96,5 +83,5 @@ public interface IFedoraCommunication
      * @throws ServiceException 
      * @throws ConfigurationException 
      */
-    public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, ServiceException;
+    //public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, ServiceException;
 }

@@ -18,18 +18,10 @@
 */
 
 
-/**
- * \file PTIThread.java
- * \brief The PTIThread Class
- * \package pti
- */
-
-
 package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
@@ -75,8 +67,6 @@ public class PTIThread implements Callable< Long >
     private String fedoraPid;
     private IEstimate estimate;
     private ArrayList< String > list;
-    //private IFedoraCommunication fedoraCommunication;
-    private FedoraAdministration fedoraAdministration;
 
 
     /**
@@ -87,18 +77,16 @@ public class PTIThread implements Callable< Long >
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, FedoraAdministration fedoraAdministration ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         super();
 
         log.debug( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
 
-        //this.jobMap = jobMap;
         this.estimate = estimate;
         this.session = session;
         this.fedoraPid = fedoraPid;
-        //this.fedoraCommunication = fedoraCommunication;
-        this.fedoraAdministration = fedoraAdministration;
+
         log.debug( "constructor done" );
     }
 
@@ -133,9 +121,7 @@ public class PTIThread implements Callable< Long >
         try
         {
             System.out.println( "PTIThread -> fedoraPid: " + fedoraPid );
-            //cc = fedoraCommunication.retrieveContainer( fedoraPid );
-            //FedoraAdministration fa = new FedoraAdministration();
-            cc = fedoraAdministration.retrieveCargoContainer( fedoraPid );
+            cc = FedoraAdministration.retrieveCargoContainer( fedoraPid );
         }
         catch( Exception e )
         {

@@ -22,12 +22,11 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-import dk.dbc.opensearch.common.fedora.FedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.IWorkRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
@@ -35,7 +34,6 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.FileNotFoundException;
@@ -84,18 +82,14 @@ public class DatadockThread implements Callable< Float >
 {
     private Logger log = Logger.getLogger( DatadockThread.class );
 
-    private CargoContainer cc;
+
+    private CargoContainer cargo;
     private IProcessqueue queue;
     private IEstimate estimate;
-    
     private DatadockJob datadockJob;
     private String submitter;
     private String format;
     private ArrayList< String > list;
-    
-    //private IFedoraCommunication fedoraCom;
-    private FedoraAdministration fedoraAdministration;
-    
     private String result;
     
 
@@ -120,7 +114,7 @@ public class DatadockThread implements Callable< Float >
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
@@ -142,7 +136,6 @@ public class DatadockThread implements Callable< Float >
         queue = processqueue;
 
         this.estimate = estimate;
-        this.fedoraAdministration = fedoraAdministration;
 
         log.debug( String.format( "DataDock Construction finished" ) );
     }
@@ -196,31 +189,44 @@ public class DatadockThread implements Callable< Float >
             {
                 case HARVEST:
                     log.debug( String.format( "case HARVEST pluginType %s", plugin.getTaskName().toString() ) );
+                    
                     IHarvestable harvestPlugin = (IHarvestable)plugin;
-                    cc = harvestPlugin.getCargoContainer( datadockJob );
-                    if( cc.getCargoObjectCount() < 1 ) // no data in the cargocontainer, so no reason to continue
-                    {
-                        log.error( String.format( "no cargoobjects in the cargocontainer" ) );
-                        throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
-                    }
-                    //make estimate
+                    cargo = harvestPlugin.getCargoContainer( datadockJob );
+                    
+                    checkCargoObjectCount( cargo );
+                    
                     break;
                 case ANNOTATE:
                     log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getTaskName().toString() ) );
+                    
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
 
-                   if ( cc == null )
-                   {
-                        log.error( "DatadockThread call throws NullPointerException, cc is null" );
-                        throw new NullPointerException( "DatadockThread call throws NullPointerException" );
-                    }
-                    cc = annotatePlugin.getCargoContainer( cc );
+                    checkCargoContainerIsNotNull( cargo );
+                    
+                    cargo = annotatePlugin.getCargoContainer( cargo );
+                    
                     break;
-                //case STORE:
+                case WORKRELATION:
+                    log.debug( String.format( "case WORKRELATION pluginType %s", plugin.getTaskName().toString() ) );
+                    
+                    checkCargoContainerIsNotNull( cargo );
+                    
+                    IWorkRelation workRelationPlugin = (IWorkRelation)plugin;
+                    cargo = workRelationPlugin.getCargoContainer( cargo );
+                    
+                    break;
+                case STORE:
                     //IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     //result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
-                    default:
-                        log.warn( String.format( "plugin.getTaskName ('%s') did not match HARVEST or ANNOTATE", plugin.getTaskName() ) );
+                	// break;
+                case GETESTIMATE:
+                    log.debug( "" );
+                    
+                    //    
+                    
+                    break;
+                default:
+                	log.warn( String.format( "plugin.getTaskName ('%s') did not match HARVEST or ANNOTATE", plugin.getTaskName() ) );
             }
         }
 
@@ -230,7 +236,7 @@ public class DatadockThread implements Callable< Float >
         String submitter = null;
         long length = 0;
         
-        for( CargoObject co : cc.getCargoObjects() )
+        for( CargoObject co : cargo.getCargoObjects() )
         {
             if( co.getDataStreamName() == DataStreamType.OriginalData )
             {
@@ -242,17 +248,32 @@ public class DatadockThread implements Callable< Float >
             length += co.getContentLength();
         }
 
-        //InputPair< String, Float > storeDataResponse = fedoraCom.storeContainer( cc, datadockJob, queue, estimate);
-        System.out.println( String.format( "DatadockThread b4 storeCC: submitter %s; format: %s", submitter, format ) );
-        //String pid = fedoraAdministration.storeCargoContainer( cc, submitter, format ); //, label ); //datadockJob, queue, estimate );
-        String pid = FedoraAdministration.storeCargoContainer( cc, submitter, format );
+        String pid = FedoraAdministration.storeCargoContainer( cargo, submitter, format );
         
         //push to processqueue job to processqueue and get estimate
         queue.push( pid );
         Float est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est ) );
         return est;
-        //return new InputPair<String, Float>( pid, est );
-        //return storeDataResponse.getSecond(); 
+    }
+    
+    
+    private void checkCargoContainerIsNotNull( CargoContainer cargo ) throws NullPointerException
+    {
+    	if ( cargo == null )
+        {
+        	log.error( "DatadockThread call throws NullPointerException, cc is null" );
+           	throw new NullPointerException( "DatadockThread call throws NullPointerException" );
+        }
+    }
+    
+    
+    private void checkCargoObjectCount( CargoContainer cargo ) throws IllegalStateException
+    {
+    	if( cargo.getCargoObjectCount() < 1 ) // no data in the cargocontainer, so no reason to continue
+        {
+            log.error( String.format( "no cargoobjects in the cargocontainer" ) );
+            throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
+        }   	
     }
 }

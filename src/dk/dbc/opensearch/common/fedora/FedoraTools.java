@@ -34,6 +34,7 @@ import dk.dbc.opensearch.xsd.DigitalObject;
 import dk.dbc.opensearch.xsd.ObjectProperties;
 import dk.dbc.opensearch.xsd.Property;
 import dk.dbc.opensearch.xsd.PropertyType;
+import dk.dbc.opensearch.xsd.XmlContent;
 import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
 import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
 import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
@@ -49,10 +50,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Collections;
-
-import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -128,7 +125,7 @@ public class FedoraTools
         log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
 
         Date now = new Date(System.currentTimeMillis());
-        return constructFoxml(cargo, nextPid, label, now);
+        return constructFoxml( cargo, nextPid, label, now );
     }
 
     
@@ -211,10 +208,20 @@ public class FedoraTools
 
         log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
         Datastream[] dsArray = new Datastream[ cargo_count ];
+        
+        /* 
+         * \todo: 
+         * 
+         * when iterating here: 
+         * if cargoObject.getDataStreamName (c.getDataStreamName() => c.getDataStreamType) is datastreamtype.RELSEXT 
+         * 	    1) Extend datastreamtype to contain RELSEXT
+         * then constructDataStream must be called with true, false, true, that is, Versionable = true, External = false, and 
+         *      InlineData = true.
+         */
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getCargoObjects().get( i );
-
+            
             dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
         }
 
@@ -294,7 +301,7 @@ public class FedoraTools
      *
      * @return a DigitalObject with no DataStreams
      */
-    static DigitalObject initDigitalObject( String state,
+    private static DigitalObject initDigitalObject( String state,
                                             String label,
                                             String owner,
                                             String pid )
@@ -315,7 +322,7 @@ public class FedoraTools
      *
      * @return a DigitalObject with no DataStreams
      */
-    static DigitalObject initDigitalObject( String state,
+    private static DigitalObject initDigitalObject( String state,
                                             String label,
                                             String owner,
                                             String pid,
@@ -369,8 +376,8 @@ public class FedoraTools
      *
      * @return
      */
-    static Datastream constructDatastream( CargoObject co,
-                                           String itemID ) throws ParseException,
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String itemID ) throws ParseException,
                                                                   IOException
     {
         Date timestamp = new Date( System.currentTimeMillis() );
@@ -389,9 +396,9 @@ public class FedoraTools
      *
      * @return A datastream suitable for ingestion into the DigitalObject
      */
-    static Datastream constructDatastream( CargoObject co,
-                                           String timeNow,
-                                           String itemID ) throws ParseException
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String timeNow,
+                                                   String itemID ) throws ParseException
     {
         return constructDatastream( co, timeNow, itemID, false, false, false );
     }
@@ -435,12 +442,12 @@ public class FedoraTools
      *      content to a client (e.g., video streaming), rather than
      *      have Fedora in the middle re-streaming the content out.
      */
-    static Datastream constructDatastream( CargoObject co,
-                                           String timeNow,
-                                           String itemID,
-                                           boolean versionable,
-                                           boolean externalData,
-                                           boolean inlineData ) throws ParseException
+    private static Datastream constructDatastream( CargoObject co,
+                                                   String timeNow,
+                                                   String itemID,
+                                                   boolean versionable,
+                                                   boolean externalData,
+                                                   boolean inlineData ) throws ParseException
     {
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
@@ -453,7 +460,8 @@ public class FedoraTools
             //Managed content
             controlGroup = DatastreamTypeCONTROL_GROUPType.M;
         }
-        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) {
+        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) 
+        {
             //Inline content
             controlGroup = DatastreamTypeCONTROL_GROUPType.X;
         }
@@ -494,7 +502,17 @@ public class FedoraTools
 
         //ContentDigest binaryContent = new ContentDigest();
 
-        dVersTypeChoice.setBinaryContent( ba );
+        if ( controlGroup == DatastreamTypeCONTROL_GROUPType.M )
+        {
+        	dVersTypeChoice.setBinaryContent( ba ); // specific for managed content
+        }
+        else if ( controlGroup == DatastreamTypeCONTROL_GROUPType.X )
+        {
+        	String str = new String( ba );
+        	XmlContent xmlCont = new XmlContent();
+        	xmlCont.addAnyObject( str );
+        	dVersTypeChoice.setXmlContent( xmlCont );
+        }
 
         dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
 

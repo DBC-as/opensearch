@@ -299,7 +299,7 @@ public class PTIManagerTest
          * do stuff
          */
         FedoraAdministration fedoraAdministration = new FedoraAdministration();
-        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, fedoraAdministration );
+        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass );
         ptiManager = new PTIManager( ptiPool, mockPQ );
         ptiManager.update();
 

@@ -1,30 +1,24 @@
-/**
- * \file DocbookAnnotate.java
- * \brief The DocbookAnnotate class
- * \package plugins;
- */
+/*   
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 
 package dk.dbc.opensearch.plugins;
-
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
@@ -65,6 +59,7 @@ public class DocbookAnnotate implements IAnnotate
 {
     static Logger log = Logger.getLogger( DocbookAnnotate.class );
 
+    
     private PluginType pluginType = PluginType.ANNOTATE;
     private  NamespaceContext nsc;
 
@@ -72,13 +67,13 @@ public class DocbookAnnotate implements IAnnotate
     /**
      * Constructor for the DocbookAnnotate plugin.
      */
-
     public DocbookAnnotate()
     {
         log.debug( "Constructor() called" );
         nsc = new OpensearchNamespaceContext();
     }
 
+    
     /**
      * The "main" method of this plugin. Request annotation data from
      * a webservice. If annotationdata is available it added to the
@@ -90,15 +85,10 @@ public class DocbookAnnotate implements IAnnotate
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.debug( "getCargoContainer() called" );
 
-        // our namespace context for evaluating xpath expressions
-        
-        log.debug( "Retrive docbook xml from CargoContainer" );
-        
         if ( cargo == null )
         {
             log.error( "DocbookAnnotate getCargoContainer cargo is null" );
@@ -141,7 +131,7 @@ public class DocbookAnnotate implements IAnnotate
         {
             title = xPathExpression.evaluate( docbookSource ).replaceAll( "\\s", "+" );
         } 
-        catch (XPathExpressionException xpe) 
+        catch ( XPathExpressionException xpe ) 
         {
             throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
 
@@ -161,7 +151,7 @@ public class DocbookAnnotate implements IAnnotate
             queryURL = formURL( title, serverChoice );
             xmlString = httpGet( queryURL );
         } 
-        catch (IOException ioe) 
+        catch ( IOException ioe ) 
         {
             throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
         }
@@ -175,7 +165,7 @@ public class DocbookAnnotate implements IAnnotate
         {
             bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
         } 
-        catch (UnsupportedEncodingException uee) 
+        catch ( UnsupportedEncodingException uee ) 
         {
             throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
         }
@@ -193,7 +183,7 @@ public class DocbookAnnotate implements IAnnotate
         {
             xPathExpression_numOfRec = xpath.compile( xpathString );
         } 
-        catch (XPathExpressionException e) 
+        catch ( XPathExpressionException e ) 
         {
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  xmlString ), e );
         }
@@ -209,7 +199,7 @@ public class DocbookAnnotate implements IAnnotate
             log.fatal( String.format( "Could not format number of records returned by the webservice" ) );
             throw new PluginException( "Could not format number of records returned by the webservice", nfe );
         } 
-        catch (XPathExpressionException xpee ) 
+        catch ( XPathExpressionException xpee ) 
         {
             log.fatal( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
             throw new PluginException( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ), xpee );
@@ -217,7 +207,8 @@ public class DocbookAnnotate implements IAnnotate
 
         log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
 
-        if( numOfRec == 0 ){ // no hits. Make another search without serverchoice
+        if( numOfRec == 0 ) // no hits. Make another search without serverchoice
+        { 
             @SuppressWarnings("unused")
 			String xmlStr = null;
             queryURL = null;
@@ -227,7 +218,7 @@ public class DocbookAnnotate implements IAnnotate
                 queryURL = formURL( title, "" );
                 xmlStr = httpGet( queryURL );
             } 
-            catch (IOException ioe) 
+            catch ( IOException ioe ) 
             {
                 log.fatal( String.format( "Caugth IOException: Could not get result from webservice = %s.", queryURL ) );
                 throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
@@ -240,7 +231,7 @@ public class DocbookAnnotate implements IAnnotate
         {
             bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
         } 
-        catch (UnsupportedEncodingException uee) 
+        catch ( UnsupportedEncodingException uee ) 
         {
             log.fatal( String.format( "Could not convert string to UTF-8 ByteArrayInputStream" ) );
             throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
@@ -255,13 +246,13 @@ public class DocbookAnnotate implements IAnnotate
             xpath_evaluation = xPathExpression_numOfRec.evaluate( annotateSource );
             numOfRec = Integer.parseInt( xpath_evaluation );
         } 
-        catch (NumberFormatException nfe) 
+        catch ( NumberFormatException nfe ) 
         {
             log.fatal( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
             throw new PluginException( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int",
                                                       xpath_evaluation ), nfe );
         } 
-        catch (XPathExpressionException xpe) 
+        catch ( XPathExpressionException xpe ) 
         {
             log.fatal( String.format( "Could not evaluate xpath expression to find number of returned records" ) );
             throw new PluginException( "Could not evaluate xpath expression to find number of returned records", xpe );
@@ -278,7 +269,7 @@ public class DocbookAnnotate implements IAnnotate
                 /** \todo: use of deprecated method from CargoContainer */
                 cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", IndexingAlias.None, isolatedDCData.getBytes() );
             } 
-            catch (IOException ioe) 
+            catch ( IOException ioe ) 
             {
                 log.fatal( "Could not add DC data to CargoContainer" );
                 throw new PluginException( "Could not add DC data to CargoContainer", ioe );
@@ -305,16 +296,23 @@ public class DocbookAnnotate implements IAnnotate
         // building document 
         Document annotationDocument = null;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try{
+        try
+        {
             DocumentBuilder builder = factory.newDocumentBuilder();
             annotationDocument = builder.parse( new InputSource( new ByteArrayInputStream(  recordXmlString.getBytes() ) ) );
-        }catch( ParserConfigurationException pce ){
+        }
+        catch( ParserConfigurationException pce )
+        {
             log.fatal( String.format( "Caught error while trying to instanciate documentbuilder '%s'", pce ) );
             throw new PluginException( "Caught error while trying to instanciate documentbuilder", pce );
-        }catch( SAXException se){
+        }
+        catch( SAXException se)
+        {
             log.fatal( String.format( "Could not parse annotation data: '%s'", se ) );
             throw new PluginException( "Could not parse annotation data ", se );
-        }catch( IOException ioe ){
+        }
+        catch( IOException ioe )
+        {
             log.fatal( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
             throw new PluginException( "Could not cast the bytearrayinputstream to a inputsource", ioe );
         }
@@ -325,14 +323,18 @@ public class DocbookAnnotate implements IAnnotate
         XPathExpression xPathExpression_record;
         String recordString = null;
         
-        try {
+        try 
+        {
             // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
             xPathExpression_record = xpath.compile( "/*/*[3]/*/*[3]" );
             recordString  = xPathExpression_record.evaluate( annotationDocument );
-        } catch (XPathExpressionException e) {
+        } 
+        catch (XPathExpressionException e) 
+        {
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/*/*[3]/*/*[3]" ), e );
         }
         log.debug( String.format( "IsolateDC returns xml: %s", recordString ) );
+        
         return recordString;
     }
 

@@ -17,13 +17,12 @@
  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -43,7 +42,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -64,11 +62,7 @@ public class DatadockPool
     private IEstimate estimate;
     private IProcessqueue processqueue;
     private int shutDownPollTime;
-    private FedoraAdministration fedoraAdministration;
-
     private int i = 0;
-
-    XMLConfiguration config = null;
 
     
     /**
@@ -79,18 +73,15 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
         this.threadpool = threadpool;
         this.estimate = estimate;
         this.processqueue = processqueue;
-        //this.fedoraCom = fedoraCom;
-        this.fedoraAdministration = fedoraAdministration;
 
         jobs = new Vector<FutureTask< Float >>();
-
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
     }
 
@@ -116,7 +107,7 @@ public class DatadockPool
         if ( future == null )
         {
         	log.error( "DatadockPool submit 'future' is null" );
-        	//throw new NullPointerException( "DatadockPool submit 'future' is null" );
+        	throw new NullPointerException( "DatadockPool submit 'future' is null" );
         }
         
         threadpool.submit( future );
@@ -126,7 +117,7 @@ public class DatadockPool
     
     public FutureTask<Float> getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration ) );
+    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue ) );
     }
 
 

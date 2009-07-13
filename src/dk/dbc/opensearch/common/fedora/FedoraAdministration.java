@@ -127,29 +127,23 @@ public class FedoraAdministration implements IFedoraAdministration
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException
+    public static synchronized CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException
     {
         log.trace( String.format( "entering getDO( '%s' )", pid ) );
-        System.out.println( "retrieveCargoContainer 1" );
+
         Element adminStream = getAdminStream( pid );
-        System.out.println( "retrieveCargoContainer 2" );
         NodeList streamNodeList = getStreamNodes( adminStream );
-        System.out.println( "retrieveCargoContainer 3" );
         String indexingAlias = getIndexingAlias( adminStream );
 
         log.debug( String.format( "Iterating streams in nodelist" ) );
-        System.out.println( "4" );
         CargoContainer cc = new CargoContainer();
-
         int streamNLLength = streamNodeList.getLength();
-        System.out.println( "streamNodeList length: " + streamNodeList.getLength() );
         for(int i = 0; i < streamNLLength; i++ )
-        {	System.out.println( "for løkke" );
+        {	
             Element stream = (Element)streamNodeList.item(i);
             String streamID = stream.getAttribute( "id" );
-            System.out.println( "5" );
             MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null);
-            System.out.println( "after fedoraHandle" );
+
             cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
@@ -172,14 +166,12 @@ public class FedoraAdministration implements IFedoraAdministration
     public static synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
     {
     	log.trace( "Entering storeContainer( CargoContainer )" );
-    	System.out.println( "FedoraAdministration storeCargoContainer" );
         if( cargo.getCargoObjectCount() == 0 ) 
         {
             log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
             throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
         } 
         
-        System.out.println( "submitter: " + submitter );
         String nextPid = PIDManager.getInstance().getNextPID( submitter );
         byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
         
@@ -189,38 +181,6 @@ public class FedoraAdministration implements IFedoraAdministration
         log.info( String.format( "Submitted data, returning pid %s", pid ) );        
         return pid;
     }
-        
-     /*   log.trace( "entering storeCC" );
-
-        String returnVal = null;
-
-        String submitter = theCC.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
-        
-        String pid = PIDManager.getInstance().getNextPID( submitter );
-
-        byte[] foxml = FedoraTools.constructFoxml( theCC, pid, label );
-        String logm = String.format( "%s inserted", label );
-        //If the XML document specifies a pid, it will be assigned to
-        //the digital object provided that 1. it conforms to the
-        //Fedora pid Syntax, 2. it uses a namespace that matches the
-        //"retainPIDs" value configured for the repository, and 3. it
-        //does not collide with an existing pid of an object in the
-        //repository.
-        String returnPid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
-        if( pid.equals( returnPid ) )
-        {
-            returnVal = pid;
-        }
-        else
-        {
-            log.warn( String.format( "Pid '%s' does not equal expected pid '%s'", returnPid, pid ) );
-            // \todo: should we do more than this? If we got a pid
-            // * back, it means that we succeded, so what if it's not
-            // * the expected one?
-        }
-
-        return returnVal;
-    }*/
 
 
     /**
@@ -235,17 +195,12 @@ public class FedoraAdministration implements IFedoraAdministration
         log.trace( String.format( "Entering getDataStreamsOfType()" ) );
         CargoContainer cc = new CargoContainer();
 
-        //Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
-        Element adminStream = getAdminStream( pid );
-        
+        Element adminStream = getAdminStream( pid );        
         NodeList streamNodeList = getStreamNodes( adminStream );
-
         String indexingAlias = getIndexingAlias( adminStream );
-
-        log.debug( "iterating streams in nodelist to get the right streamtype" );
-
         int length = streamNodeList.getLength();
 
+        log.debug( "iterating streams in nodelist to get the right streamtype" );
         for( int i = 0; i < length; i++ )
         {
             Element stream = (Element)streamNodeList.item(i);
@@ -282,16 +237,11 @@ public class FedoraAdministration implements IFedoraAdministration
     public CargoContainer getDataStream( String pid, String streamID ) throws MalformedURLException, IOException, RemoteException, ServiceException, ParserConfigurationException, SAXException, ConfigurationException
     {
         CargoContainer cc = new CargoContainer();
-
-        //Pair< NodeList, NodeList > aliasAndStreamNL = getAdminStream( pid );
-        Element adminStream = getAdminStream( pid );
-        
+        Element adminStream = getAdminStream( pid );        
         NodeList streamNodeList = getStreamNodes( adminStream );
-
         String indexingAlias = getIndexingAlias( adminStream );
 
         log.debug( "iterating streams in nodelist to get info" );
-
         int length = streamNodeList.getLength();
         for( int i = 0; i < length; i++ )
         {
@@ -349,9 +299,7 @@ public class FedoraAdministration implements IFedoraAdministration
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document admStream = builder.newDocument();
-
         Element newRoot = (Element)admStream.importNode( (Node)root, true );
-        //Element newRoot = admStream.getDocumentElement();
 
         NodeList streamsNL = newRoot.getElementsByTagName( "streams" );
         Element streams = (Element)streamsNL.item( 0 );
@@ -377,7 +325,6 @@ public class FedoraAdministration implements IFedoraAdministration
             }
         }
 
-        // 14: create a streamId
         if( sID == null )
         {
             sID = dsnName + "." + count;
@@ -425,7 +372,6 @@ public class FedoraAdministration implements IFedoraAdministration
         FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
         //upload the content
-        //byte[] to File
         String dsLocation = createFedoraResource( cargo );
         // File tempFile = File.createTempFile( timeNow, "tmp" );
         // //File theFile = new File( "tempFile" );

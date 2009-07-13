@@ -26,10 +26,6 @@ import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.common.fedora.FedoraCommunication;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-//import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -64,10 +60,10 @@ public class PTIMain
 {
     static Logger log = Logger.getLogger("PTIMain");
 
+
     static protected boolean shutdownRequested = false;
     static PTIPool ptiPool = null;
     static PTIManager ptiManager = null;
-
     static int queueSize;
     static int corePoolSize;
     static int maxPoolSize;
@@ -171,9 +167,6 @@ public class PTIMain
 
             IEstimate estimate = new Estimate();
             IProcessqueue processqueue = new Processqueue();
-            //IFedoraCommunication fedoraCommunication = new FedoraCommunication();
-            FedoraAdministration fedoraAdministration = new FedoraAdministration();
-
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
 
@@ -181,7 +174,7 @@ public class PTIMain
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
 
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, fedoraAdministration );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 
@@ -203,27 +196,27 @@ public class PTIMain
             log.removeAppender(startupAppender);
         }
 
-        while(!isShutdownRequested())
-        {// Mainloop
-        	try
+        while(!isShutdownRequested()) // Mainloop
+        {   
+            try
             {
                 ptiManager.update();
                 Thread.currentThread();
-				Thread.sleep( pollTime );
+                Thread.sleep( pollTime );
             }
-        	catch(InterruptedException ie)
+            catch(InterruptedException ie)
             {
                 log.error("InterruptedException caught in mainloop: ");
                 log.error("  "+ie.getMessage() );
             }
-        	catch(RuntimeException re)
+            catch(RuntimeException re)
             {
                 log.error("RuntimeException caught in mainloop: " + re);
                 log.error("\n" + re.getCause().getMessage() );
                 log.error("\n" + re.getCause().getStackTrace() );
                 throw re;
             }
-        	catch(Exception e)
+            catch(Exception e)
             {
                 log.error("Exception caught in mainloop: " + e);
                 log.error("  " + e.getMessage() );

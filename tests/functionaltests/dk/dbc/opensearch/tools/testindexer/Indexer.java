@@ -1,20 +1,20 @@
 /**
-   This file is part of opensearch.
-   Copyright © 2009, Dansk Bibliotekscenter a/s,
-   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-   opensearch is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-   opensearch is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -23,7 +23,6 @@ package dk.dbc.opensearch.tools.testindexer;
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-//import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
@@ -141,7 +140,7 @@ public class Indexer
     private void runDatadock( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, ExecutionException
     {
         log.debug( "Entering runDatadock" );
-        FutureTask<Float> ft = getDatadockTask( datadockJob, estimate, processqueue, fedoraAdministration );
+        FutureTask<Float> ft = getDatadockTask( datadockJob, estimate, processqueue );
 
         pool.submit( ft );
 
@@ -175,7 +174,7 @@ public class Indexer
         log.debug( "Entering runPTI" );
 
         // run the PTI thread
-        ptiFuture = getPTITask( fedoraPid, session, estimate, fedoraAdministration );
+        ptiFuture = getPTITask( fedoraPid, session, estimate );
         pool.submit( ptiFuture );
 
         log.debug( "PTI job commited to threadpool.... waiting for it to return" );
@@ -191,9 +190,9 @@ public class Indexer
     /**
      *
      */
-    public FutureTask<Float> getDatadockTask( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public FutureTask<Float> getDatadockTask( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue ) throws ConfigurationException, ClassNotFoundException, InterruptedException, FileNotFoundException, IOException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        DatadockThread ddt = new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration );
+        DatadockThread ddt = new DatadockThread( datadockJob, estimate, processqueue );
         FutureTask<Float> datadockFuture = new FutureTask<Float>( ddt );
         return datadockFuture;
     }
@@ -202,9 +201,9 @@ public class Indexer
     /**
      *
      */
-    public FutureTask<Long> getPTITask( String fedoraPid, CompassSession session, IEstimate estimate, FedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException
+    public FutureTask<Long> getPTITask( String fedoraPid, CompassSession session, IEstimate estimate ) throws ConfigurationException, ClassNotFoundException, InterruptedException, IOException, ServiceException
     {
-        PTIThread PTIt = new PTIThread( fedoraPid, session, estimate, fedoraAdministration );
+        PTIThread PTIt = new PTIThread( fedoraPid, session, estimate );
         FutureTask<Long> ptiFuture = new FutureTask<Long>( PTIt );
         return ptiFuture;
     }

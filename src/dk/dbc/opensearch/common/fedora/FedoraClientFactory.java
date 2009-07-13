@@ -1,10 +1,3 @@
-/**
- * \file FedoraClientFactory.java
- * \brief The FedoraClientFactory class
- * \package tools
- */
-package dk.dbc.opensearch.common.fedora;
-
 /*
    
 This file is part of opensearch.
@@ -24,6 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
+package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
