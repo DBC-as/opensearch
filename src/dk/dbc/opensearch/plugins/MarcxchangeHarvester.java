@@ -42,7 +42,6 @@ public class MarcxchangeHarvester implements IHarvestable
 {
     Logger log = Logger.getLogger( MarcxchangeHarvester.class );
 
-    //private CargoContainer cargo;
     private String submitter;
     private String format;
     private String path;
@@ -51,7 +50,6 @@ public class MarcxchangeHarvester implements IHarvestable
 
     public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
     {
-        //cargo = new CargoContainer();
         this.path = job.getUri().getPath();
         this.submitter = job.getSubmitter();
         this.format = job.getFormat();
@@ -74,32 +72,44 @@ public class MarcxchangeHarvester implements IHarvestable
         String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
         InputStream data;
-        try {
+        try 
+        {
             data = FileHandler.readFile( path );
             log.debug( String.format( "File: %s has been read",path ) );
-        } catch (FileNotFoundException fnfe) {
+        } 
+        catch (FileNotFoundException fnfe) 
+        {
             throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
         }
 
         byte[] bdata;
-        try {
+        try 
+        {
             bdata = StreamHandler.bytesFromInputStream( data, 0 );
             log.debug(String.format("the data read has size: %s", bdata.length));
-        } catch (IOException ioe) {
+        } 
+        catch (IOException ioe) 
+        {
             throw new PluginException( "Could not construct byte[] from InputStream", ioe );
         }
 
-        try {
+        try 
+        {
             cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Danmarcxchange, bdata );
-        } catch (IOException ioe) {
+        } 
+        catch (IOException ioe) 
+        {
             throw new PluginException( "Could not construct CargoContainer", ioe );
-        }catch(Exception e){
+        }
+        catch(Exception e)
+        {
             log.error( String.format( "Exception of type: %s cast with message: %s", e.getClass(), e.getMessage() ) );
         }
         log.debug(String.format("num of objects in cargo: %s", cargo.getCargoObjectCount()) );
         return cargo;
     }
 
+    
     public PluginType getTaskName()
     {
         return pluginType;

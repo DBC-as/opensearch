@@ -298,7 +298,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
         try
         {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            annotationDocument = builder.parse( new InputSource( new ByteArrayInputStream(  recordXmlString.getBytes() ) ) );
+            annotationDocument = builder.parse( new InputSource( new ByteArrayInputStream( recordXmlString.getBytes() ) ) );
         }
         catch( ParserConfigurationException pce )
         {
@@ -328,10 +328,11 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
             xPathExpression_record = xpath.compile( "/*/*[3]/*/*[3]" );
             recordString  = xPathExpression_record.evaluate( annotationDocument );
         } 
-        catch (XPathExpressionException e) 
+        catch ( XPathExpressionException e) 
         {
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/*/*[3]/*/*[3]" ), e );
         }
+        
         log.debug( String.format( "IsolateDC returns xml: %s", recordString ) );
         return recordString;
     }
@@ -340,11 +341,9 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
     /**
      * Forms the URL to use for annotate query.
      *
-     *
      * @param title the title to query.
      * @param serverChoice This correspond to submitter field (eg. faktalink). Can be empty.
      */
-
     private String formURL( String title, String serverChoice ){
 
         int maxRecords = 1;
@@ -362,13 +361,13 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
         String postRecords = "&recordSchema=dc&stylesheet=default.xsl&recordPacking=string";
 
         String queryURL;
-        if( serverChoice.equals( "" ) ){
-            queryURL = baseURL + preTitle + title + postTitle +
-                preRecords + maxRecords + postRecords;
+        if( serverChoice.equals( "" ) )
+        {
+            queryURL = baseURL + preTitle + title + postTitle + preRecords + maxRecords + postRecords;
         }
-        else{
-            queryURL = baseURL + preTitle + title + postTitle +
-                preServerChoice + serverChoice + postServerChoice + preRecords + maxRecords + postRecords;
+        else
+        {
+            queryURL = baseURL + preTitle + title + postTitle + preServerChoice + serverChoice + postServerChoice + preRecords + maxRecords + postRecords;
         }
         return queryURL;
     }
@@ -390,18 +389,18 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         if (conn.getResponseCode() != 200)
-            {
-                throw new IOException(conn.getResponseMessage());
-            }
+        {
+        	throw new IOException(conn.getResponseMessage());
+        }
 
         // Buffer the result into a string
         BufferedReader rd = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
         StringBuilder sb = new StringBuilder();
         String line;
         while ( ( line = rd.readLine() ) != null )
-            {
-                sb.append( line );
-            }
+        {
+        	sb.append( line );
+        }
 
         rd.close();
 
@@ -409,6 +408,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
         return sb.toString();
     }
 
+    
     public PluginType getTaskName()
     {
         return pluginType;

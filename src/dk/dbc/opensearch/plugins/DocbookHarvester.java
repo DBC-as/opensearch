@@ -93,7 +93,9 @@ public class DocbookHarvester implements IHarvestable
         try 
         {
             bdata = StreamHandler.bytesFromInputStream( data, 0 );
-        } catch (IOException ioe) {
+        } 
+        catch (IOException ioe) 
+        {
             throw new PluginException( "Could not construct byte[] from InputStream", ioe );
         }
 
