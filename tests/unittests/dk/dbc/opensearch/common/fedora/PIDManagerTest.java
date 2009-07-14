@@ -41,7 +41,8 @@ public class PIDManagerTest
     }
 
 
-    @Test //( expected=IllegalStateException.class ) 
+    @Ignore
+    @Test //( expected=IllegalStateException.class )
     public void testFedoraConnectionMustBePresent() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         PIDManager.getInstance().getNextPID( "a" );

@@ -1,34 +1,30 @@
-/**
- * \file CargoObject.java
- * \brief The CargoObject class
- * \package common.types
- */
-package dk.dbc.opensearch.common.types;
+/*   
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//import dk.dbc.opensearch.common.types.IndexingAlias;
+
+package dk.dbc.opensearch.common.types;
+
 
 import java.io.IOException;
+
 import org.apache.log4j.Logger;
+
 
 /**
  * \ingroup common.types
@@ -42,16 +38,12 @@ import org.apache.log4j.Logger;
  */
 public class CargoObject
 {
-    /**
-     * Internal data structure for the CargoObject class.
-     */
-    //    Pair< CargoObjectInfo, byte[] > pair;
-
-    private final byte[] data;
-
+	private Logger log = Logger.getLogger( CargoObject.class );
+	
+	
+	private final byte[] data;
     private final CargoObjectInfo coi;
-
-    private Logger log = Logger.getLogger( CargoObject.class );
+    
 
     /**
      * Constructor for the CargoObject class. Here an object of the
@@ -75,16 +67,14 @@ public class CargoObject
      * @throws IOException
      */
     CargoObject( DataStreamType dataStreamName, 
-                        String mimetype, 
-                        String language, 
-                        String submitter,
-                        String format,
-                        IndexingAlias alias,
-                        byte[] data ) 
-        throws IOException
+                 String mimetype, 
+                 String language, 
+                 String submitter,
+                 String format,
+                 IndexingAlias alias,
+                 byte[] data ) throws IOException
     {
-
-        CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
+        CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );        
         long id = 0L;
         id += dataStreamName.hashCode();
         id += cmt.hashCode(); 
@@ -93,14 +83,14 @@ public class CargoObject
         id += format.hashCode(); 
         id += alias.hashCode(); 
         id += data.hashCode(); 
+        
         log.debug( String.format( "id for CargoObject = %s", id ) );
         assert( id != 0 );
+        
         coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format, alias, id );
         
         this.data = data;
         log.debug( String.format( "length of data: %s", data.length ) );
-        
-        //pair = new Pair<CargoObjectInfo, byte[] >( coi, data );
     }
 
     
@@ -113,6 +103,7 @@ public class CargoObject
     {
         return coi.getId();
     }
+    
     
     /**
      * Checks if the language of the submitted data is allowed in a
@@ -152,7 +143,6 @@ public class CargoObject
     {
         return coi.validSubmitter( name );
     }
-
 
 
     /**
@@ -202,13 +192,7 @@ public class CargoObject
         return coi.getFormat();
     }
 
-    /*
-    public String getLanguage()
-    {
-        return coi.getLanguage();
-    }
-    */
-
+   
     /**
      * Returns the mimetype of the data associated with the underlying
      * CargoObjectInfo
@@ -253,16 +237,4 @@ public class CargoObject
     {
         return data.clone();
     }
-    
-    /**
-     * Returns the length of the underlying byte[]
-     * 
-     * @return length of the byte[]
-     * 
-     * \todo: this is a duplicate method. Please refactor one of us out.
-     */
-    // public int getByteArrayLength(){
-    //     return pair.getSecond().length;
-    // }
-
 }

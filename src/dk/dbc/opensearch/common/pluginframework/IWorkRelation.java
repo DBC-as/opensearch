@@ -24,8 +24,15 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import javax.xml.rpc.ServiceException;
+
+import org.apache.commons.configuration.ConfigurationException;
+
 
 public interface IWorkRelation extends IPluggable
 {
-    CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException;
+    CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 }

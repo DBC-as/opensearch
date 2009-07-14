@@ -181,7 +181,6 @@ public class AdministrationFunc
 
     static void testAddDataStreamToObject( String pid )
     {
-
         CargoObject cargo = null;
         try
         {

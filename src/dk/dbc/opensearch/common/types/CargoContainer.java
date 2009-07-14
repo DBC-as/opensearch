@@ -1,12 +1,4 @@
-/**
- * \file CargoContainer.java
- * \brief The CargoContainer class
- * \package common.types
- */
-package dk.dbc.opensearch.common.types;
-
 /*
-
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -23,16 +15,18 @@ package dk.dbc.opensearch.common.types;
 
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-
 */
+
+
+package dk.dbc.opensearch.common.types;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-//import dk.dbc.opensearch.common.types.IndexingAlias;
-
 import org.apache.log4j.Logger;
+
 
 /**
  * \ingroup common.types
@@ -46,9 +40,10 @@ public class CargoContainer
 {
     Logger log = Logger.getLogger( CargoContainer.class );
 
+    
     /** The internal representation of the data contained in the CargoContainer*/
     private ArrayList< CargoObject > data;
-
+    private String pid;
     
     /**
      * Constructor initializes internal representation of data, i.e.,
@@ -267,6 +262,7 @@ public class CargoContainer
         return ret_co;
     }
 
+    
     /**
      * Based on the DataStreamType, the first CargoObject matching the type is
      * returned. This method should only be used, if you know that there is
@@ -432,5 +428,22 @@ public class CargoContainer
         }
 
         return ret_ia;
+    }
+    
+    
+    public void setPid( String pid )
+    {
+    	this.pid = pid;
+    }
+    
+    
+    public String getPid() throws IllegalStateException
+    {
+    	if ( this.pid.isEmpty() )
+    	{
+    		throw new IllegalStateException( "Pid for CargoContainer is empty" );
+    	}
+    	
+    	return this.pid;
     }
 }

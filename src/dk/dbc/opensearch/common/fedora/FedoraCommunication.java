@@ -27,31 +27,15 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-//import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 
-import fedora.server.types.gen.MIMETypedStream;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.text.ParseException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 
 /**

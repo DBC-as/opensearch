@@ -1,24 +1,24 @@
-package dk.dbc.opensearch.plugins;
+/*   
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
+package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -42,12 +42,14 @@ public class MarcxchangeHarvester implements IHarvestable
 {
     Logger log = Logger.getLogger( MarcxchangeHarvester.class );
 
+    
     private String submitter;
     private String format;
     private String path;
 
     private PluginType pluginType = PluginType.HARVEST;
 
+    
     public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
     {
         this.path = job.getUri().getPath();
@@ -72,12 +74,13 @@ public class MarcxchangeHarvester implements IHarvestable
         String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
         InputStream data;
+        
         try 
         {
             data = FileHandler.readFile( path );
             log.debug( String.format( "File: %s has been read",path ) );
         } 
-        catch (FileNotFoundException fnfe) 
+        catch ( FileNotFoundException fnfe ) 
         {
             throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
         }
@@ -86,9 +89,9 @@ public class MarcxchangeHarvester implements IHarvestable
         try 
         {
             bdata = StreamHandler.bytesFromInputStream( data, 0 );
-            log.debug(String.format("the data read has size: %s", bdata.length));
+            log.debug( String.format( "the data read has size: %s", bdata.length ) );
         } 
-        catch (IOException ioe) 
+        catch ( IOException ioe ) 
         {
             throw new PluginException( "Could not construct byte[] from InputStream", ioe );
         }
@@ -97,15 +100,16 @@ public class MarcxchangeHarvester implements IHarvestable
         {
             cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Danmarcxchange, bdata );
         } 
-        catch (IOException ioe) 
+        catch ( IOException ioe ) 
         {
             throw new PluginException( "Could not construct CargoContainer", ioe );
         }
-        catch(Exception e)
+        catch( Exception e )
         {
             log.error( String.format( "Exception of type: %s cast with message: %s", e.getClass(), e.getMessage() ) );
         }
-        log.debug(String.format("num of objects in cargo: %s", cargo.getCargoObjectCount()) );
+        
+        log.debug(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );        
         return cargo;
     }
 
@@ -114,5 +118,4 @@ public class MarcxchangeHarvester implements IHarvestable
     {
         return pluginType;
     }
-
 }

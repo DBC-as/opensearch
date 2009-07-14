@@ -48,6 +48,10 @@ public class OpensearchNamespaceContext implements NamespaceContext
         {
             uri = "http://docbook.org/ns/docbook";
         }
+        else if ( prefix.equals( "marcxchange" ) )
+        {
+        	uri = "http://where.is.marcxchange.org";
+        }
         
         return uri;
     }

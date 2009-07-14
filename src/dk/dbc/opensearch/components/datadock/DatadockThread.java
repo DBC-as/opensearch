@@ -26,6 +26,7 @@ import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.IWorkRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
@@ -206,6 +207,10 @@ public class DatadockThread implements Callable< Float >
                     cargo = annotatePlugin.getCargoContainer( cargo );
                     
                     break;
+                case STORE:
+                    IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+                    cargo = repositoryStore.storeCargoContainer( cargo );
+                	break;
                 case WORKRELATION:
                     log.debug( String.format( "case WORKRELATION pluginType %s", plugin.getTaskName().toString() ) );
                     
@@ -215,10 +220,6 @@ public class DatadockThread implements Callable< Float >
                     cargo = workRelationPlugin.getCargoContainer( cargo );
                     
                     break;
-                case STORE:
-                    //IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                    //result = repositoryStore.storeCargoContainer( cc, this.datadockJob );
-                	// break;
                 case GETESTIMATE:
                     log.debug( "" );
                     

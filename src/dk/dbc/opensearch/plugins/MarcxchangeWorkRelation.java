@@ -21,6 +21,8 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.pluginframework.IWorkRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -30,6 +32,9 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
+//import fedora.server.storage.types.RelationshipTuple;
+import fedora.server.types.gen.RelationshipTuple;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,14 +43,17 @@ import java.io.UnsupportedEncodingException;
 import java.lang.Integer;
 import java.lang.StringBuilder;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
 import javax.xml.xpath.*;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -55,9 +63,9 @@ import org.xml.sax.SAXException;
 /**
  * Plugin for annotating docbook carcoContainers
  */
-public class DanmarcXchangeWorkRelation implements IWorkRelation
+public class MarcxchangeWorkRelation implements IWorkRelation
 {
-    static Logger log = Logger.getLogger( DanmarcXchangeWorkRelation.class );
+    static Logger log = Logger.getLogger( MarcxchangeWorkRelation.class );
 
 
     private PluginType pluginType = PluginType.WORKRELATION;
@@ -67,8 +75,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
     /**
      * Constructor for the DocbookAnnotate plugin.
      */
-
-    public DanmarcXchangeWorkRelation()
+    public MarcxchangeWorkRelation()
     {
         log.debug( "DanmarcXchangeWorkRelation constructor called" );
         nsc = new OpensearchNamespaceContext();
@@ -86,7 +93,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
         log.debug( "DanmarcXchangeWorkRelation -> getCargoContainer() called" );
 
@@ -115,48 +122,70 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
         XPathExpression xPathExpression;
         XPathExpression xPathExpression_numOfRec;
         
+        String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
+        String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1] ";
+        String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
+        String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
+        String xpathStr = "WILL BE OVERWRITTEN: Used for exception detection";
+        
+        InputSource workRelationSource = new InputSource( new ByteArrayInputStream( b ) );
+
+        String dcType;
+        String dcCreator;
+        String dcTitle;
+        String dcSource;
         try
         {
-            xPathExpression = xpath.compile( "/docbook:article/docbook:title" );
+        	xpathStr = typeXpathStr;
+            xPathExpression = xpath.compile( xpathStr );
+            dcType = xPathExpression.evaluate( workRelationSource );
+            log.debug( String.format( "MarcxchangeWorkRelation found type: %s", dcType ) );
+            
+            xpathStr = creatorXpathStr;
+            xPathExpression = xpath.compile( xpathStr );
+            dcCreator = xPathExpression.evaluate( workRelationSource );
+            log.debug( String.format( "MarcxchangeWorkRelation found creator: %s", dcCreator ) );
+            
+            xpathStr = titleXpathStr;
+            xPathExpression = xpath.compile( xpathStr );
+            dcTitle = xPathExpression.evaluate( workRelationSource );
+            log.debug( String.format( "MarcxchangeWorkRelation found title: %s", dcTitle ) );
+            
+            xpathStr = sourceXpathStr;
+            xPathExpression = xpath.compile( xpathStr );
+            dcSource = xPathExpression.evaluate( workRelationSource );
+            log.debug( String.format( "MarcxchangeWorkRelation found source: %s", dcSource ) );
         } 
-        catch (XPathExpressionException e) 
+        catch ( XPathExpressionException e ) 
         {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/docbook:article/docbook:title" ), e );
+            throw new PluginException( String.format( "Could not compile xpath expression '%s'",  xpathStr ), e );
         }
 
-        InputSource workRelationSource = new InputSource(new ByteArrayInputStream( b ) );
-
-        // Find title of the docbook document
-        String title;
-        try 
-        {
-            title = xPathExpression.evaluate( workRelationSource ).replaceAll( "\\s", "+" );
-        } 
-        catch ( XPathExpressionException xpe ) 
-        {
-            throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
-
-        }
-
+        // get relationships
+        FedoraAdministration fa = new FedoraAdministration();
+        String pid = cargo.getPid();
+        String predicate = "";
+        RelationshipTuple[] relTuple = fa.getRelationships( pid, predicate );
+        
         // isolate format
         String serverChoice = co.getFormat();
 
         // Querying webservice
-        log.debug( String.format( "querying the webservice with title='%s', serverChoice(format)='%s'", title, serverChoice ) );
+        //log.debug( String.format( "querying the webservice with title='%s', serverChoice(format)='%s'", title, serverChoice ) );
 
         String xmlString = null;
         String queryURL = null;
 
         try 
         {
-            queryURL = formURL( title, serverChoice );
+            //queryURL = formURL( title, serverChoice );
             xmlString = httpGet( queryURL );
         } 
-        catch (IOException ioe) 
+        catch ( IOException ioe ) 
         {
             throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
         }
-        log.debug( String.format( "data: title='%s', serverChoice(format)='%s', queryURL='%s', xml retrieved='%s'", title, serverChoice, queryURL, xmlString ) );
+        //log.debug( String.format( "data: title='%s', serverChoice(format)='%s', queryURL='%s', xml retrieved='%s'", title, serverChoice, queryURL, xmlString ) );
 
 
         // put retrieved answer into inputsource object
@@ -166,7 +195,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
         {
             bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
         } 
-        catch (UnsupportedEncodingException uee) 
+        catch ( UnsupportedEncodingException uee ) 
         {
             throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
         }
@@ -184,7 +213,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
         {
             xPathExpression_numOfRec = xpath.compile( xpathString );
         } 
-        catch (XPathExpressionException e) 
+        catch ( XPathExpressionException e ) 
         {
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  xmlString ), e );
         }
@@ -215,7 +244,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
             try 
             {
                 //uhm, per instructions above, this is not a query with_out_ serverchoice, is it?
-                queryURL = formURL( title, "" );
+                //queryURL = formURL( title, "" );
                 xmlStr = httpGet( queryURL );
             } 
             catch (IOException ioe) 
@@ -223,7 +252,7 @@ public class DanmarcXchangeWorkRelation implements IWorkRelation
                 log.fatal( String.format( "Caugth IOException: Could not get result from webservice = %s.", queryURL ) );
                 throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
             }
-            log.debug( String.format( "data: title='%s', serverChose(format)=\"\"\nxml retrieved\n%s", title, xmlString ) );
+            //log.debug( String.format( "data: title='%s', serverChose(format)=\"\"\nxml retrieved\n%s", title, xmlString ) );
         }
 
         // put retrieved answer into inputsource object
