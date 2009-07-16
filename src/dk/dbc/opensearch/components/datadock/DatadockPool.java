@@ -44,6 +44,7 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 
 
 /**
@@ -63,6 +64,7 @@ public class DatadockPool
     private IProcessqueue processqueue;
     private int shutDownPollTime;
     private int i = 0;
+    private IFedoraAdministration fedoraAdministration;
 
     
     /**
@@ -73,14 +75,14 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, Estimate estimate, IProcessqueue processqueue ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
         this.threadpool = threadpool;
         this.estimate = estimate;
         this.processqueue = processqueue;
-
+        this.fedoraAdministration = fedoraAdministration;
         jobs = new Vector<FutureTask< Float >>();
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
     }
@@ -117,7 +119,7 @@ public class DatadockPool
     
     public FutureTask<Float> getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue ) );
+    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration ) );
     }
 
 

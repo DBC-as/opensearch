@@ -63,7 +63,6 @@ public class IndexCheckerTest
     /**
      *
      */
-	@Ignore
     @Test public void testindexes() throws ClassNotFoundException, ConfigurationException, ExecutionException, FileNotFoundException, InterruptedException, IOException, MalformedURLException, ParserConfigurationException, PluginResolverException, SAXException, ServiceException, TransformerConfigurationException, TransformerException, URISyntaxException, NoSuchFieldException, IllegalAccessException
     {
         System.out.println( "IndexChecker running" );

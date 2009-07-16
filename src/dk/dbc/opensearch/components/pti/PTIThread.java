@@ -21,7 +21,7 @@
 package dk.dbc.opensearch.components.pti;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
@@ -67,7 +67,7 @@ public class PTIThread implements Callable< Long >
     private String fedoraPid;
     private IEstimate estimate;
     private ArrayList< String > list;
-
+    private IFedoraAdministration fedoraAdministration;
 
     /**
      * \brief Constructs the PTI instance with the given parameters
@@ -77,16 +77,17 @@ public class PTIThread implements Callable< Long >
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IFedoraAdministration fedoraAdministration ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
     {
         super();
 
         log.debug( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
 
+        this.fedoraAdministration = fedoraAdministration;
         this.estimate = estimate;
         this.session = session;
         this.fedoraPid = fedoraPid;
-
+        
         log.debug( "constructor done" );
     }
 
@@ -120,8 +121,8 @@ public class PTIThread implements Callable< Long >
         
         try
         {
-            System.out.println( "PTIThread -> fedoraPid: " + fedoraPid );
-            cc = FedoraAdministration.retrieveCargoContainer( fedoraPid );
+            log.debug( String.format( "PTIThread -> fedoraPid: ", fedoraPid ) );
+            cc = fedoraAdministration.retrieveCargoContainer( fedoraPid );
         }
         catch( Exception e )
         {

@@ -214,7 +214,7 @@ public class DatadockThreadTest
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration );
 
         //verify
         verify( mockDatadockJob );
@@ -248,7 +248,7 @@ public class DatadockThreadTest
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration );
 
         //verify
         verify( mockDatadockJob );
@@ -302,7 +302,7 @@ public class DatadockThreadTest
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         Float result = ddThread.call();
 
         assertTrue( result == 7f );
@@ -353,7 +353,7 @@ public class DatadockThreadTest
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         Float result = ddThread.call();
 
         /**
@@ -402,7 +402,7 @@ public class DatadockThreadTest
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         Float result = ddThread.call();
 
         /**

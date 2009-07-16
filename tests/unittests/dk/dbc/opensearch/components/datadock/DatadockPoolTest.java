@@ -83,7 +83,7 @@ public class DatadockPoolTest extends TestCase
     DatadockJob mockDatadockJob;
     DatadockPool datadockPool;
     DatadockThread datadockThread;
-
+    FedoraAdministration mockFedoraAdministration;
 
     /**
      * After each test the mock are reset
@@ -105,7 +105,7 @@ public class DatadockPoolTest extends TestCase
         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
         mockEstimate = createMock( Estimate.class);
         mockProcessqueue = createMock( Processqueue.class );
-        //mockFedoraAdministration = createMock( FedoraAdministration.class );
+        mockFedoraAdministration = createMock( FedoraAdministration.class );
         mockDatadockJob = createMock( DatadockJob.class );
     }
 
@@ -116,7 +116,7 @@ public class DatadockPoolTest extends TestCase
         reset( mockThreadPoolExecutor );
         reset( mockEstimate );
         reset( mockProcessqueue );
-        //reset( mockFedoraAdministration );
+        reset( mockFedoraAdministration );
         reset( mockDatadockJob );
         reset( mockFuture );
     }
@@ -138,12 +138,12 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        //replay( mockFedoraAdministration );
+        replay( mockFedoraAdministration );
         
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         
         /**
          * verify
@@ -151,7 +151,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        //verify( mockFedoraAdministration );
+        verify( mockFedoraAdministration );
     }
 
     
@@ -184,14 +184,14 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        //replay( mockFedoraAdministration );
+        replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         datadockPool.submit( mockDatadockJob );
         /**
          * verify
@@ -199,7 +199,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        //verify( mockFedoraAdministration );
+        verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
     }
@@ -237,14 +237,14 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        //replay( mockFedoraAdministration );
+        replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 0 );
@@ -255,7 +255,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        //verify( mockFedoraAdministration );
+        verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
     }
@@ -295,14 +295,14 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        //replay( mockFedoraAdministration );
+        replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 1 );
@@ -313,7 +313,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        //verify( mockFedoraAdministration );
+        verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
     }
@@ -360,14 +360,14 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        //replay( mockFedoraAdministration );
+        replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         datadockPool.submit( mockDatadockJob );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
@@ -379,7 +379,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        //verify( mockFedoraAdministration );
+        verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
     }
@@ -419,14 +419,14 @@ public class DatadockPoolTest extends TestCase
         replay( mockThreadPoolExecutor );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        //replay( mockFedoraAdministration );
+        replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
         datadockPool.submit( mockDatadockJob );
         datadockPool.shutdown();
 
@@ -436,7 +436,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockThreadPoolExecutor );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        //verify( mockFedoraAdministration );
+        verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
     }

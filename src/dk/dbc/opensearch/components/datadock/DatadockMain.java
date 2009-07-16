@@ -40,6 +40,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 
 
 /**
@@ -168,6 +170,7 @@ public class DatadockMain
             // DB access
             IEstimate estimate = new Estimate();
             IProcessqueue processqueue = new Processqueue();
+            IFedoraAdministration fedoraAdministration = new FedoraAdministration();
 
             log.debug( "Starting datadockPool" );
 
@@ -176,7 +179,7 @@ public class DatadockMain
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge();
             
-            datadockPool = new DatadockPool( threadpool, (Estimate) estimate, processqueue );
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraAdministration );
 
             log.debug( "Starting harvester" );
             

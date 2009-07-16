@@ -127,7 +127,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @return the CargoContainer representing the DigitalObject
      * @throws RemoteException if something on the serverside goes wrong.
      */
-    public static synchronized CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException
+    public synchronized CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException
     {
         log.trace( String.format( "entering getDO( '%s' )", pid ) );
 
@@ -163,7 +163,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public static synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
+    public synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
     {
     	log.trace( "Entering storeContainer( CargoContainer )" );
         if( cargo.getCargoObjectCount() == 0 ) 

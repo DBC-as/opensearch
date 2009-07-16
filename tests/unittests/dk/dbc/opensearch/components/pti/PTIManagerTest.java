@@ -56,6 +56,7 @@ import java.net.MalformedURLException;
 import java.util.concurrent.RejectedExecutionException;
 import java.io.IOException;
 import javax.xml.rpc.ServiceException;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 
 
 /**
@@ -298,8 +299,8 @@ public class PTIManagerTest
             /**
          * do stuff
          */
-        FedoraAdministration fedoraAdministration = new FedoraAdministration();
-        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass );
+        IFedoraAdministration fedoraAdministration = new FedoraAdministration();
+        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, fedoraAdministration);
         ptiManager = new PTIManager( ptiPool, mockPQ );
         ptiManager.update();
 

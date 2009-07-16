@@ -52,6 +52,25 @@ import org.xml.sax.SAXException;
  */
 public interface IFedoraAdministration
 {    
+
+
+    /**
+     * method for getting an object in a CargoContainer based on its pid
+     * @param pid, the identifier of the object to get
+     * @return the CargoContainer representing the DigitalObject
+     * @throws RemoteException if something on the serverside goes wrong.
+     */
+    public CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException;
+   
+    /**
+     * method for storing an object in the Fedora base
+     * @param theCC the CargoContainer to store
+     * @param label, the label to put on the object
+     * @return the pid of the object in the repository, null if unsuccesfull
+     */
+    public String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException;
+    
+
     /**
      * method to delete an object for good, based on the pid
      * @param pid, the identifier of the object to be removed

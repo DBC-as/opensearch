@@ -22,7 +22,7 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -92,7 +92,7 @@ public class DatadockThread implements Callable< Float >
     private String format;
     private ArrayList< String > list;
     private String result;
-    
+    private IFedoraAdministration fedoraAdministration;
 
     /**
      *\todo: Wheet out in the Exceptions
@@ -115,7 +115,7 @@ public class DatadockThread implements Callable< Float >
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.debug( String.format( "Entering DatadockThread Constructor" ) );
 
@@ -134,9 +134,11 @@ public class DatadockThread implements Callable< Float >
             throw new NullPointerException( String.format( "The returned list from the DatadockJobsMap.getDatadockJobsMap( %s, %s ) is null", submitter, format ) );
         }
         log.debug( "constructor PluginList " + list.toString() );
-        queue = processqueue;
 
+        queue = processqueue;
         this.estimate = estimate;
+        this.fedoraAdministration = fedoraAdministration;
+
 
         log.debug( String.format( "DataDock Construction finished" ) );
     }
@@ -249,7 +251,7 @@ public class DatadockThread implements Callable< Float >
             length += co.getContentLength();
         }
 
-        String pid = FedoraAdministration.storeCargoContainer( cargo, submitter, format );
+        String pid = fedoraAdministration.storeCargoContainer( cargo, submitter, format );
         
         //push to processqueue job to processqueue and get estimate
         queue.push( pid );

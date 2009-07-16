@@ -145,12 +145,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
   <target name="dist-aux" depends="clean, config_py"> <!-- xsd, -->
-    <antcall target="compile_project">
-      <param name="project.name" value="dist/*.jar" />
-    </antcall>
-    <antcall target="compile-tests_project">
-      <param name="project.name" value="dist/*.jar" />
-    </antcall>
+    <antcall target="compile-tests" />
     <antcall target="_dist_testindexer">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />

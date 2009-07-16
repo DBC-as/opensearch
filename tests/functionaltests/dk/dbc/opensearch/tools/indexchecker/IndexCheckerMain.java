@@ -22,14 +22,13 @@ package dk.dbc.opensearch.tools.indexchecker;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-import dk.dbc.opensearch.common.fedora.IFedoraCommunication;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.tools.readindex.ReadIndex;
 import dk.dbc.opensearch.tools.testindexer.Estimate;
-import dk.dbc.opensearch.tools.testindexer.FedoraCommunication;
+import dk.dbc.opensearch.tools.testindexer.FedoraAdministration;
 import dk.dbc.opensearch.tools.testindexer.Indexer;
 import dk.dbc.opensearch.tools.testindexer.Processqueue;
 

@@ -46,6 +46,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 
 
 /**
@@ -63,6 +64,7 @@ public class PTIPool
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
+    private IFedoraAdministration fedoraAdministration;
     private Compass compass;
     private int shutDownPollTime;
 
@@ -75,10 +77,11 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, IFedoraAdministration fedoraAdministration ) throws ConfigurationException
     {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
+         this.fedoraAdministration = fedoraAdministration;
          this.threadpool = threadpool;
          this.estimate = estimate;
          this.compass = compass;
@@ -112,7 +115,7 @@ public class PTIPool
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
 
-        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate ) );
+        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, fedoraAdministration ) );
     }
 
     

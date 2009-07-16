@@ -1,4 +1,4 @@
-/**
+/*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -51,6 +51,7 @@ import static org.easymock.classextension.EasyMock.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.xml.sax.SAXException;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 
 
 /**
@@ -73,14 +74,14 @@ public class IndexerTest
     public static class MockIndexer
     {
         @Mock( invocations = 1 )
-        public static FutureTask getDatadockTask( DatadockJob datadockjob, IEstimate estimate, IProcessqueue processqueue )
+        public static FutureTask getDatadockTask( DatadockJob datadockjob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration )
         {
             return mockFutureDatadock;
         }
 
         
         @Mock( invocations = 1 )
-        public static FutureTask getPTITask( String fedoraPID, CompassSession session, IEstimate estimate )
+        public static FutureTask getPTITask( String fedoraPID, CompassSession session, IEstimate estimate, IFedoraAdministration fedoraAdministration )
         {
             return mockFuturePTI;
         }

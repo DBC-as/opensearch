@@ -46,6 +46,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.compass.core.Compass;
 import org.xml.sax.SAXException;
+import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 
 
 /**
@@ -167,6 +169,7 @@ public class PTIMain
 
             IEstimate estimate = new Estimate();
             IProcessqueue processqueue = new Processqueue();
+            IFedoraAdministration fedoraAdministration = new FedoraAdministration();
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
 
@@ -174,7 +177,7 @@ public class PTIMain
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
 
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, fedoraAdministration );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 
