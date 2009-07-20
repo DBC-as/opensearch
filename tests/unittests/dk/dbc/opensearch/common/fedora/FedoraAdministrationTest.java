@@ -73,7 +73,7 @@ import org.junit.*;
  */
 public class FedoraAdministrationTest
 {
-    FedoraCommunication fc;
+    FedoraAdministration fa;
     CargoContainer mockCC;
     CargoObject mockCO;
     //DatadockJob mockDatadockJob;
@@ -182,21 +182,93 @@ public class FedoraAdministrationTest
         reset( mockElement );
         reset( mockNodeList );
         reset( mockMTStream );
+
+        fa = null;
     }
 
     
     /**
-     * Testing the happy path of the constructor, the only path, since the
-     * super class is being mocked...
+     * Testing the happy path of the constructor, the only path.
      */
-    @Ignore
-    @Test public void testConstructor() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException
+  
+    @Test public void testConstructor()
+    {
+        fa = new FedoraAdministration();
+    }
+    
+
+    /**
+     * Testing the deleteObject method
+     */
+    @Test public void testDeleteObject()throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+        //nothing to test yet
+    }
+ 
+    /**
+     * Testing the markObjectAsDeleted method
+     */
+    @Test public void testMarkObjectAsDeleted()
+    {
+        //nothing to test yet
+    }
+ 
+    /**
+     * Tests the happy path of the retrieveCargoContainer method
+     */
+    @Test
+    public void testRetrieveContainer() throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, MalformedURLException, ServiceException
     {
         Mockit.setUpMocks( MockFedoraClient.class );
         Mockit.setUpMocks( MockFedoraConfig.class );
-        fc = new FedoraCommunication();
+        Mockit.setUpMocks( MockXMLFileReader.class );
+        String byteString = "admindata";
+        byte[] bytes = byteString.getBytes();
+
+        //expectations
+        expect( mockFea.getDatastreamDissemination( "pid", "adminData" , null ) ).andReturn( mockMTStream );
+        expect( mockMTStream.getStream() ).andReturn( bytes );
+
+        expect( mockElement.getElementsByTagName( "streams" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item( 0 )).andReturn( mockElement );
+        expect( mockElement.getElementsByTagName( "stream" ) ).andReturn( mockNodeList );
+        expect( mockElement.getElementsByTagName( "indexingalias" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "name" ) ).andReturn( "article" );
+        expect( mockNodeList.getLength()).andReturn( 1 );
+        //loop
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "id" ) ).andReturn( "streamID" );
+        expect( mockFea.getDatastreamDissemination( "pid", "streamID", null) ).andReturn( mockMTStream );
+        //construnting the CargoContainer
+
+        expect( mockElement.getAttribute( "streamNameType" ) ).andReturn( "originalData" );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "test" ).times( 3 );
+        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "text/xml" );
+        expect( mockMTStream.getStream() ).andReturn( bytes );
+        //mockCC.add( isA( DataStreamType.class ), isA( String.class ), isA( String.class ), isA( String.class ), isA( String.class ), isA( IndexingAlias.class ), isA( byte[].class) );
+        //out of loop
+
+        //replay
+        replay( mockElement );
+        replay( mockNodeList );
+        replay( mockMTStream );
+        //replay( mockCC );
+        replay( mockFea );
+        
+        //do stuff
+        fa = new FedoraAdministration();
+        CargoContainer cc = fa.retrieveCargoContainer( "pid" );
+        assertTrue( cc.getCargoObjectCount() == 1 );
+
+        //verify
+        verify( mockElement );
+        verify( mockNodeList );
+        verify( mockMTStream );
+        //verify( mockCC );
+        verify( mockFea );
     }
-    
+
 
     /**
      * Testing the happy path of the storeContainer method
@@ -235,7 +307,7 @@ public class FedoraAdministrationTest
         replay( mockFea );
 
         //do stuff
-        fc = new FedoraCommunication();
+        //fc = new FedoraCommunication();
         //InputPair<String, Float> result = fc.storeContainer( mockCC, mockDatadockJob, mockProcessqueue, mockEstimate);
 
         //verify
@@ -247,63 +319,6 @@ public class FedoraAdministrationTest
         verify( mockFem );
         verify( mockFea );
     }
-
-    
-    /**
-     * Tests the happy path of the retrieveContainer method
-     */
-    @Ignore
-    @Test
-    public void testRetrieveContainer() throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, MalformedURLException, ServiceException
-    {
-        Mockit.setUpMocks( MockFedoraClient.class );
-        Mockit.setUpMocks( MockFedoraConfig.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
-        String byteString = "admindata";
-        byte[] bytes = byteString.getBytes();
-
-        //expectations
-        expect( mockFea.getDatastreamDissemination( "pid", "adminData" , null ) ).andReturn( mockMTStream );
-        expect( mockMTStream.getStream() ).andReturn( bytes );
-        expect( mockElement.getElementsByTagName( "indexingalias" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement ).times( 2 );
-        expect( mockElement.getAttribute( "name" ) ).andReturn( "article" );
-        expect( mockElement.getElementsByTagName( "streams" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( "stream" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength()).andReturn( 1 );
-        //loop
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "id" ) ).andReturn( "streamID" );
-        expect( mockFea.getDatastreamDissemination( "pid", "streamID", null) ).andReturn( mockMTStream );
-        //construnting the CargoContainer
-
-        expect( mockElement.getAttribute( "streamNameType" ) ).andReturn( "originalData" );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "test" ).times( 3 );
-        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "text/xml" );
-        expect( mockMTStream.getStream() ).andReturn( bytes );
-        //mockCC.add( isA( DataStreamType.class ), isA( String.class ), isA( String.class ), isA( String.class ), isA( String.class ), isA( IndexingAlias.class ), isA( byte[].class) );
-        //out of loop
-
-        //replay
-        replay( mockElement );
-        replay( mockNodeList );
-        replay( mockMTStream );
-        replay( mockCC );
-        replay( mockFea );
-        
-        //do stuff
-        // CargoContainer cc = FedoraAdministration.retrieveCargoContainer( "pid" );
-        // assertTrue( cc.getCargoObjectCount() == 1 );
-
-        //verify
-        verify( mockElement );
-        verify( mockNodeList );
-        verify( mockMTStream );
-        verify( mockCC );
-        verify( mockFea );
-    }
-
 
     @Ignore
     @Test (expected = IllegalStateException.class)
@@ -318,7 +333,7 @@ public class FedoraAdministrationTest
         //replay( mockDatadockJob );
 
         CargoContainer cc = new CargoContainer();
-        fc = new FedoraCommunication();
+        //fc = new FedoraCommunication();
         //InputPair<String, Float> result = fc.storeContainer( cc, mockDatadockJob, mockProcessqueue, mockEstimate);
 
         //System.out.println( String.format( "%s", result.getFirst() ) );

@@ -140,7 +140,7 @@ public class FedoraAdministration implements IFedoraAdministration
         int streamNLLength = streamNodeList.getLength();
         for(int i = 0; i < streamNLLength; i++ )
         {	
-            Element stream = (Element)streamNodeList.item(i);
+            Element stream = (Element)streamNodeList.item( i );
             String streamID = stream.getAttribute( "id" );
             MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null);
 
@@ -710,7 +710,7 @@ public class FedoraAdministration implements IFedoraAdministration
  
         log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
 
-        CargoContainer cc = new CargoContainer();
+        //CargoContainer cc = new CargoContainer();
         System.out.println( "getAdminstream 3" );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
