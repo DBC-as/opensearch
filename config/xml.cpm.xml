@@ -57,6 +57,10 @@
         xpath="/ting:container/original_format"
         index="un_tokenized"
         />
+    <xml-property
+        xpath="/ting:container/submitter"
+        index="un_tokenized"
+        />
 
   </xml-object>
 
@@ -111,6 +115,10 @@
         />
     <xml-property
         xpath="/ting:container/original_format"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/submitter"
         index="un_tokenized"
         />
 
@@ -294,6 +302,10 @@
         />
     <xml-property
         xpath="/ting:container/original_format"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/submitter"
         index="un_tokenized"
         />
 

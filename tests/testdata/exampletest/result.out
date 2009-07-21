@@ -112,6 +112,8 @@ Field: stored/uncompressed,indexed<fedoraPid:mock_fedoraPID>
 Values: mock_fedoraPID
 Field: stored/uncompressed,indexed<original_format:danmarcxchange>
 Values: danmarcxchange
+Field: stored/uncompressed,indexed<submitter:kkb>
+Values: kkb
 Field: stored/uncompressed,indexed,omitNorms<$/uid:danmarcxchange#03281698#>
 Values: danmarcxchange#03281698#
 
@@ -192,6 +194,8 @@ Field: stored/uncompressed,indexed<fedoraPid:mock_fedoraPID>
 Values: mock_fedoraPID
 Field: stored/uncompressed,indexed<original_format:danmarcxchange>
 Values: danmarcxchange
+Field: stored/uncompressed,indexed<submitter:kkb>
+Values: kkb
 Field: stored/uncompressed,indexed,omitNorms<$/uid:danmarcxchange#05912776#>
 Values: danmarcxchange#05912776#
 
@@ -272,6 +276,7 @@ Field: stored/uncompressed,indexed<fedoraPid:mock_fedoraPID>
 Values: mock_fedoraPID
 Field: stored/uncompressed,indexed<original_format:danmarcxchange>
 Values: danmarcxchange
+Field: stored/uncompressed,indexed<submitter:kkb>
+Values: kkb
 Field: stored/uncompressed,indexed,omitNorms<$/uid:danmarcxchange#03216799#>
 Values: danmarcxchange#03216799#
-

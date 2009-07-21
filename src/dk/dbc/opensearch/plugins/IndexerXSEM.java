@@ -172,10 +172,11 @@ public class IndexerXSEM implements IIndexer
                         throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
                     }
                     /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
-                    HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
+                    HashMap< String, String> fieldMap = new HashMap< String, String >( 3 );
                     log.debug( String.format( "Initializing new fields for the index" ) );
                     fieldMap.put( "fedoraPid", fedoraHandle );
                     fieldMap.put( "original_format", co.getFormat() );
+                    fieldMap.put( "submitter", co.getSubmitter() );
 
                     Element root = doc.getRootElement();
 
