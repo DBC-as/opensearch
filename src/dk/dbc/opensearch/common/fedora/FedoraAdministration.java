@@ -693,12 +693,20 @@ public class FedoraAdministration implements IFedoraAdministration
                                                         ServiceException, 
                                                         SAXException, 
                                                         ConfigurationException
-    {	System.out.println( "getAdminstream 1" );
-    	try
+    {	
+        System.out.println( "getAdminstream 1" );
+    	MIMETypedStream ds;
+        try
     	{
         System.out.println( "FEDORAADM. fedoraPid: " + pid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
         
-    	MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+    	ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        }
+        catch( Exception e )
+        {
+        System.out.println( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
+    		throw new IOException("test");
+        }
         byte[] adminStream = ds.getStream();        
         System.out.println( "getAdminstream 2" );
         if( adminStream == null ) 
@@ -720,12 +728,7 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "root element from adminstream == %s", root ) );
         
         return root;
-    	}
-    	catch ( Exception ex )
-    	{
-    		System.out.println( "Exception in getDatastreamDissemination: " + ex.getMessage() + ex.getCause() );
-    		throw new IOException("test");
-    	}
+    
     }
 
 

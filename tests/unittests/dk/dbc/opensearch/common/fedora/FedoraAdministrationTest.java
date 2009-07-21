@@ -34,7 +34,12 @@ import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
+//import java.lang.ClassNotFoundException;
+//import java.lang.InstantiationException;
+//import java.lang.ClassNotFoundException;
+import java.lang.IllegalAccessException;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.sql.SQLException;
@@ -196,6 +201,105 @@ public class FedoraAdministrationTest
         fa = new FedoraAdministration();
     }
     
+    /**
+     * Testing private helper methods so that they wont have to be tested again 
+     * and again
+     */
+
+    /**
+     * Testing the happy path of the getAdminStream method
+     */
+
+    @Test public void testGetAdminStreamHappy() throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException, NoSuchMethodException, IllegalAccessException
+    {
+        //setup
+        Mockit.setUpMocks( MockFedoraClient.class );
+        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockXMLFileReader.class );
+        String byteString = "admindata";
+        byte[] bytes = byteString.getBytes();
+
+        String pid = "pid";
+        Method method;
+        Class[] argClasses = new Class[]{ String.class };
+        Object[] args = new Object[]{ pid };
+        Element result;
+        //expectations
+        expect( mockFea.getDatastreamDissemination( "pid", "adminData" , null ) ).andReturn( mockMTStream );
+        expect( mockMTStream.getStream() ).andReturn( bytes );
+        //replay
+        replay( mockElement );
+        replay( mockMTStream );
+        replay( mockFea );
+        //do stuff
+        fa = new FedoraAdministration();
+        try
+        {
+            method = fa.getClass().getDeclaredMethod( "getAdminStream", argClasses );
+            method.setAccessible( true );
+            result = (Element)method.invoke( fa, args );
+        }
+        catch( InvocationTargetException ite )
+        {
+            Assert.fail();
+        }
+        //verify
+        verify( mockElement );
+        verify( mockMTStream );
+        verify( mockFea );
+    }
+
+    /**
+     * Testing the throwing of the IllegalStateException
+     */
+    @Test
+    public void testGetAdminStreamIllegalState() throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException, NoSuchMethodException, IllegalAccessException
+    {
+     //setup
+        boolean illegalCaught = false;
+        Mockit.setUpMocks( MockFedoraClient.class );
+        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockXMLFileReader.class );
+        String byteString = "admindata";
+        byte[] bytes = byteString.getBytes();
+
+        String pid = "pid";
+        Method method;
+        Class[] argClasses = new Class[]{ String.class };
+        Object[] args = new Object[]{ pid };
+        Element result;
+        //expectations
+        expect( mockFea.getDatastreamDissemination( "pid", "adminData" , null ) ).andReturn( mockMTStream );
+        expect( mockMTStream.getStream() ).andReturn( null );
+        //replay
+        replay( mockElement );
+        replay( mockMTStream );
+        replay( mockFea );
+        //do stuff
+        fa = new FedoraAdministration();
+        try
+        {
+            method = fa.getClass().getDeclaredMethod( "getAdminStream", argClasses );
+            System.out.println( "hat 1" );
+            method.setAccessible( true );
+            System.out.println( "hat 2" );
+            result = (Element)method.invoke( fa, args );
+            System.out.println( "hat 3" );
+        }
+        catch( InvocationTargetException ite )
+        {
+            //check the class of the exception...
+            if( ite.getCause().getClass().equals( IllegalStateException.class ) )
+            {
+                illegalCaught = true;
+            }
+        }
+        assertTrue( illegalCaught );
+        //verify
+        verify( mockElement );
+        verify( mockMTStream );
+        verify( mockFea );
+    }
 
     /**
      * Testing the deleteObject method
@@ -246,14 +350,12 @@ public class FedoraAdministrationTest
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "test" ).times( 3 );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "text/xml" );
         expect( mockMTStream.getStream() ).andReturn( bytes );
-        //mockCC.add( isA( DataStreamType.class ), isA( String.class ), isA( String.class ), isA( String.class ), isA( String.class ), isA( IndexingAlias.class ), isA( byte[].class) );
         //out of loop
 
         //replay
         replay( mockElement );
         replay( mockNodeList );
         replay( mockMTStream );
-        //replay( mockCC );
         replay( mockFea );
         
         //do stuff
@@ -265,7 +367,6 @@ public class FedoraAdministrationTest
         verify( mockElement );
         verify( mockNodeList );
         verify( mockMTStream );
-        //verify( mockCC );
         verify( mockFea );
     }
 
