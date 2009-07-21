@@ -24,6 +24,8 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
+import dk.dbc.opensearch.common.db.IDBConnection;
+import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
@@ -167,8 +169,9 @@ public class PTIMain
 
             log.debug( "initializing resources" );
 
-            IEstimate estimate = new Estimate();
-            IProcessqueue processqueue = new Processqueue();
+            IDBConnection dbConnection = new PostgresqlDBConnection();
+            IEstimate estimate = new Estimate( dbConnection );
+            IProcessqueue processqueue = new Processqueue( dbConnection );
             IFedoraAdministration fedoraAdministration = new FedoraAdministration();
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();

@@ -21,7 +21,8 @@
 package dk.dbc.opensearch.common.db;
 
 
-import dk.dbc.opensearch.common.db.DBConnection;
+import dk.dbc.opensearch.common.db.IDBConnection;
+import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -43,8 +44,7 @@ import org.apache.log4j.Logger;
 public class Processqueue implements IProcessqueue
 {
     Logger log = Logger.getLogger( Processqueue.class );
-    DBConnection DBconnection = null;
-
+    IDBConnection dbConnection = null;
 
     /**
      * Constructor
@@ -52,10 +52,10 @@ public class Processqueue implements IProcessqueue
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public Processqueue()throws ConfigurationException, ClassNotFoundException
+    public Processqueue( IDBConnection dbConnection )throws ConfigurationException, ClassNotFoundException
     {
-        log.debug( "Processqueue Constructor" );
-        DBconnection = new DBConnection();
+        log.debug( "Processqueue Constructor" );        
+        this.dbConnection = dbConnection;
     }
 
 
@@ -71,8 +71,7 @@ public class Processqueue implements IProcessqueue
     public void push( String fedorahandle ) throws ClassNotFoundException, SQLException
     {
         log.debug( String.format( "Processqueue.push( '%s' ) called", fedorahandle ) );
-        Connection con = DBConnection.getConnection();
-
+        Connection con = dbConnection.getConnection();
         log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
         Statement stmt = null;
         stmt = con.createStatement();
@@ -104,7 +103,7 @@ public class Processqueue implements IProcessqueue
     {
         log.debug( "Entering Processqueue.popAll()" );
 
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
         Statement stmt = null;
         ResultSet rs = null;
 
@@ -151,7 +150,7 @@ public class Processqueue implements IProcessqueue
     {
         log.debug( "Entering Processqueue.pop()" );
 
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
         Statement stmt = null;
         ResultSet rs = null;
 
@@ -199,7 +198,7 @@ public class Processqueue implements IProcessqueue
     public void commit( int queueID ) throws ClassNotFoundException, SQLException, NoSuchElementException
     {
         log.debug( String.format( "Processqueue.commit( queueID='%s' ) called", queueID ) );
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
 
         Statement stmt = null;
         int rowsRemoved = 0;
@@ -240,7 +239,7 @@ public class Processqueue implements IProcessqueue
     public void rollback( int queueID ) throws ClassNotFoundException, SQLException, NoSuchElementException
     {
         log.debug( String.format( "Processqueue.rollback( queueID='%s' ) called", queueID ) );
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
 
         Statement stmt = null;
         int rowsRemoved = 0;
@@ -282,7 +281,7 @@ public class Processqueue implements IProcessqueue
     public int deActivate() throws ClassNotFoundException, SQLException
     {
         log.debug( "Entering Processqueue.deActivate()" );
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
 
         String sql_query = "UPDATE processqueue SET processing = 'N' WHERE processing = 'Y'";
 
@@ -316,7 +315,7 @@ public class Processqueue implements IProcessqueue
     public void notDocked( String path ) throws ClassNotFoundException, SQLException
     {
         log.debug( String.format( "Entering notDocked( path = '%s')",path ) );
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
 
         //log.debug( String.format( "push fedorahandle=%s to queue", fedorahandle ) );
         Statement stmt = con.createStatement();
@@ -349,7 +348,7 @@ public class Processqueue implements IProcessqueue
     public void notIndexed(int queueID ) throws ClassNotFoundException, SQLException
     {
         log.debug( String.format( "Entering notIndexed( queueID = '%s')",queueID ) );
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
 
         String sql_query = String.format( "SELECT * FROM processqueue WHERE queueID = %s", queueID );
 

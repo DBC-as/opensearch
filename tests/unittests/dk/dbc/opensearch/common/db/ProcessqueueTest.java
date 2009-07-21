@@ -36,6 +36,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import java.util.ArrayList;
 import java.util.Vector;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.db.IDBConnection;
+import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 
 
 /** \brief Unittest for Processqueue */
@@ -46,7 +48,7 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter
     MockResultSet result;
     Vector<InputPair<String, Integer>> resultVector;
     Processqueue processqueue;
-
+    IDBConnection dbConnection;
 
     /**
      * Common setup
@@ -55,10 +57,11 @@ public class ProcessqueueTest extends BasicJDBCTestCaseAdapter
     {
         super.setUp();
 
+        dbConnection = new PostgresqlDBConnection();
         connection = getJDBCMockObjectFactory().getMockConnection();
         statementHandler = connection.getStatementResultSetHandler();
 
-        processqueue = new Processqueue();
+        processqueue = new Processqueue( dbConnection );
         resultVector = new Vector<InputPair<String, Integer>>(); 
     }
 

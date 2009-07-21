@@ -83,23 +83,44 @@ def build_config( path ):
     httpurl.text   = config_txt.get( compass_section, "httpurl" )
 
     # database settings
-    driver = ET.SubElement( db, "driver" )
-    url    = ET.SubElement( db, "url" )
-    user   = ET.SubElement( db, "userID" )
-    passwd = ET.SubElement( db, "passwd" )
+    postgresql_driver = ET.SubElement( db, "postgresql_driver" )
+    postgresql_url    = ET.SubElement( db, "postgresql_url" )
+    postgresql_user   = ET.SubElement( db, "postgresql_userID" )
+    postgresql_passwd = ET.SubElement( db, "postgresql_passwd" )
+    oracle_driver = ET.SubElement( db, "oracle_driver" )
+    oracle_url    = ET.SubElement( db, "oracle_url" )
+    oracle_user   = ET.SubElement( db, "oracle_userID" )
+    oracle_passwd = ET.SubElement( db, "oracle_passwd" )
     database_section = "database"
     # this will probably not work for cruisecontrol user
-    usern = config_txt.get( database_section, "user" )
-    if len( usern ) == 0:
-        usern = os.environ.get( "USER" )
-    driver.text = config_txt.get( database_section, "driver" )
-    url.text    = config_txt.get( database_section, "url" ) + usern 
-    user.text   = usern
-    password = config_txt.get( database_section, "password" )
-    if len( password ) == 0:
-        passwd.text = usern
+    postgresql_usern = config_txt.get( database_section, "postgresql_user" )
+    if len( postgresql_usern ) == 0:
+        postgresql_usern = os.environ.get( "USER" )
+        
+    postgresql_driver.text = config_txt.get( database_section, "postgresql_driver" )
+    postgresql_url.text    = config_txt.get( database_section, "postgresql_url" ) + postgresql_usern
+    postgresql_user.text   = postgresql_usern
+    
+    postgresql_password = config_txt.get( database_section, "postgresql_password" )
+    if len( postgresql_password ) == 0:
+        postgresql_passwd.text = postgresql_usern
     else:
-        passwd.text = password
+        postgresql_passwd.text = postgresql_password
+
+    oracle_usern = config_txt.get( database_section, "oracle_user" )
+    if len( oracle_usern ) == 0:
+        oracle_usern = os.environ.get( "USER" )
+
+    oracle_driver.text = config_txt.get( database_section, "oracle_driver" )
+    oracle_url.text    = config_txt.get( database_section, "oracle_url" ) + oracle_usern + "/" + \
+                         oracle_usern + "@tora1.dbc.dk:1521"
+    oracle_user.text   = oracle_usern
+
+    oracle_password = config_txt.get( database_section, "oracle_password" )
+    if len( oracle_password ) == 0:
+        oracle_passwd.text = oracle_usern
+    else:
+        oracle_passwd.text = oracle_password
 
     # datadock settings
     poll      = ET.SubElement( dd, "main-poll-time" )

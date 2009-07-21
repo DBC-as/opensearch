@@ -44,62 +44,121 @@ public class DataBaseConfig extends Config
 	}
 
 
-	/* DRIVER */
-	private String getDataBaseDriver()
+	/* POSTGRESQL_DRIVER */
+	private String getDataBasePostgresqlDriver()
 	{
-		String ret = config.getString( "database.driver" );
+		String ret = config.getString( "database.postgresql_driver" );
 		return ret;
 	}
 	
 	
-	public static String getDriver() throws ConfigurationException 
+	public static String getPostgresqlDriver() throws ConfigurationException 
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getDataBaseDriver();
+		return dbc.getDataBasePostgresqlDriver();
 	}
 	
 	
-	/* URL */
-	private String getDataBaseUrl()
+	/* POSTGRESQL_URL */
+	private String getDataBasePostgresqlUrl()
 	{
-		String ret = config.getString( "database.url" );
+		String ret = config.getString( "database.postgresql_url" );
 		return ret;
 	}
 	
 	
-	public static String getUrl() throws ConfigurationException
+	public static String getPostgresqlUrl() throws ConfigurationException
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getDataBaseUrl();
+		return dbc.getDataBasePostgresqlUrl();
 	}
 	
-	
-	/* USERID */
-	private String getDataBaseUserID()
+    
+	/* ORACLE_DRIVER */
+	private String getDataBaseOracleDriver()
 	{
-		String ret = config.getString( "database.userID" );
+		String ret = config.getString( "database.oracle_driver" );
 		return ret;
 	}
 	
 	
-	public static String getUserID() throws ConfigurationException
+	public static String getOracleDriver() throws ConfigurationException 
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getDataBaseUserID();
+		return dbc.getDataBaseOracleDriver();
 	}
 	
 	
-	/* PASSWD */
-	private String getDataBasePassWd()
+	/* ORACLE_URL */
+	private String getDataBaseOracleUrl()
 	{
-		String ret = config.getString( "database.passwd" );
+		String ret = config.getString( "database.oracle_url" );
 		return ret;
 	}
 	
 	
-	public static String getPassWd() throws ConfigurationException
+	public static String getOracleUrl() throws ConfigurationException
 	{
 		DataBaseConfig dbc = new DataBaseConfig();
-		return dbc.getDataBasePassWd();		
+		return dbc.getDataBaseOracleUrl();
+	}
+	
+
+	/* ORACLE_USERID */
+	private String getDataBaseOracleUserID()
+	{
+		String ret = config.getString( "database.oracle_userID" );
+		return ret;
+	}
+	
+	
+	public static String getOracleUserID() throws ConfigurationException
+	{
+		DataBaseConfig dbc = new DataBaseConfig();
+		return dbc.getDataBaseOracleUserID();
+	}
+	
+	
+	/* ORACLE_PASSWD */
+	private String getDataBaseOraclePassWd()
+	{
+		String ret = config.getString( "database.oracle_passwd" );
+		return ret;
+	}
+	
+	
+	public static String getOraclePassWd() throws ConfigurationException
+	{
+		DataBaseConfig dbc = new DataBaseConfig();
+		return dbc.getDataBaseOraclePassWd();		
+	}
+
+	/* POSTGRESQL_USERID */
+	private String getDataBasePostgresqlUserID()
+	{
+		String ret = config.getString( "database.postgresql_userID" );
+		return ret;
+	}
+	
+	
+	public static String getPostgresqlUserID() throws ConfigurationException
+	{
+		DataBaseConfig dbc = new DataBaseConfig();
+		return dbc.getDataBasePostgresqlUserID();
+	}
+	
+	
+	/* POSTGRESQL_PASSWD */
+	private String getDataBasePostgresqlPassWd()
+	{
+		String ret = config.getString( "database.postgresql_passwd" );
+		return ret;
+	}
+	
+	
+	public static String getPostgresqlPassWd() throws ConfigurationException
+	{
+		DataBaseConfig dbc = new DataBaseConfig();
+		return dbc.getDataBasePostgresqlPassWd();		
 	}
 }

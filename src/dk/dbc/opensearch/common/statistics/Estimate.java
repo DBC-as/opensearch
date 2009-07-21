@@ -26,7 +26,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.db.DBConnection;
+import dk.dbc.opensearch.common.db.IDBConnection;
 
 import java.lang.ClassNotFoundException;
 import java.sql.Connection;
@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
 public class Estimate implements IEstimate
 {
     Logger log = Logger.getLogger("Estimate");
-    DBConnection DBconnection = null;
+    IDBConnection dbConnection = null;
  
     
     /**
@@ -55,10 +55,10 @@ public class Estimate implements IEstimate
      * @throws ConfigurationException error reading configuration file
      * @throws ClassNotFoundException if the databasedriver is not found
      */
-    public Estimate() throws ConfigurationException, ClassNotFoundException 
+    public Estimate( IDBConnection dbConnection ) throws ConfigurationException, ClassNotFoundException 
     {
         log.debug( "Estimate Constructor" );
-        DBconnection = new DBConnection();
+        this.dbConnection = dbConnection;
     }
 
     
@@ -79,7 +79,7 @@ public class Estimate implements IEstimate
     {
         log.debug( String.format( "estimate.getEstimate(mimeType=%s, length=%s) called", mimeType, length ) );
 
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
      
         float average_time = 0f;
         ResultSet rs = null;
@@ -143,7 +143,7 @@ public class Estimate implements IEstimate
     {
         log.debug( String.format( "UpdateEstimate(mimeType = %s, length = %s, time = %s) called", mimeType, length, time ) );
 
-        Connection con = DBConnection.getConnection();
+        Connection con = dbConnection.getConnection();
  
         Statement stmt = null;
         String sqlQuery = String.format( "UPDATE statistics "+

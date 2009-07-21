@@ -9,11 +9,18 @@ httpurl:    http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd
 
 [database]
 # leave unassigned if user is 'os user'
-user:                           
+postgresql_user:                           
 # leave unassigned if pswd is 'os user'
-password:                       
-driver:   org.postgresql.Driver
-url:      jdbc:postgresql:
+postgresql_password:
+postgresql_driver:   org.postgresql.Driver
+postgresql_url:      jdbc:postgresql:
+
+# leave unassigned if user is 'os user'
+oracle_user:                           
+# leave unassigned if pswd is 'os user'
+oracle_password:                       
+oracle_driver:   oracle.jdbc.driver.OracleDriver
+oracle_url:      dbc:oracle:thin:
 
 [datadock]
 main_poll_time:      1000

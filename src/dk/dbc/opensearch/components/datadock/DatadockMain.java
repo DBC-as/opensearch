@@ -22,6 +22,8 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.db.IDBConnection;
+import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
@@ -168,8 +170,9 @@ public class DatadockMain
             log.debug( "initializing resources" );
 
             // DB access
-            IEstimate estimate = new Estimate();
-            IProcessqueue processqueue = new Processqueue();
+            IDBConnection dbConnection = new PostgresqlDBConnection();
+            IEstimate estimate = new Estimate( dbConnection );
+            IProcessqueue processqueue = new Processqueue( dbConnection );
             IFedoraAdministration fedoraAdministration = new FedoraAdministration();
 
             log.debug( "Starting datadockPool" );

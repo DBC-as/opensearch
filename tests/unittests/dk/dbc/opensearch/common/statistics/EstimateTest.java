@@ -32,6 +32,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
+import dk.dbc.opensearch.common.db.IDBConnection;
+import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 
 
 public class EstimateTest extends BasicJDBCTestCaseAdapter 
@@ -40,15 +42,16 @@ public class EstimateTest extends BasicJDBCTestCaseAdapter
     StatementResultSetHandler statementHandler;
     Estimate estimate;
     MockResultSet result;
-
+    IDBConnection dbConnection;
     
     protected void setUp() throws Exception 
     {
         super.setUp();
+        dbConnection = new PostgresqlDBConnection();
         connection = getJDBCMockObjectFactory().getMockConnection();
         statementHandler = connection.getStatementResultSetHandler();
         result = statementHandler.createResultSet();
-        estimate = new Estimate();
+        estimate = new Estimate( dbConnection );
     }
     
     
