@@ -41,11 +41,12 @@ import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.pdmodel.PDDocumentInformation;
 import org.pdfbox.pdfparser.PDFParser;
 
+
 public class IndexerPDF implements IIndexer
 {
-
     Logger log = Logger.getLogger( IndexerPDF.class );
 
+    
     PluginType pluginType = PluginType.INDEX;
 
 
@@ -143,7 +144,7 @@ public class IndexerPDF implements IIndexer
         return cos;
     }
 
-    public PluginType getTaskName()
+    public PluginType getPluginType()
     {
         return pluginType;
     }

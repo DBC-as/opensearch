@@ -32,8 +32,10 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
-//import fedora.server.storage.types.RelationshipTuple;
+import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.RelationshipTuple;
+
+import fedora.server.types.gen.ComparisonOperator;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -45,6 +47,7 @@ import java.lang.StringBuilder;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -70,6 +73,7 @@ public class MarcxchangeWorkRelation implements IWorkRelation
 
     private PluginType pluginType = PluginType.WORKRELATION;
     private NamespaceContext nsc;
+    private Vector< String > types;
 
 
     /**
@@ -77,8 +81,16 @@ public class MarcxchangeWorkRelation implements IWorkRelation
      */
     public MarcxchangeWorkRelation()
     {
-        log.debug( "DanmarcXchangeWorkRelation constructor called" );
+        log.debug( "DanmarcxchangeWorkRelation constructor called" );
         nsc = new OpensearchNamespaceContext();
+        
+        types = new Vector< String >();
+        types.add( "Anmeldelse" );
+        types.add( "Artikel" );
+        types.add( "Avis" );
+        types.add( "Avisartikel" );
+        types.add( "Tidsskrift" );
+        types.add( "Tidsskriftsartikel" );
     }
 
 
@@ -95,7 +107,7 @@ public class MarcxchangeWorkRelation implements IWorkRelation
      */
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        log.debug( "DanmarcXchangeWorkRelation -> getCargoContainer() called" );
+        log.debug( "DanmarcxchangeWorkRelation -> getCargoContainer() called" );
 
         if ( cargo == null )
         {
@@ -116,63 +128,108 @@ public class MarcxchangeWorkRelation implements IWorkRelation
             throw new PluginException( String.format( error ) );
         }
         
-        byte[] b = co.getBytes();
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression;
-        XPathExpression xPathExpression_numOfRec;
+        byte[] b = co.getBytes();       
         
         String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
-        String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1] ";
-        String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
-        String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
-        String xpathStr = "WILL BE OVERWRITTEN: Used for exception detection";
+        String dcType = getDCVariable( b, typeXpathStr );
         
-        InputSource workRelationSource = new InputSource( new ByteArrayInputStream( b ) );
+        String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
+        String dcTitle = getDCVariable( b, titleXpathStr );
+        
+        String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1]";
+        String dcCreator = getDCVariable( b, creatorXpathStr );
 
-        String dcType;
-        String dcCreator;
-        String dcTitle;
-        String dcSource;
+        String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
+        String dcSource = getDCVariable( b, sourceXpathStr );
+        
+        FedoraAdministration fa = new FedoraAdministration();
+        log.debug( String.format( "DanmarcXchangeWorkRelation dcType: '%s'", dcType ) );
+        if ( ! types.contains( dcType ) )
+        {
+        	log.debug( String.format( "WorkRelation entering findObjects", "") );
+        	// match SOURCE: dcTitle on TARGET: dcTitle
+        	String[] resultFields = { "pid", "title" };
+        	ObjectFields[] objectFields = fa.findObjectFields( resultFields, "title", ComparisonOperator.eq, dcTitle );
+        	
+        	if ( objectFields != null )
+        	{
+	        	int ofLength = objectFields.length;
+	            String[] titles = new String[ ofLength ];
+	            String[] pids = new String[ ofLength ];
+	            String[] test = objectFields[ 0 ].getTitle();
+	            log.debug( String.format( "ObjectFields titles: '%s'", test.toString() ) );
+	            for( int i = 0; i < ofLength; i++ )
+	            {
+	            	String title = (String)objectFields[ i ].getTitle(i);
+	            	log.debug( String.format( "ObjectFields, title: '%s'", title) );
+	                titles[ i ] = (String)objectFields[ i ].getTitle(i);
+	                
+	                String pid = (String)objectFields[ i ].getTitle(i);
+	                log.debug( String.format( "ObjectFields, pid: '%s'", pid) );
+	                pids[ i ] = (String)objectFields[ i ].getPid();
+	            }
+	
+	        	log.debug( String.format( "ObjectFields from findObjectFields, titles: '%s'", titles.toString() ) );
+	        	log.debug( String.format( "ObjectFields from findObjectFields, pids: '%s'", pids.toString() ) );
+        	}
+        	// match SOURCE: dcSource on TARGET: dcTitle
+        	
+        	// match SOURCE: dcSource on TARGET: dcSource
+        	
+        	// match SOURCE: dcTitle on TARGET: dcSource
+        }
+        else 
+        {
+        	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
+        }
+        
+        log.debug( String.format( "MarcxchangeWorkRelation found dcVariables: '%s', '%s', '%s', and '%s'", dcTitle, dcType, dcCreator, dcSource ) );
+                
+        // get relationships        
+        log.debug( String.format( "MarcxchangeWorkRelation: Trying to obtain pid" ) );
+        String pid = "shite";
         try
         {
-        	xpathStr = typeXpathStr;
-            xPathExpression = xpath.compile( xpathStr );
-            dcType = xPathExpression.evaluate( workRelationSource );
-            log.debug( String.format( "MarcxchangeWorkRelation found type: %s", dcType ) );
-            
-            xpathStr = creatorXpathStr;
-            xPathExpression = xpath.compile( xpathStr );
-            dcCreator = xPathExpression.evaluate( workRelationSource );
-            log.debug( String.format( "MarcxchangeWorkRelation found creator: %s", dcCreator ) );
-            
-            xpathStr = titleXpathStr;
-            xPathExpression = xpath.compile( xpathStr );
-            dcTitle = xPathExpression.evaluate( workRelationSource );
-            log.debug( String.format( "MarcxchangeWorkRelation found title: %s", dcTitle ) );
-            
-            xpathStr = sourceXpathStr;
-            xPathExpression = xpath.compile( xpathStr );
-            dcSource = xPathExpression.evaluate( workRelationSource );
-            log.debug( String.format( "MarcxchangeWorkRelation found source: %s", dcSource ) );
-        } 
-        catch ( XPathExpressionException e ) 
-        {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'",  xpathStr ), e );
+        	pid = cargo.getPid();
         }
-
-        // get relationships
-        FedoraAdministration fa = new FedoraAdministration();
-        String pid = cargo.getPid();
-        String predicate = "";
-        RelationshipTuple[] relTuple = fa.getRelationships( pid, predicate );
+        catch ( Exception ex )
+        {
+        	log.error( String.format( "Error in getting pid for cargo: ", ex.getMessage() ) );
+        	StackTraceElement[] stackTraceElements = ex.getStackTrace();
+        	for ( int i = 0; i < stackTraceElements.length; i++ )
+        	{
+        		log.error( String.format( "STACKTRACE %s: %s", i, stackTraceElements[ i ] ) );
+        	}
+        }
+        log.debug( String.format( "MarcxchangeWorkRelation pid: '%s'", pid ) );
+        String predicate = null;
+        RelationshipTuple[] relTuple = null;
+        try
+        {
+        	relTuple = fa.getRelationships( pid, predicate );
+        }
+        catch( Exception ex )
+        {
+        	log.error( String.format( "ERROR in getting RelationshipTuple", "" ) );
+        	StackTraceElement[] elems = ex.getStackTrace();
+        	for ( int i = 0; i < elems.length; i++ )
+        	{
+        		log.error( String.format( "RelationshipTuple error element: '%s'", elems[ i ] ) );
+        	}
+        }
+        
+        if ( relTuple != null )
+        {
+        	log.debug( String.format( "RelationshipTuple returned, length: '%s'", relTuple.length ) );
+        }
+        else
+        {
+        	log.debug( String.format( "RelationshipTuple is null", "" ) );
+        }
+        
         
         // isolate format
-        String serverChoice = co.getFormat();
-
-        // Querying webservice
-        //log.debug( String.format( "querying the webservice with title='%s', serverChoice(format)='%s'", title, serverChoice ) );
-
+        /*String serverChoice = co.getFormat();
         String xmlString = null;
         String queryURL = null;
 
@@ -185,8 +242,6 @@ public class MarcxchangeWorkRelation implements IWorkRelation
         {
             throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
         }
-        //log.debug( String.format( "data: title='%s', serverChoice(format)='%s', queryURL='%s', xml retrieved='%s'", title, serverChoice, queryURL, xmlString ) );
-
 
         // put retrieved answer into inputsource object
         log.debug( "Got answer from the webservice" );
@@ -205,10 +260,11 @@ public class MarcxchangeWorkRelation implements IWorkRelation
         // create xpath exp
         xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
+        XPathExpression xPathExpression_numOfRec;
         
         //String xpathString = "/docbook:article/docbook:title";
         // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
-        String xpathString = "/*/*[2]";
+        String xpathString = "/* /*[2]";
         try 
         {
             xPathExpression_numOfRec = xpath.compile( xpathString );
@@ -218,8 +274,8 @@ public class MarcxchangeWorkRelation implements IWorkRelation
             throw new PluginException( String.format( "Could not compile xpath expression '%s'",  xmlString ), e );
         }
 
-        int numOfRec = 0;
-        
+        int numOfRec = 0;        
+
         try 
         {
             numOfRec = Integer.parseInt( xPathExpression_numOfRec.evaluate( annotateSource ) );
@@ -229,7 +285,7 @@ public class MarcxchangeWorkRelation implements IWorkRelation
             log.fatal( String.format( "Could not format number of records returned by the webservice" ) );
             throw new PluginException( "Could not format number of records returned by the webservice", nfe );
         } 
-        catch (XPathExpressionException xpee ) 
+        catch ( XPathExpressionException xpee ) 
         {
             log.fatal( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
             throw new PluginException( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ), xpee );
@@ -237,7 +293,8 @@ public class MarcxchangeWorkRelation implements IWorkRelation
 
         log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
 
-        if( numOfRec == 0 ){ // no hits. Make another search without serverchoice
+        if( numOfRec == 0 ) // no hits. Make another search without serverchoice
+        { 
             @SuppressWarnings("unused")
 			String xmlStr = null;
             queryURL = null;
@@ -295,7 +352,7 @@ public class MarcxchangeWorkRelation implements IWorkRelation
             {
                 log.debug( "Adding annotation to CargoContainer" );
                 String isolatedDCData = isolateDCData( xmlString );   
-                /** \todo: use of deprecated method from CargoContainer */
+                /** \todo: use of deprecated method from CargoContainer * /
                 cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", IndexingAlias.None, isolatedDCData.getBytes() );
             } 
             catch ( IOException ioe ) 
@@ -304,7 +361,34 @@ public class MarcxchangeWorkRelation implements IWorkRelation
                 throw new PluginException( "Could not add DC data to CargoContainer", ioe );
             }
         }
+        */
         return cargo;
+    }
+    
+    
+    private String getDCVariable( byte[] bytes, String xPathStr ) throws PluginException
+    {
+    	XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext( nsc );
+        XPathExpression xPathExpression;        
+        
+        InputSource workRelationSource = new InputSource( new ByteArrayInputStream( bytes ) );        
+        String dcVariable = null;
+        try
+        {
+        	log.debug( String.format( "MarcxchangeWorkRelation xpathStr = '%s'", xPathStr ) );
+        	xPathExpression = xpath.compile( xPathStr );
+            dcVariable = xPathExpression.evaluate( workRelationSource );            
+            log.debug( String.format( "MarcxchangeWorkRelation found dcVariable: '%s'", dcVariable ) );
+        } 
+        catch ( XPathExpressionException e ) 
+        {
+        	String error = String.format( "Could not compile xpath expression '%s'",  xPathStr );
+        	log.error( error );
+            throw new PluginException( error, e );
+        }
+        
+        return dcVariable;
     }
 
 
@@ -373,8 +457,8 @@ public class MarcxchangeWorkRelation implements IWorkRelation
      * @param title the title to query.
      * @param serverChoice This correspond to submitter field (eg. faktalink). Can be empty.
      */
-    private String formURL( String title, String serverChoice ){
-
+    private String formURL( String title, String serverChoice )
+    {
         int maxRecords = 1;
 
         String baseURL = "http://koncept.dbc.dk/~fvs/webservice.bibliotek.dk/";
@@ -438,7 +522,7 @@ public class MarcxchangeWorkRelation implements IWorkRelation
     }
 
     
-    public PluginType getTaskName()
+    public PluginType getPluginType()
     {
         return pluginType;
     }

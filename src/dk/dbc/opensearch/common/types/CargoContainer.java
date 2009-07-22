@@ -114,7 +114,7 @@ public class CargoContainer
      *
      * @return a unique id identifying the submitted data
      */
-    public long add( DataStreamType dataStreamName,  
+    public long add( DataStreamType dataStreamName, 
                      String format, String submitter, String language, String mimetype, 
                      IndexingAlias alias, 
                      byte[] data ) throws IOException
@@ -164,8 +164,7 @@ public class CargoContainer
                                           data );
 
         this.data.add( co );
-        log.debug( String.format( "cargoObject with id '%s' added to container", 
-                                  co.getId() ) );
+        log.debug( String.format( "cargoObject with id '%s' added to container", co.getId() ) );
         log.debug( String.format( "number of CargoObjects: %s", getCargoObjectCount() ) );
 
         return co.getId();
@@ -433,17 +432,21 @@ public class CargoContainer
     
     public void setPid( String pid )
     {
+    	log.debug( String.format( "setting pid '%s' for CargoContainer", pid ) );
     	this.pid = pid;
     }
     
     
     public String getPid() throws IllegalStateException
     {
-    	if ( this.pid.isEmpty() )
+    	log.debug( "CargoContainer.getPid() called, pid: " + this.pid );
+    	if ( this.pid == null || this.pid.isEmpty() )
     	{
+    		log.error( String.format( "getPid: pid '%s' is empty", pid ) );
     		throw new IllegalStateException( "Pid for CargoContainer is empty" );
     	}
     	
+    	log.debug( String.format( "getPid returning pid '%s'", pid ) );
     	return this.pid;
     }
 }

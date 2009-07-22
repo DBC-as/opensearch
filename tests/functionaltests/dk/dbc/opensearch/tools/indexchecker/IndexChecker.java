@@ -32,7 +32,7 @@ import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.tools.readindex.ReadIndex;
 import dk.dbc.opensearch.tools.testindexer.Estimate;
-import dk.dbc.opensearch.tools.testindexer.FedoraAdministration;
+import dk.dbc.opensearch.tools.testindexer.FedoraAdministrationMock;
 import dk.dbc.opensearch.tools.testindexer.Indexer;
 import dk.dbc.opensearch.tools.testindexer.Processqueue;
 
@@ -57,6 +57,7 @@ import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -86,7 +87,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import java.util.Collections;
 
 
 /**
@@ -157,7 +157,6 @@ public class IndexChecker
                     System.out.println( "FAILED" );
                     allPassed = false;
                 }
-
             }
         }
 
@@ -240,7 +239,7 @@ public class IndexChecker
         // setup classes needed for indexing
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
-        FedoraAdministration fedoraAdministration = new FedoraAdministration();
+        IFedoraAdministration fedoraAdministration = new dk.dbc.opensearch.tools.testindexer.FedoraAdministrationMock();
         ReadIndex readIndex = new ReadIndex();
         ExecutorService pool = Executors.newFixedThreadPool( 1 );
 
@@ -276,7 +275,6 @@ public class IndexChecker
      */
     private void resetMapClasses() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException
     {
-
         // Re-initialize the DatadockJobsMap ( is possibly set by earlier unittests )
         Class datadockJobMapClass = Class.forName( "dk.dbc.opensearch.components.datadock.DatadockJobsMap" );
         Field field = datadockJobMapClass.getDeclaredField( "initiated" );
@@ -341,7 +339,6 @@ public class IndexChecker
      */
     public ArrayList<DatadockJob> getJobList( File root ) throws FileNotFoundException, MalformedURLException, URISyntaxException
     {
-
         if ( ! root.isDirectory() )
         {
             throw new FileNotFoundException( String.format( "%s is not i directory", root ) );

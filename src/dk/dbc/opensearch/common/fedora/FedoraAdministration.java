@@ -165,7 +165,7 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     public synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
     {
-    	log.trace( "Entering storeContainer( CargoContainer )" );
+    	log.debug( "Entering storeContainer( CargoContainer )" );
         if( cargo.getCargoObjectCount() == 0 ) 
         {
             log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
@@ -173,12 +173,15 @@ public class FedoraAdministration implements IFedoraAdministration
         } 
         
         String nextPid = PIDManager.getInstance().getNextPID( submitter );
+        cargo.setPid( nextPid );
         byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
         
         String logm = String.format( "%s inserted", format );        
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
         
-        log.info( String.format( "Submitted data, returning pid %s", pid ) );        
+        log.info( String.format( "Submitted data, returning pid %s", pid ) );
+        
+        
         return pid;
     }
 
@@ -656,6 +659,43 @@ public class FedoraAdministration implements IFedoraAdministration
     }
 
 
+    /**
+     * method for finding pids of objects based on object properties
+     * @param resultFields, the fields to return: 
+     *               -Key fields:         pid, label, state, ownerId, cDate, mDate, dcmDate
+     *               -Dublin core fields: title, creator, subject, description, publisher, contributor, date, format, identifier, source, language, relation, coverage, rights
+     * @param property, the property to match
+     * @param operator, the operator to apply, "has", "eq", "lt", "le","gt" and "ge" are valid
+     * @param value, the value the property adheres to
+     * @return an array o pids of the matching objects
+     */
+    public ObjectFields[] findObjectFields( String[] resultFields, String property, ComparisonOperator operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
+    {
+    	log.debug( String.format( "Entering findObjectFields with property '%s' and value '%s'", property, value ) );
+        NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
+        Condition[] cond = { new Condition( property, operator, value ) };
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+
+        log.debug( "just before findObjects" );
+        FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
+        log.debug( "right after findObjects" );
+        
+        ObjectFields[] objectFields = null;        
+        if ( fsr == null )
+        {
+        	log.debug( String.format( "NullPointerException thrown from findObjects with values '%s', '%s', and '%s'", property, operator.toString(), value ) );
+        	//throw new NullPointerException( "objectFields null, no result list returned from FedoraHandle" );
+        }
+        else
+        {
+        	log.debug( String.format( "findObjectFields returning ObjectFields[]", "" ) );
+        	objectFields = fsr.getResultList();
+        }
+        log.debug( String.format( "Returning objectFields", "" ) );
+        return objectFields;
+    }
+    
+    
     /** 
      * Deletes the specified relationship. This method will remove the
      * specified relationship(s) from the RELS-EXT datastream. If the

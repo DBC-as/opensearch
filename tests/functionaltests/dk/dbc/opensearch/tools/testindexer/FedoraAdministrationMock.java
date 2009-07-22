@@ -41,32 +41,33 @@ import java.lang.ClassNotFoundException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.net.MalformedURLException;
 
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
-import org.xml.sax.SAXException;
 
+import org.xml.sax.SAXException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.apache.commons.lang.NotImplementedException;
-import java.net.MalformedURLException;
-import javax.xml.transform.TransformerConfigurationException;
 
 
 /**
  *
  */
-public class FedoraAdministration implements IFedoraAdministration{
+public class FedoraAdministrationMock implements IFedoraAdministration
+{
     /**
      *
      */
     
     private CargoContainer cc;
 
-    public FedoraAdministration(){}
+    public FedoraAdministrationMock(){}
 
     // public InputPair<String, Float> storeContainer( CargoContainer cc, DatadockJob datadockJob, IProcessqueue queue, IEstimate estimate ) throws ClassNotFoundException, IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException{
     //     
@@ -75,23 +76,25 @@ public class FedoraAdministration implements IFedoraAdministration{
         
     // }
 
-    public CargoContainer retrieveCargoContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException{
+    public CargoContainer retrieveCargoContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
+    {
+    	System.out.println( "mock retrieve..." );
+    	System.out.println( "cc: " + cc.toString() );
         return cc;
     }
 
 
     public String storeCargoContainer( CargoContainer cargo, String submitter, String format )throws IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, TransformerException, ValidationException
     {
+    	System.out.println( "mockpid returned" );
         cc = cargo;
+        System.out.println( "cargo: " + cargo.toString() );
         return "MOCK_PID";
-        
-        
-
     }
 
 
 
-public void deleteObject( String pid, boolean force ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public void deleteObject( String pid, boolean force ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
         throw new NotImplementedException( "Not implemented - shouldn't be used with this implementation" );
     }

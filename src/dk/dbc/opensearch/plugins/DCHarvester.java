@@ -1,4 +1,4 @@
-/**   
+/*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s, 
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -113,7 +113,7 @@ public class DCHarvester implements IHarvestable
     }
 
     
-    public PluginType getTaskName()
+    public PluginType getPluginType()
     {
         return pluginType;
     }

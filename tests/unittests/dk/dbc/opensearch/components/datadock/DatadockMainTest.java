@@ -89,7 +89,7 @@ public class DatadockMainTest
 //                    for( String task : list)
 //                    {	
 //                        IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-//                        switch ( plugin.getTaskName() )
+//                        switch ( plugin.getPluginType() )
 //                        {	
 //                            case HARVEST:
 //                                IHarvestable harvestPlugin = (IHarvestable)plugin; 

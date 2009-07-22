@@ -28,7 +28,7 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.tools.readindex.ReadIndex;
 import dk.dbc.opensearch.tools.testindexer.Estimate;
-import dk.dbc.opensearch.tools.testindexer.FedoraAdministration;
+import dk.dbc.opensearch.tools.testindexer.FedoraAdministrationMock;
 import dk.dbc.opensearch.tools.testindexer.Indexer;
 import dk.dbc.opensearch.tools.testindexer.Processqueue;
 
@@ -158,7 +158,7 @@ public class IndexCheckerMain
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
         //IFedoraCommunication c = new FedoraCommunication();
-        FedoraAdministration fedoraAdministration = new FedoraAdministration();
+        IFedoraAdministration fedoraAdministration = new FedoraAdministrationMock();
         ExecutorService pool = Executors.newFixedThreadPool( 1 );
         Indexer indexer = new Indexer( compass, e, p, fedoraAdministration, pool );
         ReadIndex reader = new ReadIndex();

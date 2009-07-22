@@ -102,10 +102,11 @@ public class FedoraTools
     public static byte[] DigitalObjectAsByteArray( DigitalObject dot )throws IOException, MarshalException, ValidationException//, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
         log.debug( "Marshalling the digitalObject to a byte[]" );
+        
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         OutputStreamWriter outW = new OutputStreamWriter(out);
         Marshaller m = new Marshaller( outW ); // IOException
-        m.marshal(dot); // throws MarshallException, ValidationException
+        m.marshal(dot); // throws MarshallException, ValidationException        
         //log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
         byte[] ret = out.toByteArray();
 
@@ -153,7 +154,6 @@ public class FedoraTools
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getCargoObjects().get( i );
-
             lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
         }
 
@@ -192,10 +192,10 @@ public class FedoraTools
         // Transform document to xml string
         Source source = new DOMSource((Node) root );
         StringWriter stringWriter = new StringWriter();
-        Result result = new StreamResult(stringWriter);
+        Result result = new StreamResult( stringWriter );
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
-        transformer.transform(source, result);
+        transformer.transform( source, result );
         String admStreamString = stringWriter.getBuffer().toString();
         log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
 
@@ -209,7 +209,7 @@ public class FedoraTools
         log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
         Datastream[] dsArray = new Datastream[ cargo_count ];
         
-        /* 
+        /** 
          * \todo: 
          * 
          * when iterating here: 
@@ -218,10 +218,9 @@ public class FedoraTools
          * then constructDataStream must be called with true, false, true, that is, Versionable = true, External = false, and 
          *      InlineData = true.
          */
-        for(int i = 0; i < cargo_count; i++)
+        for( int i = 0; i < cargo_count; i++ )
         {
-            CargoObject c = cargo.getCargoObjects().get( i );
-            
+            CargoObject c = cargo.getCargoObjects().get( i );            
             dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
         }
 
@@ -301,10 +300,7 @@ public class FedoraTools
      *
      * @return a DigitalObject with no DataStreams
      */
-    private static DigitalObject initDigitalObject( String state,
-                                            String label,
-                                            String owner,
-                                            String pid )
+    private static DigitalObject initDigitalObject( String state, String label, String owner, String pid )
     {
         Date timestamp = new Date( System.currentTimeMillis() );
         return initDigitalObject( state, label, owner, pid, timestamp );
@@ -322,11 +318,7 @@ public class FedoraTools
      *
      * @return a DigitalObject with no DataStreams
      */
-    private static DigitalObject initDigitalObject( String state,
-                                            String label,
-                                            String owner,
-                                            String pid,
-                                            Date timestamp )
+    private static DigitalObject initDigitalObject( String state, String label, String owner, String pid, Date timestamp )
     {
         //ObjectProperties holds all the Property types
         ObjectProperties op = new ObjectProperties();
@@ -340,7 +332,7 @@ public class FedoraTools
         pLabel.setVALUE( label );
 
         PropertyType pOwner = new Property();
-        pOwner.setNAME(PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID);
+        pOwner.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_MODEL_OWNERID );
         pOwner.setVALUE( owner );
 
         //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S");
@@ -354,8 +346,7 @@ public class FedoraTools
         pLastModifiedDate.setNAME( PropertyTypeNAMEType.INFO_FEDORA_FEDORA_SYSTEM_DEF_VIEW_LASTMODIFIEDDATE );
         pLastModifiedDate.setVALUE( timeNow );
 
-        Property[] props = new Property[] { pState, pLabel, (Property) pOwner,
-                                            pCreatedDate, pLastModifiedDate };
+        Property[] props = new Property[] { pState, pLabel, (Property) pOwner, pCreatedDate, pLastModifiedDate };
         op.setProperty( props );
 
         DigitalObject dot = new DigitalObject();
@@ -368,17 +359,14 @@ public class FedoraTools
 
     
     /**
-     * Constructing a Datastream with a default timestamp (
-     * System.currentTimeMillis )
+     * Constructing a Datastream with a default timestamp ( System.currentTimeMillis )
      *
      * @param co
      * @param itemID
      *
      * @return
      */
-    private static Datastream constructDatastream( CargoObject co,
-                                                   String itemID ) throws ParseException,
-                                                                  IOException
+    private static Datastream constructDatastream( CargoObject co, String itemID ) throws ParseException, IOException
     {
         Date timestamp = new Date( System.currentTimeMillis() );
         String timeNow = dateFormat.format( timestamp );
@@ -396,9 +384,7 @@ public class FedoraTools
      *
      * @return A datastream suitable for ingestion into the DigitalObject
      */
-    private static Datastream constructDatastream( CargoObject co,
-                                                   String timeNow,
-                                                   String itemID ) throws ParseException
+    private static Datastream constructDatastream( CargoObject co, String timeNow, String itemID ) throws ParseException
     {
         return constructDatastream( co, timeNow, itemID, false, false, false );
     }
@@ -442,12 +428,7 @@ public class FedoraTools
      *      content to a client (e.g., video streaming), rather than
      *      have Fedora in the middle re-streaming the content out.
      */
-    private static Datastream constructDatastream( CargoObject co,
-                                                   String timeNow,
-                                                   String itemID,
-                                                   boolean versionable,
-                                                   boolean externalData,
-                                                   boolean inlineData ) throws ParseException
+    private static Datastream constructDatastream( CargoObject co, String timeNow, String itemID, boolean versionable, boolean externalData, boolean inlineData ) throws ParseException
     {
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
@@ -490,7 +471,7 @@ public class FedoraTools
         dataStreamElement.setVERSIONABLE( versionable );
 
         // datastreamVersionElement
-        String itemId_version = itemID+".0";
+        String itemId_version = itemID + ".0";
 
         DatastreamVersion dataStreamVersionElement = new DatastreamVersion();
 
@@ -514,7 +495,7 @@ public class FedoraTools
         	dVersTypeChoice.setXmlContent( xmlCont );
         }
 
-        dataStreamVersionElement.setDatastreamVersionTypeChoice(dVersTypeChoice);
+        dataStreamVersionElement.setDatastreamVersionTypeChoice( dVersTypeChoice );
 
         String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
         dataStreamVersionElement.setLABEL(mimeLabel);
@@ -528,7 +509,7 @@ public class FedoraTools
         DatastreamVersion[] dsvArray = new DatastreamVersion[] { dataStreamVersionElement };
         dataStreamElement.setDatastreamVersion( dsvArray );
 
-        log.debug( String.format( "Datastream element is valid=%s", dataStreamElement.isValid() ) );
+        log.debug( String.format( "Datastream element is valid = '%s'", dataStreamElement.isValid() ) );
 
         return dataStreamElement;
     }

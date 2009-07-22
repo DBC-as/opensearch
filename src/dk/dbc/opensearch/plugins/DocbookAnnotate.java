@@ -53,7 +53,7 @@ import org.xml.sax.SAXException;
 
 
 /**
- * Plugin for annotating docbook carcoContainers
+ * Plugin for annotating docbook cargoContainers
  */
 public class DocbookAnnotate implements IAnnotate
 {
@@ -69,7 +69,7 @@ public class DocbookAnnotate implements IAnnotate
      */
     public DocbookAnnotate()
     {
-        log.debug( "Constructor() called" );
+        log.debug( "DocbookAnnotate Constructor() called" );
         nsc = new OpensearchNamespaceContext();
     }
 
@@ -87,7 +87,7 @@ public class DocbookAnnotate implements IAnnotate
      */
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-        log.debug( "getCargoContainer() called" );
+        log.debug( "DocbookAnnotate getCargoContainer() called" );
 
         if ( cargo == null )
         {
@@ -275,6 +275,7 @@ public class DocbookAnnotate implements IAnnotate
                 throw new PluginException( "Could not add DC data to CargoContainer", ioe );
             }
         }
+
         return cargo;
     }
 
@@ -411,7 +412,7 @@ public class DocbookAnnotate implements IAnnotate
         return sb.toString();
     }
 
-    public PluginType getTaskName()
+    public PluginType getPluginType()
     {
         return pluginType;
     }

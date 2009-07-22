@@ -73,7 +73,7 @@ public class PIDManager
     {	
     	if( ! ( pidMap.containsKey( prefix ) ) ||  pidMap.get( prefix ).empty() )  
         {
-        	pidMap.put( prefix, retrievePIDStack( prefix ) );
+            pidMap.put( prefix, retrievePIDStack( prefix ) );
         }
         
     	String ret = pidMap.get( prefix ).pop(); 
@@ -95,9 +95,10 @@ public class PIDManager
         Stack<String> pidStack = new Stack<String>();
 
         fedora.server.management.FedoraAPIM fem = FedoraHandle.getInstance().getAPIM();
-        
+        System.out.println( "numPids: " + numPIDs.toString() );
+        System.out.println( "PIDManager prefix: " + prefix );
         String[] pids = fem.getNextPID( numPIDs, prefix );
-        
+        System.out.println( "pids: " + pids.toString() );
         if ( pids == null )
         {
             log.error( "Could not retrieve pids from Fedora repository" );

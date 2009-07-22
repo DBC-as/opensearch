@@ -22,6 +22,7 @@ package dk.dbc.opensearch.tools.testindexer;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -51,7 +52,6 @@ import static org.easymock.classextension.EasyMock.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.xml.sax.SAXException;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 
 
 /**
@@ -61,7 +61,7 @@ public class IndexerTest
 {
     IEstimate mockEstimate;
     IProcessqueue mockProcessqueue;
-    FedoraAdministration mockFedoraAdministration;
+    IFedoraAdministration mockFedoraAdministration;
     Compass mockCompass;
     CompassSession mockSession;
     ThreadPoolExecutor mockThreadPoolExecutor;

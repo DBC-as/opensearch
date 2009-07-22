@@ -108,7 +108,7 @@ public class DatadockThreadTest
         PluginType pt = PluginType.HARVEST;
 
         @Mock( invocations = 3 )
-        public PluginType getTaskName()
+        public PluginType getPluginType()
         {
             return pt;
         }
@@ -127,7 +127,7 @@ public class DatadockThreadTest
         PluginType pt = PluginType.ANNOTATE;
 
         @Mock( invocations = 3 )
-        public PluginType getTaskName()
+        public PluginType getPluginType()
         {
             return pt;
         }
@@ -139,13 +139,14 @@ public class DatadockThreadTest
         }
     }    
     
+    
     @MockClass( realClass = DocbookAnnotate.class )
     public static class MockAnnotate2
     {
         PluginType pt = PluginType.ANNOTATE;
 
         @Mock( invocations = 3 )
-        public PluginType getTaskName()
+        public PluginType getPluginType()
         {
             return pt;
         }

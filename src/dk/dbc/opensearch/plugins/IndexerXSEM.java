@@ -69,12 +69,6 @@ public class IndexerXSEM implements IIndexer
     PluginType pluginType = PluginType.INDEX;
 
 
-    public PluginType getTaskName()
-    {
-        return pluginType;
-    }
-
-
     public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle, IEstimate estimate ) throws PluginException, ConfigurationException
     {
         long processTime = 0;
@@ -314,4 +308,10 @@ public class IndexerXSEM implements IIndexer
             throw new PluginException( "Could not configure database in Estimation class", cnfe );
         }
     }
+    
+    
+    public PluginType getPluginType()
+    {
+        return pluginType;
+    }    
 }

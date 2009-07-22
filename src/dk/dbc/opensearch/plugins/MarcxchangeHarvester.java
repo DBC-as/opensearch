@@ -114,7 +114,7 @@ public class MarcxchangeHarvester implements IHarvestable
     }
 
     
-    public PluginType getTaskName()
+    public PluginType getPluginType()
     {
         return pluginType;
     }

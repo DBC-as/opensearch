@@ -30,7 +30,7 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.tools.testindexer.FedoraAdministration;
+import dk.dbc.opensearch.tools.testindexer.FedoraAdministrationMock;
 
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
@@ -55,8 +55,8 @@ import org.apache.commons.configuration.ConfigurationException;
 /**
  * 
  */
-public class FedoraAdministrationTest {
-
+public class FedoraAdministrationTest 
+{
     CargoContainer mockCargoContainer;
     IProcessqueue mockProcessqueue;
     IEstimate mockEstimate;
@@ -71,8 +71,6 @@ public class FedoraAdministrationTest {
 
     @Test public void testFedoraAdministration() throws URISyntaxException, ClassNotFoundException, ConfigurationException, IOException, MarshalException, ParseException, ParserConfigurationException, ServiceException, SAXException, SQLException, TransformerException, ValidationException
     {
-        
-
         mockCargoContainer = createMock( CargoContainer.class);
         mockEstimate = createMock( IEstimate.class);
         mockProcessqueue = createMock( IProcessqueue.class );
@@ -86,7 +84,7 @@ public class FedoraAdministrationTest {
 
         // //InputPair result = new InputPair<String, Float>();
         
-        IFedoraAdministration fc = new FedoraAdministration();
+        IFedoraAdministration fc = new FedoraAdministrationMock();
         
         String result = fc.storeCargoContainer( mockCargoContainer, submitter, format );
     

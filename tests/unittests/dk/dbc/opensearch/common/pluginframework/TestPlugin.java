@@ -46,7 +46,7 @@ public class TestPlugin implements IPluggable
     }
     
     
-    public PluginType getTaskName()
+    public PluginType getPluginType()
     {
         return PluginType.ANNOTATE;
     }

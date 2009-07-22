@@ -1,20 +1,20 @@
 /*   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -174,24 +174,32 @@ public class DatadockThread implements Callable< Float >
     {
         // Must be implemented due to class implementing Callable< Float > interface.
         // Method is to be extended when we connect to 'Posthuset'
-
-        log.debug( "DatadockThread call method called" );
+    	log.debug( "DatadockThread call method called" );
 
         // Validate plugins
         PluginResolver pluginResolver = new PluginResolver();
-
+        System.out.println( "list: " + list.toString() );
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
+        String mimeType = null;
+        String format = null;
+        String submitter = null;
+        long length = 0;
+        //String pid = null;
+        //boolean stored = false;
+        Float est = 0F;
+        
         for( String classname : list)
         {
             log.debug( "DatadockThread getPlugin 'classname' " + classname );
 
             IPluggable plugin = pluginResolver.getPlugin( classname );
-            log.debug( String.format( "plugin::TaskName = '%s'", plugin.getTaskName() ) );
-            
-            switch ( plugin.getTaskName() )
+            log.debug( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
+           
+            switch ( plugin.getPluginType() )
             {
                 case HARVEST:
-                    log.debug( String.format( "case HARVEST pluginType %s", plugin.getTaskName().toString() ) );
+                	System.out.println("HARVEST");
+                    log.debug( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
                     
                     IHarvestable harvestPlugin = (IHarvestable)plugin;
                     cargo = harvestPlugin.getCargoContainer( datadockJob );
@@ -200,7 +208,8 @@ public class DatadockThread implements Callable< Float >
                     
                     break;
                 case ANNOTATE:
-                    log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getTaskName().toString() ) );
+                	System.out.println("ANNOTATE");
+                    log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
                     
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
 
@@ -210,53 +219,50 @@ public class DatadockThread implements Callable< Float >
                     
                     break;
                 case STORE:
+                	System.out.println("STORE");
+                	log.debug( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
+                	
+                	for( CargoObject co : cargo.getCargoObjects() )
+                    {
+                        if( co.getDataStreamName() == DataStreamType.OriginalData )
+                        {
+                            mimeType = co.getMimeType();
+                            format = co.getFormat();
+                            submitter = co.getSubmitter();
+                        }
+                        
+                        length += co.getContentLength();
+                    }
+
                     IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                    cargo = repositoryStore.storeCargoContainer( cargo );
+                    cargo = repositoryStore.storeCargoContainer( cargo, submitter, format );
+                    
                 	break;
                 case WORKRELATION:
-                    log.debug( String.format( "case WORKRELATION pluginType %s", plugin.getTaskName().toString() ) );
+                	System.out.println("WORKRELATION");
+                    log.debug( String.format( "case WORKRELATION pluginType %s", plugin.getPluginType().toString() ) );
                     
                     checkCargoContainerIsNotNull( cargo );
                     
                     IWorkRelation workRelationPlugin = (IWorkRelation)plugin;
                     cargo = workRelationPlugin.getCargoContainer( cargo );
+                    log.debug( String.format( "DATADOCKTHREAD workRelationPlugin returned cargo", "" ) );
                     
                     break;
                 case GETESTIMATE:
                     log.debug( "" );
-                    
-                    //    
+                    est = estimate.getEstimate( mimeType, length );
+                    log.debug( String.format( "Got estimate of %s", est) );
                     
                     break;
                 default:
-                	log.warn( String.format( "plugin.getTaskName ('%s') did not match HARVEST or ANNOTATE", plugin.getTaskName() ) );
+                	log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
             }
         }
-
-        //obtain mimetype and length from CargoContainer
-        String mimeType = null;
-        String format = null;
-        String submitter = null;
-        long length = 0;
-        
-        for( CargoObject co : cargo.getCargoObjects() )
-        {
-            if( co.getDataStreamName() == DataStreamType.OriginalData )
-            {
-                mimeType = co.getMimeType();
-                format = co.getFormat();
-                submitter = co.getSubmitter();
-            }
-            
-            length += co.getContentLength();
-        }
-
-        String pid = fedoraAdministration.storeCargoContainer( cargo, submitter, format );
-        
+           
         //push to processqueue job to processqueue and get estimate
-        queue.push( pid );
-        Float est = estimate.getEstimate( mimeType, length );
-        log.debug( String.format( "Got estimate of %s", est ) );
+        queue.push( cargo.getPid() );
+        
         return est;
     }
     

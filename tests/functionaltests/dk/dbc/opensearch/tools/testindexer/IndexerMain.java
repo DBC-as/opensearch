@@ -22,9 +22,16 @@ package dk.dbc.opensearch.tools.testindexer;
 
 
 import dk.dbc.opensearch.common.compass.CompassFactory;
+import dk.dbc.opensearch.tools.testindexer.Estimate;
+import dk.dbc.opensearch.tools.testindexer.FedoraAdministrationMock;
+import dk.dbc.opensearch.tools.testindexer.Processqueue;
+import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.statistics.IEstimate;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,6 +39,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.xml.rpc.ServiceException;
 
@@ -42,14 +50,6 @@ import org.compass.core.config.CompassEnvironment;
 import org.compass.core.converter.mapping.xsem.XmlContentMappingConverter;
 import org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter;
 import org.compass.core.CompassSession;
-import dk.dbc.opensearch.tools.testindexer.Estimate;
-import dk.dbc.opensearch.tools.testindexer.FedoraAdministration;
-import dk.dbc.opensearch.tools.testindexer.Processqueue;
-import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
-import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
-import java.util.concurrent.ExecutionException;
 
 /**
  * The main class for the testindexer. Provides parsing of commandline
@@ -156,7 +156,7 @@ public class IndexerMain
         IEstimate e = new Estimate();
         IProcessqueue p = new Processqueue();
         //IFedoraCommunication c = new FedoraCommunication();
-        FedoraAdministration fedoraAdministration = new FedoraAdministration();
+        IFedoraAdministration fedoraAdministration = new FedoraAdministrationMock();
         ExecutorService pool = Executors.newFixedThreadPool( 1 );
         Indexer indexer = new Indexer( compass, e, p, fedoraAdministration, pool );
 

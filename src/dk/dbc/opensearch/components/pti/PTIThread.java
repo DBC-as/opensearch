@@ -121,7 +121,7 @@ public class PTIThread implements Callable< Long >
         
         try
         {
-            log.debug( String.format( "PTIThread -> fedoraPid: ", fedoraPid ) );
+        	log.debug( String.format( "PTIThread -> fedoraPid: ", fedoraPid ) );
             cc = fedoraAdministration.retrieveCargoContainer( fedoraPid );
         }
         catch( Exception e )
@@ -153,7 +153,7 @@ public class PTIThread implements Callable< Long >
             log.debug( "PTIThread running through plugins list" );
             IPluggable plugin = pluginResolver.getPlugin( classname );
             log.debug( "PTIThread plugin resolved" );
-            PluginType taskName = plugin.getTaskName();
+            PluginType taskName = plugin.getPluginType();
             log.debug( "PTIThread taskName: " + taskName );
             switch ( taskName )
             {                
