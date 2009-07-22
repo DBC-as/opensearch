@@ -302,6 +302,58 @@ public class FedoraAdministrationTest
     }
 
     /**
+     * Testing the throwing of the IOException in getAdminStreamMethod
+     */ 
+    @Test
+    public void testGetAdminStreamIOExp() throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException, NoSuchMethodException, IllegalAccessException
+    {
+     //setup
+        boolean illegalCaught = false;
+        Mockit.setUpMocks( MockFedoraClient.class );
+        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockXMLFileReader.class );
+        String byteString = "admindata";
+        byte[] bytes = byteString.getBytes();
+
+        String pid = "pid";
+        Method method;
+        Class[] argClasses = new Class[]{ String.class };
+        Object[] args = new Object[]{ pid };
+        Element result;
+        //expectations
+        expect( mockFea.getDatastreamDissemination( "pid", "adminData" , null ) ).andThrow( new RemoteException( "test" ) );
+        //        expect( mockMTStream.getStream() ).andReturn( null );
+        //replay
+        replay( mockElement );
+        replay( mockMTStream );
+        replay( mockFea );
+        //do stuff
+        fa = new FedoraAdministration();
+        try
+        {
+            method = fa.getClass().getDeclaredMethod( "getAdminStream", argClasses );
+            System.out.println( "hat 1" );
+            method.setAccessible( true );
+            System.out.println( "hat 2" );
+            result = (Element)method.invoke( fa, args );
+            System.out.println( "hat 3" );
+        }
+        catch( InvocationTargetException ite )
+        {
+            //check the class of the exception...
+            if( ite.getCause().getClass().equals( IOException.class ) )
+            {
+                illegalCaught = true;
+            }
+        }
+        assertTrue( illegalCaught );
+        //verify
+        verify( mockElement );
+        verify( mockMTStream );
+        verify( mockFea );
+    }
+
+    /**
      * Testing the deleteObject method
      */
     @Test public void testDeleteObject()throws ConfigurationException, MalformedURLException, ServiceException, IOException
