@@ -280,11 +280,11 @@ public class FedoraAdministrationTest
         try
         {
             method = fa.getClass().getDeclaredMethod( "getAdminStream", argClasses );
-            System.out.println( "hat 1" );
+            //System.out.println( "hat 1" );
             method.setAccessible( true );
-            System.out.println( "hat 2" );
+            //System.out.println( "hat 2" );
             result = (Element)method.invoke( fa, args );
-            System.out.println( "hat 3" );
+            //System.out.println( "hat 3" );
         }
         catch( InvocationTargetException ite )
         {
@@ -332,11 +332,11 @@ public class FedoraAdministrationTest
         try
         {
             method = fa.getClass().getDeclaredMethod( "getAdminStream", argClasses );
-            System.out.println( "hat 1" );
+            //System.out.println( "hat 1" );
             method.setAccessible( true );
-            System.out.println( "hat 2" );
+            //System.out.println( "hat 2" );
             result = (Element)method.invoke( fa, args );
-            System.out.println( "hat 3" );
+            //System.out.println( "hat 3" );
         }
         catch( InvocationTargetException ite )
         {
@@ -352,6 +352,113 @@ public class FedoraAdministrationTest
         verify( mockMTStream );
         verify( mockFea );
     }
+
+    /**
+     * Testing the getIndexingAlias methods happypath
+     */
+    @Test public void testGetIndexingAlias() throws NoSuchMethodException, IllegalAccessException
+    {  
+        //setup
+        String testString = "test";
+        String result = "not equal to test";
+        Method method;
+        Class[] argClasses = new Class[]{ Element.class };
+        Object[] args = new Object[]{ mockElement };
+
+        //expectations
+        expect( mockElement.getElementsByTagName( "indexingalias" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "name" ) ).andReturn( testString );
+        
+        //replay
+        replay( mockElement );
+        replay( mockNodeList );        
+
+        //do stuff
+        fa = new FedoraAdministration();
+        try
+        {
+            System.out.println( "hat 0" );
+            method = fa.getClass().getDeclaredMethod( "getIndexingAlias", argClasses );
+            System.out.println( "hat 1" );
+            method.setAccessible( true );
+            System.out.println( "hat 2" );
+            result = (String)method.invoke( fa, args );
+            System.out.println( "hat 3" );
+        }
+        catch( InvocationTargetException ite )
+        {
+            //ite.getCause().printStackTrace();
+            Assert.fail();
+            
+        }
+        assertTrue( result.equals( testString ));
+
+        //verify
+        verify( mockElement );
+        verify( mockNodeList );
+
+    }
+
+
+    /**
+     * Testing the getIndexingAlias with indexingAliasElem == null
+     */ 
+    @Test public void testGetIndexingAliasNull() throws NoSuchMethodException, IllegalAccessException
+    {  
+        //setup
+        //String testString = "test";
+        boolean correctException = false;
+        String result = "not equal to test";
+        Method method;
+        Class[] argClasses = new Class[]{ Element.class };
+        Object[] args = new Object[]{ mockElement };
+
+        //expectations
+        expect( mockElement.getElementsByTagName( "indexingalias" ) ).andReturn( null );
+               
+        //replay
+        replay( mockElement );
+       
+        //do stuff
+        fa = new FedoraAdministration();
+        try
+        {
+            //System.out.println( "hat 0" );
+            method = fa.getClass().getDeclaredMethod( "getIndexingAlias", argClasses );
+            //System.out.println( "hat 1" );
+            method.setAccessible( true );
+            //System.out.println( "hat 2" );
+            result = (String)method.invoke( fa, args );
+            //System.out.println( "hat 3" );
+        }
+        catch( InvocationTargetException ite )
+        {
+            if( ite.getCause().getClass().equals( NullPointerException.class ) )
+            {
+                correctException = true;
+            }
+            else
+            {
+            Assert.fail();
+            }
+            
+        }
+        assertTrue( correctException );
+
+        //verify
+        verify( mockElement );
+
+    }
+
+    /**
+     * Testing getStreamNodes method, so that it can be mocked for 
+     * other testcases using it
+     */
+    /**
+     * Testing createFedoraResource method, so that it can be mocked 
+     * for testcases that calls it
+     */
 
     /**
      * Testing the deleteObject method

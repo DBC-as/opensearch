@@ -786,7 +786,9 @@ public class FedoraAdministration implements IFedoraAdministration
         {
             /** \todo: this if statement doesnt skip anything. What should we do? bug: 8878 */
             log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+            throw new NullPointerException( "An Adminstream didnt contain a indexingAslias");
         }
+        //this might throw a NullPointerException.... 
         String indexingAliasName = ((Element)indexingAliasElem.item( 0 )).getAttribute( "name" );
 
         return indexingAliasName;
