@@ -142,10 +142,14 @@ public class FedoraTools
     {
         log.trace( String.format( "Entering constructFoxml( cargo, nexPid='%s', label='%s', now )", nextPid, label ) );
 
+        ///////////////// INITIALIZING DIGITAL OBJECT ////////////////////////////
         DigitalObject dot = initDigitalObject( "Active", label, "dbc", nextPid, now );
 
-        String timeNow = dateFormat.format( now );
-
+        ///////////////////// CONSTRUCTING DC DATASTREAM ////////////////////////////////
+        log.debug( "Constructing DC datastream" );
+        Element dcRoot = constructDCDatastream( cargo );        
+        
+        ////////////////////// 
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
 
@@ -185,12 +189,13 @@ public class FedoraTools
 
         Collections.sort( lst2 );
 
+        ///////////////////// CONSTRUCTING ADMINDATASTREAM //////////////////////////////
         log.debug( "Constructing adminstream" );
 
         Element root = constructAdminStream( cargo, lst2 );
 
         // Transform document to xml string
-        Source source = new DOMSource((Node) root );
+        Source source = new DOMSource( ( Node ) root );
         StringWriter stringWriter = new StringWriter();
         Result result = new StreamResult( stringWriter );
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -202,7 +207,7 @@ public class FedoraTools
         // add the adminstream to the cargoContainer
         byte[] byteAdmArray = admStreamString.getBytes();
         cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
-
+        
         log.debug( "Constructing foxml byte[] from cargoContainer" );
         cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
 
@@ -218,6 +223,7 @@ public class FedoraTools
          * then constructDataStream must be called with true, false, true, that is, Versionable = true, External = false, and 
          *      InlineData = true.
          */
+        String timeNow = dateFormat.format( now );
         for( int i = 0; i < cargo_count; i++ )
         {
             CargoObject c = cargo.getCargoObjects().get( i );            
@@ -242,9 +248,95 @@ public class FedoraTools
     }
 
 
-    private static Element constructAdminStream( CargoContainer cargo, List< ComparablePair<Integer, String> > lst2 ) throws ParserConfigurationException
+    private static Element constructDCDatastream( CargoContainer cargo ) 
     {
-        // Constructing adm stream
+    	Element rootElement = null;
+    	
+    	try 
+    	{
+    		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); //factory.setNamespaceAware(true);
+    	    DocumentBuilder builder = factory.newDocumentBuilder();
+    	        	 
+    	    // Now build an empty XML DOM document for the Dublin Core
+    	    Document dcDoc = builder.newDocument();
+    	    rootElement = dcDoc.createElementNS( "http://www.openarchives.org/OAI/2.0/oai_dc/", "oai_dc:dc" );    	    
+    	    rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:oai_dc","http://www.openarchives.org/OAI/2.0/oai_dc/");
+    	    rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:dc","http://purl.org/dc/elements/1.1/");
+    	    dcDoc.appendChild( rootElement );
+    	 
+    	    Element e; String value;
+    	    /*e = dcDoc.createElement("dc:identifier");
+    	    e.appendChild( dcDoc.createTextNode( pid ) );
+    	    rootElement.appendChild( e );*/
+    	 
+    	    e = dcDoc.createElement( "dc:title" );
+    	    value = ""; //sourceDoc.getElementsByTagName("title").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
+    	    e.appendChild( dcDoc.createTextNode( value ) );
+    	    rootElement.appendChild( e );
+    	 
+    	    // author's name comes in many parts; this'll put them together
+    	    e = dcDoc.createElement( "dc:creator" );
+    	    String nameFields[] = { "authfname", "authmname", "authlname", "authsuffix"};
+    	    String author = new String();
+    	    for (String field : nameFields) 
+    	    {
+    	       value = ""; //sourceDoc.getElementsByTagName(field).item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
+    	       if ( value != null && !value.equals( "" ) ) 
+    	       {
+    	    	   author = author.concat(value).concat( " " );
+    	       }
+    	    }    	    
+    	    e.appendChild( dcDoc.createTextNode( author.trim() ) );
+    	    rootElement.appendChild( e );       
+    	 
+    	    e = dcDoc.createElement( "dc:language" );
+    	    value = ""; //sourceDoc.getElementsByTagName("language").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
+    	    e.appendChild( dcDoc.createTextNode( value ) );
+    	    rootElement.appendChild(e);
+    	 
+    	    e = dcDoc.createElement( "dc:description" );
+    	    value = ""; //sourceDoc.getElementsByTagName("abstract").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
+    	    e.appendChild( dcDoc.createTextNode( value ) );
+    	    rootElement.appendChild(e);
+    	 
+    	    e = dcDoc.createElement( "dc:date" );
+    	    value = ""; //sourceDoc.getElementsByTagName("docyear").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
+    	    e.appendChild( dcDoc.createTextNode( value ) );
+    	    rootElement.appendChild(e);       
+    	 
+    	    e = dcDoc.createElement( "dc:subject" );
+    	    value = ""; //sourceDoc.getElementsByTagName("subjects").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
+    	    e.appendChild( dcDoc.createTextNode( value ) );
+    	    rootElement.appendChild(e);
+    	 
+    	    // Use a Transformer for output
+    	    /*TransformerFactory tFactory = TransformerFactory.newInstance();
+    	    Transformer transformer = tFactory.newTransformer();
+    	    transformer.setOutputProperty( javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes" );
+    	    DOMSource source = new DOMSource( dcDoc );
+    	    StringWriter strWriter = new StringWriter();
+    	    StreamResult result = new StreamResult(strWriter);
+    	    transformer.transform(source, result);
+    	    String xmlAsString = strWriter.getBuffer().toString();
+    	    // System.out.println(xmlAsString);
+    	    byte[] normalarr = xmlAsString.getBytes( "UTF-8" );*/
+    	 
+    	    // Lastly, write the modified DC datastream back to the FEDORA server
+    	    //apim.modifyDatastreamByValue(pid, "DC", null, "Dublin Core", false, "text/xml", null, normalarr, "A", "Batch program to add DC datastream from ETD XML file", false);
+    	}
+    	catch ( Exception e ) 
+    	{
+    		String msg = e.getLocalizedMessage(); 
+    		log.error( msg );
+    		System.out.println( msg );
+    	}	
+
+		return rootElement;
+	}
+
+    
+	private static Element constructAdminStream( CargoContainer cargo, List< ComparablePair<Integer, String> > lst2 ) throws ParserConfigurationException
+    {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
 

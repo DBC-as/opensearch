@@ -56,6 +56,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.xpath.*;
 
+import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -107,7 +108,7 @@ public class MarcxchangeWorkRelation implements IWorkRelation
      */
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        log.debug( "DanmarcxchangeWorkRelation -> getCargoContainer() called" );
+    	log.debug( "DanmarcxchangeWorkRelation -> getCargoContainer() called" );
 
         if ( cargo == null )
         {
@@ -129,6 +130,7 @@ public class MarcxchangeWorkRelation implements IWorkRelation
         }
         
         byte[] b = co.getBytes();       
+        log.debug( "CargoObject byteArray: " + new String( b ) );
         
         String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
         String dcType = getDCVariable( b, typeXpathStr );
@@ -143,13 +145,14 @@ public class MarcxchangeWorkRelation implements IWorkRelation
         String dcSource = getDCVariable( b, sourceXpathStr );
         
         FedoraAdministration fa = new FedoraAdministration();
-        log.debug( String.format( "DanmarcXchangeWorkRelation dcType: '%s'", dcType ) );
+        log.debug( String.format( "MWR dcType: '%s'", dcType ) );
         if ( ! types.contains( dcType ) )
         {
-        	log.debug( String.format( "WorkRelation entering findObjects", "") );
+        	log.debug( String.format( "MWR entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
         	// match SOURCE: dcTitle on TARGET: dcTitle
-        	String[] resultFields = { "pid", "title" };
-        	ObjectFields[] objectFields = fa.findObjectFields( resultFields, "title", ComparisonOperator.eq, dcTitle );
+        	String[] resultFields = { "pid", "title", "cDate" };
+        	//dcTitle = "danmarcxchange";
+        	ObjectFields[] objectFields = fa.findObjectFields( resultFields, "label", ComparisonOperator.eq, dcTitle, new NonNegativeInteger( "1" ) );
         	
         	if ( objectFields != null )
         	{
@@ -160,13 +163,16 @@ public class MarcxchangeWorkRelation implements IWorkRelation
 	            log.debug( String.format( "ObjectFields titles: '%s'", test.toString() ) );
 	            for( int i = 0; i < ofLength; i++ )
 	            {
-	            	String title = (String)objectFields[ i ].getTitle(i);
-	            	log.debug( String.format( "ObjectFields, title: '%s'", title) );
-	                titles[ i ] = (String)objectFields[ i ].getTitle(i);
+	            	String[] title = objectFields[ i ].getTitle();
+	            	log.debug( String.format( "ObjectFields, title: '%s'", title[0]) );
+	                //titles[ i ] = (String)objectFields[ i ].getTitle(i);
 	                
-	                String pid = (String)objectFields[ i ].getTitle(i);
+	                String pid = (String)objectFields[ i ].getPid();
 	                log.debug( String.format( "ObjectFields, pid: '%s'", pid) );
-	                pids[ i ] = (String)objectFields[ i ].getPid();
+	                //pids[ i ] = (String)objectFields[ i ].getPid();
+	                
+	                String cdate = (String)objectFields[ i ].getCDate();
+	                log.debug( String.format( "ObjectFields, cdate: '%s'", cdate ) );
 	            }
 	
 	        	log.debug( String.format( "ObjectFields from findObjectFields, titles: '%s'", titles.toString() ) );
@@ -183,10 +189,10 @@ public class MarcxchangeWorkRelation implements IWorkRelation
         	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
         }
         
-        log.debug( String.format( "MarcxchangeWorkRelation found dcVariables: '%s', '%s', '%s', and '%s'", dcTitle, dcType, dcCreator, dcSource ) );
+        log.debug( String.format( "MWR found dcVariables: '%s', '%s', '%s', and '%s'", dcTitle, dcType, dcCreator, dcSource ) );
                 
         // get relationships        
-        log.debug( String.format( "MarcxchangeWorkRelation: Trying to obtain pid" ) );
+        log.debug( String.format( "MWR: Trying to obtain pid" ) );
         String pid = "shite";
         try
         {
@@ -201,12 +207,12 @@ public class MarcxchangeWorkRelation implements IWorkRelation
         		log.error( String.format( "STACKTRACE %s: %s", i, stackTraceElements[ i ] ) );
         	}
         }
-        log.debug( String.format( "MarcxchangeWorkRelation pid: '%s'", pid ) );
+        log.debug( String.format( "MWR pid: '%s'", pid ) );
         String predicate = null;
         RelationshipTuple[] relTuple = null;
         try
         {
-        	relTuple = fa.getRelationships( pid, predicate );
+        	//relTuple = fa.getRelationships( pid, predicate );
         }
         catch( Exception ex )
         {
@@ -226,7 +232,6 @@ public class MarcxchangeWorkRelation implements IWorkRelation
         {
         	log.debug( String.format( "RelationshipTuple is null", "" ) );
         }
-        
         
         // isolate format
         /*String serverChoice = co.getFormat();

@@ -669,14 +669,15 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param value, the value the property adheres to
      * @return an array o pids of the matching objects
      */
-    public ObjectFields[] findObjectFields( String[] resultFields, String property, ComparisonOperator operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
+    public ObjectFields[] findObjectFields( String[] resultFields, String property, ComparisonOperator operator, String value, NonNegativeInteger maxResults ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
     {
     	log.debug( String.format( "Entering findObjectFields with property '%s' and value '%s'", property, value ) );
-        NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
-        Condition[] cond = { new Condition( property, operator, value ) };
+        
+    	Condition[] cond = { new Condition( property, operator, value ) };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
-        log.debug( "just before findObjects" );
+        String msg = "just before findObjects"; 
+        log.debug( msg );System.out.println( msg );
         FieldSearchResult fsr = null;
         try
         {
@@ -688,7 +689,7 @@ public class FedoraAdministration implements IFedoraAdministration
         	log.debug( "findObjectField threw an exception: " + ex.getMessage() );
         	for ( int i = 0; i < ex.getStackTrace().length; i++ )
         	{
-        		log.debug( "findObject exception stacktrace element No. " + i + ": " + ex.getStackTrace()[i].toString() );
+        		log.error( "findObject exception stacktrace element No. " + i + ": " + ex.getStackTrace()[i].toString() );
         	}
         }
         

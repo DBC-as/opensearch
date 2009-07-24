@@ -24,6 +24,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import fedora.server.errors.ObjectNotInLowlevelStorageException;
 
+import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 
 
@@ -52,23 +53,23 @@ public class AdministrationFunc
             e.printStackTrace();
         }
 
-        System.out.println( "*** kalder teestStoreCC ***" );
+        /*System.out.println( "*** kalder teestStoreCC ***" );
         String pid = testStoreCC();
 
         System.out.println( "*** kalder get ***" );
         testGetObject( pid );
 
         System.out.println( "*** kalder testFindObjects ***" );
-        testFindObjectPids();
+        testFindObjectPids();*/
         
-        /*System.out.println( "*** kalder testFindObjectFields ***" );
-        testFindObjectFields();*/
+        System.out.println( "*** kalder testFindObjectFields ***" );
+        testFindObjectFields();
         
         /*System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "materialevurderinger" };
         testDeleteObjectPids( labels, 50 );*/
 
-        System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
+        /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
 
         System.out.println( "*** kalder add ***" );
@@ -85,7 +86,7 @@ public class AdministrationFunc
         
         System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
         testGetDataStreamsOfType( pid );
-        testDeleteObject( pid );
+        testDeleteObject( pid );*/
     }
 
 
@@ -115,7 +116,7 @@ public class AdministrationFunc
         {
         	System.out.println( "before findObjectFields" );
         	String[] resultFields = { "pid", "title", "cDate" };
-        	objectFields = fa.findObjectFields( resultFields, "label", ComparisonOperator.eq, "danmarcxchange" );
+        	objectFields = fa.findObjectFields( resultFields, "label", ComparisonOperator.eq, "danmarcxchange", new NonNegativeInteger( "1000" ) );
         	System.out.println( "after findObjectFields" );
         }
         catch( RemoteException re )
@@ -123,16 +124,16 @@ public class AdministrationFunc
             re.printStackTrace();
         }
         
+        int length = 0;
         if ( objectFields != null )
     	{
         	System.out.println( "objectFields not null" );
-        	int ofLength = objectFields.length;
-        	System.out.println( "objectFields length: " + ofLength );
-            String[] titles = new String[ ofLength ];
-            String[] pids = new String[ ofLength ];
-            String[] test = objectFields[ 0 ].getTitle();
+        	length = objectFields.length;
+        	System.out.println( "objectFields length: " + length );
+            String[] titles = new String[ length ];
+            String[] pids = new String[ length ];
             
-            for( int i = 0; i < ofLength; i++ )
+            for( int i = 0; i < length; i++ )
             {
             	String[] title = objectFields[i].getTitle();
             	System.out.println( "title: " + title[0] );

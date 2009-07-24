@@ -27,7 +27,7 @@
   <job submitter="kkb" format="danmarcxchange">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
-    <!--plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="2" /-->
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="2" />
   </job>
   <job submitter="dbc" format="materialevurderinger">
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
