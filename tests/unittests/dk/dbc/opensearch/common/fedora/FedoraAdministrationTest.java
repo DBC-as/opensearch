@@ -664,4 +664,94 @@ public class FedoraAdministrationTest
         //verify
         verify( mockCC );
     }
+
+    /**
+     * Testing the getDataStreamsOfType method
+     */
+    @Test 
+    public void testGetDataStreamsOfType() throws MalformedURLException, IOException, RemoteException, ParserConfigurationException, SAXException, ServiceException, ConfigurationException
+    {
+        //setup
+        Mockit.setUpMocks( MockFedoraAdministration.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
+        String pid = "test:1";
+        String streamID = "streamID";
+        DataStreamType typeOfStream = DataStreamType.OriginalData;
+        String typeOfStreamString = typeOfStream.getName();
+        CargoContainer cc;
+
+        //expectations
+        expect( mockNodeList.getLength() ).andReturn( 2 );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "streamNameType" ) ).andReturn( typeOfStreamString );
+        expect( mockElement.getAttribute( "id" ) ).andReturn( streamID );
+        expect( mockFea.getDatastreamDissemination( pid, streamID, null ) ).andReturn( mockMTStream );
+        expect( mockMTStream.getStream() ).andReturn( bytes );
+        expect( mockElement.getAttribute( isA(String.class ) ) ).andReturn( "string" ).times( 3 );
+        expect( mockElement.getAttribute( "mimetype" ) ).andReturn( "text/xml" );
+        //2nd time in loop
+        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "streamNameType" ) ).andReturn( "hat" );
+
+        //replay
+        replay( mockElement );
+        replay( mockNodeList );
+        replay( mockMTStream );
+        replay( mockFea );
+
+        //do stuff
+        fa = new FedoraAdministration();
+        cc = fa.getDataStreamsOfType( pid, typeOfStream );
+        assertTrue( cc.getCargoObjectCount() == 1 );
+
+        //verify
+        verify( mockElement );
+        verify( mockNodeList );
+        verify( mockMTStream );
+        verify( mockFea );
+    }
+
+    /**
+     * Testing the getDataStream method
+     */
+    @Test
+    public void testGetDataStream() throws MalformedURLException, IOException, RemoteException, ServiceException, ParserConfigurationException, SAXException, ConfigurationException
+    {
+        //setup
+        Mockit.setUpMocks( MockFedoraAdministration.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
+        String streamID = "streamID";
+        String pid = "test:1";
+        CargoContainer cc;
+
+        //expectations
+        expect( mockNodeList.getLength() ).andReturn( 2 );
+        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "id" ) ).andReturn( streamID );
+expect( mockFea.getDatastreamDissemination( pid, streamID, null ) ).andReturn( mockMTStream );
+        expect( mockMTStream.getStream() ).andReturn( bytes );
+        expect( mockElement.getAttribute( "streamNameType" ) ).andReturn( "originalData" );
+        expect( mockElement.getAttribute( isA(String.class ) ) ).andReturn( "string" ).times( 3 );
+        expect( mockElement.getAttribute( "mimetype" ) ).andReturn( "text/xml" );        
+        //2nd time in loop
+        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
+        expect( mockElement.getAttribute( "id" ) ).andReturn( "hat" );
+
+        //replay
+        replay( mockElement );
+        replay( mockNodeList );
+        replay( mockMTStream );
+        replay( mockFea );
+
+        //do stuff
+        fa = new FedoraAdministration();
+        cc = fa.getDataStream( pid, streamID );
+        assertTrue( cc.getCargoObjectCount() == 1 );
+
+        //verify
+        verify( mockElement );
+        verify( mockNodeList );
+        verify( mockMTStream );
+        verify( mockFea );
+    }
 }
