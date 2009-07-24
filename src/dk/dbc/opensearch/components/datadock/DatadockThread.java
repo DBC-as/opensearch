@@ -236,6 +236,7 @@ public class DatadockThread implements Callable< Float >
 
                     IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     cargo = repositoryStore.storeCargoContainer( cargo, submitter, format );
+                    log.debug( "STORE pid: " + cargo.getPid() );
                     
                 	break;
                 case WORKRELATION:
@@ -251,8 +252,8 @@ public class DatadockThread implements Callable< Float >
                     break;
                 case GETESTIMATE:
                     log.debug( "" );
-                    est = estimate.getEstimate( mimeType, length );
-                    log.debug( String.format( "Got estimate of %s", est) );
+                    /*est = estimate.getEstimate( mimeType, length );
+                    log.debug( String.format( "Got estimate of %s", est) );*/
                     
                     break;
                 default:
@@ -261,6 +262,8 @@ public class DatadockThread implements Callable< Float >
         }
            
         //push to processqueue job to processqueue and get estimate
+        est = estimate.getEstimate( mimeType, length );
+        log.debug( String.format( "Got estimate of %s", est) );
         queue.push( cargo.getPid() );
         
         return est;

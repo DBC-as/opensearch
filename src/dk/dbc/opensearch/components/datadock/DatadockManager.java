@@ -98,7 +98,7 @@ public class DatadockManager
 	    }
             catch( RejectedExecutionException re )
             {
-                log.error( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );	           	
+                log.warn( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );	           	
             }
         }
         
