@@ -171,17 +171,18 @@ public class FedoraAdministration implements IFedoraAdministration
             log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
             throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
         } 
-        
+
         String nextPid = PIDManager.getInstance().getNextPID( submitter );
         log.debug( "pid next (getNextPid): " + nextPid );
         byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
         cargo.setPid( nextPid );
         
-        String logm = String.format( "%s inserted", format );        
+        String logm = String.format( "%s inserted", format );
+
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
         log.debug( "pid new (inget):       " + pid );
         log.info( String.format( "Submitted data, returning pid %s", pid ) );        
-        
+
         return pid;
     }
 
@@ -745,7 +746,7 @@ public class FedoraAdministration implements IFedoraAdministration
                                                         SAXException, 
                                                         ConfigurationException
     {	
-        System.out.println( "getAdminstream 1" );
+        //System.out.println( "getAdminstream 1" );
     	MIMETypedStream ds;
         try
     	{
@@ -759,7 +760,7 @@ public class FedoraAdministration implements IFedoraAdministration
     		throw new IOException("test");
         }
         byte[] adminStream = ds.getStream();        
-        System.out.println( "getAdminstream 2" );
+        //System.out.println( "getAdminstream 2" );
         if( adminStream == null ) 
         {	
             System.out.println( "adminStream is null" );
@@ -770,10 +771,10 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
 
         //CargoContainer cc = new CargoContainer();
-        System.out.println( "getAdminstream 3" );
+        //System.out.println( "getAdminstream 3" );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        System.out.println( "getDocumentElement" );
+        //System.out.println( "getDocumentElement" );
         Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );

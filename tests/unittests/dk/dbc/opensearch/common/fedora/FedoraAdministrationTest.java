@@ -23,7 +23,7 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+//import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -33,6 +33,7 @@ import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.helpers.XMLFileReader;
 
+import java.io.File;
 import java.io.IOException;
 //import java.lang.ClassNotFoundException;
 //import java.lang.InstantiationException;
@@ -74,28 +75,41 @@ import org.junit.*;
 
 
 /**
- *
+ * This class tests the FedoraAdministration class
+ * It starts out with testing the private methods used by the 
+ * public once, so that they can be mocked and not tested everytime 
+ * a public method uses them 
  */
 public class FedoraAdministrationTest
 {
     FedoraAdministration fa;
     CargoContainer mockCC;
-    CargoObject mockCO;
-    //DatadockJob mockDatadockJob;
-    Processqueue mockProcessqueue;
-    Estimate mockEstimate;
-    NodeList mockNodeList;
     MIMETypedStream mockMTStream;
+    CargoObject mockCargoObject;
     static FedoraAPIA mockFea = createMock( FedoraAPIA.class );
     static FedoraAPIM mockFem = createMock( FedoraAPIM.class );
     static Element mockElement = createMock( Element.class );
+    static FedoraClient mockFedoraClient = createMock( FedoraClient.class);
+    static NodeList mockNodeList = createMock( NodeList.class );
+    static byte[] bytes = "bytes".getBytes();
 
+    /**
+     * MockClasses
+     */
+    @MockClass( realClass = PIDManager.class )
+    public static class MockPIDManager
+    {
+        @Mock public static String getNextPID( String prefix )
+        {
+            return "test:1";
+        }
+    }
     
-    @MockClass( realClass = FedoraClient.class )
-    public static class MockFedoraClient
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandle
     {
 
-        @Mock public void $init( String baseURL, String user, String pass )
+        @Mock public void $init()
         {
         }
 
@@ -108,38 +122,19 @@ public class FedoraAdministrationTest
         {
             return mockFem;
         }
-    }
-
-    
-    @MockClass( realClass = FedoraConfig.class )
-    public static class MockFedoraConfig
-    {
-        @Mock public String getHost()
+        @Mock public static FedoraClient getFC()
         {
-            return "host";
-        }
-        @Mock public String getPort()
-        {
-            return "port";
-        }
-        @Mock public String getUser()
-        {
-            return "User";
-        }
-        @Mock public String getPassPhrase()
-        {
-            return "pass";
+            return mockFedoraClient;
         }
     }
 
-    
     @MockClass( realClass = FedoraTools.class )
     public static class MockFedoraTools
     {
         @Mock public byte[] constructFoxml( CargoContainer cargo, String nextPid, String label )
         {
-            String byteString = "bytes";
-            byte[] bytes = byteString.getBytes();
+            //   String byteString = "bytes";
+            //byte[] bytes = byteString.getBytes();
             return bytes;
         }
     }
@@ -155,57 +150,63 @@ public class FedoraAdministrationTest
 
     }
 
-    
-    /**
-     *
-     */
-    @Before public void SetUp() 
+    @MockClass( realClass = FedoraAdministration.class )
+    public static class MockFedoraAdministration
     {
-        mockCC = createMock( CargoContainer.class );
-        //mockDatadockJob = createMock( DatadockJob.class );
-        mockProcessqueue = createMock( Processqueue.class );
-        mockEstimate = createMock( Estimate.class );
-        mockCO = createMock( CargoObject.class );
-        mockNodeList = createMock( NodeList.class );     
-        mockMTStream = createMock( MIMETypedStream.class );
+        @Mock public static Element getAdminStream( String pid )
+        { 
+            return mockElement;
+        }
+        
+        @Mock public static String getIndexingAlias( Element adminStream )
+        {
+            return "article";
+        }
+
+        @Mock public static NodeList getStreamNodes( Element adminStream )
+        {
+            return mockNodeList;
+        }
+
+        @Mock public static String createFedoraResource( CargoObject cargo )
+        {
+            return "dsLocation";
+        }
     }
 
     
     /**
-     *
+     *setup
+     */
+    @Before public void SetUp() 
+    {
+        mockCC = createMock( CargoContainer.class );
+        mockMTStream = createMock( MIMETypedStream.class );
+        mockCargoObject = createMock( CargoObject.class );
+    }
+
+    
+    /**
+     *teardown
      */
     @After public void TearDown()
     {
         Mockit.tearDownMocks();
         reset( mockCC );
-        reset( mockCO );
-        reset( mockProcessqueue );
-        reset( mockEstimate );
         reset( mockFem );
         reset( mockFea );
-        //reset( mockDatadockJob );
         reset( mockElement );
         reset( mockNodeList );
         reset( mockMTStream );
+        reset( mockCargoObject );
 
         fa = null;
-    }
-
-    
-    /**
-     * Testing the happy path of the constructor, the only path.
-     */
-  
-    @Test public void testConstructor()
-    {
-        fa = new FedoraAdministration();
     }
     
     /**
      * Testing private helper methods so that they wont have to be tested again 
      * and again
      */
-
     /**
      * Testing the happy path of the getAdminStream method
      */
@@ -213,8 +214,7 @@ public class FedoraAdministrationTest
     @Test public void testGetAdminStreamHappy() throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException, NoSuchMethodException, IllegalAccessException
     {
         //setup
-        Mockit.setUpMocks( MockFedoraClient.class );
-        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
         Mockit.setUpMocks( MockXMLFileReader.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
@@ -257,8 +257,8 @@ public class FedoraAdministrationTest
     {
      //setup
         boolean illegalCaught = false;
-        Mockit.setUpMocks( MockFedoraClient.class );
-        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
+        //Mockit.setUpMocks( MockFedoraConfig.class );
         Mockit.setUpMocks( MockXMLFileReader.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
@@ -309,8 +309,8 @@ public class FedoraAdministrationTest
     {
      //setup
         boolean illegalCaught = false;
-        Mockit.setUpMocks( MockFedoraClient.class );
-        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
+        //Mockit.setUpMocks( MockFedoraConfig.class );
         Mockit.setUpMocks( MockXMLFileReader.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
@@ -455,11 +455,99 @@ public class FedoraAdministrationTest
      * Testing getStreamNodes method, so that it can be mocked for 
      * other testcases using it
      */
+    @Test public void testGetStreamNodes() throws NoSuchMethodException, IllegalAccessException
+    {
+        //setup
+        NodeList result = null;
+        Method method;
+        Class[] argClasses = new Class[]{ Element.class };
+        Object[] args = new Object[]{ mockElement };
+
+        //expectations
+        expect( mockElement.getElementsByTagName( "streams" ) ).andReturn( mockNodeList );
+        expect( mockNodeList.item( 0) ).andReturn( mockElement );
+        expect( mockElement.getElementsByTagName( "stream" ) ).andReturn( mockNodeList );
+               
+        //replay
+        replay( mockElement );
+        replay( mockNodeList );
+        //do stuff
+        fa = new FedoraAdministration();
+        try
+        {
+                       method = fa.getClass().getDeclaredMethod( "getStreamNodes", argClasses );
+                       method.setAccessible( true );
+                       result = (NodeList)method.invoke( fa, args );
+                   }
+        catch( InvocationTargetException ite )
+        {
+            Assert.fail();
+        }
+        assertTrue( result == mockNodeList );
+
+        //verify
+        verify( mockElement );
+        verify( mockNodeList );
+
+    }
     /**
      * Testing createFedoraResource method, so that it can be mocked 
      * for testcases that calls it
      */
+    @Test public void testCreateFedoraResource() throws NoSuchMethodException, IllegalAccessException, IOException
+    {
+      //setup
+        Mockit.setUpMocks( MockFedoraHandle.class);
+        String byteString = "bytes";
+        String returnString = "result";
+        byte[] bytes = byteString.getBytes();
+        String result = null;
+        Method method;
+        Class[] argClasses = new Class[]{ CargoObject.class };
+        Object[] args = new Object[]{ mockCargoObject };
 
+        //expectations
+        expect( mockCargoObject.getId() ).andReturn( 2l );
+        //2nd method called
+        expect( mockCargoObject.getBytes() ).andReturn( bytes );
+        expect( mockFedoraClient.uploadFile( isA( File.class ) ) ).andReturn( returnString );
+               
+        //replay
+        replay( mockCargoObject );
+        replay( mockFedoraClient );
+        //do stuff
+        fa = new FedoraAdministration();
+        try
+        {
+                       method = fa.getClass().getDeclaredMethod( "createFedoraResource", argClasses );
+                       method.setAccessible( true );
+                       result = (String)method.invoke( fa, args );
+                   }
+        catch( InvocationTargetException ite )
+        {
+            Assert.fail();
+        }
+        assertTrue( result.equals( returnString ) );
+
+        //verify
+        verify( mockCargoObject );
+        verify( mockFedoraClient );
+    }  
+    /**
+     * Testing the constructor
+     */
+    /**
+     * Testing the happy path of the constructor, the only path.
+     */
+    
+    @Test public void testConstructor()
+    {
+        fa = new FedoraAdministration();
+    }
+
+    /**
+     * Testing public methods and mocking the private once.
+     */
     /**
      * Testing the deleteObject method
      */
@@ -482,22 +570,13 @@ public class FedoraAdministrationTest
     @Test
     public void testRetrieveContainer() throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, MalformedURLException, ServiceException
     {
-        Mockit.setUpMocks( MockFedoraClient.class );
-        Mockit.setUpMocks( MockFedoraConfig.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
+        Mockit.setUpMocks( MockFedoraAdministration.class );
         Mockit.setUpMocks( MockXMLFileReader.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
 
         //expectations
-        expect( mockFea.getDatastreamDissemination( "pid", "adminData" , null ) ).andReturn( mockMTStream );
-        expect( mockMTStream.getStream() ).andReturn( bytes );
-
-        expect( mockElement.getElementsByTagName( "streams" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item( 0 )).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( "stream" ) ).andReturn( mockNodeList );
-        expect( mockElement.getElementsByTagName( "indexingalias" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "name" ) ).andReturn( "article" );
         expect( mockNodeList.getLength()).andReturn( 1 );
         //loop
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
@@ -533,72 +612,56 @@ public class FedoraAdministrationTest
     /**
      * Testing the happy path of the storeContainer method
      */
-    @Ignore
-    @Test public void testStoreContainer() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
+    @Test public void testStoreCargoContainer() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
     {
-        Mockit.setUpMocks( MockFedoraClient.class );
-        Mockit.setUpMocks( MockFedoraConfig.class );
+        //setup
+        Mockit.setUpMocks( MockFedoraHandle.class );
         Mockit.setUpMocks( MockFedoraTools.class );
-        ArrayList<CargoObject> COList = new ArrayList<CargoObject>();
-        COList.add( mockCO );
-        COList.add( mockCO );
+        Mockit.setUpMocks( MockPIDManager.class );
+        //  String byteString = "bytes";
+        String format = "test";
+        String logm = String.format( "%s inserted", format);
+        String fedMessage = "info:fedora/fedora-system:FOXML-1.1";
+        //byte[] bytes = byteString.getBytes();
+        
 
         //expectations
-        expect( mockCC.getCargoObjectCount() ).andReturn( COList.size() );
-        expect( mockCC.getCargoObjects() ).andReturn( COList );
-        expect( mockCO.getDataStreamName() ).andReturn( DataStreamType.OriginalData );
-        expect( mockCO.getMimeType() ).andReturn( "mimeType" );
-        expect( mockCO.getContentLength() ).andReturn( 2 );
-        expect( mockCO.getDataStreamName() ).andReturn( DataStreamType.AdminData );
-        expect( mockCO.getContentLength() ).andReturn( 2 );
-        //expect( mockDatadockJob.getPID() ).andReturn( "PID" );
-        //expect( mockDatadockJob.getFormat() ).andReturn( "format" ).times( 2 );
-        expect( mockFem.ingest( isA( byte[].class ), isA( String.class ), isA(String.class ) ) ).andReturn( "pid" );
-        mockProcessqueue.push( "pid" );
-        expect( mockEstimate.getEstimate( "mimeType", 4l ) ).andReturn( 3f );
-
+        expect( mockCC.getCargoObjectCount() ).andReturn( 2 );
+        mockCC.setPid( "test:1" );
+        expect( mockFem.ingest( bytes, fedMessage, logm ) ).andReturn( "test:1" ); 
         //replay
-        replay( mockCO );
+        
         replay( mockCC );
-        //replay( mockDatadockJob );
-        replay( mockProcessqueue );
-        replay( mockEstimate );
         replay( mockFem );
-        replay( mockFea );
 
         //do stuff
-        //fc = new FedoraCommunication();
-        //InputPair<String, Float> result = fc.storeContainer( mockCC, mockDatadockJob, mockProcessqueue, mockEstimate);
+        fa = new FedoraAdministration();
+        String result = fa.storeCargoContainer( mockCC, "test", format );
+        assertTrue( result.equals( "test:1" ) );
 
         //verify
-        verify( mockCO );
         verify( mockCC );
-        //verify( mockDatadockJob );
-        verify( mockProcessqueue );
-        verify( mockEstimate );
         verify( mockFem );
-        verify( mockFea );
+        
     }
 
-    @Ignore
+    /**
+     * Testing the storeCa the IllegalStateException when there are no 
+     * CargoObjects in the CargoContainer
+     */
     @Test (expected = IllegalStateException.class)
     public void testEmptyCargoContainerShouldNotBeStored() throws ConfigurationException, IOException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, SAXException, SQLException, TransformerException, ValidationException
     {
-        Mockit.setUpMocks( MockFedoraClient.class );
-        Mockit.setUpMocks( MockFedoraConfig.class );
-        Mockit.setUpMocks( MockFedoraTools.class );
+        //expectations
+        expect( mockCC.getCargoObjectCount() ).andReturn( 0 );
+        
+        //replay
+        replay( mockCC );
 
-        //expect( mockDatadockJob.getPID() ).andReturn( "PID" );
-        //expect( mockDatadockJob.getFormat() ).andReturn( "format" ).times( 2 );
-        //replay( mockDatadockJob );
-
-        CargoContainer cc = new CargoContainer();
-        //fc = new FedoraCommunication();
-        //InputPair<String, Float> result = fc.storeContainer( cc, mockDatadockJob, mockProcessqueue, mockEstimate);
-
-        //System.out.println( String.format( "%s", result.getFirst() ) );
-        //System.out.println( String.format( "%s", result.getSecond() ) );
-
-        assertTrue( cc.getCargoObjectCount() == 0 );
+        //do stuff
+        fa = new FedoraAdministration();
+        String result = fa.storeCargoContainer( mockCC, "test", "test" );
+        //verify
+        verify( mockCC );
     }
 }
