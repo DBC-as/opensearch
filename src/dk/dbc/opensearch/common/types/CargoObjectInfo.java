@@ -270,7 +270,9 @@ public class CargoObjectInfo
         return language;
     }
 
-    DataStreamType getDataStreamName(){
+    
+    DataStreamType getDataStreamName()
+    {
         return dataStreamName;
     }
 
