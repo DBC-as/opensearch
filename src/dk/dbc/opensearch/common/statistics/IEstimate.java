@@ -17,8 +17,8 @@ import org.apache.commons.configuration.ConfigurationException;
 /**
  * The IEstimate Interface handles all communication to the statistics table
  */
-public interface IEstimate{
-
+public interface IEstimate
+{
     /**
      * \brief getEstimate retrieves estimate from statistics table.
      *
@@ -32,6 +32,7 @@ public interface IEstimate{
      * @throws NoSuchElementException if the mimetype is not known
      */
     float getEstimate( String mimeType, long length )throws SQLException, NoSuchElementException, ClassNotFoundException, NullPointerException;
+    
     
     /**
      * updateEstimate updates the entry in statistics that matches the given mimetype, with the length and time.
