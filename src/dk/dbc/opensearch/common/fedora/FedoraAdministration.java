@@ -173,14 +173,14 @@ public class FedoraAdministration implements IFedoraAdministration
         } 
         
         String nextPid = PIDManager.getInstance().getNextPID( submitter );
-        cargo.setPid( nextPid );
+        log.debug( "pid next (getNextPid): " + nextPid );
         byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
+        cargo.setPid( nextPid );
         
         String logm = String.format( "%s inserted", format );        
-        String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm);
-        
-        log.info( String.format( "Submitted data, returning pid %s", pid ) );
-        
+        String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
+        log.debug( "pid new (inget):       " + pid );
+        log.info( String.format( "Submitted data, returning pid %s", pid ) );        
         
         return pid;
     }
@@ -634,27 +634,26 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     public String[] findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        String[] resultFields = { "pid", "title" };
+    	String[] resultFields = { "pid", "title" };
+        
         NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
+        
         // \Todo: check needed on the operator
-        ComparisonOperator comp = ComparisonOperator.fromString( operator ); 
-        Condition cond = new Condition();
-        cond.setProperty( property );
-        cond.setOperator( comp );
-        cond.setValue( value );
-        Condition[] condArray = { cond };
-        FieldSearchQuery fsq = new FieldSearchQuery();
-        fsq.setConditions( condArray );
+        ComparisonOperator comp = ComparisonOperator.fromString( operator );        
+        Condition[] cond = { new Condition( property, comp, value ) };//cond.setProperty( property );//cond.setOperator( comp );//cond.setValue( value );//Condition[] condArray = { cond };        
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null ); //fsq.setConditions( condArray );
+        
         FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
         ObjectFields[] objectFields = fsr.getResultList();
-        int ofLength = objectFields.length;
+        
+        int ofLength = objectFields.length;        
         String[] pids = new String[ ofLength ];
-
         for( int i = 0; i < ofLength; i++ )
         {
             pids[ i ] = objectFields[ i ].getPid();
+            System.out.println( "pid " + i + ": " + pids[ i ].toString() );    
         }
-
+        
         return pids;
     }
 
@@ -677,8 +676,20 @@ public class FedoraAdministration implements IFedoraAdministration
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
         log.debug( "just before findObjects" );
-        FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
-        log.debug( "right after findObjects" );
+        FieldSearchResult fsr = null;
+        try
+        {
+        	fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
+        	log.debug( "right after findObjects" );
+        }
+        catch ( Exception ex )
+        {
+        	log.debug( "findObjectField threw an exception: " + ex.getMessage() );
+        	for ( int i = 0; i < ex.getStackTrace().length; i++ )
+        	{
+        		log.debug( "findObject exception stacktrace element No. " + i + ": " + ex.getStackTrace()[i].toString() );
+        	}
+        }
         
         ObjectFields[] objectFields = null;        
         if ( fsr == null )
@@ -826,8 +837,7 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     private String createFedoraResource( CargoObject cargo ) throws IOException, FileNotFoundException, ConfigurationException, ServiceException
     {
-        String timeStamp = dateFormat.format( new Date( System.currentTimeMillis() ) ) +
-            Long.toString( cargo.getId() );
+        String timeStamp = dateFormat.format( new Date( System.currentTimeMillis() ) ) + Long.toString( cargo.getId() );
         return createFedoraResource( cargo, timeStamp );
     }
 
