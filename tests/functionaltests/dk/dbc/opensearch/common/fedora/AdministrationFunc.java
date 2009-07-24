@@ -1,10 +1,14 @@
 package dk.dbc.opensearch.common.fedora;
 
+
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
+import fedora.server.types.gen.ObjectFields;
+import fedora.server.types.gen.ComparisonOperator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,9 +61,12 @@ public class AdministrationFunc
         System.out.println( "*** kalder testFindObjects ***" );
         testFindObjectPids();
         
-        System.out.println( "*** kalder testDeleteObjects ***" );
+        /*System.out.println( "*** kalder testFindObjectFields ***" );
+        testFindObjectFields();*/
+        
+        /*System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "materialevurderinger" };
-        testDeleteObjectPids( labels, 50 );
+        testDeleteObjectPids( labels, 50 );*/
 
         System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
@@ -87,15 +94,65 @@ public class AdministrationFunc
         String[] pids = null;
         try
         {
-            pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration" );
+        	pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration" );
         }
         catch( RemoteException re )
         {
             re.printStackTrace();
         }
+        
         for( int i = 0; i < pids.length; i++ )
         {
             System.out.println( pids[ i ] );
+        }
+    }
+    
+    
+    static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        ObjectFields[] objectFields = null;
+        try
+        {
+        	System.out.println( "before findObjectFields" );
+        	String[] resultFields = { "pid", "title", "cDate" };
+        	objectFields = fa.findObjectFields( resultFields, "label", ComparisonOperator.eq, "danmarcxchange" );
+        	System.out.println( "after findObjectFields" );
+        }
+        catch( RemoteException re )
+        {
+            re.printStackTrace();
+        }
+        
+        if ( objectFields != null )
+    	{
+        	System.out.println( "objectFields not null" );
+        	int ofLength = objectFields.length;
+        	System.out.println( "objectFields length: " + ofLength );
+            String[] titles = new String[ ofLength ];
+            String[] pids = new String[ ofLength ];
+            String[] test = objectFields[ 0 ].getTitle();
+            
+            for( int i = 0; i < ofLength; i++ )
+            {
+            	String[] title = objectFields[i].getTitle();
+            	System.out.println( "title: " + title[0] );
+            	String label = (String)objectFields[ i ].getLabel();
+            	System.out.println( "label: " + label );
+                //titles[ i ] = (String)objectFields[ i ].getTitle(i);
+                
+                String pid = (String)objectFields[ i ].getPid();
+                System.out.println( "pid:   " + pid );
+                //pids[ i ] = (String)objectFields[ i ].getPid();
+                
+                String cdate = (String)objectFields[ i ].getCDate();
+                System.out.println( "cdate: " + cdate );
+                
+                System.out.println();
+            }
+     	}
+        else
+        {
+        	System.out.println( "objectFields null or empty" );
         }
     }
     
