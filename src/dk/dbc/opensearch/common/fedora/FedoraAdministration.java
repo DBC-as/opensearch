@@ -361,7 +361,7 @@ public class FedoraAdministration implements IFedoraAdministration
         transformer.transform(source, stringResult);
         //debug
         String admStreamString = stringWriter.getBuffer().toString();
-        System.out.println( String.format( "printing new adminstream: %s", admStreamString ) );
+        log.debug( String.format( "printing new adminstream: %s", admStreamString ) );
 
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
@@ -527,7 +527,7 @@ public class FedoraAdministration implements IFedoraAdministration
         transformer.transform(source, stringResult);
         //debug
         String admStreamString = stringWriter.getBuffer().toString();
-        System.out.println( String.format( "printing new adminstream: %s", admStreamString ) );
+        log.debug( String.format( "printing new adminstream: %s", admStreamString ) );
 
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
@@ -652,7 +652,7 @@ public class FedoraAdministration implements IFedoraAdministration
         for( int i = 0; i < ofLength; i++ )
         {
             pids[ i ] = objectFields[ i ].getPid();
-            System.out.println( "pid " + i + ": " + pids[ i ].toString() );    
+            log.debug( "pid " + i + ": " + pids[ i ].toString() );    
         }
         
         return pids;
@@ -677,7 +677,7 @@ public class FedoraAdministration implements IFedoraAdministration
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
         String msg = "just before findObjects"; 
-        log.debug( msg );System.out.println( msg );
+        log.debug( msg );log.debug( msg );
         FieldSearchResult fsr = null;
         try
         {
@@ -747,24 +747,24 @@ public class FedoraAdministration implements IFedoraAdministration
                                                         SAXException, 
                                                         ConfigurationException
     {	
-        //System.out.println( "getAdminstream 1" );
+        //log.debug( "getAdminstream 1" );
     	MIMETypedStream ds;
         try
     	{
-        System.out.println( "FEDORAADM. fedoraPid: " + pid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
+        log.debug( "FEDORAADM. fedoraPid: " + pid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
         
     	ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         }
         catch( Exception e )
         {
-        System.out.println( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
+        log.debug( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
     		throw new IOException("test");
         }
         byte[] adminStream = ds.getStream();        
-        //System.out.println( "getAdminstream 2" );
+        //log.debug( "getAdminstream 2" );
         if( adminStream == null ) 
         {	
-            System.out.println( "adminStream is null" );
+            log.debug( "adminStream is null" );
             log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
             throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
         }
@@ -772,10 +772,10 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
 
         //CargoContainer cc = new CargoContainer();
-        //System.out.println( "getAdminstream 3" );
+        //log.debug( "getAdminstream 3" );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        //System.out.println( "getDocumentElement" );
+        //log.debug( "getDocumentElement" );
         Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );

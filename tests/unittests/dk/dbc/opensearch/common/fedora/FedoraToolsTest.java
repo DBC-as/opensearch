@@ -151,7 +151,6 @@ public class FedoraToolsTest// extends XMLTestCase
     @Test
     public void testTimestamp() throws SAXException, IOException, XpathException
     {
-        System.out.println( String.format( "%s", timeNow ) );
         XMLAssert.assertXpathEvaluatesTo( timeNow, "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", origStr );
     }
 

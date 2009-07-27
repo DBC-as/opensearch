@@ -41,7 +41,6 @@ public class StoreTest
     @Test @Ignore( "not yet implemented" )
     public void test() throws Exception
     {
-     System.out.println(" storeTest ");   
 
         // FAKTALINK
 

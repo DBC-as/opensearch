@@ -78,7 +78,7 @@ public class DatadockMainTest
 //                    
 //                if( ! missingPlugins.isEmpty() )
 //                {		
-//                    System.out.println( " kill thread" );
+//                    log.debug( " kill thread" );
 //                    throw new Exception( "plugins not found in test" );
 //                    // kill thread/throw meaningful exception/log message
 //	    	    }

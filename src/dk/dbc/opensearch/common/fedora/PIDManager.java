@@ -95,10 +95,10 @@ public class PIDManager
         Stack<String> pidStack = new Stack<String>();
 
         fedora.server.management.FedoraAPIM fem = FedoraHandle.getInstance().getAPIM();
-        System.out.println( "numPids: " + numPIDs.toString() );
-        System.out.println( "PIDManager prefix: " + prefix );
+        log.debug( "numPids: " + numPIDs.toString() );
+        log.debug( "PIDManager prefix: " + prefix );
         String[] pids = fem.getNextPID( numPIDs, prefix );
-        System.out.println( "pids: " + pids.toString() );
+        log.debug( "pids: " + pids.toString() );
         if ( pids == null )
         {
             log.error( "Could not retrieve pids from Fedora repository" );

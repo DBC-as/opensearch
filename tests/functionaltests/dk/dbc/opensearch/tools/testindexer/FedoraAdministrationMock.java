@@ -78,17 +78,17 @@ public class FedoraAdministrationMock implements IFedoraAdministration
 
     public CargoContainer retrieveCargoContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException
     {
-    	System.out.println( "mock retrieve..." );
-    	System.out.println( "cc: " + cc.toString() );
+        //    	System.out.println( "mock retrieve..." );
+    	//System.out.println( "cc: " + cc.toString() );
         return cc;
     }
 
 
     public String storeCargoContainer( CargoContainer cargo, String submitter, String format )throws IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, TransformerException, ValidationException
     {
-    	System.out.println( "mockpid returned" );
+    	//System.out.println( "mockpid returned" );
         cc = cargo;
-        System.out.println( "cargo: " + cargo.toString() );
+        //System.out.println( "cargo: " + cargo.toString() );
         return "MOCK_PID";
     }
 

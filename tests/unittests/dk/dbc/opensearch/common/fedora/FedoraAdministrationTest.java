@@ -280,11 +280,8 @@ public class FedoraAdministrationTest
         try
         {
             method = fa.getClass().getDeclaredMethod( "getAdminStream", argClasses );
-            //System.out.println( "hat 1" );
             method.setAccessible( true );
-            //System.out.println( "hat 2" );
             result = (Element)method.invoke( fa, args );
-            //System.out.println( "hat 3" );
         }
         catch( InvocationTargetException ite )
         {
@@ -332,11 +329,8 @@ public class FedoraAdministrationTest
         try
         {
             method = fa.getClass().getDeclaredMethod( "getAdminStream", argClasses );
-            //System.out.println( "hat 1" );
             method.setAccessible( true );
-            //System.out.println( "hat 2" );
             result = (Element)method.invoke( fa, args );
-            //System.out.println( "hat 3" );
         }
         catch( InvocationTargetException ite )
         {
@@ -378,13 +372,9 @@ public class FedoraAdministrationTest
         fa = new FedoraAdministration();
         try
         {
-            System.out.println( "hat 0" );
             method = fa.getClass().getDeclaredMethod( "getIndexingAlias", argClasses );
-            System.out.println( "hat 1" );
             method.setAccessible( true );
-            System.out.println( "hat 2" );
             result = (String)method.invoke( fa, args );
-            System.out.println( "hat 3" );
         }
         catch( InvocationTargetException ite )
         {
@@ -424,13 +414,9 @@ public class FedoraAdministrationTest
         fa = new FedoraAdministration();
         try
         {
-            //System.out.println( "hat 0" );
             method = fa.getClass().getDeclaredMethod( "getIndexingAlias", argClasses );
-            //System.out.println( "hat 1" );
             method.setAccessible( true );
-            //System.out.println( "hat 2" );
             result = (String)method.invoke( fa, args );
-            //System.out.println( "hat 3" );
         }
         catch( InvocationTargetException ite )
         {

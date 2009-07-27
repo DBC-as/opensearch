@@ -62,7 +62,7 @@ public class AdministrationFunc
         System.out.println( "*** kalder testFindObjects ***" );
         testFindObjectPids();*/
         
-        System.out.println( "*** kalder testFindObjectFields ***" );
+        //System.out.println( "*** kalder testFindObjectFields ***" );
         testFindObjectFields();
         
         /*System.out.println( "*** kalder testDeleteObjects ***" );

@@ -24,7 +24,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.pluginframework.IWorkRelation;
+import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -67,7 +67,7 @@ import org.xml.sax.SAXException;
 /**
  * Plugin for annotating docbook carcoContainers
  */
-public class MarcxchangeWorkRelation implements IWorkRelation
+public class MarcxchangeWorkRelation implements IRelation
 {
     static Logger log = Logger.getLogger( MarcxchangeWorkRelation.class );
 

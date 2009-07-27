@@ -245,5 +245,22 @@ def main( arg_lst ):
 
 ### Starts the main method
 if __name__ == "__main__":
-    main( sys.argv[1:])
+
+    from optparse import OptionParser
+    
+    parser = OptionParser( usage="%prog [options]" )
+    
+    parser.add_option( "-d", "--find_declarations", dest="DECL", 
+                       action="store", help="find declaration of DECL" )
+    
+    (options, args) = parser.parse_args()
+
+    infile = list()
+
+    for line in sys.stdin:
+        infile.append( line.strip( '\n' ) )
+
+    for enil in infile:
+        print enil
+#     main( sys.argv[1:])
     

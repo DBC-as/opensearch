@@ -62,7 +62,6 @@ public class AnnotateTest
         CargoContainer cc = new CargoContainer();
         cc.add( DataStreamType.OriginalData, "faktalink", "dbc", "da", "text/xml", fb );
 
-        System.out.println("Annotate Test !!!");
         DocbookAnnotate dba = new DocbookAnnotate();
 
         CargoContainer cc2 = dba.getCargoContainer( cc );

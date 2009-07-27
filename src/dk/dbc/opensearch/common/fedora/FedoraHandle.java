@@ -50,7 +50,6 @@ public class FedoraHandle
 
     private FedoraHandle() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-    	System.out.println( "FedoraHandle constructor" );
     	log.debug( "FedoraHandle constructor" );
         String fedora_base_url;
 

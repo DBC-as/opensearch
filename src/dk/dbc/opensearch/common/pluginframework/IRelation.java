@@ -32,7 +32,7 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.configuration.ConfigurationException;
 
 
-public interface IWorkRelation extends IPluggable
+public interface IRelation extends IPluggable
 {
     CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 }

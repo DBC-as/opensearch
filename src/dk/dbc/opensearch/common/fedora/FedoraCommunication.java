@@ -186,7 +186,7 @@ public class FedoraCommunication implements IFedoraCommunication
     public CargoContainer retrieveContainer( String fedoraPid ) throws IOException, ParserConfigurationException, RemoteException, SAXException, ConfigurationException, ServiceException
     {
         log.debug( String.format( "entering retrieveContainer( '%s' )", fedoraPid ) );
-        System.out.println( "FEDORACOM. fedoraPid: " + fedoraPid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
+        log.debug( "FEDORACOM. fedoraPid: " + fedoraPid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( fedoraPid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );

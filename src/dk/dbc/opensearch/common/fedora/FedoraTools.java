@@ -318,7 +318,7 @@ public class FedoraTools
     	    StreamResult result = new StreamResult(strWriter);
     	    transformer.transform(source, result);
     	    String xmlAsString = strWriter.getBuffer().toString();
-    	    // System.out.println(xmlAsString);
+    	    // log.debug(xmlAsString);
     	    byte[] normalarr = xmlAsString.getBytes( "UTF-8" );*/
     	 
     	    // Lastly, write the modified DC datastream back to the FEDORA server
@@ -328,7 +328,6 @@ public class FedoraTools
     	{
     		String msg = e.getLocalizedMessage(); 
     		log.error( msg );
-    		System.out.println( msg );
     	}	
 
 		return rootElement;

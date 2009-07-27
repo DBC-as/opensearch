@@ -27,7 +27,7 @@ import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
-import dk.dbc.opensearch.common.pluginframework.IWorkRelation;
+import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
@@ -178,7 +178,7 @@ public class DatadockThread implements Callable< Float >
 
         // Validate plugins
         PluginResolver pluginResolver = new PluginResolver();
-        System.out.println( "list: " + list.toString() );
+        log.debug( "list: " + list.toString() );
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
         String mimeType = null;
         String format = null;
@@ -198,7 +198,7 @@ public class DatadockThread implements Callable< Float >
             switch ( plugin.getPluginType() )
             {
                 case HARVEST:
-                	System.out.println("HARVEST");
+                	log.debug("HARVEST");
                     log.debug( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
                     
                     IHarvestable harvestPlugin = (IHarvestable)plugin;
@@ -208,7 +208,7 @@ public class DatadockThread implements Callable< Float >
                     
                     break;
                 case ANNOTATE:
-                	System.out.println("ANNOTATE");
+                	log.debug("ANNOTATE");
                     log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
                     
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
@@ -219,7 +219,6 @@ public class DatadockThread implements Callable< Float >
                     
                     break;
                 case STORE:
-                	System.out.println("STORE");
                 	log.debug( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
                 	
                 	for( CargoObject co : cargo.getCargoObjects() )
@@ -240,12 +239,11 @@ public class DatadockThread implements Callable< Float >
                     
                 	break;
                 case WORKRELATION:
-                	System.out.println("WORKRELATION");
                     log.debug( String.format( "case WORKRELATION pluginType %s", plugin.getPluginType().toString() ) );
                     
                     checkCargoContainerIsNotNull( cargo );
                     
-                    IWorkRelation workRelationPlugin = (IWorkRelation)plugin;
+                    IRelation workRelationPlugin = (IRelation)plugin;
                     cargo = workRelationPlugin.getCargoContainer( cargo );
                     log.debug( String.format( "DATADOCKTHREAD workRelationPlugin returned cargo", "" ) );
                     
