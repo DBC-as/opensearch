@@ -92,7 +92,7 @@ public class DocbookAnnotate implements IAnnotate
         if ( cargo == null )
         {
             log.error( "DocbookAnnotate getCargoContainer cargo is null" );
-            throw new PluginException( new NullPointerException( "DocbookAnnotate getCargoContainer throws NullPointerException" ) );
+            throw new PluginException( new IllegalStateException( "CargoContainer was null. Cannot operate without a CargoContainer instance" ) );
         }
         else 
         {
@@ -103,7 +103,7 @@ public class DocbookAnnotate implements IAnnotate
         
         if ( co == null )
         {
-            String error = "DocbookAnnotate getCargoContainer cargo object null";
+            String error = "Could not retrieve CargoObject with original data from CargoContainer";
             log.error( error );
             throw new PluginException( String.format( error ) );
         }
@@ -210,7 +210,7 @@ public class DocbookAnnotate implements IAnnotate
         if( numOfRec == 0 ) // no hits. Make another search without serverchoice
         { 
             @SuppressWarnings("unused")
-			String xmlStr = null;
+            String xmlStr = null;
             queryURL = null;
             try 
             {
