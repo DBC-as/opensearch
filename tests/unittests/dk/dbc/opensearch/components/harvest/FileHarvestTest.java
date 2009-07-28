@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,8 +71,8 @@ public class FileHarvestTest
     Element mockElement;
 
 
-    @MockClass( realClass = XMLFileReader.class )
-    public static class MockXMLFileReader
+    @MockClass( realClass = XMLUtils.class )
+    public static class MockXMLUtils
     {
         @Mock public static NodeList getNodeList( File xmlFile, String tagName )
         {
@@ -236,7 +236,7 @@ public class FileHarvestTest
      */
     /**
      * \Todo the test is reading the actual datadock_jobs file and thereby dependant
-     * on the filesystem. Fix: mock the XMLFileReader it uses to get the values.
+     * on the filesystem. Fix: mock the XMLUtils it uses to get the values.
      */
     @Test
     public void testHappyRunPath() throws IOException, IllegalArgumentException, ParserConfigurationException, SAXException, ConfigurationException, XMLStreamException
@@ -337,7 +337,7 @@ public class FileHarvestTest
          * setup
          */
         Mockit.setUpMocks( MockHC.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
 
         //File system setup
 
@@ -438,7 +438,7 @@ public class FileHarvestTest
         /**
          * setup
          */
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         Mockit.setUpMocks( MockHC2.class );
 
 
@@ -535,7 +535,7 @@ public class FileHarvestTest
         /**
          * setup
          */
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         Mockit.setUpMocks( MockHC.class );
 
 
@@ -606,7 +606,7 @@ public class FileHarvestTest
         /**
          * setup
          */
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         Mockit.setUpMocks( MockHC2.class );
         //Mockit.setUpMocks( MockFile1.class );
         Mockit.setUpMocks( MockFileHandler.class );
@@ -690,7 +690,7 @@ public class FileHarvestTest
         /**
          * setup
          */
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         Mockit.setUpMocks( MockHC2.class );
         Mockit.setUpMocks( MockFileHandler.class );
 

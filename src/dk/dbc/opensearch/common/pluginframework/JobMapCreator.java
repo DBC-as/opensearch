@@ -21,7 +21,7 @@ package dk.dbc.opensearch.common.pluginframework;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
@@ -82,7 +82,7 @@ public class JobMapCreator
 
         // Build the jobMap
         log.debug( String.format( "init calling getNodeList with jobFile %s ", jobFile ) );
-        NodeList jobNodeList = XMLFileReader.getNodeList( jobFile, "job" );
+        NodeList jobNodeList = XMLUtils.getNodeList( jobFile, "job" );
         int listLength = jobNodeList.getLength();
 
         List< ComparablePair<Integer, String>> pluginAndPriority = new ArrayList<ComparablePair<Integer, String>>();
@@ -164,7 +164,7 @@ public class JobMapCreator
     public static void validateJobXmlFilePosition( String path ) throws ParserConfigurationException, SAXException, IOException, IllegalStateException
     {
         File jobsXmlFile = new File( path );
-        NodeList jobsNodeList = XMLFileReader.getNodeList( jobsXmlFile, "job" );
+        NodeList jobsNodeList = XMLUtils.getNodeList( jobsXmlFile, "job" );
 
         int nodeListLen = jobsNodeList.getLength();
         for ( int i = 0; i < nodeListLen; i++ )

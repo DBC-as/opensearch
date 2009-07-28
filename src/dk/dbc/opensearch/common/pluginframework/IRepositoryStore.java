@@ -28,6 +28,7 @@ import java.text.ParseException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.exolab.castor.xml.MarshalException;
@@ -43,5 +44,5 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
  */
 public interface IRepositoryStore extends IPluggable 
 {
-    CargoContainer storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException;
+    CargoContainer storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException;
 }

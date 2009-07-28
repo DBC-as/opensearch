@@ -116,7 +116,7 @@ public class AdministrationFunc
         {
         	System.out.println( "before findObjectFields" );
         	String[] resultFields = { "pid", "title", "cDate" };
-        	objectFields = fa.findObjectFields( resultFields, "label", ComparisonOperator.eq, "danmarcxchange", new NonNegativeInteger( "1000" ) );
+        	objectFields = fa.findObjectFields( resultFields, "title", ComparisonOperator.has, "Harry Potter", new NonNegativeInteger( "1000" ) );
         	System.out.println( "after findObjectFields" );
         }
         catch( RemoteException re )
@@ -143,7 +143,7 @@ public class AdministrationFunc
                 
                 String pid = (String)objectFields[ i ].getPid();
                 System.out.println( "pid:   " + pid );
-                //pids[ i ] = (String)objectFields[ i ].getPid();
+                //pids[ i ] = (String)objectFields[ i ].getDCIdentifier();
                 
                 String cdate = (String)objectFields[ i ].getCDate();
                 System.out.println( "cdate: " + cdate );

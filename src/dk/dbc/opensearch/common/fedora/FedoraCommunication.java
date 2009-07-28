@@ -21,15 +21,6 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
-import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.common.types.InputPair;
-
 import java.io.IOException;
 
 import javax.xml.rpc.ServiceException;
@@ -195,7 +186,7 @@ public class FedoraCommunication implements IFedoraCommunication
 
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+        Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
 

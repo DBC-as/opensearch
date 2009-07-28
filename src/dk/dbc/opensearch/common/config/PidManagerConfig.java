@@ -44,7 +44,7 @@ public class PidManagerConfig extends Config
 
 
 	/* NUMBER OF PIDS TO RETRIEVE */
-	private String getPidManagerNumberOfPidsToRetrieve()
+	private String getDCIdentifierManagerNumberOfPidsToRetrieve()
 	{
 		String ret = config.getString( "pidmanager.num-of-pids-to-retrieve" );
 		return ret;
@@ -54,6 +54,6 @@ public class PidManagerConfig extends Config
 	public static String getNumberOfPidsToRetrieve() throws ConfigurationException 
 	{
 		PidManagerConfig pmc = new PidManagerConfig();
-		return pmc.getPidManagerNumberOfPidsToRetrieve();
+		return pmc.getDCIdentifierManagerNumberOfPidsToRetrieve();
 	} 
 }

@@ -22,7 +22,7 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.fedora.PIDManager;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -52,6 +52,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.xpath.XPathExpressionException;
 
 import fedora.server.types.gen.RelationshipTuple;
 import fedora.server.types.gen.MIMETypedStream;
@@ -163,7 +164,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
      */
-    public synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException
+    public synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException
     {
     	log.debug( "Entering storeContainer( CargoContainer )" );
         if( cargo.getCargoObjectCount() == 0 ) 
@@ -173,9 +174,9 @@ public class FedoraAdministration implements IFedoraAdministration
         } 
 
         String nextPid = PIDManager.getInstance().getNextPID( submitter );
-        log.debug( "pid next (getNextPid): " + nextPid );
+        cargo.setDCIdentifier( nextPid );
+        log.debug( "pid next (getNextPid): " + nextPid );        
         byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
-        cargo.setPid( nextPid );
         
         String logm = String.format( "%s inserted", format );
 
@@ -296,7 +297,7 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+        Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
 
@@ -447,7 +448,7 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element rootOld = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+        Element rootOld = XMLUtils.getDocumentElement( new InputSource( bis ) );
 
         log.debug( String.format( "root element from adminstream == %s", rootOld ) );
 
@@ -561,8 +562,8 @@ public class FedoraAdministration implements IFedoraAdministration
      * method for adding a relation to an object
      * @param pid, the identifier of the object to add the realtion to
      * @param predicate, the predicate of the relation to add
-     * @param targetPid, the object to relate the object to, can be a literal
-     * @param literal, true if the targetPid is a literal
+     * @param targetDCIdentifier, the object to relate the object to, can be a literal
+     * @param literal, true if the targetDCIdentifier is a literal
      * @param datatype, the datatype of the literal, optional
      * @return true if the relation was added
      * @throws IOException 
@@ -570,9 +571,9 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetPid, literal, datatype );
+        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
     }
 
 
@@ -720,15 +721,15 @@ public class FedoraAdministration implements IFedoraAdministration
      * 
      * @param pid fedora pid
      * @param predicate relation on the object to remove
-     * @param targetPid referenced fedora pid
+     * @param targetDCIdentifier referenced fedora pid
      * @param isLiteral set if the referenced rdf node is a Literal ( see http://www.w3.org/TR/rdf-concepts/#section-Literals)
      * @param datatype datatype of the Literal, if any. If none should be specified, submit an empty String
      * 
      * @return true iff the relationship could be removed from the object, false otherwise
      */
-    public boolean removeRelation( String pid, String predicate, String targetPid, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    public boolean removeRelation( String pid, String predicate, String targetDCIdentifier, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetPid, isLiteral, datatype );
+        return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
     }
 
     
@@ -776,7 +777,7 @@ public class FedoraAdministration implements IFedoraAdministration
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
         //log.debug( "getDocumentElement" );
-        Element root = XMLFileReader.getDocumentElement( new InputSource( bis ) );
+        Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
         

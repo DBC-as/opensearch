@@ -120,29 +120,10 @@ public class MarcxchangeWorkRelation implements IRelation
             log.debug( "DanmarcXchangeWorkRelation getCargoContainer cargo is not null" );
         }
         
-        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-        
-        if ( co == null )
-        {
-            String error = "DanmarcXchangeWorkRelation getCargoContainer cargo object null";
-            log.error( error );
-            throw new PluginException( String.format( error ) );
-        }
-        
-        byte[] b = co.getBytes();       
-        log.debug( "CargoObject byteArray: " + new String( b ) );
-        
-        String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
-        String dcType = getDCVariable( b, typeXpathStr );
-        
-        String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
-        String dcTitle = getDCVariable( b, titleXpathStr );
-        
-        String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1]";
-        String dcCreator = getDCVariable( b, creatorXpathStr );
-
-        String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
-        String dcSource = getDCVariable( b, sourceXpathStr );
+        String dcType = cargo.getDCType();
+        String dcTitle = cargo.getDCTitle();
+        String dcCreator = cargo.getDCCreator();
+        String dcSource = cargo.getDCSource();
         
         FedoraAdministration fa = new FedoraAdministration();
         log.debug( String.format( "MWR dcType: '%s'", dcType ) );
@@ -150,9 +131,9 @@ public class MarcxchangeWorkRelation implements IRelation
         {
         	log.debug( String.format( "MWR entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
         	// match SOURCE: dcTitle on TARGET: dcTitle
-        	String[] resultFields = { "pid", "title", "cDate" };
+        	String[] resultFields = { "pid", "title" };
         	//dcTitle = "danmarcxchange";
-        	ObjectFields[] objectFields = fa.findObjectFields( resultFields, "label", ComparisonOperator.eq, dcTitle, new NonNegativeInteger( "1" ) );
+        	ObjectFields[] objectFields = fa.findObjectFields( resultFields, "title", ComparisonOperator.has, dcTitle, new NonNegativeInteger( "1" ) );
         	
         	if ( objectFields != null )
         	{
@@ -169,7 +150,7 @@ public class MarcxchangeWorkRelation implements IRelation
 	                
 	                String pid = (String)objectFields[ i ].getPid();
 	                log.debug( String.format( "ObjectFields, pid: '%s'", pid) );
-	                //pids[ i ] = (String)objectFields[ i ].getPid();
+	                //pids[ i ] = (String)objectFields[ i ].getDCIdentifier();
 	                
 	                String cdate = (String)objectFields[ i ].getCDate();
 	                log.debug( String.format( "ObjectFields, cdate: '%s'", cdate ) );
@@ -196,7 +177,7 @@ public class MarcxchangeWorkRelation implements IRelation
         String pid = "shite";
         try
         {
-        	pid = cargo.getPid();
+        	pid = cargo.getDCIdentifier();
         }
         catch ( Exception ex )
         {
@@ -371,32 +352,6 @@ public class MarcxchangeWorkRelation implements IRelation
     }
     
     
-    private String getDCVariable( byte[] bytes, String xPathStr ) throws PluginException
-    {
-    	XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression;        
-        
-        InputSource workRelationSource = new InputSource( new ByteArrayInputStream( bytes ) );        
-        String dcVariable = null;
-        try
-        {
-        	log.debug( String.format( "MarcxchangeWorkRelation xpathStr = '%s'", xPathStr ) );
-        	xPathExpression = xpath.compile( xPathStr );
-            dcVariable = xPathExpression.evaluate( workRelationSource );            
-            log.debug( String.format( "MarcxchangeWorkRelation found dcVariable: '%s'", dcVariable ) );
-        } 
-        catch ( XPathExpressionException e ) 
-        {
-        	String error = String.format( "Could not compile xpath expression '%s'",  xPathStr );
-        	log.error( error );
-            throw new PluginException( error, e );
-        }
-        
-        return dcVariable;
-    }
-
-
     /**
      * Isolates the Dublin Core data from the data retrieved from the
      * webservice.

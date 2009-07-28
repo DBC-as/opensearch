@@ -29,7 +29,7 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ComparablePair;
@@ -83,8 +83,8 @@ public class JobMapCreatorTest
     Element mockElement;   
 
 
-    @MockClass( realClass = XMLFileReader.class )
-    public static class MockXMLFileReader
+    @MockClass( realClass = XMLUtils.class )
+    public static class MockXMLUtils
     {
     	@Mock public static NodeList getNodeList( File xmlFile, String tagName )
     	{
@@ -161,7 +161,7 @@ public class JobMapCreatorTest
     @Before 
     public void SetUp() 
     {
-        //Mockit.setUpMocks( MockXMLFileReader.class );
+        //Mockit.setUpMocks( MockXMLUtils.class );
 
         mockElement = createMock( Element.class );
         //mockNodeList = createMock( NodeList.class );
@@ -192,7 +192,7 @@ public class JobMapCreatorTest
          * setup
          */
         Mockit.setUpMocks( MockFH.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         String path = "test path";
 
         /**
@@ -252,7 +252,7 @@ public class JobMapCreatorTest
          * setup
          */
         Mockit.setUpMocks( MockFH.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         String path = "test path";
 
         /**
@@ -302,7 +302,7 @@ public class JobMapCreatorTest
          * setup
          */
         Mockit.setUpMocks( MockFH.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         String path = "test path";
 
         /**

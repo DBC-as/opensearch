@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,8 +85,8 @@ public class PTIJobsMapTest
     }
 
 
-    @MockClass( realClass = XMLFileReader.class )
-    public static class MockXMLFileReader
+    @MockClass( realClass = XMLUtils.class )
+    public static class MockXMLUtils
     {
         @Mock public NodeList getNodeList( File xmlFile, String tagName )
         {
@@ -141,7 +141,7 @@ public class PTIJobsMapTest
          */
         Mockit.setUpMocks( MockPtiConfig.class );
         Mockit.setUpMocks( MockJobMapCreator.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         Mockit.setUpMocks( MockFH.class );
 
         String sub1 = "dbc";
@@ -181,7 +181,7 @@ public class PTIJobsMapTest
          */
         Mockit.setUpMocks( MockPtiConfig.class );
         Mockit.setUpMocks( MockJobMapCreator.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         Mockit.setUpMocks( MockFH.class );
 
         String sub1 = "dbc";

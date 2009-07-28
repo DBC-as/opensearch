@@ -29,6 +29,7 @@ import java.text.ParseException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
@@ -54,12 +55,12 @@ public class Store implements IRepositoryStore
     private PluginType pluginType = PluginType.STORE;
 
 
-    public CargoContainer storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException
+    public CargoContainer storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException
     {
     	log.debug( "just before fa.storeCargoContainer()" );
     	FedoraAdministration fa = new FedoraAdministration();
         /*String pid =*/ fa.storeCargoContainer( cargo, submitter, format );
-        //cargo.setPid( pid );
+        //cargo.setDCIdentifier( pid );
         
         return cargo;
     }

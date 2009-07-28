@@ -23,7 +23,7 @@ import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -133,7 +133,7 @@ public class FedoraAdministrationMock implements IFedoraAdministration
     }
 
 
-    public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
   {
         throw new NotImplementedException( "Not implemented - shouldn't be used with this implementation" );
     }

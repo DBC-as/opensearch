@@ -22,7 +22,7 @@ package dk.dbc.opensearch.common.compass;
 
 import dk.dbc.opensearch.common.compass.CompassEntityResolver;
 import dk.dbc.opensearch.common.config.CompassConfig;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,8 +55,8 @@ public class CPMAlias
         String systemUrl = "file://" + dtdPath;
         CompassEntityResolver cer = new CompassEntityResolver( publicUrl, systemUrl );
            
-        cpmNodeList = XMLFileReader.getNodeList( xsemFile, "xml-object", cer );
-        log.debug( "XMLFileReader returned node list" );
+        cpmNodeList = XMLUtils.getNodeList( xsemFile, "xml-object", cer );
+        log.debug( "XMLUtils returned node list" );
     }
 
 

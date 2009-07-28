@@ -43,7 +43,12 @@ public class CargoContainer
     
     /** The internal representation of the data contained in the CargoContainer*/
     private ArrayList< CargoObject > data;
-    private String pid;
+    private String dcIdentifier;
+    private String dcTitle;
+	private String dcCreator;
+	private String dcType;
+	private String dcSource;
+	
     
     /**
      * Constructor initializes internal representation of data, i.e.,
@@ -124,17 +129,17 @@ public class CargoContainer
             log.fatal( "dataStreamName cannot be null" );
             throw new NullPointerException( "dataStreamName cannot be null" );
         }
-    	else if( ( mimetype == null ) || ( mimetype .equals( "" ) ) ) 
+    	else if( ( mimetype == null ) || ( mimetype.equals( "" ) ) ) 
         {
             log.fatal( "mimetype must be specified" );
             throw new NullPointerException( "mimetype must be specified" );
         }
-    	else if( ( language == null ) || ( language .equals( "" ) ) ) 
+    	else if( ( language == null ) || ( language.equals( "" ) ) ) 
         {
             log.fatal( "language must be specified" );
             throw new NullPointerException( "language must be specified" );
         }
-    	else if( ( submitter == null ) || ( submitter .equals( "" ) ) ) 
+    	else if( ( submitter == null ) || ( submitter.equals( "" ) ) ) 
         {
             log.fatal( "submitter must be specified" );
             throw new NullPointerException( "submitter must be specified" );
@@ -169,7 +174,8 @@ public class CargoContainer
 
         return co.getId();
     }
-
+    
+    
     /**
      * Given an id, this method removes a CargoObject from the
      * CargoContainer. If the id can be found, and the object can be
@@ -340,9 +346,9 @@ public class CargoContainer
      *
      * @return a List of CargoObjects or a null List if none were found
      */
-    public List<CargoObject> getCargoObjects(DataStreamType type) 
+    public List< CargoObject > getCargoObjects( DataStreamType type ) 
     {
-        List<CargoObject> ret_list = new ArrayList<CargoObject>();
+        List< CargoObject > ret_list = new ArrayList< CargoObject >();
         for( CargoObject co : data )
         {
             if( type == co.getDataStreamType() ) 
@@ -366,7 +372,7 @@ public class CargoContainer
      * @return a List of all CargoObjects from the CargoContainer or a null List
      *         object if none are found
      */
-    public List<CargoObject> getCargoObjects() 
+    public List< CargoObject > getCargoObjects() 
     {
         return data;
     }
@@ -430,23 +436,111 @@ public class CargoContainer
     }
     
     
-    public void setPid( String pid )
+    public void setDCIdentifier( String dcIdentifier )
     {
-    	log.debug( String.format( "setting pid '%s' for CargoContainer", pid ) );
-    	this.pid = pid;
+    	log.debug( String.format( "setting dcIdentifier '%s' for CargoContainer", this.dcIdentifier ) );
+    	this.dcIdentifier = dcIdentifier;
     }
     
     
-    public String getPid() throws IllegalStateException
+    public String getDCIdentifier() throws IllegalStateException
     {
-    	log.debug( "CargoContainer.getPid() called, pid: " + this.pid );
-    	if ( this.pid == null || this.pid.isEmpty() )
+    	log.debug( "CargoContainer.getDCIdentifier() called, pid: " + this.dcIdentifier );
+    	if ( this.dcIdentifier == null || this.dcIdentifier.isEmpty() || this.dcIdentifier.equals( "" ) ) 
     	{
-    		log.error( String.format( "getPid: pid '%s' is empty", pid ) );
+    		log.error( String.format( "getDCIdentifier: dcIdentifier '%s' is empty", dcIdentifier ) );
     		throw new IllegalStateException( "Pid for CargoContainer is empty" );
     	}
     	
-    	log.debug( String.format( "getPid returning pid '%s'", pid ) );
-    	return this.pid;
+    	log.debug( String.format( "getDCIdentifier returning dcIdentifier '%s'", this.dcIdentifier ) );    	
+    	return this.dcIdentifier;
     }
+
+
+	public void setDCTitle( String dcTitle ) 
+	{
+		if ( this.dcTitle == null )
+		{
+			this.dcTitle = dcTitle;			
+		}
+	}
+	
+	
+	public String getDCTitle() 
+	{
+		if ( this.dcTitle == null )
+		{
+			return this.dcTitle;
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+
+	public void setDCCreator( String dcCreator ) 
+	{
+		if ( this.dcCreator == null )
+		{
+			this.dcCreator = dcCreator;
+		}
+	}
+
+
+	public String getDCCreator() 
+	{
+		if ( this.dcCreator == null )
+		{
+			return this.dcCreator;
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+
+	public void setDCType( String dcType ) 
+	{
+		if ( this.dcType == null )
+		{
+			this.dcType = dcType;
+		}		
+	}
+	
+	
+	public String getDCType() 
+	{
+		if ( this.dcType == null )
+		{
+			return this.dcType;
+		}
+		else
+		{
+			return "";
+		}		
+	}
+	
+
+	public void setDCSource(String dcSource) 
+	{
+		if ( this.dcSource == null )
+		{
+			this.dcSource = dcSource;
+		}		
+	}
+
+
+	public String getDCSource() 
+	{
+		if ( this.dcSource == null )
+		{
+			return this.dcSource;
+		}
+		else
+		{
+			return "";
+		}
+	}
 }

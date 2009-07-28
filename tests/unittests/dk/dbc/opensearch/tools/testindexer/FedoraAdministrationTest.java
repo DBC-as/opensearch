@@ -41,6 +41,7 @@ import java.text.ParseException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import static org.easymock.classextension.EasyMock.*;
 import org.exolab.castor.xml.MarshalException;
@@ -69,7 +70,7 @@ public class FedoraAdministrationTest
      * 
      */
 
-    @Test public void testFedoraAdministration() throws URISyntaxException, ClassNotFoundException, ConfigurationException, IOException, MarshalException, ParseException, ParserConfigurationException, ServiceException, SAXException, SQLException, TransformerException, ValidationException
+    @Test public void testFedoraAdministration() throws URISyntaxException, ClassNotFoundException, ConfigurationException, IOException, MarshalException, ParseException, ParserConfigurationException, ServiceException, SAXException, SQLException, TransformerException, ValidationException, XPathExpressionException
     {
         mockCargoContainer = createMock( CargoContainer.class);
         mockEstimate = createMock( IEstimate.class);

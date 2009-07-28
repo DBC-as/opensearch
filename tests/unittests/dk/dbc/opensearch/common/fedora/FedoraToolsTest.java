@@ -17,6 +17,7 @@
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 package dk.dbc.opensearch.common.fedora;
 
 
@@ -34,6 +35,7 @@ import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -54,11 +56,10 @@ import dk.dbc.opensearch.xsd.types.DatastreamTypeCONTROL_GROUPType;
  */
 public class FedoraToolsTest// extends XMLTestCase
 {
-
     CargoContainer cargo;
     String origStr;
 
-    static String utf8Str = "æøå";
+    static String utf8Str = "æøå";    
     static Date now = new Date ( System.currentTimeMillis() );
     static String timeNow = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" )).format( now );
     static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -69,22 +70,23 @@ public class FedoraToolsTest// extends XMLTestCase
     public static void SetupClass()
     {
         HashMap m = new HashMap();
-        m.put("x", "info:fedora/fedora-system:def/foxml#");
+        m.put( "x", "info:fedora/fedora-system:def/foxml#" );
         SimpleNamespaceContext ctx = new SimpleNamespaceContext(m);
         XMLUnit.setXpathNamespaceContext( ctx );
     }
 
+    
     @Before
-    public void SetUp() throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException
+    public void SetUp() throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException
     {
-        byte[] cargoBytes =  utf8Str.getBytes( "UTF-8" );
+        byte[] cargoBytes = utf8Str.getBytes( "UTF-8" );
         cargo = new CargoContainer( );
         cargo.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
         byte[] b = FedoraTools.constructFoxml( cargo, "dbc:1", "label_1", now );
         origStr = new String( b );
-
     }
 
+    
     @After
     public void TearDown()
     {
@@ -116,6 +118,7 @@ public class FedoraToolsTest// extends XMLTestCase
         XMLAssert.assertXpathEvaluatesTo( "dbc:1", "/x:digitalObject[1]/@PID", origStr);
     }
 
+    
     /** 
      * Tests that the correct state was inserted in the digital object properties
      */
@@ -125,6 +128,7 @@ public class FedoraToolsTest// extends XMLTestCase
         XMLAssert.assertXpathEvaluatesTo( "Active", "/x:digitalObject[1]/x:objectProperties[1]/x:property[1]/@VALUE", origStr );
     }
 
+    
     /** 
      * Tests that the correct label was inserted in the digital object properties
      */
@@ -134,6 +138,7 @@ public class FedoraToolsTest// extends XMLTestCase
         XMLAssert.assertXpathEvaluatesTo( "label_1", "/x:digitalObject[1]/x:objectProperties[1]/x:property[2]/@VALUE", origStr );
     }
 
+    
     /** 
      * Tests that the correct owner was inserted in the digital object properties
      */
@@ -143,6 +148,7 @@ public class FedoraToolsTest// extends XMLTestCase
         XMLAssert.assertXpathEvaluatesTo( "dbc", "/x:digitalObject[1]/x:objectProperties[1]/x:property[3]/@VALUE", origStr );
     }
 
+    
     /** 
      * Tests that the correct timestamp was inserted in the digital
      * object properties. The format of the datestring is internally
@@ -154,6 +160,7 @@ public class FedoraToolsTest// extends XMLTestCase
         XMLAssert.assertXpathEvaluatesTo( timeNow, "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", origStr );
     }
 
+    
     /** 
      * Tests that the datastream id is set to the first added cargoobject
      */
@@ -161,9 +168,9 @@ public class FedoraToolsTest// extends XMLTestCase
     public void testDatastreamID() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( "originalData.0", "/x:digitalObject[1]/x:datastream[1]/@ID", origStr );
-
     }
 
+    
     /** 
      * A test that really serves two purposes, but in one test because
      * if one fails, both fails.  The first test ensures that the
@@ -180,12 +187,14 @@ public class FedoraToolsTest// extends XMLTestCase
         XMLAssert.assertXpathEvaluatesTo( new String( encodedBytes ), "/x:digitalObject[1]/x:datastream[1]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );
     }
 
+    
     @Test 
     public void testControlGroup() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( DatastreamTypeCONTROL_GROUPType.M.toString(), "/x:digitalObject[1]/x:datastream[1]/@CONTROL_GROUP", origStr );
     }
 
+    
     @Test 
     public void testHasAdminStreamInDigitalObjectAfterSerialization() throws SAXException, IOException, XpathException
     {
@@ -193,14 +202,13 @@ public class FedoraToolsTest// extends XMLTestCase
 
     }
 
+    
     @Test 
     public void testCorrectAdminStream() throws SAXException, IOException, XpathException
-    {
-        
+    {    
         String adminDataString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><admin-stream><indexingalias name=\"article\"/><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"eng\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
 
         byte[] encodedBytes  = Base64.encodeBase64( adminDataString.getBytes() );
-        XMLAssert.assertXpathEvaluatesTo( new String( encodedBytes ), "/x:digitalObject[1]/x:datastream[2]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );
-        
+        XMLAssert.assertXpathEvaluatesTo( new String( encodedBytes ), "/x:digitalObject[1]/x:datastream[2]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );        
     }
 }

@@ -1,20 +1,20 @@
 /**
-   This file is part of opensearch.
-   Copyright © 2009, Dansk Bibliotekscenter a/s,
-   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-   opensearch is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-   opensearch is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -23,7 +23,6 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
-//import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -31,13 +30,10 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;
-//import java.lang.ClassNotFoundException;
-//import java.lang.InstantiationException;
-//import java.lang.ClassNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -49,6 +45,7 @@ import java.net.MalformedURLException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -140,8 +137,8 @@ public class FedoraAdministrationTest
     }
 
     
-    @MockClass( realClass = XMLFileReader.class )
-    public static class MockXMLFileReader
+    @MockClass( realClass = XMLUtils.class )
+    public static class MockXMLUtils
     {
         @Mock public static Element getDocumentElement( InputSource is)
         {
@@ -215,7 +212,7 @@ public class FedoraAdministrationTest
     {
         //setup
         Mockit.setUpMocks( MockFedoraHandle.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
 
@@ -259,7 +256,7 @@ public class FedoraAdministrationTest
         boolean illegalCaught = false;
         Mockit.setUpMocks( MockFedoraHandle.class );
         //Mockit.setUpMocks( MockFedoraConfig.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
 
@@ -308,7 +305,7 @@ public class FedoraAdministrationTest
         boolean illegalCaught = false;
         Mockit.setUpMocks( MockFedoraHandle.class );
         //Mockit.setUpMocks( MockFedoraConfig.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
 
@@ -558,7 +555,7 @@ public class FedoraAdministrationTest
     {
         Mockit.setUpMocks( MockFedoraHandle.class );
         Mockit.setUpMocks( MockFedoraAdministration.class );
-        Mockit.setUpMocks( MockXMLFileReader.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
         byte[] bytes = byteString.getBytes();
 
@@ -598,7 +595,7 @@ public class FedoraAdministrationTest
     /**
      * Testing the happy path of the storeContainer method
      */
-    @Test public void testStoreCargoContainer() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException
+    @Test public void testStoreCargoContainer() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, XPathExpressionException
     {
         //setup
         Mockit.setUpMocks( MockFedoraHandle.class );
@@ -613,7 +610,7 @@ public class FedoraAdministrationTest
 
         //expectations
         expect( mockCC.getCargoObjectCount() ).andReturn( 2 );
-        mockCC.setPid( "test:1" );
+        mockCC.setDCIdentifier( "test:1" );
         expect( mockFem.ingest( bytes, fedMessage, logm ) ).andReturn( "test:1" ); 
         //replay
         
@@ -627,8 +624,7 @@ public class FedoraAdministrationTest
 
         //verify
         verify( mockCC );
-        verify( mockFem );
-        
+        verify( mockFem );        
     }
 
     /**
@@ -636,7 +632,7 @@ public class FedoraAdministrationTest
      * CargoObjects in the CargoContainer
      */
     @Test (expected = IllegalStateException.class)
-    public void testEmptyCargoContainerShouldNotBeStored() throws ConfigurationException, IOException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, SAXException, SQLException, TransformerException, ValidationException
+    public void testEmptyCargoContainerShouldNotBeStored() throws ConfigurationException, IOException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, SAXException, SQLException, TransformerException, ValidationException, XPathExpressionException
     {
         //expectations
         expect( mockCC.getCargoObjectCount() ).andReturn( 0 );

@@ -21,7 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -33,10 +33,10 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 
-/** \brief UnitTest for XMLFileReader
+/** \brief UnitTest for XMLUtils
  * \todo make it possible to the DocumentBuilderFactory or the DocumentBuilder...
  * If that is not possible it is only possible to test the methods with real files */
-public class XMLFileReaderTest 
+public class XMLUtilsTest 
 {
     /**
      *

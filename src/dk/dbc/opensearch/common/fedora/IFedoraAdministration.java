@@ -36,6 +36,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.exolab.castor.xml.MarshalException;
@@ -67,8 +68,9 @@ public interface IFedoraAdministration
      * @param theCC the CargoContainer to store
      * @param label, the label to put on the object
      * @return the pid of the object in the repository, null if unsuccesfull
+     * @throws XPathExpressionException 
      */
-    public String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException;
+    public String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException;
     
 
     /**
@@ -160,8 +162,8 @@ public interface IFedoraAdministration
      * method for adding a relation to an object
      * @param pid, the identifier of the object to add the realtion to
      * @param predicate, the predicate of the relation to add
-     * @param targetPid, the object to relate the object to, can be a literal
-     * @param literal, true if the targetPid is a literal
+     * @param targetDCIdentifier, the object to relate the object to, can be a literal
+     * @param literal, true if the targetDCIdentifier is a literal
      * @param datatype, the datatype of the literal, optional
      * @return true if the relation was added
      * @throws IOException 
@@ -169,7 +171,7 @@ public interface IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public boolean addRelation( String pid, String predicate, String targetPid, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
+    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 
     
     /**

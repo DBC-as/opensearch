@@ -29,7 +29,7 @@ package dk.dbc.opensearch.components.harvest;
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
-import dk.dbc.opensearch.common.helpers.XMLFileReader;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -165,7 +165,7 @@ public class FileHarvest implements IHarvester
         log.debug( "initvectors() called" );
 
         File datadockJobsFile = FileHandler.getFile( datadockJobsFilePath );
-        NodeList jobNodeList = XMLFileReader.getNodeList( datadockJobsFile, "job" );
+        NodeList jobNodeList = XMLUtils.getNodeList( datadockJobsFile, "job" );
         submittersFormatsVector = new Vector< InputPair< String, String > >();
         int jobNodeListLength = jobNodeList.getLength();
         for( int i = 0; i < jobNodeListLength; i++ )

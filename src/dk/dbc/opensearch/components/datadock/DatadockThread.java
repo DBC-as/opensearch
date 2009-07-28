@@ -198,7 +198,7 @@ public class DatadockThread implements Callable< Float >
             switch ( plugin.getPluginType() )
             {
                 case HARVEST:
-                	log.debug("HARVEST");
+                	log.debug( "HARVEST" );
                     log.debug( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
                     
                     IHarvestable harvestPlugin = (IHarvestable)plugin;
@@ -235,7 +235,7 @@ public class DatadockThread implements Callable< Float >
 
                     IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     cargo = repositoryStore.storeCargoContainer( cargo, submitter, format );
-                    log.debug( "STORE pid: " + cargo.getPid() );
+                    log.debug( "STORE pid: " + cargo.getDCIdentifier() );
                     
                 	break;
                 case WORKRELATION:
@@ -262,7 +262,7 @@ public class DatadockThread implements Callable< Float >
         //push to processqueue job to processqueue and get estimate
         est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est) );
-        queue.push( cargo.getPid() );
+        queue.push( cargo.getDCIdentifier() );
         
         return est;
     }

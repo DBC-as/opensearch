@@ -1,8 +1,5 @@
-package dk.dbc.opensearch.common.helpers;
-
-/*
-   
-This file is part of opensearch.
+/*   
+  This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
@@ -21,28 +18,38 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+package dk.dbc.opensearch.common.helpers;
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-public class XMLFileReader 
+public class XMLUtils 
 {
-    static Logger log = Logger.getLogger( XMLFileReader.class );
+    static Logger log = Logger.getLogger( XMLUtils.class );
 	
 	
     public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
@@ -98,4 +105,24 @@ public class XMLFileReader
             throw ioe;
         }
     }
+    
+    
+    public static byte[] getByteArray( Element root ) throws TransformerException, UnsupportedEncodingException
+    {
+    	Source source = new DOMSource( ( Node ) root );
+    	StringWriter stringWriter = new StringWriter();
+    	Result result = new StreamResult( stringWriter );
+    	
+    	TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    	Transformer transformer = transformerFactory.newTransformer();
+    	//transformer.setOutputProperty( javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes" );
+    	transformer.transform( source, result );
+    	
+    	String streamString = stringWriter.getBuffer().toString();
+    	log.debug( String.format( "Constructed stream for the CargoContainer = %s", streamString ) );
+    	byte[] byteArray = streamString.getBytes( "UTF-8" );
+    	
+    	return byteArray;
+    }
+    
 }

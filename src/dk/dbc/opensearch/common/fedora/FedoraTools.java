@@ -20,6 +20,8 @@
 package dk.dbc.opensearch.common.fedora;
 
 
+import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
@@ -40,10 +42,12 @@ import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
 import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
 import dk.dbc.opensearch.xsd.types.StateType;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +59,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -62,6 +67,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
@@ -70,6 +79,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
@@ -82,8 +92,8 @@ public class FedoraTools
     
     
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
-
+    
+    
     /**
      * Serializes a DigitalObject into a byte[] containing the
      * serialized xml document.
@@ -104,27 +114,29 @@ public class FedoraTools
         log.debug( "Marshalling the digitalObject to a byte[]" );
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStreamWriter outW = new OutputStreamWriter(out);
+        OutputStreamWriter outW = new OutputStreamWriter( out );
         Marshaller m = new Marshaller( outW ); // IOException
         m.marshal(dot); // throws MarshallException, ValidationException        
         //log.debug( String.format( "Marshalled DigitalObject=%s", out.toString() ) );
         byte[] ret = out.toByteArray();
 
-        log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
+        log.debug( String.format( "length of marshalled byte[] = %s", ret.length ) );
         return ret;
     }
 
+    
     /**
      * method for constructing the foxml to ingest
      * @param cargo, the CargoContainer to ingest
      * @param nextPid, the pid of the object to create
      * @param label, the label of the object, most often the format of the original data
      * @return a byte[] to ingest
+     * @throws XPathExpressionException 
      */
-    static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException, XPathExpressionException
     {
         log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
-
+        
         Date now = new Date(System.currentTimeMillis());
         return constructFoxml( cargo, nextPid, label, now );
     }
@@ -137,19 +149,17 @@ public class FedoraTools
      * @param label, the label of the object, most often the format of the original data
      * @param now, the time of creation of the foxml
      * @return a byte[] to ingest
+     * @throws XPathExpressionException 
      */
-    static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
+    static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label, Date now ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException, XPathExpressionException
     {
         log.trace( String.format( "Entering constructFoxml( cargo, nexPid='%s', label='%s', now )", nextPid, label ) );
-
+        cargo.setDCIdentifier( nextPid );
+        
         ///////////////// INITIALIZING DIGITAL OBJECT ////////////////////////////
         DigitalObject dot = initDigitalObject( "Active", label, "dbc", nextPid, now );
 
-        ///////////////////// CONSTRUCTING DC DATASTREAM ////////////////////////////////
-        log.debug( "Constructing DC datastream" );
-        Element dcRoot = constructDCDatastream( cargo );        
-        
-        ////////////////////// 
+        ///////////////////// CONSTRUCTIN ADMIN DATASTREAM ////////////////////////////// 
         int cargo_count = cargo.getCargoObjectCount();
         log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
 
@@ -189,13 +199,11 @@ public class FedoraTools
 
         Collections.sort( lst2 );
 
-        ///////////////////// CONSTRUCTING ADMINDATASTREAM //////////////////////////////
         log.debug( "Constructing adminstream" );
 
         Element root = constructAdminStream( cargo, lst2 );
-
-        // Transform document to xml string
-        Source source = new DOMSource( ( Node ) root );
+        byte[] admByteArray = XMLUtils.getByteArray( root );
+        /*Source source = new DOMSource( ( Node ) root );
         StringWriter stringWriter = new StringWriter();
         Result result = new StreamResult( stringWriter );
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -205,8 +213,8 @@ public class FedoraTools
         log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
 
         // add the adminstream to the cargoContainer
-        byte[] byteAdmArray = admStreamString.getBytes();
-        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, byteAdmArray );
+        byte[] byteAdmArray = admStreamString.getBytes();*/
+        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, admByteArray );
         
         log.debug( "Constructing foxml byte[] from cargoContainer" );
         cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
@@ -246,92 +254,6 @@ public class FedoraTools
         log.debug( String.format( "length of marshalled byte[]=%s", ret.length ) );
         return ret;
     }
-
-
-    private static Element constructDCDatastream( CargoContainer cargo ) 
-    {
-    	Element rootElement = null;
-    	
-    	try 
-    	{
-    		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); //factory.setNamespaceAware(true);
-    	    DocumentBuilder builder = factory.newDocumentBuilder();
-    	        	 
-    	    // Now build an empty XML DOM document for the Dublin Core
-    	    Document dcDoc = builder.newDocument();
-    	    rootElement = dcDoc.createElementNS( "http://www.openarchives.org/OAI/2.0/oai_dc/", "oai_dc:dc" );    	    
-    	    rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:oai_dc","http://www.openarchives.org/OAI/2.0/oai_dc/");
-    	    rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:dc","http://purl.org/dc/elements/1.1/");
-    	    dcDoc.appendChild( rootElement );
-    	 
-    	    Element e; String value;
-    	    /*e = dcDoc.createElement("dc:identifier");
-    	    e.appendChild( dcDoc.createTextNode( pid ) );
-    	    rootElement.appendChild( e );*/
-    	 
-    	    e = dcDoc.createElement( "dc:title" );
-    	    value = ""; //sourceDoc.getElementsByTagName("title").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
-    	    e.appendChild( dcDoc.createTextNode( value ) );
-    	    rootElement.appendChild( e );
-    	 
-    	    // author's name comes in many parts; this'll put them together
-    	    e = dcDoc.createElement( "dc:creator" );
-    	    String nameFields[] = { "authfname", "authmname", "authlname", "authsuffix"};
-    	    String author = new String();
-    	    for (String field : nameFields) 
-    	    {
-    	       value = ""; //sourceDoc.getElementsByTagName(field).item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
-    	       if ( value != null && !value.equals( "" ) ) 
-    	       {
-    	    	   author = author.concat(value).concat( " " );
-    	       }
-    	    }    	    
-    	    e.appendChild( dcDoc.createTextNode( author.trim() ) );
-    	    rootElement.appendChild( e );       
-    	 
-    	    e = dcDoc.createElement( "dc:language" );
-    	    value = ""; //sourceDoc.getElementsByTagName("language").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
-    	    e.appendChild( dcDoc.createTextNode( value ) );
-    	    rootElement.appendChild(e);
-    	 
-    	    e = dcDoc.createElement( "dc:description" );
-    	    value = ""; //sourceDoc.getElementsByTagName("abstract").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
-    	    e.appendChild( dcDoc.createTextNode( value ) );
-    	    rootElement.appendChild(e);
-    	 
-    	    e = dcDoc.createElement( "dc:date" );
-    	    value = ""; //sourceDoc.getElementsByTagName("docyear").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
-    	    e.appendChild( dcDoc.createTextNode( value ) );
-    	    rootElement.appendChild(e);       
-    	 
-    	    e = dcDoc.createElement( "dc:subject" );
-    	    value = ""; //sourceDoc.getElementsByTagName("subjects").item(0).getTextContent().replaceAll("[\t ]*\n[\t ]*", " ").replaceAll("[\t ][\t ]+", " ").trim();
-    	    e.appendChild( dcDoc.createTextNode( value ) );
-    	    rootElement.appendChild(e);
-    	 
-    	    // Use a Transformer for output
-    	    /*TransformerFactory tFactory = TransformerFactory.newInstance();
-    	    Transformer transformer = tFactory.newTransformer();
-    	    transformer.setOutputProperty( javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes" );
-    	    DOMSource source = new DOMSource( dcDoc );
-    	    StringWriter strWriter = new StringWriter();
-    	    StreamResult result = new StreamResult(strWriter);
-    	    transformer.transform(source, result);
-    	    String xmlAsString = strWriter.getBuffer().toString();
-    	    // log.debug(xmlAsString);
-    	    byte[] normalarr = xmlAsString.getBytes( "UTF-8" );*/
-    	 
-    	    // Lastly, write the modified DC datastream back to the FEDORA server
-    	    //apim.modifyDatastreamByValue(pid, "DC", null, "Dublin Core", false, "text/xml", null, normalarr, "A", "Batch program to add DC datastream from ETD XML file", false);
-    	}
-    	catch ( Exception e ) 
-    	{
-    		String msg = e.getLocalizedMessage(); 
-    		log.error( msg );
-    	}	
-
-		return rootElement;
-	}
 
     
 	private static Element constructAdminStream( CargoContainer cargo, List< ComparablePair<Integer, String> > lst2 ) throws ParserConfigurationException
@@ -477,7 +399,7 @@ public class FedoraTools
      */
     private static Datastream constructDatastream( CargoObject co, String timeNow, String itemID ) throws ParseException
     {
-        return constructDatastream( co, timeNow, itemID, false, false, false );
+        return constructDatastream( co, timeNow, itemID, false, false );
     }
 
      
@@ -519,25 +441,26 @@ public class FedoraTools
      *      content to a client (e.g., video streaming), rather than
      *      have Fedora in the middle re-streaming the content out.
      */
-    private static Datastream constructDatastream( CargoObject co, String timeNow, String itemID, boolean versionable, boolean externalData, boolean inlineData ) throws ParseException
+    private static Datastream constructDatastream( CargoObject co, String timeNow, String itemID, boolean versionable, boolean externalData ) throws ParseException
     {
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
 
-        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamType(), co.getIndexingAlias(), itemID ) );
+        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s", co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
 
         DatastreamTypeCONTROL_GROUPType controlGroup = null;
-        if( (! externalData ) && ( ! inlineData ) && ( co.getMimeType() == "text/xml" ) )
+        if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) )
         {
             //Managed content
             controlGroup = DatastreamTypeCONTROL_GROUPType.M;
         }
-        else if( ( ! externalData ) && ( inlineData ) && ( co.getMimeType() == "text/xml" )) 
+        else if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) && co.getDataStreamName() == DataStreamType.DublinCoreData ) 
         {
             //Inline content
             controlGroup = DatastreamTypeCONTROL_GROUPType.X;
         }
-        // else if( ( externalData ) && ( ! inlineData ) ){
+        // else if( ( externalData ) && ( ! inlineData ) )
+        // {
         //     /**
         //      * external data cannot be inline, and this is regarded as
         //      * a client error, but we assume that the client wanted
@@ -588,8 +511,8 @@ public class FedoraTools
 
         dataStreamVersionElement.setDatastreamVersionTypeChoice( dVersTypeChoice );
 
-        String mimeLabel = String.format("%s [%s]", co.getFormat(), co.getMimeType());
-        dataStreamVersionElement.setLABEL(mimeLabel);
+        String mimeLabel = String.format( "%s [%s]", co.getFormat(), co.getMimeType() );
+        dataStreamVersionElement.setLABEL( mimeLabel );
         String mimeFormatted = String.format("%s", co.getMimeType());
         dataStreamVersionElement.setMIMETYPE( mimeFormatted );
 
