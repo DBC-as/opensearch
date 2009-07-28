@@ -57,9 +57,9 @@ public enum DataStreamType
 	}
 
 
-	public static boolean validDataStreamNameType( String nametype )
+	public static boolean validDataStreamType( String nametype )
     {
-        DataStreamType DSN = DataStreamType.getDataStreamNameFrom( nametype );
+        DataStreamType DSN = DataStreamType.getDataStreamTypeFrom( nametype );
         log.debug( "checking dataStreamName" );
         
         if( DSN == null )
@@ -75,7 +75,7 @@ public enum DataStreamType
      * @param mime
      * @return
      */
-    public static DataStreamType getDataStreamNameFrom( String name )
+    public static DataStreamType getDataStreamTypeFrom( String name )
     {
         DataStreamType DSN = null;
         for (DataStreamType dsn : DataStreamType.values() )

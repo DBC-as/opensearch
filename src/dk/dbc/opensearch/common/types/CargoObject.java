@@ -151,9 +151,9 @@ public class CargoObject
      * 
      * @return the enum value of the name of the Datastream
      */
-    public DataStreamType getDataStreamName()
+    public DataStreamType getDataStreamType()
     {
-        return coi.getDataStreamName();
+        return coi.getDataStreamType();
     }
 
 

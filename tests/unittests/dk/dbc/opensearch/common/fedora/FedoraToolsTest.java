@@ -79,7 +79,7 @@ public class FedoraToolsTest// extends XMLTestCase
     {
         byte[] cargoBytes =  utf8Str.getBytes( "UTF-8" );
         cargo = new CargoContainer( );
-        cargo.add( DataStreamType.getDataStreamNameFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
+        cargo.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
         byte[] b = FedoraTools.constructFoxml( cargo, "dbc:1", "label_1", now );
         origStr = new String( b );
 

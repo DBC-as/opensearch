@@ -223,7 +223,7 @@ public class DatadockThread implements Callable< Float >
                 	
                 	for( CargoObject co : cargo.getCargoObjects() )
                     {
-                        if( co.getDataStreamName() == DataStreamType.OriginalData )
+                        if( co.getDataStreamType() == DataStreamType.OriginalData )
                         {
                             mimeType = co.getMimeType();
                             format = co.getFormat();

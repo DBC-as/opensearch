@@ -148,7 +148,7 @@ public class DocbookMerger implements IProcesser
 
         try
         {
-            new_id = cargo.add( orig.getDataStreamName(),
+            new_id = cargo.add( orig.getDataStreamType(),
                                 orig.getFormat(),
                                 orig.getSubmitter(),
                                 orig.getLang(),

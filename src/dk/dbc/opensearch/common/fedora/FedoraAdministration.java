@@ -144,7 +144,7 @@ public class FedoraAdministration implements IFedoraAdministration
             String streamID = stream.getAttribute( "id" );
             MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null);
 
-            cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
+            cc.add( DataStreamType.getDataStreamTypeFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
                     stream.getAttribute( "lang" ),
@@ -257,7 +257,7 @@ public class FedoraAdministration implements IFedoraAdministration
                 MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null );
                 byte[] bytestream = dstream.getStream();
 
-                cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
+                cc.add( DataStreamType.getDataStreamTypeFrom( stream.getAttribute( "streamNameType" ) ),
                         stream.getAttribute( "format" ),
                         stream.getAttribute( "lang" ),
                         stream.getAttribute( "submitter" ),
@@ -289,7 +289,7 @@ public class FedoraAdministration implements IFedoraAdministration
         String sID = null;
         String logm = "";
         String adminLogm = "";
-        String dsnName = cargo.getDataStreamName().getName();
+        String dsnName = cargo.getDataStreamType().getName();
 
         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         byte[] adminStream = ds.getStream();

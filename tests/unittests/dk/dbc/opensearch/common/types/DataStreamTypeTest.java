@@ -35,33 +35,19 @@ public class DataStreamTypeTest {
     DataStreamType dst;
 
     /**
-     *
-     */
-    @Before public void SetUp() {
-
-    }
-
-    /**
-     *
-     */
-    @After public void TearDown() {
-
-    }
-
-    /**
      * 
      */
     @Test public void testGetDescription() 
     {
-        dst = DataStreamType.getDataStreamNameFrom( "adminData" );
+        dst = DataStreamType.getDataStreamTypeFrom( "adminData" );
         assertTrue( dst.getDescription().equals( "Administration" ) );
     }
 
-    @Test public void testValidDataStreamNameType()
+    @Test public void testValidDataStreamType()
     {
         String valid = "adminData";
         String invalid = "invalid";
-        assertTrue( DataStreamType.validDataStreamNameType( valid ));
-        assertFalse( DataStreamType.validDataStreamNameType( invalid ));
+        assertTrue( DataStreamType.validDataStreamType( valid ) );
+        assertFalse( DataStreamType.validDataStreamType( invalid ) );
     }
 }

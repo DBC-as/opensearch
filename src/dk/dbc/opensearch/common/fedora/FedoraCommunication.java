@@ -101,7 +101,7 @@ public class FedoraCommunication implements IFedoraCommunication
         long length = 0;
         for( CargoObject co : cc.getCargoObjects() )
         {
-            if( co.getDataStreamName() == DataStreamType.OriginalData )
+            if( co.getDataStreamType() == DataStreamType.OriginalData )
             {
                 mimeType = co.getMimeType();
             }
@@ -144,7 +144,7 @@ public class FedoraCommunication implements IFedoraCommunication
         long length = 0;
         for( CargoObject co : cargo.getCargoObjects() )
         {
-            if( co.getDataStreamName() == DataStreamType.OriginalData )
+            if( co.getDataStreamType() == DataStreamType.OriginalData )
             {
                 mimeType = co.getMimeType();
                 format = co.getFormat();
@@ -220,7 +220,7 @@ public class FedoraCommunication implements IFedoraCommunication
             Element stream = (Element)streamNL.item(i);
             String streamID = stream.getAttribute( "id" );
             MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination(fedoraPid, streamID, null);
-            cc.add( DataStreamType.getDataStreamNameFrom( stream.getAttribute( "streamNameType" ) ),
+            cc.add( DataStreamType.getDataStreamTypeFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
                     stream.getAttribute( "lang" ),

@@ -158,7 +158,7 @@ public class FedoraTools
         for(int i = 0; i < cargo_count; i++)
         {
             CargoObject c = cargo.getCargoObjects().get( i );
-            lst.add( new ComparablePair< String, Integer >( c.getDataStreamName().getName(), i ) );
+            lst.add( new ComparablePair< String, Integer >( c.getDataStreamType().getName(), i ) );
         }
 
         Collections.sort( lst );
@@ -171,7 +171,7 @@ public class FedoraTools
         List< ComparablePair<Integer, String> > lst2 = new ArrayList< ComparablePair <Integer, String> >();
         for( Pair<String, Integer> p : lst)
         {
-            if( dsn != DataStreamType.getDataStreamNameFrom( p.getFirst() ) )
+            if( dsn != DataStreamType.getDataStreamTypeFrom( p.getFirst() ) )
             {
                 j = 0;
             }
@@ -180,7 +180,7 @@ public class FedoraTools
                 j += 1;
             }
 
-            dsn = DataStreamType.getDataStreamNameFrom( p.getFirst() );
+            dsn = DataStreamType.getDataStreamTypeFrom( p.getFirst() );
 
             lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
         }
@@ -218,7 +218,7 @@ public class FedoraTools
          * \todo: 
          * 
          * when iterating here: 
-         * if cargoObject.getDataStreamName (c.getDataStreamName() => c.getDataStreamType) is datastreamtype.RELSEXT 
+         * if cargoObject.getDataStreamName (c.getDataStreamType() => c.getDataStreamType) is datastreamtype.RELSEXT 
          * 	    1) Extend datastreamtype to contain RELSEXT
          * then constructDataStream must be called with true, false, true, that is, Versionable = true, External = false, and 
          *      InlineData = true.
@@ -362,7 +362,7 @@ public class FedoraTools
             stream.setAttribute( "mimetype", c.getMimeType() );
             stream.setAttribute( "submitter", c.getSubmitter() );
             stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-            stream.setAttribute( "streamNameType" ,c.getDataStreamName().getName() );
+            stream.setAttribute( "streamNameType" ,c.getDataStreamType().getName() );
             streams.appendChild( (Node) stream );
         }
 
@@ -524,7 +524,7 @@ public class FedoraTools
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
 
-        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
+        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s",co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamType(), co.getIndexingAlias(), itemID ) );
 
         DatastreamTypeCONTROL_GROUPType controlGroup = null;
         if( (! externalData ) && ( ! inlineData ) && ( co.getMimeType() == "text/xml" ) )

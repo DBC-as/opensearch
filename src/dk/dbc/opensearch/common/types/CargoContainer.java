@@ -227,7 +227,7 @@ public class CargoContainer
     {
         for( CargoObject co : data )
         {
-            if( co.getDataStreamName() == type ) 
+            if( co.getDataStreamType() == type ) 
             {
                 return true;
             }
@@ -281,7 +281,7 @@ public class CargoContainer
         CargoObject ret_co = null;
         for( CargoObject co : data )
         {
-            if( type == co.getDataStreamName() )
+            if( type == co.getDataStreamType() )
             {
                 ret_co = co;
             }
@@ -309,7 +309,7 @@ public class CargoContainer
         int count = 0;
         for( CargoObject co : data )
         {
-            if( type == co.getDataStreamName() )
+            if( type == co.getDataStreamType() )
             {
                 count++;
             }
@@ -345,7 +345,7 @@ public class CargoContainer
         List<CargoObject> ret_list = new ArrayList<CargoObject>();
         for( CargoObject co : data )
         {
-            if( type == co.getDataStreamName() ) 
+            if( type == co.getDataStreamType() ) 
             {
                 ret_list.add( co );
             }
@@ -420,7 +420,7 @@ public class CargoContainer
         IndexingAlias ret_ia = null;
         for( CargoObject co : data )
         {
-            if( dataStreamType == co.getDataStreamName() )
+            if( dataStreamType == co.getDataStreamType() )
             {
                 ret_ia = co.getIndexingAlias();
             }

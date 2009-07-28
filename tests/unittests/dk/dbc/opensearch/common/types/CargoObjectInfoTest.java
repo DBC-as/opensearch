@@ -72,11 +72,11 @@ public class CargoObjectInfoTest
     
     
     @Test
-    public void testGetDataStreamName()
+    public void testGetDataStreamType()
     {
     	for ( CargoObject co : cc.getCargoObjects() )
     	{
-    		assertEquals( DataStreamType.OriginalData, co.getDataStreamName( ) );
+    		assertEquals( DataStreamType.OriginalData, co.getDataStreamType() );
     	}
     }
     

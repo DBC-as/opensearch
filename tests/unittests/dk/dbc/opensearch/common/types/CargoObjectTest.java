@@ -52,7 +52,7 @@ public class CargoObjectTest {
     public void SetUp() throws UnsupportedEncodingException, IOException
     {
 
-        dst = DataStreamType.getDataStreamNameFrom( "originalData" );
+        dst = DataStreamType.getDataStreamTypeFrom( "originalData" );
         format = "forfatterweb";
         language = "DA";
         mimetype = "text/xml";

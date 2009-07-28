@@ -68,7 +68,7 @@ public class CargoContainerTest
     @Before
     public void SetUp() throws UnsupportedEncodingException
     {
-        dsn = DataStreamType.getDataStreamNameFrom( "originalData" );
+        dsn = DataStreamType.getDataStreamTypeFrom( "originalData" );
         format = "forfatterweb";
         language = "DA";
         mimetype = "text/xml";
@@ -259,8 +259,8 @@ public class CargoContainerTest
         CargoObject co1;
         CargoObject co2;
 
-        DataStreamType dst1 = DataStreamType.getDataStreamNameFrom( "originalData" );
-        DataStreamType dst2 = DataStreamType.getDataStreamNameFrom( "indexableData" );
+        DataStreamType dst1 = DataStreamType.getDataStreamTypeFrom( "originalData" );
+        DataStreamType dst2 = DataStreamType.getDataStreamTypeFrom( "indexableData" );
 
         byte[] data1 = "abc".getBytes();
 
@@ -280,7 +280,7 @@ public class CargoContainerTest
      */
     @Test(expected = NullPointerException.class)
     public void testNullPointerExceptionWithLookupOnNonExistingCargoObject(){
-        DataStreamType dst3 = DataStreamType.getDataStreamNameFrom( "adminData" );
+        DataStreamType dst3 = DataStreamType.getDataStreamTypeFrom( "adminData" );
         cargo.getCargoObject( dst3 );
     }
 

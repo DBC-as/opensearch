@@ -124,9 +124,9 @@ public class IndexerXSEM implements IIndexer
 
         for( CargoObject co : list )
         {
-            if( ! ( co.getDataStreamName() == DataStreamType.OriginalData ) ) 
+            if( ! ( co.getDataStreamType() == DataStreamType.OriginalData ) ) 
             {
-                log.info( String.format( "Not indexing data with datastreamtype '%s'",co.getDataStreamName() ) );
+                log.info( String.format( "Not indexing data with datastreamtype '%s'",co.getDataStreamType() ) );
             }
             else {
 

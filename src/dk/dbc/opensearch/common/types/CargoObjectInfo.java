@@ -271,13 +271,13 @@ public class CargoObjectInfo
     }
 
     
-    DataStreamType getDataStreamName()
+    DataStreamType getDataStreamType()
     {
         return dataStreamName;
     }
 
-    //    String getDataStreamNameFrom( String name )
+    //    String getDataStreamTypeFrom( String name )
     //    {
-    //          return DataStreamNames.getDataStreamNameFrom( name ).name;
+    //          return DataStreamNames.getDataStreamTypeFrom( name ).name;
     //    }
 }
