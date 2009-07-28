@@ -110,51 +110,9 @@ public class AdministrationFunc
     
     
     static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException
-    {
-        ObjectFields[] objectFields = null;
-        try
-        {
-        	System.out.println( "before findObjectFields" );
-        	String[] resultFields = { "pid", "title", "cDate" };
-        	objectFields = fa.findObjectFields( resultFields, "title", ComparisonOperator.has, "Harry Potter", new NonNegativeInteger( "1000" ) );
-        	System.out.println( "after findObjectFields" );
-        }
-        catch( RemoteException re )
-        {
-            re.printStackTrace();
-        }
-        
-        int length = 0;
-        if ( objectFields != null )
-    	{
-        	System.out.println( "objectFields not null" );
-        	length = objectFields.length;
-        	System.out.println( "objectFields length: " + length );
-            String[] titles = new String[ length ];
-            String[] pids = new String[ length ];
-            
-            for( int i = 0; i < length; i++ )
-            {
-            	String[] title = objectFields[i].getTitle();
-            	System.out.println( "title: " + title[0] );
-            	String label = (String)objectFields[ i ].getLabel();
-            	System.out.println( "label: " + label );
-                //titles[ i ] = (String)objectFields[ i ].getTitle(i);
-                
-                String pid = (String)objectFields[ i ].getPid();
-                System.out.println( "pid:   " + pid );
-                //pids[ i ] = (String)objectFields[ i ].getDCIdentifier();
-                
-                String cdate = (String)objectFields[ i ].getCDate();
-                System.out.println( "cdate: " + cdate );
-                
-                System.out.println();
-            }
-     	}
-        else
-        {
-        	System.out.println( "objectFields null or empty" );
-        }
+    {    	
+    	System.out.println( "calling addRelationship" );
+        fa.addRelationship( "harry:1", "title", "Harry Potter", "rel:isMemberOfCollection", "work" );
     }
     
     

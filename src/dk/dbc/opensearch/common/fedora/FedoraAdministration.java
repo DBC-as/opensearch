@@ -571,9 +571,59 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) //throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
+    	System.out.println( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
+    	try
+    	{
+    		return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
+    	}
+    	catch ( Exception ex )
+    	{
+    		System.out.println( "Exception caught" );
+    		ex.printStackTrace();
+    	}
+    	
+    	return false;
+    }
+    
+    
+    public boolean addRelationship( String sourcePid, String property, String value, String predicate, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    {
+    	System.out.println/*log.debug*/( String.format( "Finding objecs with property '%s' and value '%s'", property, value ) );
+    	String targetPid = findPropertyPid( sourcePid, property, value );
+    	System.out.println/*log.debug*/( "success" );
+    	if ( targetPid != null )
+    	{
+    		System.out.println( "finding relationships" );
+        	RelationshipTuple[] rel = getRelationships( targetPid, predicate );
+        	String relationshipObject = null;
+            if ( rel != null )
+            {
+            	System.out.println( "relationshipType not null" );
+            	relationshipObject = rel[0].getObject();
+            	System.out.println( String.format( "relationship object: '%s'", relationshipObject ) );            	
+            }
+            else
+            {
+            	System.out.println( "rel is null" );
+            }
+            
+            if ( relationshipObject == null )
+            {            	
+            	String nextPid = PIDManager.getInstance().getNextPID( namespace );
+            	System.out.println/*log.debug*/( String.format( "next pid for submitter '%s'", namespace ) );
+            	addRelation( sourcePid, predicate, targetPid, true, null);
+            }
+            else // or create new relationship object 
+            {
+            	String object = String.format( "info:opensearch/%s:%s", namespace, relationshipObject );
+            	log.debug( "Adding relationship: " + object );
+            	addRelation( sourcePid, "isMemberOfCollection", object, true, null );
+            }
+        }
+    	
+    	return false;
     }
 
 
@@ -592,9 +642,41 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    public RelationshipTuple[] getRelationships( String pid, String predicate ) //throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        return FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate);
+    	System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
+    	try
+    	{
+    		return FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate );    		
+    	}
+    	catch ( ConfigurationException ce )
+    	{
+    		System.out.println( "ConfigurationException caught" );
+    		//throw ce;
+    	}
+    	catch ( MalformedURLException mue )
+    	{
+    		System.out.println( "MalformedUrlException caught" );
+    		//throw mue;
+    	}
+    	catch ( ServiceException se )
+    	{
+    		System.out.println( "MalformedUrlException caught" );
+    		//throw se;
+    	}
+    	catch ( IOException ioe )
+    	{
+    		System.out.println( "MalformedUrlException caught" );
+    		//throw ioe;
+    	}
+    	catch( Exception ex )
+    	{
+    		System.out.println( "Exception caught");
+    		ex.printStackTrace();
+    	}
+    	
+    	System.out.println( " returning null, no relationships found" );
+    	return null;
     }
 
 
@@ -670,7 +752,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param value, the value the property adheres to
      * @return an array o pids of the matching objects
      */
-    public ObjectFields[] findObjectFields( String[] resultFields, String property, ComparisonOperator operator, String value, NonNegativeInteger maxResults ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
+    private ObjectFields[] findObjectFields( String[] resultFields, String property, ComparisonOperator operator, String value, NonNegativeInteger maxResults ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
     {
     	log.debug( String.format( "Entering findObjectFields with property '%s' and value '%s'", property, value ) );
         
@@ -682,6 +764,7 @@ public class FedoraAdministration implements IFedoraAdministration
         FieldSearchResult fsr = null;
         try
         {
+        	System.out.println( "calling fedora apia findObjects" );
         	fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
         	log.debug( "right after findObjects" );
         }
@@ -707,6 +790,27 @@ public class FedoraAdministration implements IFedoraAdministration
         }
         log.debug( String.format( "Returning objectFields", "" ) );
         return objectFields;
+    }
+    
+    
+    private String findPropertyPid( String sourcePid, String property, String value ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    {
+    	String[] resultFields = { "pid" };
+    	System.out.println( String.format( "findObjectFields with sourcePid: '%s'; property: '%s'; value: '%s'", sourcePid, property, value ) );
+    	ObjectFields[] pids = findObjectFields( resultFields, property, ComparisonOperator.has, value, new NonNegativeInteger( "1000" ) );
+    	if ( pids != null )
+    	{
+    		for ( int i = 0; i < pids.length; i++ )
+    		{
+    			if ( pids[i].getPid() != sourcePid )
+    			{
+    				System.out.println( "return pid: " + pids[0].getPid() );
+    				return pids[0].getPid();
+    			}
+    		}
+    	}
+    	
+    	return null;
     }
     
     

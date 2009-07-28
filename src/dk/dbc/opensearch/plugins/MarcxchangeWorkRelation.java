@@ -23,6 +23,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -106,7 +107,7 @@ public class MarcxchangeWorkRelation implements IRelation
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public CargoContainer getCargoContainer( CargoContainer cargo, String submitter ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	log.debug( "DanmarcxchangeWorkRelation -> getCargoContainer() called" );
 
@@ -120,45 +121,31 @@ public class MarcxchangeWorkRelation implements IRelation
             log.debug( "DanmarcXchangeWorkRelation getCargoContainer cargo is not null" );
         }
         
-        String dcType = cargo.getDCType();
         String dcTitle = cargo.getDCTitle();
+        String dcType = cargo.getDCType();
         String dcCreator = cargo.getDCCreator();
         String dcSource = cargo.getDCSource();
+        String dcIdentifier = cargo.getDCIdentifier();
+        log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
         
         FedoraAdministration fa = new FedoraAdministration();
         log.debug( String.format( "MWR dcType: '%s'", dcType ) );
         if ( ! types.contains( dcType ) )
-        {
+        {        	
         	log.debug( String.format( "MWR entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
-        	// match SOURCE: dcTitle on TARGET: dcTitle
-        	String[] resultFields = { "pid", "title" };
-        	//dcTitle = "danmarcxchange";
-        	ObjectFields[] objectFields = fa.findObjectFields( resultFields, "title", ComparisonOperator.has, dcTitle, new NonNegativeInteger( "1" ) );
         	
-        	if ( objectFields != null )
-        	{
-	        	int ofLength = objectFields.length;
-	            String[] titles = new String[ ofLength ];
-	            String[] pids = new String[ ofLength ];
-	            String[] test = objectFields[ 0 ].getTitle();
-	            log.debug( String.format( "ObjectFields titles: '%s'", test.toString() ) );
-	            for( int i = 0; i < ofLength; i++ )
-	            {
-	            	String[] title = objectFields[ i ].getTitle();
-	            	log.debug( String.format( "ObjectFields, title: '%s'", title[0]) );
-	                //titles[ i ] = (String)objectFields[ i ].getTitle(i);
-	                
-	                String pid = (String)objectFields[ i ].getPid();
-	                log.debug( String.format( "ObjectFields, pid: '%s'", pid) );
-	                //pids[ i ] = (String)objectFields[ i ].getDCIdentifier();
-	                
-	                String cdate = (String)objectFields[ i ].getCDate();
-	                log.debug( String.format( "ObjectFields, cdate: '%s'", cdate ) );
-	            }
-	
-	        	log.debug( String.format( "ObjectFields from findObjectFields, titles: '%s'", titles.toString() ) );
-	        	log.debug( String.format( "ObjectFields from findObjectFields, pids: '%s'", pids.toString() ) );
+        	// match SOURCE: dcTitle on TARGET: dcTitle        	
+        	dcTitle = "Harry Potter and the order of the phoenix";
+        	if ( dcTitle != "" )
+        	{	
+        		boolean ok = fa.addRelationship( dcIdentifier, "title", dcTitle, "isMemberOfCollection", "work" );	        	        
         	}
+        	else
+        	{
+        		log.debug( String.format( "dcTitle '%s' is empty", dcTitle ) );
+        	}
+        	
+        	
         	// match SOURCE: dcSource on TARGET: dcTitle
         	
         	// match SOURCE: dcSource on TARGET: dcSource
@@ -214,140 +201,6 @@ public class MarcxchangeWorkRelation implements IRelation
         	log.debug( String.format( "RelationshipTuple is null", "" ) );
         }
         
-        // isolate format
-        /*String serverChoice = co.getFormat();
-        String xmlString = null;
-        String queryURL = null;
-
-        try 
-        {
-            //queryURL = formURL( title, serverChoice );
-            xmlString = httpGet( queryURL );
-        } 
-        catch ( IOException ioe ) 
-        {
-            throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
-        }
-
-        // put retrieved answer into inputsource object
-        log.debug( "Got answer from the webservice" );
-        ByteArrayInputStream bis;
-        try 
-        {
-            bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
-        } 
-        catch ( UnsupportedEncodingException uee ) 
-        {
-            throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
-        }
-        InputSource annotateSource = new InputSource( bis );
-
-        // Get number of records...
-        // create xpath exp
-        xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression_numOfRec;
-        
-        //String xpathString = "/docbook:article/docbook:title";
-        // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
-        String xpathString = "/* /*[2]";
-        try 
-        {
-            xPathExpression_numOfRec = xpath.compile( xpathString );
-        } 
-        catch ( XPathExpressionException e ) 
-        {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'",  xmlString ), e );
-        }
-
-        int numOfRec = 0;        
-
-        try 
-        {
-            numOfRec = Integer.parseInt( xPathExpression_numOfRec.evaluate( annotateSource ) );
-        } 
-        catch ( NumberFormatException nfe ) 
-        {
-            log.fatal( String.format( "Could not format number of records returned by the webservice" ) );
-            throw new PluginException( "Could not format number of records returned by the webservice", nfe );
-        } 
-        catch ( XPathExpressionException xpee ) 
-        {
-            log.fatal( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
-            throw new PluginException( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ), xpee );
-        }
-
-        log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
-
-        if( numOfRec == 0 ) // no hits. Make another search without serverchoice
-        { 
-            @SuppressWarnings("unused")
-			String xmlStr = null;
-            queryURL = null;
-            try 
-            {
-                //uhm, per instructions above, this is not a query with_out_ serverchoice, is it?
-                //queryURL = formURL( title, "" );
-                xmlStr = httpGet( queryURL );
-            } 
-            catch (IOException ioe) 
-            {
-                log.fatal( String.format( "Caugth IOException: Could not get result from webservice = %s.", queryURL ) );
-                throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe);
-            }
-            //log.debug( String.format( "data: title='%s', serverChose(format)=\"\"\nxml retrieved\n%s", title, xmlString ) );
-        }
-
-        // put retrieved answer into inputsource object
-        try
-        {
-            bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
-        } 
-        catch ( UnsupportedEncodingException uee ) 
-        {
-            log.fatal( String.format( "Could not convert string to UTF-8 ByteArrayInputStream" ) );
-            throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
-        }
-        annotateSource = new InputSource( bis );
-
-        // Get annotation if one is returned 
-           
-        String xpath_evaluation = null;
-        try
-        {
-            xpath_evaluation = xPathExpression_numOfRec.evaluate( annotateSource );
-            numOfRec = Integer.parseInt( xpath_evaluation );
-        } 
-        catch ( NumberFormatException nfe ) 
-        {
-            log.fatal( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
-            throw new PluginException( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int",
-                                                      xpath_evaluation ), nfe );
-        } 
-        catch ( XPathExpressionException xpe ) 
-        {
-            log.fatal( String.format( "Could not evaluate xpath expression to find number of returned records" ) );
-            throw new PluginException( "Could not evaluate xpath expression to find number of returned records", xpe );
-        }
-
-        log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
-
-        if ( numOfRec == 1 )
-        {
-            try 
-            {
-                log.debug( "Adding annotation to CargoContainer" );
-                String isolatedDCData = isolateDCData( xmlString );   
-                /** \todo: use of deprecated method from CargoContainer * /
-                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", IndexingAlias.None, isolatedDCData.getBytes() );
-            } 
-            catch ( IOException ioe ) 
-            {
-                log.fatal( "Could not add DC data to CargoContainer" );
-                throw new PluginException( "Could not add DC data to CargoContainer", ioe );
-            }
-        }
-        */
         return cargo;
     }
     
