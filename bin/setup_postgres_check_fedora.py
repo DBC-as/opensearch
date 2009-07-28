@@ -65,7 +65,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     if not options.harvest_folder:
-        harvest_folder = '/data1/harvest-kanon'
+        harvest_folder = '/data1/harvest-test'
     else:
         harvest_folder = options.harvest_folder
         
