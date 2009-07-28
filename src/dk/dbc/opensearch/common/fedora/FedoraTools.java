@@ -446,7 +446,7 @@ public class FedoraTools
         int srcLen = co.getContentLength();
         byte[] ba = co.getBytes();
 
-        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s", co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamName(), co.getIndexingAlias(), itemID ) );
+        log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s", co.getId(), co.getFormat(),co.getSubmitter(),co.getMimeType(), co.getContentLength(), co.getDataStreamType(), co.getIndexingAlias(), itemID ) );
 
         DatastreamTypeCONTROL_GROUPType controlGroup = null;
         if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) )
@@ -454,7 +454,7 @@ public class FedoraTools
             //Managed content
             controlGroup = DatastreamTypeCONTROL_GROUPType.M;
         }
-        else if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) && co.getDataStreamName() == DataStreamType.DublinCoreData ) 
+        else if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) && co.getDataStreamType() == DataStreamType.DublinCoreData ) 
         {
             //Inline content
             controlGroup = DatastreamTypeCONTROL_GROUPType.X;
