@@ -60,10 +60,9 @@ public class CompassEntityResolver implements EntityResolver
         }
         else
         {
-            String msg = "private String 'url' has not been set in constructor!";
-            log.error( msg );
+            String msg = "System identifier does not resolve with public url, using default EntityResolver";
+            log.info( msg );
             return null;
-            //throw new NullPointerException( String.format( msg ) );
         }
     }
 }

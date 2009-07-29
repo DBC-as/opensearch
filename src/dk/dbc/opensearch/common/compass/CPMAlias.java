@@ -33,6 +33,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
 
@@ -53,7 +54,7 @@ public class CPMAlias
         String publicUrl = CompassConfig.getHttpUrl();
         String dtdPath = CompassConfig.getDTDPath();
         String systemUrl = "file://" + dtdPath;
-        CompassEntityResolver cer = new CompassEntityResolver( publicUrl, systemUrl );
+        EntityResolver cer = new CompassEntityResolver( publicUrl, systemUrl );
            
         cpmNodeList = XMLUtils.getNodeList( xsemFile, "xml-object", cer );
         log.debug( "XMLUtils returned node list" );
