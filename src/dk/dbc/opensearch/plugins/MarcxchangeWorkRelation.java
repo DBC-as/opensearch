@@ -48,6 +48,7 @@ import java.lang.StringBuilder;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.Vector;
 
 import javax.xml.namespace.NamespaceContext;
@@ -76,6 +77,7 @@ public class MarcxchangeWorkRelation implements IRelation
     private PluginType pluginType = PluginType.WORKRELATION;
     private NamespaceContext nsc;
     private Vector< String > types;
+    private final String namespace = "work";
 
 
     /**
@@ -107,9 +109,9 @@ public class MarcxchangeWorkRelation implements IRelation
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo, String submitter ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public CargoContainer getCargoContainer( CargoContainer cargo, String submitter ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-    	log.debug( "DanmarcxchangeWorkRelation -> getCargoContainer() called" );
+    	log.debug( "DWR -> getCargoContainer() called" );
 
         if ( cargo == null )
         {
@@ -128,80 +130,148 @@ public class MarcxchangeWorkRelation implements IRelation
         String dcIdentifier = cargo.getDCIdentifier();
         log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
         
-        FedoraAdministration fa = new FedoraAdministration();
+        boolean ok = false;
         log.debug( String.format( "MWR dcType: '%s'", dcType ) );
         if ( ! types.contains( dcType ) )
         {        	
         	log.debug( String.format( "MWR entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
         	
-        	// match SOURCE: dcTitle on TARGET: dcTitle        	
-        	dcTitle = "Harry Potter and the order of the phoenix";
-        	if ( dcTitle != "" )
+        	// 1. match SOURCE: dcTitle on TARGET: dcTitle        	
+        	if ( ! dcTitle.equals( "" ) )
         	{	
-        		boolean ok = fa.addRelationship( dcIdentifier, "title", dcTitle, "isMemberOfCollection", "work" );	        	        
+        		ok = addRelationship( dcIdentifier, "title", dcTitle );
+        		log.debug( String.format("relationship add on '%s' and pid: '%s'", dcTitle, dcIdentifier ) );
         	}
         	else
         	{
-        		log.debug( String.format( "dcTitle '%s' is empty", dcTitle ) );
+        		log.warn( String.format( "dcTitle '%s' is empty", dcTitle ) );
         	}
         	
+        	// 2. match SOURCE: dcSource on TARGET: dcTitle
+        	if ( ! dcSource.equals( "" ) )
+        	{
+        		ok = addRelationship( dcIdentifier, "title", dcSource );
+        		log.debug( String.format( "relationship added on title with dcSource '%s' and pid: '%s'", dcSource, dcIdentifier ) );
+        	}
+        	else
+        	{
+        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) ); 
+        	}
         	
-        	// match SOURCE: dcSource on TARGET: dcTitle
+        	// 3. match SOURCE: dcSource on TARGET: dcSource
+        	if ( ! dcSource.equals( "" ) )
+        	{
+        		ok = addRelationship( dcIdentifier, "source", dcSource );
+        		log.debug( String.format( "relationship added on source with dcSource '%s' and pid: '%s'", dcSource, dcIdentifier ) );
+        	}
+        	else
+        	{
+        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) ); 
+        	}
         	
-        	// match SOURCE: dcSource on TARGET: dcSource
-        	
-        	// match SOURCE: dcTitle on TARGET: dcSource
+        	// 4. match SOURCE: dcTitle on TARGET: dcSource
+        	if ( ! dcTitle.equals( "" ) )
+        	{
+        		ok = addRelationship( dcIdentifier, "source", dcTitle );
+        		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, dcIdentifier ) );
+        	}
+        	else
+        	{
+        		log.warn( String.format( "dcCreator '%s' is empty", dcCreator ) ); 
+        	}
         }
-        else 
+        else // dcType is in ('Anmeldelse', 'Artikel', 'Avis', 'Avisartikel', 'Tidsskrift', 'Tidsskriftsartikel') 
         {
         	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
-        }
-        
-        log.debug( String.format( "MWR found dcVariables: '%s', '%s', '%s', and '%s'", dcTitle, dcType, dcCreator, dcSource ) );
-                
-        // get relationships        
-        log.debug( String.format( "MWR: Trying to obtain pid" ) );
-        String pid = "shite";
-        try
-        {
-        	pid = cargo.getDCIdentifier();
-        }
-        catch ( Exception ex )
-        {
-        	log.error( String.format( "Error in getting pid for cargo: ", ex.getMessage() ) );
-        	StackTraceElement[] stackTraceElements = ex.getStackTrace();
-        	for ( int i = 0; i < stackTraceElements.length; i++ )
+        	if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
         	{
-        		log.error( String.format( "STACKTRACE %s: %s", i, stackTraceElements[ i ] ) );
+        		ok = addRelationship( dcIdentifier, "title", dcTitle, "creator", dcCreator );
+        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, dcIdentifier ) );
         	}
-        }
-        log.debug( String.format( "MWR pid: '%s'", pid ) );
-        String predicate = null;
-        RelationshipTuple[] relTuple = null;
-        try
-        {
-        	//relTuple = fa.getRelationships( pid, predicate );
-        }
-        catch( Exception ex )
-        {
-        	log.error( String.format( "ERROR in getting RelationshipTuple", "" ) );
-        	StackTraceElement[] elems = ex.getStackTrace();
-        	for ( int i = 0; i < elems.length; i++ )
+        	else
         	{
-        		log.error( String.format( "RelationshipTuple error element: '%s'", elems[ i ] ) );
+        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) ); 
         	}
         }
         
-        if ( relTuple != null )
-        {
-        	log.debug( String.format( "RelationshipTuple returned, length: '%s'", relTuple.length ) );
-        }
-        else
-        {
-        	log.debug( String.format( "RelationshipTuple is null", "" ) );
-        }
+        log.debug( String.format( "MWR (pid: '%s') found dcVariables: '%s', '%s', '%s', and '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
+        log.debug( "Adding relationship succeeded: " + ok );
         
         return cargo;
+    }
+    
+    
+    private boolean addRelationship( String dcIdentifier, String property_1, String dcVariable_1, String property_2, String dcVariable_2 ) throws PluginException
+    {
+    	FedoraAdministration fa = new FedoraAdministration();        
+    	boolean ok = false;
+		try 
+		{
+			ok = fa.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
+		} 
+		catch ( RemoteException re ) 
+		{		
+			throw new PluginException( "RemoteException thrown from FedoraAdministration.addIsMbrOfCollRelationship", re );
+		} 
+		catch ( ConfigurationException ce ) 
+		{	
+			throw new PluginException( "ConfigurationException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ce );
+		} 
+		catch ( MalformedURLException mue ) 
+		{
+			throw new PluginException( "MalformedURLException thrown from FedoraAdministration.addIsMbrOfCollRelationship", mue );
+		} 
+		catch ( NullPointerException npe ) 
+		{
+			throw new PluginException( "NullPointerException thrown from FedoraAdministration.addIsMbrOfCollRelationship", npe );
+		} 
+		catch ( ServiceException se ) 
+		{
+			throw new PluginException( "ServiceException thrown from FedoraAdministration.addIsMbrOfCollRelationship", se );
+		} 
+		catch ( IOException ioe ) 
+		{
+			throw new PluginException( "IOException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ioe );
+		} 
+		
+		return ok;
+    }
+    
+    
+    private boolean addRelationship( String dcIdentifier, String property, String dcVariable ) throws PluginException
+    {
+    	FedoraAdministration fa = new FedoraAdministration();        
+    	boolean ok = false;
+		try 
+		{
+			ok = fa.addIsMbrOfCollRelationship( dcIdentifier, property, dcVariable, namespace );
+		} 
+		catch ( RemoteException re ) 
+		{		
+			throw new PluginException( "RemoteException thrown from FedoraAdministration.addIsMbrOfCollRelationship", re );
+		} 
+		catch ( ConfigurationException ce ) 
+		{	
+			throw new PluginException( "ConfigurationException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ce );
+		} 
+		catch ( MalformedURLException mue ) 
+		{
+			throw new PluginException( "MalformedURLException thrown from FedoraAdministration.addIsMbrOfCollRelationship", mue );
+		} 
+		catch ( NullPointerException npe ) 
+		{
+			throw new PluginException( "NullPointerException thrown from FedoraAdministration.addIsMbrOfCollRelationship", npe );
+		} 
+		catch ( ServiceException se ) 
+		{
+			throw new PluginException( "ServiceException thrown from FedoraAdministration.addIsMbrOfCollRelationship", se );
+		} 
+		catch ( IOException ioe ) 
+		{
+			throw new PluginException( "IOException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ioe );
+		}
+		
+		return ok;
     }
     
     

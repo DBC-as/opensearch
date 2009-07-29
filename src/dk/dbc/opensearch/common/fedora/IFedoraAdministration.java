@@ -189,7 +189,7 @@ public interface IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public RelationshipTuple[] getRelationships( String pid, String predicate) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException; 
+    //public RelationshipTuple[] getRelationships( String pid, String predicate) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException; 
     
     
     /**

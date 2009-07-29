@@ -43,11 +43,11 @@ public class CargoContainer
     
     /** The internal representation of the data contained in the CargoContainer*/
     private ArrayList< CargoObject > data;
-    private String dcIdentifier;
-    private String dcTitle;
-	private String dcCreator;
-	private String dcType;
-	private String dcSource;
+    private String dcIdentifier = null;
+    private String dcTitle = null;
+	private String dcCreator = null;
+	private String dcType = null;
+	private String dcSource = null;
 	
     
     /**
@@ -468,7 +468,7 @@ public class CargoContainer
 	
 	public String getDCTitle() 
 	{
-		if ( this.dcTitle == null )
+		if ( this.dcTitle != null )
 		{
 			return this.dcTitle;
 		}
@@ -490,7 +490,7 @@ public class CargoContainer
 
 	public String getDCCreator() 
 	{
-		if ( this.dcCreator == null )
+		if ( this.dcCreator != null )
 		{
 			return this.dcCreator;
 		}
@@ -512,7 +512,7 @@ public class CargoContainer
 	
 	public String getDCType() 
 	{
-		if ( this.dcType == null )
+		if ( this.dcType != null )
 		{
 			return this.dcType;
 		}
@@ -534,7 +534,7 @@ public class CargoContainer
 
 	public String getDCSource() 
 	{
-		if ( this.dcSource == null )
+		if ( this.dcSource != null )
 		{
 			return this.dcSource;
 		}

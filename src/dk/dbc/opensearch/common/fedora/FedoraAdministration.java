@@ -37,6 +37,8 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.xml.transform.TransformerException;
@@ -88,7 +90,7 @@ public class FedoraAdministration implements IFedoraAdministration
 
  
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
+    private final NonNegativeInteger maxResults = new NonNegativeInteger( "1000000" );
 
     /**
      */
@@ -588,42 +590,68 @@ public class FedoraAdministration implements IFedoraAdministration
     }
     
     
-    public boolean addRelationship( String sourcePid, String property, String value, String predicate, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
-    	System.out.println/*log.debug*/( String.format( "Finding objecs with property '%s' and value '%s'", property, value ) );
+    	//System.out.println/*log.debug*/( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
+    	System.out.println( String.format( "Finding objects for pid '%s'", sourcePid) );
+    	String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );    	
+    	System.out.println( "targetPid found: " + targetPid );
+    	return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
+    }
+    
+    
+    public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    {
+    	System.out.println/*log.debug*/( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
     	String targetPid = findPropertyPid( sourcePid, property, value );
-    	System.out.println/*log.debug*/( "success" );
-    	if ( targetPid != null )
+    	System.out.println( "targetPid found: " + targetPid );
+    	return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
+    }
+    
+    
+    private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
+    {
+    	String relationshipObject = null;
+    	String predicate = "rel:isMemberOfCollection";
+    	
+    	if ( targetPid != null ) // object with matching 'value' on 'property' found
     	{
-    		System.out.println( "finding relationships" );
-        	RelationshipTuple[] rel = getRelationships( targetPid, predicate );
-        	String relationshipObject = null;
-            if ( rel != null )
+    		System.out.println( "targetPid: " + targetPid );
+    		RelationshipTuple[] rel = getRelationships( targetPid, predicate );
+        	
+            if ( rel != null ) // existing relationships found
             {
-            	System.out.println( "relationshipType not null" );
+            	System.out.println( "relationshipTuple not null" );
             	relationshipObject = rel[0].getObject();
-            	System.out.println( String.format( "relationship object: '%s'", relationshipObject ) );            	
             }
-            else
+            else // no existing relationships found -> add relationship to new RELS-EXT object
             {
             	System.out.println( "rel is null" );
-            }
-            
-            if ( relationshipObject == null )
-            {            	
-            	String nextPid = PIDManager.getInstance().getNextPID( namespace );
-            	System.out.println/*log.debug*/( String.format( "next pid for submitter '%s'", namespace ) );
-            	addRelation( sourcePid, predicate, targetPid, true, null);
-            }
-            else // or create new relationship object 
-            {
-            	String object = String.format( "info:opensearch/%s:%s", namespace, relationshipObject );
-            	log.debug( "Adding relationship: " + object );
-            	addRelation( sourcePid, "isMemberOfCollection", object, true, null );
-            }
+            	relationshipObject = getNextRelationshipObject( namespace );
+            }            
         }
+    	else // no object found -> add relationship to new RELS-EXT object
+    	{
+    		relationshipObject = getNextRelationshipObject( namespace );
+    	}
     	
-    	return false;
+    	System.out.println/*log.debug*/( String.format( "relationshipObject: '%s'", relationshipObject ) );
+    	return addIsMbrOfCollRelationshipNewRelsExt( sourcePid, predicate, relationshipObject );    	
+    }
+    
+    
+    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject )
+    {	
+    	return addRelation( sourcePid, predicate, relationshipObject, true, null );
+    }
+    
+    
+    private String getNextRelationshipObject( String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
+    {
+    	String relationshipObject = PIDManager.getInstance().getNextPID( namespace );
+    	relationshipObject = String.format( "info:fedora/%s", relationshipObject );
+    	
+    	return relationshipObject;
     }
 
 
@@ -642,7 +670,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public RelationshipTuple[] getRelationships( String pid, String predicate ) //throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    private RelationshipTuple[] getRelationships( String pid, String predicate ) //throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
     	try
@@ -720,7 +748,7 @@ public class FedoraAdministration implements IFedoraAdministration
     {
     	String[] resultFields = { "pid", "title" };
         
-        NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
+        //NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
         
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( operator );        
@@ -748,19 +776,20 @@ public class FedoraAdministration implements IFedoraAdministration
      *               -Key fields:         pid, label, state, ownerId, cDate, mDate, dcmDate
      *               -Dublin core fields: title, creator, subject, description, publisher, contributor, date, format, identifier, source, language, relation, coverage, rights
      * @param property, the property to match
-     * @param operator, the operator to apply, "has", "eq", "lt", "le","gt" and "ge" are valid
+     * @param operator, the operator to apply, "has", "eq", "lt", "le","gt" and "ge" are valid NB! NOT AVAILABLE ANYMORE -- DO NOT DELETE THIS (mro, 29.07.2009)
      * @param value, the value the property adheres to
      * @return an array o pids of the matching objects
      */
-    private ObjectFields[] findObjectFields( String[] resultFields, String property, ComparisonOperator operator, String value, NonNegativeInteger maxResults ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
+    private ObjectFields[] findObjectFields( String[] resultFields, String property, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
     {
     	log.debug( String.format( "Entering findObjectFields with property '%s' and value '%s'", property, value ) );
         
-    	Condition[] cond = { new Condition( property, operator, value ) };
+    	/** \todo: ComparisonOperator.has used! Should be .eq which is not allowed on all fields */
+    	Condition[] cond = { new Condition( property, ComparisonOperator.has, value ) };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
         String msg = "just before findObjects"; 
-        log.debug( msg );log.debug( msg );
+        log.debug( msg );
         FieldSearchResult fsr = null;
         try
         {
@@ -780,7 +809,7 @@ public class FedoraAdministration implements IFedoraAdministration
         ObjectFields[] objectFields = null;        
         if ( fsr == null )
         {
-        	log.debug( String.format( "NullPointerException thrown from findObjects with values '%s', '%s', and '%s'", property, operator.toString(), value ) );
+        	log.debug( String.format( "NullPointerException thrown from findObjects with values '%s', and '%s'", property, value ) );
         	//throw new NullPointerException( "objectFields null, no result list returned from FedoraHandle" );
         }
         else
@@ -793,19 +822,66 @@ public class FedoraAdministration implements IFedoraAdministration
     }
     
     
+    private String findPropertiesPid( String sourcePid, String property_1, String value_1, String property_2, String value_2 ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    {
+    	/** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
+    	String[] resultFields = { "pid" };
+    	ObjectFields[] pids_1 = findObjectFields( resultFields, property_1, value_1 );
+    	ObjectFields[] pids_2 = findObjectFields( resultFields, property_2, value_2 );
+    	
+    	if ( pids_1 == null || pids_2 == null )
+    	{
+    		return null;
+    	}
+    	
+    	// move pids to ArrayList and sort for quicker search and match
+    	int pids_2_len = pids_2.length;
+    	ArrayList< String > pidsArrLst_2 = new ArrayList< String >( pids_2_len );
+    	for ( int i = 0; i < pids_2_len; i++ )
+    	{
+    		pidsArrLst_2.add( pids_2[i].getPid() );
+    	}
+    	Collections.sort( pidsArrLst_2 );
+    	    	
+    	if ( pids_1 != null && pids_2 != null )
+    	{
+    		String nextPid = null;
+    		int pids_1_len = pids_1.length;
+    		for ( int i = 0; i < pids_1_len; i++ )
+    		{
+    			nextPid = pids_1[i].getPid();
+    			if ( pidsArrLst_2.contains( nextPid ) )
+    			{
+    				int index = pidsArrLst_2.indexOf( nextPid );
+    				String ret = pidsArrLst_2.get( index ); 
+    				if ( ret.equals( nextPid ) && ! ret.equals( sourcePid ) )
+    				{
+    					return ret; 
+    				}
+    			}    				
+    		}
+    	}
+    	
+    	return null;
+    }
+    
     private String findPropertyPid( String sourcePid, String property, String value ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
     	String[] resultFields = { "pid" };
-    	System.out.println( String.format( "findObjectFields with sourcePid: '%s'; property: '%s'; value: '%s'", sourcePid, property, value ) );
-    	ObjectFields[] pids = findObjectFields( resultFields, property, ComparisonOperator.has, value, new NonNegativeInteger( "1000" ) );
+    	//System.out.println( String.format( "findObjectFields with sourcePid: '%s'; property: '%s'; value: '%s'", sourcePid, property, value ) );
+    	ObjectFields[] pids = findObjectFields( resultFields, property, value );
+    	
     	if ( pids != null )
     	{
+    		String nextPid = null;
     		for ( int i = 0; i < pids.length; i++ )
     		{
-    			if ( pids[i].getPid() != sourcePid )
+    			nextPid = pids[i].getPid();
+    			//System.out.println( "pid " + i + ": " + nextPid + " sourcePid: " + sourcePid );
+    			if ( ! nextPid.equals( sourcePid ) )
     			{
-    				System.out.println( "return pid: " + pids[0].getPid() );
-    				return pids[0].getPid();
+    				//System.out.println( "return pid: " + nextPid );
+    				return nextPid;
     			}
     		}
     	}

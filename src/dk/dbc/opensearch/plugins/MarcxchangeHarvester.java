@@ -31,6 +31,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
@@ -125,8 +127,12 @@ public class MarcxchangeHarvester implements IHarvestable
 
             // CONSTRUCTING DC DATASTREAM
             log.debug( "Constructing DC datastream" );
-            byte[] dcByteArray = constructDC( cargo );
+            //byte[] dcByteArray = constructDC( cargo );
+            Pair< byte[], CargoContainer > pair = constructDC( cargo );
+            byte[] dcByteArray = pair.getFirst();
             log.debug( "MARC HARVESTER dcByteArray: " + new String( dcByteArray ) );
+            cargo = pair.getSecond();
+            log.debug( String.format( "MH cargo dcTitle '%s'", cargo.getDCTitle() ) );
             cargo.add( DataStreamType.DublinCoreData, "dc", "dbc", "da", "text/xml", IndexingAlias.None, dcByteArray );
             
         } 
@@ -146,7 +152,7 @@ public class MarcxchangeHarvester implements IHarvestable
     }
 
     
-    private byte[] constructDC( CargoContainer cargo ) throws PluginException 
+    private Pair< byte[], CargoContainer > constructDC( CargoContainer cargo ) throws PluginException 
     {
     	log.debug( "Entering constructDC" );
     	byte[] byteArray = null;
@@ -245,7 +251,9 @@ public class MarcxchangeHarvester implements IHarvestable
 		}
     	System.out.println( "byte array: " + new String( byteArray ) );    	    	
 
-		return byteArray;
+    	Pair< byte[], CargoContainer > ret = new InputPair< byte[], CargoContainer >( byteArray, cargo );    	
+    	
+		return ret;
 	}
     
     

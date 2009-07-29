@@ -203,17 +203,7 @@ public class FedoraTools
 
         Element root = constructAdminStream( cargo, lst2 );
         byte[] admByteArray = XMLUtils.getByteArray( root );
-        /*Source source = new DOMSource( ( Node ) root );
-        StringWriter stringWriter = new StringWriter();
-        Result result = new StreamResult( stringWriter );
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.transform( source, result );
-        String admStreamString = stringWriter.getBuffer().toString();
-        log.debug( String.format( "Constructed Administration stream for the CargoContainer=%s", admStreamString ) );
-
-        // add the adminstream to the cargoContainer
-        byte[] byteAdmArray = admStreamString.getBytes();*/
+        
         cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, admByteArray );
         
         log.debug( "Constructing foxml byte[] from cargoContainer" );
@@ -234,6 +224,7 @@ public class FedoraTools
         String timeNow = dateFormat.format( now );
         for( int i = 0; i < cargo_count; i++ )
         {
+        	log.debug( String.format( "constructing datastream with cargo dctitle '%s'", cargo.getDCTitle() ) );
             CargoObject c = cargo.getCargoObjects().get( i );            
             dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
         }
@@ -456,6 +447,7 @@ public class FedoraTools
         }
         else if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) && co.getDataStreamType() == DataStreamType.DublinCoreData ) 
         {
+        	log.debug( String.format( "setting control group, datastream type is dublincore", "" ) );
             //Inline content
             controlGroup = DatastreamTypeCONTROL_GROUPType.X;
         }

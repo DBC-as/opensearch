@@ -63,11 +63,11 @@ public class AdministrationFunc
         testFindObjectPids();*/
         
         //System.out.println( "*** kalder testFindObjectFields ***" );
-        testFindObjectFields();
+        //testFindObjectFields();
         
-        /*System.out.println( "*** kalder testDeleteObjects ***" );
-        String[] labels = { "materialevurderinger" };
-        testDeleteObjectPids( labels, 50 );*/
+        System.out.println( "*** kalder testDeleteObjects ***" );
+        String[] labels = { "ebrary" };
+        testDeleteObjectPids( labels, 50 );
 
         /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
@@ -111,8 +111,15 @@ public class AdministrationFunc
     
     static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {    	
-    	System.out.println( "calling addRelationship" );
-        fa.addRelationship( "harry:1", "title", "Harry Potter", "rel:isMemberOfCollection", "work" );
+    	boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter", "work" );
+    	System.out.println( "Everything ok: " + ret );
+    }
+    
+    
+    static void testFindObjectFieldsDouble() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {    	
+    	boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter og Fønixordenen", "creator", "Joanne K. Rowling", "work" );
+    	System.out.println( "Everything ok: " + ret );
     }
     
     
