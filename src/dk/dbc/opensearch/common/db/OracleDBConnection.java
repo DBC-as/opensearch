@@ -47,7 +47,7 @@ import dk.dbc.opensearch.common.db.IDBConnection;
  */
 public class OracleDBConnection implements IDBConnection
 {    
-	static Logger log = Logger.getLogger( OracleDBConnection.class );
+	private static Logger log = Logger.getLogger( OracleDBConnection.class );
 	
 	
     /**
@@ -64,6 +64,7 @@ public class OracleDBConnection implements IDBConnection
      *
      * @throws ConfigurationException
      * @throws ClassNotFoundException
+     * TODO bug 9205
      */
     public OracleDBConnection() throws ConfigurationException, ClassNotFoundException 
     {
@@ -93,7 +94,7 @@ public class OracleDBConnection implements IDBConnection
         con = DriverManager.getConnection( url, userID, passwd );        
         if( con == null )
         {
-            throw new NullPointerException( String.format( "Could not get connection to database using url=%s, userID=%s, passwd=%s", url, userID, passwd ) );
+            throw new IllegalStateException( String.format( "Could not obtain enough configuration information to connect to database using url=%s, userID=%s, passwd=%s", url, userID, passwd ) );
         }
         return con;
     }
