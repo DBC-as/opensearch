@@ -34,5 +34,5 @@ import org.apache.commons.configuration.ConfigurationException;
 
 public interface IRelation extends IPluggable
 {
-    CargoContainer getCargoContainer( CargoContainer cargo, String submitter ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException;
+    CargoContainer getCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 }

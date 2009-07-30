@@ -22,48 +22,22 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
-import fedora.server.types.gen.ObjectFields;
-import fedora.server.types.gen.RelationshipTuple;
-
-import fedora.server.types.gen.ComparisonOperator;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.Integer;
-import java.lang.StringBuilder;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-import javax.xml.xpath.*;
 
-import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -71,7 +45,7 @@ import org.xml.sax.SAXException;
  */
 public class MarcxchangeWorkRelation implements IRelation
 {
-    static Logger log = Logger.getLogger( MarcxchangeWorkRelation.class );
+    private static Logger log = Logger.getLogger( MarcxchangeWorkRelation.class );
 
 
     private PluginType pluginType = PluginType.WORKRELATION;
@@ -85,7 +59,7 @@ public class MarcxchangeWorkRelation implements IRelation
      */
     public MarcxchangeWorkRelation()
     {
-        log.debug( "DanmarcxchangeWorkRelation constructor called" );
+        log.debug( "MarcxchangeWorkRelation constructor called" );
         nsc = new OpensearchNamespaceContext();
         
         types = new Vector< String >();
@@ -109,18 +83,18 @@ public class MarcxchangeWorkRelation implements IRelation
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo, String submitter ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public CargoContainer getCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	log.debug( "DWR -> getCargoContainer() called" );
 
         if ( cargo == null )
         {
-            log.error( "DanmarcXchangeWorkRelation getCargoContainer cargo is null" );
-            throw new PluginException( new NullPointerException( "DanmarcXchange getCargoContainer throws NullPointerException" ) );
+            log.error( "MarcxchangeWorkRelation getCargoContainer cargo is null" );
+            throw new PluginException( new NullPointerException( "MarcxchangeWorkRelation getCargoContainer throws NullPointerException" ) );
         }
         else 
         {
-            log.debug( "DanmarcXchangeWorkRelation getCargoContainer cargo is not null" );
+            log.debug( "MarcxchangeWorkRelation getCargoContainer cargo is not null" );
         }
         
         String dcTitle = cargo.getDCTitle();
@@ -272,136 +246,6 @@ public class MarcxchangeWorkRelation implements IRelation
 		}
 		
 		return ok;
-    }
-    
-    
-    /**
-     * Isolates the Dublin Core data from the data retrieved from the
-     * webservice.
-     *
-     *
-     * @param The xml String retrieved from the webservice
-     * 
-     * @throws PluginException Thrown if something goes wrong during xml parsing
-     */
-    private String isolateDCData( String recordXmlString ) throws PluginException
-    {
-        log.debug( "isolateDCData( recordXMLString ) called" );
-        
-        // building document 
-        Document annotationDocument = null;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try
-        {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            annotationDocument = builder.parse( new InputSource( new ByteArrayInputStream( recordXmlString.getBytes() ) ) );
-        }
-        catch( ParserConfigurationException pce )
-        {
-            log.fatal( String.format( "Caught error while trying to instanciate documentbuilder '%s'", pce ) );
-            throw new PluginException( "Caught error while trying to instanciate documentbuilder", pce );
-        }
-        catch( SAXException se)
-        {
-            log.fatal( String.format( "Could not parse annotation data: '%s'", se ) );
-            throw new PluginException( "Could not parse annotation data ", se );
-        }
-        catch( IOException ioe )
-        {
-            log.fatal( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
-            throw new PluginException( "Could not cast the bytearrayinputstream to a inputsource", ioe );
-        }
-        
-        log.debug( String.format( "Isolate Dublin Core from annotation data." ) );
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression_record;
-        String recordString = null;
-        
-        try 
-        {
-            // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
-            xPathExpression_record = xpath.compile( "/*/*[3]/*/*[3]" );
-            recordString  = xPathExpression_record.evaluate( annotationDocument );
-        } 
-        catch ( XPathExpressionException e) 
-        {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'",  "/*/*[3]/*/*[3]" ), e );
-        }
-        
-        log.debug( String.format( "IsolateDC returns xml: %s", recordString ) );
-        return recordString;
-    }
-
-
-    /**
-     * Forms the URL to use for annotate query.
-     *
-     * @param title the title to query.
-     * @param serverChoice This correspond to submitter field (eg. faktalink). Can be empty.
-     */
-    private String formURL( String title, String serverChoice )
-    {
-        int maxRecords = 1;
-
-        String baseURL = "http://koncept.dbc.dk/~fvs/webservice.bibliotek.dk/";
-
-        String preTitle = "?version=1.1&operation=searchRetrieve&query=dc.title+%3D+%28%22";
-        String postTitle = "%22%29";
-
-        //using docbook forfatterweb, the following lines will cause the webservice to (wrongly) return 0 results
-        String preServerChoice = "+and+cql.serverChoice+%3D+%28";
-        String postServerChoice = "%29";
-
-        String preRecords = "&startRecord=1&maximumRecords=";
-        String postRecords = "&recordSchema=dc&stylesheet=default.xsl&recordPacking=string";
-
-        String queryURL;
-        if( serverChoice.equals( "" ) )
-        {
-            queryURL = baseURL + preTitle + title + postTitle + preRecords + maxRecords + postRecords;
-        }
-        else
-        {
-            queryURL = baseURL + preTitle + title + postTitle + preServerChoice + serverChoice + postServerChoice + preRecords + maxRecords + postRecords;
-        }
-        return queryURL;
-    }
-
-
-    /**
-     *  Performs a http call and returns the answer.
-     *
-     *  @param URLstr The URL to use for hhtp call.
-     *
-     *  @returns String containing the response.
-     *
-     *  @throws IOException if we got a connection error.
-     */
-
-    private String httpGet( String URLstr ) throws IOException
-    {
-        URL url = new URL( URLstr );
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-        if (conn.getResponseCode() != 200)
-        {
-        	throw new IOException(conn.getResponseMessage());
-        }
-
-        // Buffer the result into a string
-        BufferedReader rd = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ( ( line = rd.readLine() ) != null )
-        {
-        	sb.append( line );
-        }
-
-        rd.close();
-
-        conn.disconnect();
-        return sb.toString();
     }
 
     

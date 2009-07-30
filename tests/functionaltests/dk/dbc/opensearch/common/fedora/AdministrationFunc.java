@@ -66,7 +66,7 @@ public class AdministrationFunc
         //testFindObjectFields();
         
         System.out.println( "*** kalder testDeleteObjects ***" );
-        String[] labels = { "ebrary", "danmarcxchange" };
+        String[] labels = { "ebrary", "danmarcxchange", "anmeldelser" };
         testDeleteObjectPids( labels, 50 );
 
         /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );

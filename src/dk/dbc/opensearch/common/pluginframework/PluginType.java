@@ -26,6 +26,7 @@ public enum PluginType
     HARVEST,
     ANNOTATE,
     WORKRELATION,
+    OWNER,
     GETESTIMATE,
     STORE,
     INDEX,

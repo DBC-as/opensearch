@@ -244,7 +244,7 @@ public class DatadockThread implements Callable< Float >
                     checkCargoContainerIsNotNull( cargo );
                     
                     IRelation workRelationPlugin = (IRelation)plugin;
-                    cargo = workRelationPlugin.getCargoContainer( cargo, submitter );
+                    cargo = workRelationPlugin.getCargoContainer( cargo, submitter, format );
                     log.debug( String.format( "DATADOCKTHREAD workRelationPlugin returned cargo", "" ) );
                     
                     break;

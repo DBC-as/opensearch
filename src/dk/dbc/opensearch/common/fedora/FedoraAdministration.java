@@ -572,8 +572,13 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws ServiceException 
      * @throws MalformedURLException 
      * @throws ConfigurationException 
+     * @throws RemoteException 
+     * @throws IOException 
+     * @throws ServiceException 
+     * @throws MalformedURLException 
+     * @throws ConfigurationException 
      */
-    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) //throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	System.out.println( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
     	try
@@ -587,6 +592,15 @@ public class FedoraAdministration implements IFedoraAdministration
     	}
     	
     	return false;
+    }
+    
+    
+    public boolean addIsMbrOfCollRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+    	/** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
+    	log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
+    	String predicate = "rel:isMemberOfCollection";
+    	return addRelation( pid, predicate, namespace, true, null );
     }
     
     
@@ -640,7 +654,7 @@ public class FedoraAdministration implements IFedoraAdministration
     }
     
     
-    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject )
+    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {	
     	return addRelation( sourcePid, predicate, relationshipObject, true, null );
     }
