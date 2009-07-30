@@ -46,7 +46,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
              
              4) ant functionaltests -Darg="classname"
                 Examples: ant functionaltests -Darg="dk.dbc.opensearch.common.fedora.AdministrationFunc"
-                          ant functionaltests -Darg="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain"
+                          DOES NOT WORK!: ant functionaltests -Darg="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain"
                           ...
 
 	  where 'target' options are the "usual", e.g., compile, test, etc.,
