@@ -784,7 +784,9 @@ public class FedoraAdministration implements IFedoraAdministration
     {
     	log.debug( String.format( "Entering findObjectFields with property '%s' and value '%s'", property, value ) );
         
-    	/** \todo: ComparisonOperator.has used! Should be .eq which is not allowed on all fields */
+    	/** \todo: ComparisonOperator.has used! Should be .eq which is not allowed on all fields 
+    	 *  \todo: We are replacing "'" with "", which is a problem!
+    	 */    	
     	value = value.replace( "'", "");
     	log.debug( String.format( "value after replace: '%s'", value ) );
     	Condition[] cond = { new Condition( property, ComparisonOperator.has, value ) };
