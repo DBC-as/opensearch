@@ -616,17 +616,17 @@ public class FedoraAdministration implements IFedoraAdministration
     	
     	if ( targetPid != null ) // object with matching 'value' on 'property' found
     	{
-    		System.out.println( "targetPid: " + targetPid );
-    		RelationshipTuple[] rel = getRelationships( targetPid, predicate );
-        	
+            log.debug( String.format( "targetPid: %s",  targetPid ) );
+            RelationshipTuple[] rel = getRelationships( targetPid, predicate );
+            
             if ( rel != null ) // existing relationships found
             {
-            	System.out.println( "relationshipTuple not null" );
+            	log.debug( "RelationshipTuple not null; existing relationship found" );
             	relationshipObject = rel[0].getObject();
             }
             else // no existing relationships found -> add relationship to new RELS-EXT object
             {
-            	System.out.println( "rel is null" );
+            	log.debug( "no existing relationships found" );
             	relationshipObject = getNextRelationshipObject( namespace );
             }            
         }
@@ -635,7 +635,7 @@ public class FedoraAdministration implements IFedoraAdministration
     		relationshipObject = getNextRelationshipObject( namespace );
     	}
     	
-    	System.out.println/*log.debug*/( String.format( "relationshipObject: '%s'", relationshipObject ) );
+    	log.debug( String.format( "relationshipObject: '%s'", relationshipObject ) );
     	return addIsMbrOfCollRelationshipNewRelsExt( sourcePid, predicate, relationshipObject );    	
     }
     
@@ -940,16 +940,15 @@ public class FedoraAdministration implements IFedoraAdministration
         
     	ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
         }
-        catch( Exception e )
+        catch( Exception e )//this looks a bit dubious, donnit?
         {
-        log.debug( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
-    		throw new IOException("test");
+            log.debug( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
+            /*\todo: WTF?*/throw new IOException("test");
         }
         byte[] adminStream = ds.getStream();        
         //log.debug( "getAdminstream 2" );
         if( adminStream == null ) 
         {	
-            log.debug( "adminStream is null" );
             log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
             throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
         }

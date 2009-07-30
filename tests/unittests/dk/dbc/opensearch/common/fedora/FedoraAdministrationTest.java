@@ -21,26 +21,19 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.config.FedoraConfig;
-import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.helpers.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.IllegalAccessException;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.net.MalformedURLException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -214,7 +207,7 @@ public class FedoraAdministrationTest
         Mockit.setUpMocks( MockFedoraHandle.class );
         Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
-        byte[] bytes = byteString.getBytes();
+        byte[] bytearraystring = byteString.getBytes();
 
         String pid = "pid";
         Method method;
@@ -223,7 +216,7 @@ public class FedoraAdministrationTest
         Element result;
         //expectations
         expect( mockFea.getDatastreamDissemination( "pid", "adminData" , null ) ).andReturn( mockMTStream );
-        expect( mockMTStream.getStream() ).andReturn( bytes );
+        expect( mockMTStream.getStream() ).andReturn( bytearraystring );
         //replay
         replay( mockElement );
         replay( mockMTStream );
@@ -249,16 +242,15 @@ public class FedoraAdministrationTest
     /**
      * Testing the throwing of the IllegalStateException
      */
-    @Test
-    public void testGetAdminStreamIllegalState() throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException, NoSuchMethodException, IllegalAccessException
+    @Test (expected=IllegalStateException.class)
+    public void testGetAdminStreamIllegalState() throws Exception
     {
      //setup
-        boolean illegalCaught = false;
         Mockit.setUpMocks( MockFedoraHandle.class );
         //Mockit.setUpMocks( MockFedoraConfig.class );
         Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
-        byte[] bytes = byteString.getBytes();
+        byte[] bytearraystring = byteString.getBytes();
 
         String pid = "pid";
         Method method;
@@ -285,14 +277,10 @@ public class FedoraAdministrationTest
             //check the class of the exception...
             if( ite.getCause().getClass().equals( IllegalStateException.class ) )
             {
-                illegalCaught = true;
+                //rethrow to conform with the test specification
+                throw new IllegalStateException( ite.getCause() );
             }
         }
-        assertTrue( illegalCaught );
-        //verify
-        verify( mockElement );
-        verify( mockMTStream );
-        verify( mockFea );
     }
 
     /**
@@ -307,7 +295,7 @@ public class FedoraAdministrationTest
         //Mockit.setUpMocks( MockFedoraConfig.class );
         Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
-        byte[] bytes = byteString.getBytes();
+        byte[] bytearraystring = byteString.getBytes();
 
         String pid = "pid";
         Method method;
