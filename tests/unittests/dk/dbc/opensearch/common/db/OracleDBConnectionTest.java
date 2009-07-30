@@ -25,37 +25,10 @@ import static org.junit.Assert.*;
 public class OracleDBConnectionTest {
 
     /**
-     * 
-     * @throws Exception
-     */
-    @MockClass( realClass=OracleDBConnection.class )
-    static class MockOracleDBConnection
-    {
-        @Mock( minInvocations = 1 )
-        void getConnection()
-        {
-            
-        }
-
-    }
-
-
-    @BeforeClass
-    public static void setUpClass() throws Exception
-    {
-    }
-
-
-    @AfterClass
-    public static void tearDownClass() throws Exception
-    {
-    }
-
-
-    /**
      * Test of getConnection method, of class OracleDBConnection.
+     * TODO until bug 9205 is solved, we cannot test the getconnection properly
      */
-    @Test
+    @Ignore @Test
     public void testGetConnection() throws Exception
     {
         OracleDBConnection instance = new OracleDBConnection();
@@ -68,7 +41,7 @@ public class OracleDBConnectionTest {
      *
      * @throws ConfigurationException
      * @throws ClassNotFoundException
-     * TODO before bug 9205 is solved, we cannot test missing configuration values leading to an IllegalStateException.
+     * TODO until bug 9205 is solved, we cannot test missing configuration values leading to an IllegalStateException.
      * Until then, this test is ignored
      */
     @Ignore @Test( expected=IllegalStateException.class )
