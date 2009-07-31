@@ -62,12 +62,14 @@ public class AdministrationFunc
         System.out.println( "*** kalder testFindObjects ***" );
         testFindObjectPids();*/
         
-        //System.out.println( "*** kalder testFindObjectFields ***" );
-        //testFindObjectFields();
+        /*System.out.println( "*** kalder testFindObjectFields ***" );
+        testFindObjectFields();*/
         
-        System.out.println( "*** kalder testDeleteObjects ***" );
-        String[] labels = { "ebrary", "danmarcxchange", "anmeldelser" };
-        testDeleteObjectPids( labels, 50 );
+        testFindObjectRelationships();
+        
+        //System.out.println( "*** kalder testDeleteObjects ***" );
+        //String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
+        //testDeleteObjectPids( labels, 50 );
 
         /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
@@ -105,6 +107,27 @@ public class AdministrationFunc
         for( int i = 0; i < pids.length; i++ )
         {
             System.out.println( pids[ i ] );
+        }
+    }
+    
+    
+    static void testFindObjectRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        ObjectFields[] objs = null;
+        try
+        {
+        	String[] resultFields = { "pid", "relation" };
+        	objs = fa.findObjectFields( resultFields, "pid", "harry:1" );
+        }
+        catch( RemoteException re )
+        {
+            re.printStackTrace();
+        }
+        
+        for( int i = 0; i < objs.length; i++ )
+        {
+            System.out.println( "i " + i + " :" + objs[ i ].getRelation()[0] );
+            System.out.println( "i " + i + " :" + objs[ i ].getRelation(i) );
         }
     }
     

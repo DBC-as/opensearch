@@ -259,6 +259,14 @@ public class DatadockThread implements Callable< Float >
             }
         }
            
+        /** \todo: might have to be moved into switch clause */
+        // OWNER
+        IPluggable plugin = pluginResolver.getPlugin( "dk.dbc.opensearch.plugins.OwnerRelation" );
+        IRelation ownerRelationPlugin = (IRelation)plugin;
+        log.debug( "Just before ownerRelation" );
+        cargo = ownerRelationPlugin.getCargoContainer( cargo, submitter, format );
+        log.debug( String.format( "DATADOCKTHREAD ownerRelationPlugin returned cargo", "" ) );
+        
         //push to processqueue job to processqueue and get estimate
         est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est) );

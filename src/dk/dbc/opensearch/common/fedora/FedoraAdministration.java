@@ -580,18 +580,31 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-    	System.out.println( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
+    	log.debug( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
     	try
     	{
     		return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
     	}
-    	catch ( Exception ex )
+    	catch ( RemoteException re )
     	{
-    		System.out.println( "Exception caught" );
-    		ex.printStackTrace();
+    	 	throw re; 
     	}
-    	
-    	return false;
+    	catch ( ConfigurationException ce )
+    	{
+    		throw ce;
+    	}
+    	catch ( MalformedURLException mue )
+    	{
+    		throw mue;
+    	}
+    	catch ( ServiceException se )
+    	{
+    		throw se;
+    	}
+    	catch ( IOException ioe )
+    	{
+    		throw ioe;
+    	}
     }
     
     /**
@@ -608,26 +621,26 @@ public class FedoraAdministration implements IFedoraAdministration
     {
     	/** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
     	log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
-    	String predicate = "rel:isMemberOfCollection";
+    	String predicate = "fedora:isMemberOfCollection";
     	return addRelation( pid, predicate, namespace, true, null );
     }
     
     
     public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
-    	//System.out.println/*log.debug*/( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
-    	System.out.println( String.format( "Finding objects for pid '%s'", sourcePid) );
+    	log.debug( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1, value_1 ) );
+    	//log.debug( String.format( "Finding objects for pid '%s'", sourcePid) );
     	String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );    	
-    	System.out.println( "targetPid found: " + targetPid );
+    	log.debug( "targetPid found: " + targetPid );
     	return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
     }
     
     
     public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
-    	System.out.println/*log.debug*/( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
+    	log.debug( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
     	String targetPid = findPropertyPid( sourcePid, property, value );
-    	System.out.println( "targetPid found: " + targetPid );
+    	log.debug( "targetPid found: " + targetPid );
     	return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
     }
     
@@ -635,7 +648,7 @@ public class FedoraAdministration implements IFedoraAdministration
     private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
     {
     	String relationshipObject = null;
-    	String predicate = "rel:isMemberOfCollection";
+    	String predicate = "fedora:isMemberOfCollection";
     	
     	if ( targetPid != null ) // object with matching 'value' on 'property' found
     	{
@@ -693,7 +706,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    private RelationshipTuple[] getRelationships( String pid, String predicate ) //throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    private RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
     	try
@@ -702,31 +715,26 @@ public class FedoraAdministration implements IFedoraAdministration
     	}
     	catch ( ConfigurationException ce )
     	{
-    		System.out.println( "ConfigurationException caught" );
-    		//throw ce;
+    		//System.out.println( "ConfigurationException caught" );
+    		throw ce;
     	}
     	catch ( MalformedURLException mue )
     	{
-    		System.out.println( "MalformedUrlException caught" );
-    		//throw mue;
+    		//System.out.println( "MalformedUrlException caught" );
+    		throw mue;
     	}
     	catch ( ServiceException se )
     	{
-    		System.out.println( "MalformedUrlException caught" );
-    		//throw se;
+    		//System.out.println( "MalformedUrlException caught" );
+    		throw se;
     	}
     	catch ( IOException ioe )
     	{
     		System.out.println( "MalformedUrlException caught" );
     		//throw ioe;
     	}
-    	catch( Exception ex )
-    	{
-    		System.out.println( "Exception caught");
-    		ex.printStackTrace();
-    	}
     	
-    	System.out.println( " returning null, no relationships found" );
+    	log.debug( " returning null, no relationships found" );
     	return null;
     }
 
@@ -803,7 +811,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @param value, the value the property adheres to
      * @return an array o pids of the matching objects
      */
-    private ObjectFields[] findObjectFields( String[] resultFields, String property, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
+    public ObjectFields[] findObjectFields( String[] resultFields, String property, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException, NullPointerException
     {
     	log.debug( String.format( "Entering findObjectFields with property '%s' and value '%s'", property, value ) );
         
@@ -820,9 +828,8 @@ public class FedoraAdministration implements IFedoraAdministration
         FieldSearchResult fsr = null;
         try
         {
-        	System.out.println( "calling fedora apia findObjects" );
+        	log.debug( "calling fedora apia findObjects" );
         	fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
-        	log.debug( "right after findObjects" );
         }
         catch ( Exception ex )
         {
@@ -836,7 +843,7 @@ public class FedoraAdministration implements IFedoraAdministration
         ObjectFields[] objectFields = null;        
         if ( fsr == null )
         {
-        	log.debug( String.format( "NullPointerException thrown from findObjects with values '%s', and '%s'", property, value ) );
+        	log.error( String.format( "NullPointerException thrown from findObjects with values '%s', and '%s'", property, value ) );
         	//throw new NullPointerException( "objectFields null, no result list returned from FedoraHandle" );
         }
         else

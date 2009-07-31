@@ -48,16 +48,18 @@ public class OwnerRelation implements IRelation
     private PluginType pluginType = PluginType.OWNER;
     
     // Relations
-    private final String free = String.format( "info:fedora/%s", "free" );
-    private final String materialevurderinger = String.format( "info:fedora/%s", "materialevurderinger" );
-    private final String forfatterweb = String.format( "info:fedora/%s", "forfatterweb" );
-    private final String faktalink = String.format( "info:fedora/%s", "faktalink" );
-    private final String aakb_catalog = String.format( "info:fedora/%s", "aakb_catalog" );
-    private final String aakb_ebrary = String.format( "info:fedora/%s", "aakb_ebrary" );
-    private final String aakb_ebsco = String.format( "info:fedora/%s", "aakb_ebsco" );
-    private final String kkb_catalog = String.format( "info:fedora/%s", "kkb_catalog" );
-    private final String louisiana = String.format( "info:fedora/%s", "louisiana" );
-    private final String nota = String.format( "info:fedora/%s", "nota" );
+    private final String info = "info:fedora/%s";
+    private final String free = String.format( info, "free" );
+    private final String materialevurderinger = String.format( info, "materialevurderinger" );
+    private final String forfatterweb = String.format( info, "forfatterweb" );
+    private final String faktalink = String.format( info, "faktalink" );
+    private final String artikler = String.format( info, "artikler" );
+    private final String aakb_catalog = String.format( info, "aakb_catalog" );
+    private final String aakb_ebrary = String.format( info, "aakb_ebrary" );
+    private final String aakb_ebsco = String.format( info, "aakb_ebsco" );
+    private final String kkb_catalog = String.format( info, "kkb_catalog" );
+    private final String louisiana = String.format( info, "louisiana" );
+    private final String nota = String.format( info, "nota" );
     
 
     /**
@@ -93,9 +95,9 @@ public class OwnerRelation implements IRelation
         String pid = cargo.getDCIdentifier();
         boolean ok = false;
         log.debug( String.format( "owner relation with values: submitter: '%s'; format: '%s'", submitter, format ) );        
-        if ( submitter == "dbc" )
+        if ( submitter.equals( "dbc" ) )
         {        	
-        	if ( format.equals( "anmedelser" ) )
+        	if ( format.equals( "anmeldelser" ) )
         	{
         		ok = addRelationship( pid, free );
         	}
@@ -117,15 +119,21 @@ public class OwnerRelation implements IRelation
         	}
         	else if ( format.equals( "dr_bonanza" ) )
         	{
+        		log.debug( String.format( "adding owner relationship for submitter: '%s' and format '%s'", submitter, format ) );
         		ok = addRelationship( pid, free );	
         	}
         	else if ( format.equals( "louisiana" ) )
         	{
         		ok = addRelationship( pid, louisiana );
         	}
+        	else if ( format.equals( "artikler" ) ) /** \todo: decide if correct!!! */
+        	{
+        		ok = addRelationship( pid, artikler );
+        	}
         	else
         	{
-        		throw new PluginException( String.format( "format '%s' from submitter '%s' could not be processed!", format, submitter ) );
+        		//log.error( String.format( "no rule for submitter '%s' and format '%s'", submitter, format ) );
+        		throw new PluginException( String.format( "format '%s' from submitter '%s' with pid '%s' could not be processed!", format, submitter, pid ) );
         	}
         }
         else if ( submitter.equals( "kkb" ) )
@@ -164,7 +172,7 @@ public class OwnerRelation implements IRelation
     	} 
     	else 
     	{
-    		throw new PluginException( String.format( "submitter '%s' could not be processed!", submitter ) );
+    		throw new PluginException( String.format( "submitter '%s'; format '%s'; pid '%s' could not be processed!", submitter, format, pid ) );
     	}
         
         return cargo;
@@ -177,6 +185,7 @@ public class OwnerRelation implements IRelation
     	boolean ok = false;
 		try 
 		{
+			log.debug( String.format( "OR addRelationship with pid: '%s'; namespace: '%s'", pid, namespace) );
 			ok = fa.addIsMbrOfCollRelationship( pid, namespace );
 		} 
 		catch ( RemoteException re ) 
@@ -204,6 +213,7 @@ public class OwnerRelation implements IRelation
 			throw new PluginException( "IOException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ioe );
 		}
 		
+		log.debug( String.format( "OR added relation: '%s' (pid: '%s')", ok, pid ) );
 		return ok;
     }
 
