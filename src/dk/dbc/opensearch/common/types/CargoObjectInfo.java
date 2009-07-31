@@ -1,10 +1,3 @@
-/**
- * \file CargoObjectInfo.java
- * \brief The CargoObjectInfo class
- * \package datadock
- */
-package dk.dbc.opensearch.common.types;
-
 /*
 
   This file is part of opensearch.
@@ -25,6 +18,13 @@ package dk.dbc.opensearch.common.types;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file CargoObjectInfo.java
+ * \brief The CargoObjectInfo class
+ * \package datadock
+ */
+package dk.dbc.opensearch.common.types;
+
 
 import dk.dbc.opensearch.common.types.CargoMimeType;
 
@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 
 
 /**
- * \ingroup datadock
  * \brief Holds the metadata for CargoObject that are contained in a CargoContainer
  */
 public class CargoObjectInfo
@@ -70,69 +69,12 @@ public class CargoObjectInfo
     
     private IndexingAlias alias;
 
-    /**
-     * @deprecated users of the CargoObjectInfo API should now pass
-     * IndexingAlias and ids along as well. This constructor passes null value for id and default value (Article) IndexingAlias
-     */
-    @Deprecated
-    CargoObjectInfo( DataStreamType dataStreamName, 
-                     CargoMimeType mimeType, 
-                     String lang, 
-                     String submitter, 
-                     String format )
-    {
-        this( dataStreamName, 
-              mimeType, 
-              lang, 
-              submitter, 
-              format, 
-              IndexingAlias.Article,
-              0 );
-        log.warn( "Passing default values: (0) for id and (Article) for IndexingAlias" );
-    }
-
-    /** 
-     * 
-     * 
-     * @param dataStreamName 
-     * @param mimeType 
-     * @param lang 
-     * @param submitter 
-     * @param format 
-     * @param id 
-     * 
-     * @deprecated passes default values for id and IndexingAlias
-     */
-    @Deprecated
-    CargoObjectInfo( DataStreamType dataStreamName, 
-                     CargoMimeType mimeType, 
-                     String lang, 
-                     String submitter, 
-                     String format, 
-                     long id )
-    {
-        this( dataStreamName, 
-                         mimeType, 
-                         lang, 
-                         submitter, 
-                         format, 
-                         IndexingAlias.Article,
-                         id );
-        log.warn( "Passing default value (Article) for IndexingAlias" );
-    }
 
     /**
      * Constructs a CargoObjectInfo instance that acts as a container
      * for the metadata associated with a given CargoContainers
      * data. 
-     *
-     * @param dataStreamName the DataStreamType of the data
-     * @param mimeType the mimetype of the data
-     * @param lang the language of the data
-     * @param submitter the submitter of the data
-     * @param format the format of the data
-     * @param alias the alias that should be used when indexing the data
-     * @param id the id that identifies the data
+     * See the CargoObject constructor for implementation documentation
      */
     CargoObjectInfo( DataStreamType dataStreamName, 
                      CargoMimeType mimeType, 
@@ -155,116 +97,70 @@ public class CargoObjectInfo
     }
     
 
-    /**
-     * Returns the globally unique id of the CargoObject. This method
-     * will not be exposed outside the package
-     * 
-     * @return the id of the CargoObject
-     */
     long getId()
     {
         return id;
     }
 
 
-    /**
-     * Checks the validity if the language
-     *
-     *@returns true if language is allowed, false otherwise
-     */
     boolean checkLanguage( String language )
     {
+        throw new UnsupportedOperationException( "this method has yet to be implemented" );
         /** \todo: implement real check of language*/
-        return true;
+        // return true;
     }
 
 
-    /**
-     * Checks the validity if the mimeType
-     *
-     * @returns true if mimetype is allowed in OpenSearch, false otherwise
-     */
     boolean validMimetype( String mimetype )
     {
         return CargoMimeType.validMimetype( mimetype );
     }
 
 
-    /**
-     * Checks the validity if the submitter
-     *
-     * @returns true if name is found in a list of submitters, false otherwise
-     */
-    boolean validSubmitter( String name ) throws IllegalArgumentException
+    boolean validSubmitter( String name )
     {
+        throw new UnsupportedOperationException( "this method has yet to be implemented" );
         /** \todo: implement real check of submitter*/
-        return true;
+        // return true;
     }
 
 
-    /**
-     * Returns this CargoContainers timestamp
-     *
-     * @returns the timestamp of the CargoContainer
-     */
     long getTimestamp()
     {
         return timestamp.getTime();
     }
 
 
-    /**
-     * Returns the mimetype
-     *
-     * @returns the mimetype of the data as a string
-     */
     String getMimeType()
     {
         return mimeType.getMimeType();
     }
 
 
-    /**
-     * Returns the name of the submitter
-     *
-     * @returns submitter as string
-     */
     String getSubmitter()
     {
         return submitter;
     }
 
 
-    /**
-     * Returns the format
-     *
-     * @returns format as string
-     */
     String getFormat()
     {
         return format;
     }
 
-    /**
-     * setter for the indexingAlias
-     */
+
     void setIndexingAlias( IndexingAlias indexingAlias )
     {
         alias = indexingAlias;
     }
 
-    /**
-     * getter for the indexing alias
-     */
+
     IndexingAlias getIndexingAlias()
     {
         return alias;
     }
 
 
-    /**
-     * @returns the language
-     */
     String getLanguage()
     {
         return language;
@@ -275,9 +171,4 @@ public class CargoObjectInfo
     {
         return dataStreamName;
     }
-
-    //    String getDataStreamTypeFrom( String name )
-    //    {
-    //          return DataStreamNames.getDataStreamTypeFrom( name ).name;
-    //    }
 }

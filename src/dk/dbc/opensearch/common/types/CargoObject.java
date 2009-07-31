@@ -40,7 +40,6 @@ public class CargoObject
 {
     private Logger log = Logger.getLogger( CargoObject.class );
 	
-	
     private final byte[] data;
     private final CargoObjectInfo coi;
     
@@ -59,11 +58,13 @@ public class CargoObject
      * _exactly_ the same input data provided to the constructor) will
      * have the same id. 
      *
-     * @param mimetype
-     * @param language
-     * @param submitter
-     * @param format
-     * @param data
+     * @param dataStreamName the DataStreamType of the data
+     * @param mimeType the mimetype of the data
+     * @param language the language of the data
+     * @param submitter the submitter of the data
+     * @param format the format of the data
+     * @param alias the IndeingAlias that should be used when indexing the data
+     * @param data the data to be stored in the CargoContainer
      * @throws IOException
      */
     CargoObject( DataStreamType dataStreamName, 
@@ -84,13 +85,13 @@ public class CargoObject
         id += alias.hashCode(); 
         id += data.hashCode(); 
         
-        log.debug( String.format( "id for CargoObject = %s", id ) );
-        assert( id != 0 );
+        log.trace( String.format( "id for CargoObject = %s", id ) );
+        assert( id != 0L );
         
         coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format, alias, id );
         
         this.data = data;
-        log.debug( String.format( "length of data: %s", data.length ) );
+        log.trace( String.format( "length of data: %s", data.length ) );
     }
 
     
@@ -157,18 +158,23 @@ public class CargoObject
     }
 
 
+    /** 
+     * returns the IndexingAlias for the CargoObject.
+     * The returned value will never be null
+     * 
+     * @return the IndexingAlias for the CargoObject
+     */
     public IndexingAlias getIndexingAlias()
     {
         IndexingAlias ret_ia = coi.getIndexingAlias();
-        log.debug( String.format( "Getting IndexingAlias from COI: %s", ret_ia  ) );
         return ret_ia;
     }
 
 
     /**
-     * Gets the size of the underlying byte array.
+     * Gets the size of the underlying byte[].
      *
-     * @return the size of the byte[]
+     * @return the size of the contents
      */
     public int getContentLength()
     {
@@ -176,6 +182,15 @@ public class CargoObject
     }
 
 
+    /** 
+     * Returns the language of the submitted which the data stored in
+     * the CargoObject. Language strings try (but are not obliged) to adhere to RFC 4646
+     * http://www.rfc-editor.org/rfc/rfc4646.txt
+     * 
+     * No checks are made and no guarantees given
+     * 
+     * @return the language code as a String
+     */
     public String getLang()
     {
         return coi.getLanguage();

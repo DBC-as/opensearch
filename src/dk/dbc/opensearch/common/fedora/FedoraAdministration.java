@@ -98,7 +98,7 @@ public class FedoraAdministration implements IFedoraAdministration
 
 
     /**
-     * method to delete an object for good, based on the pid
+     * Permanently deletes a DigitalObject from the underlying repository
      * @param pid, the identifier of the object to be removed
      * @param force, tells whether to purge the object even if it
      * breaks dependencies to other objects
