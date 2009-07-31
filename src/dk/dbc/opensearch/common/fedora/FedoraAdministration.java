@@ -562,7 +562,7 @@ public class FedoraAdministration implements IFedoraAdministration
 
     /**
      * method for adding a relation to an object
-     * @param pid, the identifier of the object to add the realtion to
+     * @param pid, the identifier of the digital object to add the relation to
      * @param predicate, the predicate of the relation to add
      * @param targetDCIdentifier, the object to relate the object to, can be a literal
      * @param literal, true if the targetDCIdentifier is a literal
@@ -594,7 +594,16 @@ public class FedoraAdministration implements IFedoraAdministration
     	return false;
     }
     
-    
+    /**
+     * Wrapper method for adding the the relationship
+     * "isMemberOfCollection" on a RELS-EXT stream of the
+     * DigitalObject designated by `pid`
+     * 
+     * @param pid the pid on the DigitalObject to add the relation on
+     * @param namespace 
+     * 
+     * @return true iff the relationship could be added, false otherwise
+     */
     public boolean addIsMbrOfCollRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	/** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
