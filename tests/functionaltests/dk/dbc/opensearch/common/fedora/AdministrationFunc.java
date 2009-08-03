@@ -9,6 +9,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 
 import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.ComparisonOperator;
+import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,7 +66,9 @@ public class AdministrationFunc
         /*System.out.println( "*** kalder testFindObjectFields ***" );
         testFindObjectFields();*/
         
-        testFindObjectRelationships();
+        //testFindObjectRelationships();
+        
+        testGetRelationships();
         
         //System.out.println( "*** kalder testDeleteObjects ***" );
         //String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
@@ -116,7 +119,7 @@ public class AdministrationFunc
         ObjectFields[] objs = null;
         try
         {
-        	String[] resultFields = { "pid", "relation" };
+        	String[] resultFields = { "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights" };
         	objs = fa.findObjectFields( resultFields, "pid", "harry:1" );
         }
         catch( RemoteException re )
@@ -127,7 +130,37 @@ public class AdministrationFunc
         for( int i = 0; i < objs.length; i++ )
         {
             System.out.println( "i " + i + " :" + objs[ i ].getRelation()[0] );
+            System.out.println( "i " + i + " :" + objs[ i ].getRelation()[i] );
             System.out.println( "i " + i + " :" + objs[ i ].getRelation(i) );
+            System.out.println( "i " + i + " :" + objs[ i ].getIdentifier()[i] );
+            System.out.println( "i " + i + " :" + objs[ i ].getCreator()[i] );
+            
+        }
+    }
+    
+    
+    static void testGetRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        RelationshipTuple[] subj = null;
+        try
+        {
+        	//String[] resultFields = { "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights" };
+        	subj = fa.getRelationships( "kkb:1979", "rel:isMemberOfCollection" );
+        }
+        catch( RemoteException re )
+        {
+            re.printStackTrace();
+        }
+        if ( subj != null )
+        {
+	        for( int i = 0; i < subj.length; i++ )
+	        {
+	            System.out.println( "i " + i + " :" + subj[ i ].getObject() );	            
+	        }
+        }
+        else
+        {
+        	System.out.println( "subj is null" );
         }
     }
     

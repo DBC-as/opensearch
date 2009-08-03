@@ -219,7 +219,7 @@ public class MarcxchangeHarvester implements IHarvestable
 	    log.debug( String.format( "finding dcType using xpath: '%s'", typeXpathStr ) );
         String dcType = getDCVariable( b, typeXpathStr );
 	    e.appendChild( dcDoc.createTextNode( dcType ) );
-	    rootElement.appendChild(e);
+	    rootElement.appendChild( e );
 	    log.debug( String.format( "cargo setting dcType with value '%s'", dcType ) );
 	    cargo.setDCType( dcType );
 	    
@@ -228,9 +228,18 @@ public class MarcxchangeHarvester implements IHarvestable
 	    log.debug( String.format( "finding dcSource using xpath: '%s'", sourceXpathStr ) );
         String dcSource = getDCVariable( b, sourceXpathStr );            
 		e.appendChild( dcDoc.createTextNode( dcSource ) );
-	    rootElement.appendChild(e);
+	    rootElement.appendChild( e );
 	    log.debug( String.format( "cargo setting dcSource with value '%s'", dcSource ) );
 	    cargo.setDCSource( dcSource );
+	    
+	    e = dcDoc.createElement( "dc:relation" );
+	    String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a'";
+	    log.debug( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
+        String dcRelation = getDCVariable( b, relationXpathStr );            
+		e.appendChild( dcDoc.createTextNode( dcRelation ) );
+	    rootElement.appendChild( e );
+	    log.debug( String.format( "cargo setting dcRelation with value '%s'", dcRelation ) );
+	    cargo.setDCRelation( dcRelation );	    
     	    
 	    log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
     	try 

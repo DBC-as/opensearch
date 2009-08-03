@@ -126,7 +126,7 @@ public class OwnerRelation implements IRelation
         	{
         		ok = addRelationship( pid, louisiana );
         	}
-        	else if ( format.equals( "artikler" ) ) /** \todo: decide if correct!!! */
+        	else if ( format.equals( "artikler" ) ) 
         	{
         		ok = addRelationship( pid, artikler );
         	}

@@ -48,6 +48,8 @@ public class CargoContainer
 	private String dcCreator = null;
 	private String dcType = null;
 	private String dcSource = null;
+	private String _001_a = null;
+	private String dcRelation = null;
 	
     
     /**
@@ -461,6 +463,11 @@ public class CargoContainer
 	{
 		if ( this.dcTitle == null )
 		{
+			if ( dcTitle.contains( "[Materialevurdering]") )
+			{
+				dcTitle = dcTitle.replaceAll( "[Materialevurdering]", "" );
+			}
+			
 			this.dcTitle = dcTitle;			
 		}
 	}
@@ -523,7 +530,7 @@ public class CargoContainer
 	}
 	
 
-	public void setDCSource(String dcSource) 
+	public void setDCSource( String dcSource ) 
 	{
 		if ( this.dcSource == null )
 		{
@@ -542,5 +549,49 @@ public class CargoContainer
 		{
 			return "";
 		}
+	}
+	
+	
+	public void set_001_a( String _001_a )
+	{
+		if ( this._001_a == null )
+		{
+			this._001_a = _001_a;			
+		}
+	}
+	
+	
+	public String get_001_a()
+	{
+		if ( this._001_a != null )
+		{
+			return this._001_a;
+		}
+		else
+		{
+			return "";
+		}	
+	}
+	
+	
+	public void setDCRelation( String dcRelation )
+	{
+		if ( this.dcRelation == null )
+		{
+			this.dcRelation = dcRelation;			
+		}
+	}
+	
+	
+	public String getDCRelation()
+	{
+		if ( this.dcRelation != null )
+		{
+			return this.dcRelation;
+		}
+		else
+		{
+			return "";
+		}	
 	}
 }

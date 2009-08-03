@@ -706,7 +706,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    private RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
     	try
