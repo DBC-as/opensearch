@@ -116,42 +116,24 @@ public class MarcxchangeWorkRelation implements IRelation
         		ok = addRelationship( dcIdentifier, "title", dcTitle );
         		log.debug( String.format("relationship add on '%s' and pid: '%s'", dcTitle, dcIdentifier ) );
         	}
-        	else
-        	{
-        		log.warn( String.format( "dcTitle '%s' is empty", dcTitle ) );
-        	}
-        	
-        	// 2. match SOURCE: dcSource on TARGET: dcTitle
-        	if ( ! dcSource.equals( "" ) )
+        	else if ( ! dcSource.equals( "" ) ) // 2. match SOURCE: dcSource on TARGET: dcTitle
         	{
         		ok = addRelationship( dcIdentifier, "title", dcSource );
         		log.debug( String.format( "relationship added on title with dcSource '%s' and pid: '%s'", dcSource, dcIdentifier ) );
         	}
-        	else
-        	{
-        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) ); 
-        	}
-        	
-        	// 3. match SOURCE: dcSource on TARGET: dcSource
-        	if ( ! dcSource.equals( "" ) )
+        	else if ( ! dcSource.equals( "" ) ) // 3. match SOURCE: dcSource on TARGET: dcSource
         	{
         		ok = addRelationship( dcIdentifier, "source", dcSource );
         		log.debug( String.format( "relationship added on source with dcSource '%s' and pid: '%s'", dcSource, dcIdentifier ) );
         	}
-        	else
-        	{
-        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) ); 
-        	}
-        	
-        	// 4. match SOURCE: dcTitle on TARGET: dcSource
-        	if ( ! dcTitle.equals( "" ) )
+            else if ( ! dcTitle.equals( "" ) ) // 4. match SOURCE: dcTitle on TARGET: dcSource
         	{
         		ok = addRelationship( dcIdentifier, "source", dcTitle );
         		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, dcIdentifier ) );
         	}
         	else
         	{
-        		log.warn( String.format( "dcCreator '%s' is empty", dcCreator ) ); 
+        		log.warn( String.format( "dcVariable was", "" ) );
         	}
         }
         else // dcType is in ('Anmeldelse', 'Artikel', 'Avis', 'Avisartikel', 'Tidsskrift', 'Tidsskriftsartikel') 

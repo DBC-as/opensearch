@@ -233,7 +233,7 @@ public class MarcxchangeHarvester implements IHarvestable
 	    cargo.setDCSource( dcSource );
 	    
 	    e = dcDoc.createElement( "dc:relation" );
-	    String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a'";
+	    String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a']";
 	    log.debug( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
         String dcRelation = getDCVariable( b, relationXpathStr );            
 		e.appendChild( dcDoc.createTextNode( dcRelation ) );
