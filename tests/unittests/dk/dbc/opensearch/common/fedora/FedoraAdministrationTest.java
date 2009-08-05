@@ -24,6 +24,7 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.os.FileHandler;
 
 import dk.dbc.opensearch.common.helpers.XMLUtils;
 
@@ -97,9 +98,11 @@ public class FedoraAdministrationTest
     static FedoraClient mockFedoraClient = createMock( FedoraClient.class);
     static NodeList mockNodeList = createMock( NodeList.class );
     static Document mockDocument = createMock( Document.class );
+    
+    //needed global variables
     static byte[] bytes = "bytes".getBytes();
     static String[] empty = new String[] {};
-
+    static File admStreamFile = new File( "admFile" );
     /**
      * MockClasses
      */
@@ -154,7 +157,7 @@ public class FedoraAdministrationTest
         }
 
     }
-
+    
     @MockClass( realClass = FedoraAdministration.class )
     public static class MockFedoraAdministration
     {
@@ -243,7 +246,86 @@ public class FedoraAdministrationTest
         //System.out.println( admString );
         bytes = admString.getBytes();
         return bytes;
+    } 
+    
+    private static Element createAdminStreamElement()throws ParserConfigurationException, TransformerConfigurationException, TransformerException
+    {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        Document admStream = builder.newDocument();
+        Element root = admStream.createElement( "admin-stream" );
+
+        Element indexingaliasElem = admStream.createElement( "indexingalias" );
+        indexingaliasElem.setAttribute( "name", "article");
+        root.appendChild( (Node)indexingaliasElem );
+
+        Node streams = admStream.createElement( "streams" );
+        Element stream = admStream.createElement( "stream" );
+
+        stream.setAttribute( "id", "relsExt.0" );
+        stream.setAttribute( "lang", "eng" );
+        stream.setAttribute( "format", "test" );
+        stream.setAttribute( "mimetype", "text/xml" );
+        stream.setAttribute( "submitter", "dbc" );
+        stream.setAttribute( "index", "0" );
+        stream.setAttribute( "streamNameType" , "relsExt" );
+        streams.appendChild( (Node) stream );
+
+        Element stream2 = admStream.createElement( "stream" );
+
+        stream2.setAttribute( "id",  "originalData.0");
+        stream2.setAttribute( "lang", "eng" );
+        stream2.setAttribute( "format", "test" );
+        stream2.setAttribute( "mimetype", "text/xml" );
+        stream2.setAttribute( "submitter", "dbc" );
+        stream2.setAttribute( "index", "0" );
+        stream2.setAttribute( "streamNameType" , "originalData" );
+        streams.appendChild( (Node) stream2 );
+
+        root.appendChild( (Node) streams );
+
+        return root;
     }
+       
+    @MockClass( realClass = FedoraAdministration.class )
+    public static class MockFedoraAdministration2
+    {
+        @Mock public static Element getAdminStream( String pid ) throws ParserConfigurationException, TransformerConfigurationException, TransformerException
+        {  
+            return createAdminStreamElement();
+        }
+
+        @Mock public static String getIndexingAlias( Element adminStream )
+        {
+            return "article";
+        }
+
+        @Mock public static NodeList getStreamNodes( Element adminStream )
+        {
+            return mockNodeList;
+        }
+
+        @Mock public static String createFedoraResource( CargoObject cargo )
+        {
+            return "dsLocation";
+        }
+
+        @Mock public static String[] getEmptyStringArray()
+        {
+            return empty;
+        }
+    }
+    
+    @MockClass( realClass = FileHandler.class )
+    public static class MockFileHandler
+    {
+        @Mock public static File getFile( String path )
+        {
+            return admStreamFile;
+        }
+    }
+
 
     /**
      *setup
@@ -813,10 +895,10 @@ public class FedoraAdministrationTest
     public void testAddDataStreamToObject() throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException, ConfigurationException, ServiceException, DOMException, TransformerFactoryConfigurationError
     {
         //setup
-        Mockit.setUpMocks( MockFedoraAdministration.class );
+        Mockit.setUpMocks( MockFedoraAdministration2.class );
         Mockit.setUpMocks( MockFedoraHandle.class );
 
-        byte[] adminStreamBytes = createAdminStreamBytes();
+        //byte[] adminStreamBytes = createAdminStreamBytes();
 
 
         DataStreamType testDST = DataStreamType.RelsExt;
@@ -827,8 +909,8 @@ public class FedoraAdministrationTest
 
         //expectations
         expect( mockCargoObject.getDataStreamType() ).andReturn( testDST );
-        expect( mockFea.getDatastreamDissemination( testPid, "adminData", null ) ).andReturn( mockMTStream );
-        expect( mockMTStream.getStream() ).andReturn( adminStreamBytes );
+        //expect( mockFea.getDatastreamDissemination( testPid, "adminData", null ) ).andReturn( mockMTStream );
+        //expect( mockMTStream.getStream() ).andReturn( adminStreamBytes );
         expect( mockCargoObject.getLang() ).andReturn( "testLang" );
 
         expect( mockCargoObject.getFormat() ).andReturn( "testFormat" );
@@ -902,4 +984,55 @@ String logm = String.format( "modified the object with pid: %s", pid );
         verify( mockFem );
     }
     
+
+    /**
+     * Testing the removeDataStream method
+     */
+    @Test
+    public void testRemoveDataStream() throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException, ConfigurationException, ServiceException
+    {
+        //setup 
+        Mockit.setUpMocks( MockFedoraAdministration2.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
+        Mockit.setUpMocks( MockFileHandler.class );
+
+        String admLocation = "location";
+        String pid = "test:1";
+        String sID = "relsExt.0";
+        String startDate = "start";
+        String endDate = "end";
+        String adminLabel = "admin [text/xml]";
+        String mimeType = "text/xml";
+        String adminLogm =  "admin stream updated with added stream data";// + timeNow;
+        String logm = String.format( "removed stream %s from object %s", sID, pid );
+
+        //expectations
+        expect( mockFedoraClient.uploadFile( isA( File.class ) ) ).andReturn( admLocation );
+        expect( mockFem.modifyDatastreamByReference( pid, "adminData", empty, adminLabel, mimeType, null, admLocation, null, null, adminLogm, true ) ).andReturn( "not used" );
+        expect( mockFem.purgeDatastream( pid, sID, startDate, endDate, logm, true )  ).andReturn( new String[] { "not", "used" });
+
+
+        //replay
+        replay( mockFem );
+        replay( mockFedoraClient );
+
+        //do stuff
+        fa = new FedoraAdministration();
+        boolean result = fa.removeDataStream( pid, sID, startDate, endDate, true );
+        //verify
+        assertTrue( result );
+        //check the modified adminstream  
+        NodeList streamsNL = XMLUtils.getNodeList( admStreamFile, "streams" );
+        assertTrue( streamsNL.getLength() == 1 );
+        Element streams = (Element)streamsNL.item( 0 );
+        NodeList streamNL = streams.getElementsByTagName( "stream" );
+        assertTrue( streamNL.getLength() == 1 );
+        Element stream = (Element)streamNL.item( 0 );
+        assertEquals( stream.getAttribute( "id" ) , "originalData.0" );
+
+
+        verify( mockFem );
+        verify( mockFedoraClient );
+
+    }
 }

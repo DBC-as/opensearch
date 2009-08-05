@@ -23,6 +23,7 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.XMLUtils;
+import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -294,12 +295,13 @@ public class FedoraAdministration implements IFedoraAdministration
         String adminLogm = "";
         String dsnName = cargo.getDataStreamType().getName();
 
-        MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
-        byte[] adminStream = ds.getStream();
-        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
+//         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+//         byte[] adminStream = ds.getStream();
+//         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+//         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+//         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+//         Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
+        Element root = getAdminStream( pid );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
 
@@ -452,12 +454,14 @@ public class FedoraAdministration implements IFedoraAdministration
         String adminLogm = "";
 
         //10: get the adminstream to modify
-        MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
-        byte[] adminStream = ds.getStream();
-        log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        Element rootOld = XMLUtils.getDocumentElement( new InputSource( bis ) );
+//         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+//         byte[] adminStream = ds.getStream();
+//         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+//         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+//         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+//         Element rootOld = XMLUtils.getDocumentElement( new InputSource( bis ) );
+
+        Element rootOld = getAdminStream( pid );
 
         log.debug( String.format( "root element from adminstream == %s", rootOld ) );
 
@@ -467,7 +471,7 @@ public class FedoraAdministration implements IFedoraAdministration
         //get indexingAlias
         NodeList indexingAliasElemOld = rootOld.getElementsByTagName( "indexingalias" );
         Node indexingAliasNodeOld = indexingAliasElemOld.item( 0 );
-
+        //System.out.println( ( (Element)indexingAliasNodeOld ).getAttribute( "name" ) );
         //make root and indexingAlias part of the new document
         Element root = (Element)admStream.importNode( (Node)rootOld, false );
         Node indexingAliasNode = admStream.importNode( indexingAliasNodeOld, true );
@@ -526,7 +530,8 @@ public class FedoraAdministration implements IFedoraAdministration
         // 18: make the admin info into a File ( and a String for current debug)
         Source source = new DOMSource((Node) root );
         StringWriter stringWriter = new StringWriter();
-        File admFile = new File( "admFile" );
+        //File admFile = new File( "admFile" );
+        File admFile = FileHandler.getFile( "admFile" );
         admFile.deleteOnExit();
 
         Result result = new StreamResult( admFile );
@@ -544,12 +549,14 @@ public class FedoraAdministration implements IFedoraAdministration
         String adminMime = "text/xml";
         //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
         String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
-        adminLogm = "admin stream updated with added stream data" + timeNow;
+        adminLogm = "admin stream updated with added stream data";// + timeNow;
 
         //upload the admFile
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
 
-        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[] {}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        String[] empty = getEmptyStringArray();
+
+        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
         boolean retval = false;
         String logm = String.format( "removed stream %s from object %s", sID, pid );
