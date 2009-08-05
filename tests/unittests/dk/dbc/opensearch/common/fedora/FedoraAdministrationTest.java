@@ -835,9 +835,6 @@ public class FedoraAdministrationTest
         expect( mockCargoObject.getMimeType() ).andReturn( "text/xml" );
         expect( mockCargoObject.getSubmitter() ).andReturn( "test" );
 
-
-
-
         expect( mockFedoraClient.uploadFile( isA( File.class ) ) ).andReturn( returnString );
 
         expect( mockFem.modifyDatastreamByReference( testPid, "adminData", empty, "admin [text/xml]", "text/xml", null, returnString, null , null, adminLogm, true ) ).andReturn( "hat" );
@@ -854,7 +851,6 @@ public class FedoraAdministrationTest
         replay( mockCargoObject );
         replay( mockFea );
         replay( mockMTStream );
-
         replay( mockFem );
         replay( mockFedoraClient );
 
@@ -871,5 +867,39 @@ public class FedoraAdministrationTest
         verify( mockFem );
         verify( mockFedoraClient );
     }
+    /**
+     * Testing the modifyDataStream method
+     */
+    @Test
+    public void testModifyDataStream()throws RemoteException, MalformedURLException, IOException, ConfigurationException, ServiceException
+    {
+       
+        //setup
+        Mockit.setUpMocks( MockFedoraAdministration.class);
+        Mockit.setUpMocks( MockFedoraHandle.class);
+        String sID = "streamID";
+        String pid = "test:1";
+        String format = "format";
+        String mimeType = "mimeType";
+String logm = String.format( "modified the object with pid: %s", pid );
 
+        //expectations
+        expect( mockCargoObject.getFormat() ).andReturn( format );
+        expect( mockCargoObject.getMimeType() ).andReturn( mimeType );
+        expect( mockFem.modifyDatastreamByReference( pid, sID, empty, format, mimeType, null, "dsLocation", null, null, logm, true ) ).andReturn( sID );
+        //expect().andReturn();
+
+        //replay
+        replay( mockCargoObject ); 
+        replay( mockFem ); 
+        
+        //do stuff
+        fa = new FedoraAdministration();
+        String result = fa.modifyDataStream( mockCargoObject, sID, pid, false, true );
+        assertEquals( sID, result );
+        //verify
+        verify( mockCargoObject );
+        verify( mockFem );
+    }
+    
 }

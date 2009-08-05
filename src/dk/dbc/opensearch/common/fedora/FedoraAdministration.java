@@ -430,7 +430,9 @@ public class FedoraAdministration implements IFedoraAdministration
 
         // String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
 
-        return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, new String[] {}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
+        String[] empty = getEmptyStringArray();
+
+        return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, empty, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
     }
 
 
