@@ -595,30 +595,30 @@ public class FedoraAdministration implements IFedoraAdministration
     public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
         log.debug( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
-        try
-        {
+       //  try
+//         {
             return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
-        }
-        catch ( RemoteException re )
-        {
-            throw re;
-        }
-        catch ( ConfigurationException ce )
-        {
-            throw ce;
-        }
-        catch ( MalformedURLException mue )
-        {
-            throw mue;
-        }
-        catch ( ServiceException se )
-        {
-            throw se;
-        }
-        catch ( IOException ioe )
-        {
-            throw ioe;
-        }
+        // }
+//         catch ( RemoteException re )
+//         {
+//             throw re;
+//         }
+//         catch ( ConfigurationException ce )
+//         {
+//             throw ce;
+//         }
+//         catch ( MalformedURLException mue )
+//         {
+//             throw mue;
+//         }
+//         catch ( ServiceException se )
+//         {
+//             throw se;
+//         }
+//         catch ( IOException ioe )
+//         {
+//             throw ioe;
+//         }
     }
 
     /**
@@ -639,7 +639,9 @@ public class FedoraAdministration implements IFedoraAdministration
         return addRelation( pid, predicate, namespace, true, null );
     }
 
-
+    /**
+     * Method for adding relationship data
+     */
     public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
         log.debug( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1, value_1 ) );
@@ -649,6 +651,9 @@ public class FedoraAdministration implements IFedoraAdministration
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
     }
 
+    /**
+     * Method for adding relationship data
+     */
 
     public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
@@ -658,6 +663,9 @@ public class FedoraAdministration implements IFedoraAdministration
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
     }
 
+    /**
+     * Method for adding relationship data, used by other method
+     */
 
     private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
     {
@@ -688,13 +696,17 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "relationshipObject: '%s'", relationshipObject ) );
         return addIsMbrOfCollRelationshipNewRelsExt( sourcePid, predicate, relationshipObject );
     }
-
+    /**
+     * Method for adding relationship data, used by other methods
+     */
 
     private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
         return addRelation( sourcePid, predicate, relationshipObject, true, null );
     }
-
+    /**
+     * 
+     */
 
     private String getNextRelationshipObject( String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
     {
