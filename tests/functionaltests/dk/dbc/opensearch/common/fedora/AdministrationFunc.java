@@ -1,14 +1,11 @@
 package dk.dbc.opensearch.common.fedora;
 
-
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import fedora.server.types.gen.ObjectFields;
-import fedora.server.types.gen.ComparisonOperator;
 import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.File;
@@ -23,25 +20,22 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
-import fedora.server.errors.ObjectNotInLowlevelStorageException;
-
-import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 
 
 /**
  *class for testing the functionality of the FedoraAdminstration class
  */
-public class AdministrationFunc 
+public class AdministrationFunc
 {
+
     static FedoraAdministration fa;
 
-    
     public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         runTests();
     }
-    
+
 
     static void runTests() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
@@ -49,7 +43,7 @@ public class AdministrationFunc
         {
             fa = new FedoraAdministration();
         }
-        catch( Exception e)
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
@@ -62,14 +56,14 @@ public class AdministrationFunc
 
         System.out.println( "*** kalder testFindObjects ***" );
         testFindObjectPids();*/
-        
+
         /*System.out.println( "*** kalder testFindObjectFields ***" );
         testFindObjectFields();*/
-        
+
         //testFindObjectRelationships();
-        
+
         testGetRelationships();
-        
+
         //System.out.println( "*** kalder testDeleteObjects ***" );
         //String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
         //testDeleteObjectPids( labels, 50 );
@@ -100,109 +94,112 @@ public class AdministrationFunc
         String[] pids = null;
         try
         {
-        	pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration" );
+            pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration" );
         }
-        catch( RemoteException re )
+        catch ( RemoteException re )
         {
             re.printStackTrace();
         }
-        
-        for( int i = 0; i < pids.length; i++ )
+
+        for ( int i = 0; i < pids.length; i++ )
         {
-            System.out.println( pids[ i ] );
+            System.out.println( pids[i] );
         }
     }
-    
-    
+
+
     static void testFindObjectRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         ObjectFields[] objs = null;
         try
         {
-        	String[] resultFields = { "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights" };
-        	objs = fa.findObjectFields( resultFields, "pid", "harry:1" );
+            String[] resultFields =
+            {
+                "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights"
+            };
+            objs = fa.findObjectFields( resultFields, "pid", "harry:1" );
         }
-        catch( RemoteException re )
+        catch ( RemoteException re )
         {
             re.printStackTrace();
         }
-        
-        for( int i = 0; i < objs.length; i++ )
+
+        for ( int i = 0; i < objs.length; i++ )
         {
-            System.out.println( "i " + i + " :" + objs[ i ].getRelation()[0] );
-            System.out.println( "i " + i + " :" + objs[ i ].getRelation()[i] );
-            System.out.println( "i " + i + " :" + objs[ i ].getRelation(i) );
-            System.out.println( "i " + i + " :" + objs[ i ].getIdentifier()[i] );
-            System.out.println( "i " + i + " :" + objs[ i ].getCreator()[i] );
-            
+            System.out.println( "i " + i + " :" + objs[i].getRelation()[0] );
+            System.out.println( "i " + i + " :" + objs[i].getRelation()[i] );
+            System.out.println( "i " + i + " :" + objs[i].getRelation( i ) );
+            System.out.println( "i " + i + " :" + objs[i].getIdentifier()[i] );
+            System.out.println( "i " + i + " :" + objs[i].getCreator()[i] );
+
         }
     }
-    
-    
+
+
     static void testGetRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         RelationshipTuple[] subj = null;
         try
         {
-        	//String[] resultFields = { "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights" };
-        	subj = fa.getRelationships( "kkb:1979", "rel:isMemberOfCollection" );
+            //String[] resultFields = { "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights" };
+            subj = fa.getRelationships( "kkb:1979", "rel:isMemberOfCollection" );
         }
-        catch( RemoteException re )
+        catch ( RemoteException re )
         {
             re.printStackTrace();
         }
         if ( subj != null )
         {
-	        for( int i = 0; i < subj.length; i++ )
-	        {
-	            System.out.println( "i " + i + " :" + subj[ i ].getObject() );	            
-	        }
+            for ( int i = 0; i < subj.length; i++ )
+            {
+                System.out.println( "i " + i + " :" + subj[i].getObject() );
+            }
         }
         else
         {
-        	System.out.println( "subj is null" );
+            System.out.println( "subj is null" );
         }
     }
-    
-    
+
+
     static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException
-    {    	
-    	boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter", "work" );
-    	System.out.println( "Everything ok: " + ret );
+    {
+        boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter", "work" );
+        System.out.println( "Everything ok: " + ret );
     }
-    
-    
+
+
     static void testFindObjectFieldsDouble() throws ConfigurationException, ServiceException, MalformedURLException, IOException
-    {    	
-    	boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter og Fønixordenen", "creator", "Joanne K. Rowling", "work" );
-    	System.out.println( "Everything ok: " + ret );
+    {
+        boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter og Fønixordenen", "creator", "Joanne K. Rowling", "work" );
+        System.out.println( "Everything ok: " + ret );
     }
-    
-    
+
+
     static void testDeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
-    {	
-    	for ( String str : labels )
-    	{
-    		for ( int i = 0; i < runsPerLabel; i++ )
-    		{
-		        String[] pids = null;
-		        try
-		        {
-		            //pids = fa.findObjectPids( "label", "eq", "materialevurderinger" );
-		        	pids = fa.findObjectPids( "label", "eq", str );
-		        }
-		        catch( RemoteException re )
-		        {
-		            re.printStackTrace();
-		        }
-		        System.out.println( "testDeleteObjectPids - pids.length: " + pids.length );
-		        for( int j = 0; j < pids.length; j++ )
-		        {
-		            System.out.println( pids[ j ] );
-		            testDeleteObject( pids[ j ] );
-		        }
-    		}
-    	}
+    {
+        for ( String str : labels )
+        {
+            for ( int i = 0; i < runsPerLabel; i++ )
+            {
+                String[] pids = null;
+                try
+                {
+                    //pids = fa.findObjectPids( "label", "eq", "materialevurderinger" );
+                    pids = fa.findObjectPids( "label", "eq", str );
+                }
+                catch ( RemoteException re )
+                {
+                    re.printStackTrace();
+                }
+                System.out.println( "testDeleteObjectPids - pids.length: " + pids.length );
+                for ( int j = 0; j < pids.length; j++ )
+                {
+                    System.out.println( pids[j] );
+                    testDeleteObject( pids[j] );
+                }
+            }
+        }
     }
 
 
@@ -214,11 +211,11 @@ public class AdministrationFunc
         {
             success = fa.removeDataStream( pid, sID, null, null, false );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
-        if( !success )
+        if ( !success )
         {
             System.out.println( "testRemoveDataStream failed" );
         }
@@ -231,31 +228,31 @@ public class AdministrationFunc
 
 
     static void testModifyDataStream( String pid )
-        {
-             CargoObject cargo = null;
+    {
+        CargoObject cargo = null;
         try
         {
-            cargo  = createCargoObject( 2 );
+            cargo = createCargoObject( 2 );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
-            String sID = DataStreamType.OriginalData.getName() + ".0";
+        String sID = DataStreamType.OriginalData.getName() + ".0";
 
-            String checksum = null;
-            try
-            {
-                checksum = fa.modifyDataStream( cargo, sID, pid, false, true );
-            }
-            catch( Exception e )
-            {
-                e.printStackTrace();
-            }
-
-            System.out.println( String.format( "the returned checksum: ", checksum ) );
-
+        String checksum = null;
+        try
+        {
+            checksum = fa.modifyDataStream( cargo, sID, pid, false, true );
         }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+        }
+
+        System.out.println( String.format( "the returned checksum: ", checksum ) );
+
+    }
 
 
     static void testAddDataStreamToObject( String pid )
@@ -263,9 +260,9 @@ public class AdministrationFunc
         CargoObject cargo = null;
         try
         {
-            cargo  = createCargoObject( 1 );
+            cargo = createCargoObject( 1 );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
@@ -275,7 +272,7 @@ public class AdministrationFunc
         {
             retID = fa.addDataStreamToObject( cargo, pid, false, true );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
@@ -293,12 +290,12 @@ public class AdministrationFunc
         {
             cc = fa.getDataStream( streamID, pid );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
         int count = cc.getCargoObjectCount();
-        if( count < 1 )
+        if ( count < 1 )
         {
             System.out.println( String.format( "kunne ikke finde nogen strømme med id %s", streamID ) );
         }
@@ -317,13 +314,13 @@ public class AdministrationFunc
         {
             cc = fa.getDataStreamsOfType( pid, dst );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
 
         int count = cc.getCargoObjectCount();
-        if( count < 1 )
+        if ( count < 1 )
         {
             System.out.println( "kunne ikke finde nogen af korrekt type!!!!!!!" );
         }
@@ -350,7 +347,7 @@ public class AdministrationFunc
         {
             fa.deleteObject( pid, false );
         }
-        catch( RemoteException re )
+        catch ( RemoteException re )
         {
             System.out.println( "printing trace:" );
             re.printStackTrace();
@@ -371,7 +368,7 @@ public class AdministrationFunc
         {
             cc = createContainer();
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
@@ -385,7 +382,7 @@ public class AdministrationFunc
         {
             pid = fa.storeCargoContainer( cc, submitter, format );
         }
-        catch( Exception e)
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
@@ -395,9 +392,9 @@ public class AdministrationFunc
         return pid;
     }
 
-    
+
     //method for testing the getObject method
-    static void testGetObject( String pid)
+    static void testGetObject( String pid )
     {
         System.out.println( String.format( "testGetObject called with pid: %s", pid ) );
         List<CargoObject> coList = new ArrayList<CargoObject>();
@@ -405,11 +402,11 @@ public class AdministrationFunc
 
         try
         {
-        	FedoraAdministration fa = new FedoraAdministration();
+            FedoraAdministration fa = new FedoraAdministration();
             //cc = FedoraAdministration.retrieveCargoContainer( pid );
-        	cc = fa.retrieveCargoContainer( pid );
+            cc = fa.retrieveCargoContainer( pid );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
@@ -424,10 +421,10 @@ public class AdministrationFunc
      * Helper methods
      */
     //method for creating a CargoObject
-    static CargoObject createCargoObject( int job )throws IllegalArgumentException, NullPointerException, IOException
+    static CargoObject createCargoObject( int job ) throws IllegalArgumentException, NullPointerException, IOException
     {
         String testStr;
-        if( job == 1 )
+        if ( job == 1 )
         {
             testStr = "added stream";
         }
@@ -435,10 +432,10 @@ public class AdministrationFunc
         {
             testStr = "modified stream";
         }
-        byte[] cargoBytes =  testStr.getBytes( "UTF-8" );
+        byte[] cargoBytes = testStr.getBytes( "UTF-8" );
 
         CargoContainer cc = new CargoContainer();
-        cc.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
+        cc.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ), cargoBytes );
 
         return cc.getCargoObject( DataStreamType.OriginalData );
     }
@@ -448,10 +445,10 @@ public class AdministrationFunc
     static CargoContainer createContainer() throws IllegalArgumentException, NullPointerException, IOException
     {
         String testStr = "test";
-        byte[] cargoBytes =  testStr.getBytes( "UTF-8" );
+        byte[] cargoBytes = testStr.getBytes( "UTF-8" );
 
         CargoContainer ret = new CargoContainer();
-        ret.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ) , cargoBytes);
+        ret.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", IndexingAlias.getIndexingAlias( "article" ), cargoBytes );
 
         return ret;
     }
@@ -470,17 +467,19 @@ public class AdministrationFunc
         try
         {
             writer = factory.createXMLStreamWriter( new FileOutputStream( theFile ), "UTF-8" );
-            writer.writeStartDocument("UTF-8", "1.0"); //(encoding, version)
-            writer.writeStartElement("Text");
+            writer.writeStartDocument( "UTF-8", "1.0" ); //(encoding, version)
+            writer.writeStartElement( "Text" );
             writer.writeCharacters( "created test stream" );
             writer.writeEndElement();
             writer.writeEndDocument();
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
 
         return theFile;
     }
+
+
 }
