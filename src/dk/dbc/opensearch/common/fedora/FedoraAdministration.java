@@ -450,7 +450,17 @@ public class FedoraAdministration implements IFedoraAdministration
     public boolean removeDataStream( String pid, String sID, String startDate, String endDate, boolean breakDependencies ) throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException, ConfigurationException, ServiceException
     {
         String adminLogm = "";
+        //boolean retval = false;
+        String logm = String.format( "removed stream %s from object %s", sID, pid );
 
+        /**
+         * \Todo: find out why the return val is String[] and not String. bug 9046
+         */
+        String[] stamp = FedoraHandle.getInstance().getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
+        if( stamp == null )
+        {
+            return false;
+        }
         //10: get the adminstream to modify
 //         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
 //         byte[] adminStream = ds.getStream();
@@ -511,8 +521,7 @@ public class FedoraAdministration implements IFedoraAdministration
                 Element stream = (Element)admStream.importNode( (Node)oldStream, true );
                 //modify the index of the stream, if of same StreamType and index has higher value
                 currentStreamTypeName = stream.getAttribute( "streamNameType" );
-System.out.println( "curent: " + currentStreamTypeName );
-System.out.println( "purge: " + purgeStreamTypeName );
+
                 if( currentStreamTypeName.equals( purgeStreamTypeName ) )
                 {
                     currentIndex = Integer.valueOf( stream.getAttribute( "index" ) );
@@ -559,19 +568,19 @@ System.out.println( "purge: " + purgeStreamTypeName );
 
         FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
-        boolean retval = false;
-        String logm = String.format( "removed stream %s from object %s", sID, pid );
+        // boolean retval = false;
+        //String logm = String.format( "removed stream %s from object %s", sID, pid );
 
         /**
          * \Todo: find out why the return val is String[] and not String. bug 9046
          */
-        String[] stamp = FedoraHandle.getInstance().getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
-        if( stamp != null )
-        {
-            retval = true;
-        }
+        // String[] stamp = FedoraHandle.getInstance().getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
+        // if( stamp != null )
+        //{
+        //  retval = true;
+        //}
 
-        return retval;
+        return true;
     }
 
 

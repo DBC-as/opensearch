@@ -1022,7 +1022,7 @@ String logm = String.format( "modified the object with pid: %s", pid );
 
         String admLocation = "location";
         String pid = "test:1";
-        String sID = "relsExt.0";
+        String sID = "relsExt.1";
         String startDate = "start";
         String endDate = "end";
         String adminLabel = "admin [text/xml]";
@@ -1031,9 +1031,10 @@ String logm = String.format( "modified the object with pid: %s", pid );
         String logm = String.format( "removed stream %s from object %s", sID, pid );
 
         //expectations
+        expect( mockFem.purgeDatastream( pid, sID, startDate, endDate, logm, true )  ).andReturn( new String[] { "not", "used" });        
         expect( mockFedoraClient.uploadFile( isA( File.class ) ) ).andReturn( admLocation );
         expect( mockFem.modifyDatastreamByReference( pid, "adminData", empty, adminLabel, mimeType, null, admLocation, null, null, adminLogm, true ) ).andReturn( "not used" );
-        expect( mockFem.purgeDatastream( pid, sID, startDate, endDate, logm, true )  ).andReturn( new String[] { "not", "used" });
+        
 
 
         //replay
@@ -1052,13 +1053,53 @@ String logm = String.format( "modified the object with pid: %s", pid );
         NodeList streamNL = streams.getElementsByTagName( "stream" );
         assertTrue( streamNL.getLength() == 2 );
         Element stream = (Element)streamNL.item( 0 );
-        assertEquals( stream.getAttribute( "id" ) , "originalData.0" );
+        assertEquals( stream.getAttribute( "id" ) , "relsExt.0" );
 
 
         verify( mockFem );
         verify( mockFedoraClient );
 
     }
+    /**
+     * Testing the returning of false by the removeDataStream method when not 
+     * able to remove the desired stream. The adminstream should not be modified
+     */
+    @Test
+    public void testFailureRemoveDataStream() throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException, ConfigurationException, ServiceException
+    {
+        //setup 
+        Mockit.setUpMocks( MockFedoraAdministration2.class );
+        Mockit.setUpMocks( MockFedoraHandle.class );
+        Mockit.setUpMocks( MockFileHandler.class );
+
+        String admLocation = "location";
+        String pid = "test:1";
+        String sID = "relsExt.1";
+        String startDate = "start";
+        String endDate = "end";
+        String adminLabel = "admin [text/xml]";
+        String mimeType = "text/xml";
+        String adminLogm =  "admin stream updated with added stream data"+ timeNow;
+        String logm = String.format( "removed stream %s from object %s", sID, pid );
+
+        //expectations
+        expect( mockFem.purgeDatastream( pid, sID, startDate, endDate, logm, true )  ).andReturn( null );
+
+
+        //replay
+        replay( mockFem );
+        replay( mockFedoraClient );
+
+        //do stuff
+        fa = new FedoraAdministration();
+        boolean result = fa.removeDataStream( pid, sID, startDate, endDate, true );
+        //verify
+        assertFalse( result );
+
+        verify( mockFem );
+        verify( mockFedoraClient );
+    }
+
 
     /**
      * Testing the addRelation method, happy path
