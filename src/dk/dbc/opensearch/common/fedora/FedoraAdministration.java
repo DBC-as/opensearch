@@ -334,10 +334,7 @@ public class FedoraAdministration implements IFedoraAdministration
             }
         }
 
-        if( sID == null )
-        {
-            sID = dsnName + "." + count;
-        }
+        sID = dsnName + "." + count;
 
         Element stream = admStream.createElement( "stream" );
 
@@ -497,7 +494,7 @@ public class FedoraAdministration implements IFedoraAdministration
             if( oldStream.getAttribute( "id" ).equals( sID ) )
             {
                 purgeIndex = Integer.valueOf( oldStream.getAttribute( "index" ) );
-                purgeStreamTypeName = oldStream.getAttribute( "streamTypeName" );
+                purgeStreamTypeName = oldStream.getAttribute( "streamNameType" );
             }
         }
 
@@ -513,7 +510,9 @@ public class FedoraAdministration implements IFedoraAdministration
             {
                 Element stream = (Element)admStream.importNode( (Node)oldStream, true );
                 //modify the index of the stream, if of same StreamType and index has higher value
-                currentStreamTypeName = stream.getAttribute( "streamTypeName" );
+                currentStreamTypeName = stream.getAttribute( "streamNameType" );
+System.out.println( "curent: " + currentStreamTypeName );
+System.out.println( "purge: " + purgeStreamTypeName );
                 if( currentStreamTypeName.equals( purgeStreamTypeName ) )
                 {
                     currentIndex = Integer.valueOf( stream.getAttribute( "index" ) );
