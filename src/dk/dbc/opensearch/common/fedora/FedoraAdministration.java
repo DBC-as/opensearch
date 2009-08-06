@@ -373,9 +373,10 @@ public class FedoraAdministration implements IFedoraAdministration
         // 20:use modify by reference
         String adminLabel= "admin [text/xml]";
         String adminMime = "text/xml";
+        //        String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
+        String timeNow = getTimeNow();
 
-        String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
-        adminLogm = "admin stream updated with added stream data"; //+ timeNow;
+        adminLogm = "admin stream updated with added stream data"+ timeNow;
 
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
 
@@ -548,8 +549,9 @@ public class FedoraAdministration implements IFedoraAdministration
         String adminLabel= "admin [text/xml]";
         String adminMime = "text/xml";
         //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
-        String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
-        adminLogm = "admin stream updated with added stream data";// + timeNow;
+        //String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
+        String timeNow = getTimeNow();
+        adminLogm = "admin stream updated with added stream data"+ timeNow;
 
         //upload the admFile
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
@@ -1113,4 +1115,15 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         return new String[] {};
     }
+
+    /**
+     * method to get a string representing the current time
+     * Note: hack to mock the time part of the log strings that are
+     * sent to Fedora. Cant mock the DateFormat.format( Date date) method 
+     */
+    private String getTimeNow()
+    {
+        return dateFormat.format( new Date( System.currentTimeMillis() ) );
+    }
+
 }

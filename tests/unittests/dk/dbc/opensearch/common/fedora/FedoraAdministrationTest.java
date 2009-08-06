@@ -103,6 +103,8 @@ public class FedoraAdministrationTest
     static byte[] bytes = "bytes".getBytes();
     static String[] empty = new String[] {};
     static File admStreamFile = new File( "admFile" );
+    static String timeNow = "mockTime";
+
     /**
      * MockClasses
      */
@@ -184,6 +186,11 @@ public class FedoraAdministrationTest
         @Mock public static String[] getEmptyStringArray()
         {
             return empty;
+        }
+
+        @Mock public static String getTimeNow()
+        {
+            return timeNow;
         }
     }
 
@@ -282,6 +289,17 @@ public class FedoraAdministrationTest
         stream2.setAttribute( "index", "0" );
         stream2.setAttribute( "streamNameType" , "originalData" );
         streams.appendChild( (Node) stream2 );
+   
+        Element stream3 = admStream.createElement( "stream" );
+
+        stream3.setAttribute( "id",  "relsExt.1");
+        stream3.setAttribute( "lang", "eng" );
+        stream3.setAttribute( "format", "test" );
+        stream3.setAttribute( "mimetype", "text/xml" );
+        stream3.setAttribute( "submitter", "dbc" );
+        stream3.setAttribute( "index", "1" );
+        stream3.setAttribute( "streamNameType" , "relsExt" );
+        streams.appendChild( (Node) stream3 );
 
         root.appendChild( (Node) streams );
 
@@ -314,7 +332,13 @@ public class FedoraAdministrationTest
         @Mock public static String[] getEmptyStringArray()
         {
             return empty;
-        }
+        }  
+
+        @Mock public static String getTimeNow()
+        {
+            return timeNow;
+        } 
+
     }
     
     @MockClass( realClass = FileHandler.class )
@@ -904,7 +928,7 @@ public class FedoraAdministrationTest
         DataStreamType testDST = DataStreamType.RelsExt;
         String testPid = "test:1";
         String returnString = "admLoc";
-        String adminLogm =  "admin stream updated with added stream data";
+        String adminLogm =  "admin stream updated with added stream data"+timeNow;
         String logm = String.format( "added %s to the object with pid: %s", "dsLocation", testPid );
 
         //expectations
@@ -926,7 +950,7 @@ public class FedoraAdministrationTest
         expect( mockCargoObject.getFormat() ).andReturn( "testFormat" );
         expect( mockCargoObject.getMimeType() ).andReturn( "text/xml" );
 
-        expect( mockFem.addDatastream( testPid, "relsExt.1", empty, "testFormat", false, "text/xml", null, "dsLocation", "M", "A", null, null, logm ) ).andReturn( "testSID" );
+        expect( mockFem.addDatastream( testPid, "relsExt.2", empty, "testFormat", false, "text/xml", null, "dsLocation", "M", "A", null, null, logm ) ).andReturn( "testSID" );
 
         //replay
 
@@ -1003,7 +1027,7 @@ String logm = String.format( "modified the object with pid: %s", pid );
         String endDate = "end";
         String adminLabel = "admin [text/xml]";
         String mimeType = "text/xml";
-        String adminLogm =  "admin stream updated with added stream data";// + timeNow;
+        String adminLogm =  "admin stream updated with added stream data"+ timeNow;
         String logm = String.format( "removed stream %s from object %s", sID, pid );
 
         //expectations
@@ -1026,7 +1050,7 @@ String logm = String.format( "modified the object with pid: %s", pid );
         assertTrue( streamsNL.getLength() == 1 );
         Element streams = (Element)streamsNL.item( 0 );
         NodeList streamNL = streams.getElementsByTagName( "stream" );
-        assertTrue( streamNL.getLength() == 1 );
+        assertTrue( streamNL.getLength() == 2 );
         Element stream = (Element)streamNL.item( 0 );
         assertEquals( stream.getAttribute( "id" ) , "originalData.0" );
 
