@@ -419,8 +419,6 @@ public final class FoxmlDocument
         Node node = getDatastreamVersion( dsvId );
         Element location = doc.createElementNS( FOXML_NS, "foxml:contentLocation" );
         node.appendChild( location );
-        System.out.println( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
-        System.out.println( location.getTextContent() );
         return location;
     }
 
