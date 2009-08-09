@@ -1,15 +1,5 @@
 package dk.dbc.opensearch.common.fedora;
 
-
-import dk.dbc.opensearch.common.helpers.XMLUtils;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.ComparablePair;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.common.types.Pair;
-
-import fedora.server.utilities.DateUtility;
 import fedora.utilities.Base64;
 import fedora.utilities.NamespaceContextImpl;
 import fedora.utilities.XmlTransformUtility;
@@ -17,18 +7,13 @@ import fedora.utilities.XmlTransformUtility;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -37,6 +22,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -44,7 +32,6 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,20 +48,16 @@ import org.xml.sax.SAXException;
  */
 public final class FoxmlDocument
 {
+
     static Logger log = Logger.getLogger( FoxmlDocument.class );
     public static final String FOXML_NS = "info:fedora/fedora-system:def/foxml#";
     private DocumentBuilder builder;
     private Document doc;
     private Element rootElement;
     private Element objectProperties;
-    // I'm not quite sure of the wisdom in the following final
-    // declarations, but I needed a way to guarantee that the
-    // TransformerFactory will be available at the time {@link
-    // #serialize(OutputStream)} is called independently of which
-    // constructor was used
-    private final XPathFactory factory = XPathFactory.newInstance();
-    private final XPath xpath = factory.newXPath();
-    private final TransformerFactory xformFactory = XmlTransformUtility.getTransformerFactory();
+    private XPathFactory factory;
+    private XPath xpath;
+    private TransformerFactory xformFactory;
 
     public enum Property
     {
@@ -101,16 +84,52 @@ public final class FoxmlDocument
 
     }
 
+    /**
+     *
+     */
     public enum State
     {
 
-        A, I, D;
+        /**
+         * Active
+         */
+        A,
+        /**
+         * Inactive
+         */
+        I,
+        /**
+         * Deleted
+         */
+        D;
     }
 
+    /**
+     *
+     */
     public enum ControlGroup
     {
 
-        X, M, E, R;
+        /**
+         *
+         */
+        X,
+        /**
+         * 
+         */
+        M,
+        /**
+         *
+         */
+        E,
+        /**
+         * 
+         */
+        R,
+        /**
+         *
+         */
+        B;
     }
 
     /**
@@ -142,17 +161,45 @@ public final class FoxmlDocument
 //        constructFoxml( cargo );
 //
 //    }
-
+    /**
+     * Creates a skeletal FedoraObject document with a timestamp of System.currentTimeMillis().
+     * Its serialized representation
+     * can be obtained through the {@link FoxmlDocument#serialize(java.io.OutputStream)} method
+     *
+     * @param pid the pid to be the identifier for the Digital Object
+     * @param label short description of the contents of the Digital Object
+     * @param owner the owner of the Digital Object
+     * @throws ParserConfigurationException
+     */
+//    public FoxmlDocument( String pid, String label, String owner ) throws ParserConfigurationException
+//    {
+//        initDocument( pid );
+//        constructFoxmlProperties( label, owner, getTimestamp( 0l ) );
+//    }
+//
 
     /**
      * Creates a skeletal FedoraObject document. Its serialized representation
-     * can be obtained through the {@link FoxmlDocument#serialize(java.io.OutputStream)} method
+     * can be obtained through the
+     * {@link FoxmlDocument#serialize(java.io.OutputStream)} method
+     * 
      * @param pid the pid to be the identifier for the Digital Object
+     * @param label short description of the contents of the Digital Object
+     * @param owner the owner of the Digital Object
+     * @param timestamp the time of creation of the Digital Object,
+     *        System.currentTimeMillis() is a fine choice
+     * @throws ParserConfigurationException
      */
-    public FoxmlDocument( String pid ) throws ParserConfigurationException
+    public FoxmlDocument( String pid, String label, String owner, long timestamp ) throws ParserConfigurationException
     {
+        /** \todo: a fedora document v1.1 pid must conform to the following rules
+         * a maximum length of 64 chars
+         * must satisfy the pattern "([A-Za-z0-9]|-|\.)+:(([A-Za-z0-9])|-|\.|~|_|(%[0-9A-F]{2}))+"
+         */
         initDocument( pid );
+        constructFoxmlProperties( label, owner, getTimestamp( timestamp ) );
     }
+
 
     private void initDocument( String id ) throws ParserConfigurationException
     {
@@ -172,7 +219,9 @@ public final class FoxmlDocument
         rootElement.setAttribute( "VERSION", "1.1" );
         rootElement.setAttribute( "PID", id );
 
-
+        factory = XPathFactory.newInstance();
+        xpath = factory.newXPath();
+        xformFactory = XmlTransformUtility.getTransformerFactory();
 
         NamespaceContextImpl nsCtx = new NamespaceContextImpl();
         nsCtx.addNamespace( "foxml", FOXML_NS );
@@ -180,6 +229,19 @@ public final class FoxmlDocument
 
         xpath.setNamespaceContext( nsCtx );
     }
+
+
+    private void constructFoxmlProperties( String label, String owner, String timestamp )
+    {
+        //\todo: we always create active objects (until told otherwise)
+        addObjectProperty( Property.STATE, "Active" );
+        addObjectProperty( Property.LABEL, label );
+        addObjectProperty( Property.OWNERID, owner );
+        addObjectProperty( Property.CREATE_DATE, timestamp );
+        // Upon creation, the last modified date == created date
+        addObjectProperty( Property.MOD_DATE, timestamp );
+    }
+
 
     private void addObjectProperties()
     {
@@ -214,13 +276,10 @@ public final class FoxmlDocument
      * @param label
      * @param co
      */
-    public void addDatastream( String id,
-                               State state,
-                               ControlGroup controlGroup,
-                               String label,
-                               CargoObject co,
-                               boolean versionable,
-                               boolean externalData ) throws XPathExpressionException
+    private String addDatastream( String id,
+                                  State state,
+                                  ControlGroup controlGroup,
+                                  boolean versionable ) throws XPathExpressionException, SAXException, IOException
     {
         Element ds = doc.createElementNS( FOXML_NS, "foxml:datastream" );
         ds.setAttribute( "ID", id );
@@ -229,29 +288,7 @@ public final class FoxmlDocument
         ds.setAttribute( "VERSIONABLE", Boolean.toString( versionable ) );
         rootElement.appendChild( ds );
 
-        String dsv_id = id + ".0";
-
-        String mime = co.getMimeType();
-
-        addDatastreamVersion( id,
-                dsv_id,
-                mime,
-                label,
-                co.getContentLength(),
-                new Date( co.getTimestamp() ) );
-    }
-
-
-    private void addDublinCoreDatastream( CargoContainer cargo ) throws XPathExpressionException
-    {
-        String label = String.format( "Dublin Core data for %s", cargo.getDCTitle() );
-        this.addDatastream( "DC",
-                State.A,
-                ControlGroup.X,
-                label,
-                cargo.getCargoObject( DataStreamType.DublinCoreData ),
-                true,
-                false );
+        return id;
     }
 
 
@@ -260,7 +297,7 @@ public final class FoxmlDocument
                                        String mimeType,
                                        String label,
                                        int size,
-                                       Date created ) throws XPathExpressionException
+                                       String created ) throws XPathExpressionException
     {
         String expr = String.format( "//foxml:datastream[@ID='%s']", dsId );
         NodeList nodes = (NodeList) xpath.evaluate( expr, doc, XPathConstants.NODESET );
@@ -269,46 +306,98 @@ public final class FoxmlDocument
         {
             throw new IllegalArgumentException( dsId + "does not exist." );
         }
+        if( dsvId == null || dsvId.equals( "" ) )
+        {
+            dsvId = dsId + ".0";
+        }
+
         Element dsv = doc.createElementNS( FOXML_NS, "foxml:datastreamVersion" );
         dsv.setAttribute( "ID", dsvId );
         dsv.setAttribute( "MIMETYPE", mimeType );
         dsv.setAttribute( "LABEL", label );
-        dsv.setAttribute( "SIZE", Integer.toString( size ) );
-        dsv.setAttribute( "CREATED", DateUtility.convertDateToString( created ) );
+        if( size != 0 )
+        {
+            dsv.setAttribute( "SIZE", Integer.toString( size ) );
+        }
+        dsv.setAttribute( "CREATED", created );
         node.appendChild( dsv );
-
-
     }
 
 
-    private void addXmlContent( String dsvId, String xmlContent ) throws SAXException, IOException
+    /**
+     * 
+     * @param cargo
+     * @throws XPathExpressionException
+     */
+    public void addDublinCoreDatastream( String dcdata, long timenow ) throws XPathExpressionException, SAXException, IOException
     {
+        String label = "Dublin Core data";
+        String id = "DC";
+        this.addXmlContent( id, dcdata, label, timenow, true );
+    }
+
+
+    /**
+     * Constructs a datastream and a datastreamversion in the Digital Object
+     * @param datastreamId
+     * @param xmlContent
+     * @param versionable
+     * @throws SAXException
+     * @throws IOException
+     */
+    public void addXmlContent( String datastreamId, String xmlContent, String label, long timenow, boolean versionable ) throws SAXException, IOException, XPathExpressionException
+    {
+        String dsId = addDatastream( datastreamId, State.A, ControlGroup.X, versionable );
+        String dsvId = dsId + ".0";
+        addDatastreamVersion( dsId, dsvId, "text/xml", label, xmlContent.length(), getTimestamp( timenow ) );
         Document contentDoc = builder.parse( new InputSource( new StringReader( xmlContent ) ) );
         Node importedContent = doc.adoptNode( contentDoc.getDocumentElement() );
         Node dsv = getDatastreamVersion( dsvId );
         Element content = doc.createElementNS( FOXML_NS, "foxml:xmlContent" );
         dsv.appendChild( content );
         content.appendChild( importedContent );
-
     }
 
 
-    private void addBinaryContent( String dsvId, byte[] content ) throws SAXException, IOException
+    /**
+     *
+     * @param dsvId
+     * @param content
+     * @throws SAXException
+     * @throws IOException
+     */
+    public void addBinaryContent( String datastreamId, byte[] content, String label, long timenow ) throws SAXException, IOException, XPathExpressionException
     {
+        String dsId = addDatastream( datastreamId, State.A, ControlGroup.X, false );
+        String dsvId = dsId + ".0";
+        addDatastreamVersion( dsId, dsvId, "application/octet-stream", label, content.length, getTimestamp( timenow ) );
         String b = Base64.encodeToString( content );
-        Document contentDoc = builder.parse( new InputSource( new StringReader( b ) ) );
-        Node b64content = doc.adoptNode( contentDoc.getDocumentElement() );
+//        Document contentDoc = builder.parse( new InputSource( new StringReader( b ) ) );
+
+//        Node b64content = doc.adoptNode( contentDoc.getDocumentElement() );
+
+        //Node b64content =
         Node dsv = getDatastreamVersion( dsvId );
         Element binelement = doc.createElementNS( FOXML_NS, "foxml:binaryContent" );
         dsv.appendChild( binelement );
-        binelement.appendChild( b64content );
+        binelement.setTextContent( b );
+//        binelement.appendChild( b64content );
     }
 
 
-    private void addContentLocation( String dsvId, String ref, String type ) throws XPathExpressionException
+    /**
+     *
+     * @param dsvId
+     * @param ref
+     * @param type
+     * @throws XPathExpressionException
+     */
+    public void addContentLocation( String datastreamId, String ref, String label, String mimetype, String type, long timenow ) throws XPathExpressionException, SAXException, IOException
     {
-        String expr = String.format( "//foxml:datastreamVersion[@ID='%s']/foxml:contentLocation", dsvId );
-
+        String dsId = addDatastream( datastreamId, State.A, ControlGroup.E, true );
+        String dsvId = dsId + ".0";
+        addDatastreamVersion( dsId, dsvId, mimetype, label, 0, getTimestamp( timenow ) );
+        String expr = String.format( "//foxml:datastreamVersion[@ID='%s']/foxml:contentLocation", datastreamId );
 
         NodeList nodes = (NodeList) xpath.evaluate( expr, doc, XPathConstants.NODESET );
         Element location = (Element) nodes.item( 0 );
@@ -317,9 +406,11 @@ public final class FoxmlDocument
             location = setContentLocationElement( dsvId );
         }
         location.setAttribute( "REF", ref );
+        if( ! type.equals( "URL" ) || type.equals( "INTERNAL_ID" ) )
+        {
+            throw new IllegalArgumentException( "Type must be either 'URL' or 'INTERNAL_REF'");
+        }
         location.setAttribute( "TYPE", type );
-
-
     }
 
 
@@ -328,10 +419,15 @@ public final class FoxmlDocument
         Node node = getDatastreamVersion( dsvId );
         Element location = doc.createElementNS( FOXML_NS, "foxml:contentLocation" );
         node.appendChild( location );
+        System.out.println( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );
+        System.out.println( location.getTextContent() );
         return location;
     }
 
 
+    /**
+     * Get datastreamversion identified by dsvId
+     */
     private Node getDatastreamVersion( String dsvId )
     {
         String expr = String.format( "//foxml:datastreamVersion[@ID='%s']", dsvId );
@@ -353,128 +449,18 @@ public final class FoxmlDocument
     }
 
 
-    private void constructFoxml( CargoContainer cargo ) throws TransformerException, UnsupportedEncodingException, IOException, XPathExpressionException
+    /**
+     * gets a string representation of a timestamp. If 0l is given as an
+     * argument, a timestamp constructed from System.currentTimeMillis is
+     * returned
+     */
+    private String getTimestamp( long time )
     {
-        constructFoxmlProperties( cargo );
-
-        cargo = constructAdminstream( cargo );
-
-        for( CargoObject co : cargo.getCargoObjects() )
+        if( time == 0 )
         {
-            this.addDatastream( co.getDataStreamType().getName(),
-                    State.A,
-                    ControlGroup.M,
-                    co.getFormat(),
-                    co,
-                    false,
-                    false );
+            time = System.currentTimeMillis();
         }
-
-        if( cargo.hasCargo( DataStreamType.DublinCoreData ) ){
-            this.addDublinCoreDatastream( cargo );
-        }
-        else
-        {
-            log.warn( String.format( "Data '%s' ( '%s' ) has no associated Dublin Core data", cargo.getDCTitle(), cargo.getDCIdentifier() ) );
-        }
-        //\todo: shold we implement some sort of event notification, such that 
-        // serialize will not be called before constructFoxml has finished?
-    }
-
-
-    private void constructFoxmlProperties( CargoContainer cargo )
-    {
-        String timestamp = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" ).format( new Date( System.currentTimeMillis() ) );
-        //\todo: we always create active objects (until told otherwise)
-        addObjectProperty( Property.STATE, "Active" );
-        //\todo: by convention:
-        addObjectProperty( Property.LABEL, cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-        //\todo: hardcoding owner value of digital objects
-        addObjectProperty( Property.OWNERID, "dbc" );
-        addObjectProperty( Property.CREATE_DATE, timestamp );
-        // Upon creation, the last modified date == created date
-        addObjectProperty( Property.MOD_DATE, timestamp );
-    }
-
-
-    private CargoContainer constructAdminstream( CargoContainer cargo ) throws TransformerException, UnsupportedEncodingException, IOException
-    {
-        int cargo_count = cargo.getCargoObjectCount();
-
-        // Constructing list with datastream indexes and id
-        List<ComparablePair<String, Integer>> lst = new ArrayList<ComparablePair<String, Integer>>();
-        for( int i = 0; i < cargo_count; i++ )
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-            lst.add( new ComparablePair<String, Integer>( c.getDataStreamType().getName(), i ) );
-        }
-
-        Collections.sort( lst );
-
-        // Add a number to the id according to the number of
-        // datastreams with this datastreamtype name
-        int j = 0;
-        DataStreamType dsn = null;
-
-        List<ComparablePair<Integer, String>> lst2 = new ArrayList<ComparablePair<Integer, String>>();
-        for( Pair<String, Integer> p : lst )
-        {
-            if( dsn != DataStreamType.getDataStreamTypeFrom( p.getFirst() ) )
-            {
-                j = 0;
-            }
-            else
-            {
-                j += 1;
-            }
-
-            dsn = DataStreamType.getDataStreamTypeFrom( p.getFirst() );
-
-            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
-        }
-
-        lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
-
-        Collections.sort( lst2 );
-
-        //DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        //DocumentBuilder builder = factory.newDocumentBuilder();
-
-        Document admStream = builder.newDocument();
-        Element root = admStream.createElement( "admin-stream" );
-
-        Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-        root.appendChild( (Node) indexingaliasElem );
-
-        Node streams = admStream.createElement( "streams" );
-
-        int counter = cargo.getCargoObjectCount();
-
-        for( int i = 0; i < counter; i++ )
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-
-            Element stream = admStream.createElement( "stream" );
-
-            stream.setAttribute( "id", lst2.get( i ).getSecond() );
-            stream.setAttribute( "lang", c.getLang() );
-            stream.setAttribute( "format", c.getFormat() );
-            stream.setAttribute( "mimetype", c.getMimeType() );
-            stream.setAttribute( "submitter", c.getSubmitter() );
-            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-            stream.setAttribute( "streamNameType", c.getDataStreamType().getName() );
-            streams.appendChild( (Node) stream );
-        }
-
-        root.appendChild( streams );
-
-        byte[] admByteArray = XMLUtils.getByteArray( root );
-
-        cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, admByteArray );
-
-        return cargo;
-
+        return new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" ).format( new Date( time ) );
     }
 
 
@@ -482,15 +468,22 @@ public final class FoxmlDocument
      * Serializes the FoxmlDocument into a foxml 1.1 string representation that
      * is written to the OutputStream
      * @param out the OutputStream to write the foxml serialization to
+     * @param schemaurl Schema to validate the serialization against. If null, no validation will be performed
      * @throws TransformerConfigurationException
      * @throws TransformerException
      */
-    public void serialize( OutputStream out ) throws TransformerConfigurationException, TransformerException
+    public void serialize( OutputStream out, URL schemaurl ) throws TransformerConfigurationException, TransformerException, SAXException, IOException
     {
-        /** \todo serialize should construct an admin stream upon invocation*/
         Transformer idTransform;
         idTransform = xformFactory.newTransformer();
         Source input = new DOMSource( doc );
+        if( schemaurl != null )
+        {
+            SchemaFactory schemaf = javax.xml.validation.SchemaFactory.newInstance( FOXML_NS );
+            Schema schema = schemaf.newSchema( schemaurl );
+            Validator validator = schema.newValidator();
+            validator.validate( input );
+        }
         Result output = new StreamResult( out );
         idTransform.transform( input, output );
 

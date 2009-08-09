@@ -1,25 +1,22 @@
 /*
-  This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
-  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+This file is part of opensearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s,
+Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-  opensearch is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+opensearch is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  opensearch is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+opensearch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
+You should have received a copy of the GNU General Public License
+along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package dk.dbc.opensearch.common.types;
-
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,31 +35,29 @@ import org.apache.log4j.Logger;
  */
 public class CargoContainer
 {
-    Logger log = Logger.getLogger( CargoContainer.class );
 
-    
+    Logger log = Logger.getLogger( CargoContainer.class );
     /** The internal representation of the data contained in the CargoContainer*/
-    private ArrayList< CargoObject > data;
+    private ArrayList<CargoObject> data;
     private String dcIdentifier = null;
     private String dcTitle = null;
-	private String dcCreator = null;
-	private String dcType = null;
-	private String dcSource = null;
-	private String _001_a = null;
-	private String dcRelation = null;
-	
-    
+    private String dcCreator = null;
+    private String dcType = null;
+    private String dcSource = null;
+    private String _001_a = null;
+    private String dcRelation = null;
+
     /**
      * Constructor initializes internal representation of data, i.e.,
      * ArrayList of CargoObjects
      */
     public CargoContainer()
     {
-        data = new ArrayList< CargoObject >();
-        log.debug( String.format( "Constructing new CargoContainer" ) );
+        data = new ArrayList<CargoObject>();
+        log.trace( String.format( "Constructing new CargoContainer" ) );
     }
 
-    
+
     /**
      * Add CargoObject to internal data representation.
      *
@@ -72,18 +67,18 @@ public class CargoContainer
      * @param mimetype
      * @param data
      * @throws IOException
-     * @deprecated use add() with IndexingAlias specified
+     * deprecated use add() with IndexingAlias specified
      */
-    @Deprecated
-    public void add( DataStreamType dataStreamName, 
-                     String format, String submitter, String language, String mimetype, 
-                     byte[] data ) throws IOException, NullPointerException
-    {
-        log.warn( String.format( "Use of deprecated method" ) );
-        add( dataStreamName, format, submitter, language, mimetype, null, data );
-    }
+//    Deprecated
+//    public void add( DataStreamType dataStreamName,
+//                     String format, String submitter, String language, String mimetype,
+//                     byte[] data ) throws IOException, NullPointerException
+//    {
+//        log.warn( String.format( "Use of deprecated method" ) );
+//        add( dataStreamName, format, submitter, language, mimetype, null, data );
+//    }
 
-    
+
     /**
      * Adds a 'datastream' to the CargoContainer; a datastream is any kind of
      * data which, for the duration of the CargoContainer object to which it is
@@ -121,54 +116,57 @@ public class CargoContainer
      *
      * @return a unique id identifying the submitted data
      */
-    public long add( DataStreamType dataStreamName, 
-                     String format, String submitter, String language, String mimetype, 
-                     IndexingAlias alias, 
+    public long add( DataStreamType dataStreamName,
+                     String format,
+                     String submitter,
+                     String language,
+                     String mimetype,
+                     IndexingAlias alias,
                      byte[] data ) throws IOException
     {
-    	if( dataStreamName == null ) 
+        if( dataStreamName == null )
         {
             log.fatal( "dataStreamName cannot be null" );
-            throw new NullPointerException( "dataStreamName cannot be null" );
+            throw new IllegalArgumentException( "dataStreamName cannot be null" );
         }
-    	else if( ( mimetype == null ) || ( mimetype.equals( "" ) ) ) 
+        else if( (mimetype == null) || (mimetype.equals( "" )) )
         {
             log.fatal( "mimetype must be specified" );
-            throw new NullPointerException( "mimetype must be specified" );
+            throw new IllegalArgumentException( "mimetype must be specified" );
         }
-    	else if( ( language == null ) || ( language.equals( "" ) ) ) 
+        else if( (language == null) || (language.equals( "" )) )
         {
             log.fatal( "language must be specified" );
-            throw new NullPointerException( "language must be specified" );
+            throw new IllegalArgumentException( "language must be specified" );
         }
-    	else if( ( submitter == null ) || ( submitter.equals( "" ) ) ) 
+        else if( (submitter == null) || (submitter.equals( "" )) )
         {
             log.fatal( "submitter must be specified" );
-            throw new NullPointerException( "submitter must be specified" );
+            throw new IllegalArgumentException( "submitter must be specified" );
         }
-    	else if( ( format == null ) || ( format.equals( "" ) ) ) 
+        else if( (format == null) || (format.equals( "" )) )
         {
             log.fatal( "format must be specified" );
-            throw new NullPointerException( "format must be specified" );
+            throw new IllegalArgumentException( "format must be specified" );
         }
-    	else if( alias == null ) 
-    	{
+        else if( alias == null )
+        {
             log.fatal( "alias must be specified" );
-            throw new NullPointerException( "alias must be specified" );
+            throw new IllegalArgumentException( "alias must be specified" );
         }
-    	else if( ( data == null ) || ( data.length <= 0 ) ) 
+        else if( (data == null) || (data.length <= 0) )
         {
             log.fatal( "data must be present " );
-            throw new NullPointerException( "data must be present " );
+            throw new IllegalArgumentException( "data must be present " );
         }
-        
-        CargoObject co = new CargoObject( dataStreamName, 
-                                          mimetype, 
-                                          language, 
-                                          submitter, 
-                                          format,
-                                          alias,
-                                          data );
+
+        CargoObject co = new CargoObject( dataStreamName,
+                mimetype,
+                language,
+                submitter,
+                format,
+                alias,
+                data );
 
         this.data.add( co );
         log.debug( String.format( "cargoObject with id '%s' added to container", co.getId() ) );
@@ -176,20 +174,21 @@ public class CargoContainer
 
         return co.getId();
     }
-    
-    
+
+
     /**
      * Given an id, this method removes a CargoObject from the
      * CargoContainer. If the id can be found, and the object can be
      * deleted, this method returns true, all other scenarios will
      * return false.
-     * 
+     *
      * @param id of the data to be removed from the CargoContainer
      * @returns true iff the referenced data could be deleted from the CargoContainer, false otherwise
      */
     public boolean remove( long id )
     {
-        if( ! this.hasCargo( id ) ) {
+        if( !this.hasCargo( id ) )
+        {
             log.warn( String.format( "No CargoObject with id %s", id ) );
             return false;
         }
@@ -197,8 +196,9 @@ public class CargoContainer
         {
             return this.data.remove( this.getCargoObject( id ) );
         }
-        
+
     }
+
 
     /**
      * Given an id, this method returns true if a CargoObject with the
@@ -212,15 +212,15 @@ public class CargoContainer
     {
         for( CargoObject co : data )
         {
-            if( co.getId() == id ) 
+            if( co.getId() == id )
             {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
 
     /**
      * Given a DataStreamTyped, this method returns true if a
@@ -235,12 +235,12 @@ public class CargoContainer
     {
         for( CargoObject co : data )
         {
-            if( co.getDataStreamType() == type ) 
+            if( co.getDataStreamType() == type )
             {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -254,7 +254,7 @@ public class CargoContainer
      *
      * @return CargoObject or a null CargoObject if id isn't found
      */
-    public CargoObject getCargoObject( long id ) 
+    public CargoObject getCargoObject( long id )
     {
         CargoObject ret_co = null;
         for( CargoObject co : data )
@@ -269,23 +269,29 @@ public class CargoContainer
         return ret_co;
     }
 
-    
+
     /**
-     * Based on the DataStreamType, the first CargoObject matching the type is
-     * returned. This method should only be used, if you know that there is
-     * exactly one CargoObject with the type in the CargoContainer. If there are
-     * more, or if you are unsure, please use the getCargoObjects() method
-     * instead. Use the getCargoObjectCount() method to find out how many
-     * CargoObjects matching a specific DataStreamType that resides in the
-     * CargoContainer.
+     * Based on the {@link DataStreamType}, the first {@link
+     * CargoObject} matching the type is returned. This method should
+     * only be used, if you know that there is exactly one {@link
+     * CargoObject} with the type in the {@link CargoContainer}. If
+     * there are more, or if you are unsure, please use the {@link
+     * #getCargoObjects()} method instead. Use the {@link
+     * #getCargoObjectCount()} method to find out how many
+     * CargoObjects matching a specific DataStreamType that resides in
+     * the CargoContainer.
+     *
+     * Please note that this method returns null if no matching
+     * CargoObjects were found. Use {@link #hasCargo(DataStreamType)}
+     * to check beforehand or check for nulls afterward.
      *
      * @param type The DataStreamType to find the CargoObject from
      *
      * @return The first CargoObject that matches the DataStreamType
+     * or null if no matches were found
      */
-    public CargoObject getCargoObject( DataStreamType type ) 
+    public CargoObject getCargoObject( DataStreamType type )
     {
-    	log.debug( "CargoContainer getCargoObject entering method" ); 
         CargoObject ret_co = null;
         for( CargoObject co : data )
         {
@@ -295,10 +301,11 @@ public class CargoContainer
             }
         }
 
-        if( null == ret_co ) 
+        if( null == ret_co )
         {
-            log.error( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
-            throw new NullPointerException( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
+            log.warn( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
+            //we'll let the client deal with null;
+            //throw new NullPointerException( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
         }
 
         return ret_co;
@@ -312,7 +319,7 @@ public class CargoContainer
      *
      * @return the count of CargoObjects matching the type
      */
-    public int getCargoObjectCount( DataStreamType type ) 
+    public int getCargoObjectCount( DataStreamType type )
     {
         int count = 0;
         for( CargoObject co : data )
@@ -326,18 +333,18 @@ public class CargoContainer
         return count;
     }
 
-    
+
     /**
      * Get the total number of CargoObjects in the CargoContainer
      *
      * @return the count of CargoObjects in the CargoContainer
      */
-    public int getCargoObjectCount() 
+    public int getCargoObjectCount()
     {
         return data.size();
     }
 
-    
+
     /**
      * Returns a List of CargoObjects that matches the DataStreamType. If you
      * know that there are only one CargoObject matching the DataStreamType, use
@@ -348,23 +355,24 @@ public class CargoContainer
      *
      * @return a List of CargoObjects or a null List if none were found
      */
-    public List< CargoObject > getCargoObjects( DataStreamType type ) 
+    public List<CargoObject> getCargoObjects( DataStreamType type )
     {
-        List< CargoObject > ret_list = new ArrayList< CargoObject >();
+        List<CargoObject> ret_list = new ArrayList<CargoObject>();
         for( CargoObject co : data )
         {
-            if( type == co.getDataStreamType() ) 
+            if( type == co.getDataStreamType() )
             {
                 ret_list.add( co );
             }
         }
 
-        // the returned list must contain the same number of CargoObjects 
+        // the returned list must contain the same number of CargoObjects
         // that getCargoObjectCount(DataStreamType type) does
-        assert( getCargoObjectCount( type ) == ret_list.size() );
+        assert (getCargoObjectCount( type ) == ret_list.size());
 
         return ret_list;
     }
+
 
     /**
      * Returns a List of all the CargoObjects that are contained in the
@@ -374,12 +382,12 @@ public class CargoContainer
      * @return a List of all CargoObjects from the CargoContainer or a null List
      *         object if none are found
      */
-    public List< CargoObject > getCargoObjects() 
+    public List<CargoObject> getCargoObjects()
     {
         return data;
     }
 
-    
+
     /**
      * Given an id of a CargoObject, this method returns the DataStreamType
      * which the CargoObject was registered with
@@ -387,12 +395,10 @@ public class CargoContainer
      * @param id the id to match the CargoObject with
      * @return the DataStreamType of the CargoObject with the specified id
      */
-//    public DataStreamType getDataStreamType( long id )
-//    {
-//        return null;
-//    }
-
-
+    //    public DataStreamType getDataStreamType( long id )
+    //    {
+    //        return null;
+    //    }
     /**
      * Given an id of a CargoObject, this method returns the IndexingAlias
      * for the data in the CargoObject
@@ -400,12 +406,11 @@ public class CargoContainer
      * @param id the id to match the CargoObject with
      * @return the alias that is used to index the data in the CargoObject with
      */
-    public IndexingAlias getIndexingAlias( long id ) 
+    public IndexingAlias getIndexingAlias( long id )
     {
         IndexingAlias ret_ia = null;
-        log.debug( String.format( "id to test for = %s", id ) );
-        for( CargoObject co : data ){
-            log.debug( String.format( "co.getId() = %s", co.getId() ) );
+        for( CargoObject co : data )
+        {
             if( id == co.getId() )
             {
                 ret_ia = co.getIndexingAlias();
@@ -423,7 +428,7 @@ public class CargoContainer
      * @param dataStreamType the DataStreamType to match the CargoObject with
      * @return the alias that is used to index the data in the CargoObject with
      */
-    public IndexingAlias getIndexingAlias( DataStreamType dataStreamType ) 
+    public IndexingAlias getIndexingAlias( DataStreamType dataStreamType )
     {
         IndexingAlias ret_ia = null;
         for( CargoObject co : data )
@@ -436,162 +441,163 @@ public class CargoContainer
 
         return ret_ia;
     }
-    
-    
+
+
     public void setDCIdentifier( String dcIdentifier )
     {
-    	log.debug( String.format( "setting dcIdentifier '%s' for CargoContainer", this.dcIdentifier ) );
-    	this.dcIdentifier = dcIdentifier;
+        this.dcIdentifier = dcIdentifier;
     }
-    
-    
+
+
     public String getDCIdentifier() throws IllegalStateException
     {
-    	log.debug( "CargoContainer.getDCIdentifier() called, pid: " + this.dcIdentifier );
-    	if ( this.dcIdentifier == null || this.dcIdentifier.isEmpty() || this.dcIdentifier.equals( "" ) ) 
-    	{
-    		log.error( String.format( "getDCIdentifier: dcIdentifier '%s' is empty", dcIdentifier ) );
-    		throw new IllegalStateException( "Pid for CargoContainer is empty" );
-    	}
-    	
-    	log.debug( String.format( "getDCIdentifier returning dcIdentifier '%s'", this.dcIdentifier ) );    	
-    	return this.dcIdentifier;
+        if( this.dcIdentifier == null || this.dcIdentifier.isEmpty() || this.dcIdentifier.equals( "" ) )
+        {
+            log.warn( String.format( "Identifier for CargoContainer not specified" ) );
+            //if identifier is not given in the constructor, a missing identifier is a valid state.
+            //throw new IllegalStateException(  );
+            }
+
+        return this.dcIdentifier;
     }
 
 
-	public void setDCTitle( String dcTitle ) 
-	{
-		if ( this.dcTitle == null )
-		{
-			if ( dcTitle.contains( "[Materialevurdering]") )
-			{
-				dcTitle = dcTitle.replaceAll( "[Materialevurdering]", "" );
-			}
-			
-			this.dcTitle = dcTitle;			
-		}
-	}
-	
-	
-	public String getDCTitle() 
-	{
-		if ( this.dcTitle != null )
-		{
-			return this.dcTitle;
-		}
-		else
-		{
-			return "";
-		}
-	}
+    public void setDCTitle( String dcTitle )
+    {
+        //\todo: clean up this code
+        if( this.dcTitle == null )
+        {
+            if( dcTitle.contains( "[Materialevurdering]" ) )
+            {
+                dcTitle = dcTitle.replaceAll( "[Materialevurdering]", "" );
+            }
+
+            this.dcTitle = dcTitle;
+        }
+    }
 
 
-	public void setDCCreator( String dcCreator ) 
-	{
-		if ( this.dcCreator == null )
-		{
-			this.dcCreator = dcCreator;
-		}
-	}
+    public String getDCTitle()
+    {
+        if( this.dcTitle != null )
+        {
+            return this.dcTitle;
+        }
+        else
+        {
+            return "";
+        }
+    }
 
 
-	public String getDCCreator() 
-	{
-		if ( this.dcCreator != null )
-		{
-			return this.dcCreator;
-		}
-		else
-		{
-			return "";
-		}
-	}
+    public void setDCCreator( String dcCreator )
+    {
+        if( this.dcCreator == null )
+        {
+            this.dcCreator = dcCreator;
+        }
+    }
 
 
-	public void setDCType( String dcType ) 
-	{
-		if ( this.dcType == null )
-		{
-			this.dcType = dcType;
-		}		
-	}
-	
-	
-	public String getDCType() 
-	{
-		if ( this.dcType != null )
-		{
-			return this.dcType;
-		}
-		else
-		{
-			return "";
-		}		
-	}
-	
-
-	public void setDCSource( String dcSource ) 
-	{
-		if ( this.dcSource == null )
-		{
-			this.dcSource = dcSource;
-		}		
-	}
+    public String getDCCreator()
+    {
+        if( this.dcCreator != null )
+        {
+            return this.dcCreator;
+        }
+        else
+        {
+            return "";
+        }
+    }
 
 
-	public String getDCSource() 
-	{
-		if ( this.dcSource != null )
-		{
-			return this.dcSource;
-		}
-		else
-		{
-			return "";
-		}
-	}
-	
-	
-	public void set_001_a( String _001_a )
-	{
-		if ( this._001_a == null )
-		{
-			this._001_a = _001_a;			
-		}
-	}
-	
-	
-	public String get_001_a()
-	{
-		if ( this._001_a != null )
-		{
-			return this._001_a;
-		}
-		else
-		{
-			return "";
-		}	
-	}
-	
-	
-	public void setDCRelation( String dcRelation )
-	{
-		if ( this.dcRelation == null )
-		{
-			this.dcRelation = dcRelation;			
-		}
-	}
-	
-	
-	public String getDCRelation()
-	{
-		if ( this.dcRelation != null )
-		{
-			return this.dcRelation;
-		}
-		else
-		{
-			return "";
-		}	
-	}
+    public void setDCType( String dcType )
+    {
+        if( this.dcType == null )
+        {
+            this.dcType = dcType;
+        }
+    }
+
+
+    public String getDCType()
+    {
+        if( this.dcType != null )
+        {
+            return this.dcType;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+
+    public void setDCSource( String dcSource )
+    {
+        if( this.dcSource == null )
+        {
+            this.dcSource = dcSource;
+        }
+    }
+
+
+    public String getDCSource()
+    {
+        if( this.dcSource != null )
+        {
+            return this.dcSource;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+
+    public void set_001_a( String _001_a )
+    {
+        if( this._001_a == null )
+        {
+            this._001_a = _001_a;
+        }
+    }
+
+
+    public String get_001_a()
+    {
+        if( this._001_a != null )
+        {
+            return this._001_a;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+
+    public void setDCRelation( String dcRelation )
+    {
+        if( this.dcRelation == null )
+        {
+            this.dcRelation = dcRelation;
+        }
+    }
+
+
+    public String getDCRelation()
+    {
+        if( this.dcRelation != null )
+        {
+            return this.dcRelation;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+
 }

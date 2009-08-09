@@ -23,19 +23,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 /** \brief UnitTest for CargoContainerT **/
 
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.CargoObjectInfo;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.common.types.InputPair;
 
-import fedora.common.policy.DatastreamNamespace;
-import fedora.server.types.gen.Datastream;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 
 /**
@@ -133,7 +124,7 @@ public class CargoContainerTest
      * 
      * @throws IOException
      */
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testStreamCannotBeEmpty() throws IOException
     {
 
@@ -151,17 +142,51 @@ public class CargoContainerTest
         //     throw new NullPointerException();
         // }
     }
-
-    @Test(expected = NullPointerException.class)
-    public void testNullPointerExceptionWithNoAlias() throws IOException
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentExceptionWithNullDataStreamType() throws IOException
     {
-        byte[] is = "abc".getBytes();
-        CargoContainer cc = new CargoContainer();
-
-        //the add method of the CargoContainer should throw a NullPointerException on this call:
-        cc.add( dsn, format, submitter, language, mimetype, is );
+        cargo.add( null, format, submitter, language, mimetype, IndexingAlias.None, data );
 
     }
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentExceptionWithNullFormat() throws IOException
+    {
+        cargo.add( dsn, null, submitter, language, mimetype, IndexingAlias.None, data );
+
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentExceptionWithNullSubmitter() throws IOException
+    {
+        cargo.add( dsn, format, null, language, mimetype, IndexingAlias.None, data );
+
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentExceptionWithNullLanguage() throws IOException
+    {
+        cargo.add( dsn, format, submitter, null, mimetype, IndexingAlias.None, data );
+
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentExceptionWithNullMimetype() throws IOException
+    {
+        cargo.add( dsn, format, submitter, language, null, IndexingAlias.None, data );
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentExceptionWithNullAlias() throws IOException
+    {
+        cargo.add( dsn, format, submitter, language, mimetype, null, data );
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentExceptionWithNoData() throws IOException
+    {
+        cargo.add( dsn, format, submitter, language, mimetype, IndexingAlias.None, "".getBytes() );
+
+    }
+
 
     /** 
      * This test will ensure that the conversion between the String
@@ -274,14 +299,14 @@ public class CargoContainerTest
 
 
     /** 
-     * This test expects a NullPointerException to be
-     * thrown if the client tries to lookup a nonexisting datastream
+     * This test tests the expectations of a null return value
+     * if the client tries to lookup a nonexisting datastream
      * from a cargocontainer
      */
-    @Test(expected = NullPointerException.class)
-    public void testNullPointerExceptionWithLookupOnNonExistingCargoObject(){
+    @Test
+    public void testNullWithLookupOnNonExistingCargoObject(){
         DataStreamType dst3 = DataStreamType.getDataStreamTypeFrom( "adminData" );
-        cargo.getCargoObject( dst3 );
+        assertNull( cargo.getCargoObject( dst3 ) );
     }
 
 
@@ -323,7 +348,8 @@ public class CargoContainerTest
         assertTrue( !( id1 == id2 ) );
     }
 
-    @Test public void testRemoveCargoObject() throws IOException
+    @Test
+    public void testRemoveCargoObject() throws IOException
     {
         long id = cargo.add( DataStreamType.OriginalData, 
                               format, 
@@ -336,7 +362,8 @@ public class CargoContainerTest
         assertTrue( cargo.remove( id ) );
     }
 
-    @Test public void testTryRemoveNonexistingId() throws IOException
+    @Test
+    public void testTryRemoveNonexistingId() throws IOException
     {
         long id = cargo.add( DataStreamType.OriginalData, 
                               format, 
@@ -349,7 +376,8 @@ public class CargoContainerTest
         assertTrue( ! cargo.remove( id ) );
     }
 
-    @Test public void testTryRemoveNonexistingCargoObject() throws IOException
+    @Test
+    public void testTryRemoveNonexistingCargoObject() throws IOException
     {
         long id = cargo.add( DataStreamType.OriginalData, 
                               format, 

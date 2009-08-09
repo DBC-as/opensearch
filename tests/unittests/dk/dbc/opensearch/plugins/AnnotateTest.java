@@ -30,6 +30,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
 
@@ -60,8 +61,7 @@ public class AnnotateTest
 
         DatadockJob ddj = new DatadockJob( uri, "dbc", "faktalink", "dbc:100" );
         CargoContainer cc = new CargoContainer();
-        cc.add( DataStreamType.OriginalData, "faktalink", "dbc", "da", "text/xml", fb );
-
+        cc.add( DataStreamType.OriginalData, "faktalink", "dbc", "da", "text/xml", IndexingAlias.None, fb );
         DocbookAnnotate dba = new DocbookAnnotate();
 
         CargoContainer cc2 = dba.getCargoContainer( cc );

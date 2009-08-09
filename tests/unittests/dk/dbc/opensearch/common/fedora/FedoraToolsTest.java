@@ -22,7 +22,6 @@ package dk.dbc.opensearch.common.fedora;
 
 
 
-import dk.dbc.opensearch.common.fedora.FedoraTools;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
@@ -41,7 +40,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import org.junit.*;
-import static org.junit.Assert.*;
 import org.xml.sax.SAXException;
 import org.custommonkey.xmlunit.*;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -69,7 +67,7 @@ public class FedoraToolsTest// extends XMLTestCase
     @BeforeClass
     public static void SetupClass()
     {
-        HashMap m = new HashMap();
+        HashMap<String, String> m = new HashMap<String, String>();
         m.put( "x", "info:fedora/fedora-system:def/foxml#" );
         SimpleNamespaceContext ctx = new SimpleNamespaceContext(m);
         XMLUnit.setXpathNamespaceContext( ctx );
