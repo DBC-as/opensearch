@@ -7,42 +7,57 @@ package dk.dbc.opensearch.plugins;
 
 
 /**
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+   This file is part of opensearch.
+   Copyright © 2009, Dansk Bibliotekscenter a/s,
+   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   opensearch is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   opensearch is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
 import dk.dbc.opensearch.common.compass.CPMAlias;
+import dk.dbc.opensearch.common.config.CompassConfig;
+import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.common.helpers.XMLUtils;
+import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -52,13 +67,16 @@ import org.compass.core.CompassTransaction;
 import org.compass.core.Resource;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
+import org.compass.core.xml.dom4j.Dom4jXmlObject;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import dk.dbc.opensearch.common.types.DataStreamType;
 
 
 public class IndexerXSEM implements IIndexer
@@ -101,20 +119,20 @@ public class IndexerXSEM implements IIndexer
         CPMAlias cpmAlias = null;
         log.debug( String.format( "number of streams in cc: %s", cc.getCargoObjectCount() ) );
         List< CargoObject > list = cc.getCargoObjects();
-        try 
+        try
         {
             cpmAlias = new CPMAlias();
-        } 
-        catch( ParserConfigurationException pce ) 
+        }
+        catch( ParserConfigurationException pce )
         {
             log.fatal( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" + pce ) );
             throw new PluginException( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
-        } 
-        catch (SAXException se) 
+        }
+        catch (SAXException se)
         {
             log.fatal( String.format( "Could not parse XSEM mappings file" + se ) );
             throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
-        } 
+        }
         catch ( IOException ioe )
         {
             log.fatal( String.format( "First: Could not open or read XSEM mappings file: " + ioe ) );
@@ -124,7 +142,7 @@ public class IndexerXSEM implements IIndexer
 
         for( CargoObject co : list )
         {
-            if( ! ( co.getDataStreamType() == DataStreamType.OriginalData ) ) 
+            if( ! ( co.getDataStreamType() == DataStreamType.OriginalData ) )
             {
                 log.info( String.format( "Not indexing data with datastreamtype '%s'",co.getDataStreamType() ) );
             }
@@ -134,15 +152,15 @@ public class IndexerXSEM implements IIndexer
                 boolean isValidAlias = false;
                 try {
                     isValidAlias = cpmAlias.isValidAlias( indexingAlias );
-                } 
+                }
                 catch ( ParserConfigurationException pce ) {
                     log.fatal( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
                     throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
-                } 
+                }
                 catch ( SAXException se ) {
                     log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
                     throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
-                } 
+                }
                 catch (IOException ioe) {
                     log.fatal( String.format( "Second: Could not open or read XSEM mappings file" ), ioe );
                     throw new PluginException( String.format( "Second Exception Could not open or read XSEM mappings file" ), ioe );
@@ -174,6 +192,8 @@ public class IndexerXSEM implements IIndexer
 
                     Element root = doc.getRootElement();
 
+
+
                     for( String key : fieldMap.keySet() )
                     {
                         log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
@@ -189,6 +209,83 @@ public class IndexerXSEM implements IIndexer
                     //AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( co.getFormat(), doc.getRootElement() );
                     log.info( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
 
+
+                    /** lowerCase Untokenized Fields start
+                     * \todo: This is a hack, made this way because we cannot access
+                     * lucene directly through compass 2.0.*
+                     */
+
+                    Stack< String > unTokenizedProperties = new Stack< String >(); 
+                    
+                    log.trace( "retrieving xml.cpm.xml file, to find un_tokenized fields" );
+
+                    NodeList nl = null;
+                    
+                    try{
+                        nl = XMLUtils.getNodeList( new File( CompassConfig.getXSEMPath() ), "xml-object" );}
+                    catch(ParserConfigurationException pce){
+                        log.fatal(String.format( "Could not configure SAXParser: %s", pce) );
+                        throw new PluginException("Could not configure SAXParser");
+                    }
+                    catch(SAXException se){
+                        log.fatal(String.format( "Could not parse XSEM file: %s", se) );
+                        throw new PluginException("Could not parse XSEM file");
+                    }
+                    
+                    catch(IOException ioe){
+                        log.fatal(String.format( "Could not read XSEM file: %s", ioe) );
+                        throw new PluginException("Could not read XSEM file");
+                    }
+                    
+                    
+                    log.trace( "Retrieve xpaths for untokenized fields, and push them to untokenized stack" );
+                    for(int i = 0; i < nl.getLength(); i++ ){
+                        
+                        org.w3c.dom.Element XSEM_xml_object = (org.w3c.dom.Element) nl.item( i );
+                        String aliasAttr = XSEM_xml_object.getAttribute( "alias" );
+                        if( indexingAlias.equals( aliasAttr ) )
+                        {  
+                            log.trace( String.format( "found xml-object with alias attribute = %s", indexingAlias ) );
+                            NodeList propertyNodeList = null;
+                            propertyNodeList = XSEM_xml_object.getElementsByTagName( "xml-property" );
+           
+                            
+                            for(int j = 0; j < propertyNodeList.getLength(); j++ )
+                            {
+                                org.w3c.dom.Element XSEM_xml_property = 
+                                    (org.w3c.dom.Element) propertyNodeList.item( j );
+                                String nameAttr = XSEM_xml_property.getAttribute( "name" );
+                                String indexAttr = XSEM_xml_property.getAttribute( "index" );           
+                                if( indexAttr.equals( "un_tokenized") )
+                                { 
+                                    log.trace( "Found un_tokenized property");
+                                    unTokenizedProperties.push( XSEM_xml_property.getAttribute( "xpath" ) );
+                                }
+                            }
+                        }
+                    }
+
+                    log.trace( "Lowercasing identified fields" );
+                    for(String path : unTokenizedProperties)
+                     { 
+                         log.trace( "Found matching elements" );
+                        ArrayList<Element> matchList = (ArrayList<Element>)root.selectNodes( path );
+                        for(Element match : matchList)
+                        { 
+                            log.trace( String.format( "Lowercasing Eement:", match.asXML() ) );
+                            String text = match.getText();
+                            String lowerCasedText = text.toLowerCase();
+                            match.setText( lowerCasedText );
+                            log.warn( String.format( "INSIDE: %s", text ) );
+                        }
+
+                       
+                        log.warn( String.format( "ahem:%s:ahem", root.selectNodes( path ) ) );
+                    }
+           
+                    /** lowerCase Untokenized Fields end */
+
+                    
                     // getting transaction object and saving index
                     log.debug( String.format( "Getting transaction object" ) );
                     CompassTransaction trans = null;
@@ -202,6 +299,9 @@ public class IndexerXSEM implements IIndexer
                         log.fatal( String.format( "Could not initiate transaction on the CompassSession" ) );
                         throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
                     }
+
+                    
+                    
 
                     /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
                     //HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
@@ -287,7 +387,7 @@ public class IndexerXSEM implements IIndexer
      */
     private void updateEstimationDB( CargoObject co, long processTime, IEstimate estimate ) throws PluginException
     {
-        
+
 
         // updating the database with the new estimations
         try
@@ -308,10 +408,10 @@ public class IndexerXSEM implements IIndexer
             throw new PluginException( "Could not configure database in Estimation class", cnfe );
         }
     }
-    
-    
+
+
     public PluginType getPluginType()
     {
         return pluginType;
-    }    
+    }
 }
