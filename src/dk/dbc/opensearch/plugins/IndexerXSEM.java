@@ -255,10 +255,12 @@ public class IndexerXSEM implements IIndexer
                                 org.w3c.dom.Element XSEM_xml_property = 
                                     (org.w3c.dom.Element) propertyNodeList.item( j );
                                 String nameAttr = XSEM_xml_property.getAttribute( "name" );
-                                String indexAttr = XSEM_xml_property.getAttribute( "index" );           
-                                if( indexAttr.equals( "un_tokenized") )
+                                String indexAttr = XSEM_xml_property.getAttribute( "index" );
+                                String analyzerAttr = XSEM_xml_property.getAttribute( "analyzer" );
+                                log.warn( String.format( "ANALYZER ATTR = %s : $s", analyzerAttr ) );
+                                if( analyzerAttr.equals( "KeywordLowerAnalyzer") )
                                 { 
-                                    log.trace( "Found un_tokenized property");
+                                    log.warn( "Found keywordLowerAnalyzer");
                                     unTokenizedProperties.push( XSEM_xml_property.getAttribute( "xpath" ) );
                                 }
                             }
