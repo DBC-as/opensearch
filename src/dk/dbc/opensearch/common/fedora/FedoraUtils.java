@@ -54,13 +54,35 @@ public class FedoraUtils
     {
         FoxmlDocument foxml = new FoxmlDocument( cargo.getDCIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
         Element admstream = FedoraUtils.constructAdminStream( cargo );
+
+        /**
+         * \todo:
+         *
+         * when iterating here:
+         * if cargoObject.getDataStreamName (c.getDataStreamType() => c.getDataStreamType) is datastreamtype.RELSEXT
+         * 	    1) Extend datastreamtype to contain RELSEXT
+         * then constructDataStream must be called with true, false, true, that is, Versionable = true, External = false, and
+         *      InlineData = true.
+         */
+        int cargo_count = cargo.getCargoObjectCount();
+        List< ? extends Pair<Integer, String> > ordering = getOrderedMapping( cargo );
+        for( int i = 0; i < cargo_count; i++ )
+        {
+            CargoObject c = cargo.getCargoObjects().get( i );
+            foxml.addBinaryContent( ordering.get( i ).getSecond(), c.getBytes(), c.getFormat(), c.getMimeType(), c.getTimestamp() );
+        }
+
+
         String administrationStream = XMLUtils.ElementToString( admstream );
 
         foxml.addXmlContent( "AdministrationStream", administrationStream, "administration stream", System.currentTimeMillis(), true );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
 
         foxml.serialize( baos, null );
+        foxml.serialize( baos2, null );
+        log.debug( String.format( "foxml: %s", baos2.toString() ));
 
         return baos.toByteArray();
     }
@@ -75,6 +97,45 @@ public class FedoraUtils
      * @throws ParserConfigurationException
      */
     private static Element constructAdminStream( CargoContainer cargo ) throws ParserConfigurationException
+    {
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        Document admStream = builder.newDocument();
+        Element root = admStream.createElement( "admin-stream" );
+
+        Element indexingaliasElem = admStream.createElement( "indexingalias" );
+        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
+        root.appendChild( (Node) indexingaliasElem );
+
+        Node streams = admStream.createElement( "streams" );
+
+        int counter = cargo.getCargoObjectCount();
+        List<? extends Pair<Integer, String>> lst2 = getOrderedMapping( cargo );
+        for( int i = 0; i < counter; i++ )
+        {
+            CargoObject c = cargo.getCargoObjects().get( i );
+
+            Element stream = admStream.createElement( "stream" );
+
+            stream.setAttribute( "id", lst2.get( i ).getSecond() );
+            stream.setAttribute( "lang", c.getLang() );
+            stream.setAttribute( "format", c.getFormat() );
+            stream.setAttribute( "mimetype", c.getMimeType() );
+            stream.setAttribute( "submitter", c.getSubmitter() );
+            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
+            stream.setAttribute( "streamNameType", c.getDataStreamType().getName() );
+            streams.appendChild( (Node) stream );
+        }
+
+        root.appendChild( streams );
+
+        return root;
+    }
+
+
+    private static List< ? extends Pair<Integer, String>> getOrderedMapping( CargoContainer cargo )
     {
         int cargo_count = cargo.getCargoObjectCount();
         log.trace( String.format( "Number of CargoObjects in Container", cargo_count ) );
@@ -114,39 +175,7 @@ public class FedoraUtils
         lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );
 
         Collections.sort( lst2 );
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        Document admStream = builder.newDocument();
-        Element root = admStream.createElement( "admin-stream" );
-
-        Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-        root.appendChild( (Node) indexingaliasElem );
-
-        Node streams = admStream.createElement( "streams" );
-
-        int counter = cargo.getCargoObjectCount();
-
-        for( int i = 0; i < counter; i++ )
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-
-            Element stream = admStream.createElement( "stream" );
-
-            stream.setAttribute( "id", lst2.get( i ).getSecond() );
-            stream.setAttribute( "lang", c.getLang() );
-            stream.setAttribute( "format", c.getFormat() );
-            stream.setAttribute( "mimetype", c.getMimeType() );
-            stream.setAttribute( "submitter", c.getSubmitter() );
-            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-            stream.setAttribute( "streamNameType", c.getDataStreamType().getName() );
-            streams.appendChild( (Node) stream );
-        }
-
-        root.appendChild( streams );
-
-        return root;
+        return lst2;
     }
+
 }

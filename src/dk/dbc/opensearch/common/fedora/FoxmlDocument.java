@@ -353,11 +353,11 @@ public final class FoxmlDocument
      * @throws SAXException
      * @throws IOException
      */
-    public void addBinaryContent( String datastreamId, byte[] content, String label, long timenow ) throws IOException, XPathExpressionException
+    public void addBinaryContent( String datastreamId, byte[] content, String label, String mime, long timenow ) throws IOException, XPathExpressionException
     {
-        String dsId = addDatastream( datastreamId, State.A, ControlGroup.X, false );
+        String dsId = addDatastream( datastreamId, State.A, ControlGroup.M, false );
         String dsvId = dsId + ".0";
-        addDatastreamVersion( dsId, dsvId, "application/octet-stream", label, content.length, getTimestamp( timenow ) );
+        addDatastreamVersion( dsId, dsvId, mime, label, content.length, getTimestamp( timenow ) );
         String b = Base64.encodeToString( content );
         Node dsv = getDatastreamVersion( dsvId );
         Element binelement = doc.createElementNS( FOXML_NS, "foxml:binaryContent" );
