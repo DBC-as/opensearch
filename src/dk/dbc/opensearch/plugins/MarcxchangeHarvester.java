@@ -130,7 +130,7 @@ public class MarcxchangeHarvester implements IHarvestable
             //byte[] dcByteArray = constructDC( cargo );
             Pair< byte[], CargoContainer > pair = constructDC( cargo );
             byte[] dcByteArray = pair.getFirst();
-            log.debug( "MARC HARVESTER dcByteArray: " + new String( dcByteArray ) );
+            log.debug( "MH dcByteArray: " + new String( dcByteArray ) );
             cargo = pair.getSecond();
             log.debug( String.format( "MH cargo dcTitle '%s'", cargo.getDCTitle() ) );
             cargo.add( DataStreamType.DublinCoreData, "dc", "dbc", "da", "text/xml", IndexingAlias.None, dcByteArray );

@@ -59,8 +59,8 @@ public class Store implements IRepositoryStore
     {
     	log.debug( "just before fa.storeCargoContainer()" );
     	FedoraAdministration fa = new FedoraAdministration();
-        /*String pid =*/ fa.storeCargoContainer( cargo, submitter);
-        //cargo.setDCIdentifier( pid );
+
+        fa.storeCargoContainer( cargo, submitter );
         
         return cargo;
     }

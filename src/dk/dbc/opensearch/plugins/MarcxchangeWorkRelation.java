@@ -97,10 +97,10 @@ public class MarcxchangeWorkRelation implements IRelation
             log.debug( "MarcxchangeWorkRelation getCargoContainer cargo is not null" );
         }
         
-        String dcTitle = cargo.getDCTitle();
-        String dcType = cargo.getDCType();
-        String dcCreator = cargo.getDCCreator();
-        String dcSource = cargo.getDCSource();
+        String dcTitle = cargo.getDCTitle().toLowerCase();
+        String dcType = cargo.getDCType().toLowerCase();
+        String dcCreator = cargo.getDCCreator().toLowerCase();
+        String dcSource = cargo.getDCSource().toLowerCase();
         String dcIdentifier = cargo.getDCIdentifier();
         log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
         
@@ -109,29 +109,41 @@ public class MarcxchangeWorkRelation implements IRelation
         if ( ! types.contains( dcType ) )
         {        	
         	log.debug( String.format( "MWR entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
-        	
+        	if ( dcSource.equals( new String( "Harry Potter and the Order of the Phoenix" ).toLowerCase() ) )
+            {
+                log.debug( String.format( "ORDER OF THE PHOENIX: pid '%s'; title '%s'; type '%s'; creator '%s' source '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ));
+            }
+            
         	// 1. match SOURCE: dcTitle on TARGET: dcTitle        	
         	if ( ! dcTitle.equals( "" ) )
-        	{	
-        		ok = addRelationship( dcIdentifier, "title", dcTitle );
-        		log.debug( String.format("relationship add on '%s' and pid: '%s'", dcTitle, dcIdentifier ) );
-        	}
-        	else if ( ! dcSource.equals( "" ) ) // 2. match SOURCE: dcSource on TARGET: dcTitle
         	{
+                log.debug( String.format( "MWR trying match on title and title", "" ) );
+        		ok = addRelationship( dcIdentifier, "title", dcTitle );
+        		log.debug( String.format("relationship added on title '%s' and title, pid: '%s'", dcTitle, dcIdentifier ) );
+        	}
+        	
+            if ( ! dcSource.equals( "" ) && ! ok ) // 2. match SOURCE: dcSource on TARGET: dcTitle
+        	{
+                log.debug( String.format( "MWR trying match on source and title", "" ) );
         		ok = addRelationship( dcIdentifier, "title", dcSource );
         		log.debug( String.format( "relationship added on title with dcSource '%s' and pid: '%s'", dcSource, dcIdentifier ) );
         	}
-        	else if ( ! dcSource.equals( "" ) ) // 3. match SOURCE: dcSource on TARGET: dcSource
+        	
+            if ( ! dcSource.equals( "" ) && ! ok ) // 3. match SOURCE: dcSource on TARGET: dcSource
         	{
+                log.debug( String.format( "MWR trying match on source and source", "" ) );
         		ok = addRelationship( dcIdentifier, "source", dcSource );
         		log.debug( String.format( "relationship added on source with dcSource '%s' and pid: '%s'", dcSource, dcIdentifier ) );
         	}
-            else if ( ! dcTitle.equals( "" ) ) // 4. match SOURCE: dcTitle on TARGET: dcSource
+            
+            if ( ! dcTitle.equals( "" ) && ! ok ) // 4. match SOURCE: dcTitle on TARGET: dcSource
         	{
+                log.debug( String.format( "MWR trying match on title and source", "" ) );
         		ok = addRelationship( dcIdentifier, "source", dcTitle );
         		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, dcIdentifier ) );
         	}
-        	else
+
+            if ( ! ok )
         	{
         		log.warn( String.format( "dcVariable was", "" ) );
         	}

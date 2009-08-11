@@ -86,13 +86,13 @@ public class CargoObject
         id += alias.hashCode(); 
         id += data.hashCode(); 
         
-        log.trace( String.format( "id for CargoObject = %s", id ) );
+        log.debug( String.format( "id for CargoObject = %s", id ) );
         assert( id != 0L );
         
         coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format, alias, id );
         
         this.data = data;
-        log.trace( String.format( "length of data: %s", data.length ) );
+        log.debug( String.format( "length of data: %s", this.data.length ) );
     }
 
     

@@ -1,24 +1,38 @@
 package dk.dbc.opensearch.common.fedora;
 
+
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
+//import dk.dbc.opensearch.xsd.Property;
+import fedora.common.PID;
+import fedora.server.management.FedoraAPIM;
+import fedora.utilities.Foxml11Document.Property;
+import fedora.utilities.Foxml11Document.State;
 import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.RelationshipTuple;
 
+import fedora.utilities.Foxml11Document;
+import fedora.utilities.Foxml11Document.ControlGroup;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+//import java.lang.Thread.State;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
+
+//import fedora.server.errors.ObjectNotInLowlevelStorageException;
 
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -62,7 +76,9 @@ public class AdministrationFunc
 
         //testFindObjectRelationships();
 
-        testGetRelationships();
+        //testGetRelationships();
+
+        testFoxml11Document();
 
         //System.out.println( "*** kalder testDeleteObjects ***" );
         //String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
@@ -86,6 +102,84 @@ public class AdministrationFunc
         System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
         testGetDataStreamsOfType( pid );
         testDeleteObject( pid );*/
+    }
+
+
+    static void testFoxml11Document()
+    {
+        try
+        {
+            String pid = "admin:func";
+            String contentLocation = "file:" + FileSystemConfig.getTrunkPath() + "pot1.xml";
+            //String contentLocation = "copy:///data1/harvest-test/kkb/danmarcxchange/pot1.xml";
+            byte[] b = getFoxmlObject ( pid, contentLocation );
+            System.out.println( String.format( "byte[]: %s", new String( b ) ) );
+            String retPid = FedoraHandle.getInstance().getAPIM().ingest( b, "info:fedora/fedora-system:FOXML-1.1", null );
+            System.out.println( String.format( "return pid: %s", retPid ) );
+        }
+        catch ( RemoteException re )
+        {
+            System.out.println( String.format( "RemoteException caught: %s", re.getMessage()  ) );
+            re.printStackTrace();
+        }
+        catch ( ConfigurationException ce )
+        {
+            System.out.println( String.format( "", "" ) );
+            ce.printStackTrace();
+        }
+        catch ( ServiceException se )
+        {
+            System.out.println( String.format( "", "" ) );
+            se.printStackTrace();
+        }
+        catch ( MalformedURLException mue )
+        {
+            System.out.println( String.format( "", "" ) );
+            mue.printStackTrace();
+        }
+        catch ( IOException ioe )
+        {
+            System.out.println( String.format( "", "" ) );
+            ioe.printStackTrace();
+        }
+        catch ( Exception e )
+        {
+            System.out.println( String.format( "", "" ) );
+            e.printStackTrace();
+        }
+    }
+
+
+    private static byte[] getFoxmlObject( String pid, String contentLocation ) throws Exception
+    {
+        System.out.println( "Getting foxml object" );
+        Foxml11Document doc = createFoxmlObject( pid, contentLocation );
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        doc.serialize( out );
+
+        return out.toByteArray();
+    }
+
+    
+    static Foxml11Document createFoxmlObject( String spid, String contentLocation )
+    {
+        PID pid = PID.getInstance( spid );
+        System.out.println( String.format( "pid: %s", pid ) );
+        Date date = new Date( 1 );
+
+        Foxml11Document doc = new Foxml11Document( pid.toString() );
+        doc.addObjectProperty( Property.STATE, "A" );
+
+        /*if ( contentLocation != null && contentLocation.length() > 0)
+        {
+            String ds = "DS";
+            String dsv = "DS1.0";
+            doc.addDatastream( ds, State.A, ControlGroup.M, true );
+            doc.addDatastreamVersion( ds, dsv, "text/plaintext", "label", 1, date );
+            doc.setContentLocation( dsv, contentLocation, "URL" );
+        }*/
+        
+        return doc;
     }
 
 

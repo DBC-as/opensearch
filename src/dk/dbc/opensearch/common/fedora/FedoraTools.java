@@ -20,7 +20,6 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -42,12 +41,9 @@ import dk.dbc.opensearch.xsd.types.DigitalObjectTypeVERSIONType;
 import dk.dbc.opensearch.xsd.types.PropertyTypeNAMEType;
 import dk.dbc.opensearch.xsd.types.StateType;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,22 +51,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Collections;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.Result;
 import javax.xml.transform.TransformerException;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
@@ -79,7 +65,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
@@ -225,7 +210,10 @@ public class FedoraTools
         for( int i = 0; i < cargo_count; i++ )
         {
         	log.debug( String.format( "constructing datastream with cargo dctitle '%s'", cargo.getDCTitle() ) );
-            CargoObject c = cargo.getCargoObjects().get( i );            
+            CargoObject c = cargo.getCargoObjects().get( i );
+            log.debug( String.format( "got CargoObject %s", c.getDataStreamType() ) );
+            byte[] b = c.getBytes();
+            log.debug( String.format( "byteArray length '%s'; constructFoxml ByteArray: ", b.length, new String( b ) ) );
             dsArray[i] = constructDatastream( c, timeNow, lst2.get( i ).getSecond() );
         }
 
@@ -440,16 +428,17 @@ public class FedoraTools
         log.debug( String.format( "constructing datastream from cargoobject id=%s, format=%s, submitter=%s, mimetype=%s, contentlength=%s, datastreamtype=%s, indexingalias=%s, datastream id=%s", co.getId(), co.getFormat(), co.getSubmitter(), co.getMimeType(), co.getContentLength(), co.getDataStreamType(), co.getIndexingAlias(), itemID ) );
 
         DatastreamTypeCONTROL_GROUPType controlGroup = null;
-        if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) )
-        {
-            //Managed content
-            controlGroup = DatastreamTypeCONTROL_GROUPType.M;
-        }
-        else if( ( ! externalData ) && ( co.getMimeType() == "text/xml" ) && co.getDataStreamType() == DataStreamType.DublinCoreData ) 
+        if ( ( ! externalData ) && ( co.getMimeType().equals( "text/xml" ) ) && co.getDataStreamType() == DataStreamType.DublinCoreData )
         {
         	log.debug( String.format( "setting control group, datastream type is dublincore", "" ) );
             //Inline content
             controlGroup = DatastreamTypeCONTROL_GROUPType.X;
+        }
+        else if ( ( ! externalData ) && ( co.getMimeType().equals( "text/xml" ) ) )
+        {
+            //Managed content
+            log.debug(  String.format( "setting control group, datastream type is %s", co.getDataStreamType() ) );
+            controlGroup = DatastreamTypeCONTROL_GROUPType.M;
         }
         // else if( ( externalData ) && ( ! inlineData ) )
         // {
@@ -489,15 +478,18 @@ public class FedoraTools
 
         //ContentDigest binaryContent = new ContentDigest();
 
+        log.debug( String.format( "control group is %s, and bytearray %s", controlGroup, new String( ba ) ) );
         if ( controlGroup == DatastreamTypeCONTROL_GROUPType.M )
         {
         	dVersTypeChoice.setBinaryContent( ba ); // specific for managed content
         }
         else if ( controlGroup == DatastreamTypeCONTROL_GROUPType.X )
         {
-        	String str = new String( ba );
+            String str = new String( ba );
+            log.debug( String.format( "dublin core string %s", str ) );
         	XmlContent xmlCont = new XmlContent();
         	xmlCont.addAnyObject( str );
+            //log.debug( String.format( "dublin core xml content %s", xmlCont.toString() ) );
         	dVersTypeChoice.setXmlContent( xmlCont );
         }
 
