@@ -87,7 +87,7 @@ public class FedoraAdministrationTest
         
         IFedoraAdministration fc = new FedoraAdministrationMock();
         
-        String result = fc.storeCargoContainer( mockCargoContainer, submitter, format );
+        String result = fc.storeCargoContainer( mockCargoContainer, submitter);
     
         // //InputPair result = fc.storeContainer( mockCargoContainer, datadockJob, mockProcessqueue, mockEstimate );
         // assertEquals( result.getFirst(), PID );

@@ -65,6 +65,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import fedora.client.FedoraClient;
+import fedora.common.Constants;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.MIMETypedStream;
@@ -140,15 +141,23 @@ public class FedoraAdministrationTest
         }
     }
 
-    @MockClass( realClass = FedoraTools.class )
-    public static class MockFedoraTools
+//    @MockClass( realClass = FedoraTools.class )
+//    public static class MockFedoraTools
+//    {
+//        @Mock public byte[] constructFoxml( CargoContainer cargo, String nextPid, String label )
+//        {
+//            return bytes;
+//        }
+//    }
+
+    @MockClass( realClass = FedoraUtils.class )
+    public static class MockFedoraUtils
     {
-        @Mock public byte[] constructFoxml( CargoContainer cargo, String nextPid, String label )
+        @Mock public byte[] CargoContainerToFoxml( CargoContainer cargo )
         {
             return bytes;
         }
     }
-
 
     @MockClass( realClass = XMLUtils.class )
     public static class MockXMLUtils
@@ -770,31 +779,36 @@ public class FedoraAdministrationTest
     /**
      * Testing the happy path of the storeContainer method
      */
-    @Test public void testStoreCargoContainer() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, XPathExpressionException
+    @Test public void testStoreCargoContainer() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, XPathExpressionException, InstantiationException, IllegalAccessException
     {
         //setup
         Mockit.setUpMocks( MockFedoraHandle.class );
-        Mockit.setUpMocks( MockFedoraTools.class );
+        //Mockit.setUpMocks( MockFedoraTools.class );
+        Mockit.setUpMocks( MockFedoraUtils.class );
         Mockit.setUpMocks( MockPIDManager.class );
         //  String byteString = "bytes";
         String format = "test";
         String logm = String.format( "%s inserted", format);
-        String fedMessage = "info:fedora/fedora-system:FOXML-1.1";
+        String fedMessage = Constants.FOXML1_1.toString();//"info:fedora/fedora-system:FOXML-1.1";
         //byte[] bytes = byteString.getBytes();
 
 
         //expectations
         expect( mockCC.getCargoObjectCount() ).andReturn( 2 );
         mockCC.setDCIdentifier( "test:1" );
+        expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
+        expect( mockCargoObject.getFormat() ).andReturn( format );
+        
         expect( mockFem.ingest( bytes, fedMessage, logm ) ).andReturn( "test:1" );
         //replay
 
         replay( mockCC );
+        replay( mockCargoObject );
         replay( mockFem );
 
         //do stuff
         fa = new FedoraAdministration();
-        String result = fa.storeCargoContainer( mockCC, "test", format );
+        String result = fa.storeCargoContainer( mockCC, "test");
         assertTrue( result.equals( "test:1" ) );
 
         //verify
@@ -817,7 +831,7 @@ public class FedoraAdministrationTest
 
         //do stuff
         fa = new FedoraAdministration();
-        String result = fa.storeCargoContainer( mockCC, "test", "test" );
+        String result = fa.storeCargoContainer( mockCC, "test");
         //verify
         verify( mockCC );
     }

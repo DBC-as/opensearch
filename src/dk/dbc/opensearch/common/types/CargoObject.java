@@ -75,7 +75,8 @@ public class CargoObject
                  IndexingAlias alias,
                  byte[] data ) throws IOException
     {
-        CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );        
+        CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
+        /** \todo: fix hashcode generation to ensure uniqueness */
         long id = 0L;
         id += dataStreamName.hashCode();
         id += cmt.hashCode(); 

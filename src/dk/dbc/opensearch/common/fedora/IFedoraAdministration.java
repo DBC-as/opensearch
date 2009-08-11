@@ -70,7 +70,7 @@ public interface IFedoraAdministration
      * @return the pid of the object in the repository, null if unsuccesfull
      * @throws XPathExpressionException 
      */
-    public String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException;
+    public String storeCargoContainer( CargoContainer cargo, String submitter) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException;
     
 
     /**

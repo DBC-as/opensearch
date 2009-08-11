@@ -50,7 +50,11 @@ public final class FoxmlDocument
 {
 
     static Logger log = Logger.getLogger( FoxmlDocument.class );
+    /**
+     * Defines the system-wide namespace for use in all valid foxml elements
+     */
     public static final String FOXML_NS = "info:fedora/fedora-system:def/foxml#";
+    public static final String FOXML_VERSION_NS = FOXML_NS+"";
     private DocumentBuilder builder;
     private Document doc;
     private Element rootElement;
@@ -59,6 +63,10 @@ public final class FoxmlDocument
     private XPath xpath;
     private TransformerFactory xformFactory;
 
+
+    /**
+     * Helper class for defining properties on the Digital Object
+     */
     public enum Property
     {
 
@@ -85,7 +93,8 @@ public final class FoxmlDocument
     }
 
     /**
-     *
+     * Helper class for defining the state of the individual datastreams in the
+     * Digital Object
      */
     public enum State
     {
@@ -99,13 +108,13 @@ public final class FoxmlDocument
          */
         I,
         /**
-         * Deleted
+         * Deleted (but not purged from the repository)
          */
         D;
     }
 
     /**
-     *
+     * Helper class for defining the controlgroup of the individual datastreams.
      */
     public enum ControlGroup
     {
@@ -133,55 +142,24 @@ public final class FoxmlDocument
     }
 
     /**
-     * Creates a fedora object xml document from a
-     * CargoContainer. The xml representation of the FoxmlDocument can be
-     * obtained via {@link #serialize(OutputStream)}.
-     * For more control over the construction,
-     * use {@link #FoxmlDocument(String) FoxmlDocument} constructor in
-     * conjunction with
-     * {@link #addDatastream(String, State, ControlGroup, String, CargoObject, boolean, boolean) addDatastream} method
-     * @param cargo
-     * @return
+     * Helper class to specify the LocationType of a referring String
      */
-//    public FoxmlDocument( CargoContainer cargo ) throws ServiceException, ConfigurationException, MalformedURLException, IOException, TransformerException, UnsupportedEncodingException, XPathExpressionException, ParserConfigurationException
-//    {
-//        String identifier = cargo.getDCIdentifier();
-//
-//        if( identifier == null || identifier.equals( "" ) )
-//        {
-//            cargo.setDCIdentifier( PIDManager.getInstance().getNextPID( cargo.getDCCreator() ) );
-//        }
-//        else if( identifier.split( ":" ).length == 0 )
-//        {
-//            throw new IllegalArgumentException( String.format( identifier ) );
-//        }
-//
-//        initDocument( identifier );
-//        // automatically contruct the whole document from the CargoContainer.
-//        constructFoxml( cargo );
-//
-//    }
-    /**
-     * Creates a skeletal FedoraObject document with a timestamp of System.currentTimeMillis().
-     * Its serialized representation
-     * can be obtained through the {@link FoxmlDocument#serialize(java.io.OutputStream)} method
-     *
-     * @param pid the pid to be the identifier for the Digital Object
-     * @param label short description of the contents of the Digital Object
-     * @param owner the owner of the Digital Object
-     * @throws ParserConfigurationException
-     */
-//    public FoxmlDocument( String pid, String label, String owner ) throws ParserConfigurationException
-//    {
-//        initDocument( pid );
-//        constructFoxmlProperties( label, owner, getTimestamp( 0l ) );
-//    }
-//
+    public enum LocationType
+    {
+        /**
+         * the referring String denotes a pid in a fedora repository
+         */
+        INTERNAL_ID,
+        /**
+         * the referring String denotes an Url
+         */
+        URL;
+    }
 
     /**
      * Creates a skeletal FedoraObject document. Its serialized representation
      * can be obtained through the
-     * {@link FoxmlDocument#serialize(java.io.OutputStream)} method
+     * {@link FoxmlDocument#serialize(java.io.OutputStream, java.net.URL)} method
      * 
      * @param pid the pid to be the identifier for the Digital Object
      * @param label short description of the contents of the Digital Object
@@ -279,7 +257,7 @@ public final class FoxmlDocument
     private String addDatastream( String id,
                                   State state,
                                   ControlGroup controlGroup,
-                                  boolean versionable ) throws XPathExpressionException, SAXException, IOException
+                                  boolean versionable ) throws XPathExpressionException, IOException
     {
         Element ds = doc.createElementNS( FOXML_NS, "foxml:datastream" );
         ds.setAttribute( "ID", id );
@@ -325,8 +303,13 @@ public final class FoxmlDocument
 
 
     /**
-     * 
-     * @param cargo
+     * Adds a dublincore xml document (in the form of a string) to the Digital
+     * Object. There is no checks regarding the validity of the dublin core xml
+     * or even the well-formedness of the xml contained in the string
+     * (allthough) a SAXException will be thrown when trying to add
+     * non-well-formed xml to the Digital Object xml document.
+     * @param dcdata the dublin core xml document in a string representation.
+     * @param timenow a long suitable for ingesting into {@link java.util.Date(long)}
      * @throws XPathExpressionException
      */
     public void addDublinCoreDatastream( String dcdata, long timenow ) throws XPathExpressionException, SAXException, IOException
@@ -339,9 +322,10 @@ public final class FoxmlDocument
 
     /**
      * Constructs a datastream and a datastreamversion in the Digital Object
-     * @param datastreamId
-     * @param xmlContent
-     * @param versionable
+     * @param datastreamId id for the datastream to be contructed inside the Digital Object
+     * @param xmlContent the xml document in a string representation.
+     * @param versionable a boolean indicating whether the fedora repository
+     *        should manage versioning of the datastream
      * @throws SAXException
      * @throws IOException
      */
@@ -360,39 +344,42 @@ public final class FoxmlDocument
 
 
     /**
-     *
-     * @param dsvId
-     * @param content
+     * Method for adding data to the Digital Object, which will not be
+     * interpreted by the serialization mechanism or by the fedora repository
+     * 
+     * @param datastreamId id for the datastream to be contructed inside the Digital Object
+     * @param content a byte[] containing the data
+     * @param timenow a long suitable for ingesting into {@link java.util.Date(long)}
      * @throws SAXException
      * @throws IOException
      */
-    public void addBinaryContent( String datastreamId, byte[] content, String label, long timenow ) throws SAXException, IOException, XPathExpressionException
+    public void addBinaryContent( String datastreamId, byte[] content, String label, long timenow ) throws IOException, XPathExpressionException
     {
         String dsId = addDatastream( datastreamId, State.A, ControlGroup.X, false );
         String dsvId = dsId + ".0";
         addDatastreamVersion( dsId, dsvId, "application/octet-stream", label, content.length, getTimestamp( timenow ) );
         String b = Base64.encodeToString( content );
-//        Document contentDoc = builder.parse( new InputSource( new StringReader( b ) ) );
-
-//        Node b64content = doc.adoptNode( contentDoc.getDocumentElement() );
-
-        //Node b64content =
         Node dsv = getDatastreamVersion( dsvId );
         Element binelement = doc.createElementNS( FOXML_NS, "foxml:binaryContent" );
         dsv.appendChild( binelement );
         binelement.setTextContent( b );
-//        binelement.appendChild( b64content );
     }
 
 
     /**
+     * Add a content location as a datastream on the Digital Object.
+     * The content can be either stored internally in the fedora repository,
+     * in which case type should be set to {@link INTERNAL_REF}, or externally stored
+     * in which case type should be set to {@link URL}. This method performs no checks
+     * on whether the content referred by ref actually exists or is reachable,
+     * nor does it perform any checks on the uri-scheme of ref.
      *
-     * @param dsvId
-     * @param ref
-     * @param type
+     * @param datastreamId id for the datastream to be contructed inside the Digital Object
+     * @param ref url that references the content
+     * @param type LocationType specifying what kind of reference {@link ref} denotes
      * @throws XPathExpressionException
      */
-    public void addContentLocation( String datastreamId, String ref, String label, String mimetype, String type, long timenow ) throws XPathExpressionException, SAXException, IOException
+    public void addContentLocation( String datastreamId, String ref, String label, String mimetype, LocationType type, long timenow ) throws XPathExpressionException, SAXException, IOException
     {
         String dsId = addDatastream( datastreamId, State.A, ControlGroup.E, true );
         String dsvId = dsId + ".0";
@@ -406,11 +393,7 @@ public final class FoxmlDocument
             location = setContentLocationElement( dsvId );
         }
         location.setAttribute( "REF", ref );
-        if( ! type.equals( "URL" ) || type.equals( "INTERNAL_ID" ) )
-        {
-            throw new IllegalArgumentException( "Type must be either 'URL' or 'INTERNAL_REF'");
-        }
-        location.setAttribute( "TYPE", type );
+        location.setAttribute( "TYPE", type.name() );
     }
 
 
@@ -466,7 +449,7 @@ public final class FoxmlDocument
      * Serializes the FoxmlDocument into a foxml 1.1 string representation that
      * is written to the OutputStream
      * @param out the OutputStream to write the foxml serialization to
-     * @param schemaurl Schema to validate the serialization against. If null, no validation will be performed
+     * @param schemaurl Optional: Schema to validate the serialization against. If no validation is wanted, set this parameter to null
      * @throws TransformerConfigurationException
      * @throws TransformerException
      */

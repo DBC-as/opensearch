@@ -1,5 +1,5 @@
 /*   
-  This file is part of opensearch.
+This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
@@ -15,11 +15,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
+ */
 package dk.dbc.opensearch.common.helpers;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -47,22 +45,22 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-public class XMLUtils 
+public class XMLUtils
 {
+
     static Logger log = Logger.getLogger( XMLUtils.class );
-	
-	
+
     public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFact.newDocumentBuilder();
         Document admDoc = docBuilder.parse( is );
         Element root = admDoc.getDocumentElement();
-        
+
         return root;
     }
-	
-	
+
+
     public static NodeList getNodeList( File xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
@@ -73,11 +71,11 @@ public class XMLUtils
         return xmlRoot.getElementsByTagName( tagName );
     }
 
-    
+
     public static NodeList getNodeList( String xmlFile, String tagName, EntityResolver er ) throws ParserConfigurationException, SAXException, IOException
     {
         log.debug( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, tagName ) );
-        
+
         try
         {
             DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
@@ -105,24 +103,23 @@ public class XMLUtils
             throw ioe;
         }
     }
-    
-    
+
+
     public static byte[] getByteArray( Element root ) throws TransformerException, UnsupportedEncodingException
     {
-    	Source source = new DOMSource( ( Node ) root );
-    	StringWriter stringWriter = new StringWriter();
-    	Result result = new StreamResult( stringWriter );
-    	
-    	TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    	Transformer transformer = transformerFactory.newTransformer();
-    	//transformer.setOutputProperty( javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes" );
-    	transformer.transform( source, result );
-    	
-    	String streamString = stringWriter.getBuffer().toString();
-    	log.debug( String.format( "Constructed stream for the CargoContainer = %s", streamString ) );
-    	byte[] byteArray = streamString.getBytes( "UTF-8" );
-    	
-    	return byteArray;
+        Source source = new DOMSource( (Node) root );
+        StringWriter stringWriter = new StringWriter();
+        Result result = new StreamResult( stringWriter );
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        //transformer.setOutputProperty( javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION, "yes" );
+        transformer.transform( source, result );
+
+        String streamString = stringWriter.getBuffer().toString();
+        log.debug( String.format( "Constructed stream for the CargoContainer = %s", streamString ) );
+        byte[] byteArray = streamString.getBytes( "UTF-8" );
+
+        return byteArray;
     }
-    
 }

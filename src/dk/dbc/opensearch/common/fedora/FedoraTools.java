@@ -161,7 +161,7 @@ public class FedoraTools
 
         ///////////////////// CONSTRUCTIN ADMIN DATASTREAM ////////////////////////////// 
         int cargo_count = cargo.getCargoObjectCount();
-        log.debug( String.format( "Number of CargoObjects in Container", cargo_count ) );
+        log.trace( String.format( "Number of CargoObjects in Container", cargo_count ) );
 
         // Constructing list with datastream indexes and id
         List< ComparablePair < String, Integer > > lst = new  ArrayList< ComparablePair < String, Integer > >();

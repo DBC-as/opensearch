@@ -380,7 +380,7 @@ public class AdministrationFunc
         String pid = "";
         try
         {
-            pid = fa.storeCargoContainer( cc, submitter, format );
+            pid = fa.storeCargoContainer( cc, submitter);
         }
         catch ( Exception e )
         {

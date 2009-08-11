@@ -27,7 +27,7 @@ public enum DataStreamType
 {	
 	OriginalData ( "originalData", "original data" ),
 	DublinCoreData( "dublinCoreData", "dublin core data" ),
-	AdminData( "adminData", "Administration" ),      
+	AdminData( "adminData", "Administration" ), 
     IndexableData( "indexableData", "data prepared for indexing" ),
     RelsExt( "relsExt", "relationship expressions" );
 	

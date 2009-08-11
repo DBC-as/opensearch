@@ -128,7 +128,7 @@ public class FoxmlDocumentTest
     {
         String label = "testdata";
         FoxmlDocument f = new FoxmlDocument( pid, label, "dbc", timestamp );
-        f.addContentLocation( "ReferencedContent", "http://www.dbc.dk/document", label, "application/pdf", "URL", timestamp );
+        f.addContentLocation( "ReferencedContent", "http://www.dbc.dk/document", label, "application/pdf", FoxmlDocument.LocationType.URL, timestamp );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         f.serialize( baos, null );
         String xml = new String( baos.toByteArray() );

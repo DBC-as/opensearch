@@ -84,7 +84,7 @@ public class FedoraAdministrationMock implements IFedoraAdministration
     }
 
 
-    public String storeCargoContainer( CargoContainer cargo, String submitter, String format )throws IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, TransformerException, ValidationException
+    public String storeCargoContainer( CargoContainer cargo, String submitter )throws IOException, MarshalException, ParseException, ParserConfigurationException, RemoteException, TransformerException, ValidationException
     {
     	//System.out.println( "mockpid returned" );
         cc = cargo;

@@ -21,7 +21,6 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -29,6 +28,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
+import fedora.common.Constants;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.FileOutputStream;
@@ -163,13 +163,15 @@ public class FedoraAdministration implements IFedoraAdministration
 
     /**
      * method for storing an object in the Fedora base
-     * @param theCC the CargoContainer to store
-     * @param label, the label to put on the object
-     * @return the pid of the object in the repository, null if unsuccesfull
+     * @param cargo the CargoContainer to store
+     * @param submitter the submitter of the CargoContainer
+     * @param format the format of the CargoContainer
+     * @return the pid of the object in the repository, null if unsuccessful
      */
-    public synchronized String storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException
+    @Override
+    public synchronized String storeCargoContainer( CargoContainer cargo, String submitter) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException
     {
-        log.debug( "Entering storeContainer( CargoContainer )" );
+        log.trace( "Entering storeContainer( CargoContainer )" );
         if( cargo.getCargoObjectCount() == 0 )
         {
             log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
@@ -178,14 +180,13 @@ public class FedoraAdministration implements IFedoraAdministration
 
         String nextPid = PIDManager.getInstance().getNextPID( submitter );
         cargo.setDCIdentifier( nextPid );
-        log.debug( "pid next (getNextPid): " + nextPid );
-        byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
+        log.debug( String.format( "CargoContainer will have pid '%s'", nextPid ) );
+        //byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
+        byte[] foxml = FedoraUtils.CargoContainerToFoxml( cargo );
+        String logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
 
-        String logm = String.format( "%s inserted", format );
-
-        String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, "info:fedora/fedora-system:FOXML-1.1", logm );
-        log.debug( "pid new (inget):       " + pid );
-        log.info( String.format( "Submitted data, returning pid %s", pid ) );
+        String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, Constants.FOXML1_1.toString(), logm );// "info:fedora/fedora-system:FOXML-1.1", logm );
+        log.trace( String.format( "Submitted data, returning pid %s", pid ) );
 
         return pid;
     }
@@ -998,7 +999,6 @@ public class FedoraAdministration implements IFedoraAdministration
                                                                SAXException,
                                                                ConfigurationException
     {
-        //log.debug( "getAdminstream 1" );
         MIMETypedStream ds;
         try
         {
@@ -1019,16 +1019,16 @@ public class FedoraAdministration implements IFedoraAdministration
             throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
         }
 
-        log.debug( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
+        log.trace( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
 
         //CargoContainer cc = new CargoContainer();
         //log.debug( "getAdminstream 3" );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        log.trace( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
         //log.debug( "getDocumentElement" );
         Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
 
-        log.debug( String.format( "root element from adminstream == %s", root ) );
+        log.trace( String.format( "root element from adminstream == %s", root ) );
 
         return root;
 
