@@ -31,5 +31,9 @@
        </converter>
      </converters>
      
+     <searchEngine>
+       <analyzer name="KeywordLowerAnalyzer" type="CustomAnalyzer" analyzerClass="dk.dbc.opensearch.common.compass.KeywordLowerAnalyzer"/>       
+     </searchEngine>
+     
    </compass>
 </compass-core-config>
