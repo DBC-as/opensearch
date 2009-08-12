@@ -33,7 +33,8 @@ import org.xml.sax.SAXException;
 
 
 /**
- *
+ * This class handles the construction of Fedora Digital Object XML (foxml)
+ * from CargoContainers.
  */
 public class FedoraUtils
 {
@@ -53,7 +54,6 @@ public class FedoraUtils
     public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, ServiceException, ConfigurationException, IOException, MalformedURLException, UnsupportedEncodingException, XPathExpressionException, SAXException
     {
         FoxmlDocument foxml = new FoxmlDocument( cargo.getDCIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
-        Element admstream = FedoraUtils.constructAdminStream( cargo );
 
         /**
          * \todo:
@@ -65,14 +65,21 @@ public class FedoraUtils
          *      InlineData = true.
          */
         int cargo_count = cargo.getCargoObjectCount();
-        List< ? extends Pair<Integer, String> > ordering = getOrderedMapping( cargo );
+        List<? extends Pair<Integer, String>> ordering = getOrderedMapping( cargo );
         for( int i = 0; i < cargo_count; i++ )
         {
             CargoObject c = cargo.getCargoObjects().get( i );
-            foxml.addBinaryContent( ordering.get( i ).getSecond(), c.getBytes(), c.getFormat(), c.getMimeType(), c.getTimestamp() );
+            if( c.getDataStreamType() == DataStreamType.DublinCoreData )
+            {
+                foxml.addDublinCoreDatastream( new String( c.getBytes() ), c.getTimestamp() );
+            }
+            else
+            {
+                foxml.addBinaryContent( ordering.get( i ).getSecond(), c.getBytes(), c.getFormat(), c.getMimeType(), c.getTimestamp() );
+            }
         }
 
-
+        Element admstream = FedoraUtils.constructAdminStream( cargo );
         String administrationStream = XMLUtils.ElementToString( admstream );
 
         foxml.addXmlContent( "AdministrationStream", administrationStream, "administration stream", System.currentTimeMillis(), true );
@@ -81,8 +88,6 @@ public class FedoraUtils
         ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
 
         foxml.serialize( baos, null );
-        foxml.serialize( baos2, null );
-        log.debug( String.format( "foxml: %s", baos2.toString() ));
 
         return baos.toByteArray();
     }
@@ -135,7 +140,7 @@ public class FedoraUtils
     }
 
 
-    private static List< ? extends Pair<Integer, String>> getOrderedMapping( CargoContainer cargo )
+    private static List<? extends Pair<Integer, String>> getOrderedMapping( CargoContainer cargo )
     {
         int cargo_count = cargo.getCargoObjectCount();
         log.trace( String.format( "Number of CargoObjects in Container", cargo_count ) );
@@ -177,5 +182,6 @@ public class FedoraUtils
         Collections.sort( lst2 );
         return lst2;
     }
+
 
 }

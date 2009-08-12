@@ -70,7 +70,7 @@ public class FedoraHandle
 
     public static synchronized FedoraHandle getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-    	log.debug( "FedoraHandle getInstance" );    	
+    	log.trace( "FedoraHandle getInstance" );
         if ( INSTANCE == null )
         {
         	INSTANCE = new FedoraHandle();
@@ -82,21 +82,21 @@ public class FedoraHandle
 
     public FedoraAPIA getAPIA() throws ServiceException
     {
-    	log.debug( "FedoraHandle getAPIA" );
+    	log.trace( "FedoraHandle getAPIA" );
     	return fea;
     }
 
 
     public FedoraAPIM getAPIM()
     {
-    	log.debug( "FedoraHandle getAPIM" );
+    	log.trace( "FedoraHandle getAPIM" );
     	return fem;
     }
 
 
     public FedoraClient getFC()
     {
-    	log.debug( "FedoraHandle getFC()" );
+    	log.trace( "FedoraHandle getFC()" );
     	return fc;
     }
 }

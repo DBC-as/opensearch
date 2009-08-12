@@ -321,7 +321,10 @@ public final class FoxmlDocument
 
 
     /**
-     * Constructs a datastream and a datastreamversion in the Digital Object
+     * Constructs a datastream and a datastreamversion in the Digital Object.
+     * The mimetype of the datastream is set to "text/xml" no matter what mimetype
+     * the delivered {@code xmlContent} has.
+     * 
      * @param datastreamId id for the datastream to be contructed inside the Digital Object
      * @param xmlContent the xml document in a string representation.
      * @param versionable a boolean indicating whether the fedora repository

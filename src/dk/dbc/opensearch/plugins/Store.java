@@ -57,7 +57,7 @@ public class Store implements IRepositoryStore
 
     public CargoContainer storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException
     {
-    	log.debug( "just before fa.storeCargoContainer()" );
+    	log.trace( "Entering storeCargoContainer( CargoContainer, String, String)" );
     	FedoraAdministration fa = new FedoraAdministration();
 
         fa.storeCargoContainer( cargo, submitter );
