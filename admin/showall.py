@@ -29,29 +29,38 @@ import psycopg2
 import os
 
 
-def showall():
+
+
+def login():
+    '''handles the login to the database and, if successful, returns a
+    connection object'''
+    usern = os.environ.get( 'USER' )
+    conn = None
+
+    try:
+        conn = psycopg2.connect( "dbname='%s' user='%s' host='%s' password='%s'"%( usern, usern, 'localhost', usern))
+    except psycopg2.InterfaceError, ife:
+        log.fatal( ife.message )
+        sys.exit( "I am unable to connect to the database; %s"%( ife.message ) )
+    return conn
+
+
+
+def showall( cursor ):
     """
     this script print the rows stored in the processqueue and related tables,
     and prints a small summary.
     """
 
-    format = "%-15s %-18s %-2s" 
 
-    usern = os.environ.get( 'USER' )
+    format = "%-15s %-18s %-2s"
     
     try:
-        conn = psycopg2.connect( "dbname='%s' user='%s' password='%s'"%( usern, usern, usern))
-    except:
-        print "I am unable to connect to the database."
-       
-    cur = conn.cursor()
-    
-    try:
-        cur.execute("""SELECT * from processqueue""")
+        cursor.execute("""SELECT * from processqueue""")
     except:
         print "I can't SELECT from processqueue"
         
-    rows = cur.fetchall()
+    rows = cursor.fetchall()
 
     print "processqueue"
     print "----------------------------------------"
@@ -61,11 +70,11 @@ def showall():
 
 
     try:
-        cur.execute("""SELECT * from statistics""")
+        cursor.execute("""SELECT * from statistics""")
     except:
         print "I can't SELECT from statistics"
         
-    rows = cur.fetchall()
+    rows = cursor.fetchall()
 
     print "\n\nstatistics"
     print "----------------------------------------"
@@ -75,11 +84,11 @@ def showall():
 
 
     try:
-        cur.execute("""SELECT * from notindexed""")
+        cursor.execute("""SELECT * from notindexed""")
     except:
         print "I can't SELECT from notindexed"
         
-    rows = cur.fetchall()
+    rows = cursor.fetchall()
 
     print "\n\nnotindexed"
     print "----------------------------------------"
@@ -89,19 +98,19 @@ def showall():
 
 
     try:
-        cur.execute("""SELECT COUNT(*) from processqueue""")
+        cursor.execute("""SELECT COUNT(*) from processqueue""")
     except:
         print "I can't SELECT COUNT(*)from processqueue"
         
-    total_rows = cur.fetchall()[0][0]
+    total_rows = cursor.fetchall()[0][0]
 
     try:
-        cur.execute("""SELECT COUNT(*) from processqueue  WHERE processing='Y'""")
+        cursor.execute("""SELECT COUNT(*) from processqueue  WHERE processing='Y'""")
     except:
         print "I can't SELECT COUNT(*)from processqueue"
 
     try:
-        active_rows = cur.fetchall()[0][0]
+        active_rows = cursor.fetchall()[0][0]
     except:
         active_rows = 0
             
@@ -111,13 +120,20 @@ def showall():
 
     
     try:
-        cur.execute("""SELECT COUNT(*) from notindexed""")
+        cursor.execute("""SELECT COUNT(*) from notindexed""")
     except:
         print "I can't SELECT COUNT(*)from notindexed"
         
-    total_rows = cur.fetchall()[0][0]
+    total_rows = cursor.fetchall()[0][0]
 
     print " Total Number of jobs in notindexed: %s" % (total_rows)
 
 
-showall()
+def main():
+    conn = login()
+    showall( conn.cursor() )
+    conn.commit()
+
+
+if __name__ == "__main__":
+    main()
