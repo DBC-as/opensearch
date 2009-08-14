@@ -37,6 +37,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
+import dk.dbc.opensearch.common.types.DataStreamType;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
@@ -45,7 +46,7 @@ import org.xml.sax.SAXException;
 
 
 /**
- * Class for storing marcxchange sources
+ * Class for storing CargoContainers
  */
 public class Store implements IRepositoryStore
 {
@@ -55,11 +56,19 @@ public class Store implements IRepositoryStore
     private PluginType pluginType = PluginType.STORE;
 
 
-    public CargoContainer storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException
+    public CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException
     {
     	log.trace( "Entering storeCargoContainer( CargoContainer, String, String)" );
     	FedoraAdministration fa = new FedoraAdministration();
-
+        String submitter = null;
+        if( cargo.hasCargo( DataStreamType.OriginalData ) )
+        {
+            submitter = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
+        }
+        else
+        {
+            submitter = cargo.getDCCreator();
+        }
         fa.storeCargoContainer( cargo, submitter );
         
         return cargo;

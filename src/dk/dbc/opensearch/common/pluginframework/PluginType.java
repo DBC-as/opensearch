@@ -25,6 +25,7 @@ public enum PluginType
 {
     HARVEST,
     ANNOTATE,
+    RELATION,
     WORKRELATION,
     REVIEWRELATION,
     OWNER,

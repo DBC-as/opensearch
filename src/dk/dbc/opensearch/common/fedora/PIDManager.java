@@ -22,7 +22,6 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.config.PidManagerConfig;
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
 
 import java.util.HashMap;
 import java.util.Stack;
@@ -90,7 +89,7 @@ public class PIDManager
             throw new IllegalStateException( "Prefix was not specified, and I have no default, exiting" );
         }
 
-        log.debug( String.format( "Calling through FedoraHandle.getInstance().getAPIM().getNextPID( %s, %s)", numPIDs, prefix ) );
+        log.trace( String.format( "Calling through FedoraHandle.getInstance().getAPIM().getNextPID( %s, %s)", numPIDs, prefix ) );
 
         Stack<String> pidStack = new Stack<String>();
 
@@ -105,7 +104,6 @@ public class PIDManager
             throw new IllegalStateException( "Could not retrieve pids from Fedora repository" );
         }
 
-        log.debug( String.format( "pidList length: %s -- Got pidlist=%s", pids.length, pids.toString() ) );        
         for( String pid : pids )
         { 	
             log.debug( String.format( "pushing pid '%s' onto pidstack", pid ) );

@@ -22,9 +22,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
 
+/**
+ * Defines the behaviour for all plugins that retrieves data or information from
+ * repositories
+ */
 public interface IRepositoryRetrieve extends IPluggable
 {    
-    CargoContainer getCargoContainer( String fedoraPID ) throws PluginException;
+    CargoContainer getCargoContainer( String repositoryID ) throws PluginException;
 }

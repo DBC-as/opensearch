@@ -117,7 +117,7 @@ public class DatadockThread implements Callable< Float >
      */
     public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        log.debug( String.format( "Entering DatadockThread Constructor" ) );
+        log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
         this.datadockJob = datadockJob;
 
@@ -125,22 +125,22 @@ public class DatadockThread implements Callable< Float >
         submitter = datadockJob.getSubmitter();
         format = datadockJob.getFormat();
 
-        log.debug( String.format("submitter: %s, format: %s", submitter, format ) );
-        log.debug( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
+        log.trace( String.format("submitter: %s, format: %s", submitter, format ) );
+        log.trace( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
 
         list = DatadockJobsMap.getDatadockPluginsList( submitter, format );
         if( list == null )
         {
             throw new NullPointerException( String.format( "The returned list from the DatadockJobsMap.getDatadockJobsMap( %s, %s ) is null", submitter, format ) );
         }
-        log.debug( "constructor PluginList " + list.toString() );
+        log.trace( "constructor PluginList " + list.toString() );
 
         queue = processqueue;
         this.estimate = estimate;
         this.fedoraAdministration = fedoraAdministration;
 
 
-        log.debug( String.format( "DataDock Construction finished" ) );
+        log.trace( String.format( "DataDock Construction finished" ) );
     }
 
     
@@ -174,15 +174,14 @@ public class DatadockThread implements Callable< Float >
     {
         // Must be implemented due to class implementing Callable< Float > interface.
         // Method is to be extended when we connect to 'Posthuset'
-    	log.debug( "DatadockThread call method called" );
+    	log.trace( "DatadockThread call method called" );
 
         // Validate plugins
         PluginResolver pluginResolver = new PluginResolver();
-        log.debug( "list: " + list.toString() );
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
         String mimeType = null;
-        String format = null;
-        String submitter = null;
+        //String format = null;
+        //String submitter = null;
         long length = 0;
         //String pid = null;
         //boolean stored = false;
@@ -190,16 +189,15 @@ public class DatadockThread implements Callable< Float >
         
         for( String classname : list)
         {
-            log.debug( "DatadockThread getPlugin 'classname' " + classname );
+            log.trace( "DatadockThread getPlugin 'classname' " + classname );
 
             IPluggable plugin = pluginResolver.getPlugin( classname );
-            log.debug( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
+            log.trace( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
            
             switch ( plugin.getPluginType() )
             {
                 case HARVEST:
-                	log.debug( "HARVEST" );
-                    log.debug( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
+                    log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
                     
                     IHarvestable harvestPlugin = (IHarvestable)plugin;
                     cargo = harvestPlugin.getCargoContainer( datadockJob );
@@ -208,8 +206,7 @@ public class DatadockThread implements Callable< Float >
                     
                     break;
                 case ANNOTATE:
-                	log.debug("ANNOTATE");
-                    log.debug( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
+                    log.trace( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
                     
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
 
@@ -219,37 +216,35 @@ public class DatadockThread implements Callable< Float >
                     
                     break;
                 case STORE:
-                	log.debug( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
+                	log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
                 	
-                	for( CargoObject co : cargo.getCargoObjects() )
-                    {
-                        if( co.getDataStreamType() == DataStreamType.OriginalData )
-                        {
-                            mimeType = co.getMimeType();
-                            format = co.getFormat();
-                            submitter = co.getSubmitter();
-                        }
-                        
-                        length += co.getContentLength();
-                    }
+//                	for( CargoObject co : cargo.getCargoObjects() )
+//                    {
+//                        if( co.getDataStreamType() == DataStreamType.OriginalData )
+//                        {
+//                            //mimeType = co.getMimeType();
+//                            //format = co.getFormat();
+//                            //submitter = co.getSubmitter();
+//                        }
+//
+//                        //length += co.getContentLength();
+//                    }
 
                     IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                    cargo = repositoryStore.storeCargoContainer( cargo, submitter, format );
+                    cargo = repositoryStore.storeCargoContainer( cargo );
                     log.debug( "STORE pid: " + cargo.getDCIdentifier() );
                     
                 	break;
-                case WORKRELATION:
-                    log.debug( String.format( "case WORKRELATION pluginType %s", plugin.getPluginType().toString() ) );
+                case RELATION:
+                    log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
                     
                     checkCargoContainerIsNotNull( cargo );
                     
-                    IRelation workRelationPlugin = (IRelation)plugin;
-                    cargo = workRelationPlugin.getCargoContainer( cargo, submitter, format );
-                    log.debug( String.format( "DATADOCKTHREAD workRelationPlugin returned cargo", "" ) );
+                    IRelation relationPlugin = (IRelation)plugin;
+                    cargo = relationPlugin.getCargoContainer( cargo );
                     
                     break;
                 case GETESTIMATE:
-                    log.debug( "" );
                     /*est = estimate.getEstimate( mimeType, length );
                     log.debug( String.format( "Got estimate of %s", est) );*/
                     
@@ -261,12 +256,12 @@ public class DatadockThread implements Callable< Float >
            
         /** \todo: might have to be moved into switch clause */
         // OWNER
-        IPluggable plugin = pluginResolver.getPlugin( "dk.dbc.opensearch.plugins.OwnerRelation" );
-        IRelation ownerRelationPlugin = (IRelation)plugin;
-        log.debug( "Just before ownerRelation" );
-        cargo = ownerRelationPlugin.getCargoContainer( cargo, submitter, format );
-        log.debug( String.format( "DATADOCKTHREAD ownerRelationPlugin returned cargo", "" ) );
-        
+//        IPluggable plugin = pluginResolver.getPlugin( "dk.dbc.opensearch.plugins.OwnerRelation" );
+//        IRelation ownerRelationPlugin = (IRelation)plugin;
+
+//        cargo = ownerRelationPlugin.getCargoContainer( cargo );
+//        log.debug( String.format( "DATADOCKTHREAD ownerRelationPlugin returned cargo", "" ) );
+        length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
         //push to processqueue job to processqueue and get estimate
         est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est) );

@@ -78,11 +78,11 @@ public class AdministrationFunc
 
         //testGetRelationships();
 
-        testFoxml11Document();
+        //testFoxml11Document();
 
         //System.out.println( "*** kalder testDeleteObjects ***" );
-        //String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
-        //testDeleteObjectPids( labels, 50 );
+        String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
+        testDeleteObjectPids( labels, 50 );
 
         /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );

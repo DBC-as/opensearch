@@ -61,10 +61,7 @@ public interface IPluggable
      * by the thread handling to decide which type of plugin to call. It
      * is a private variable of the plugin classes.
      * 
-     * @returns a string containing the task name
+     * @returns a PluginType defining containing the plugin
      */
     public PluginType getPluginType();
-    /**
-     *	 Empty plugin only used to define the type!
-     */
 }

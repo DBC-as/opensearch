@@ -22,12 +22,11 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -60,7 +59,7 @@ public class DatadockManager
      */
     public DatadockManager( DatadockPool pool, IHarvester harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
-        log.debug( "Constructor( pool, harvester ) called" );
+        log.trace( "DatadockManager( pool, harvester ) called" );
 
         this.pool = pool;
         
@@ -73,13 +72,13 @@ public class DatadockManager
     
     public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
     {
-        log.debug( "DatadockManager update called" );
+        log.trace( "DatadockManager update called" );
       
         // Check if there are any registered jobs ready for docking
         // if not... new jobs are requested from the harvester
         if( registeredJobs.size() == 0 )
         {
-            log.debug( "no more jobs. requesting new jobs from the harvester" );
+            log.trace( "no more jobs. requesting new jobs from the harvester" );
             registeredJobs = harvester.getJobs();
         }
       
@@ -98,12 +97,13 @@ public class DatadockManager
 	    }
             catch( RejectedExecutionException re )
             {
-                log.warn( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );	           	
+                /** \todo: explanation on the frequency of this exception.*/
+                log.warn( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
             }
         }
         
         //checking jobs
-        Vector<CompletedTask> finishedJobs = pool.checkJobs();       
+        Vector<CompletedTask> finishedJobs = pool.checkJobs();
     }
     
     

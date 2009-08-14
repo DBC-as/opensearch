@@ -36,13 +36,32 @@ import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.SAXException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
 
 
 /**
- * 
+ * Defines the behavior for all plugins that stores information or data in
+ * repositories.
  */
 public interface IRepositoryStore extends IPluggable 
 {
-    CargoContainer storeCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException;
+    /**
+     * Stores {@code cargo} in a repository.
+     * @param cargo the {@link CargoContainer} to store
+     * @param submitter
+     * @return
+     * @throws PluginException
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws MalformedURLException
+     * @throws RemoteException
+     * @throws ConfigurationException
+     * @throws ServiceException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParseException
+     * @throws ParserConfigurationException
+     * @throws TransformerException
+     * @throws XPathExpressionException
+     */
+    CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException;
 }

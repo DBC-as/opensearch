@@ -22,7 +22,6 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -33,7 +32,6 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -48,7 +46,7 @@ public class ReviewRelation implements IRelation
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
 
-    private PluginType pluginType = PluginType.REVIEWRELATION;
+    private PluginType pluginType = PluginType.RELATION;
     //private NamespaceContext nsc;
     private Vector< String > types;
     private final String marterialevurderinger = "Materialevurdering:?";
@@ -89,7 +87,7 @@ public class ReviewRelation implements IRelation
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo, String submitter, String format ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
     	log.debug( "RR -> getCargoContainer() called" );
 

@@ -94,6 +94,7 @@ public class PluginException extends Exception
 	 * original exception. Returns null if no message was given at the time of
 	 * the catch.
 	 */
+    @Override
 	public String getMessage() {
 		return msg;
 	}
