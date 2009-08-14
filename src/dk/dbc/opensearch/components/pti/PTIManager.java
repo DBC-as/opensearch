@@ -115,8 +115,8 @@ public class PTIManager
                 }
                 catch( RejectedExecutionException re )
                 {
-                    log.error( String.format( "Job rejected, cause: %s, message: %s", re.getCause(), re.getMessage() ) );
-                    log.warn( String.format( "job: fedorahandle='%s' and queueID='%s' rejected - trying again",job.getFirst(), job.getSecond() ) );
+                    log.warn( String.format( "job: fedorahandle='%s' and queueID='%s' rejected (all threads are busy)- trying again"
+                                             ,job.getFirst(), job.getSecond() ) );
                     Thread.currentThread();
                     Thread.sleep( rejectedSleepTime );
                 }
