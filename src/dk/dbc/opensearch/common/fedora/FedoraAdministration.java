@@ -608,7 +608,11 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
         //  try
 //         {
-        /** \todo: this string should be a type */
+        /**
+         * \todo: this string should be a type or the prdicate should be a type
+         * and the actual predicate should be chosen through the parameter
+         */
+
         predicate = "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";//FedoraObjectRelations.Relationship.IS_MEMBER_OF_COLLECTION.toString();
         literal = false;
         log.debug( String.format( "modified addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );

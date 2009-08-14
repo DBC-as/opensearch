@@ -1118,7 +1118,7 @@ String logm = String.format( "modified the object with pid: %s", pid );
     /**
      * Testing the addRelation method, happy path
      */
-@Ignore
+
     @Test
     public void testAddRelation() throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
@@ -1126,11 +1126,12 @@ String logm = String.format( "modified the object with pid: %s", pid );
         Mockit.setUpMocks( MockFedoraHandle.class);
         String pid = "test:1";
         String predicate = "predicate";
+String isMemberOfCollectionPredicate =  "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";
         String targetDCIdentifier = "DCid";
         boolean literal = false;
         String datatype = "unknown";
         //expectations
-        expect( mockFem.addRelationship( pid, predicate, targetDCIdentifier, literal, datatype) ).andReturn( true );
+        expect( mockFem.addRelationship( pid, isMemberOfCollectionPredicate, targetDCIdentifier, literal, datatype) ).andReturn( true );
 
         //replay
         replay( mockFem );
