@@ -1118,6 +1118,7 @@ String logm = String.format( "modified the object with pid: %s", pid );
     /**
      * Testing the addRelation method, happy path
      */
+@Ignore
     @Test
     public void testAddRelation() throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {

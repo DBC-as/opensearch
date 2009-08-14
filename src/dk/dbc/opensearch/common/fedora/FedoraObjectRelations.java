@@ -102,7 +102,7 @@ public class FedoraObjectRelations
      * @throws IOException
      * @throws FedoraCommunicationException
      */
-    public List<String> getObjectRelationships( String relation, String object ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, FedoraCommunicationException
+    public List<String> getObjectRelationships( String relation, String object ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         List<String> foundObjects = new ArrayList<String>();
         for( InputPair<String, String> objects : getRelationships( null, relation, object ) )
