@@ -20,8 +20,9 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 
+import java.lang.NullPointerException;
+import java.util.Iterator;
 import static org.junit.Assert.*;
 import org.junit.*;
 
@@ -32,20 +33,27 @@ import org.apache.commons.lang.NotImplementedException;
 public class OpensearchNamespaceContextTest 
 {
     OpensearchNamespaceContext nsc;
+    static String uri = "http://docbook.org/ns/docbook";
  
 
     /**
      *
      */
     @Before 
-    public void SetUp() { }
+    public void SetUp() 
+    { 
+        nsc = new OpensearchNamespaceContext();
+    }
 
 
     /**
      *
      */
     @After 
-    public void TearDown() { }
+    public void TearDown() 
+    { 
+        nsc = null;
+    }
 
 
     /**
@@ -54,7 +62,6 @@ public class OpensearchNamespaceContextTest
     @Test 
     public void testConstructor() 
     {
-        nsc = new OpensearchNamespaceContext();
         assertTrue( nsc != null );
     }
 
@@ -62,25 +69,41 @@ public class OpensearchNamespaceContextTest
     @Test 
     public void testGetNamespaceURI() 
     { 
-        String uri = "http://docbook.org/ns/docbook";
-        nsc = new OpensearchNamespaceContext();
         assertEquals( uri, nsc.getNamespaceURI( "docbook" ) );
-        assertTrue( null == nsc.getNamespaceURI( "anything else" ) );
+    }
+
+    /**
+     * 
+     */
+    @Test(expected=NullPointerException.class)
+    public void testGetNamespaceURIOnNonexistingPrefixReturnsNull()
+    {
+        //I can't get junit to assertNull on the return value, so this strange
+        //construction is used instead
+        String osns = nsc.getNamespaceURI( "i'm no prefix" );
     }
 
 
-    @Test(expected=NotImplementedException.class) 
+    /**
+     * Tests the semantics of OpenSearchNamespaceContext; that there is only one
+     * possible prefix per namespace
+     */
+    @Test
     public void testGetPrefixes() 
     {
-        nsc = new OpensearchNamespaceContext();
-        nsc.getPrefixes( "anything" );
+        for( Iterator<String> pIter = nsc.getPrefixes( uri ); pIter.hasNext(); )
+        {
+            assertTrue( pIter.hasNext() );
+            String prefix = pIter.next();
+            assertFalse( pIter.hasNext() );
+            assertEquals( "docbook", prefix );
+        }
     }
     
-
-    @Test(expected=NotImplementedException.class)
     public void testGetPrefix() 
     {
         nsc = new OpensearchNamespaceContext();
-        nsc.getPrefix( "anything" );
+        String prefix = nsc.getPrefix( "docbook" );
+        assertEquals( uri, prefix );
     }
 }

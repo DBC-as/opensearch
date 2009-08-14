@@ -37,7 +37,7 @@ except ImportError:
     except ImportError:
         sys.exit( "could not import elementtree library. Is it installed?" )
 
-def main( harvest_folder ):
+def main( harvest_folder, delete_existing ):
     
     build_config.main( [ '', '../' ] )
 
@@ -45,10 +45,12 @@ def main( harvest_folder ):
 
     dest = config.findall( '//toharvest' )[0].text
 
-    if os.path.exists( dest ):
-        shutil.rmtree( dest )
+    if delete_existing:
+        if os.path.exists( dest ):
+            shutil.rmtree( dest )
 
-    shutil.copytree( harvest_folder, dest )
+    if harvest_folder != "":
+        shutil.copytree( harvest_folder, dest )
 
     postgres_setup.main()
     fedora_conn.test_fedora_conn( 'localhost', '8080' )
@@ -61,13 +63,18 @@ if __name__ == '__main__':
     
     parser.add_option( "-f", dest="harvest_folder", 
                        action="store", help="The full path to the folder containing the data to be harvested" )
-    
+    parser.add_option( "--delete", action="store_true", dest="DEL", default="False",
+                       help="does not delete the folder containing the local harvest files (if -f was given, the folder will be deleted)" )
+    parser.add_option( "--use-defaults", action="store_true", dest="DEFAULT", 
+                       help="use /data1/harvest-test as default folder (for backwards compatibility...)")
     (options, args) = parser.parse_args()
 
-    if not options.harvest_folder:
-   	harvest_folder = '/data1/harvest-test' 
-	#harvest_folder = '/data1/harvest-tiny'
-    else:
+    harvest_folder = ""
+
+    if options.DEFAULT:
+    	harvest_folder = '/data1/harvest-test' 
+    if options.harvest_folder:
         harvest_folder = options.harvest_folder
-        
-    main( harvest_folder )
+
+
+    main( harvest_folder, options.DEL )

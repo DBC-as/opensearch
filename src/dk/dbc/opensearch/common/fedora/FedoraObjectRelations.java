@@ -62,9 +62,6 @@ public class FedoraObjectRelations
 //    public FedoraObjectRelations()
 //    {
 //    }
-
-
-
     /**
      * Returns the matching objects from the simple rdf query of selecting all
      * objects that has {@code relation} from {@code subject}
@@ -114,10 +111,16 @@ public class FedoraObjectRelations
 
 
     /**
-     * returns an iterator over tuples of pids that has {@link relation} to {@link pid}
-     * @param relation the relation to query for
-     * @param pid the fedora pid to query for relations to
-     * @return an iterator containing matching tuples
+     * returns an {@link List<InputPair<String,String>>} where
+     * {@link InputPair.getFirst()} represents the {@code subject} tuple
+     * variable and {@link InputPair.getSecond()} represents the {@code object}
+     * tuple variable. If the variable is not named, e.g. by using null as
+     * parameter, the getters will display the sparql variable substitute.
+     *
+     * @param subject
+     * @param relation
+     * @param object
+     * @return
      * @throws ConfigurationException
      * @throws ServiceException
      * @throws MalformedURLException
@@ -128,21 +131,21 @@ public class FedoraObjectRelations
         String query;
 
         String fedoraNS = "fedora";
-        String relsNS   = "fedora-rels-ext";
+        String relsNS = "fedora-rels-ext";
 
         //rewrite rules, specific for itql:
         if( subject == null )
         {
-            query = String.format( "select $s from <#ri> where $s <%s> <%s>", relsNS+":"+relation, fedoraNS+":"+object );
+            query = String.format( "select $s from <#ri> where $s <%s> <%s>", relsNS + ":" + relation, fedoraNS + ":" + object );
 
         }
         else if( object == null )
         {
-            query = String.format( "select $o from <#ri> where <%s> <%s> $o", fedoraNS+":"+subject, relsNS+":"+relation );
+            query = String.format( "select $o from <#ri> where <%s> <%s> $o", fedoraNS + ":" + subject, relsNS + ":" + relation );
         }
         else
         {
-            query = String.format( "select <%s> <%s> from <#ri> where <%s> <%s> <%s>", fedoraNS+":"+subject, fedoraNS+":"+object, fedoraNS+":"+subject, relsNS+":"+relation, fedoraNS+":"+object );
+            query = String.format( "select <%s> <%s> from <#ri> where <%s> <%s> <%s>", fedoraNS + ":" + subject, fedoraNS + ":" + object, fedoraNS + ":" + subject, relsNS + ":" + relation, fedoraNS + ":" + object );
         }
         /**
          * FedoraClient.getTuples might throw:
@@ -215,6 +218,7 @@ public class FedoraObjectRelations
         return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, collectionpid, false, null );
     }
 
+
     public boolean addOwnerToPid( String pid, String owner ) throws IOException, ServiceException, ConfigurationException
     {
         // \todo: Relationship.IS_MEMBER_OF_COLLECTION.toString() does not work, fix it.
@@ -223,5 +227,6 @@ public class FedoraObjectRelations
 
         return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, owner, false, null );
     }
+
 
 }
