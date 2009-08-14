@@ -1,22 +1,23 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package dk.dbc.opensearch.common.fedora;
+
 
 import dk.dbc.opensearch.common.helpers.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -147,8 +148,14 @@ public class FedoraAdministration implements IFedoraAdministration
         {
             Element stream = (Element) streamNodeList.item( i );
             String streamID = stream.getAttribute( "id" );
+            
+            if (streamID.equals( DataStreamType.DublinCoreData.getName()+".0"  ) ){ // the dc stream
+                streamID = "DC";
+            }
+            
             MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null );
 
+           
             cc.add( DataStreamType.getDataStreamTypeFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
@@ -297,12 +304,12 @@ public class FedoraAdministration implements IFedoraAdministration
         String adminLogm = "";
         String dsnName = cargo.getDataStreamType().getName();
 
-//         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
-//         byte[] adminStream = ds.getStream();
-//         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-//         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-//         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-//         Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
+        //         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        //         byte[] adminStream = ds.getStream();
+        //         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        //         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        //         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        //         Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
         Element root = getAdminStream( pid );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
@@ -464,12 +471,12 @@ public class FedoraAdministration implements IFedoraAdministration
             return false;
         }
         //10: get the adminstream to modify
-//         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
-//         byte[] adminStream = ds.getStream();
-//         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-//         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-//         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-//         Element rootOld = XMLUtils.getDocumentElement( new InputSource( bis ) );
+        //         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
+        //         byte[] adminStream = ds.getStream();
+        //         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
+        //         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        //         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        //         Element rootOld = XMLUtils.getDocumentElement( new InputSource( bis ) );
 
         Element rootOld = getAdminStream( pid );
 
@@ -607,7 +614,7 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         log.debug( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
         //  try
-//         {
+        //         {
         /**
          * \todo: this string should be a type or the prdicate should be a type
          * and the actual predicate should be chosen through the parameter
@@ -619,26 +626,26 @@ public class FedoraAdministration implements IFedoraAdministration
 
         return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
         // }
-//         catch ( RemoteException re )
-//         {
-//             throw re;
-//         }
-//         catch ( ConfigurationException ce )
-//         {
-//             throw ce;
-//         }
-//         catch ( MalformedURLException mue )
-//         {
-//             throw mue;
-//         }
-//         catch ( ServiceException se )
-//         {
-//             throw se;
-//         }
-//         catch ( IOException ioe )
-//         {
-//             throw ioe;
-//         }
+        //         catch ( RemoteException re )
+        //         {
+        //             throw re;
+        //         }
+        //         catch ( ConfigurationException ce )
+        //         {
+        //             throw ce;
+        //         }
+        //         catch ( MalformedURLException mue )
+        //         {
+        //             throw mue;
+        //         }
+        //         catch ( ServiceException se )
+        //         {
+        //             throw se;
+        //         }
+        //         catch ( IOException ioe )
+        //         {
+        //             throw ioe;
+        //         }
     }
 
 
@@ -737,7 +744,7 @@ public class FedoraAdministration implements IFedoraAdministration
 
 
     /**
-     * 
+     *
      */
     private String getNextRelationshipObject( String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
     {
@@ -829,7 +836,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * Given a field to match (in the DublinCore streams of the underlying
      * repository digital objects), {@code fieldToMatch} and a value to match
      * on, {@code valueToMatch}, this method returns a list of matching pids
-     * 
+     *
      * @param fieldToMatch field in the repository objects to match in
      * @param valueToFind value to match in the fields
      * @return a list of pids of objects that matched the parameters
@@ -842,18 +849,18 @@ public class FedoraAdministration implements IFedoraAdministration
     {
 
         String[] results =
-        {
-            "pid", "title"
-        };
+            {
+                "pid", "title"
+            };
 
         /** \todo: we're meddling with the contents here. Should no be so. Fixxit*/
         valueToFind = valueToFind.replace( "'", "" );
 
         log.debug( String.format( "fieldToMatch = %s, valueToFind = %s", fieldToMatch, valueToFind ) );
         Condition[] cond =
-        {
-            new Condition( fieldToMatch, ComparisonOperator.has, valueToFind )
-        };
+            {
+                new Condition( fieldToMatch, ComparisonOperator.has, valueToFind )
+            };
 
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null ); //fsq.setConditions( condArray );
 
@@ -882,18 +889,18 @@ public class FedoraAdministration implements IFedoraAdministration
     public String[] findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String[] resultFields =
-        {
-            "pid", "title"
-        };
+            {
+                "pid", "title"
+            };
 
         //NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
 
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( operator );
         Condition[] cond =
-        {
-            new Condition( property, comp, value )
-        };//cond.setProperty( property );//cond.setOperator( comp );//cond.setValue( value );//Condition[] condArray = { cond };
+            {
+                new Condition( property, comp, value )
+            };//cond.setProperty( property );//cond.setOperator( comp );//cond.setValue( value );//Condition[] condArray = { cond };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null ); //fsq.setConditions( condArray );
 
         FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
@@ -931,9 +938,9 @@ public class FedoraAdministration implements IFedoraAdministration
         value = value.replace( "'", "" );
         log.debug( String.format( "value after replace: '%s'", value ) );
         Condition[] cond =
-        {
-            new Condition( property, ComparisonOperator.has, value )
-        };
+            {
+                new Condition( property, ComparisonOperator.has, value )
+            };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
         String msg = "just before findObjects";
@@ -973,9 +980,9 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         /** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
         String[] resultFields =
-        {
-            "pid"
-        };
+            {
+                "pid"
+            };
         ObjectFields[] pids_1 = findObjectFields( resultFields, property_1, value_1 );
         ObjectFields[] pids_2 = findObjectFields( resultFields, property_2, value_2 );
 
@@ -1019,9 +1026,9 @@ public class FedoraAdministration implements IFedoraAdministration
     private String findPropertyPid( String sourcePid, String property, String value ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
         String[] resultFields =
-        {
-            "pid"
-        };
+            {
+                "pid"
+            };
         //System.out.println( String.format( "findObjectFields with sourcePid: '%s'; property: '%s'; value: '%s'", sourcePid, property, value ) );
         ObjectFields[] pids = findObjectFields( resultFields, property, value );
 
@@ -1207,15 +1214,15 @@ public class FedoraAdministration implements IFedoraAdministration
     private String[] getEmptyStringArray()
     {
         return new String[]
-                {
-                };
+        {
+        };
     }
 
 
     /**
      * method to get a string representing the current time
      * Note: hack to mock the time part of the log strings that are
-     * sent to Fedora. Cant mock the DateFormat.format( Date date) method 
+     * sent to Fedora. Cant mock the DateFormat.format( Date date) method
      */
     private String getTimeNow()
     {
