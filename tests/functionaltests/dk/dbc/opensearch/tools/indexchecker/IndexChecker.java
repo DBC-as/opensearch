@@ -1,38 +1,35 @@
 /**
-   This file is part of opensearch.
-   Copyright © 2009, Dansk Bibliotekscenter a/s,
-   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-   opensearch is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-   opensearch is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
 package dk.dbc.opensearch.tools.indexchecker;
 
 
-import dk.dbc.opensearch.common.compass.CompassFactory;
 import dk.dbc.opensearch.common.config.CompassConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.tools.readindex.ReadIndex;
 import dk.dbc.opensearch.tools.testindexer.Estimate;
-import dk.dbc.opensearch.tools.testindexer.FedoraAdministrationMock;
 import dk.dbc.opensearch.tools.testindexer.Indexer;
 import dk.dbc.opensearch.tools.testindexer.Processqueue;
 
@@ -44,16 +41,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.lang.ClassNotFoundException;
-import java.lang.IllegalAccessException;
-import java.lang.InterruptedException;
-import java.lang.NoSuchFieldException;
-import java.lang.StringBuilder;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
@@ -76,11 +66,8 @@ import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.compass.core.Compass;
-import org.compass.core.CompassSession;
 import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassEnvironment;
-import org.compass.core.converter.mapping.xsem.XmlContentMappingConverter;
-import org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -114,7 +101,7 @@ public class IndexChecker
      * @throws TransformerConfigurationException
      * @throws TransformerException
      **/
-    public boolean runTests( File testFolder )throws ClassNotFoundException, ConfigurationException, ExecutionException, FileNotFoundException, IllegalAccessException, InterruptedException, IOException, NoSuchFieldException, ParserConfigurationException, PluginResolverException, SAXException, ServiceException, TransformerConfigurationException, TransformerException, URISyntaxException
+    public boolean runTests( File testFolder ) throws ClassNotFoundException, ConfigurationException, ExecutionException, FileNotFoundException, IllegalAccessException, InterruptedException, IOException, NoSuchFieldException, ParserConfigurationException, PluginResolverException, SAXException, ServiceException, TransformerConfigurationException, TransformerException, URISyntaxException
     {
         resetMapClasses(); // reset the jobmaps
 
@@ -174,6 +161,7 @@ public class IndexChecker
         return allPassed;
     }
 
+    
     /**
      * Runs a single test folder
      *

@@ -20,11 +20,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.compass;
 
 
-import dk.dbc.opensearch.common.compass.CompassEntityResolver;
 import dk.dbc.opensearch.common.config.CompassConfig;
-import dk.dbc.opensearch.common.helpers.XMLUtils;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;

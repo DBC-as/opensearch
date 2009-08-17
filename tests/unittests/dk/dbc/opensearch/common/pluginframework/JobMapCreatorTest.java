@@ -29,27 +29,13 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.helpers.XMLUtils;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.ComparablePair;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import java.lang.IllegalStateException;
-import java.lang.IllegalArgumentException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -58,11 +44,8 @@ import mockit.Mockit;
 import mockit.MockClass;
 
 import static org.easymock.classextension.EasyMock.*;
-import static org.junit.Assert.*;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

@@ -26,17 +26,14 @@
 package dk.dbc.opensearch.components.pti;
 
 
-import dk.dbc.opensearch.components.pti.PTIJobsMap;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.helpers.XMLUtils;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
 

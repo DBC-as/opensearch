@@ -32,6 +32,7 @@ public enum IndexingAlias
     Article ( "article", "the docbook/ting xml alias" ),
     Danmarcxchange ( "danmarcxchange", "alias for marc posts" ),
     DC ( "dc", "data in Dublin Core format" ),
+    Materialevurderinger( "materialevurderinger", "alias for marterialevurderinger posts"),
     None( "none", "Non-indexable content" );
 
     

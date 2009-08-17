@@ -29,9 +29,8 @@ package dk.dbc.opensearch.components.harvest;
 
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.helpers.XMLUtils;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +38,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.*;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -52,7 +49,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import static org.easymock.classextension.EasyMock.*;
 import org.junit.*;
 import static org.junit.Assert.*;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

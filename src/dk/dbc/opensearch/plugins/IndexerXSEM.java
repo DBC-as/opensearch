@@ -1,12 +1,4 @@
 /**
- * \file IndexerXSEM.java
- * \brief Indexing using xsem
- * \package dk.dbc.opensearch.plugins;
- */
-package dk.dbc.opensearch.plugins;
-
-
-/**
    This file is part of opensearch.
    Copyright © 2009, Dansk Bibliotekscenter a/s,
    Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -26,11 +18,12 @@ package dk.dbc.opensearch.plugins;
 */
 
 
+package dk.dbc.opensearch.plugins;
+
+
 import dk.dbc.opensearch.common.compass.CPMAlias;
 import dk.dbc.opensearch.common.config.CompassConfig;
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.helpers.XMLUtils;
-import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -41,7 +34,6 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,14 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -67,21 +52,18 @@ import org.compass.core.CompassTransaction;
 import org.compass.core.Resource;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.dom4j.Dom4jAliasedXmlObject;
-import org.compass.core.xml.dom4j.Dom4jXmlObject;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
 public class IndexerXSEM implements IIndexer
 {
-    Logger log = Logger.getLogger( IndexerXSEM.class );
+    private static Logger log = Logger.getLogger( IndexerXSEM.class );
 
 
     PluginType pluginType = PluginType.INDEX;

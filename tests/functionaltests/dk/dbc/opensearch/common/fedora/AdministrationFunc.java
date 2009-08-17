@@ -7,21 +7,16 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-//import dk.dbc.opensearch.xsd.Property;
 import fedora.common.PID;
-import fedora.server.management.FedoraAPIM;
 import fedora.utilities.Foxml11Document.Property;
-import fedora.utilities.Foxml11Document.State;
 import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.RelationshipTuple;
 
 import fedora.utilities.Foxml11Document;
-import fedora.utilities.Foxml11Document.ControlGroup;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-//import java.lang.Thread.State;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -31,8 +26,6 @@ import java.util.List;
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
-
-//import fedora.server.errors.ObjectNotInLowlevelStorageException;
 
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -62,29 +55,29 @@ public class AdministrationFunc
             e.printStackTrace();
         }
 
-        /*System.out.println( "*** kalder teestStoreCC ***" );
+        System.out.println( "*** kalder teestStoreCC ***" );
         String pid = testStoreCC();
 
         System.out.println( "*** kalder get ***" );
         testGetObject( pid );
 
         System.out.println( "*** kalder testFindObjects ***" );
-        testFindObjectPids();*/
+        testFindObjectPids();
 
-        /*System.out.println( "*** kalder testFindObjectFields ***" );
-        testFindObjectFields();*/
+        System.out.println( "*** kalder testFindObjectFields ***" );
+        testFindObjectFields();
 
-        //testFindObjectRelationships();
+        testFindObjectRelationships();
 
-        //testGetRelationships();
+        testGetRelationships();
 
-        //testFoxml11Document();
+        testFoxml11Document();
 
-        //System.out.println( "*** kalder testDeleteObjects ***" );
+        System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
         testDeleteObjectPids( labels, 50 );
 
-        /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
+        System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
 
         System.out.println( "*** kalder add ***" );
@@ -101,7 +94,7 @@ public class AdministrationFunc
         
         System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
         testGetDataStreamsOfType( pid );
-        testDeleteObject( pid );*/
+        testDeleteObject( pid );
     }
 
 

@@ -25,8 +25,13 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 
-import dk.dbc.opensearch.common.helpers.XMLUtils;
+import fedora.client.FedoraClient;
+import fedora.common.Constants;
+import fedora.server.access.FedoraAPIA;
+import fedora.server.management.FedoraAPIM;
+import fedora.server.types.gen.MIMETypedStream;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +58,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamResult;
 
+import mockit.Mock;
+import mockit.Mockit;
+import mockit.MockClass;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -63,19 +72,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import fedora.client.FedoraClient;
-import fedora.common.Constants;
-import fedora.server.access.FedoraAPIA;
-import fedora.server.management.FedoraAPIM;
-import fedora.server.types.gen.MIMETypedStream;
-
-import mockit.Mock;
-import mockit.Mockit;
-import mockit.MockClass;
-
 import static org.easymock.classextension.EasyMock.*;
-
 import static org.junit.Assert.*;
 import org.junit.*;
 

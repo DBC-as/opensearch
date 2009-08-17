@@ -22,7 +22,7 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.helpers.XMLUtils;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.common.pluginframework.IHarvestable;

@@ -25,8 +25,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import fedora.server.types.gen.RelationshipTuple;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
@@ -53,8 +51,6 @@ import org.xml.sax.SAXException;
  */
 public interface IFedoraAdministration
 {    
-
-
     /**
      * method for getting an object in a CargoContainer based on its pid
      * @param pid, the identifier of the object to get
@@ -62,7 +58,8 @@ public interface IFedoraAdministration
      * @throws RemoteException if something on the serverside goes wrong.
      */
     public CargoContainer retrieveCargoContainer( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException;
-   
+
+
     /**
      * method for storing an object in the Fedora base
      * @param theCC the CargoContainer to store
@@ -129,7 +126,7 @@ public interface IFedoraAdministration
     public String addDataStreamToObject( CargoObject cargo, String pid, boolean versionable, boolean overwrite ) throws RemoteException, MalformedURLException, ParserConfigurationException, TransformerConfigurationException, TransformerException, SAXException, IOException, ConfigurationException, ServiceException;
 
 
-   /**
+    /**
      * method for modifying an existing dataStream in an object
      * @param cargo, the CargoObject holding the data to update the object with
      * @param sID the id of the datastream to be modified

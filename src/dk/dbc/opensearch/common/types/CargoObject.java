@@ -39,7 +39,8 @@ import org.apache.log4j.Logger;
 public class CargoObject
 {
     private Logger log = Logger.getLogger( CargoObject.class );
-	
+
+    
     private final byte[] data;
     private final CargoObjectInfo coi;
     

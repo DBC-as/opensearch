@@ -47,6 +47,7 @@ public class DocbookHarvester implements IHarvestable
 {
     Logger log = Logger.getLogger( DocbookHarvester.class );
 
+    
     private String submitter;
     private String format;
     private String path;

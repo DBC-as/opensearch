@@ -19,7 +19,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.helpers.XMLUtils;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -27,18 +27,30 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import fedora.common.Constants;
+import fedora.server.types.gen.RelationshipTuple;
+import fedora.server.types.gen.MIMETypedStream;
+import fedora.server.types.gen.ComparisonOperator;
+import fedora.server.types.gen.Condition;
+import fedora.server.types.gen.FieldSearchQuery;
+import fedora.server.types.gen.FieldSearchResult;
+import fedora.server.types.gen.ObjectFields;
+
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.StringWriter;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.parsers.DocumentBuilder;
@@ -55,14 +67,6 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPathExpressionException;
 
-import fedora.server.types.gen.RelationshipTuple;
-import fedora.server.types.gen.MIMETypedStream;
-import fedora.server.types.gen.ComparisonOperator;
-import fedora.server.types.gen.Condition;
-import fedora.server.types.gen.FieldSearchQuery;
-import fedora.server.types.gen.FieldSearchResult;
-import fedora.server.types.gen.ObjectFields;
-
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.NotImplementedException;
@@ -76,10 +80,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.List;
-import org.openrdf.query.algebra.IsLiteral;
 
 
 /**
