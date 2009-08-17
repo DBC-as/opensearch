@@ -4,21 +4,18 @@
  */
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.Pair;
+
 import fedora.common.Constants;
-import fedora.common.rdf.FedoraRelsExtNamespace;
-import fedora.common.rdf.RDFName;
-import fedora.common.rdf.RDFNamespace;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.xml.rpc.ServiceException;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.jrdf.graph.Node;
@@ -32,7 +29,6 @@ import org.trippi.TupleIterator;
  */
 public class FedoraObjectRelations
 {
-
     private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
 
     /**
@@ -62,6 +58,8 @@ public class FedoraObjectRelations
 //    public FedoraObjectRelations()
 //    {
 //    }
+
+
     /**
      * Returns the matching objects from the simple rdf query of selecting all
      * objects that has {@code relation} from {@code subject}
@@ -182,7 +180,6 @@ public class FedoraObjectRelations
         ArrayList<InputPair<String, String>> tupleList = new ArrayList<InputPair<String, String>>();
         try
         {
-
             while( tuples.hasNext() )
             {
                 Map<String, Node> row = tuples.next();
@@ -227,6 +224,5 @@ public class FedoraObjectRelations
 
         return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, owner, false, null );
     }
-
 
 }

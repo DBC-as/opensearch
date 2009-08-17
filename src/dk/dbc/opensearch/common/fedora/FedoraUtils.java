@@ -25,6 +25,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -32,6 +33,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,6 +41,7 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.axis.utils.XMLUtils;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -54,8 +57,8 @@ import org.xml.sax.SAXException;
  */
 public class FedoraUtils
 {
-
     static Logger log = Logger.getLogger( FedoraUtils.class );
+
 
     /**
      * Creates a fedora digital object document XML representation of a given
@@ -81,7 +84,7 @@ public class FedoraUtils
          *      InlineData = true.
          */
         int cargo_count = cargo.getCargoObjectCount();
-        List<? extends Pair<Integer, String>> ordering = getOrderedMapping( cargo );
+        List< ? extends Pair< Integer, String > > ordering = getOrderedMapping( cargo );
         for( int i = 0; i < cargo_count; i++ )
         {
             CargoObject c = cargo.getCargoObjects().get( i );
@@ -101,8 +104,7 @@ public class FedoraUtils
         foxml.addXmlContent( DataStreamType.AdminData.getName(), administrationStream, "administration stream", System.currentTimeMillis(), true );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-
+        
         foxml.serialize( baos, null );
 
         return baos.toByteArray();
@@ -198,6 +200,4 @@ public class FedoraUtils
         Collections.sort( lst2 );
         return lst2;
     }
-
-
 }

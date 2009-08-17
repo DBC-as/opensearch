@@ -41,9 +41,11 @@ import org.apache.log4j.Logger;
  */
 public class OwnerRelation implements IRelation
 {
-
     private static Logger log = Logger.getLogger( OwnerRelation.class );
+
+
     private PluginType pluginType = PluginType.RELATION;
+
     // Relations
     private final String info = "info:fedora/%s";
     private final String free = String.format( info, "free" );

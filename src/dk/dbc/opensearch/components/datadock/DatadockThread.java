@@ -33,9 +33,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -92,8 +90,7 @@ public class DatadockThread implements Callable< Float >
     private String format;
     private ArrayList< String > list;
     private String result;
-    private IFedoraAdministration fedoraAdministration;
-
+    
     /**
      *\todo: Wheet out in the Exceptions
      *
@@ -137,9 +134,7 @@ public class DatadockThread implements Callable< Float >
 
         queue = processqueue;
         this.estimate = estimate;
-        this.fedoraAdministration = fedoraAdministration;
-
-
+    
         log.trace( String.format( "DataDock Construction finished" ) );
     }
 
@@ -180,11 +175,7 @@ public class DatadockThread implements Callable< Float >
         PluginResolver pluginResolver = new PluginResolver();
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
         String mimeType = null;
-        //String format = null;
-        //String submitter = null;
         long length = 0;
-        //String pid = null;
-        //boolean stored = false;
         Float est = 0F;
         
         for( String classname : list)
@@ -218,18 +209,6 @@ public class DatadockThread implements Callable< Float >
                 case STORE:
                 	log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
                 	
-//                	for( CargoObject co : cargo.getCargoObjects() )
-//                    {
-//                        if( co.getDataStreamType() == DataStreamType.OriginalData )
-//                        {
-//                            //mimeType = co.getMimeType();
-//                            //format = co.getFormat();
-//                            //submitter = co.getSubmitter();
-//                        }
-//
-//                        //length += co.getContentLength();
-//                    }
-
                     IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     cargo = repositoryStore.storeCargoContainer( cargo );
                     log.debug( "STORE pid: " + cargo.getDCIdentifier() );

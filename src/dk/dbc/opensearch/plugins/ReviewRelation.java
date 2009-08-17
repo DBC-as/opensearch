@@ -47,7 +47,7 @@ public class ReviewRelation implements IRelation
 
 
     private PluginType pluginType = PluginType.RELATION;
-    //private NamespaceContext nsc;
+
     private Vector< String > types;
     private final String marterialevurderinger = "Materialevurdering:?";
     private final String anmeldelse = "Anmeldelse";
@@ -100,15 +100,29 @@ public class ReviewRelation implements IRelation
         {
             log.debug( "ReviewRelation getCargoContainer cargo is not null" );
         }
-        
+
+        boolean ok = false;
+        ok = addReviewRelation( cargo );
+
+        if ( ! ok )
+        {
+            log.error( String.format( "could not add review relation on pid %s", cargo.getDCIdentifier() ) );
+        }
+
+        return cargo;
+    }
+
+
+    private boolean addReviewRelation( CargoContainer cargo )
+    {
         String dcTitle = cargo.getDCTitle();
         String dcType = cargo.getDCType();
         String dcCreator = cargo.getDCCreator();
         String dcSource = cargo.getDCSource();
         String dcIdentifier = cargo.getDCIdentifier();
-        log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
+
+        /*log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
         
-        boolean ok = false;
         log.debug( String.format( "RR dcType: '%s'", dcType ) );
         if ( dcType.equals( marterialevurderinger ) )
         {        	
@@ -159,7 +173,8 @@ public class ReviewRelation implements IRelation
         log.debug( String.format( "MWR (pid: '%s') found dcVariables: '%s', '%s', '%s', and '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
         log.debug( "Adding relationship succeeded: " + ok );
         
-        return cargo;
+        return cargo;*/
+        return false;
     }
     
     

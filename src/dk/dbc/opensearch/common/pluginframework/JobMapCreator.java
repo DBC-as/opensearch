@@ -29,15 +29,11 @@ import dk.dbc.opensearch.common.types.ComparablePair;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
-import java.lang.IllegalStateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -47,7 +43,6 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

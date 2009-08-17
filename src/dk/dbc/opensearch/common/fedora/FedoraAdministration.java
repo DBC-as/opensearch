@@ -194,6 +194,8 @@ public class FedoraAdministration implements IFedoraAdministration
         String logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
 
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, Constants.FOXML1_1.toString(), logm );// "info:fedora/fedora-system:FOXML-1.1", logm );
+
+        log.debug( String.format( "Submittet data %s", new String( foxml ) ) );
         log.trace( String.format( "Submitted data, returning pid %s", pid ) );
 
         return pid;
@@ -779,27 +781,20 @@ public class FedoraAdministration implements IFedoraAdministration
         }
         catch( ConfigurationException ce )
         {
-            //System.out.println( "ConfigurationException caught" );
             throw ce;
         }
         catch( MalformedURLException mue )
         {
-            //System.out.println( "MalformedUrlException caught" );
             throw mue;
         }
         catch( ServiceException se )
         {
-            //System.out.println( "MalformedUrlException caught" );
             throw se;
         }
         catch( IOException ioe )
         {
-            System.out.println( "MalformedUrlException caught" );
-            //throw ioe;
+            throw ioe;
         }
-
-        log.debug( " returning null, no relationships found" );
-        return null;
     }
 
 
@@ -1228,6 +1223,4 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         return dateFormat.format( new Date( System.currentTimeMillis() ) );
     }
-
-
 }
