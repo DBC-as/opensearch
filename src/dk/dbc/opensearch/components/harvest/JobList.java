@@ -20,17 +20,37 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
-public interface IIdentifier
-{
-    public void init( int targetRef, int lbNr);
-    
-    public int getTargetRef();
+import java.util.ArrayList;
+import java.util.Iterator;
 
-    public int getLbNr();
+public class JobList implements IJobList
+{    
+    private ArrayList<IJob> jobList;
+    private Iterator<IJob> iter;
 
-    public int compareTo( Object obj );
+    public JobList()
+    {
+        jobList = new ArrayList<IJob>();
+        iter = jobList.iterator();
+    }
 
-    public boolean equals(Object obj );
+    public IJob getNext()
+    {
+        return iter.next();
+    }
 
-    public String toString();
+    public boolean hasNext()
+    {
+        return iter.hasNext();
+    }
+
+    public void add( IJob theJob )
+    {
+        jobList.add( theJob );
+    }
+
+    public int size()
+    {
+        return jobList.size();
+    }
 }

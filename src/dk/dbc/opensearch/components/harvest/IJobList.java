@@ -32,4 +32,6 @@ public interface IJobList
     public boolean hasNext();
 
     public void add( IJob theJob );
+
+    public int size();
 }

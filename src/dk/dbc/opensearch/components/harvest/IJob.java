@@ -23,11 +23,11 @@ package dk.dbc.opensearch.components.harvest;
 
 public interface IJob
 {
+    public void init( IIdentifier identifier, byte[] referenceData );
+
     public IIdentifier getIdentifier();
 
     public byte[] getReferenceData();
-
-    public int compareTo( Object job );
 
     public boolean equals( Object job );
 
