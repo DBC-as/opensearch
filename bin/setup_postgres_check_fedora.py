@@ -72,7 +72,7 @@ if __name__ == '__main__':
     harvest_folder = ""
 
     if options.DEFAULT:
-    	harvest_folder = '/data1/harvest-test' 
+    	harvest_folder = '/data1/harvest-test'
     if options.harvest_folder:
         harvest_folder = options.harvest_folder
 

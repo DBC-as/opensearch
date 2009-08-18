@@ -17,6 +17,7 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 package dk.dbc.opensearch.plugins;
 
 
@@ -33,9 +34,10 @@ import dk.dbc.opensearch.common.os.FileHandler;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -61,6 +63,20 @@ public class RUBHarvester implements IHarvestable
     private String submitter;
     private String format;
     private String path;
+
+
+    /**
+     * \todo: Implement this method
+     *
+     * @param data
+     * @param xml
+     * @return
+     * @throws PluginException
+     */
+    public CargoContainer getCargoContainer( InputStream data, InputStream xml) throws PluginException
+    {
+        throw new PluginException( "Not implemented yet!" );
+    }
 
 
     /**

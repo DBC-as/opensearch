@@ -24,6 +24,7 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 
+import java.io.InputStream;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,10 +38,24 @@ import org.xml.sax.SAXException;
 public interface IHarvestable extends IPluggable
 {
 	/**
+     * \todo: describe
+     *
+     * @param job 
 	 * @return the CargoContainer that results from the plugin activity 
-	 * @throws IOException if the URI provided by the DatadockJob from the init call could not be read 
+     * @throws IOException if the URI provided by the DatadockJob from the init call could not be read
 	 * @throws ParserConfigurationException 
 	 * @throws SAXException 
 	 */
-	public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException;//IOException, ParserConfigurationException, SAXException;
+	public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException;
+
+
+    /**
+     * \todo: describe
+     *
+     * @param data
+     * @param xml
+     * @return the CargoContainer that results from the plugin activity
+     * @throws PluginException
+     */
+    public CargoContainer getCargoContainer( InputStream data, InputStream xml ) throws PluginException;
 }

@@ -172,12 +172,12 @@ public class FedoraObjectRelations
          * the xmlpull jar and the  xpp3 jar
          */
         log.debug( String.format( "using query %s", query ) );
-        Map<String, String> qparams = new HashMap<String, String>( 3 );
+        Map<String, String> qparams = new HashMap< String, String >( 3 );
         qparams.put( "lang", "itql" );
         qparams.put( "flush", "true" );
         qparams.put( "query", query );
         TupleIterator tuples = FedoraHandle.getInstance().getFC().getTuples( qparams );
-        ArrayList<InputPair<String, String>> tupleList = new ArrayList<InputPair<String, String>>();
+        ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
         try
         {
             while( tuples.hasNext() )
@@ -185,7 +185,7 @@ public class FedoraObjectRelations
                 Map<String, Node> row = tuples.next();
                 for( String key : row.keySet() )
                 {
-                    tupleList.add( new InputPair<String, String>( key, row.get( key ).toString() ) );
+                    tupleList.add( new InputPair< String, String >( key, row.get( key ).toString() ) );
                 }
             }
         }

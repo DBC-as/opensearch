@@ -55,6 +55,20 @@ public class DocbookHarvester implements IHarvestable
     private PluginType pluginType = PluginType.HARVEST;
 
     
+    /**
+     * \todo: Implement this method
+     *
+     * @param data
+     * @param xml
+     * @return
+     * @throws PluginException
+     */
+    public CargoContainer getCargoContainer( InputStream data, InputStream xml) throws PluginException
+    {
+        throw new PluginException( "Not implemented yet!" );
+    }
+
+
     public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
     {
     	this.path = job.getUri().getPath();
