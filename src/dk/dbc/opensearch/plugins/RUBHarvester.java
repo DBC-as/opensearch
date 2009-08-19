@@ -25,7 +25,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.os.PdfFileFilter;
@@ -53,7 +53,7 @@ import org.w3c.dom.NodeList;
 /**
  * Plugin class for harvesting RUB data.
  */
-public class RUBHarvester implements IHarvestable
+public class RUBHarvester implements ICreateCargoContainer
 {    
     private static Logger log = Logger.getLogger( RUBHarvester.class );
 

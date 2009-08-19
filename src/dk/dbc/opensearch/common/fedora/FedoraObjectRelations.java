@@ -164,7 +164,8 @@ public class FedoraObjectRelations
          *	at org.trippi.TupleIterator.fromStream(TupleIterator.java:152)
          *	at fedora.client.FedoraClient.getTuples(FedoraClient.java:705)
          *	... local call stack ...
-         *Caused by: org.xmlpull.v1.XmlPullParserException: caused by: org.xmlpull.v1.XmlPullParserException: resource not found: /META-INF/services/org.xmlpull.v1.XmlPullParserFactory make sure that parser implementing XmlPull API is available
+         * Caused by: org.xmlpull.v1.XmlPullParserException: caused by: org.xmlpull.v1.XmlPullParserException:
+         * resource not found: /META-INF/services/org.xmlpull.v1.XmlPullParserFactory make sure that parser implementing XmlPull API is available
          *
          * Which the scarred hacker will recognize as a form of type 'jar hell';
          * fedora uses one version of the xmlpull library and we use another. So,
@@ -176,7 +177,9 @@ public class FedoraObjectRelations
         qparams.put( "lang", "itql" );
         qparams.put( "flush", "true" );
         qparams.put( "query", query );
+        log.warn( "before calling getTuples" );
         TupleIterator tuples = FedoraHandle.getInstance().getFC().getTuples( qparams );
+        log.warn( "after  calling getTuples" );
         ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
         try
         {

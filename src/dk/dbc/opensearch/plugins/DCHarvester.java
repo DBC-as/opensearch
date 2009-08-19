@@ -23,7 +23,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
-import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -38,7 +38,7 @@ import java.io.InputStream;
 import org.apache.log4j.Logger;
 
 
-public class DCHarvester implements IHarvestable
+public class DCHarvester implements ICreateCargoContainer
 {
     Logger log = Logger.getLogger( DCHarvester.class );
 

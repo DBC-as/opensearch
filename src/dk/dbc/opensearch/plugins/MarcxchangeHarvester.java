@@ -25,7 +25,7 @@ import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
-import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -58,7 +58,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 
-public class MarcxchangeHarvester implements IHarvestable
+public class MarcxchangeHarvester implements ICreateCargoContainer
 {
     private static Logger log = Logger.getLogger( MarcxchangeHarvester.class );
 

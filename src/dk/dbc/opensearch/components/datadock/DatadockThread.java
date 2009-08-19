@@ -24,7 +24,7 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
-import dk.dbc.opensearch.common.pluginframework.IHarvestable;
+import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
@@ -190,7 +190,7 @@ public class DatadockThread implements Callable< Float >
                 case HARVEST:
                     log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
                     
-                    IHarvestable harvestPlugin = (IHarvestable)plugin;
+                    ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
                     cargo = harvestPlugin.getCargoContainer( datadockJob );
                     
                     checkCargoObjectCount( cargo );

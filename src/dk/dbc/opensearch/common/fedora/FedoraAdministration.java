@@ -16,6 +16,8 @@
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
 package dk.dbc.opensearch.common.fedora;
 
 
@@ -34,7 +36,6 @@ import fedora.server.types.gen.Condition;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
-
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -88,10 +89,12 @@ import org.xml.sax.SAXException;
  */
 public class FedoraAdministration implements IFedoraAdministration
 {
-
     static Logger log = Logger.getLogger( FedoraAdministration.class );
+
+    
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
     private final NonNegativeInteger maxResults = new NonNegativeInteger( "1000000" );
+
 
     /**
      */
@@ -149,7 +152,8 @@ public class FedoraAdministration implements IFedoraAdministration
             Element stream = (Element) streamNodeList.item( i );
             String streamID = stream.getAttribute( "id" );
             
-            if (streamID.equals( DataStreamType.DublinCoreData.getName()+".0"  ) ){ // the dc stream
+            if (streamID.equals( DataStreamType.DublinCoreData.getName() + ".0"  ) )
+            { // the dc stream
                 streamID = "DC";
             }
             
