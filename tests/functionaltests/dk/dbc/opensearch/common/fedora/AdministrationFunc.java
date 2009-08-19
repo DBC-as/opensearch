@@ -55,7 +55,7 @@ public class AdministrationFunc
             e.printStackTrace();
         }
 
-        System.out.println( "*** kalder teestStoreCC ***" );
+        /*System.out.println( "*** kalder teestStoreCC ***" );
         String pid = testStoreCC();
 
         System.out.println( "*** kalder get ***" );
@@ -72,12 +72,14 @@ public class AdministrationFunc
         testGetRelationships();
 
         testFoxml11Document();
-
-        System.out.println( "*** kalder testDeleteObjects ***" );
+*/
+        /*System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
-        testDeleteObjectPids( labels, 50 );
+        testDeleteObjectPids( labels, 50 );*/
 
-        System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
+        testGetSubjectRelations();
+
+        /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
 
         System.out.println( "*** kalder add ***" );
@@ -94,9 +96,54 @@ public class AdministrationFunc
         
         System.out.println( "*** kalder getDataStreamsOfType for anden gang" );
         testGetDataStreamsOfType( pid );
-        testDeleteObject( pid );
+        testDeleteObject( pid );*/
     }
 
+
+    static void testGetSubjectRelations()
+    {
+        String predicate = "title"; // "source";
+        String object = "Harry Potter and the Order of the Phoenix s";
+        String predicate_2 = "creator";
+        String object_2 = "J. K. Rowling s";
+        String relation = "isMemberOf";
+
+        FedoraObjectRelations fedor = new FedoraObjectRelations();
+        try
+        {
+            List< String > workRelations = fedor.getSubjectRelations( "source", object, relation );
+            for ( String str : workRelations )
+            {
+                System.out.println( String.format( "first workRelation found:  %s", str ) );
+            }
+
+            workRelations = fedor.getSubjectRelations( predicate, object, predicate_2, object_2, relation );
+            for ( String str : workRelations )
+            {
+                System.out.println( String.format( "second workRelation found: %s", str ) );
+            }
+        }
+        catch ( ConfigurationException ce )
+        {
+            System.out.println( "ce caught" );
+            ce.printStackTrace();
+        }
+        catch ( ServiceException se )
+        {
+            System.out.println( "se caught" );
+            se.printStackTrace();
+        }
+        catch ( MalformedURLException mue )
+        {
+            System.out.println( "mue caught" );
+            mue.printStackTrace();
+        }
+        catch ( IOException ioe )
+        {
+            System.out.println( "ioe caught" );
+            ioe.printStackTrace();
+        }
+    }
 
     static void testFoxml11Document()
     {
