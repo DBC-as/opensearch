@@ -20,6 +20,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
+/**
+ * Interface that defines the harvester og data for the DataDock
+ * It is a step in the process of making the harvester a service and 
+ * not a part of the DataDock.
+ */
+
 public interface IHarvest
 {
      /**
