@@ -20,13 +20,13 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.datadock;
 
 
+import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -52,6 +52,7 @@ public class DatadockManager
     private IHarvester harvester = null;
     XMLConfiguration config = null;    
     Vector< DatadockJob > registeredJobs = null;
+    static int rejectedSleepTime;
     
     
     /**
@@ -62,7 +63,7 @@ public class DatadockManager
         log.trace( "DatadockManager( pool, harvester ) called" );
 
         this.pool = pool;
-        
+        this.rejectedSleepTime = DatadockConfig.getRejectedSleepTime();
         this.harvester = harvester;
         harvester.start();
 
@@ -99,6 +100,7 @@ public class DatadockManager
             {
                 /** \todo: explanation on the frequency of this exception.*/
                 log.warn( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
+                Thread.sleep( rejectedSleepTime );
             }
         }
         
