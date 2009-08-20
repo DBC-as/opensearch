@@ -1,21 +1,23 @@
 /*   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
@@ -106,15 +108,15 @@ public class OwnerRelation implements IRelation
         log.debug( String.format( "owner relation with values: submitter: '%s'; format: '%s'", submitter, format ) );
         if( submitter.equals( "dbc" ) )
         {
-            if( format.equals( "anmeldelser" ) )
+            if( format.equals( "anmeldelser" ) || format.equals( "anmeld" ) )
             {
                 ok = addRelationship( pid, free );
             }
-            else if( format.equals( "materialevurderinger" ) )
+            else if( format.equals( "materialevurderinger" ) || format.equals( "matvurd" ) )
             {
                 ok = addRelationship( pid, materialevurderinger );
             }
-            else if( format.equals( "forfatterweb" ) )
+            else if( format.equals( "forfatterweb" ) || format.equals( "forfatterw" ) )
             {
                 ok = addRelationship( pid, forfatterweb );
             }
@@ -122,7 +124,7 @@ public class OwnerRelation implements IRelation
             {
                 ok = addRelationship( pid, faktalink );
             }
-            else if( format.equals( "dr_forfatteratlas" ) )
+            else if( format.equals( "dr_forfatteratlas" ) || format.equals( "dr_atlas" ) )
             {
                 ok = addRelationship( pid, free );
             }
@@ -145,9 +147,9 @@ public class OwnerRelation implements IRelation
                 throw new PluginException( String.format( "format '%s' from submitter '%s' with pid '%s' could not be processed!", format, submitter, pid ) );
             }
         }
-        else if( submitter.equals( "kkb" ) )
+        else if( submitter.equals( "kkb" ) || submitter.equals( "710100" ) )
         {
-            if( format.equals( "danmarcxchange" ) )
+            if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
             {
                 ok = addRelationship( pid, kkb_catalog );
             }
@@ -156,9 +158,9 @@ public class OwnerRelation implements IRelation
                 throw new PluginException( String.format( "format '%s' from submitter '%s' could not be processed!", format, submitter ) );
             }
         }
-        else if( submitter.equals( "aakb" ) )
+        else if( submitter.equals( "aakb" ) || format.equals( "775100" ) )
         {
-            if( format.equals( "danmarcxchange" ) )
+            if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
             {
                 ok = addRelationship( pid, aakb_catalog );
             }
@@ -175,7 +177,7 @@ public class OwnerRelation implements IRelation
                 throw new PluginException( String.format( "format '%s' from submitter '%s' could not be processed!", format, submitter ) );
             }
         }
-        else if( submitter.equals( "nota" ) )
+        else if( submitter.equals( "nota" ) || submitter.equals( "874310" ) )
         {
             ok = addRelationship( pid, nota );
         }

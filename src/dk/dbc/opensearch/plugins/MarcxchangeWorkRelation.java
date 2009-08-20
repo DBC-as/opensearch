@@ -126,33 +126,39 @@ public class MarcxchangeWorkRelation implements IRelation
             List< String > sSourceWorkRelations = new ArrayList< String >();
             List< String > tSourceWorkRelations = new ArrayList< String >();
 
-            if ( ! dcTitle.equals( "" ) )
-            {
-                tTitleWorkRelations = fedor.getSubjectRelations( "title", dcTitle, relation );
-                sTitleWorkRelations = fedor.getSubjectRelations( "source", dcTitle, relation );
-            }
-            
             if ( ! dcSource.equals( "" ) )
             {
                 sSourceWorkRelations = fedor.getSubjectRelations( "source", dcSource, relation );
-                tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
+                if ( sSourceWorkRelations.isEmpty() ) // skipping if source-source work relations have been found
+                {
+                    sTitleWorkRelations = fedor.getSubjectRelations( "source", dcTitle, relation );
+                }
             }
 
-            if( ! tTitleWorkRelations.isEmpty() )
+            if ( ! dcTitle.equals( "" ) )
             {
-                workRelations.addAll( tTitleWorkRelations );
+                tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
+                if ( tSourceWorkRelations.isEmpty() ) // skipping if
+                {
+                    tTitleWorkRelations = fedor.getSubjectRelations( "title", dcTitle, relation );
+                }
+            }
+            
+            if( ! sSourceWorkRelations.isEmpty() )
+            {
+                workRelations.addAll( sSourceWorkRelations );
             }
             else if( ! sTitleWorkRelations.isEmpty() )
             {
                 workRelations.addAll( sTitleWorkRelations );
             }
-            else if( ! sSourceWorkRelations.isEmpty() )
-            {
-                workRelations.addAll( sSourceWorkRelations );
-            }
             else if( ! tSourceWorkRelations.isEmpty() )
             {
                 workRelations.addAll( tSourceWorkRelations );
+            }
+            else if( ! tTitleWorkRelations.isEmpty() )
+            {
+                workRelations.addAll( tTitleWorkRelations );
             }
             else
             {
