@@ -72,7 +72,8 @@ public class FedoraUtils
      */
     public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, ServiceException, ConfigurationException, IOException, MalformedURLException, UnsupportedEncodingException, XPathExpressionException, SAXException
     {
-        FoxmlDocument foxml = new FoxmlDocument( cargo.getDCIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
+        //\todo: we always create active objects (until told otherwise)
+        FoxmlDocument foxml = new FoxmlDocument( FoxmlDocument.State.A, cargo.getDCIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
 
         /**
          * \todo:

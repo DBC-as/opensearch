@@ -1,23 +1,21 @@
 /*
-  This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
-  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+This file is part of opensearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s,
+Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-  opensearch is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+opensearch is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  opensearch is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+opensearch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
+You should have received a copy of the GNU General Public License
+along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
@@ -78,7 +76,7 @@ public final class FoxmlDocument
     public static final String FEDORA_MODEL = FedoraNamespaceContext.FedoraNamespace.FEDORAMODEL.getURI();
     public static final FedoraNamespace model = FedoraNamespaceContext.FedoraNamespace.FEDORAMODEL;
     public static final FedoraNamespace view = FedoraNamespaceContext.FedoraNamespace.FEDORAVIEW;
-    public static final String FOXML_VERSION_NS = FOXML_NS+"";
+    public static final String FOXML_VERSION_NS = FOXML_NS + "";
     private DocumentBuilder builder;
     private Document doc;
     private Element rootElement;
@@ -86,7 +84,6 @@ public final class FoxmlDocument
     private XPathFactory factory;
     private XPath xpath;
     private TransformerFactory xformFactory;
-
 
     /**
      * Helper class for defining properties on the Digital Object
@@ -100,7 +97,6 @@ public final class FoxmlDocument
         CREATE_DATE( model.getElementURI( "createdDate" ) ),
         OWNERID( model.getElementURI( "ownerId" ) ),
         MOD_DATE( view.getElementURI( "lastModifiedDate" ) );
-
         private final String uri;
 
         Property( String uri )
@@ -125,11 +121,11 @@ public final class FoxmlDocument
     {
 
         /**
-         * Active
+         * Active: The object is published and available.
          */
         A,
         /**
-         * Inactive
+         * Inactive: The object is not publicly available.
          */
         I,
         /**
@@ -145,32 +141,62 @@ public final class FoxmlDocument
     {
 
         /**
-         *
+         * Internal XML Content - the content is stored as XML
+         * in-line within the digital object XML file
          */
         X,
         /**
-         * 
+         * Managed Content - the content is stored in the repository
+         * and the digital object XML maintains an internal
+         * identifier that can be used to retrieve the content from
+         * storage
          */
         M,
         /**
-         *
+         * Externally Referenced Content (not yet implemented) - the
+         * content is stored outside the repository and the digital
+         * object XML maintains a URL that can be dereferenced by the
+         * repository to retrieve the content from a remote
+         * location. While the datastream content is stored outside of
+         * the Fedora repository, at runtime, when an access request
+         * for this type of datastream is made, the Fedora repository
+         * will use this URL to get the content from its remote
+         * location, and the Fedora repository will mediate access to
+         * the content. This means that behind the scenes, Fedora will
+         * grab the content and stream in out the the client
+         * requesting the content as if it were served up directly by
+         * Fedora. This is a good way to create digital objects that
+         * point to distributed content, but still have the repository
+         * in charge of serving it up.
          */
         E,
         /**
-         * 
+         * Redirect Referenced Content (not supported)- the content
+         * is stored outside the repository and the digital object
+         * XML maintains a URL that is used to redirect the client
+         * when an access request is made. The content is not
+         * streamed through the repository. This is beneficial when
+         * you want a digital object to have a Datastream that is
+         * stored and served by some external service, and you want
+         * the repository to get out of the way when it comes time to
+         * serve the content up. A good example is when you want a
+         * Datastream to be content that is stored and served by a
+         * streaming media server. In such a case, you would want to
+         * pass control to the media server to actually stream the
+         * content to a client (e.g., video streaming), rather than
+         * have Fedora in the middle re-streaming the content out.
          */
-        R,
-        /**
-         *
-         */
-        B;
+        R;
     }
 
     /**
-     * Helper class to specify the LocationType of a referring String
+     * Helper class to specify the LocationType of a referring String if the
+     * {@link ControlGroup} has specified referenced content
+     * ({@link FoxmlDocument.ControlGroup.R})
      */
     public enum LocationType
     {
+
         /**
          * the referring String denotes a pid in a fedora repository
          */
@@ -193,14 +219,14 @@ public final class FoxmlDocument
      *        System.currentTimeMillis() is a fine choice
      * @throws ParserConfigurationException
      */
-    public FoxmlDocument( String pid, String label, String owner, long timestamp ) throws ParserConfigurationException
+    public FoxmlDocument( State state, String pid, String label, String owner, long timestamp ) throws ParserConfigurationException
     {
         /** \todo: a fedora document v1.1 pid must conform to the following rules
          * a maximum length of 64 chars
          * must satisfy the pattern "([A-Za-z0-9]|-|\.)+:(([A-Za-z0-9])|-|\.|~|_|(%[0-9A-F]{2}))+"
          */
         initDocument( pid );
-        constructFoxmlProperties( label, owner, getTimestamp( timestamp ) );
+        constructFoxmlProperties( state, label, owner, getTimestamp( timestamp ) );
     }
 
 
@@ -234,10 +260,9 @@ public final class FoxmlDocument
     }
 
 
-    private void constructFoxmlProperties( String label, String owner, String timestamp )
+    private void constructFoxmlProperties( State state, String label, String owner, String timestamp )
     {
-        //\todo: we always create active objects (until told otherwise)
-        addObjectProperty( Property.STATE, "Active" );
+        addObjectProperty( Property.STATE, state.toString() );
         addObjectProperty( Property.LABEL, label );
         addObjectProperty( Property.OWNERID, owner );
         addObjectProperty( Property.CREATE_DATE, timestamp );
