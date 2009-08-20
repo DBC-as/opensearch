@@ -82,6 +82,10 @@ public interface IHarvest
      * @throws UnknownIdentifierException if the {@code jobId} could not be found in the {@link IHarvester}
      * @throws InvalidStatusChangeException if the client tries to set the status more than once on a given {@code jobId}
      */
-    void setStatus( IIdentifier jobId, int status ) throws UnknownIdentifierException, InvalidStatusChangeException;
+    void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException;
 
+
+    /**
+     * \todo: should the interface expose a `public JobStatus getStatus( IIdentifier jobId )`?
+     */
 }
