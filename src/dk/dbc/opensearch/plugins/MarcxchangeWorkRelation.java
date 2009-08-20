@@ -121,10 +121,22 @@ public class MarcxchangeWorkRelation implements IRelation
         List< String > workRelations = new ArrayList<String>();
         if( ! types.contains( dcType ) )
         {
-            List< String > tTitleWorkRelations = fedor.getSubjectRelations( "title", dcTitle, relation );
-            List< String > sTitleWorkRelations = fedor.getSubjectRelations( "source", dcTitle, relation );
-            List< String > sSourceWorkRelations = fedor.getSubjectRelations( "source", dcSource, relation );
-            List< String > tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
+            List< String > tTitleWorkRelations = new ArrayList< String >();
+            List< String > sTitleWorkRelations = new ArrayList< String >();
+            List< String > sSourceWorkRelations = new ArrayList< String >();
+            List< String > tSourceWorkRelations = new ArrayList< String >();
+
+            if ( ! dcTitle.equals( "" ) )
+            {
+                tTitleWorkRelations = fedor.getSubjectRelations( "title", dcTitle, relation );
+                sTitleWorkRelations = fedor.getSubjectRelations( "source", dcTitle, relation );
+            }
+            
+            if ( ! dcSource.equals( "" ) )
+            {
+                sSourceWorkRelations = fedor.getSubjectRelations( "source", dcSource, relation );
+                tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
+            }
 
             if( ! tTitleWorkRelations.isEmpty() )
             {
