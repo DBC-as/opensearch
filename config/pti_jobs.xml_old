@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<job_list xmlns="info:opensearch.dbc.dk#">
+
+  <job submitter="dbc" format="faktalink">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" position="0"/>    
+  </job>
+  <job submitter="dbc" format="forfatterweb">
+    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" position="0"/>
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+  </job>
+  <job submitter="dbc" format="materialevurderinger">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+  <job submitter="dbc" format="anmeldelser">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>  
+  <job submitter="dbc" format="artikler">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>  
+  <job submitter="dbc" format="dr_forfatteratlas">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job> 
+  <job submitter="dbc" format="dr_bonanza">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+  <job submitter="aakb" format="danmarcxchange">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+  <job submitter="aakb" format="ebsco">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+  <job submitter="aakb" format="ebrary">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+  <job submitter="kkb" format="danmarcxchange">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+
+</job_list>
