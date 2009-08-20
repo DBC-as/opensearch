@@ -121,15 +121,17 @@ public class MarcxchangeWorkRelation implements IRelation
         List< String > workRelations = new ArrayList<String>();
         if( ! types.contains( dcType ) )
         {
+            log.debug( String.format( "finding work relations for dcType %s", dcType ) );
             List< String > tTitleWorkRelations = new ArrayList< String >();
             List< String > sTitleWorkRelations = new ArrayList< String >();
             List< String > sSourceWorkRelations = new ArrayList< String >();
             List< String > tSourceWorkRelations = new ArrayList< String >();
 
+            log.debug( String.format( "WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle) );
             if ( ! dcSource.equals( "" ) )
             {
                 sSourceWorkRelations = fedor.getSubjectRelations( "source", dcSource, relation );
-                if ( sSourceWorkRelations.isEmpty() ) // skipping if source-source work relations have been found
+                if ( sSourceWorkRelations.isEmpty() && ! dcTitle.equals( "" ) ) 
                 {
                     sTitleWorkRelations = fedor.getSubjectRelations( "source", dcTitle, relation );
                 }
@@ -137,8 +139,12 @@ public class MarcxchangeWorkRelation implements IRelation
 
             if ( ! dcTitle.equals( "" ) )
             {
-                tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
-                if ( tSourceWorkRelations.isEmpty() ) // skipping if
+                if ( ! dcSource.equals( "" ) )
+                {
+                    tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
+                }
+                else
+                //if ( tSourceWorkRelations.isEmpty() )
                 {
                     tTitleWorkRelations = fedor.getSubjectRelations( "title", dcTitle, relation );
                 }
@@ -168,7 +174,11 @@ public class MarcxchangeWorkRelation implements IRelation
         else
         {
 
-            List< String > titlePids = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation ); //fa.findMatchingFieldPids( "title", dcTitle );
+            List< String > titlePids = new ArrayList<String>();
+            if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
+            {
+                fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation ); //fa.findMatchingFieldPids( "title", dcTitle );
+            }
             /*List<String> creatorPids = fedor.getSubjectRelations( "creator", dcCreator, relation ); //fa.findMatchingFieldPids( "creator", dcCreator );
             titlePids.retainAll( creatorPids );*/
 
