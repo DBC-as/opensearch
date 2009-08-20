@@ -20,6 +20,7 @@
 
 package dk.dbc.opensearch.common.fedora;
 
+import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import fedora.utilities.Base64;
 import fedora.utilities.NamespaceContextImpl;
 import fedora.utilities.XmlTransformUtility;
@@ -73,7 +74,10 @@ public final class FoxmlDocument
     /**
      * Defines the system-wide namespace for use in all valid foxml elements
      */
-    public static final String FOXML_NS = "info:fedora/fedora-system:def/foxml#";
+    public static final String FOXML_NS = FedoraNamespaceContext.FedoraNamespace.FOXML.getURI();
+    public static final String FEDORA_MODEL = FedoraNamespaceContext.FedoraNamespace.FEDORAMODEL.getURI();
+    public static final FedoraNamespace model = FedoraNamespaceContext.FedoraNamespace.FEDORAMODEL;
+    public static final FedoraNamespace view = FedoraNamespaceContext.FedoraNamespace.FEDORAVIEW;
     public static final String FOXML_VERSION_NS = FOXML_NS+"";
     private DocumentBuilder builder;
     private Document doc;
@@ -90,12 +94,13 @@ public final class FoxmlDocument
     public enum Property
     {
 
-        STATE( "info:fedora/fedora-system:def/model#state" ),
-        LABEL( "info:fedora/fedora-system:def/model#label" ),
-        CONTENT_MODEL( "info:fedora/fedora-system:def/model#contentModel" ),
-        CREATE_DATE( "info:fedora/fedora-system:def/model#createdDate" ),
-        OWNERID( "info:fedora/fedora-system:def/model#ownerId" ),
-        MOD_DATE( "info:fedora/fedora-system:def/view#lastModifiedDate" );
+        STATE( model.getElementURI( "state" ) ),
+        LABEL( model.getElementURI( "label" ) ),
+        CONTENT_MODEL( model.getElementURI( "contentModel" ) ),
+        CREATE_DATE( model.getElementURI( "createdDate" ) ),
+        OWNERID( model.getElementURI( "ownerId" ) ),
+        MOD_DATE( view.getElementURI( "lastModifiedDate" ) );
+
         private final String uri;
 
         Property( String uri )

@@ -1,4 +1,4 @@
-/*   
+/**
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -16,43 +16,39 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
-package dk.dbc.opensearch.common.helpers;
+package dk.dbc.opensearch.common.fedora;
 
+import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import java.util.List;
-import javax.xml.namespace.NamespaceContext;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import org.apache.log4j.Logger;
 
 
 /**
- * Namespace context for opensearch.
+ *
  */
-public final class OpensearchNamespaceContext implements NamespaceContext
+public final class FedoraNamespaceContext implements NamespaceContext
 {
 
     private static Logger log = Logger.getLogger( OpensearchNamespaceContext.class );
 
-    enum OpenSearchNamespace
+    enum FedoraNamespace
     {
 
-        DOCBOOK( "docbook", "http://docbook.org/ns/docbook" ),
-        DKABM( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" ),
-        TING( "ting", "http://www.dbc.dk/ting" ),
-        DC( "dc", "http://purl.org/dc/elements/1.1/" ),
-        XSI( "xsi", "http://www.w3.org/2001/XMLSchema-instance" ),
-        ISO6392( "ISO639-2", "http://lcweb.loc.gov/standards/iso639-2/" ),
-        DCMI( "dcmitype", "http://purl.org/dc/dcmitype/" ),
-        DCTERMS( "dcterms", "http://purl.org/dc/terms/" ),
-        AC( "ac", "http://biblstandard.dk/ac/namespace/" ),
-        DKDCPLUS( "dkdcplus", "http://biblstandard.dk/abm/namespace/dkdcplus/" );
-
+        XML( XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI ),
+        FEDORA( "fedora", "info:fedora/" ),
+        FEDORARELSEXT( "rel", "info:fedora/fedora-system:def/relations-external#" ),
+        FEDORAMODEL( "fedora-model", "info:fedora/fedora-system:def/model#" ),
+        FEDORAVIEW( "fedora-view", "info:fedora/fedora-system:def/view#" ),
+        FOXML( "foxml", "info:fedora/fedora-system:def/foxml#" );
         private String prefix;
         private String uri;
 
-        OpenSearchNamespace( String prefix, String URI )
+        FedoraNamespace( String prefix, String URI )
         {
             this.prefix = prefix;
             this.uri = URI;
@@ -79,17 +75,23 @@ public final class OpensearchNamespaceContext implements NamespaceContext
         }
 
 
+        public String getElementURI( String element )
+        {
+            return this.uri + element;
+        }
+
+
     }
 
     /**
-     * finds an {@link OpenSearchNamespace} given a prefix
+     * finds an {@link FedoraNamespace} given a prefix
      * @param prefix the prefix to look in the enums for
-     * @return OpenSearchNamespace type if found, null otherwise
+     * @return FedoraNamespace type if found, null otherwise
      */
-    OpenSearchNamespace getNamespace( String prefix )
+    FedoraNamespace getNamespace( String prefix )
     {
-        OpenSearchNamespace ns = null;
-        for( OpenSearchNamespace osns : OpenSearchNamespace.values() )
+        FedoraNamespace ns = null;
+        for( FedoraNamespace osns : FedoraNamespace.values() )
         {
             if( osns.prefix.equals( prefix ) )
             {
@@ -103,19 +105,19 @@ public final class OpensearchNamespaceContext implements NamespaceContext
     /**
      * Empty constructor
      */
-    public OpensearchNamespaceContext()
+    public FedoraNamespaceContext()
     {
     }
 
 
     /**
-     * @param prefix a String giving the prefix of the namespace for which to search 
+     * @param prefix a String giving the prefix of the namespace for which to search
      * @return the uri of the namespace that has the given prefix
      */
     @Override
     public String getNamespaceURI( String prefix )
     {
-        OpenSearchNamespace namespace = this.getNamespace( prefix );
+        FedoraNamespace namespace = this.getNamespace( prefix );
         return namespace.uri;
     }
 
@@ -132,7 +134,7 @@ public final class OpensearchNamespaceContext implements NamespaceContext
     {
         List<String> prefixes = new ArrayList<String>();
 
-        for( OpenSearchNamespace ns : OpenSearchNamespace.values() )
+        for( FedoraNamespace ns : FedoraNamespace.values() )
         {
             if( ns.uri.equals( namespaceURI ) )
             {
