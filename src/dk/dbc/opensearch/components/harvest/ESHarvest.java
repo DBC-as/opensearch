@@ -63,7 +63,7 @@ System.out.println( "dummy hearvester shutdown" );
         return null;
     }
 
-    public void setStatus( IIdentifier jobId, int status ) throws UnknownIdentifierException, InvalidStatusChangeException
+    public void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException
     {
         System.out.println( String.format( "Dummy harvester was requested to set status %s on data identified by the identifier %s", status, jobId ) );
         //check if the status associated with the identifier has previously been set
