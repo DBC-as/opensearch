@@ -26,6 +26,7 @@ import dk.dbc.opensearch.common.db.OracleDBConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -114,7 +115,7 @@ public class ESHarvest implements IHarvest
                     }
                     else
                     {
-         System.out.println( "rs2 is not null" );
+                        System.out.println( "rs2 is not null" );
                         while( rs2.next() && taken < maxAmount )
                         {
                             System.out.println( "rs2 has next" );
@@ -131,14 +132,14 @@ public class ESHarvest implements IHarvest
                         Iterator takenIter = takenList.iterator();
                         if( takenIter.hasNext() )
                         {
-                        String updateString = "UPDATE TASKPACKAGERECORDSTRUCTURE SET RECORDSTATUS = 3 WHERE TARGETREFERENCE = " + targetRef + " AND LBNR = " + takenIter.next();
-                        while( takenIter.hasNext())
-                        {
-                            updateString = updateString + " OR LBNR = " + takenIter.next();
-                        }
-                        System.out.println( updateString );
-                        stmt.executeUpdate( updateString );
-                        takenList.clear();
+                            String updateString = "UPDATE TASKPACKAGERECORDSTRUCTURE SET RECORDSTATUS = 3 WHERE TARGETREFERENCE = " + targetRef + " AND LBNR = " + takenIter.next();
+                            while( takenIter.hasNext())
+                            {
+                                updateString = updateString + " OR LBNR = " + takenIter.next();
+                            }
+                            System.out.println( updateString );
+                            stmt.executeUpdate( updateString );
+                            takenList.clear();
                         }
                     }
 
@@ -158,9 +159,41 @@ public class ESHarvest implements IHarvest
 
     public byte[] getData( IIdentifier jobId ) throws UnknownIdentifierException
     {
-        System.out.println( String.format( "identifier %s called on the Dummy harvester", jobId ) );
+        System.out.println( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
         //get the data associated with the identifier from the record field
-        return null;
+        Blob data = null;
+        ResultSet rs = null;
+        byte[] returnData = null;
+        Identifier theJobId = (Identifier)jobId;   
+        try
+        {
+            Statement stmt = conn.createStatement();
+            String queryString = String.format( "SELECT RECORD FROM SUPPLIEDRECORDS WHERE TARGETREFERENCE = %s AND LBNR = %s" ,theJobId.getTargetRef() , theJobId.getLbNr() );
+            System.out.println( queryString );
+            rs = stmt.executeQuery( queryString );
+            if( rs == null || ! rs.next() )
+            {
+                throw new UnknownIdentifierException( String.format( "the Identifier %s is unknown in the base", jobId.toString() ) );
+            }
+            else
+            {
+                data= rs.getBlob( "RECORD" );
+                long blobLength = data.length();
+                if( blobLength > 0 )
+                {
+                    returnData = data.getBytes( 1l, (int)blobLength );
+                }
+                else
+                {
+                    System.out.println( String.format( "No data associated with id %s", theJobId.toString() ) );
+                }
+            }
+        }
+        catch( SQLException sqle )
+        {
+            sqle.printStackTrace();
+        }
+        return returnData;
     }
 
     public void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException

@@ -23,12 +23,12 @@ package dk.dbc.opensearch.components.harvest;
 import java.util.ArrayList;
 import java.util.Iterator;
 /**
- * 
+ *
  */
 public class HarvestFunc {
 
     static ESHarvest esh;
-    
+
     public static void main( String[] args )
     {
         runTests();
@@ -37,7 +37,7 @@ public class HarvestFunc {
     static void runTests()
     {
         //startESHarvestTest();
-        getJobsTest();
+        getJobsNDataTest();
     }
 
     private static void startESHarvestTest()
@@ -46,16 +46,30 @@ public class HarvestFunc {
         esh.start();
     }
 
-    private static void getJobsTest()
+    private static void getJobsNDataTest()
     {
+        byte[] data = null;
         esh = new ESHarvest();
         esh.start();
         ArrayList<IJob> jobL = esh.getJobs( 3 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
         Iterator iter = jobL.iterator();
+        System.out.println( "got jobs:" );
         while( iter.hasNext() )
         {
-            System.out.println( String.format( "job: %s", iter.next().toString() ) );
+            IJob theJob = (IJob)iter.next();
+            System.out.println( String.format( "job: %s", theJob.toString() ) );
+            try
+            {
+                data = esh.getData( theJob.getIdentifier() );
+
+                System.out.println(  String.format( "data gotten: %s", data.toString() ) );
+
+            }
+            catch( UnknownIdentifierException uie )
+            {
+                uie.printStackTrace();
+            }
         }
     }
 
