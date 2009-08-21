@@ -28,7 +28,6 @@ import sys
 sys.path.append( "../tools/" )
 import build_config
 
-
 try:
     import xml.etree.ElementTree as ET
 except ImportError:
@@ -37,23 +36,32 @@ except ImportError:
     except ImportError:
         sys.exit( "could not import elementtree library. Is it installed?" )
 
-def main( harvest_folder, delete_existing ):
+def main( harvest_folder ):
     
     build_config.main( [ '', '../' ] )
 
     config = ET.parse( '../config/config.xml' )
 
-    dest = config.findall( '//toharvest' )[0].text
+    if harvest_folder != "":
 
-    if delete_existing:
+        dest = config.findall( '//toharvest' )[0].text
+        
+        target = config.findall( '//harvestdone' )[0].text
+
+        if os.path.exists( target ):
+            shutil.rmtree( target )
+        
         if os.path.exists( dest ):
             shutil.rmtree( dest )
-
-    if harvest_folder != "":
-        shutil.copytree( harvest_folder, dest )
+            shutil.copytree( harvest_folder, dest )
+        os.mkdir( target )
 
     postgres_setup.main()
-    fedora_conn.test_fedora_conn( 'localhost', '8080' )
+
+    host = config.findall( '//host' )[0].text
+    port = config.findall( '//port' )[0].text
+    
+    fedora_conn.test_fedora_conn( host, port )
 
 if __name__ == '__main__':
 
@@ -62,19 +70,14 @@ if __name__ == '__main__':
     parser = OptionParser( usage="%prog [options]" )
     
     parser.add_option( "-f", dest="harvest_folder", 
-                       action="store", help="The full path to the folder containing the data to be harvested" )
-    parser.add_option( "--delete", action="store_true", dest="DEL", default="False",
-                       help="does not delete the folder containing the local harvest files (if -f was given, the folder will be deleted)" )
-    parser.add_option( "--use-defaults", action="store_true", dest="DEFAULT", 
-                       help="use /data1/harvest-test as default folder (for backwards compatibility...)")
+                       action="store", help="The full path to the folder containing the data to be harvested."+
+                       "\nIf not given, it is assumed that a harvest folder with data already exists, and nothing is copied or deleted."+
+                       "\nE.g. /data1/harvest-test " )
     (options, args) = parser.parse_args()
 
-    harvest_folder = ""
-
-    if options.DEFAULT:
-    	harvest_folder = '/data1/harvest-test'
     if options.harvest_folder:
         harvest_folder = options.harvest_folder
-
+    else:
+        harvest_folder = ""
 
     main( harvest_folder, options.DEL )
