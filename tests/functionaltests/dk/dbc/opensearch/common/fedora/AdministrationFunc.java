@@ -74,7 +74,7 @@ public class AdministrationFunc
         testFoxml11Document();
 */
         System.out.println( "*** kalder testDeleteObjects ***" );
-        String[] labels = { "anmeldelser", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
+        String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
         testDeleteObjectPids( labels, 50 );
 
         //testGetSubjectRelations();

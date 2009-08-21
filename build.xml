@@ -134,13 +134,20 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       <param name="project.name" value="dist/*.jar" />
     </antcall>
     <antcall target="_dist_datadock">
-      <param name="src.dir" value="${src.dir}" />
+      <!--param name="src.dir" value="${src.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
     <antcall target="_dist_pti">
-      <param name="src.dir" value="${src.dir}" />
+      <!--param name="src.dir" value="${src.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
+
+    <!-- TO BE DELETED UPON RELEASE!!! -->
+    <antcall target="compile-tests" />
+    <antcall target="_dist_adminfunc">
+      <!--param name="src.dir" value="${src.dir}" /-->
+      <param name="project.name" value="dist/${dist.jar}_ADMIN_FUNC.jar" />
+    </antcall>    
   </target> 
 
 
@@ -163,15 +170,22 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   <target name="dist_datadock" depends="clean, compile"> <!-- xsd, "> -->
     <antcall target="_dist_datadock">
-      <param name="src.dir" value="${src.dir}" />
+      <!--param name="src.dir" value="${src.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
   </target>
 
   <target name="dist_pti" depends="clean, compile">  <!-- xsd, "> -->
     <antcall target="_dist_pti">
-      <param name="src.dir" value="${src.dir}" />
+      <!--param name="src.dir" value="${src.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
+    </antcall>
+  </target>
+
+  <target name="dist_adminfunc" depends="clean, compile-tests, config_py">  <!-- xsd, "> -->
+    <antcall target="_dist_adminfunc">
+      <!--param name="src.dir" value="${tests.dir}" /-->
+      <param name="project.name" value="dist/${dist.jar}_ADMIN_FUNC.jar" />
     </antcall>
   </target>
 

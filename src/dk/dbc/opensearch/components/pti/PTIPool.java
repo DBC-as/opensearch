@@ -28,11 +28,7 @@ import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -42,7 +38,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;

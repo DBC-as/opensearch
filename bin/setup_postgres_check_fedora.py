@@ -53,8 +53,9 @@ def main( harvest_folder ):
         
         if os.path.exists( dest ):
             shutil.rmtree( dest )
-            shutil.copytree( harvest_folder, dest )
-        os.mkdir( target )
+
+        shutil.copytree( harvest_folder, dest )
+	os.mkdir( target )
 
     postgres_setup.main()
 
@@ -79,5 +80,5 @@ if __name__ == '__main__':
         harvest_folder = options.harvest_folder
     else:
         harvest_folder = ""
-
-    main( harvest_folder, options.DEL )
+    
+    main( harvest_folder )

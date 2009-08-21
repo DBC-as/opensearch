@@ -108,6 +108,7 @@ public class OwnerRelation implements IRelation
         log.debug( String.format( "owner relation with values: submitter: '%s'; format: '%s'", submitter, format ) );
         if( submitter.equals( "dbc" ) )
         {
+            log.debug( String.format( "submitter 'dbc' format: %s", format ) );
             if( format.equals( "anmeldelser" ) || format.equals( "anmeld" ) )
             {
                 ok = addRelationship( pid, free );
@@ -149,6 +150,7 @@ public class OwnerRelation implements IRelation
         }
         else if( submitter.equals( "kkb" ) || submitter.equals( "710100" ) )
         {
+            log.debug( String.format( "submitter 'kkb' or '710100' format: %s", format ) );
             if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
             {
                 ok = addRelationship( pid, kkb_catalog );
@@ -158,8 +160,9 @@ public class OwnerRelation implements IRelation
                 throw new PluginException( String.format( "format '%s' from submitter '%s' could not be processed!", format, submitter ) );
             }
         }
-        else if( submitter.equals( "aakb" ) || format.equals( "775100" ) )
+        else if( submitter.equals( "aakb" ) || submitter.equals( "775100" ) )
         {
+            log.debug( String.format( "submitter 'aakb' or '775100' format: %s", format ) );
             if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
             {
                 ok = addRelationship( pid, aakb_catalog );

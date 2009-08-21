@@ -1,54 +1,68 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <job_list xmlns="info:opensearch.dbc.dk#">
 
   <job submitter="dbc" format="faktalink">
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
-    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
-    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
-  </job>
-  <job submitter="dbc" format="forfatterweb">
+    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>  
+    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />                     
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />     
+  </job>                                                                                                 
+  <job submitter="dbc" format="forfatterw">                                                              
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
-    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>
-    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
+    <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate" position="1"/>  
+    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />                     
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />
   </job>
-  <job submitter="aakb" format="danmarcxchange">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
-    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
-  </job>
-  <job submitter="aakb" format="ebsco">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
-    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
-  </job>
-  <job submitter="aakb" format="ebrary">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
-    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
-  </job>
-  <job submitter="kkb" format="danmarcxchange">
+  <job submitter="775100" format="katalog">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="3" />
   </job>
-  <job submitter="dbc" format="materialevurderinger">
+  <job submitter="775100" format="ebsco">
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
+    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="3" />
+  </job>
+  <job submitter="775100" format="ebrary">
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
+    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="3" />
+  </job>
+  <job submitter="710100" format="katalog">
+    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
+    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="3" />
+  </job>
+  <job submitter="dbc" format="matvurd">
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
   </job>
-  <job submitter="dbc" format="dr_forfatteratlas">
+  <job submitter="dbc" format="dr_atlas">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
-  </job>  
-  <job submitter="dbc" format="anmeldelser">
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="3" />
+  </job>
+  <job submitter="dbc" format="anmeld">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
-  </job>  
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="3" />
+  </job>
   <job submitter="dbc" format="artikler">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
-  </job>  
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="3" />
+  </job>
   <job submitter="dbc" format="dr_bonanza">
     <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DCHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="2" />
   </job>
 
 </job_list>
