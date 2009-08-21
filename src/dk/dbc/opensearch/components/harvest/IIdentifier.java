@@ -21,14 +21,16 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.harvest;
 
 public interface IIdentifier
-{   
-    public int getTargetRef();
+{ 
+    
+    /* 
 
-    public int getLbNr();
+       This interface is intentionally left empty.
+       The purpose of the interface is only to expose an Identifier-type to the 
+       DataDock, which only needs to carry it around. The only use the DD has for
+       the Identifier is when it needs to communicate to the Harvster.
+       There is no need for the DD to call methods on the Interface.
+       
+     */
 
-    public int compareTo( Object obj );
-
-    public boolean equals(Object obj );
-
-    public String toString();
 }
