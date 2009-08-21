@@ -20,6 +20,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
+import java.util.ArrayList;
+
 /**
  * Interface that defines the operations of a data-harvester The
  * development goals of the harvester application is to make it a
@@ -51,7 +53,7 @@ public interface IHarvest
      * @param maxAmount specifies the maximum amount of jobs to be written to the {@link IJobList}
      * @returns an {@link IjobList} containing information about jobs that the requestor can obtain.
      */
-    IJobList getJobs( int maxAmount );
+    ArrayList<IJob> getJobs( int maxAmount );
 
 
     /**

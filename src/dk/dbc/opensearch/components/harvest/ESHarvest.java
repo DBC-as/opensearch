@@ -80,16 +80,16 @@ public class ESHarvest implements IHarvest
 
     }
 
-    public IJobList getJobs( int maxAmount )
+    public ArrayList<IJob> getJobs( int maxAmount )
     {
 
         System.out.println( String.format( "The dummy harvester was requested for %s jobs", maxAmount ) );
-        IJobList theJobList = new JobList();
+        ArrayList<IJob> theJobList = new ArrayList();
         ResultSet rs = null;
         try{
             Statement stmt = conn.createStatement();
             int taken = 0;
-            ArrayList takenList = new ArrayList();
+            ArrayList<Integer> takenList = new ArrayList();
             //get Targetreference from view UPDATEPACKAGES
             rs = stmt.executeQuery( "SELECT TARGETREFERENCE FROM UPDATEPACKAGES WHERE DATABASENAME = 'test'" );
 
@@ -114,14 +114,14 @@ public class ESHarvest implements IHarvest
                     }
                     else
                     {
+         System.out.println( "rs2 is not null" );
                         while( rs2.next() && taken < maxAmount )
                         {
+                            System.out.println( "rs2 has next" );
                             int lbnr = rs2.getInt( "LBNR" );
-                            Identifier id = new Identifier();
-                            id.init( targetRef, lbnr );
+                            Identifier id = new Identifier( targetRef, lbnr );
                             String referenceData = rs2.getString( "SUPPLEMENTALID3" );
-                            Job theJob = new Job();
-                            theJob.init( id, referenceData.getBytes() );
+                            Job theJob = new Job( id, referenceData.getBytes() );
                             theJobList.add( theJob );
                             taken++;
                             takenList.add( lbnr );
@@ -129,6 +129,8 @@ public class ESHarvest implements IHarvest
 
                         //set recordstatus to 3 for the taken targetref and lbnr
                         Iterator takenIter = takenList.iterator();
+                        if( takenIter.hasNext() )
+                        {
                         String updateString = "UPDATE TASKPACKAGERECORDSTRUCTURE SET RECORDSTATUS = 3 WHERE TARGETREFERENCE = " + targetRef + " AND LBNR = " + takenIter.next();
                         while( takenIter.hasNext())
                         {
@@ -137,7 +139,7 @@ public class ESHarvest implements IHarvest
                         System.out.println( updateString );
                         stmt.executeUpdate( updateString );
                         takenList.clear();
-
+                        }
                     }
 
                 }

@@ -21,9 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.harvest;
 
 public interface IIdentifier
-{
-    public void init( int targetRef, int lbNr);
-    
+{   
     public int getTargetRef();
 
     public int getLbNr();

@@ -36,7 +36,16 @@ public class JobList implements IJobList
 
     public IJob getNext()
     {
-        return iter.next();
+        System.out.println( "getNext called" );
+        if(! iter.hasNext() )
+        {
+            throw new IllegalStateException( "no further elements in the JobList" );
+        }
+        else
+        {
+            System.out.println( "iter has next..." );
+            return (IJob)iter.next();
+        }
     }
 
     public boolean hasNext()

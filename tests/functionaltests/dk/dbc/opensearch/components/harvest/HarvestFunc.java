@@ -20,6 +20,8 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 /**
  * 
  */
@@ -48,9 +50,13 @@ public class HarvestFunc {
     {
         esh = new ESHarvest();
         esh.start();
-        IJobList jobL = esh.getJobs( 3 );
+        ArrayList<IJob> jobL = esh.getJobs( 3 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
- 
+        Iterator iter = jobL.iterator();
+        while( iter.hasNext() )
+        {
+            System.out.println( String.format( "job: %s", iter.next().toString() ) );
+        }
     }
 
 }

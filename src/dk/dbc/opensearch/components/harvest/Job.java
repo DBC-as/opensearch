@@ -30,7 +30,7 @@ public class Job implements IJob
     private IIdentifier identifier;
     private byte[] referenceData;
 
-    public void init( IIdentifier identifier, byte[] referenceData )
+    public Job( IIdentifier identifier, byte[] referenceData )
     {
         this.identifier = identifier;
         this.referenceData = referenceData;
@@ -70,5 +70,9 @@ public class Job implements IJob
         {
             return false;
         }
+    }
+    public String toString()
+    {
+        return String.format( "ID: %s, byte length: %s ", identifier, referenceData.length );
     }     
 }

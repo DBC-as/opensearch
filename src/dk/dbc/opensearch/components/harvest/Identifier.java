@@ -32,7 +32,7 @@ public class Identifier implements IIdentifier, Comparable{
     /**
      *
      */
-    public void init( int targetRef, int lbNr )
+    public Identifier( int targetRef, int lbNr )
     {
         targetReference = targetRef;
         this.lbNr = lbNr;
