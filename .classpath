@@ -33,9 +33,6 @@
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/easymock.jar"/>
 	<classpathentry kind="lib" path="lib/easymockclassextension.jar"/>
-	<classpathentry kind="lib" path="lib/fedora-client.jar"/>
-	<classpathentry kind="lib" path="lib/fedora-server.jar"/>
-	<classpathentry kind="lib" path="lib/fedoraclient.jar"/>
 	<classpathentry kind="lib" path="lib/FontBox-0.2.0-dev.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
@@ -54,10 +51,11 @@
 	<classpathentry kind="lib" path="lib/pjx.jar"/>
 	<classpathentry kind="lib" path="lib/postgresql-8.3-604.jdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/trippi-1.3.2-core.jar"/>
-	<classpathentry kind="lib" path="lib/tuple.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/fedora_xsd_classes.jar"/>
+	<classpathentry kind="lib" path="lib/fedora-client-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/fedora-utilities-3.2.1.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
