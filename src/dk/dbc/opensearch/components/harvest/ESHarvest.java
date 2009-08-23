@@ -51,6 +51,14 @@ public class ESHarvest implements IHarvest
     }
     public void start()
     {
+	/** \todo: When the ES-harvester starts, it must check whether ther are
+	    any posts in the ES-base with the status "inProgress". If there are, 
+	    it is safe to assume that the posts can be given to the DataDock again 
+	    without causing any error or faults. This must be done by setting the 
+	    posts to "queued".
+	    Note: Make a clean-up-es-base method to handle this.
+	 */
+
         //create the DBconnection
         try
         {
@@ -68,6 +76,15 @@ public class ESHarvest implements IHarvest
 
     public void shutdown()
     {
+	/**
+	   \Note: It could be discussed wheter the cleanup-method mentioned in the
+	   the above start()-method also should be called from here.
+	   The argument for doing this, is that in case the DataDock gracefully crashes,
+	   then the ES-base could be updated, and if data-deliverers looks at the ES-base then they will
+	   see their posts as (rightfully) queued and not (wrongfully) inProgress.
+	   Of course if the DataDock does not die gracefully, then the shutdown-method may not be run.
+	 */
+
         //close the DBconnection
         try
         {
@@ -78,7 +95,6 @@ public class ESHarvest implements IHarvest
         {
             sqle.printStackTrace();
         }
-
     }
 
     public ArrayList<IJob> getJobs( int maxAmount )
@@ -92,7 +108,13 @@ public class ESHarvest implements IHarvest
             int taken = 0;
             ArrayList<Integer> takenList = new ArrayList();
             //get Targetreference from view UPDATEPACKAGES
-            rs = stmt.executeQuery( "SELECT TARGETREFERENCE FROM UPDATEPACKAGES WHERE DATABASENAME = 'test'" );
+	    /** 
+	     * \todo: databasename (below) should come from config-file-thingy.
+	     */
+	    // Single query to retrieve all available queued packages _and_ their supplementalId3 - must be veriefied:
+	    // SELECT suppliedrecords.targetreference, suppliedrecords.lbnr, suppliedrecords.supplementalid3 FROM  taskpackagerecordstructure, suppliedrecords WHERE suppliedrecords.targetreference IN (SELECT targetreference FROM updatepackages  WHERE databasename = 'test' )  AND taskpackagerecordstructure.recordstatus = 2 AND taskpackagerecordstructure.targetreference = suppliedrecords.targetreference AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr;
+	    // Question: Is it safe to assume that if there is a taskpackerecodstructure then there is a corresponding suppliedrecords?
+            rs = stmt.executeQuery( "SELECT targetreference FROM updatepackages WHERE databasename = 'test'" );
 
             //for each Targetref get lbnr where recordstatus = 2
             //in table taskpackagerecordstructure
@@ -106,7 +128,7 @@ public class ESHarvest implements IHarvest
                 {
                     int targetRef = rs.getInt( "TARGETREFERENCE" );
                     ResultSet rs2 = null;
-                    String getlbnrQueryString = String.format( "SELECT SUPPLIEDRECORDS.LBNR, SUPPLEMENTALID3 FROM TASKPACKAGERECORDSTRUCTURE, SUPPLIEDRECORDS WHERE SUPPLIEDRECORDS.TARGETREFERENCE = %s AND TASKPACKAGERECORDSTRUCTURE.LBNR = SUPPLIEDRECORDS.LBNR AND TASKPACKAGERECORDSTRUCTURE.TARGETREFERENCE = %s AND RECORDSTATUS = 2" , targetRef, targetRef );
+                    String getlbnrQueryString = String.format( "SELECT suppliedrecords.lbnr, supplementalid3 FROM taskpackagerecordstructure, suppliedrecords WHERE suppliedrecords.targetreference = %s AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr AND taskpackagerecordstructure.targetreference = %s AND recordstatus = 2" , targetRef, targetRef );
                     System.out.println( getlbnrQueryString );
                     rs2 = stmt.executeQuery( getlbnrQueryString );
                     if( rs2 == null )
