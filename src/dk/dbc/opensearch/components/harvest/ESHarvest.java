@@ -49,6 +49,11 @@ public class ESHarvest implements IHarvest
     {
 
     }
+
+    /**
+     *    Why do we want to call start on a Harvester?
+     *    Shouldn't it not just start when it is created? (i.e. the constructor is called)
+     */
     public void start()
     {
 	/** \todo: When the ES-harvester starts, it must check whether ther are
@@ -56,7 +61,6 @@ public class ESHarvest implements IHarvest
 	    it is safe to assume that the posts can be given to the DataDock again 
 	    without causing any error or faults. This must be done by setting the 
 	    posts to "queued".
-	    Note: Make a clean-up-es-base method to handle this.
 	 */
 
         //create the DBconnection
@@ -71,9 +75,14 @@ public class ESHarvest implements IHarvest
         }
         System.out.println( "ESHarvest started" );
 
+	// Cleaning the ES-base, i.e. setting all "inProcess" to "queued": 
+	cleanupESBase();
 
     }
 
+    /**
+     *
+     */
     public void shutdown()
     {
 	/**
@@ -97,6 +106,9 @@ public class ESHarvest implements IHarvest
         }
     }
 
+    /**
+     *
+     */
     public ArrayList<IJob> getJobs( int maxAmount )
     {
 
@@ -107,69 +119,55 @@ public class ESHarvest implements IHarvest
             Statement stmt = conn.createStatement();
             int taken = 0;
             ArrayList<Integer> takenList = new ArrayList();
-            //get Targetreference from view UPDATEPACKAGES
-	    /** 
-	     * \todo: databasename (below) should come from config-file-thingy.
-	     */
-	    // Single query to retrieve all available queued packages _and_ their supplementalId3 - must be veriefied:
-	    // SELECT suppliedrecords.targetreference, suppliedrecords.lbnr, suppliedrecords.supplementalid3 FROM  taskpackagerecordstructure, suppliedrecords WHERE suppliedrecords.targetreference IN (SELECT targetreference FROM updatepackages  WHERE databasename = 'test' )  AND taskpackagerecordstructure.recordstatus = 2 AND taskpackagerecordstructure.targetreference = suppliedrecords.targetreference AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr;
-	    // Question: Is it safe to assume that if there is a taskpackerecodstructure then there is a corresponding suppliedrecords?
-            rs = stmt.executeQuery( "SELECT targetreference FROM updatepackages WHERE databasename = 'test'" );
 
-            //for each Targetref get lbnr where recordstatus = 2
-            //in table taskpackagerecordstructure
-            if( rs == null )
-            {
-                return theJobList;
-            }
-            else
-            {
-                while( rs.next() )
+	    // \todo: Single query to retrieve all available queued packages _and_ 
+	    //        their supplementalId3 - must be veriefied
+            // get queued targetreference, lbnr and referencedata (supplementalId3):
+            rs = stmt.executeQuery( "SELECT suppliedrecords.targetreference, suppliedrecords.lbnr, suppliedrecords.supplementalid3 FROM  taskpackagerecordstructure, suppliedrecords WHERE suppliedrecords.targetreference IN (SELECT targetreference FROM updatepackages  WHERE databasename = 'test' )  AND taskpackagerecordstructure.recordstatus = 2 AND taskpackagerecordstructure.targetreference = suppliedrecords.targetreference AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr" );
+	    // \todo: databasename ('test' in above) should come from config-file-thingy.
+
+
+	    while( rs.next() && taken < maxAmount )
                 {
-                    int targetRef = rs.getInt( "TARGETREFERENCE" );
-                    ResultSet rs2 = null;
-                    String getlbnrQueryString = String.format( "SELECT suppliedrecords.lbnr, supplementalid3 FROM taskpackagerecordstructure, suppliedrecords WHERE suppliedrecords.targetreference = %s AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr AND taskpackagerecordstructure.targetreference = %s AND recordstatus = 2" , targetRef, targetRef );
-                    System.out.println( getlbnrQueryString );
-                    rs2 = stmt.executeQuery( getlbnrQueryString );
-                    if( rs2 == null )
-                    {
-                        throw new IllegalStateException( String.format( "no lbnr for the targetreference: %s", targetRef ) );
-                    }
-                    else
-                    {
-                        System.out.println( "rs2 is not null" );
-                        while( rs2.next() && taken < maxAmount )
-                        {
-                            System.out.println( "rs2 has next" );
-                            int lbnr = rs2.getInt( "LBNR" );
-                            Identifier id = new Identifier( targetRef, lbnr );
-                            String referenceData = rs2.getString( "SUPPLEMENTALID3" );
-                            Job theJob = new Job( id, referenceData.getBytes() );
-                            theJobList.add( theJob );
-                            taken++;
-                            takenList.add( lbnr );
-                        }
+                    int targetRef        = rs.getInt( 1 );    // suppliedrecords.targetreference
+		    int lbnr             = rs.getInt( 2 );    // suppliedrecords.lbnr
+		    String referenceData = rs.getString( 3 ); // suppliedrecords.supplementalId3
 
-                        //set recordstatus to 3 for the taken targetref and lbnr
-                        Iterator takenIter = takenList.iterator();
-                        if( takenIter.hasNext() )
-                        {
-                            String updateString = "UPDATE TASKPACKAGERECORDSTRUCTURE SET RECORDSTATUS = 3 WHERE TARGETREFERENCE = " + targetRef + " AND LBNR = " + takenIter.next();
-                            while( takenIter.hasNext())
-                            {
-                                updateString = updateString + " OR LBNR = " + takenIter.next();
-                            }
-                            System.out.println( updateString );
-                            stmt.executeUpdate( updateString );
-                            takenList.clear();
-                        }
-                    }
+		    // Locking the row for update:
+		    Statement stmt2 = conn.createStatement();
+		    int res1 = stmt2.executeUpdate("SELECT recordstatus FROM taskpackagerecordstructure WHERE targetreference = " + targetRef + " AND lbnr = " + lbnr + " AND recordstatus = 2 FOR UPDATE OF recordstatus");
 
+		    // Testing all went well:
+		    if (res1 != 1) {
+			// Something went wrong - we did not lock a single row for update
+			System.out.println( "Error: Result from select for update was " + res1 + ". Not 1" );
+			// \todo: Throw an exception or just go to next row in rs?
+			continue;
+		    }
+
+		    // Updating recordstatus in row:
+		    int res2 = stmt2.executeUpdate("UPDATE taskpackagerecordstructure SET recordstatus = 3 WHERE targetreference = " + targetRef + " AND lbnr = " + lbnr + " AND recordstatus = 2");
+
+		    if (res2 != 1) {
+			// Something went wrong - we did not update a single row
+			System.out.println( "Error: Result from update was " + res2 + ". Not 1" );
+			// \todo: Throw an exception or just go to next row in rs?
+			continue;
+		    }
+
+		    // Committing the update:
+		    // \todo: Is this inefficient?
+		    stmt2.close();
+		    conn.commit();
+
+		    Identifier id = new Identifier( targetRef, lbnr );
+		    Job theJob = new Job( id, referenceData.getBytes() );
+		    theJobList.add( theJob );
+		    taken++;
+		    
                 }
-
-            }
-
-        }
+	    
+	}
         catch( SQLException sqle )
         {
             sqle.printStackTrace();
@@ -177,6 +175,7 @@ public class ESHarvest implements IHarvest
 
         return theJobList;
     }
+    
 
 
     public byte[] getData( IIdentifier jobId ) throws UnknownIdentifierException
@@ -190,7 +189,7 @@ public class ESHarvest implements IHarvest
         try
         {
             Statement stmt = conn.createStatement();
-            String queryString = String.format( "SELECT RECORD FROM SUPPLIEDRECORDS WHERE TARGETREFERENCE = %s AND LBNR = %s" ,theJobId.getTargetRef() , theJobId.getLbNr() );
+            String queryString = String.format( "SELECT record FROM suppliedrecords WHERE targetreference = %s AND lbnr = %s" ,theJobId.getTargetRef() , theJobId.getLbNr() );
             System.out.println( queryString );
             rs = stmt.executeQuery( queryString );
             if( rs == null || ! rs.next() )
@@ -218,6 +217,7 @@ public class ESHarvest implements IHarvest
         return returnData;
     }
 
+
     public void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException
     {
         System.out.println( String.format( "Dummy harvester was requested to set status %s on data identified by the identifier %s", status, jobId ) );
@@ -226,6 +226,33 @@ public class ESHarvest implements IHarvest
         //if success -> xxxx: invalid
         //if failure -> success: ok
         //if failure -> failure: invalid
+    }
+
+
+    private void cleanupESBase( )
+    {
+	
+	System.out.println("Cleaning up ES-base");
+	
+        try{
+            Statement stmt = conn.createStatement();
+	    // Locking the rows:
+            int res1 = stmt.executeUpdate( "SELECT recordstatus FROM taskpackagerecordstructure WHERE recordstatus = 3 FOR UPDATE OF recordstatus" );
+	    System.out.println("Select for update: " + res1);
+	    if (res1 > 0) {
+		int res2 = stmt.executeUpdate( "UPDATE taskpackagerecordstructure SET recordstatus = 2 WHERE recordstatus = 3" );
+		System.out.println("Update: " + res2);
+		stmt.close();
+		conn.commit();
+	    } else {
+		// no rows for update - just close down the statement:
+		stmt.close();
+	    }
+	}
+        catch( SQLException sqle )
+        {
+            sqle.printStackTrace();
+        }
     }
 
 }

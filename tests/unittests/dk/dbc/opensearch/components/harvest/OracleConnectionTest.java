@@ -56,15 +56,19 @@ public class OracleConnectionTest {
             IDBConnection oracleInstance = new OracleDBConnection();
             Connection conn = oracleInstance.getConnection();
             Statement stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT * FROM test");
+	    String str = new String("SELECT targetreference FROM taskpackage");
+	    //            rs = stmt.executeQuery( "SELECT * FROM test");
+            rs = stmt.executeQuery( str );
+	    System.out.println( str );
+
             if(rs == null)
-            {
-                System.out.println( "no rows found in database");
-            }
+		{
+		    System.out.println( "no rows found in database");
+		}
             else{
-            while( rs.next() ){
-                System.out.println( String.format( "value: %s", rs.getString( "test" ) ) );
-            }
+		while( rs.next() ){
+		    System.out.println( String.format( "value: %s", rs.getString( "row1" ) ) );
+		}
             }
         }
         catch(ConfigurationException ce){}

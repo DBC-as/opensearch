@@ -1,3 +1,4 @@
+
 /*
  *
  *This file is part of opensearch.
@@ -51,7 +52,7 @@ public class HarvestFunc {
         byte[] data = null;
         esh = new ESHarvest();
         esh.start();
-        ArrayList<IJob> jobL = esh.getJobs( 3 );
+        ArrayList<IJob> jobL = esh.getJobs( 5 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
         Iterator iter = jobL.iterator();
         System.out.println( "got jobs:" );
