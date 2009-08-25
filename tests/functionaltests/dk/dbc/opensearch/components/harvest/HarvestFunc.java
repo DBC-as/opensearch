@@ -52,7 +52,7 @@ public class HarvestFunc {
         byte[] data = null;
         esh = new ESHarvest();
         esh.start();
-        ArrayList<IJob> jobL = esh.getJobs( 5 );
+        ArrayList<IJob> jobL = esh.getJobs( 2 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
         Iterator iter = jobL.iterator();
         System.out.println( "got jobs:" );
@@ -71,7 +71,32 @@ public class HarvestFunc {
             {
                 uie.printStackTrace();
             }
+            setStatusTest( theJob.getIdentifier() );
+
         }
+    }
+    
+    /**
+     * testing the updating of jobs stetting the status to SUCCESS and then to FAILURE
+     */
+    private static void setStatusTest( IIdentifier id )
+    {
+        try{
+            esh.setStatus( id, JobStatus.SUCCESS );
+            esh.setStatus( id, JobStatus.FAILURE );
+        }catch( UnknownIdentifierException uie )
+        {
+            uie.printStackTrace();
+        }
+        catch( InvalidStatusChangeException isce )
+        {
+            System.out.println(isce.getMsg() );
+            isce.printStackTrace();
+        }
+
+    
+
+
     }
 
 }
