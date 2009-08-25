@@ -212,6 +212,8 @@ def main( log_type, resolution, folder, plot, verbose ):
             timings.append( elem )
         print " - Hits: %s" % l
 
+    timings = sorted( timings )
+
     if verbose:
         print_values( timings, resolution )
 
