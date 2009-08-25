@@ -17,6 +17,11 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file FedoraAdministration.java
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.common.fedora;
 

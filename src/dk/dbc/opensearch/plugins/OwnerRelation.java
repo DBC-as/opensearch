@@ -17,6 +17,10 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file OwnerRelation.java
+ * \brief Adding owner to fedora
+ */
 
 package dk.dbc.opensearch.plugins;
 
@@ -39,7 +43,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Plugin for annotating docbook carcoContainers
+ * Plugin for adding owner relation to cargoContainers
  */
 public class OwnerRelation implements IRelation
 {
@@ -81,16 +85,12 @@ public class OwnerRelation implements IRelation
      */
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-        log.debug( "Owner -> getCargoContainer() called" );
+        log.trace( "getCargoContainer() called" );
 
         if( cargo == null )
         {
             log.error( "OwnerRelation getCargoContainer cargo is null" );
             throw new PluginException( new NullPointerException( "OwnerRelation getCargoContainer throws NullPointerException" ) );
-        }
-        else
-        {
-            log.debug( "OwnerRelation getCargoContainer cargo is not null" );
         }
 
         String submitter = null;
@@ -104,43 +104,41 @@ public class OwnerRelation implements IRelation
         }
         
         String pid = cargo.getDCIdentifier();
-        boolean ok = false;
         log.debug( String.format( "owner relation with values: submitter: '%s'; format: '%s'", submitter, format ) );
         if( submitter.equals( "dbc" ) )
         {
             log.debug( String.format( "submitter 'dbc' format: %s", format ) );
             if( format.equals( "anmeldelser" ) || format.equals( "anmeld" ) )
             {
-                ok = addRelationship( pid, free );
+                addRelationship( pid, free );
             }
             else if( format.equals( "materialevurderinger" ) || format.equals( "matvurd" ) )
             {
-                ok = addRelationship( pid, materialevurderinger );
+                addRelationship( pid, materialevurderinger );
             }
             else if( format.equals( "forfatterweb" ) || format.equals( "forfatterw" ) )
             {
-                ok = addRelationship( pid, forfatterweb );
+                addRelationship( pid, forfatterweb );
             }
             else if( format.equals( "faktalink" ) )
             {
-                ok = addRelationship( pid, faktalink );
+                addRelationship( pid, faktalink );
             }
             else if( format.equals( "dr_forfatteratlas" ) || format.equals( "dr_atlas" ) )
             {
-                ok = addRelationship( pid, free );
+                addRelationship( pid, free );
             }
             else if( format.equals( "dr_bonanza" ) )
             {
-                log.debug( String.format( "adding owner relationship for submitter: '%s' and format '%s'", submitter, format ) );
-                ok = addRelationship( pid, free );
+                addRelationship( pid, free );
             }
             else if( format.equals( "louisiana" ) )
             {
-                ok = addRelationship( pid, louisiana );
+                addRelationship( pid, louisiana );
             }
             else if( format.equals( "artikler" ) )
             {
-                ok = addRelationship( pid, artikler );
+                addRelationship( pid, artikler );
             }
             else
             {
@@ -153,7 +151,7 @@ public class OwnerRelation implements IRelation
             log.debug( String.format( "submitter 'kkb' or '710100' format: %s", format ) );
             if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
             {
-                ok = addRelationship( pid, kkb_catalog );
+                addRelationship( pid, kkb_catalog );
             }
             else
             {
@@ -165,15 +163,15 @@ public class OwnerRelation implements IRelation
             log.debug( String.format( "submitter 'aakb' or '775100' format: %s", format ) );
             if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
             {
-                ok = addRelationship( pid, aakb_catalog );
+                addRelationship( pid, aakb_catalog );
             }
             else if( format.equals( "ebrary" ) )
             {
-                ok = addRelationship( pid, aakb_ebrary );
+                addRelationship( pid, aakb_ebrary );
             }
             else if( format.equals( "ebsco" ) )
             {
-                ok = addRelationship( pid, aakb_ebsco );
+                addRelationship( pid, aakb_ebsco );
             }
             else
             {
@@ -182,13 +180,14 @@ public class OwnerRelation implements IRelation
         }
         else if( submitter.equals( "nota" ) || submitter.equals( "874310" ) )
         {
-            ok = addRelationship( pid, nota );
+            addRelationship( pid, nota );
         }
         else
         {
             throw new PluginException( String.format( "submitter '%s'; format '%s'; pid '%s' could not be processed!", submitter, format, pid ) );
         }
 
+        log.trace( "getCargoContainer() returning" );
         return cargo;
     }
 
@@ -227,7 +226,7 @@ public class OwnerRelation implements IRelation
             throw new PluginException( "IOException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ioe );
         }
 
-        log.debug( String.format( "OR added relation: '%s' (pid: '%s')", ok, pid ) );
+        log.trace( String.format( "OR added relation: '%s' (pid: '%s')", ok, pid ) );
         return ok;
     }
 

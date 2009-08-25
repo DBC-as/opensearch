@@ -17,6 +17,12 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file FedoraTools.java
+ * \brief 
+ */
+
+
 package dk.dbc.opensearch.common.fedora;
 
 
@@ -96,7 +102,7 @@ public class FedoraTools
      */
     public static byte[] DigitalObjectAsByteArray( DigitalObject dot )throws IOException, MarshalException, ValidationException//, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException
     {
-        log.debug( "Marshalling the digitalObject to a byte[]" );
+        log.trace( "DigitalObjectAsByteArray( DigitalObject ), marshalling the digitalObject to a byte[]" );
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         OutputStreamWriter outW = new OutputStreamWriter( out );
@@ -120,7 +126,7 @@ public class FedoraTools
      */
     static byte[] constructFoxml( CargoContainer cargo, String nextPid, String label ) throws IOException, MarshalException, ValidationException, ParseException, ParserConfigurationException, SAXException, TransformerException, TransformerConfigurationException, XPathExpressionException
     {
-        log.debug( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
+        log.trace( String.format( "Constructor( cargo, nextPid='%s', label='%s' ) called", nextPid, label ) );
         
         Date now = new Date(System.currentTimeMillis());
         return constructFoxml( cargo, nextPid, label, now );
@@ -184,14 +190,14 @@ public class FedoraTools
 
         Collections.sort( lst2 );
 
-        log.debug( "Constructing adminstream" );
+        log.trace( "Constructing adminstream" );
 
         Element root = constructAdminStream( cargo, lst2 );
         byte[] admByteArray = XMLUtils.getByteArray( root );
         
         cargo.add( DataStreamType.AdminData, "admin", "dbc", "da", "text/xml", IndexingAlias.None, admByteArray );
         
-        log.debug( "Constructing foxml byte[] from cargoContainer" );
+        log.trace( "Constructing foxml byte[] from cargoContainer" );
         cargo_count = cargo.getCargoObjectCount();//.getItemsCount();
 
         log.debug( String.format( "Length of CargoContainer including administration stream=%s", cargo_count ) );
@@ -222,7 +228,7 @@ public class FedoraTools
         // add the streams to the digital object
         dot.setDatastream( dsArray );
 
-        log.debug( "Marshalling the digitalObject to a byte[]" );
+        log.trace( "Marshalling the digitalObject to a byte[]" );
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
         java.io.OutputStreamWriter outW = new java.io.OutputStreamWriter( out );
         Marshaller m = new Marshaller( outW ); // IOException

@@ -1,22 +1,30 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * \file FoxmlDocument.java
+ * \brief
+ */
+
+
 package dk.dbc.opensearch.common.fedora;
+
 
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import fedora.utilities.Base64;
@@ -67,8 +75,9 @@ import org.xml.sax.SAXException;
  */
 public final class FoxmlDocument
 {
-
     static Logger log = Logger.getLogger( FoxmlDocument.class );
+
+
     /**
      * Defines the system-wide namespace for use in all valid foxml elements
      */
@@ -77,6 +86,7 @@ public final class FoxmlDocument
     public static final FedoraNamespace model = FedoraNamespaceContext.FedoraNamespace.FEDORAMODEL;
     public static final FedoraNamespace view = FedoraNamespaceContext.FedoraNamespace.FEDORAVIEW;
     public static final String FOXML_VERSION_NS = FOXML_NS + "";
+
     private DocumentBuilder builder;
     private Document doc;
     private Element rootElement;
@@ -85,12 +95,12 @@ public final class FoxmlDocument
     private XPath xpath;
     private TransformerFactory xformFactory;
 
+
     /**
      * Helper class for defining properties on the Digital Object
      */
     public enum Property
     {
-
         STATE( model.getElementURI( "state" ) ),
         LABEL( model.getElementURI( "label" ) ),
         CONTENT_MODEL( model.getElementURI( "contentModel" ) ),
@@ -104,14 +114,12 @@ public final class FoxmlDocument
             this.uri = uri;
         }
 
-
         String uri()
         {
             return uri;
         }
-
-
     }
+
 
     /**
      * Helper class for defining the state of the individual datastreams in the
@@ -119,7 +127,6 @@ public final class FoxmlDocument
      */
     public enum State
     {
-
         /**
          * Active: The object is published and available.
          */
@@ -134,12 +141,12 @@ public final class FoxmlDocument
         D;
     }
 
+
     /**
      * Helper class for defining the controlgroup of the individual datastreams.
      */
     public enum ControlGroup
     {
-
         /**
          * Internal XML Content - the content is stored as XML
          * in-line within the digital object XML file
@@ -189,6 +196,7 @@ public final class FoxmlDocument
         R;
     }
 
+
     /**
      * Helper class to specify the LocationType of a referring String if the
      * {@link ControlGroup} has specified referenced content
@@ -196,7 +204,6 @@ public final class FoxmlDocument
      */
     public enum LocationType
     {
-
         /**
          * the referring String denotes a pid in a fedora repository
          */
@@ -206,6 +213,7 @@ public final class FoxmlDocument
          */
         URL;
     }
+
 
     /**
      * Creates a skeletal FedoraObject document. Its serialized representation
@@ -334,6 +342,7 @@ public final class FoxmlDocument
         {
             throw new IllegalArgumentException( dsId + "does not exist." );
         }
+
         if( dsvId == null || dsvId.equals( "" ) )
         {
             dsvId = dsId + ".0";
@@ -445,6 +454,7 @@ public final class FoxmlDocument
         {
             location = setContentLocationElement( dsvId );
         }
+
         location.setAttribute( "REF", ref );
         location.setAttribute( "TYPE", type.name() );
     }
@@ -455,6 +465,7 @@ public final class FoxmlDocument
         Node node = getDatastreamVersion( dsvId );
         Element location = doc.createElementNS( FOXML_NS, "foxml:contentLocation" );
         node.appendChild( location );
+
         return location;
     }
 
@@ -474,6 +485,7 @@ public final class FoxmlDocument
             {
                 throw new IllegalArgumentException( String.format( "%s does not exist.", dsvId ) );
             }
+
             return node;
         }
         catch( XPathExpressionException e )
@@ -494,6 +506,7 @@ public final class FoxmlDocument
         {
             time = System.currentTimeMillis();
         }
+
         return new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" ).format( new Date( time ) );
     }
 
@@ -518,10 +531,8 @@ public final class FoxmlDocument
             Validator validator = schema.newValidator();
             validator.validate( input );
         }
+
         Result output = new StreamResult( out );
         idTransform.transform( input, output );
-
     }
-
-
 }

@@ -217,9 +217,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
   <target name="_test_functionaltests" description="Run functionaltests" depends="py_config">
-    <java classname="${classname}">
+    <java classname="${classname}">      
       <classpath location="${classes.dir}" />
       <classpath refid="classpath" />
+      <arg value="${mainarg}" />
     </java>
   </target>
 

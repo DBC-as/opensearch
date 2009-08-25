@@ -17,6 +17,11 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file DatadockThread.java
+ * \brief Thread handling in datadock framework
+ */
+
 
 package dk.dbc.opensearch.components.datadock;
 
@@ -211,7 +216,8 @@ public class DatadockThread implements Callable< Float >
                 	
                     IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
                     cargo = repositoryStore.storeCargoContainer( cargo );
-                    log.debug( "STORE pid: " + cargo.getDCIdentifier() );
+                    // DO NOT CHANGE log level to trace or debug!
+                    log.info( "STORE pid: " + cargo.getDCIdentifier() );
                     
                 	break;
                 case RELATION:
@@ -232,14 +238,7 @@ public class DatadockThread implements Callable< Float >
                 	log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
             }
         }
-           
-        /** \todo: might have to be moved into switch clause */
-        // OWNER
-//        IPluggable plugin = pluginResolver.getPlugin( "dk.dbc.opensearch.plugins.OwnerRelation" );
-//        IRelation ownerRelationPlugin = (IRelation)plugin;
-
-//        cargo = ownerRelationPlugin.getCargoContainer( cargo );
-//        log.debug( String.format( "DATADOCKTHREAD ownerRelationPlugin returned cargo", "" ) );
+        
         length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
         //push to processqueue job to processqueue and get estimate
         est = estimate.getEstimate( mimeType, length );
