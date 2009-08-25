@@ -18,9 +18,9 @@
        <file path="indexes"/>
      </connection>
 
-     <transaction 
-         lockTimeout="3"
-         lockPollInterval="200"
+     <transaction
+         lockTimeout="30"
+         lockPollInterval="100"
      />
 
      <converters>
