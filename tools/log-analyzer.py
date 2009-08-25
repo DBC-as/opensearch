@@ -228,7 +228,7 @@ if __name__ == '__main__':
 
     from optparse import OptionParser
 
-    parser = OptionParser( usage="%prog [options] folder or file to analyze" )
+    parser = OptionParser( usage="%prog [options] folder or file to analyze.\n example:  python log-analyzer -p -t pti -r 1000 logs/\n   analyses all pti*.log files in the logs/ folder,\n   the estimates are made from timestamps made\n   for every 1000 (-r) hit and plots them ( -p )" )
 
     
     parser.add_option( "-t", type="string", action="store", dest="logfile_type",
@@ -247,6 +247,7 @@ if __name__ == '__main__':
     
     (options, args) = parser.parse_args()
 
+    
     
     ## Parsing arguments    
     print "--------------- arguments ---------------"
