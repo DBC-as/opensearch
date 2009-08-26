@@ -40,11 +40,16 @@ public final class FedoraNamespaceContext implements NamespaceContext
     {
 
         XML( XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI ),
+        RDF( "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+        RDFS( "rdfs", "http://www.w3.org/2000/01/rdf-schema#" ),
+        DC( "dc", "http://purl.org/dc/elements/1.1/" ),
+        OAI_DC( "oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/"),
         FEDORA( "fedora", "info:fedora/" ),
         FEDORARELSEXT( "rel", "info:fedora/fedora-system:def/relations-external#" ),
         FEDORAMODEL( "fedora-model", "info:fedora/fedora-system:def/model#" ),
         FEDORAVIEW( "fedora-view", "info:fedora/fedora-system:def/view#" ),
-        FOXML( "foxml", "info:fedora/fedora-system:def/foxml#" );
+        FOXML( "foxml", "info:fedora/fedora-system:def/foxml#" ),
+        WORK( "work", FedoraNamespace.FEDORA.getURI() );
         private String prefix;
         private String uri;
 

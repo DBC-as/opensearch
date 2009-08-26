@@ -6,7 +6,7 @@
 package dk.dbc.opensearch.common.types;
 
 /*
-   
+
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -23,9 +23,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ */
 import org.apache.log4j.Logger;
+
 
 /**
  * \ingroup datadock
@@ -35,21 +35,20 @@ import org.apache.log4j.Logger;
  */
 public enum CargoMimeType
 {
-	/** represents known mimetypes. All handler registrations must use
+
+    /** represents known mimetypes. All handler registrations must use
      * mimetypes defined here. Mimetypes from /etc/mime.types
      */
-    TEXT_XML( "text/xml", "XML Document"),
-    APPLICATION_PDF( "application/pdf", "PDF Document" );
-
-	static Logger log = Logger.getLogger( CargoMimeType.class );
-	
+    TEXT_XML( "text/xml", "XML Document" ),
+    APPLICATION_PDF( "application/pdf", "PDF Document" ),
+    APPLICATION_RDF( "application/rdf+xml", "RDF Document" );
+    static Logger log = Logger.getLogger( CargoMimeType.class );
     private final String mimetype;
     private final String description;
 
-
     CargoMimeType( String mimetype, String description )
     {
-        this.mimetype    = mimetype;
+        this.mimetype = mimetype;
         this.description = description;
     }
 
@@ -64,7 +63,7 @@ public enum CargoMimeType
         return this.description;
     }
 
-    
+
     /**
      * use instanceOfCargoMimeType.getMimeType() to get the (official)
      * name of the mimetype
@@ -75,16 +74,18 @@ public enum CargoMimeType
     {
         return this.mimetype;
     }
-    
-    
+
+
     public static boolean validMimetype( String mimetype )
     {
         CargoMimeType CMT = CargoMimeType.getMimeFrom( mimetype );
         log.debug( "checking mimetype" );
-        
+
         if( CMT == null )
-        	return false;
-        
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -96,14 +97,16 @@ public enum CargoMimeType
     public static CargoMimeType getMimeFrom( String mime )
     {
         CargoMimeType CMT = null;
-        for (CargoMimeType cmt : CargoMimeType.values() )
+        for( CargoMimeType cmt : CargoMimeType.values() )
         {
             if( mime.equals( cmt.getMimeType() ) )
             {
                 CMT = cmt;
             }
         }
-        
+
         return CMT;
     }
+
+
 }
