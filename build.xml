@@ -170,6 +170,10 @@
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_INDEXCHECKER.jar" />
     </antcall>
+    <antcall target="_dist_itqlquery">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_ITQL.jar" />
+    </antcall>
   </target> 
 
 
@@ -214,6 +218,13 @@
     <antcall target="_dist_indexchecker">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_INDEXCHECKER.jar" />
+    </antcall>
+  </target>
+
+  <target name="dist_itqlquery" depends="clean, compile-tests"> <!-- xsd, "> -->
+    <antcall target="_dist_itqlquery">
+      <param name="src.dir" value="${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_ITQL.jar" />
     </antcall>
   </target>
 

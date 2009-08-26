@@ -367,6 +367,34 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </jar>
   </target>
 
+  <target name="_dist_itqlquery"
+          description="generates jar file _itqlquery.jar" >
+    <echo>
+      Building jar file for itqlquery program
+    </echo>
+    
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist.dir}"/>
+    
+    <pathconvert property="jar_classpath" pathsep=" ../lib/">
+      <path refid="classpath4jar" />
+      <flattenmapper />
+    </pathconvert>
+    
+    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
+    <jar destfile="${dist.dir}/${dist.jar}_ITQL.jar" 
+         basedir="${classes.dir}">	    
+      <manifest>
+        <attribute name="Built-By" value="DBC"/>
+        <attribute name="Implementation-Vendor" value="DBC A/S"/>
+        <attribute name="Implementation-Title" value="Opensearch"/>
+        <attribute name="Implementation-Version" value="0.3"/>
+        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
+        <attribute name="Main-Class" value="dk.dbc.opensearch.tools.relations.Main" />
+      </manifest>
+    </jar>
+  </target>
+
   <target name="_dist_indexchecker"
           description="generates jar file _INDEXCHECKER.jar" >
     <echo>
