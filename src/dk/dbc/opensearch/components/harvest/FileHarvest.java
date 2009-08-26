@@ -21,7 +21,6 @@
 /**
  * \file FileHarvest.java
  * \brief The FileHarvest class
- * \package components.harvest;
  */
 
 package dk.dbc.opensearch.components.harvest;

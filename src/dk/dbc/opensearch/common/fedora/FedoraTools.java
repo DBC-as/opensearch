@@ -19,7 +19,7 @@
 
 /**
  * \file FedoraTools.java
- * \brief 
+ * \brief Construct foxml etc.
  */
 
 

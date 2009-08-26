@@ -109,7 +109,7 @@ public class FedoraObjectRelations
     public List< String > getSubjectRelations( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         object = object.replace( "'", "" );
-        System.out.println( "getSubjectRelations called" );
+        
         List< String > foundRelations = new ArrayList<String>();
         for( InputPair<String, String> relations : getRelationships2( predicate, object, relation ) )
         {
@@ -124,7 +124,7 @@ public class FedoraObjectRelations
     {
         object_1 = object_1.replace( "'", "" );
         object_2 = object_2.replace( "'", "" );
-        System.out.println( "getSubjectRelations called" );
+        
         List< String > foundRelations = new ArrayList<String>();
         for( InputPair<String, String> relations : getRelationships2( predicate_1, object_1, predicate_2, object_2, relation ) )
         {
@@ -200,6 +200,12 @@ public class FedoraObjectRelations
         qparams.put( "lang", "itql" );
         qparams.put( "flush", "true" );
         qparams.put( "query", query );
+        /** \todo: getTuples throws IOException "'class java.io.IOException'
+         * Message: 'Request failed [500 Internal Server Error] :
+         * http://localhost:8080/fedora/risearch?format=Sparql&flush=true&type=tuples&lang=itql&query=..."
+         *
+         * Question: Are we to catch this error, and try again? What are we to do?
+         */
         TupleIterator tuples = FedoraHandle.getInstance().getFC().getTuples( qparams );
         ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
         try

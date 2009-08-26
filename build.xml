@@ -49,7 +49,7 @@
                           DOES NOT WORK!: ant functionaltests -Darg="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain"
 
              5) ant functionaltests -Darg="classname" Dmainargs="args"
-                Examples: ant functionaltests -Darg="dk.dbc.opensearch.common.fedora.FedoraAuxiliaryMain" -Dmainargs="deletepids"
+                Examples: ant functionaltests -Darg="dk.dbc.opensearch.common.fedora.FedoraAuxiliaryMain" -Dmainarg="deletepids"
                 args:     - "deletepids"
                           <!-- - "getnextpid work" (work is relation prefix: "work", "dbc", "775100", "710100") -->
                 

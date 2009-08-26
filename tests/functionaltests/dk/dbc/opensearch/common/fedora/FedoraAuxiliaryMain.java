@@ -77,7 +77,7 @@ public class FedoraAuxiliaryMain
     public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String arg = args[0];
-
+        
         FedoraAuxiliaryMain fam = new FedoraAuxiliaryMain();
         fam.run( arg );
     }

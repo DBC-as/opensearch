@@ -17,6 +17,11 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file DatadockPool.java
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.components.datadock;
 
@@ -24,14 +29,11 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
