@@ -1,8 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <job_list xmlns="info:opensearch.dbc.dk#">
 
   <job submitter="dbc" format="faktalink">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
-    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" position="0"/>
+    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" position="0"/>    
   </job>
   <job submitter="dbc" format="forfatterw">
     <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" position="0"/>
@@ -13,14 +15,20 @@
   </job>
   <job submitter="dbc" format="anmeld">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
-  </job>
+  </job>  
   <job submitter="dbc" format="artikler">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
-  </job>
+  </job>  
   <job submitter="dbc" format="dr_atlas">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
-  </job>
+  </job> 
   <job submitter="dbc" format="dr_bonanza">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+  <job submitter="dbc" format="louisiana">
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+  </job>
+  <job submitter="dbc" format="dsd">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
   </job>
   <job submitter="775100" format="katalog">
@@ -32,7 +40,7 @@
   <job submitter="775100" format="ebrary">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
   </job>
-  <job submitter="710100" format="katalog">
+  <job submitter="710100" format="danmarcxchange">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
   </job>
 

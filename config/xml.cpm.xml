@@ -15,7 +15,7 @@
         />
     <xml-property
         name="dc.title"
-        xpath="/ting:container/docbook:article/docbook:title | /ting:container/dkabm:record/dcterms.alternative"
+        xpath="/ting:container/docbook:article/docbook:title | /ting:container/dkabm:record/dcterms:alternative"
         />
     <xml-property
         name="dc.creator"
@@ -67,7 +67,7 @@
         />
 <xml-property
         name="phrase.title"
-        xpath="/ting:container/docbook:article/docbook:title | /ting:container/dkabm:record/dcterms.alternative"
+        xpath="/ting:container/docbook:article/docbook:title | /ting:container/dkabm:record/dcterms:alternative"
         index="un_tokenized"
         
         />
@@ -269,10 +269,6 @@
     <xml-id
         name="id"
         xpath="/ting:container/dkabm:record/ac:identifier"/>
-    <xml-property
-        name="rec.id"
-        xpath="/ting:container/dkabm:record/ac:identifier | /ting:container/fedoraPid"
-        />
     <xml-property
         name="dc.title"
         xpath="/ting:container/dkabm:record/dc:title"
@@ -510,7 +506,7 @@
         xpath="/ting:container/dkabm:record/ac:identifier"/>
     <xml-property
         name="rec.id"
-        xpath="/ting:container/dkabm:record/ac:identifier|/ting:container/fedoraPid"
+        xpath="/ting:container/dkabm:record/ac:identifier"
         />
     <xml-property
         name="dc.title" 
@@ -701,7 +697,6 @@
         | /*/*/*/*[@tag='945']/*[@code='a' or @code='d' or @code='e' or @code='f' or @code='g' or @code='h' or @code='j' or @code='k' or @code='n' or @code='o' or @code='s']
         | /ting:container/dkabm:record/dc:title"
         index="un_tokenized"
-        
         /> 
     <xml-property
         name="phrase.creator" 
@@ -726,7 +721,6 @@
         | /*/*/*/*[@tag='910']/*[@code='a' or @code='c' or @code='e' or @code='g' or @code='h' or @code='i' or @code='j' or @code='k' or @code='s' or @code='A' or @code='C' or @code='S']
         | /*/*/*/*[@tag='945']/*[@code='æ']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.subject" 
@@ -757,7 +751,6 @@
         | /*/*/*/*[@tag='966']/*[@code='f' or @code='t' or @code='e' or @code='s' or @code='r' or @code='q' or @code='m' or @code='n' or @code='p' or @code='l' or @code='i' or @code='o' or @code='u']
         | /*/*/*/*[@tag='968']/*[@code='a' or @code='c']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.description" 
@@ -778,7 +771,6 @@
         | /*/*/*/*[@tag='555']/*[@code='a']
         | /*/*/*/*[@tag='559']/*[@code='a' or @code='u' or @code='y']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.publisher" 
@@ -789,21 +781,18 @@
         | /*/*/*/*[@tag='538']/*[@code='f']
         | /*/*/*/*[@tag='840']/*[@code='æ' or @code='ø']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.date" 
         xpath="/*/*/*/*[@tag='008']/*[@code='a' or @code='z']
         | /*/*/*/*[@tag='260']/*[@code='c']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.type" 
         xpath="/ting:container/dkabm:record/dc:type
         | /*/*/*/*[@tag='009']/*[@code='a' or @code='g']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.identifier" 
@@ -814,13 +803,11 @@
         | /*/*/*/*[@tag='538']/*[@code='b' or @code='f' or @code='g']
         | /*/*/*/*[@tag='856']/*[@code='u']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.source" 
         xpath="/*/*/*/*[@tag='241']/*[@code='a']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.language" 
@@ -828,13 +815,11 @@
         | /*/*/*/*[@tag='008']/*[@code='l']
         | /*/*/*/*[@tag='041']/*[@code='a' or @code='p']"
         index="un_tokenized"
-        
         />
     <xml-property
         name="phrase.anyIndexes" 
         xpath="/ting:container/dkabm:record/*"
         index="un_tokenized"
-        
         />
     <xml-property
         name="creator"
