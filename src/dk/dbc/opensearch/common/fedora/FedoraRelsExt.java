@@ -59,7 +59,7 @@ public class FedoraRelsExt
     private Document doc;
     private Element relsext;
     private Element fedoraObject;
-    private Set<Element> relations;
+    private Set<Long> relations;
 
 
     /**
@@ -71,7 +71,7 @@ public class FedoraRelsExt
     {
         // initializing state for the class. Not optimal, but'll have to do for now
         createEmptyRelsExt( id );
-        relations = new HashSet<Element>();
+        relations = new HashSet<Long>();
     }
 
 
@@ -109,9 +109,7 @@ public class FedoraRelsExt
     public boolean addRelationship( QName predicate, QName object )
     {
         Element triple = doc.createElement( predicate.getPrefix() + ":" + predicate.getLocalPart() );
-        boolean added = relations.add( triple );
-        
-        System.out.println( Arrays.deepToString( relations.toArray() ) );
+        boolean added = relations.add( new Long( new Integer( predicate.hashCode() ).toString()+new Integer( object.hashCode() ).toString() ) );
         if( added )
         {
             triple.setAttribute( "rdf:resource", object.getNamespaceURI() + object.getPrefix() + ":" + object.getLocalPart() );
