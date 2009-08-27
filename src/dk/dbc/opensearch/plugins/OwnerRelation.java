@@ -140,6 +140,10 @@ public class OwnerRelation implements IRelation
             {
                 addRelationship( pid, artikler );
             }
+            else if( format.equals( "dsd" ) )
+            {
+                addRelationship( pid, free );
+            }
             else
             {
                 //log.error( String.format( "no rule for submitter '%s' and format '%s'", submitter, format ) );
