@@ -162,7 +162,8 @@ public class IndexerXSEM implements IIndexer
                     try {
                         doc = saxReader.read( is );
                     } catch (DocumentException de) {
-                        log.fatal( String.format( "While parsing xml: %s, I caught exception from SAX Parsing : %s", new String( co.getBytes() ), de.getMessage() ) );
+                        log.trace( String.format( "While parsing xml: %s, I caught exception from SAX Parsing : %s", new String( co.getBytes() ), de.getMessage() ) );
+                        log.fatal( String.format( "Error reading xml stream: %s", de.getMessage() ) );
                         throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
                     }
                     /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
@@ -174,8 +175,6 @@ public class IndexerXSEM implements IIndexer
 
                     Element root = doc.getRootElement();
 
-
-
                     for( String key : fieldMap.keySet() )
                     {
                         log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
@@ -184,7 +183,7 @@ public class IndexerXSEM implements IIndexer
                     }
 
                     // this log line is _very_ verbose, but useful in a tight situation
-                    log.debug( String.format( "Constructing AliasedXmlObject from Document (pid = %s) with alias = %s. RootElement:\n%s", fedoraHandle, indexingAlias, doc.getRootElement().asXML() ) );
+                    log.trace( String.format( "Constructing AliasedXmlObject from Document (pid = %s) with alias = %s. RootElement:\n%s", fedoraHandle, indexingAlias, doc.getRootElement().asXML() ) );
 
                     /** \todo: Dom4jAliasedXmlObject constructor might throw some unknown exception */
                     AliasedXmlObject xmlObject = new Dom4jAliasedXmlObject( indexingAlias, doc.getRootElement() );

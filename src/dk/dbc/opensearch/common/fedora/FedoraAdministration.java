@@ -204,7 +204,7 @@ public class FedoraAdministration implements IFedoraAdministration
 
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, Constants.FOXML1_1.toString(), logm );// "info:fedora/fedora-system:FOXML-1.1", logm );
 
-        log.debug( String.format( "Submittet data %s", new String( foxml ) ) );
+        //log.trace( String.format( "Submitted data %s", new String( foxml ) ) );
         log.trace( String.format( "Submitted data, returning pid %s", pid ) );
 
         return pid;
