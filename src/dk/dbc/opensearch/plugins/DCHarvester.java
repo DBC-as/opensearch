@@ -1,6 +1,6 @@
 /*
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
   opensearch is free software: you can redistribute it and/or modify
@@ -45,7 +45,8 @@ public class DCHarvester implements ICreateCargoContainer
 
     private String submitter;
     private String format;
-    private String path;
+    private byte[] data;
+    private byte[] referenceData;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -55,7 +56,7 @@ public class DCHarvester implements ICreateCargoContainer
      *
      * @param data
      * @param xml
-     * @return
+     * @return cargocontainer
      * @throws PluginException
      */
     public CargoContainer getCargoContainer( InputStream data, InputStream xml) throws PluginException
@@ -64,9 +65,10 @@ public class DCHarvester implements ICreateCargoContainer
     }
 
 
-    public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-        this.path = job.getUri().getPath();
+        this.referenceData = job.getReferenceData();
+        this.data = data;
         this.submitter = job.getSubmitter();
         this.format = job.getFormat();
 
@@ -82,39 +84,24 @@ public class DCHarvester implements ICreateCargoContainer
     private CargoContainer createCargoContainerFromFile() throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
-        //cargo.setFilePath( path );
+
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
+        String dataMimetype = "application/pdf";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
-        InputStream data;
-        
-        try 
-        {
-            data = FileHandler.readFile( path );
-            log.debug( String.format( "File: %s has been read",path ) );
-        } 
-        catch ( FileNotFoundException fnfe ) 
-        {
-            throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
-        }
 
-        byte[] bdata;
-        try 
-        {
-            bdata = StreamHandler.bytesFromInputStream( data, 0 );
-            log.debug(String.format("the data read has size: %s", bdata.length));
-        } 
-        catch (IOException ioe) 
-        {
-            throw new PluginException( "Could not construct byte[] from InputStream", ioe );
-        }
+        //build the DC-data from the referenceData
+        byte[] DCData;
 
-        try 
+        DCData = getDCData( referenceData );
+
+        //add the data to the CargoContainer
+        try
         {
-            cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.DC, bdata );
-        } 
-        catch (IOException ioe) 
+            cargo.add( dataStreamName, format, submitter, lang, dataMimetype, IndexingAlias.None, data );
+                }
+        catch (IOException ioe)
         {
             throw new PluginException( "Could not construct CargoContainer", ioe );
         }
@@ -122,15 +109,20 @@ public class DCHarvester implements ICreateCargoContainer
         {
             log.error( String.format( "Exception of type: %s cast with message: %s", e.getClass(), e.getMessage() ) );
         }
-    
+
         log.debug(String.format("num of objects in cargo: %s", cargo.getCargoObjectCount()) );
         return cargo;
     }
 
-    
+
     public PluginType getPluginType()
     {
         return pluginType;
+    }
+
+    private byte[] getDCData( byte[] referenceData )
+    {
+        return null;
     }
 
 }

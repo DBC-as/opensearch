@@ -70,7 +70,8 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     
     private String submitter;
     private String format;
-    private String path;
+    //private String path;
+    private byte[] data;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -89,11 +90,12 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     }
     
     
-    public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-        this.path = job.getUri().getPath();
+        //        this.path = job.getUri().getPath();
         this.submitter = job.getSubmitter();
         this.format = job.getFormat();
+        this.data = data;
 
         return createCargoContainerFromFile();
     }
@@ -110,39 +112,14 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     private CargoContainer createCargoContainerFromFile() throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
-        //cargo.setFilePath( path );
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
-        InputStream data;
-        
-        try 
-        {
-            data = FileHandler.readFile( path );
-            log.debug( String.format( "File: %s has been read",path ) );
-        } 
-        catch ( FileNotFoundException fnfe ) 
-        {
-            throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
-        }
-
-        byte[] bdata;
-        try 
-        {
-            bdata = StreamHandler.bytesFromInputStream( data, 0 );
-            log.debug( String.format( "the data read has size: %s", bdata.length ) );
-        } 
-        catch ( IOException ioe ) 
-        {
-        	String msg = "Could not construct byte[] from InputStream";
-        	log.error( msg );
-        	throw new PluginException( msg, ioe );
-        }
  
         try 
         {
-            cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Danmarcxchange, bdata );
+            cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Danmarcxchange, data );
 
             // CONSTRUCTING DC DATASTREAM
             log.debug( "Constructing DC datastream" );

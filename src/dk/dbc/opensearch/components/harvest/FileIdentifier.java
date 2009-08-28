@@ -20,46 +20,40 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.net.URI;
 
-public class JobList implements IJobList
-{    
-    private ArrayList<IJob> jobList;
-    private Iterator<IJob> iter;
-
-    public JobList()
+/**
+ * Impementation of the IIdentifer interface for identification of Files
+ */
+public class FileIdentifier implements IIdentifier
+{
+    private URI uri;
+  /**
+   * 
+   */
+  public FileIdentifier( URI uri ) 
     {
-        jobList = new ArrayList<IJob>();
-        iter = jobList.iterator();
+        this.uri = uri;  
     }
 
-    public IJob getNext()
+    public URI getURI()
     {
-        System.out.println( "getNext called" );
-        if(! iter.hasNext() )
+        return uri;
+    }
+
+    public String toString()
+    {
+        return uri.getRawPath();
+    }
+
+    public int compareTo( Object obj )
+    {
+        if( ! ( obj instanceof FileIdentifier ) )
         {
-            throw new IllegalStateException( "no further elements in the JobList" );
+            throw new UnsupportedOperationException( String.format( "Type %s is not a Identifier type", obj.toString() ) );
         }
-        else
-        {
-            System.out.println( "iter has next..." );
-            return (IJob)iter.next();
-        }
-    }
 
-    public boolean hasNext()
-    {
-        return iter.hasNext();
-    }
-
-    public void add( IJob theJob )
-    {
-        jobList.add( theJob );
-    }
-
-    public int size()
-    {
-        return jobList.size();
+        FileIdentifier identifier = (FileIdentifier)obj;
+        return this.toString().compareTo( identifier.toString() );
     }
 }

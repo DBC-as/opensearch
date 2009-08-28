@@ -50,7 +50,8 @@ public class DocbookHarvester implements ICreateCargoContainer
     
     private String submitter;
     private String format;
-    private String path;
+    //    private String path;
+    private byte[] data;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -69,12 +70,12 @@ public class DocbookHarvester implements ICreateCargoContainer
     }
 
 
-    public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-    	this.path = job.getUri().getPath();
+    	//this.path = job.getUri().getPath();
     	this.submitter = job.getSubmitter();
     	this.format = job.getFormat();
-    
+        this.data = data;
     	return createCargoContainerFromFile();
     }
 
@@ -92,31 +93,31 @@ public class DocbookHarvester implements ICreateCargoContainer
         String mimetype = "text/xml";
         String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
-        InputStream data;
+       //  InputStream data;
 
-        long id;
-        try 
-        {
-            data = FileHandler.readFile( this.path );
-        } 
-        catch (FileNotFoundException fnfe) 
-        {
-            throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
-        }
+         long id;
+//         try 
+//         {
+//             data = FileHandler.readFile( this.path );
+//         } 
+//         catch (FileNotFoundException fnfe) 
+//         {
+//             throw new PluginException( String.format( "The file %s could not be found or read", this.path ), fnfe );
+//         }
 
-        byte[] bdata;
-        try 
-        {
-            bdata = StreamHandler.bytesFromInputStream( data, 0 );
-        } 
-        catch (IOException ioe) 
-        {
-            throw new PluginException( "Could not construct byte[] from InputStream", ioe );
-        }
+//         byte[] bdata;
+//         try 
+//         {
+//             bdata = StreamHandler.bytesFromInputStream( data, 0 );
+//         } 
+//         catch (IOException ioe) 
+//         {
+//             throw new PluginException( "Could not construct byte[] from InputStream", ioe );
+//         }
 
         try
         {
-            id = cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Article, bdata );
+            id = cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Article, data );
             log.info( String.format( "Added data to the cargocontainer. Id = %s", id ) );
         } 
         catch (IOException ioe) 

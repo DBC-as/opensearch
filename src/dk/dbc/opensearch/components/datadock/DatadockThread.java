@@ -1,6 +1,6 @@
-/*   
+/*
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
   opensearch is free software: you can redistribute it and/or modify
@@ -39,6 +39,11 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.components.harvest.InvalidStatusChangeException;
+import dk.dbc.opensearch.components.harvest.UnknownIdentifierException;
+import dk.dbc.opensearch.components.harvest.JobStatus;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -86,7 +91,7 @@ public class DatadockThread implements Callable< Float >
 {
     private Logger log = Logger.getLogger( DatadockThread.class );
 
-
+    private IHarvest harvester;
     private CargoContainer cargo;
     private IProcessqueue queue;
     private IEstimate estimate;
@@ -95,7 +100,7 @@ public class DatadockThread implements Callable< Float >
     private String format;
     private ArrayList< String > list;
     private String result;
-    
+
     /**
      *\todo: Wheet out in the Exceptions
      *
@@ -117,11 +122,12 @@ public class DatadockThread implements Callable< Float >
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
         this.datadockJob = datadockJob;
+        this.harvester = harvester;
 
         // Each pair identifies a plugin by p1:submitter and p2:format
         submitter = datadockJob.getSubmitter();
@@ -139,11 +145,11 @@ public class DatadockThread implements Callable< Float >
 
         queue = processqueue;
         this.estimate = estimate;
-    
-        log.trace( String.format( "DataDock Construction finished" ) );
+
+        log.trace( String.format( "DatadockThread Construction finished" ) );
     }
 
-    
+
     /**
      * call() is the thread entry method on the DataDock. Call operates
      * on the DataDock object, and all data critical for its success
@@ -170,11 +176,11 @@ public class DatadockThread implements Callable< Float >
      * @throws IOException
      * @throws ParseException
      */
-    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException
+    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, UnknownIdentifierException, InvalidStatusChangeException
     {
         // Must be implemented due to class implementing Callable< Float > interface.
         // Method is to be extended when we connect to 'Posthuset'
-    	log.trace( "DatadockThread call method called" );
+        log.trace( "DatadockThread call method called" );
 
         // Validate plugins
         PluginResolver pluginResolver = new PluginResolver();
@@ -182,89 +188,111 @@ public class DatadockThread implements Callable< Float >
         String mimeType = null;
         long length = 0;
         Float est = 0F;
-        
+        byte[] data = null;
+
         for( String classname : list)
         {
             log.trace( "DatadockThread getPlugin 'classname' " + classname );
 
             IPluggable plugin = pluginResolver.getPlugin( classname );
             log.trace( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
-           
+
             switch ( plugin.getPluginType() )
             {
-                case HARVEST:
-                    log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
-                    
-                    ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
-                    cargo = harvestPlugin.getCargoContainer( datadockJob );
-                    
-                    checkCargoObjectCount( cargo );
-                    
-                    break;
-                case ANNOTATE:
-                    log.trace( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
-                    
-                    IAnnotate annotatePlugin = (IAnnotate)plugin;
+            case HARVEST:
+                //get data from harvester
+                try
+                {
+                    data = harvester.getData( datadockJob.getIdentifier() );
+                }
+                catch( UnknownIdentifierException uie )
+                {
+                    log.error( String.format( "couldnt get data from harvester, exception message: %s, terminating thread", uie.getMsg() ) );
+                    throw new UnknownIdentifierException( uie.getMsg() );
+                }
 
-                    checkCargoContainerIsNotNull( cargo );
-                    
-                    cargo = annotatePlugin.getCargoContainer( cargo );
-                    
-                    break;
-                case STORE:
-                	log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
-                	
-                    IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-                    cargo = repositoryStore.storeCargoContainer( cargo );
-                    // DO NOT CHANGE log level to trace or debug!
-                    log.info( "STORE pid: " + cargo.getDCIdentifier() );
-                    
-                	break;
-                case RELATION:
-                    log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
-                    
-                    checkCargoContainerIsNotNull( cargo );
-                    
-                    IRelation relationPlugin = (IRelation)plugin;
-                    cargo = relationPlugin.getCargoContainer( cargo );
-                    
-                    break;
-                case GETESTIMATE:
-                    /*est = estimate.getEstimate( mimeType, length );
-                    log.debug( String.format( "Got estimate of %s", est) );*/
-                    
-                    break;
-                default:
-                	log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
+                log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
+
+                ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
+                cargo = harvestPlugin.getCargoContainer( datadockJob, data );
+
+                checkCargoObjectCount( cargo );
+
+                break;
+            case ANNOTATE:
+                log.trace( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
+
+                IAnnotate annotatePlugin = (IAnnotate)plugin;
+
+                checkCargoContainerIsNotNull( cargo );
+
+                cargo = annotatePlugin.getCargoContainer( cargo );
+
+                break;
+            case STORE:
+                log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
+
+                IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+                cargo = repositoryStore.storeCargoContainer( cargo );
+                // DO NOT CHANGE log level to trace or debug!
+                log.info( "STORE pid: " + cargo.getDCIdentifier() );
+
+                break;
+            case RELATION:
+                log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
+
+                checkCargoContainerIsNotNull( cargo );
+
+                IRelation relationPlugin = (IRelation)plugin;
+                cargo = relationPlugin.getCargoContainer( cargo );
+
+                break;
+            case GETESTIMATE:
+                /*est = estimate.getEstimate( mimeType, length );
+                  log.debug( String.format( "Got estimate of %s", est) );*/
+
+                break;
+            default:
+                log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
             }
         }
-        
+
         length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
         //push to processqueue job to processqueue and get estimate
         est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est) );
         queue.push( cargo.getDCIdentifier() );
-        
+        //inform the harvester that it was a success
+        try
+        {
+            harvester.setStatus( datadockJob.getIdentifier(), JobStatus.SUCCESS );
+
+        }
+        catch( InvalidStatusChangeException isce )
+        {
+            log.error( isce.getMsg() );
+        }
+
         return est;
     }
-    
-    
+
+
     private void checkCargoContainerIsNotNull( CargoContainer cargo ) throws NullPointerException
     {
-    	if ( cargo == null )
+        if ( cargo == null )
         {
-        	log.error( "DatadockThread call throws NullPointerException, cc is null" );
-           	throw new NullPointerException( "DatadockThread call throws NullPointerException" );
+            log.error( "DatadockThread call throws NullPointerException, cc is null" );
+            throw new NullPointerException( "DatadockThread call throws NullPointerException" );
         }
     }
-    
-    
+
+
     private void checkCargoObjectCount( CargoContainer cargo ) throws IllegalStateException
     {
-    	if( cargo.getCargoObjectCount() < 1 ) // no data in the cargocontainer, so no reason to continue
+        if( cargo.getCargoObjectCount() < 1 ) // no data in the cargocontainer, so no reason to continue
         {
             log.error( String.format( "no cargoobjects in the cargocontainer" ) );
             throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
-        }   	
+        }
     }
 }

@@ -22,6 +22,7 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import java.net.URI;
+import dk.dbc.opensearch.components.harvest.IIdentifier;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import java.net.URISyntaxException;
 
@@ -29,72 +30,47 @@ import java.net.URISyntaxException;
 
 import static org.junit.Assert.*;
 import org.junit.*;
+import static org.easymock.classextension.EasyMock.*;
 
 public class DatadockJobTest {
 
     /**
      * Testing the getters and setters of DatadockJob
      */
-    
+    IIdentifier mockID;
+
+    @Before
+    public void setUp()
+    {
+        mockID = createMock( IIdentifier.class );
+    }    
+
+    @After
+    public void tearDown()
+    {
+        reset( mockID );
+    }
+
     @Test 
     public void testSettersAndGetters() 
     {        
         String testSubmitter = "testSubmitter";
         String testFormat = "testFormat";
-        URI testURI = null;
-        
-        try
-        {
-            testURI = new URI( "testURI" );
-        }
-        catch( URISyntaxException use )
-        {
-            fail( "Catched URISyntaxException under construction of test uri."+use.getMessage() );
-        }
-        
-        DatadockJob datadockJob = new DatadockJob( testURI, testSubmitter, testFormat);
+        String refDataString = "refdata";
+        byte[] refData = refDataString.getBytes();
+     
+        DatadockJob datadockJob = new DatadockJob( testSubmitter, testFormat, mockID, refData );
         assertTrue( datadockJob.getSubmitter().equals( testSubmitter ) );
-        assertTrue( datadockJob.getFormat().equals( testFormat ) );
-        assertTrue( datadockJob.getUri().equals( testURI ) );
-        
+        assertTrue( datadockJob.getFormat().equals( testFormat ) );        
+
         testSubmitter = "testSubmitter2";
         testFormat = "testFormat2";        
-        try{
-            testURI = new URI( "testURI2" );
-        }catch( URISyntaxException use ){
-            fail( "Catched URISyntaxException under construction of test uri."+use.getMessage() );
-        }
-        
-        datadockJob.setUri( testURI );
+
         datadockJob.setSubmitter( testSubmitter );
         datadockJob.setFormat( testFormat );
 
         assertTrue( datadockJob.getSubmitter().equals( testSubmitter ) );
         assertTrue( datadockJob.getFormat().equals( testFormat ) );
-        assertTrue( datadockJob.getUri().equals( testURI ) );
-    }
-
-    @Test public void testConstructorWithPid()
-    {
-      String testSubmitter = "testSubmitter";
-        String testFormat = "testFormat";
-        URI testURI = null;
-        String testPID1 = "dbc:1";
-        String testPID2 = "dbc:2";
-        
-        try
-        {
-            testURI = new URI( "testURI" );
-        }
-        catch( URISyntaxException use )
-        {
-            fail( "Catched URISyntaxException under construction of test uri."+use.getMessage() );
-        }   
-
-        DatadockJob ddj = new DatadockJob( testURI, testSubmitter, testFormat, testPID1 );
-
-        assertEquals( ddj.getPID(), testPID1 );
-        ddj.setPID( testPID2 );
-        assertEquals( ddj.getPID(), testPID2 );
+       
     }
 }

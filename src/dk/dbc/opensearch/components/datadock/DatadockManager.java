@@ -1,20 +1,20 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package dk.dbc.opensearch.components.datadock;
@@ -23,11 +23,17 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.components.harvest.IHarvester;
+import dk.dbc.opensearch.common.xml.XMLUtils;
+//import dk.dbc.opensearch.components.harvest.IHarvester;
+import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.components.harvest.IJob;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.RejectedExecutionException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -36,7 +42,14 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 
 
 /**
@@ -47,18 +60,19 @@ public class DatadockManager
 {
     static Logger log = Logger.getLogger( DatadockManager.class );
 
-    
+
     private DatadockPool pool= null;
-    private IHarvester harvester = null;
-    XMLConfiguration config = null;    
-    Vector< DatadockJob > registeredJobs = null;
+    private IHarvest harvester = null;
+    XMLConfiguration config = null;
+    ArrayList<IJob> registeredJobs = null;
+    //Vector< DatadockJob > registeredJobs = null;
     static int rejectedSleepTime;
-    
-    
+
+
     /**
      * Constructs the the DatadockManager instance.
      */
-    public DatadockManager( DatadockPool pool, IHarvester harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    public DatadockManager( DatadockPool pool, IHarvest harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
         log.trace( "DatadockManager( pool, harvester ) called" );
 
@@ -67,56 +81,101 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
 
-        registeredJobs = new Vector< DatadockJob >(); 
+        registeredJobs = new ArrayList<IJob>();
+        //registeredJobs = new Vector< DatadockJob >();
     }
 
-    
+
     public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
     {
         log.trace( "DatadockManager update called" );
-      
+
         // Check if there are any registered jobs ready for docking
         // if not... new jobs are requested from the harvester
-        if( registeredJobs.size() == 0 )
+        if( registeredJobs.isEmpty() )
+            //if( registeredJobs.size() == 0 )
         {
             log.trace( "no more jobs. requesting new jobs from the harvester" );
-            registeredJobs = harvester.getJobs();
+            registeredJobs = (ArrayList<IJob>)harvester.getJobs( 100 );
         }
-      
+
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
 
         for( int i = 0; i < registeredJobs.size(); i++ )
         {
-            DatadockJob job = registeredJobs.get( 0 );
-        
+            IJob theJob = registeredJobs.get( 0 );
+            //build the DatadockJob
+            DatadockJob job = buildDatadockJob( theJob );
+            //DatadockJob job = registeredJobs.get( 0 );
+
             // execute jobs
             try
             {
                 pool.submit( job );
                 registeredJobs.remove( 0 );
-                log.debug( String.format( "submitted job: '%s'", job.getUri().getRawPath() ) );
-	    }
+                log.debug( String.format( "submitted job: '%s'", job ) );
+            }
             catch( RejectedExecutionException re )
             {
                 /** \todo: explanation on the frequency of this exception.*/
-                log.warn( String.format( "job: '%s' rejected, trying again", job.getUri().getRawPath() ) );
+                log.warn( String.format( "job: '%s' rejected, trying again", job) );
                 Thread.sleep( rejectedSleepTime );
             }
         }
-        
+
         //checking jobs
         Vector<CompletedTask> finishedJobs = pool.checkJobs();
     }
-    
-    
+
+
     public void shutdown() throws InterruptedException
     {
         log.debug( "Shutting down the pool" );
-        pool.shutdown();        
-        log.debug( "The pool is down" );        
-        
-        log.debug( "Stopping harvester" );        
+        pool.shutdown();
+        log.debug( "The pool is down" );
+
+        log.debug( "Stopping harvester" );
         harvester.shutdown();
         log.debug( "The harvester is stopped" );
+    }
+
+    /**
+     * method for building a Datadockjob from the information in a IJob
+     */
+
+    private DatadockJob buildDatadockJob( IJob theJob )
+    {
+        DatadockJob ddjob;
+        String submitter;
+        String format;
+        byte[] referenceData = theJob.getReferenceData();
+        //get submitter and format
+
+        // ByteArrayInputStream bis = new ByteArrayInputStream( referenceData );
+        Element root = null;
+        Element info = null;
+        try
+        {
+            root = XMLUtils.getDocumentElement( referenceData );
+        }
+        catch( ParserConfigurationException pce )
+        {
+            log.error( pce.toString() );
+        }
+        catch( SAXException se )
+        {
+            log.error( se.toString() );
+        }
+        catch( IOException ioe )
+        {
+            log.error( ioe.toString() );
+        }
+
+        info = (Element)root.getElementsByTagName( "info").item( 0 );
+        submitter = info.getAttribute( "submitter" );
+        format = info.getAttribute( "format" );
+
+        ddjob = new DatadockJob( submitter, format, theJob.getIdentifier(), referenceData );
+        return ddjob;
     }
 }

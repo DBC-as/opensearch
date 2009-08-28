@@ -39,6 +39,7 @@ import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
+import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -184,15 +185,14 @@ public class DatadockMain
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
-            threadpool.purge();
+            threadpool.purge(); 
             
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraAdministration );
-
             log.debug( "Starting harvester" );
-            
             // harvester;
-            IHarvester harvester = new FileHarvest();
-
+            IHarvest harvester = new FileHarvest();
+            
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraAdministration, harvester);
+            
             log.debug( "Starting the manager" );
             // Starting the manager
             datadockManager = new DatadockManager( datadockPool, harvester );

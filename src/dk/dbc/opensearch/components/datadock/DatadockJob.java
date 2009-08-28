@@ -29,6 +29,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import java.net.URI;
 import org.apache.log4j.Logger;
+import dk.dbc.opensearch.components.harvest.IIdentifier; 
 
 
 /**
@@ -39,11 +40,32 @@ public class DatadockJob implements Comparable<DatadockJob>
 {    
     Logger log = Logger.getLogger( DatadockJob.class );
  
-    private URI uri;
+    //    private URI uri;
     private String submitter;
     private String format;
     private String PID;
-    
+    private IIdentifier identifier;
+    private byte[] referenceData;    
+
+
+    /**
+     * Constructor that initializes the DatadockJob
+     * @param submitter, the submitter of the job
+     * @param format, the format of the job
+     * @param identifier, the identifier of the data of the job
+     * @param referenceData, the data concerning the job
+     */
+
+    public DatadockJob( String submitter, String format, IIdentifier identifier, byte[] referenceData )
+    {
+        this.submitter = submitter;
+        this.format = format;
+        this.identifier = identifier;
+        this.referenceData = referenceData;
+
+        log.debug( String.format( "Constructor submitter= %s format= %s indentifier = %s", submitter, format, identifier ) );
+    }
+
     /**
      * Constructor. initializes the DatadockJob
      * 
@@ -51,15 +73,15 @@ public class DatadockJob implements Comparable<DatadockJob>
      * @param submitter The submitter of the Job
      * @param format The format of the Job
      */
-    public DatadockJob( URI uri, String submitter, String format) 
-    {
-        log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s' ) called", uri.getRawPath(), submitter, format ) );
+//     public DatadockJob( URI uri, String submitter, String format) 
+//     {
+//         log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s' ) called", uri.getRawPath(), submitter, format ) );
         
-        this.uri = uri;
-        this.submitter = submitter;
-        this.format = format;
-        PID = "";
-    }
+//         this.uri = uri;
+//         this.submitter = submitter;
+//         this.format = format;
+//         PID = "";
+//     }
     
     
     /**
@@ -70,31 +92,31 @@ public class DatadockJob implements Comparable<DatadockJob>
      * @param format The format of the Job
      * @param PID the fedoraPID for the job
      */
-    public DatadockJob( URI uri, String submitter, String format, String PID ) 
-    {
-        log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s', PID='%s' ) called", 
-                                  uri.getRawPath(), submitter, format, PID ) );
-        this.uri = uri;
-        this.submitter = submitter;
-        this.format = format;
-        this.PID = PID;
-    }
+//     public DatadockJob( URI uri, String submitter, String format, String PID ) 
+//     {
+//         log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s', PID='%s' ) called", 
+//                                   uri.getRawPath(), submitter, format, PID ) );
+//         this.uri = uri;
+//         this.submitter = submitter;
+//         this.format = format;
+//         this.PID = PID;
+//     }
     
     
-    public int compareTo( DatadockJob datadockJob){
-        int result = uri.toString().compareTo( datadockJob.getUri().toString() );
-        return result;
+     public int compareTo( DatadockJob datadockJob){
+         int result = identifier.compareTo( datadockJob.getIdentifier() ); 
+         return result;
 
 
-    }
+     }
     /**
      * Gets the uri object from the job
      * @return The URI of the job
      */
-    public URI getUri()
-    {
-        return uri;
-    }
+//     public URI getUri()
+//     {
+//         return uri;
+//     }
     
     
     /**
@@ -126,16 +148,33 @@ public class DatadockJob implements Comparable<DatadockJob>
         return PID;
     }
     
+    /**
+     * Gets the identifier from the job
+     * @returns the identifier of the job
+     */
+
+    public IIdentifier getIdentifier()
+    {
+        return identifier;
+    }
+
+    /**
+     * gets the DCData from the job
+     */
+    public byte[] getReferenceData()
+    {
+        return referenceData;
+    }
     
     /**
      * Sets the path
      * @param The path 
      */
-    public void setUri( URI uri )
-    {
-        log.debug( String.format( "setUri( uri='%s' ) called", uri.getRawPath() ) ); 
-           this.uri = uri;
-    }
+//     public void setUri( URI uri )
+//     {
+//         log.debug( String.format( "setUri( uri='%s' ) called", uri.getRawPath() ) ); 
+//            this.uri = uri;
+//     }
     
     
     /**
@@ -168,5 +207,15 @@ public class DatadockJob implements Comparable<DatadockJob>
     {
         log.debug( String.format( "setPID( PID='%s' ) called", PID ) );
         this.PID = PID;
+    }
+
+    /**
+     * Sets the Identifier
+     * @param the Identifier
+     */
+    public void setIdentifier( IIdentifier identifier )
+    {
+        log.debug( "setIdentifier called" );
+        this.identifier = identifier;
     }
 }

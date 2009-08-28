@@ -31,6 +31,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class DatadockPool
     private int shutDownPollTime;
     private int i = 0;
     private IFedoraAdministration fedoraAdministration;
-
+    private IHarvest harvester;
     
     /**
      * Constructs the the datadockPool instance
@@ -77,10 +78,11 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
+        this.harvester = harvester;
         this.threadpool = threadpool;
         this.estimate = estimate;
         this.processqueue = processqueue;
@@ -103,7 +105,7 @@ public class DatadockPool
      */
     public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
-        log.debug( String.format( "submit( path='%s', submitter='%s', format='%s' )", datadockJob.getUri().getRawPath(), datadockJob.getSubmitter(), datadockJob.getFormat() ) );
+        log.debug( String.format( "submitter='%s', format='%s' )", datadockJob.getSubmitter(), datadockJob.getFormat() ) );
         log.debug( String.format( "counter = %s", ++i  ) );
 
         FutureTask<Float> future = getTask( datadockJob );
@@ -121,7 +123,7 @@ public class DatadockPool
     
     public FutureTask<Float> getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration ) );
+    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration, harvester ) );
     }
 
 

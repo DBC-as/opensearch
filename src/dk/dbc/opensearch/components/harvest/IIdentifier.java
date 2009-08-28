@@ -32,5 +32,6 @@ public interface IIdentifier
        There is no need for the DD to call methods on the Interface.
        
      */
+    int compareTo( Object obj );
 
 }

@@ -33,6 +33,7 @@ import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.datadock.DatadockPool;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
+import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -84,6 +85,7 @@ public class DatadockPoolTest extends TestCase
     DatadockPool datadockPool;
     DatadockThread datadockThread;
     FedoraAdministration mockFedoraAdministration;
+    IHarvest mockHarvester;
 
     /**
      * After each test the mock are reset
@@ -105,6 +107,7 @@ public class DatadockPoolTest extends TestCase
         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
         mockEstimate = createMock( Estimate.class);
         mockProcessqueue = createMock( Processqueue.class );
+        mockHarvester = createMock( IHarvest.class );
         mockFedoraAdministration = createMock( FedoraAdministration.class );
         mockDatadockJob = createMock( DatadockJob.class );
     }
@@ -119,6 +122,7 @@ public class DatadockPoolTest extends TestCase
         reset( mockFedoraAdministration );
         reset( mockDatadockJob );
         reset( mockFuture );
+        reset( mockHarvester );
     }
 
 
@@ -143,7 +147,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
         
         /**
          * verify
@@ -172,7 +176,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * expectations
          */
-        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        //expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
         //calling getTask with the getTask method mocked
@@ -191,7 +195,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
         datadockPool.submit( mockDatadockJob );
         /**
          * verify
@@ -219,11 +223,11 @@ public class DatadockPoolTest extends TestCase
         out.close();
 
         tmpFile.deleteOnExit();
-        URI testURI = tmpFile.toURI();
+        //        URI testURI = tmpFile.toURI();
         /**
          * expectations
          */
-        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        //expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
         //getTask is called and the method is mocked to return mockFuture
@@ -244,7 +248,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 0 );
@@ -280,7 +284,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * expectations
          */
-        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        //        expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
         //getTask is called and the method is mocked to return mockFuture
@@ -302,7 +306,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 1 );
@@ -333,18 +337,18 @@ public class DatadockPoolTest extends TestCase
         out.close();
 
         tmpFile.deleteOnExit();
-        URI testURI = tmpFile.toURI();
+        //URI testURI = tmpFile.toURI();
         /**
          * expectations
          */
         //submit method
-        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        //expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
         //getTask is called and the method is mocked to return mockFuture
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
         //submit method 2nd call
-        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        //expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
         //getTask is called and the method is mocked to return mockFuture
@@ -367,7 +371,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
         datadockPool.submit( mockDatadockJob );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
@@ -403,7 +407,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * expectations
          */
-        expect( mockDatadockJob.getUri() ).andReturn( testURI );
+        //        expect( mockDatadockJob.getUri() ).andReturn( testURI );
         expect( mockDatadockJob.getSubmitter() ).andReturn( "test" );
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
         //getTask is called and the method is mocked to return mockFuture
@@ -426,7 +430,7 @@ public class DatadockPoolTest extends TestCase
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
         datadockPool.submit( mockDatadockJob );
         datadockPool.shutdown();
 

@@ -42,7 +42,7 @@ public interface ICreateCargoContainer extends IPluggable
 	 * @throws ParserConfigurationException 
 	 * @throws SAXException 
 	 */
-	public CargoContainer getCargoContainer( DatadockJob job ) throws PluginException;
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException;
 
 
     /**

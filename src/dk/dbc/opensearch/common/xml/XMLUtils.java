@@ -18,6 +18,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.common.xml;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -48,6 +49,13 @@ public class XMLUtils
 {
 
     static Logger log = Logger.getLogger( XMLUtils.class );
+
+    public static Element getDocumentElement( byte[] data ) throws ParserConfigurationException, SAXException, IOException
+    {
+        ByteArrayInputStream bis = new ByteArrayInputStream( data );
+
+        return getDocumentElement( new InputSource( bis ) );
+    }
 
     public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
     {

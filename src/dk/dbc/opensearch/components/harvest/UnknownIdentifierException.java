@@ -26,7 +26,7 @@ public class UnknownIdentifierException extends Exception{
     
     private String message;
     /**
-     * 
+     * the message should contain the indentifier as a string and some additional information
      */
     public UnknownIdentifierException( String msg ) {
         message = msg;

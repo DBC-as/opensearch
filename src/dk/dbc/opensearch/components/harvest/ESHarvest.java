@@ -241,7 +241,7 @@ public class ESHarvest implements IHarvest
             ResultSet rs = stmt.executeQuery( fetchStatusString );
             if( rs == null )
             {
-                throw new UnknownIdentifierException( "recordstatus requested for unknown identifier ");
+                throw new UnknownIdentifierException( String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() ) );
             }
             else
             {
@@ -252,7 +252,7 @@ public class ESHarvest implements IHarvest
                     if( recordStatus == 1 || ( recordStatus == 4 && status == JobStatus.FAILURE ) )
                     {
 
-                        throw new InvalidStatusChangeException( "the status is already set to success" );
+                        throw new InvalidStatusChangeException( String.format( "the status is already set to success for identifier: %s", jobId.toString() ) );
                     }
                     else
                     {
@@ -279,7 +279,7 @@ public class ESHarvest implements IHarvest
                 }
                 else
                 {
-                    throw new InvalidStatusChangeException( "recordstatus requested for unknown identifier" );
+                    throw new InvalidStatusChangeException( String.format( "recordstatus requested for unknown identifier: %s", jobId.toString() ) );
                 }
 
             }

@@ -29,23 +29,32 @@ package dk.dbc.opensearch.components.harvest;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
+//import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.os.StreamHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Vector;
+import java.util.ArrayList;
 
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+//import javax.xml.transform.TransformerException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 
@@ -76,7 +85,7 @@ import org.xml.sax.SAXException;
  * The harvester only returns a job after the second consecutive time
  * it has been found and its filesize is unchanged.
  */
-public class FileHarvest implements IHarvester
+public class FileHarvest implements IHarvest
 {
     static Logger log = Logger.getLogger( FileHarvest.class );
 
@@ -103,7 +112,7 @@ public class FileHarvest implements IHarvester
      * @throws ParserConfigurationException
      * @throws ConfigurationException
      */
-    public FileHarvest( ) throws IllegalArgumentException, SAXException, IOException, ConfigurationException, FileNotFoundException
+    public FileHarvest() throws IllegalArgumentException, SAXException, IOException, ConfigurationException, FileNotFoundException
     {
         this.submitters = new Vector< InputPair< File, Long > >();
         this.formats = new Vector< InputPair< File, Long > >();
@@ -136,14 +145,19 @@ public class FileHarvest implements IHarvester
     /**
      * Starts The datadock. It initializes vectors and add found jobs to the application vector.
      */
-    public void start() throws ParserConfigurationException, SAXException, IOException
+    public void start() //throws ParserConfigurationException, SAXException, IOException
     {
         log.debug( "start() called" );
-
-        initVectors();
-        log.debug( "Vectors initialized" );
+        try
+        {
+            initVectors();
+            log.debug( "Vectors initialized" );
+        }
+        catch( Exception e )
+        {
+            log.error( e.toString() );
+        }
     }
-
 
     /**
      * Shuts down the fileharvester
@@ -234,7 +248,6 @@ public class FileHarvest implements IHarvester
         }
     }
 
-
     /**
      * getJobs. Locate jobs and returns them.  First off, the
      * candidates already registered analyzed. if their filesize has
@@ -248,35 +261,96 @@ public class FileHarvest implements IHarvester
      *
      * @returns A vector of Datadockjobs containing the necessary information to process the jobs.
      */
-    public Vector< DatadockJob > getJobs() throws FileNotFoundException, IOException, ConfigurationException
+    public ArrayList<IJob> getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
     {
-        Vector< DatadockJob > jobs = new Vector< DatadockJob>();
-        HashSet< InputPair< File, Long > > newJobs = getNewJobs();
+        ArrayList<IJob> jobs = new ArrayList<IJob>();
+        //Vector< DatadockJob > jobs = new Vector< DatadockJob>();
+        HashSet< InputPair< File, Long > > newJobs = new HashSet<InputPair<File, Long>>( 0 );
+        try
+        {
+            newJobs = getNewJobs();
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            log.error( fnfe.toString() );
+        }
+        catch( IOException ioe )
+        {
+            log.error( ioe.toString() );
+        }
+        catch( ConfigurationException ce )
+        {
+            log.error( ce.toString() );
+        }
+
         for( InputPair< File, Long > job : newJobs )
         {
             URI uri = job.getFirst().toURI();
             String grandParentFile = job.getFirst().getParentFile().getParentFile().getName();
             String parentFile = job.getFirst().getParentFile().getName();
-            DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
-            log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'", 
-                                      datadockJob.getUri().getRawPath(),
-                                      datadockJob.getSubmitter(),
-                                      datadockJob.getFormat() ) );
-            jobs.add( datadockJob );
+            FileIdentifier identifier = new FileIdentifier( uri );
+            IJob theJob = buildTheJob( identifier, grandParentFile, parentFile );
+            //  DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
+            //log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'",
+            //datadockJob.getUri().getRawPath(),
+            //datadockJob.getSubmitter(),
+            //datadockJob.getFormat() ) );
+            log.debug( String.format( "found new job: path=%s, submitter=%s, format=%s ", theJob.getIdentifier(), grandParentFile, parentFile ) );
+            jobs.add( theJob );
+            //            jobs.add( datadockJob );
         }
 
         return jobs;
     }
 
+    /**
+     * Implements the setStatus method, but does nothing but log the file and
+     * the status it is set to. So all status are treated the same and wont have any
+     * effect on the further execution.
+     */
 
-    /** 
+    public void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException
+    {
+        log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status.getDescription() ) );
+    }
+
+    /**
+     * Implements the getData method. It returns the requested file as an array of bytes
+     */
+
+    public byte[] getData( IIdentifier jobId ) throws UnknownIdentifierException
+    {
+        FileIdentifier theJobId = (FileIdentifier)jobId;
+        byte[] data;
+        InputStream ISdata;
+
+        try
+        {
+            ISdata = FileHandler.readFile( theJobId.getURI().getRawPath() );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            throw new UnknownIdentifierException( String.format( "File for path: %s couldnt be read", theJobId.getURI().getRawPath() ) );
+        }
+        try
+        {
+            data = StreamHandler.bytesFromInputStream( ISdata, 0 );
+        }
+        catch( IOException ioe )
+        {
+            throw new UnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
+        }
+        return data;
+    }
+
+    /**
      * Returns a HashSet of InputPairs with file objects. The size of
      * the HashSet is determined by the getMaxToHarvest configuration
      * values, which has no default.
      * \todo: make getMaxToHarvest default to something sane
-     * 
-     * 
-     * @return 
+     *
+     *
+     * @return
      */
     private HashSet< InputPair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
@@ -341,5 +415,38 @@ public class FileHarvest implements IHarvester
             throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
 
         }
+    }
+
+    private IJob buildTheJob( FileIdentifier identifier, String submitter, String format )
+    {
+        byte[] referenceData = null;
+        //build the referencedata
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = null;
+        try
+        {
+            builder = factory.newDocumentBuilder();
+        }
+        catch( ParserConfigurationException pce )
+        {
+            log.error( pce.toString() );
+        }
+        Document refStream = builder.newDocument();
+        Element root = refStream.createElement( "referencedata" );
+        Element info = refStream.createElement( "info" );
+        info.setAttribute( "submitter", submitter );
+        info.setAttribute( "format", format );
+        root.appendChild( (Node)info );
+        try
+        {
+            referenceData = XMLUtils.getByteArray( root );
+        }
+        catch( Exception e )
+        {
+            log.error( e.toString() );
+        }
+        Job theJob = new Job( identifier, referenceData );
+
+        return (IJob)theJob;
     }
 }
