@@ -60,7 +60,7 @@ def main( filename ):
     """
     pids = read_pids()
     dump_pids( filename, pids )
-    print "dumped %s pids to file: %s" % ( len(pids) filename )
+    print "dumped %s pids to file: %s" % ( len(pids), filename )
 
     
 if __name__ == '__main__':    
