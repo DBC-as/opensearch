@@ -81,7 +81,7 @@ public class Main {
         usage += " [pass]    The password with which to authorize the user in fedora\n";
         usage += " [query]   The itql query to pass to fedora\n\n";
         usage += " eg.";
-//        usage += " java -jar -Durl=http://sempu:8080/fedora -Duser=fedoraAdmin -Dpass=fedoraAdmin -Dquery=\"select \$s \$p \$o from <#ri> where \$s \$p \$o\" dist/OpenSearch_ITQL.jar";
+        usage += " java -jar -Durl=http://sempu:8080/fedora -Duser=fedoraAdmin -Dpass=fedoraAdmin -Dquery=\"select \\$s \\$p \\$o from <#ri> where \\$s \\$p \\$o\" dist/OpenSearch_ITQL.jar";
         return usage;
     }
 }
