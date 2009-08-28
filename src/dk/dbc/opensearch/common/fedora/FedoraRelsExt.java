@@ -1,22 +1,30 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/**
+ * \file
+ * \brief FedoraRelsExt is a helper class that constructs rels-ext xml fragments
+ */
+
+ 
 package dk.dbc.opensearch.common.fedora;
+
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +40,6 @@ import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.common.types.CargoMimeType;
 import fedora.utilities.XmlTransformUtility;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 import javax.xml.namespace.QName;
@@ -63,13 +70,16 @@ public class FedoraRelsExt
 
 
     /**
-     *
-     * @param id
-     * @throws ParserConfigurationException
+     * Constructs an empty RELS-EXT document. {@code id} is used as
+     * identifier for the RDF Node in the document
+     * 
+     * @param id identifier identifying the digital object as an RDF
+     * Node. Usually this should be the pid of the digital object, but
+     * there are no restrictions on the identifier.
+     * @throws ParserConfigurationException 
      */
     public FedoraRelsExt( String id ) throws ParserConfigurationException
     {
-        // initializing state for the class. Not optimal, but'll have to do for now
         createEmptyRelsExt( id );
         relations = new HashSet<Long>();
     }
@@ -101,7 +111,15 @@ public class FedoraRelsExt
      * <fedora:isMemberOfCollection rdf:resource="work:1"/>
      * ...
      * }
-     * </pre>
+     * 
+     * </pre> 
+     * <p/>
+     * The same relation cannot be added more than once. The
+     * method will return false if this is tried. Specifically 'same
+     * relation' is defined as calling {@code addRelationship} with
+     * identical {@link QName}s in {@code predicate} and {@code
+     * object}.
+     * 
      * @param predicate QName representing the relation type that should be added
      * @param object QName representing the object of the relation.
      * @return true if the relationship does not already exists and could be added, false otherwise
@@ -120,8 +138,10 @@ public class FedoraRelsExt
 
 
     /**
-     *
-     * @param out
+     * Serializes the RELS-EXT Document to a Node representation, ie. without the XML Declaration.
+     * @param out the {@link OutputStream} to write the serialization to.
+     * <p/>
+     * The serialized fragment is encoded with UTF-8 by default.
      * @throws TransformerConfigurationException
      * @throws TransformerException
      */
@@ -131,6 +151,7 @@ public class FedoraRelsExt
         TransformerFactory xformFactory = XmlTransformUtility.getTransformerFactory();
         idTransform = xformFactory.newTransformer();
         idTransform.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+        idTransform.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
 
         Source input = new DOMSource( doc );
         Result output = new StreamResult( out );

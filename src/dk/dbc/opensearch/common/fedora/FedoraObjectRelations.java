@@ -18,10 +18,9 @@
 */
 
 /**
- * \file FedoraObjectRelations.java
+ * \file 
  * \brief 
  */
-
 
 package dk.dbc.opensearch.common.fedora;
 
@@ -210,7 +209,6 @@ public class FedoraObjectRelations
         ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
         try
         {
-            System.out.println( "before while( tuples.hasNext()" );
             while( tuples.hasNext() )
             {
                 Map<String, Node> row = tuples.next();
@@ -218,10 +216,7 @@ public class FedoraObjectRelations
                 {
                     if ( key.equals( p ) )
                     {
-                        System.out.println( "key: " + key );
                         String workRelation = row.get( key ).toString();
-                        System.out.println( "workRelation: " + workRelation );
-                        //tupleList.add( new InputPair< String, String >( key, row.get( key ).toString() ) );
                         tupleList.add( new InputPair< String, String >( key, workRelation ) );
                     }
                 }
