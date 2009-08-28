@@ -16,7 +16,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 package dk.dbc.opensearch.common.types;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,27 +59,6 @@ public class CargoContainer
         data = new ArrayList<CargoObject>();
         log.trace( String.format( "Constructing new CargoContainer" ) );
     }
-
-
-    /**
-     * Add CargoObject to internal data representation.
-     *
-     * @param format
-     * @param submitter
-     * @param language
-     * @param mimetype
-     * @param data
-     * @throws IOException
-     * deprecated use add() with IndexingAlias specified
-     */
-//    Deprecated
-//    public void add( DataStreamType dataStreamName,
-//                     String format, String submitter, String language, String mimetype,
-//                     byte[] data ) throws IOException, NullPointerException
-//    {
-//        log.warn( String.format( "Use of deprecated method" ) );
-//        add( dataStreamName, format, submitter, language, mimetype, null, data );
-//    }
 
 
     /**
@@ -442,6 +424,18 @@ public class CargoContainer
         return ret_ia;
     }
 
+
+    /**
+     * \todo: all the following values are implementation specific for
+     * dublin core and marc data, they should not be exposed in a
+     * CargoContainer type. A preferrable way of handling (almost)
+     * arbitrary fields would be a string dictionary restricted to
+     * namespaces. Something along the lines of
+     * 
+     * HashMap<Pair<NamespaceContext, String>, <String>> datafields = new HashMap<Pair<NamespaceContext, String>, <String>>();
+     * ...
+     * cargo.addDatafield( new InputPair<NamespaceContext, String>( new FedoraNamespaceContext().FedoraNamespace.DublinCore, "identifier" ), "data subject id" );
+     */
 
     public void setDCIdentifier( String dcIdentifier )
     {
