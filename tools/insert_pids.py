@@ -28,9 +28,12 @@ import os
 
 batch_size = 10;
 
+
 def login( host ):
-    '''handles the login to the database and, if successful, returns a
-    connection object'''
+    """
+    handles the login to the database and, if successful, returns a
+    connection object
+    """
     usern = os.environ.get( 'USER' )
     conn = None
 
@@ -40,6 +43,18 @@ def login( host ):
         log.fatal( ife.message )
         sys.exit( "I am unable to connect to the database; %s"%( ife.message ) )
     return conn
+
+
+def read_pids_from_file( filename ):
+    """
+    Read pids from file and return them as a list
+    """
+    pids = []
+    
+    f = open( filename , 'r')
+    for line in f:
+        pids.append( line.strip() )
+    return pids
 
 
 def insert_into_processqueue( cursor, pid_list ):
@@ -57,37 +72,16 @@ def insert_into_processqueue( cursor, pid_list ):
             cursor.execute( sql_str )
             values = []
 
-def read_pids():
-    """
-    Read pids from stdin, and returns a list of
-    unique pids
-    """
-    line_regex = re.compile( '\'info:fedora/[a-zA-Z0-9]+:[0-9]+\'' )
-    pid_regex = re.compile( '(?<=\'info:fedora/)[a-zA-Z0-9]+:[0-9]+(?=\')' )
-    pids = [] 
-    while 1:
-        line = sys.stdin.readline().strip()
-        if not line:
-            break
-        result = pid_regex.search( line )
-        print line
-        if result:
-            #pid_match = pid_regex.search( line )
-            #pid = pid_match.group()
-            pid = result.group()
-            #print "         ", pid
-            pids.append( pid )
-    return list(Set(pids))
 
-
-def main( host ):
+def main( host, filename ):
     """
     Main method. Established connection to LOCALHOST.
     reads pids from stdin an put them on the
     processqueue
     """
+
     conn = login( host )
-    pids = read_pids()
+    pids = read_pids_from_file( filename )
     
     insert_into_processqueue( conn.cursor(), pids )
     conn.commit()
@@ -97,19 +91,21 @@ def main( host ):
 
 if __name__ == '__main__':    
     from optparse import OptionParser
-    parser = OptionParser( usage="%prog [options]" )
+    parser = OptionParser( usage="%prog [options] pidfile" )
 
     parser.add_option( "-l", type="string", action="store", dest="host",
                        help="the host where the processqueue is located")
 
     (options, args) = parser.parse_args()
 
+    if not args:
+        "no pid file to read. exiting."
+        sys.exit( 2 )
+
     host = ""
     if not options.host:
         host = "localhost"
     else:
         host = options.host
-    main( host )
 
-
-
+    main( host, args[0] )
