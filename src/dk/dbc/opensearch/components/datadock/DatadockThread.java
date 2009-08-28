@@ -210,7 +210,7 @@ public class DatadockThread implements Callable< Float >
                     log.error( String.format( "couldnt get data from harvester, exception message: %s, terminating thread", uie.getMsg() ) );
                     throw new UnknownIdentifierException( uie.getMsg() );
                 }
-
+      
                 log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
 
                 ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
@@ -259,6 +259,10 @@ public class DatadockThread implements Callable< Float >
 
         length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
         //push to processqueue job to processqueue and get estimate
+        /**
+         * \Todo: Mimetype is never changed form its initialisation value, 
+         * which is NULL bug: 9388
+         */
         est = estimate.getEstimate( mimeType, length );
         log.debug( String.format( "Got estimate of %s", est) );
         queue.push( cargo.getDCIdentifier() );

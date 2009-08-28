@@ -30,15 +30,20 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.DataStreamType;
+
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
 import dk.dbc.opensearch.plugins.DocbookHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.components.harvest.JobStatus;
 import dk.dbc.opensearch.components.harvest.UnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.InvalidStatusChangeException;
+import dk.dbc.opensearch.components.harvest.IIdentifier;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -66,6 +71,10 @@ import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
 
+/**
+ * methods are being ignored, bug 9385
+ */
+
 
 /**
  * Unittest for the DatadockThread
@@ -75,14 +84,13 @@ public class DatadockThreadTest
     DatadockThread ddThread;
     static ArrayList< String > testArrayList = new ArrayList<String>();
     static CargoContainer mockCC = createMock( CargoContainer.class);
-    //String mockSubmitter;
-    //String mockFormat;
     Estimate mockEstimate;
     DatadockJob mockDatadockJob;
     Processqueue mockProcessqueue;
     IHarvest mockHarvester;
     FedoraAdministration mockFedoraAdministration;
-    
+    IIdentifier mockIdentifier;
+    CargoObject mockCargoObject;
     
     @MockClass( realClass = DatadockJobsMap.class )
     public static class MockDDJobsMap
@@ -107,7 +115,7 @@ public class DatadockThreadTest
 
 
     @MockClass( realClass = DocbookHarvester.class )
-    public static class MockHarvest
+    public static class MockDBHarvest
     {
         PluginType pt = PluginType.HARVEST;
 
@@ -118,7 +126,7 @@ public class DatadockThreadTest
         }
 
         @Mock( invocations = 1 )
-        public CargoContainer getCargoContainer( DatadockJob job )
+        public CargoContainer getCargoContainer( DatadockJob job, byte[] referenceData )
         {
             return mockCC;
         }
@@ -168,6 +176,7 @@ public class DatadockThreadTest
      */
     @Before public void SetUp() 
     {
+        mockCargoObject = createMock( CargoObject.class );
         mockHarvester = createMock( IHarvest.class );
         mockDatadockJob = createMock( DatadockJob.class );
         mockEstimate = createMock( Estimate.class );
@@ -175,6 +184,7 @@ public class DatadockThreadTest
         mockFedoraAdministration = createMock( FedoraAdministration.class );
         //mockSubmitter = "testSubmitter"; // createMock( String.class );
         //mockFormat = "testFormat"; //createMock( String.class );
+        mockIdentifier = createMock( IIdentifier.class );
     }
 
 
@@ -195,6 +205,8 @@ public class DatadockThreadTest
         reset( mockCC );
         testArrayList.clear();
         reset( mockHarvester );
+        reset( mockIdentifier );
+        reset( mockCargoObject );
     }
 
 
@@ -240,9 +252,7 @@ public class DatadockThreadTest
         //System.out.println( "2");
         //Setup
         Mockit.setUpMocks( MockDDJobsMapNP.class );
-        //testArrayList.add( "testplugin1" );
-        //testArrayList.add( "testplugin2" );
-        //System.out.println( testArrayList.toString() );
+      
         //expectations
         expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
         expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
@@ -269,7 +279,7 @@ public class DatadockThreadTest
      * Testing happy path of the call method going through the
      * options in the switch
      */
-    @Ignore
+
     @Test
     public void testCall() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, UnknownIdentifierException, InvalidStatusChangeException
     {
@@ -278,32 +288,43 @@ public class DatadockThreadTest
          *setup
          */
         Mockit.setUpMocks( MockDDJobsMap.class );
-        Mockit.setUpMocks( MockHarvest.class );
+        Mockit.setUpMocks( MockDBHarvest.class );
         Mockit.setUpMocks( MockAnnotate.class );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" );
-
+        String dataString = "testData";
+        byte[] data = dataString.getBytes();
         /**
          *expectations
          */
         //constructor
         expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
         expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-        
+        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
+        expect( mockHarvester.getData ( mockIdentifier ) ).andReturn( data );
         //call
         expect( mockCC.getCargoObjectCount() ).andReturn( 1 );
-        expect( mockCC.getCargoObjects().size() ). andReturn( 1 );
-        //expect( mockFedoraAdministration.storeContainer( mockCC, mockDatadockJob, mockProcessqueue, mockEstimate ) ).andReturn( new InputPair< String, Float >( "test", 7f ) );
-        //expect( mockFedoraAdministration.storeCargoContainer( mockCC, mockSubmitter, mockFormat ) );
+     
+        expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
+        expect( mockCargoObject.getContentLength() ).andReturn( 5 );
+        expect( mockEstimate.getEstimate( null, 5 ) ).andReturn( 1F );
+        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+        mockProcessqueue.push( isA( String.class ) );
+        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
+        mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
+     
 
         /**
          *replay
          */
+        replay( mockHarvester );
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockFedoraAdministration );
         replay( mockCC );
+        replay( mockCargoObject );
+        replay( mockIdentifier );
 
         /**
          * do stuff
@@ -312,15 +333,18 @@ public class DatadockThreadTest
         ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
         Float result = ddThread.call();
 
-        assertTrue( result == 7f );
+        assertTrue( result == 1f );
         /**
          *verify
          */
+        verify( mockHarvester );
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockFedoraAdministration );
         verify( mockCC );
+        verify( mockCargoObject );
+        verify( mockIdentifier );
     } 
   
 @Ignore
@@ -332,7 +356,7 @@ public class DatadockThreadTest
          *setup
          */
         Mockit.setUpMocks( MockDDJobsMap.class );
-        Mockit.setUpMocks( MockHarvest.class );
+        Mockit.setUpMocks( MockDBHarvest.class );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" );
 
