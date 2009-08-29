@@ -23,6 +23,7 @@
 
 import subprocess, sys, os, fnmatch
 import datetime, os, shutil, sys
+import tarfile
 
 import exceptions
 from subprocess import PIPE
@@ -43,7 +44,7 @@ scp_dist = "scp -rp "
 
 import logging as log
 
-log.basicConfig( level = log.DEBUG,
+log.basicConfig( level = log.INFO,
                  format = '%(asctime)s %(levelname)s %(message)s' )
 log.getLogger( '' )
 
@@ -57,6 +58,8 @@ def _test_file( f ):
     elif f.startswith( '.' ) or f.startswith( 'tmp_' ):
         return False
     elif f.endswith( '.log' ) or f.endswith( 'indexes' ):
+        return False
+    elif f.endswith( 'tar.gz') or f.endswith( 'tar.bz2' ):
         return False
     elif f in files:
         return False
@@ -87,7 +90,7 @@ def _create_copy_dist( fldrs ):
     # Create tmp dir. Suffix used for deletion later
     now = datetime.datetime.now()
     suffix = "tmp_" + str( now.day) + str( now.microsecond ) # DO NOT CHANGE!
-    tmp_dir = cur_dir + '/' + suffix
+    tmp_dir = cur_dir + os.sep + suffix
     os.mkdir( tmp_dir )
 
     # Check that cwd is correct
@@ -150,7 +153,21 @@ def _make_dist( dist ):
    
 def _copy_dist():
     log.debug( "scp_dist=%s"%( scp_dist ) )
-    os.system( scp_dist )
+    try:    
+        os.system( scp_dist )
+    except:
+        raise Error( "Unable to copy to " + server + " - check connection!" )
+
+
+def _make_tarball( tmp_dir ):
+
+    log.debug(" making a tarball ");
+    try:
+        tar = tarfile.open(options.folder + ".tar.gz", "w:gz")
+        tar.add(tmp_dir , options.folder)
+        tar.close()
+    except:
+        raise Error( "Unable to generate tar file" )
 
 
 def _check_conn( copy_server ):
@@ -205,6 +222,9 @@ if __name__ == '__main__':
     parser.add_option( "-d", "--dest", type="string", dest="folder", 
                        help="Name of of destination folder (from ~/) to copy to. Defaults to 'tst'" )
 
+    parser.add_option( "--tar", dest="tarball", action="store_true",
+                       default=False, help="create a tar.gz ball" )
+
     (options, args) = parser.parse_args()
 
 
@@ -229,14 +249,13 @@ if __name__ == '__main__':
             print target
         sys.exit( 0 )
     
-    if options.server not in server_list:
+    if not options.tarball and options.server not in server_list:
         print "Use option -s to specify server. Available servers are:\n"
         print "\n".join( server_list ) + "\n"
         parser.print_help()
         sys.exit()
-#     elif options.server == 'localhost':
-#         global scp_dist
-#         scp_dist = "cp -rp "
+    elif options.tarball :
+        scp_dist = "false "
 
     if options.folder is None:
         parser.error( "please specify (existing) folder on remote host to copy to.\nUse -h to see available options" )
@@ -255,30 +274,36 @@ if __name__ == '__main__':
 
     print fldrs
 
-    if not _check_remote_folder_exists( os.path.join( options.folder ), options.server ):
-        print( "remote folder %s does not exist. Creating it"% options.folder )
-        _create_remote_folder( options.folder, options.server )        
+    if not options.tarball:
+        if not _check_remote_folder_exists( os.path.join( options.folder ), options.server ):
+            print( "remote folder %s does not exist. Creating it"% options.folder )
+            _create_remote_folder( options.folder, options.server )        
 
-    if _check_remote_folder_exists( os.path.join( options.folder, "lib" ), options.server ):
-        print "folder %s:%s/%s exists, skipping copy of libs"%( options.server, options.folder, "lib" )
-        fldrs.remove( "lib" )
-
+            if _check_remote_folder_exists( os.path.join( options.folder, "lib" ), options.server ):
+                print "folder %s:%s/%s exists, skipping copy of libs"%( options.server, options.folder, "lib" )
+                fldrs.remove( "lib" )
+    # end of options.tarball
+    
     del_dir = _create_copy_dist( fldrs )
 
     _set_copy_from_folder( del_dir )
-    _set_copy_to_server( options.server )
+    if not options.tarball :
+        _set_copy_to_server( options.server )
     _set_copy_to_folder( options.folder )
 
     print """
     Creating jar(s): """ + args[0] + """
-    copying folder:  """ + del_dir + """
-    to server:       """ + options.server + """
-    to remote folder:""" + options.folder
+    copying folder:  """ + del_dir 
+    if options.tarball :
+        print """tar.gz """ + options.folder        
+    else:
+        print """to server:       """ + options.server + """
+        to remote folder:""" + options.folder
 
-    try:
+    if options.tarball :
+        _make_tarball( del_dir )
+    else :
         _copy_dist()
-    except:
-        raise Error( "Unable to copy to " + server + " - check connection!" )
 
      # Delete tmp dir
     os.system( "tree " + del_dir )
