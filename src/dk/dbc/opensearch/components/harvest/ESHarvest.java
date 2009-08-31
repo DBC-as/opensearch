@@ -120,7 +120,8 @@ public class ESHarvest implements IHarvest
         ResultSet rs = null;
         try{
             Statement stmt = conn.createStatement();
-            int taken = 0;
+	    stmt.setMaxRows( maxAmount );
+	    //            int taken = 0;
             ArrayList<Integer> takenList = new ArrayList();
 
             // \todo: Single query to retrieve all available queued packages _and_
@@ -139,7 +140,7 @@ public class ESHarvest implements IHarvest
             // \todo: databasename ('test' in above) should come from config-file-thingy.
 
 
-            while( rs.next() && taken < maxAmount )
+            while( rs.next() /* && taken < maxAmount */ )
             {
                 int targetRef        = rs.getInt( 1 );    // suppliedrecords.targetreference
                 int lbnr             = rs.getInt( 2 );    // suppliedrecords.lbnr
@@ -184,7 +185,7 @@ public class ESHarvest implements IHarvest
                 Identifier id = new Identifier( targetRef, lbnr );
                 Job theJob = new Job( id, referenceData.getBytes() );
                 theJobList.add( theJob );
-                taken++;
+		//                taken++;
 
             }
 
@@ -255,13 +256,13 @@ public class ESHarvest implements IHarvest
         {
 
             Statement stmt = conn.createStatement();
+	    // Lock row for update
             String fetchStatusString = String.format( "SELECT recordstatus " + 
 						      "FROM taskpackagerecordstructure " + 
 						      "WHERE targetreference = %s " + 
 						      "AND lbnr = %s " + 
 						      "FOR UPDATE OF recordstatus", 
 						      theJobId.getTargetRef() , theJobId.getLbNr() );
-
             ResultSet rs = stmt.executeQuery( fetchStatusString );
 	    int counter = 0;
 	    if ( !rs.next() ) {
@@ -311,7 +312,7 @@ public class ESHarvest implements IHarvest
 		int updateResult = stmt.executeUpdate( updateString );
 		if( updateResult != 1 )
 		    {
-			log.warn( String.format( "unknown status update atempt on identifier targetref: %s lbnr :%s ", theJobId.getTargetRef(), theJobId.getLbNr() ) );
+			log.warn( String.format( "unknown status update attempt on identifier targetref: %s lbnr :%s ", theJobId.getTargetRef(), theJobId.getLbNr() ) );
 		    }
 
 		setTaskPackageStatus( theJobId.getTargetRef() );
@@ -445,18 +446,18 @@ public class ESHarvest implements IHarvest
 		    String update_taskpackage_status = String.format( "UPDATE taskspecificupdate " + 
 								      "SET updatestatus = %s " + 
 								      "WHERE targetreference = %s",
-								      current_update_status,
+								      update_status,
 								      targetref );
+		    System.out.println( update_taskpackage_status );
 		    int res = stmt.executeUpdate( update_taskpackage_status );
 		    System.out.println( String.format( "%s rows updated" , res ) );
+
+		    conn.commit();
 		}
 
 	    }
-
-	    stmt.close();
-	    conn.commit();
-
 	}
+	stmt.close();
 
     }
 
