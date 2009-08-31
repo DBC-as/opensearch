@@ -1,26 +1,37 @@
-/*   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+/*
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+/**
+ * \file XMLUtils.java
+ * \brief utility methods for XML handling
  */
+
+
 package dk.dbc.opensearch.common.xml;
 
+
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -32,6 +43,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -45,11 +57,28 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
+
+/**
+ * Provides static methods for common xml operations.
+ */
 public class XMLUtils
 {
 
     static Logger log = Logger.getLogger( XMLUtils.class );
 
+
+    /**
+     * creates a Document from data, and returns the root element of
+     * the created document.
+     *
+     * @param data is the byte array to build the Document from
+     *
+     * @return the root element of the created document
+     *
+     * @throws ParserConfigurationException Could not parse xmlFile
+     * @throws SAXException Could not parse xmlFile
+     * @throws IOException could not read xmlFile
+     */
     public static Element getDocumentElement( byte[] data ) throws ParserConfigurationException, SAXException, IOException
     {
         ByteArrayInputStream bis = new ByteArrayInputStream( data );
@@ -57,6 +86,19 @@ public class XMLUtils
         return getDocumentElement( new InputSource( bis ) );
     }
 
+
+    /**
+     * creates a Document from is, and returns the root element of the
+     * created document.
+     *
+     * @param is the inputsource to build the Document from
+     *
+     * @return the root element of the created document
+     *
+     * @throws ParserConfigurationException Could not parse xmlFile
+     * @throws SAXException Could not parse xmlFile
+     * @throws IOException could not read xmlFile
+     */
     public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
@@ -68,6 +110,19 @@ public class XMLUtils
     }
 
 
+    /**
+     * creates a Nodelist consisting of all the Nodes in xmlFile
+     * matching tagName.
+     *
+     * @param xmlFile the file to retrive nodes from
+     * @param tagName name of the nodes to retrieve
+     *
+     * @return a Nodelist consisting of all matching Nodes
+     *
+     * @throws ParserConfigurationException Could not parse xmlFile
+     * @throws SAXException Could not parse xmlFile
+     * @throws IOException could not read xmlFile
+     */
     public static NodeList getNodeList( File xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
@@ -79,6 +134,20 @@ public class XMLUtils
     }
 
 
+    /**
+     * creates a Nodelist consisting of all the Nodes in a documemt,
+     * build with the provided entityresolver, that matches tagName
+     *
+     * @param xmlFile the file to retrive nodes from
+     * @param tagName name of the nodes to retrieve
+     * @param er The entityResolver to use when build document
+     *
+     * @return a Nodelist consisting of all matching Nodes
+     *
+     * @throws ParserConfigurationException Could not parse xmlFile
+     * @throws SAXException Could not parse xmlFile
+     * @throws IOException could not read xmlFile
+     */
     public static NodeList getNodeList( String xmlFile, String tagName, EntityResolver er ) throws ParserConfigurationException, SAXException, IOException
     {
         log.debug( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, tagName ) );
@@ -112,6 +181,16 @@ public class XMLUtils
     }
 
 
+    /**
+     * builds a byte array from the xml fragment pointet to by root.
+     *
+     * @param root the Element to read into byte array
+     *
+     * @return a byte array consisting if the xml fragment pointet to by root
+     *
+     * @throws TransformerException
+     * @throws UnsupportedEncodingException
+     */
     public static byte[] getByteArray( Element root ) throws TransformerException, UnsupportedEncodingException
     {
         Source source = new DOMSource( (Node) root );
@@ -128,5 +207,60 @@ public class XMLUtils
         byte[] byteArray = streamString.getBytes( "UTF-8" );
 
         return byteArray;
+    }
+
+
+    /**
+     * Transforms xml document with a xslt document and returns the
+     * result.
+     *
+     * @param xml The root element of the xml to transform
+     * @param xslt The root element of the xslt to do the transformation with
+     *
+     * @return the result of the transformation
+     *
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws TransformerException
+     */
+    public static Document transform( Source xml, Source xslt ) throws IOException, ParserConfigurationException, SAXException, TransformerException
+    {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        StreamResult res = new StreamResult( os );
+        
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer( xslt );
+        
+        transformer.transform( xml, res ); // do the transformation
+        
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        
+        return documentBuilder.parse( new ByteArrayInputStream( os.toByteArray() ) );
+    }
+    
+    
+    /**
+     * Creates a string representation of xml document
+     * 
+     * @param The Document to transform
+     * 
+     * @return a string representation of the document
+     * 
+     * @throws TransformerException
+     */
+    public static String xmlToString( Document document ) throws TransformerException
+    {
+        Node rootNode = (Node) document.getDocumentElement();
+        Source source = new DOMSource( rootNode );
+        
+        StringWriter stringWriter = new StringWriter();
+        Result result = new StreamResult( stringWriter );
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Transformer transformer = factory.newTransformer();
+        transformer.transform( source, result );
+        
+        return stringWriter.getBuffer().toString().replace( "\n", "");
     }
 }
