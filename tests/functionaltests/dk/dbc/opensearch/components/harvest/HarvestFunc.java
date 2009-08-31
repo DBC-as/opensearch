@@ -37,7 +37,7 @@ public class HarvestFunc {
 
     static void runTests()
     {
-        //startESHarvestTest();
+        startESHarvestTest();
         getJobsNDataTest();
     }
 
@@ -50,14 +50,17 @@ public class HarvestFunc {
     private static void getJobsNDataTest()
     {
         byte[] data = null;
-        esh = new ESHarvest();
-        esh.start();
-        ArrayList<IJob> jobL = esh.getJobs( 2 );
+	//        esh = new ESHarvest();
+	//        esh.start();
+	startESHarvestTest();
+
+        ArrayList<IJob> jobL = esh.getJobs( 6 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
         Iterator iter = jobL.iterator();
         System.out.println( "got jobs:" );
         while( iter.hasNext() )
         {
+	    System.out.println("");
             IJob theJob = (IJob)iter.next();
             System.out.println( String.format( "job: %s", theJob.toString() ) );
             try
@@ -72,7 +75,6 @@ public class HarvestFunc {
                 uie.printStackTrace();
             }
             setStatusTest( theJob.getIdentifier() );
-
         }
     }
     
@@ -83,7 +85,7 @@ public class HarvestFunc {
     {
         try{
             esh.setStatus( id, JobStatus.SUCCESS );
-            esh.setStatus( id, JobStatus.FAILURE );
+	    // esh.setStatus( id, JobStatus.FAILURE );
         }catch( UnknownIdentifierException uie )
         {
             uie.printStackTrace();

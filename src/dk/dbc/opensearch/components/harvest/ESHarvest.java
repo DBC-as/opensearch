@@ -126,7 +126,16 @@ public class ESHarvest implements IHarvest
             // \todo: Single query to retrieve all available queued packages _and_
             //        their supplementalId3 - must be veriefied
             // get queued targetreference, lbnr and referencedata (supplementalId3):
-            rs = stmt.executeQuery( "SELECT suppliedrecords.targetreference, suppliedrecords.lbnr, suppliedrecords.supplementalid3 FROM  taskpackagerecordstructure, suppliedrecords WHERE suppliedrecords.targetreference IN (SELECT targetreference FROM updatepackages  WHERE databasename = 'test' )  AND taskpackagerecordstructure.recordstatus = 2 AND taskpackagerecordstructure.targetreference = suppliedrecords.targetreference AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr" );
+	    String queryStr = new String( "SELECT suppliedrecords.targetreference, suppliedrecords.lbnr, suppliedrecords.supplementalId3 " + 
+					  "FROM taskpackagerecordstructure, suppliedrecords " + 
+					  "WHERE suppliedrecords.targetreference " + 
+					  "IN (SELECT targetreference FROM updatepackages  WHERE databasename = 'test' ) " +
+					  "AND taskpackagerecordstructure.recordstatus = 2 " + 
+					  "AND taskpackagerecordstructure.targetreference = suppliedrecords.targetreference " + 
+					  "AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr " + 
+					  "ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr" );
+	    System.out.println( queryStr );
+            rs = stmt.executeQuery( queryStr );
             // \todo: databasename ('test' in above) should come from config-file-thingy.
 
 
@@ -138,7 +147,12 @@ public class ESHarvest implements IHarvest
 
                 // Locking the row for update:
                 Statement stmt2 = conn.createStatement();
-                int res1 = stmt2.executeUpdate("SELECT recordstatus FROM taskpackagerecordstructure WHERE targetreference = " + targetRef + " AND lbnr = " + lbnr + " AND recordstatus = 2 FOR UPDATE OF recordstatus");
+                int res1 = stmt2.executeUpdate("SELECT recordstatus " + 
+					       "FROM taskpackagerecordstructure " + 
+					       "WHERE targetreference = " + targetRef + 
+					       " AND lbnr = " + lbnr + 
+					       " AND recordstatus = 2 " + 
+					       "FOR UPDATE OF recordstatus");
 
                 // Testing all went well:
                 if (res1 != 1) {
@@ -149,7 +163,11 @@ public class ESHarvest implements IHarvest
                 }
 
                 // Updating recordstatus in row:
-                int res2 = stmt2.executeUpdate("UPDATE taskpackagerecordstructure SET recordstatus = 3 WHERE targetreference = " + targetRef + " AND lbnr = " + lbnr + " AND recordstatus = 2");
+                int res2 = stmt2.executeUpdate("UPDATE taskpackagerecordstructure " + 
+					       "SET recordstatus = 3 " + 
+					       "WHERE targetreference = " + targetRef + 
+					       " AND lbnr = " + lbnr + 
+					       " AND recordstatus = 2");
 
                 if (res2 != 1) {
                     // Something went wrong - we did not update a single row
@@ -231,59 +249,75 @@ public class ESHarvest implements IHarvest
         //if success (1) -> xxxx: invalid
         //if failure (4) -> success: ok
         //if failure (4) -> failure: invalid
-        String updateString;
         Identifier theJobId;
         theJobId = (Identifier)jobId;
         try
         {
+
             Statement stmt = conn.createStatement();
-            String fetchStatusString = String.format( "SELECT recordstatus FROM taskpackagerecordstructure WHERE targetreference = %s AND lbnr = %s FOR UPDATE OF recordstatus", theJobId.getTargetRef() , theJobId.getLbNr() );
+            String fetchStatusString = String.format( "SELECT recordstatus " + 
+						      "FROM taskpackagerecordstructure " + 
+						      "WHERE targetreference = %s " + 
+						      "AND lbnr = %s " + 
+						      "FOR UPDATE OF recordstatus", 
+						      theJobId.getTargetRef() , theJobId.getLbNr() );
+
             ResultSet rs = stmt.executeQuery( fetchStatusString );
-            if( rs == null )
-            {
-                throw new UnknownIdentifierException( String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() ) );
-            }
-            else
-            {
-                if( rs.next() )
-                {
-                    int recordStatus = rs.getInt( "recordstatus");
-                    //check if its set already
-                    if( recordStatus == 1 || ( recordStatus == 4 && status == JobStatus.FAILURE ) )
+	    int counter = 0;
+	    if ( !rs.next() ) {
+		// No more rows. If this is the first time rs.next() is called, then no rows where found
+		// in the above statement, and we should throw an exception.
+		if (counter == 0) {
+		    stmt.close();
+		    throw new UnknownIdentifierException( String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() ) );
+		} 
+	    } else {
+		++counter;
+		
+		int recordStatus = rs.getInt( "recordstatus");
+		//check if its set already, i.e. the post is _not_ inProgress:
+		if( recordStatus != 3 )
                     {
-
-                        throw new InvalidStatusChangeException( String.format( "the status is already set to success for identifier: %s", jobId.toString() ) );
+			stmt.close();
+                        throw new InvalidStatusChangeException( String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() ) );
                     }
-                    else
-                    {
-                        switch( status )
-                        {
-                        case SUCCESS:
-                            updateString = String.format( "UPDATE taskpackagerecordstructure SET recordstatus = 1 WHERE targetreference = %s AND lbnr = %s ", theJobId.getTargetRef(), theJobId.getLbNr()  );
-                            break;
-                        case FAILURE:
-                            updateString = String.format( "UPDATE taskpackagerecordstructure SET recordstatus = 4 WHERE targetreference = %s AND lbnr = %s ", theJobId.getTargetRef(), theJobId.getLbNr()  );
-                            break;
-                        case RETRY:
-                            throw new InvalidStatusChangeException( "RETRY not implemented yet" );
-                        default:
-                            throw new InvalidStatusChangeException( "Unknown status" );
-                        }
-                        System.out.println( String.format( "Updating with: %s", updateString ) );
-                        int updateResult = stmt.executeUpdate( updateString );
-                        if( updateResult != 1 )
-                        {
-                            log.warn( String.format( "unknown status update atempt on identifier targetref: %s lbnr :%s ", theJobId.getTargetRef(), theJobId.getLbNr() ) );
-                        }
-                    }
-                }
-                else
-                {
-                    throw new InvalidStatusChangeException( String.format( "recordstatus requested for unknown identifier: %s", jobId.toString() ) );
-                }
+		
+		// Set the status:
+		int new_recordStatus = 0;
+		switch( status )
+		    {
+		    case SUCCESS:
+			new_recordStatus = 1;
+			break;
+		    case RETRY:
+			new_recordStatus = 2;
+			break;
+		    case FAILURE:
+			new_recordStatus = 4;
+			break;
+		    default:
+			stmt.close();
+			throw new InvalidStatusChangeException( "Unknown status" );
+		    }
 
-            }
-        }catch( SQLException sqle ){
+		String updateString = String.format( "UPDATE taskpackagerecordstructure " + 
+						     "SET recordstatus = %s " + 
+						     "WHERE targetreference = %s " + 
+						     "AND lbnr = %s ", new_recordStatus, 
+						     theJobId.getTargetRef(), theJobId.getLbNr()  );
+
+		System.out.println( String.format( "Updating with: %s", updateString ) );
+
+		int updateResult = stmt.executeUpdate( updateString );
+		if( updateResult != 1 )
+		    {
+			log.warn( String.format( "unknown status update atempt on identifier targetref: %s lbnr :%s ", theJobId.getTargetRef(), theJobId.getLbNr() ) );
+		    }
+
+		setTaskPackageStatus( theJobId.getTargetRef() );
+		
+	    }
+        } catch( SQLException sqle ) {
             sqle.printStackTrace();
         }
 
@@ -300,10 +334,15 @@ public class ESHarvest implements IHarvest
         {
             Statement stmt = conn.createStatement();
             // Locking the rows:
-            int res1 = stmt.executeUpdate( "SELECT recordstatus FROM taskpackagerecordstructure WHERE recordstatus = 3 FOR UPDATE OF recordstatus" );
+            int res1 = stmt.executeUpdate( "SELECT recordstatus " + 
+					   "FROM taskpackagerecordstructure " + 
+					   "WHERE recordstatus = 3 " + 
+					   "FOR UPDATE OF recordstatus" );
             System.out.println("Select for update: " + res1);
             if (res1 > 0) {
-                int res2 = stmt.executeUpdate( "UPDATE taskpackagerecordstructure SET recordstatus = 2 WHERE recordstatus = 3" );
+                int res2 = stmt.executeUpdate( "UPDATE taskpackagerecordstructure " + 
+					       "SET recordstatus = 2 " + 
+					       "WHERE recordstatus = 3" );
                 System.out.println("Update: " + res2);
                 stmt.close();
                 conn.commit();
@@ -316,6 +355,109 @@ public class ESHarvest implements IHarvest
         {
             sqle.printStackTrace();
         }
+    }
+
+
+    private void setTaskPackageStatus( int targetref ) throws InvalidStatusChangeException, SQLException
+    {
+
+	Statement stmt = conn.createStatement();
+
+	// Check if status on TP needs to be updated.
+	// This happens if the post was the last in the TP to get a status of Success or Failure.
+	String noofrecsQuery = String.format( "SELECT noofrecs, noofrecs_treated " + 
+					      "FROM taskspecificupdate " + 
+					      "WHERE targetreference = %s", 
+					      targetref );
+
+	System.out.println( noofrecsQuery );
+	ResultSet rs1 = stmt.executeQuery( noofrecsQuery );
+	while ( rs1.next() ) {
+	    int noofrecs = rs1.getInt( 1 );
+	    int noofrecs_treated = rs1.getInt( 2 );
+	    System.out.println( String.format( "NoOfRecords: %s   NoOfRecordsTreated: %s",
+					       noofrecs, noofrecs_treated ) );
+	    if ( noofrecs < noofrecs_treated ) {
+		// This is an error. There were more treated records than actual records. 
+		// This _must_ never happen.
+		throw new InvalidStatusChangeException( String.format( "Error: There were more treated records than actual records in taskpackage %s. This should never ever happen.", targetref ) );
+	    } else if ( noofrecs == noofrecs_treated ) {
+		// find the number of success and failures on the taskpackage:
+
+		// \todo : Is it ok to use 'select *' in the below?
+		String failure_success_query = String.format( "SELECT scount, fcount  " + 
+							      "FROM " +
+							      "(SELECT count( recordstatus ) scount " + 
+							      "FROM taskpackagerecordstructure " + 
+							      "WHERE targetreference = %s " + 
+							      "AND recordstatus = 1) a , " + 
+							      "(SELECT count( recordstatus ) fcount " +
+							      "FROM taskpackagerecordstructure " + 
+							      "WHERE targetreference = %s " + 
+							      "AND recordstatus = 4) b",
+							      targetref,
+							      targetref );
+		System.out.println( failure_success_query );
+		ResultSet failure_success_rs = stmt.executeQuery( failure_success_query );
+		int counter2 = 0;
+		int success_count = 0;
+		int failure_count = 0;
+		while ( failure_success_rs.next() ) {
+		    success_count = failure_success_rs.getInt( 1 );
+		    failure_count = failure_success_rs.getInt( 2 );
+			    
+		    ++counter2;
+		}
+		if (counter2 != 1 ) {
+		    // either zero or more than one row retrieved - this should not happen.
+		    // Throw an exception?
+		}
+
+		// \todo: Should we test for to many updates?
+		int update_status = 0;
+		// update the TaskSpecificUpdate:
+		if ( success_count == noofrecs ) {
+		    // All was posts was succesfully handled:
+		    update_status = 1;
+		} else if ( failure_count == noofrecs ) {
+		    // All was posts was handled with failure:
+		    update_status = 3;
+		} else {
+		    // Posts were mixed with both success and failure:
+		    update_status = 2;
+		}
+			
+		String update_taskpackage_status_query = String.format( "SELECT updatestatus " + 
+									"FROM taskspecificupdate " + 
+									"WHERE targetreference = %s " + 
+									"FOR UPDATE OF updatestatus", 
+									targetref );
+		System.out.println( update_taskpackage_status_query );
+		ResultSet update_taskpackage_status_rs = stmt.executeQuery( update_taskpackage_status_query );
+		while ( update_taskpackage_status_rs.next() ) {
+		    int current_update_status = update_taskpackage_status_rs.getInt( 1 );
+		    if ( current_update_status != 0 ) {
+			// \todo: This should never happen. Change exception - this one is not the right one!
+			stmt.close();
+			throw new InvalidStatusChangeException( String.format( "the update_status is already set to for taskpackage: %s", current_update_status, targetref ) );
+		    } 
+
+		    String update_taskpackage_status = String.format( "UPDATE taskspecificupdate " + 
+								      "SET updatestatus = %s " + 
+								      "WHERE targetreference = %s",
+								      current_update_status,
+								      targetref );
+		    int res = stmt.executeUpdate( update_taskpackage_status );
+		    System.out.println( String.format( "%s rows updated" , res ) );
+		}
+
+	    }
+
+	    stmt.close();
+	    conn.commit();
+
+	}
+
     }
 
 }
