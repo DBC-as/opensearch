@@ -300,9 +300,10 @@ public class DatadockThreadTest
         //constructor
         expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
         expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
+        //call
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
         expect( mockHarvester.getData ( mockIdentifier ) ).andReturn( data );
-        //call
+
         expect( mockCC.getCargoObjectCount() ).andReturn( 1 );
      
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
@@ -347,7 +348,7 @@ public class DatadockThreadTest
         verify( mockIdentifier );
     } 
   
-@Ignore
+
     @Test( expected = IllegalStateException.class )
     public void testCallIllegalState() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, UnknownIdentifierException, InvalidStatusChangeException
     {
@@ -359,6 +360,8 @@ public class DatadockThreadTest
         Mockit.setUpMocks( MockDBHarvest.class );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" );
+        String dataString = "testData";
+        byte[] data = dataString.getBytes();
 
         /**
          *expectations
@@ -366,7 +369,8 @@ public class DatadockThreadTest
         //constructor
         expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
         expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-
+        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
+        expect( mockHarvester.getData ( mockIdentifier ) ).andReturn( data );
         //call
         expect( mockCC.getCargoObjectCount() ).andReturn( 0 );
 
@@ -374,11 +378,13 @@ public class DatadockThreadTest
         /**
          *replay
          */
+        replay( mockHarvester );
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockFedoraAdministration );
         replay( mockCC );
+        replay( mockIdentifier );
 
         /**
          * do stuff
@@ -390,11 +396,13 @@ public class DatadockThreadTest
         /**
          *verify
          */
+        verify( mockHarvester );
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockFedoraAdministration );
         verify( mockCC );
+        verify( mockIdentifier );
     }   
 
 
@@ -445,4 +453,44 @@ public class DatadockThreadTest
         verify( mockFedoraAdministration );
         verify( mockCC );
     }
+
+    @Test( expected = UnknownIdentifierException.class )
+    public void testUnknownIdentifier() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, InvalidStatusChangeException, UnknownIdentifierException
+    {
+        //System.out.println( "unknownidentifiertest" );
+        //setup
+        Mockit.setUpMocks( MockDDJobsMap.class );
+        Mockit.setUpMocks( MockDBHarvest.class );
+        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" ); 
+        
+
+        //expectations  
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
+        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
+
+        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
+        expect( mockHarvester.getData ( mockIdentifier ) ).andThrow( new UnknownIdentifierException( "testexception" ) );
+
+        //replay
+        replay( mockDatadockJob );
+        replay( mockEstimate );
+        replay( mockProcessqueue );
+        replay( mockFedoraAdministration );
+        replay( mockCC );
+        replay( mockHarvester );
+
+        //do stuff
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        Float result = ddThread.call();
+
+        //verify
+        verify( mockDatadockJob );
+        verify( mockEstimate );
+        verify( mockProcessqueue );
+        verify( mockFedoraAdministration );
+        verify( mockHarvester );
+        verify( mockCC );
+    }
+
 }
