@@ -25,7 +25,7 @@ import sys
 import re
 
 
-def read_pids():
+def read_pids( verbose ):
     """
     Read pids from stdin, and returns a list of
     unique pids
@@ -37,7 +37,8 @@ def read_pids():
         if not line:
             break
         result = pid_regex.search( line )
-        print line
+        if verbose:
+            print line
         if result:
             pid = result.group()
             pids.append( pid )
@@ -54,11 +55,11 @@ def dump_pids( filename, pids ):
     file.close()
 
 
-def main( filename ):
+def main( filename, verbose ):
     """
     read pids from stdin and dump them into FILENAME
     """
-    pids = read_pids()
+    pids = read_pids( verbose )
     dump_pids( filename, pids )
     print "dumped %s pids to file: %s" % ( len(pids), filename )
 
@@ -70,10 +71,13 @@ if __name__ == '__main__':
     parser.add_option( "-o", type="string", action="store", dest="filename",
                        help="The file to dump pids into (defaults to pids.out)")
 
+    parser.add_option( "-v", action="store_true", dest="verbose",
+                       help="If flag is set, analyzed lines are printed")
+
     (options, args) = parser.parse_args()
 
     filename = "pids.out"
     if options.filename:
        filename = options.filename 
     
-    main( filename )
+    main( filename, options.verbose )
