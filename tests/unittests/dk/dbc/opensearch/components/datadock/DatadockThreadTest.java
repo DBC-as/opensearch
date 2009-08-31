@@ -38,6 +38,8 @@ import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 import dk.dbc.opensearch.components.datadock.DatadockThread;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
+import dk.dbc.opensearch.plugins.Store;
+import dk.dbc.opensearch.plugins.OwnerRelation;
 import dk.dbc.opensearch.plugins.DocbookHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.JobStatus;
@@ -149,9 +151,44 @@ public class DatadockThreadTest
         {
             return mockCC;
         }
+    } 
+    
+    @MockClass( realClass = Store.class )
+    public static class MockStore
+    {
+        PluginType pt = PluginType.STORE;
+
+        @Mock( invocations = 3 )
+        public PluginType getPluginType()
+        {
+            return pt;
+        }
+
+        @Mock( invocations = 1 )
+        public CargoContainer storeCargoContainer( CargoContainer cargo )
+        {
+            return mockCC;
+        }
+    } 
+    
+    @MockClass( realClass = OwnerRelation.class )
+    public static class MockRelation
+    {
+        PluginType pt = PluginType.RELATION;
+
+        @Mock( invocations = 3 )
+        public PluginType getPluginType()
+        {
+            return pt;
+        }
+
+        @Mock( invocations = 1 )
+        public CargoContainer getCargoContainer( CargoContainer cargo )
+        {
+            return mockCC;
+        }
     }    
-    
-    
+        
     @MockClass( realClass = DocbookAnnotate.class )
     public static class MockAnnotate2
     {
@@ -182,8 +219,6 @@ public class DatadockThreadTest
         mockEstimate = createMock( Estimate.class );
         mockProcessqueue = createMock( Processqueue.class );
         mockFedoraAdministration = createMock( FedoraAdministration.class );
-        //mockSubmitter = "testSubmitter"; // createMock( String.class );
-        //mockFormat = "testFormat"; //createMock( String.class );
         mockIdentifier = createMock( IIdentifier.class );
     }
 
@@ -198,10 +233,6 @@ public class DatadockThreadTest
         reset( mockEstimate );
         reset( mockProcessqueue );
         reset( mockFedoraAdministration );
-        //reset( mockSubmitter );
-        //mockSubmitter = "";        
-        //reset( mockFormat );
-        //mockFormat = "";
         reset( mockCC );
         testArrayList.clear();
         reset( mockHarvester );
@@ -290,8 +321,12 @@ public class DatadockThreadTest
         Mockit.setUpMocks( MockDDJobsMap.class );
         Mockit.setUpMocks( MockDBHarvest.class );
         Mockit.setUpMocks( MockAnnotate.class );
+        Mockit.setUpMocks( MockRelation.class );
+        Mockit.setUpMocks( MockStore.class );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" ); 
+        testArrayList.add( "dk.dbc.opensearch.plugins.OwnerRelation" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
         String dataString = "testData";
         byte[] data = dataString.getBytes();
         /**
@@ -308,6 +343,9 @@ public class DatadockThreadTest
      
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getContentLength() ).andReturn( 5 );
+
+        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+
         expect( mockEstimate.getEstimate( null, 5 ) ).andReturn( 1F );
         expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
         mockProcessqueue.push( isA( String.class ) );
@@ -491,6 +529,87 @@ public class DatadockThreadTest
         verify( mockFedoraAdministration );
         verify( mockHarvester );
         verify( mockCC );
+    }
+
+    /**
+     * tests the situation where the datadockthread is trying to set the status 
+     * of the job in the harvester to something invalid. A InvalidStatusChangeException
+     * is thrown by the harvester and a log.error is created and 0F is returned.
+     */
+
+    @Test
+    public void testInvalidStatusChangeException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, InvalidStatusChangeException, UnknownIdentifierException
+    {
+        /**
+         *setup
+         */
+        Mockit.setUpMocks( MockDDJobsMap.class );
+        Mockit.setUpMocks( MockDBHarvest.class );
+        Mockit.setUpMocks( MockAnnotate.class );
+        Mockit.setUpMocks( MockRelation.class );
+        Mockit.setUpMocks( MockStore.class );
+        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" ); 
+        testArrayList.add( "dk.dbc.opensearch.plugins.OwnerRelation" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
+        String dataString = "testData";
+        byte[] data = dataString.getBytes();
+        Float estimateval = 12F;
+        /**
+         *expectations
+         */
+        //constructor
+        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
+        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
+        //call
+        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
+        expect( mockHarvester.getData ( mockIdentifier ) ).andReturn( data );
+
+        expect( mockCC.getCargoObjectCount() ).andReturn( 1 );
+     
+        expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
+        expect( mockCargoObject.getContentLength() ).andReturn( 5 );
+
+        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+
+        expect( mockEstimate.getEstimate( null, 5 ) ).andReturn( estimateval );
+        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+        mockProcessqueue.push( isA( String.class ) );
+        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
+        mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
+        expectLastCall().andThrow( new InvalidStatusChangeException ( "test invalidstatuschangeexception" ) );
+
+        /**
+         *replay
+         */
+        replay( mockHarvester );
+        replay( mockDatadockJob );
+        replay( mockEstimate );
+        replay( mockProcessqueue );
+        replay( mockFedoraAdministration );
+        replay( mockCC );
+        replay( mockCargoObject );
+        replay( mockIdentifier );
+
+        /**
+         * do stuff
+         */
+
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        Float result = ddThread.call();
+
+        assertFalse( result == estimateval );
+        /**
+         *verify
+         */
+        verify( mockHarvester );
+        verify( mockDatadockJob );
+        verify( mockEstimate );
+        verify( mockProcessqueue );
+        verify( mockFedoraAdministration );
+        verify( mockCC );
+        verify( mockCargoObject );
+        verify( mockIdentifier );
     }
 
 }

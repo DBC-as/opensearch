@@ -247,11 +247,11 @@ public class DatadockThread implements Callable< Float >
                 cargo = relationPlugin.getCargoContainer( cargo );
 
                 break;
-            case GETESTIMATE:
-                /*est = estimate.getEstimate( mimeType, length );
-                  log.debug( String.format( "Got estimate of %s", est) );*/
+           //  case GETESTIMATE:
+//                 /*est = estimate.getEstimate( mimeType, length );
+//                   log.debug( String.format( "Got estimate of %s", est) );*/
 
-                break;
+//                 break;
             default:
                 log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
             }
@@ -275,6 +275,7 @@ public class DatadockThread implements Callable< Float >
         catch( InvalidStatusChangeException isce )
         {
             log.error( isce.getMsg() );
+            return 0F;
         }
 
         return est;
