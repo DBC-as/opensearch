@@ -73,6 +73,8 @@ public class DatadockMain
     static long keepAliveTime;
     static int pollTime;
 
+    static java.util.Date startTime = null;
+
 
     public DatadockMain() {}
     

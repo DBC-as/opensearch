@@ -195,15 +195,27 @@ public class FedoraAdministration implements IFedoraAdministration
             throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
         }
 
-        String nextPid = PIDManager.getInstance().getNextPID( submitter );
-        cargo.setDCIdentifier( nextPid );
-        log.debug( String.format( "CargoContainer will have pid '%s'", nextPid ) );
+        String old_DC=cargo.getDCIdentifier();
+        log.debug( String.format(" ja7: old pid = %s" , old_DC) );
+        if( old_DC == null ) {
+           String nextPid = PIDManager.getInstance().getNextPID( submitter );
+           cargo.setDCIdentifier( nextPid );
+        }
+        log.debug( String.format( "CargoContainer will have pid '%s'", cargo.getDCIdentifier() ) );
         //byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
         byte[] foxml = FedoraUtils.CargoContainerToFoxml( cargo );
         String logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
 
+        try {
+             log.info( String.format("Purges object with pid %s", cargo.getDCIdentifier() ) );
+        FedoraHandle.getInstance().getAPIM().purgeObject( cargo.getDCIdentifier(), logm, false);
+        } catch( Exception e ) {
+        	log.warn( String.format( "Ignored error from purgeObject for pid %s", cargo.getDCIdentifier()));
+        }
+        		
+        logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, Constants.FOXML1_1.toString(), logm );// "info:fedora/fedora-system:FOXML-1.1", logm );
-
+        
         //log.trace( String.format( "Submitted data %s", new String( foxml ) ) );
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
