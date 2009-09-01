@@ -18,22 +18,18 @@ import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
 
 
 public class ForceFedoraPid implements IAnnotate {
 
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
 
-	
 	@Override
 	public PluginType getPluginType() {
 		return PluginType.ANNOTATE;
 	}
 
-	
 	private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -50,12 +46,7 @@ public class ForceFedoraPid implements IAnnotate {
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
         XPathExpression xPathExpression;
-        XPathExpression xPathExpression_numOfRec;
-
         
-        String fisk=new String(b);
-        		//InputSource( new ByteArrayInputStream( b ));
-        log.trace( String.format("fisk: %d - %s", b.length, fisk) );
         try
         {
             xPathExpression = xpath.compile( "/ting:container/dkabm:record/ac:identifier" );
@@ -78,7 +69,7 @@ public class ForceFedoraPid implements IAnnotate {
         }
 
         
-        log.trace( String.format("ja7: title found [%s]", title) );
+        log.trace( String.format("title found [%s]", title) );
        
         String newID = co.getSubmitter() + ":" + title.substring(0,title.indexOf('|') );
         if( newID.length() > 64 ) {
@@ -89,11 +80,10 @@ public class ForceFedoraPid implements IAnnotate {
         return newID;
 	}
 	@Override
-	public CargoContainer getCargoContainer(CargoContainer cargo)
-			throws PluginException {
-		// TODO Auto-generated method stub
+	public CargoContainer getCargoContainer(CargoContainer cargo) throws PluginException {
 		String s=getDCIdentifierFromOriginal( cargo );
-		if( s != null && s.length()>3) {		
+		if( s != null && s.length()>3) {	
+			log.info( String.format("Forcing Store ID to %s", s) );
 			cargo.setDCIdentifier( s );
 		} 
 		return cargo;
