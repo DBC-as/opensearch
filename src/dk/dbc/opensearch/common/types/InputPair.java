@@ -43,21 +43,37 @@ public class InputPair< E, V > implements Pair< E, V >
     }
 
     
+    @Override
     public E getFirst()
     {
         return first;
     }
 
     
+    @Override
     public V getSecond()
     {
         return second;
     }
     
+       
+    public String toString()
+    {
+        return String.format( "Pair< %s, %s >", first.toString(), second.toString() );
+    }
     
+    
+    @Override
+    public int hashCode()
+    {
+        return first.hashCode() ^ second.hashCode();
+    }
+
+
+    @Override
     public boolean equals( Object obj )
     {
-        if(!( obj instanceof InputPair ) )
+        if(!( obj instanceof InputPair<?,?> ) )
         {
             return false;
         }
@@ -73,18 +89,6 @@ public class InputPair< E, V > implements Pair< E, V >
         {
             return true;
         }
-    }
-    
-    
-    public String toString()
-    {
-        return String.format( "Pair< %s, %s >", first.toString(), second.toString() );
-    }
-    
-    
-    public int hashCode()
-    {
-        return first.hashCode() + second.hashCode();
     }
 
 }
