@@ -129,14 +129,6 @@ public class ComparablePairTest {
         assertTrue( match == one.hashCode() );
     }
 
-    @Test(expected = UnsupportedOperationException.class) 
-        public void testCompareToOtherClass()
-    {
-        String test = "string";
-        int testInt = 1;
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
-        one.compareTo( "invalid" );
-    }
 
     /**
      * Test of the compareTo method, when the first elements of the 
@@ -172,7 +164,7 @@ public class ComparablePairTest {
        
 
         ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, largeInt );
-        ComparablePair<String, Integer> two = new ComparablePair<String, Integer >( test, smallInt );
+        ComparablePair<String, Integer> two = new ComparablePair<String, Integer>( test, smallInt );
         
         assertTrue( one.compareTo( two ) > 0 );
         assertTrue( two.compareTo( one ) < 0 );
@@ -195,16 +187,6 @@ public class ComparablePairTest {
         assertTrue( 0 == one.compareTo( two ) );
         assertTrue( 0 == two.compareTo( one ) );
     }
-
-    @Test( expected = UnsupportedOperationException.class ) 
-    public void testCompareToOtherIncompatipleComparablePair()
-    {
-        String test = "string";
-        int testInt = 1;
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
-        ComparablePair<Integer, String> two = new ComparablePair<Integer, String>( testInt, test );
-        one.compareTo( two );
-}
 
     
 }
