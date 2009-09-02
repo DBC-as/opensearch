@@ -220,6 +220,7 @@ public class FileHarvest implements IHarvest
                 if ( checkSubmitterFormat( submitterFile, format ) )
                 {
                     log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
+                    //System.out.println( String.format( "format added: %s", format.toString() ) );
                     formats.add( new InputPair< File, Long >( format, format.lastModified() ) );
                 }
             }
@@ -229,6 +230,7 @@ public class FileHarvest implements IHarvest
 
     private boolean checkSubmitterFormat( File submitterFile, File formatFile )
     {
+        //System.out.println( "hep" );
         String submitterFilePath = submitterFile.getAbsolutePath().substring( submitterFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );
         log.debug( "FileHarvest.checkSubmitterFormat -> submitter: " + submitterFilePath );
         String formatFilePath = formatFile.getAbsolutePath().substring( formatFile.getAbsolutePath().lastIndexOf( "/") + 1 );
@@ -282,12 +284,13 @@ public class FileHarvest implements IHarvest
         {
             log.error( ce.toString() );
         }
-
+        
         for( InputPair< File, Long > job : newJobs )
         {
             URI uri = job.getFirst().toURI();
             String grandParentFile = job.getFirst().getParentFile().getParentFile().getName();
             String parentFile = job.getFirst().getParentFile().getName();
+            //System.out.println( job.getFirst().getName() );
             FileIdentifier identifier = new FileIdentifier( uri );
             IJob theJob = buildTheJob( identifier, grandParentFile, parentFile );
             //  DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
@@ -358,6 +361,7 @@ public class FileHarvest implements IHarvest
         HashSet< InputPair< File, Long > > jobs = new HashSet< InputPair< File, Long > >();
 
         //int max = HarvesterConfig.getMaxToHarvest();
+        //System.out.println( String.format( "formats vector: %s", formats.toString() ) );
         log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
         for( InputPair< File, Long > format : formats )
         {
@@ -387,6 +391,7 @@ public class FileHarvest implements IHarvest
 
     private void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException
     {
+        //System.out.println( "1");
         log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
         boolean ok = false;
         if ( ! destFldr.exists() )

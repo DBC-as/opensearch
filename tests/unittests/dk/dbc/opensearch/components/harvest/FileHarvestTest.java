@@ -56,7 +56,7 @@ import org.xml.sax.SAXException;
 
 
 /** 
- *
+ * bug 9383, testmethods are being ignored
  */
 public class FileHarvestTest 
 {
@@ -123,7 +123,7 @@ public class FileHarvestTest
         }
         @Mock public static int getMaxToHarvest()
         {
-            return 1;
+            return 2;
         }
 
     }
@@ -213,29 +213,12 @@ public class FileHarvestTest
 
 
     /**
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     * @throws ConfigurationException
-     *
-     */
-    @Ignore
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorException() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
-    {
-        harvestdir = new File( "test" );
-        fileHarvest = new FileHarvest();
-    }
-
-
-    /**
      * Test a happy path where the FileHarvest is initialized, started and asked for jobs
      */
     /**
      * \Todo the test is reading the actual datadock_jobs file and thereby dependant
      * on the filesystem. Fix: mock the XMLUtils it uses to get the values.
      */
-@Ignore
     @Test
     public void testHappyRunPath() throws IOException, IllegalArgumentException, ParserConfigurationException, SAXException, ConfigurationException, XMLStreamException
     {
@@ -327,7 +310,6 @@ public class FileHarvestTest
      * not present in the in the submittersFormatVector build on basis of the
      * datadock_jobs file. So the submitter, format pair is not in the vector
      */
-@Ignore
     @Test
     public void testIfClausesWithoutElseStatement() throws Exception
     {
@@ -430,7 +412,6 @@ public class FileHarvestTest
      * We verify this by having 3 files that should be harvested, but only get 1
      * because thats the max to harvest at a time
      */
-@Ignore
     @Test
     public void testGetNewJobsMax() throws Exception
     {
@@ -499,19 +480,31 @@ public class FileHarvestTest
 
         /**
          * Do stuff
-         */
+         */   
+     //    for( File file : harvestdir.listFiles() )
+//                 {
+//                     System.out.println( file );
+//                     for( File filx : file.listFiles() )
+//                     {
+//                         System.out.println( filx);
+//                         for( File fily : filx.listFiles() )
+//                         {
+//                         System.out.println( fily );
+//                         }
+//                     }
+//                 }
         fileHarvest = new FileHarvest();
         fileHarvest.start();
-
+        //System.out.println( "calling getjobs 1" );
         ArrayList<IJob> result1 = fileHarvest.getJobs( 30 );
-        assertTrue( result1.size() == 1 );
+        assertTrue( result1.size() == 2 );
+        //System.out.println( "calling getjobs 2" );
         result1 = fileHarvest.getJobs( 30 );
         assertTrue( result1.size() == 1 );
-        result1 = fileHarvest.getJobs( 30 );
-        assertTrue( result1.size() == 1 );
+        //System.out.println( "calling getjobs 3" );
         result1 = fileHarvest.getJobs( 30 );
         assertTrue( result1.size() == 0 );
-
+      
         fileHarvest.shutdown();
 
         /**
@@ -527,7 +520,6 @@ public class FileHarvestTest
      * Test that files in directories other than those specified through the
      * datadock_jobs file are not harvested.
      */
-@Ignore
     @Test
     public void testcheckSubmitterFormat() throws Exception
     {
@@ -600,7 +592,7 @@ public class FileHarvestTest
      * creation of the doneHarvestDir
      */
 @Ignore
-    @Test( expected = IOException.class )
+    @Test
     public void testMoveMethodIOExceptionNoDoneHarvestDir() throws FileNotFoundException, ParserConfigurationException, SAXException, XMLStreamException, IOException, ConfigurationException
     {
         //System.out.println( "5" );
@@ -611,7 +603,7 @@ public class FileHarvestTest
         Mockit.setUpMocks( MockHC2.class );
         //Mockit.setUpMocks( MockFile1.class );
         Mockit.setUpMocks( MockFileHandler.class );
-
+        File[] fileArray = new File[]{ mockFile};
         //File system setup
 
         File sub1 = new File( harvestdir, "dbc" );
@@ -635,19 +627,28 @@ public class FileHarvestTest
         /**
          * Exepctations
          */
-        
-        expect( mockFile.listFiles() ).andReturn( harvestdir.listFiles() );
-        //for( File file: destDir.listFiles() )
-        //{
-        //    System.out.println( file.toString() );
-        //}
-        
+        expect( mockFile.exists() ).andReturn( true );
+        expect( mockFile.exists() ).andReturn( true );
+        //initVectors
         expect( mockNodeList.getLength() ).andReturn( 1 );
         expect( mockNodeList.item ( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "docbook_faktalink" ); //format
         expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( "dbc" ); //submitter
+        expect( mockFile.listFiles() ).andReturn( fileArray );
+        expect( mockFile.isDirectory() ).andReturn( true );
+        expect( mockFile.getAbsolutePath() ).andReturn( sub1.getAbsolutePath() );
+        expect( mockFile.lastModified() ).andReturn( sub1.lastModified() );
+        expect( mockFile.listFiles() ).andReturn( fileArray );
+        //checkSubmitterFormat
+        expect( mockFile.getAbsolutePath() ).andReturn( sub1.getAbsolutePath() ).times( 2 );
+        expect( mockFile.getAbsolutePath() ).andReturn( format1.getAbsolutePath() ).times( 2 );
+        //out for checkSubmitterFormat
+        expect( mockFile.getAbsolutePath() ).andReturn( format1.getAbsolutePath() );
+        expect( mockFile.lastModified() ).andReturn( format1.lastModified() );
+
         //calling getJobs
         //calling getNewJobs
+        expect( mockFile.toString() ).andReturn( format1.toString() );
         //calling move
         expect( mockFile.getAbsolutePath()).andReturn( destDir.getAbsolutePath() );
         expect( mockFile.exists() ).andReturn( false );

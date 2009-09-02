@@ -785,7 +785,9 @@ public class FedoraAdministrationTest
         Mockit.setUpMocks( MockPIDManager.class );
         //  String byteString = "bytes";
         String format = "test";
-        String logm = String.format( "%s inserted", format);
+        String fedoraPid = "test:1";
+        String logm = String.format( "%s inserted", format );
+        String purgeLogm = String.format( "%s purged", fedoraPid );
         String fedMessage = Constants.FOXML1_1.toString();//"info:fedora/fedora-system:FOXML-1.1";
         //byte[] bytes = byteString.getBytes();
 
@@ -793,13 +795,18 @@ public class FedoraAdministrationTest
         //expectations
         expect( mockCC.getCargoObjectCount() ).andReturn( 2 );
         expect( mockCC.getDCIdentifier() ).andReturn( null );
-        mockCC.setDCIdentifier( "test:1" );
-        expect( mockCC.getDCIdentifier() ).andReturn( "test:1" );
+        mockCC.setDCIdentifier( fedoraPid );
+        expect( mockCC.getDCIdentifier() ).andReturn( fedoraPid );
+        //expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
+        //expect( mockCC.getDCIdentifier() ).andReturn( "test:1" );
+        //expect( mockCargoObject.getFormat() ).andReturn( format );
+        //expect( mockCC.getDCIdentifier() ).andReturn( "test:1" );
+        expect( mockFem.purgeObject( fedoraPid, purgeLogm, false ) ).andReturn( "timestamp" );
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getFormat() ).andReturn( format );
-        
-        expect( mockFem.purgeObject( "test:1", "test:1 purged", false ) ).andReturn( "test:1" );
-        expect( mockFem.ingest( bytes, fedMessage, logm ) ).andReturn( "test:1" );
+
+        //expect( mockFem.purgeObject( fedoraPid, purgeLogm, false ) ).andReturn( "test:1" );
+        expect( mockFem.ingest( bytes, fedMessage, logm ) ).andReturn( fedoraPid );
         //replay
 
         replay( mockCC );
@@ -814,6 +821,7 @@ public class FedoraAdministrationTest
         //verify
         verify( mockCC );
         verify( mockFem );
+        verify( mockCargoObject );
     }
 
     /**
