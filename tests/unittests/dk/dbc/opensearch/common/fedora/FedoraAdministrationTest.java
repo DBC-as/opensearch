@@ -792,6 +792,7 @@ public class FedoraAdministrationTest
 
         //expectations
         expect( mockCC.getCargoObjectCount() ).andReturn( 2 );
+        expect( mockCC.getDCIdentifier() ).andReturn( null );
         mockCC.setDCIdentifier( "test:1" );
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getFormat() ).andReturn( format );
