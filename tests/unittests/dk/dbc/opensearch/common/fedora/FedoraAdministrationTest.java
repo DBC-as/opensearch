@@ -776,7 +776,6 @@ public class FedoraAdministrationTest
     /**
      * Testing the happy path of the storeContainer method
      */
-    @Ignore
     @Test public void testStoreCargoContainer() throws ConfigurationException, java.io.IOException, java.net.MalformedURLException, ServiceException, ClassNotFoundException, MarshalException, ParseException, ParserConfigurationException, RemoteException, SAXException, SQLException, TransformerException, ValidationException, XPathExpressionException, InstantiationException, IllegalAccessException
     {
         //setup
@@ -799,6 +798,7 @@ public class FedoraAdministrationTest
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getFormat() ).andReturn( format );
         
+        expect( mockFem.purgeObject( "test:1", "test:1 purged", false ) ).andReturn( "test:1" );
         expect( mockFem.ingest( bytes, fedMessage, logm ) ).andReturn( "test:1" );
         //replay
 

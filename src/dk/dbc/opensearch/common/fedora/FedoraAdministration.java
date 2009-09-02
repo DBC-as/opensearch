@@ -202,16 +202,17 @@ public class FedoraAdministration implements IFedoraAdministration
            String nextPid = PIDManager.getInstance().getNextPID( submitter );
            cargo.setDCIdentifier( nextPid );
         }
-        log.debug( String.format( "CargoContainer will have pid '%s'", cargo.getDCIdentifier() ) );
+	String fedorPid=cargo.getDCIdentifier();
+        log.debug( String.format( "CargoContainer will have pid '%s'", fedorPid ) );
         //byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
         byte[] foxml = FedoraUtils.CargoContainerToFoxml( cargo );
-        String logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
+        String logm = String.format( "%s purged", fedorPid); // cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
 
         try {
-             log.info( String.format("Purges object with pid %s", cargo.getDCIdentifier() ) );
-        FedoraHandle.getInstance().getAPIM().purgeObject( cargo.getDCIdentifier(), logm, false);
+             log.info( String.format("Purges object with pid %s", fedorPid ) );
+	     FedoraHandle.getInstance().getAPIM().purgeObject( fedorPid, logm, false);
         } catch( Exception e ) {
-        	log.warn( String.format( "Ignored error from purgeObject for pid %s", cargo.getDCIdentifier()));
+        	log.warn( String.format( "Ignored error from purgeObject for pid %s", fedorPid));
         }
         		
         logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
