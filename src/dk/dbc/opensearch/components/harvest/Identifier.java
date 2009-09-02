@@ -20,8 +20,6 @@
 
 package dk.dbc.opensearch.components.harvest;
 
-import java.lang.UnsupportedOperationException;
-
 /**
  *
  */

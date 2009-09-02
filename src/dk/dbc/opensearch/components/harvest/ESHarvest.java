@@ -23,6 +23,8 @@ package dk.dbc.opensearch.components.harvest ;
 import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.OracleDBConnection;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -32,9 +34,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import java.util.logging.Level;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 /**
  *
  */
@@ -183,9 +192,28 @@ public class ESHarvest implements IHarvest
                 conn.commit();
 
                 Identifier id = new Identifier( targetRef, lbnr );
-                Job theJob = new Job( id, referenceData.getBytes() );
+                Document doc = null;
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                try
+                {
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
+                }
+                catch( ParserConfigurationException pce )
+                {
+                    log.fatal( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce ) );
+                }
+                catch( SAXException se )
+                {
+                    log.fatal( String.format( "Could not parse data: '%s'", se ) );
+                }
+                catch( IOException ioe )
+                {
+                    log.fatal( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
+                }
+                Job theJob = new Job( id, doc );
                 theJobList.add( theJob );
-		//                taken++;
+                //                taken++;
 
             }
 

@@ -445,7 +445,7 @@ public class FileHarvest implements IHarvest
         {
             log.error( e.toString() );
         }
-        Job theJob = new Job( identifier, referenceData );
+        Job theJob = new Job( identifier, refStream );
 
         return (IJob)theJob;
     }

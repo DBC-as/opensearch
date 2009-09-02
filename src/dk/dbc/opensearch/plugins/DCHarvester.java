@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 
 
 public class DCHarvester implements ICreateCargoContainer
@@ -46,7 +47,7 @@ public class DCHarvester implements ICreateCargoContainer
     private String submitter;
     private String format;
     private byte[] data;
-    private byte[] referenceData;
+    private Document referenceData;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -92,9 +93,9 @@ public class DCHarvester implements ICreateCargoContainer
         DataStreamType dataStreamName = DataStreamType.OriginalData;
 
         //build the DC-data from the referenceData
-        byte[] DCData;
+        //byte[] DCData;
 
-        DCData = getDCData( referenceData );
+        //DCData = getDCData( referenceData );
 
         //add the data to the CargoContainer
         try

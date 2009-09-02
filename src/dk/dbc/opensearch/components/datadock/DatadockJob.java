@@ -28,6 +28,7 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import java.net.URI;
+import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
 import dk.dbc.opensearch.components.harvest.IIdentifier; 
 
@@ -45,7 +46,7 @@ public class DatadockJob implements Comparable<DatadockJob>
     private String format;
     private String PID;
     private IIdentifier identifier;
-    private byte[] referenceData;    
+    private Document referenceData;
 
 
     /**
@@ -56,7 +57,7 @@ public class DatadockJob implements Comparable<DatadockJob>
      * @param referenceData, the data concerning the job
      */
 
-    public DatadockJob( String submitter, String format, IIdentifier identifier, byte[] referenceData )
+    public DatadockJob( String submitter, String format, IIdentifier identifier, Document referenceData )
     {
         this.submitter = submitter;
         this.format = format;
@@ -104,12 +105,14 @@ public class DatadockJob implements Comparable<DatadockJob>
     
     
      public int compareTo( DatadockJob datadockJob){
-         int result = identifier.compareTo( datadockJob.getIdentifier() ); 
+         int result = identifier.compareTo( datadockJob.getIdentifier() );
          return result;
 
 
      }
-    /**
+
+
+     /**
      * Gets the uri object from the job
      * @return The URI of the job
      */
@@ -159,9 +162,9 @@ public class DatadockJob implements Comparable<DatadockJob>
     }
 
     /**
-     * gets the DCData from the job
+     * gets the reference data (typically metadata) from the job
      */
-    public byte[] getReferenceData()
+    public Document getReferenceData()
     {
         return referenceData;
     }

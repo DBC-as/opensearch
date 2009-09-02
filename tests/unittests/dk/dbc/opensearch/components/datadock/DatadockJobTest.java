@@ -21,15 +21,20 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.datadock;
 
 
-import java.net.URI;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
-import java.net.URISyntaxException;
 
 /** \brief UnitTest for DatadockJob **/
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.Assert.*;
 import org.junit.*;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import static org.easymock.classextension.EasyMock.*;
 
 public class DatadockJobTest {
@@ -38,6 +43,28 @@ public class DatadockJobTest {
      * Testing the getters and setters of DatadockJob
      */
     IIdentifier mockID;
+    static Document refData;
+    static String refDataString = "<root>refdata</root>";
+    @BeforeClass
+    static public void SetupClass()
+    {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try
+        {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            refData = builder.parse( new InputSource( new ByteArrayInputStream( refDataString.getBytes() ) ) );
+        }
+        catch( ParserConfigurationException pce )
+        {
+        }
+        catch( SAXException se )
+        {
+        }
+        catch( IOException ioe )
+        {
+        }
+ 
+    }
 
     @Before
     public void setUp()
@@ -56,9 +83,7 @@ public class DatadockJobTest {
     {        
         String testSubmitter = "testSubmitter";
         String testFormat = "testFormat";
-        String refDataString = "refdata";
-        byte[] refData = refDataString.getBytes();
-     
+
         DatadockJob datadockJob = new DatadockJob( testSubmitter, testFormat, mockID, refData );
         assertTrue( datadockJob.getSubmitter().equals( testSubmitter ) );
         assertTrue( datadockJob.getFormat().equals( testFormat ) );        

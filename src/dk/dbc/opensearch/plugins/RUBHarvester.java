@@ -28,26 +28,16 @@ import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.os.PdfFileFilter;
-import dk.dbc.opensearch.common.os.XmlFileFilter;
-import dk.dbc.opensearch.common.os.FileHandler;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 
 /**
@@ -62,7 +52,7 @@ public class RUBHarvester implements ICreateCargoContainer
 
     private String submitter;
     private String format;
-    private byte[] referenceData;
+    private Document referenceData;
     private byte[] data;
     private String lang;
 
@@ -99,14 +89,7 @@ public class RUBHarvester implements ICreateCargoContainer
         this.referenceData = job.getReferenceData();
         String mimetype = "application/pdf";
         Element root = null;
-        try
-        {
-            root = XMLUtils.getDocumentElement( referenceData );
-        }
-        catch( Exception e )
-        {
-            throw new PluginException( "Tried to get root element of the referenceData", e );
-        }
+        root = referenceData.getDocumentElement();
 
         Element info = (Element)root.getElementsByTagName( "info" ).item( 0 );
         lang = info.getAttribute( lang );

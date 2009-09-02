@@ -20,18 +20,14 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
+/**
+ * This interface specifies the type that uniquely identifies a 
+ * {@link IJob Job} with the {@link IHarvester Harvester} implementation.
+ * Clients must not be allowed to read information from the {@link IIdentifier}.
+ */
 public interface IIdentifier
 { 
     
-    /* 
-
-       This interface is intentionally left empty.
-       The purpose of the interface is only to expose an Identifier-type to the 
-       DataDock, which only needs to carry it around. The only use the DD has for
-       the Identifier is when it needs to communicate to the Harvster.
-       There is no need for the DD to call methods on the Interface.
-       
-     */
     int compareTo( Object obj );
 
 }

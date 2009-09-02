@@ -21,6 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.harvest;
 
 import java.lang.UnsupportedOperationException;
+import org.w3c.dom.Document;
 /**
  * 
  */
@@ -28,9 +29,9 @@ public class Job implements IJob
 {
     
     private IIdentifier identifier;
-    private byte[] referenceData;
+    private Document referenceData;
 
-    public Job( IIdentifier identifier, byte[] referenceData )
+    public Job( IIdentifier identifier, Document referenceData )
     {
         this.identifier = identifier;
         this.referenceData = referenceData;
@@ -41,7 +42,7 @@ public class Job implements IJob
         return identifier;
     }
 
-    public byte[] getReferenceData()
+    public Document getReferenceData()
     {
         return referenceData;
     }
@@ -71,8 +72,4 @@ public class Job implements IJob
             return false;
         }
     }
-    public String toString()
-    {
-        return String.format( "ID: %s, byte length: %s ", identifier, referenceData.length );
-    }     
 }

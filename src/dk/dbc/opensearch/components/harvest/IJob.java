@@ -20,14 +20,26 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
+import org.w3c.dom.Document;
 
+
+/**
+ *
+ */
 public interface IJob
 {
-    public IIdentifier getIdentifier();
+    
+    /** 
+     * gets the identifier for this job.
+     * 
+     * @return 
+     */
+     public IIdentifier getIdentifier();
 
-    public byte[] getReferenceData();
-
-    public boolean equals( Object job );
-
-    public String toString();
+    /** 
+     * gets the metadata (or reference data) associated with this job.
+     * 
+     * @return an XML Document structure containing the metadata
+     */
+    public Document getReferenceData();
 }

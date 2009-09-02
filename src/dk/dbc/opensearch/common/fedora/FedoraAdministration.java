@@ -195,9 +195,10 @@ public class FedoraAdministration implements IFedoraAdministration
             throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
         }
 
-        String old_DC=cargo.getDCIdentifier();
-        log.debug( String.format(" ja7: old pid = %s" , old_DC) );
-        if( old_DC == null ) {
+        String old_DC = cargo.getDCIdentifier();
+        log.debug( String.format( " ja7: old pid = %s" , old_DC ) );
+        if( old_DC == null )
+        {
            String nextPid = PIDManager.getInstance().getNextPID( submitter );
            cargo.setDCIdentifier( nextPid );
         }

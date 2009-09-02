@@ -148,28 +148,13 @@ public class DatadockManager
         DatadockJob ddjob;
         String submitter;
         String format;
-        byte[] referenceData = theJob.getReferenceData();
+        Document referenceData = theJob.getReferenceData();
         //get submitter and format
 
         // ByteArrayInputStream bis = new ByteArrayInputStream( referenceData );
         Element root = null;
         Element info = null;
-        try
-        {
-            root = XMLUtils.getDocumentElement( referenceData );
-        }
-        catch( ParserConfigurationException pce )
-        {
-            log.error( pce.toString() );
-        }
-        catch( SAXException se )
-        {
-            log.error( se.toString() );
-        }
-        catch( IOException ioe )
-        {
-            log.error( ioe.toString() );
-        }
+        root = referenceData.getDocumentElement();
 
         info = (Element)root.getElementsByTagName( "info").item( 0 );
         submitter = info.getAttribute( "submitter" );
