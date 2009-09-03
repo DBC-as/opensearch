@@ -202,7 +202,7 @@ public class FedoraAdministration implements IFedoraAdministration
            String nextPid = PIDManager.getInstance().getNextPID( submitter );
            cargo.setDCIdentifier( nextPid );
         }
-	String fedorPid=cargo.getDCIdentifier();
+        String fedorPid = cargo.getDCIdentifier();
         log.debug( String.format( "CargoContainer will have pid '%s'", fedorPid ) );
         //byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
         byte[] foxml = FedoraUtils.CargoContainerToFoxml( cargo );

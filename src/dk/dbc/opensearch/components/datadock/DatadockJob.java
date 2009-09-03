@@ -19,7 +19,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * \file DatadockJob.java
+ * \file 
  * \brief
  */
 
@@ -27,7 +27,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.datadock;
 
 
-import java.net.URI;
 import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
 import dk.dbc.opensearch.components.harvest.IIdentifier; 
@@ -39,7 +38,7 @@ import dk.dbc.opensearch.components.harvest.IIdentifier;
  */
 public class DatadockJob implements Comparable<DatadockJob>
 {    
-    Logger log = Logger.getLogger( DatadockJob.class );
+    private Logger log = Logger.getLogger( DatadockJob.class );
  
     //    private URI uri;
     private String submitter;

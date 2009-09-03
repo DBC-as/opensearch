@@ -263,4 +263,25 @@ public class XMLUtils
         
         return stringWriter.getBuffer().toString().replace( "\n", "");
     }
+
+
+    /**
+     * This method tries to construct a {@link Document} from an input String
+     *
+     * @param assumedXml a String containing xml formatted text
+     * @return a {@link Document} DOM representation of the xml String
+     * @throws ParserConfigurationException if the preconditions for creating a Document is not met
+     * @throws SAXException if the {@code assumedXml} fails to meet the expectations that it can trivially be transformed into a DOM structure
+     * @throws IOException if the bytes cannot be read from the String {@code assumedXml}
+     */
+    public static Document documentFromString( String assumedXml ) throws ParserConfigurationException, SAXException, IOException
+    {
+        Document doc = null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        doc = builder.parse( new InputSource( new ByteArrayInputStream( assumedXml.getBytes() ) ) );
+
+        return doc;
+    }
+
 }

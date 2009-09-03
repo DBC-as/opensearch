@@ -100,7 +100,7 @@ public class DatadockManagerTest
 
 @Ignore
     @Test
-    public void testUpdate() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void testUpdate() throws Exception//InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         /**
          * setup
@@ -144,7 +144,7 @@ public class DatadockManagerTest
 
 @Ignore
     @Test
-    public void testUpdate_reject() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void testUpdate_reject() throws Exception//InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
         jobs.add( mockJob );
@@ -178,7 +178,7 @@ public class DatadockManagerTest
 
   @Ignore
     @Test
-    public void testUpdateWithRejectionAndContinuation() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void testUpdateWithRejectionAndContinuation() throws Exception//InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
         jobs.add( mockJob );

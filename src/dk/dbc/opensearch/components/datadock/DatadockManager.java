@@ -39,6 +39,7 @@ import java.util.concurrent.RejectedExecutionException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 
+import javax.xml.transform.TransformerException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
@@ -86,7 +87,7 @@ public class DatadockManager
     }
 
 
-    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
+    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, TransformerException
     {
         log.trace( "DatadockManager update called" );
 
@@ -103,11 +104,12 @@ public class DatadockManager
 
         for( int i = 0; i < registeredJobs.size(); i++ )
         {
+            log.trace( String.format( "processing job %s: %s", i, registeredJobs.get( i ).toString() ) );
             IJob theJob = registeredJobs.get( 0 );
             //build the DatadockJob
             DatadockJob job = buildDatadockJob( theJob );
             //DatadockJob job = registeredJobs.get( 0 );
-
+            log.trace( String.format( "submitting job %s as datadockJob %s", theJob.toString(), job.toString() ) );
             // execute jobs
             try
             {
@@ -145,9 +147,6 @@ public class DatadockManager
 
     private DatadockJob buildDatadockJob( IJob theJob )
     {
-        DatadockJob ddjob;
-        String submitter;
-        String format;
         Document referenceData = theJob.getReferenceData();
         //get submitter and format
 
@@ -156,11 +155,24 @@ public class DatadockManager
         Element info = null;
         root = referenceData.getDocumentElement();
 
-        info = (Element)root.getElementsByTagName( "info").item( 0 );
-        submitter = info.getAttribute( "submitter" );
-        format = info.getAttribute( "format" );
+        if( root == null )
+        {
+            log.error( String.format( "Could not retrieve data from referencedata" ) );
+            throw new IllegalArgumentException( "Could not retrieve data from referencedata" );
+        }
 
-        ddjob = new DatadockJob( submitter, format, theJob.getIdentifier(), referenceData );
+        info = (Element)root.getElementsByTagName( "info").item( 0 );
+
+        if( info == null )
+        {
+            log.error( String.format( "Could not retrieve info element from referencedata" ) );
+            throw new IllegalArgumentException( "Could not retrieve info element from referencedata" );
+        }
+
+        String submitter = info.getAttribute( "submitter" );
+        String format = info.getAttribute( "format" );
+
+        DatadockJob ddjob = new DatadockJob( submitter, format, theJob.getIdentifier(), referenceData );
         return ddjob;
     }
 }
