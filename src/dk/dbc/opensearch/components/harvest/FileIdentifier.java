@@ -31,29 +31,14 @@ public class FileIdentifier implements IIdentifier
   /**
    * 
    */
-  public FileIdentifier( URI uri ) 
+    FileIdentifier( URI uri ) 
     {
         this.uri = uri;  
     }
 
-    public URI getURI()
+    URI getURI()
     {
         return uri;
     }
 
-    public String toString()
-    {
-        return uri.getRawPath();
-    }
-
-    public int compareTo( Object obj )
-    {
-        if( ! ( obj instanceof FileIdentifier ) )
-        {
-            throw new UnsupportedOperationException( String.format( "Type %s is not a Identifier type", obj.toString() ) );
-        }
-
-        FileIdentifier identifier = (FileIdentifier)obj;
-        return this.toString().compareTo( identifier.toString() );
-    }
 }

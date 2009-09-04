@@ -27,7 +27,4 @@ package dk.dbc.opensearch.components.harvest;
  */
 public interface IIdentifier
 { 
-    
-    int compareTo( Object obj );
-
 }

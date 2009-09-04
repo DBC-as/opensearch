@@ -191,7 +191,7 @@ public class ESHarvest implements IHarvest
                 stmt2.close();
                 conn.commit();
 
-                Identifier id = new Identifier( targetRef, lbnr );
+                ESIdentifier id = new ESIdentifier( targetRef, lbnr );
                 Document doc = null;
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 try
@@ -235,7 +235,7 @@ public class ESHarvest implements IHarvest
         Blob data = null;
         ResultSet rs = null;
         byte[] returnData = null;
-        Identifier theJobId = (Identifier)jobId;
+        ESIdentifier theJobId = (ESIdentifier)jobId;
         try
         {
             Statement stmt = conn.createStatement();
@@ -278,8 +278,8 @@ public class ESHarvest implements IHarvest
         //if success (1) -> xxxx: invalid
         //if failure (4) -> success: ok
         //if failure (4) -> failure: invalid
-        Identifier theJobId;
-        theJobId = (Identifier)jobId;
+        ESIdentifier theJobId;
+        theJobId = (ESIdentifier)jobId;
         try
         {
 

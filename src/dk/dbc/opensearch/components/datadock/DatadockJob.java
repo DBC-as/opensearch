@@ -36,7 +36,7 @@ import dk.dbc.opensearch.components.harvest.IIdentifier;
  * The purpose of the datadockJob is to hold the information about a
  * job for the datadock. it provides get and set methods
  */
-public class DatadockJob implements Comparable<DatadockJob>
+public class DatadockJob
 {    
     private Logger log = Logger.getLogger( DatadockJob.class );
  
@@ -64,62 +64,7 @@ public class DatadockJob implements Comparable<DatadockJob>
         this.referenceData = referenceData;
 
         log.debug( String.format( "Constructor submitter= %s format= %s indentifier = %s", submitter, format, identifier ) );
-    }
-
-    /**
-     * Constructor. initializes the DatadockJob
-     * 
-     * @param path The path to the job
-     * @param submitter The submitter of the Job
-     * @param format The format of the Job
-     */
-//     public DatadockJob( URI uri, String submitter, String format) 
-//     {
-//         log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s' ) called", uri.getRawPath(), submitter, format ) );
-        
-//         this.uri = uri;
-//         this.submitter = submitter;
-//         this.format = format;
-//         PID = "";
-//     }
-    
-    
-    /**
-     * Constructor. initializes the DatadockJob
-     * 
-     * @param path The path to the job
-     * @param submitter The submitter of the Job
-     * @param format The format of the Job
-     * @param PID the fedoraPID for the job
-     */
-//     public DatadockJob( URI uri, String submitter, String format, String PID ) 
-//     {
-//         log.debug( String.format( "Constructor( uri='%s', submitter='%s', format='%s', PID='%s' ) called", 
-//                                   uri.getRawPath(), submitter, format, PID ) );
-//         this.uri = uri;
-//         this.submitter = submitter;
-//         this.format = format;
-//         this.PID = PID;
-//     }
-    
-    
-     public int compareTo( DatadockJob datadockJob){
-         int result = identifier.compareTo( datadockJob.getIdentifier() );
-         return result;
-
-
-     }
-
-
-     /**
-     * Gets the uri object from the job
-     * @return The URI of the job
-     */
-//     public URI getUri()
-//     {
-//         return uri;
-//     }
-    
+    }    
     
     /**
      * Gets the submitter
