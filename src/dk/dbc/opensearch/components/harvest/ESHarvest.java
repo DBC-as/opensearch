@@ -44,6 +44,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 /**
  *
  */
@@ -78,7 +79,10 @@ public class ESHarvest implements IHarvest
         }
         catch( Exception e )
         {
-	    log.fatal( String.format("Error while trying to connect to Oracle ES-base: %s", e.printStackTrace() ) ); 
+	    log.fatal( "Error while trying to connect to Oracle ES-base: " );
+	    e.printStackTrace();
+	    // \todo: add stacktrace to log.
+	    // \todo: throw exception.
         }
 
         log.debug( "ESHarvest started" );
@@ -113,7 +117,10 @@ public class ESHarvest implements IHarvest
         }
         catch( SQLException sqle )
         {
-	    log.fatal( String.format( "Error when closing the Oracle connection: %s", sqle.printStackTrace() ) );
+	    log.fatal( "Error when closing the Oracle connection: " );
+	    sqle.printStackTrace();
+	    // \todo: add stacktrace to log.
+	    // \todo: throw exception.
         }
     }
 
@@ -239,7 +246,9 @@ public class ESHarvest implements IHarvest
         }
         catch( SQLException sqle )
         {
-	    log.fatal( String.format( "A database error occured: %s" ), sqle.printStackTrace() );
+	    log.fatal( "A database error occured: " );
+	    sqle.printStackTrace();
+	    // \todo: add stacktrace to log.
 	    // \todo: throw fatal exception
         }
         return returnData;
@@ -430,7 +439,7 @@ public class ESHarvest implements IHarvest
     private void setTaskPackageStatus( int targetref ) throws InvalidStatusChangeException, SQLException
     {
 
-	log.debug( String.format( "setTaskPackageStatus with targetRef %s", targetRef ) );
+	log.debug( String.format( "setTaskPackageStatus with targetRef %s", targetref ) );
 
 	Statement stmt = conn.createStatement();
 
