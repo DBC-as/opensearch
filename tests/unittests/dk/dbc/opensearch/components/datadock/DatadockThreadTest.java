@@ -43,8 +43,8 @@ import dk.dbc.opensearch.plugins.OwnerRelation;
 import dk.dbc.opensearch.plugins.DocbookHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.JobStatus;
-import dk.dbc.opensearch.components.harvest.UnknownIdentifierException;
-import dk.dbc.opensearch.components.harvest.InvalidStatusChangeException;
+import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
+import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
 
 import java.io.FileNotFoundException;
@@ -312,7 +312,7 @@ public class DatadockThreadTest
      */
 
     @Test
-    public void testCall() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, UnknownIdentifierException, InvalidStatusChangeException
+    public void testCall() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         //System.out.println( "3");
         /**
@@ -388,7 +388,7 @@ public class DatadockThreadTest
   
 
     @Test( expected = IllegalStateException.class )
-    public void testCallIllegalState() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, UnknownIdentifierException, InvalidStatusChangeException
+    public void testCallIllegalState() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         //System.out.println( "4");
         /**
@@ -445,7 +445,7 @@ public class DatadockThreadTest
 
 
     @Test( expected = NullPointerException.class )
-    public void testCallNullCargoContainer() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, UnknownIdentifierException, InvalidStatusChangeException
+    public void testCallNullCargoContainer() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         //System.out.println( "5");
         /**
@@ -492,8 +492,8 @@ public class DatadockThreadTest
         verify( mockCC );
     }
 
-    @Test( expected = UnknownIdentifierException.class )
-    public void testUnknownIdentifier() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, InvalidStatusChangeException, UnknownIdentifierException
+    @Test( expected = HarvesterUnknownIdentifierException.class )
+    public void testUnknownIdentifier() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException
     {
         //System.out.println( "unknownidentifiertest" );
         //setup
@@ -508,7 +508,7 @@ public class DatadockThreadTest
         expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
 
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        expect( mockHarvester.getData ( mockIdentifier ) ).andThrow( new UnknownIdentifierException( "testexception" ) );
+        expect( mockHarvester.getData ( mockIdentifier ) ).andThrow( new HarvesterUnknownIdentifierException( "testexception" ) );
 
         //replay
         replay( mockDatadockJob );
@@ -533,12 +533,12 @@ public class DatadockThreadTest
 
     /**
      * tests the situation where the datadockthread is trying to set the status 
-     * of the job in the harvester to something invalid. A InvalidStatusChangeException
+     * of the job in the harvester to something invalid. A HarvesterInvalidStatusChangeException
      * is thrown by the harvester and a log.error is created and 0F is returned.
      */
 
     @Test
-    public void testInvalidStatusChangeException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, InvalidStatusChangeException, UnknownIdentifierException
+    public void testHarvesterInvalidStatusChangeException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException
     {
         /**
          *setup
@@ -577,7 +577,7 @@ public class DatadockThreadTest
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
-        expectLastCall().andThrow( new InvalidStatusChangeException ( "test invalidstatuschangeexception" ) );
+        expectLastCall().andThrow( new HarvesterInvalidStatusChangeException ( "test invalidstatuschangeexception" ) );
 
         /**
          *replay

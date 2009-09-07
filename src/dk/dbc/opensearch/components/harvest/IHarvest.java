@@ -67,7 +67,7 @@ public interface IHarvest
      * 
      * @throws UnknownIdentifierException if the {@link IIdentifier} is not known to the {@link IHarvester}. I.e. if the jobId can not be found
      */
-    byte[] getData( IIdentifier jobId ) throws UnknownIdentifierException;
+    byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException;
 
 
     /**
@@ -76,7 +76,7 @@ public interface IHarvest
      * a given job; a {@link Job} that has not had its status set,
      * will be unset. Trying to set a status more than once will
      * result in an error condition (signalled by an 
-     * {@link InvalidStatusChangeException}).
+     * {@link HarvesterInvalidStatusChangeException}).
      * 
      * @see JobStatus for more information on the states of jobs in the {@link IHarvester}
      * 
@@ -84,7 +84,7 @@ public interface IHarvest
      * @param status a {@link JobStatus} value indicating the client status of the job.
      * 
      * @throws UnknownIdentifierException if the {@code jobId} could not be found in the {@link IHarvester}
-     * @throws InvalidStatusChangeException if the client tries to set the status more than once on a given {@code jobId}
+     * @throws HarvesterInvalidStatusChangeException if the client tries to set the status more than once on a given {@code jobId}
      */
-    void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException;
+    void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException;
 }

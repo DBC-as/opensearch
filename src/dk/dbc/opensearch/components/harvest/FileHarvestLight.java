@@ -162,7 +162,7 @@ public class FileHarvestLight implements IHarvest
 
     }
 
-    public byte[] getData( IIdentifier jobId ) throws UnknownIdentifierException
+    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
     {
         FileIdentifier theJobId = (FileIdentifier)jobId;
         byte[] data;
@@ -174,7 +174,7 @@ public class FileHarvestLight implements IHarvest
         }
         catch( FileNotFoundException fnfe )
         {
-            throw new UnknownIdentifierException( String.format( "File for path: %s couldnt be read", theJobId.getURI().getRawPath() ) );
+            throw new HarvesterUnknownIdentifierException( String.format( "File for path: %s couldnt be read", theJobId.getURI().getRawPath() ) );
         }
         try
         {
@@ -182,12 +182,12 @@ public class FileHarvestLight implements IHarvest
         }
         catch( IOException ioe )
         {
-            throw new UnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
+            throw new HarvesterUnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
         }
         return data;
     }
 
-    public void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException
+    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         FileIdentifier ID = (FileIdentifier)jobId;
         //System.out.println( String.format("the file %s was given status %s", ID.getURI().getRawPath() ,status) );

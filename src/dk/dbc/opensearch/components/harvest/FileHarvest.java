@@ -328,7 +328,7 @@ public class FileHarvest implements IHarvest
      * effect on the further execution.
      */
     @Override
-    public void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException
+    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status.getDescription() ) );
     }
@@ -338,7 +338,7 @@ public class FileHarvest implements IHarvest
      * Implements the getData method. It returns the requested file as an array of bytes
      */
     @Override
-    public byte[] getData( IIdentifier jobId ) throws UnknownIdentifierException
+    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
     {
         FileIdentifier theJobId = (FileIdentifier) jobId;
         byte[] data;
@@ -350,7 +350,7 @@ public class FileHarvest implements IHarvest
         }
         catch( FileNotFoundException fnfe )
         {
-            throw new UnknownIdentifierException( String.format( "File for path: %s couldnt be read", theJobId.getURI().getRawPath() ) );
+            throw new HarvesterUnknownIdentifierException( String.format( "File for path: %s couldnt be read", theJobId.getURI().getRawPath() ) );
         }
         try
         {
@@ -358,7 +358,7 @@ public class FileHarvest implements IHarvest
         }
         catch( IOException ioe )
         {
-            throw new UnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
+            throw new HarvesterUnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
         }
         return data;
     }

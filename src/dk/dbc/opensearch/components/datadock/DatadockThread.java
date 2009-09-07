@@ -41,8 +41,8 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
-import dk.dbc.opensearch.components.harvest.InvalidStatusChangeException;
-import dk.dbc.opensearch.components.harvest.UnknownIdentifierException;
+import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
+import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.JobStatus;
 
 import java.io.FileNotFoundException;
@@ -176,7 +176,7 @@ public class DatadockThread implements Callable< Float >
      * @throws IOException
      * @throws ParseException
      */
-    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, UnknownIdentifierException, InvalidStatusChangeException
+    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         // Must be implemented due to class implementing Callable< Float > interface.
         // Method is to be extended when we connect to 'Posthuset'
@@ -205,10 +205,10 @@ public class DatadockThread implements Callable< Float >
                 {
                     data = harvester.getData( datadockJob.getIdentifier() );
                 }
-                catch( UnknownIdentifierException uie )
+                catch( HarvesterUnknownIdentifierException huie )
                 {
-                    log.error( String.format( "couldnt get data from harvester, exception message: %s, terminating thread", uie.getMsg() ) );
-                    throw new UnknownIdentifierException( uie.getMsg() );
+                    log.error( String.format( "could not get data from harvester, exception message: %s, terminating thread", huie.getMessage() ) );
+                    throw new HarvesterUnknownIdentifierException( huie.getMessage() );
                 }
       
                 log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
@@ -295,9 +295,9 @@ public class DatadockThread implements Callable< Float >
             harvester.setStatus( datadockJob.getIdentifier(), JobStatus.SUCCESS );
 
         }
-        catch( InvalidStatusChangeException isce )
+        catch( HarvesterInvalidStatusChangeException hisce )
         {
-            log.error( isce.getMessage() );
+            log.error( hisce.getMessage() );
             return 0F;
         }
 

@@ -79,9 +79,9 @@ public class LightHarvestFunc {
                 System.out.println(  String.format( "data gotten: %s", data.toString() ) );
 
             }
-            catch( UnknownIdentifierException uie )
+            catch( HarvesterUnknownIdentifierException huie )
             {
-                uie.printStackTrace();
+                huie.printStackTrace();
             }
             setStatusTest( theJob.getIdentifier() );
         }
@@ -99,14 +99,14 @@ public class LightHarvestFunc {
                 harvester.setStatus( id, JobStatus.FAILURE );
             }
             ++counter;
-        }catch( UnknownIdentifierException uie )
+        }catch( HarvesterUnknownIdentifierException huie )
         {
-            uie.printStackTrace();
+            huie.printStackTrace();
         }
-        catch( InvalidStatusChangeException isce )
+        catch( HarvesterInvalidStatusChangeException hisce )
         {
-            System.out.println(isce.getMessage() );
-            isce.printStackTrace();
+            System.out.println(hisce.getMessage() );
+            hisce.printStackTrace();
         }
 
 

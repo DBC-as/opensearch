@@ -124,6 +124,7 @@ public class ESHarvest implements IHarvest
         }
     }
 
+
     /**
      *
      */
@@ -131,11 +132,11 @@ public class ESHarvest implements IHarvest
     {
 
 	log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
-        ArrayList<IJob> theJobList = new ArrayList();
+        ArrayList<IJob> theJobList = new ArrayList<IJob>();
 	try {
 	    Statement stmt = conn.createStatement();
 	    stmt.setMaxRows( maxAmount );
-            ArrayList<Integer> takenList = new ArrayList();
+            ArrayList<Integer> takenList = new ArrayList<Integer>();
 
             // \todo: Single query to retrieve all available queued packages _and_
             //        their supplementalId3 - must be veriefied
@@ -203,10 +204,10 @@ public class ESHarvest implements IHarvest
 
 
 
-
-
-
-    public byte[] getData( IIdentifier jobId ) throws UnknownIdentifierException
+    /**
+     *
+     */
+    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
     {
         log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
 
@@ -228,7 +229,7 @@ public class ESHarvest implements IHarvest
             if( ! rs.next() )
             {
 		// \todo : log
-                throw new UnknownIdentifierException( String.format( "the Identifier %s is unknown in the base", jobId.toString() ) );
+                throw new HarvesterUnknownIdentifierException( String.format( "the Identifier %s is unknown in the base", jobId.toString() ) );
             }
             else
             {
@@ -262,7 +263,7 @@ public class ESHarvest implements IHarvest
     /**
      * The setstatus only accepts failure and success right now. retry will come later
      */
-    public void setStatus( IIdentifier jobId, JobStatus status ) throws UnknownIdentifierException, InvalidStatusChangeException
+    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         log.info( String.format( "ESHarvester was requested to set status %s on data identified by the identifier %s", status, jobId ) );
 
@@ -290,7 +291,7 @@ public class ESHarvest implements IHarvest
 		if (counter == 0) {
 		    stmt.close();
 		    // \todo: log.error
-		    throw new UnknownIdentifierException( String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() ) );
+		    throw new HarvesterUnknownIdentifierException( String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() ) );
 		} 
 	    } else {
 		++counter;
@@ -301,7 +302,7 @@ public class ESHarvest implements IHarvest
                     {
 			// \todo: log.error
 			stmt.close();
-                        throw new InvalidStatusChangeException( String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() ) );
+                        throw new HarvesterInvalidStatusChangeException( String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() ) );
                     }
 		
 		// Set the status:
@@ -319,7 +320,7 @@ public class ESHarvest implements IHarvest
 			break;
 		    default:
 			stmt.close();
-			throw new InvalidStatusChangeException( "Unknown status" );
+			throw new HarvesterInvalidStatusChangeException( "Unknown status" );
 		    }
 		String updateString = String.format( "UPDATE taskpackagerecordstructure " + 
 						     "SET recordstatus = %s " + 
@@ -436,7 +437,7 @@ public class ESHarvest implements IHarvest
     /**
      *
      */
-    private void setTaskPackageStatus( int targetref ) throws InvalidStatusChangeException, SQLException
+    private void setTaskPackageStatus( int targetref ) throws HarvesterInvalidStatusChangeException, SQLException
     {
 
 	log.debug( String.format( "setTaskPackageStatus with targetRef %s", targetref ) );
@@ -460,7 +461,7 @@ public class ESHarvest implements IHarvest
 	    if ( noofrecs < noofrecs_treated ) {
 		// This is an error. There were more treated records than actual records. 
 		// This _must_ never happen.
-		throw new InvalidStatusChangeException( String.format( "Error: There were more treated records than actual records in taskpackage %s. This should never ever happen.", targetref ) );
+		throw new HarvesterInvalidStatusChangeException( String.format( "Error: There were more treated records than actual records in taskpackage %s. This should never ever happen.", targetref ) );
 	    } else if ( noofrecs == noofrecs_treated ) {
 
 		// find the number of success and failures on the taskpackage:
@@ -518,7 +519,7 @@ public class ESHarvest implements IHarvest
 		    if ( current_update_status != 0 ) {
 			// \todo: This should never happen. Change exception - this one is not the right one!
 			stmt.close();
-			throw new InvalidStatusChangeException( String.format( "the update_status is already set to for taskpackage: %s", current_update_status, targetref ) );
+			throw new HarvesterInvalidStatusChangeException( String.format( "the update_status is already set to for taskpackage: %s", current_update_status, targetref ) );
 		    } 
 
 		    String update_taskpackage_status = String.format( "UPDATE taskspecificupdate " + 

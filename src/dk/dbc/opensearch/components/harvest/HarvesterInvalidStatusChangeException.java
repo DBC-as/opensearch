@@ -25,7 +25,7 @@ import dk.dbc.opensearch.common.types.OpenSearchException;
 /**
  * 
  */
-public final class InvalidStatusChangeException extends OpenSearchException{
+public final class HarvesterInvalidStatusChangeException extends OpenSearchException{
     
     static final long serialVersionUID = 632739149100896128L;
     
@@ -37,7 +37,7 @@ public final class InvalidStatusChangeException extends OpenSearchException{
      * @param e
      *            The originating exception
      */
-    public InvalidStatusChangeException( Exception e )
+    public HarvesterInvalidStatusChangeException( Exception e )
     {
         super( e );
     }
@@ -48,12 +48,12 @@ public final class InvalidStatusChangeException extends OpenSearchException{
      * the plugin point of view.
      *
      * @param msg
-     *            The message to annotate the InvalidStatusChangeException from the Catch of
+     *            The message to annotate the HarvesterInvalidStatusChangeException from the Catch of
      *            the Exception e
      * @param e
      *            The original Exception that was caught
      */
-    public InvalidStatusChangeException( String msg, Exception e )
+    public HarvesterInvalidStatusChangeException( String msg, Exception e )
     {
         super( msg, e );
     }
@@ -65,7 +65,7 @@ public final class InvalidStatusChangeException extends OpenSearchException{
      * @param msg
      *            The reason for the throwing of the Exception
      */
-    public InvalidStatusChangeException( String msg )
+    public HarvesterInvalidStatusChangeException( String msg )
     {
         super( msg );
     }
