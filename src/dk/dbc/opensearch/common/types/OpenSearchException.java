@@ -45,7 +45,7 @@ public abstract class OpenSearchException extends Exception
     public OpenSearchException( Exception e )
     {
         this.e = e;
-        this.msg = "";
+        this.msg = null;
     }
 
     

@@ -297,7 +297,7 @@ public class DatadockThread implements Callable< Float >
         }
         catch( InvalidStatusChangeException isce )
         {
-            log.error( isce.getMsg() );
+            log.error( isce.getMessage() );
             return 0F;
         }
 

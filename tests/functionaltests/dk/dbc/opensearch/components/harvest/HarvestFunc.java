@@ -98,7 +98,7 @@ public class HarvestFunc {
         }
         catch( InvalidStatusChangeException isce )
         {
-            System.out.println(isce.getMsg() );
+            System.out.println(isce.getMessage() );
             isce.printStackTrace();
         }
 
