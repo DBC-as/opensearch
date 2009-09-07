@@ -153,6 +153,7 @@ public class DatadockManager
         // ByteArrayInputStream bis = new ByteArrayInputStream( referenceData );
         Element root = null;
         Element info = null;
+
         root = referenceData.getDocumentElement();
 
         if( root == null )
