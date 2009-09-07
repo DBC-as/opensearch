@@ -1,56 +1,125 @@
-# This is a config file used for writing config.xml, which is the actual
+# This is a configuration file template used for writing (the
+# not-so-human-readable) config.xml, which is used as the actual
 # config file of the program.
 
+
+#the compass section specifies settings relating to the lucene wrapper
+ framework Compass.
 [compass]
+
+# name of the compass main configuration file
 configpath: compass.cfg.xml
+
+# name of the index specification file
 xsempath:   xml.cpm.xml
+
+# name of the Document Type Definition file for the compass configuration file
 dtdpath:    compass-core-mapping-2.0.dtd
+
+# url pointing to the network accessible version of the above
 httpurl:    http://www.compass-project.org/dtd/compass-core-mapping-2.0.dtd
 
+
+# Section containing configuration values relating to databases used by the system
 [database]
-# leave unassigned if user is 'os user'
+
+# The user name for the postgresql database. Leave unassigned if user
+# should equal $USER
 postgresql_user:                           
-# leave unassigned if pswd is 'os user'
+
+# the password for the postgresql database. If unassigned, $USER is
+# used as password
 postgresql_password:
+
+# the java postgresql driver used by the system
 postgresql_driver:   org.postgresql.Driver
+
+# the url used by the jdbc to connect to the postgresql database
+# through
 postgresql_url:      jdbc:postgresql:
 
-# leave unassigned if user is 'os user'
+# As with postgresql_user, but for Oracle databases
 oracle_user:                           
-# leave unassigned if pswd is 'os user'
-oracle_password:                       
+
+# As with postgresql_password, but for Oracle databases
+oracle_password:
+          
+# As with postgresql_driver, but for Oracle databases
 oracle_driver:   oracle.jdbc.driver.OracleDriver
+
+# As with postgresql_url, but for Oracle databases
 oracle_url:      dbc:oracle:thin:
 
+# Section relating to the runtime behaviour of the Datadock component
 [datadock]
+
+# frequency of the main loop polling for new jobs (in milliseconds)
 main_poll_time:      1000
+
+# time a thread should sleep before retrying a rejected job (in milliseconds)
 rejected_sleep_time: 3000
+
+# time between a shutdown is issued before the threadpool closes down (in milliseconds)
 shutdown_poll_time:  1000
+
+# size of the threadpool job queue, see http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html#ThreadPoolExecutor(int,%20int,%20long,%20java.util.concurrent.TimeUnit,%20java.util.concurrent.BlockingQueue)
 queue_size:          20
+
+# number of threads to keep alive in the thread pool
 core_poll_size:      1
+
+# maximum number of threads in thread pool
 max_poll_size:       1
+
+# time (in seconds) to keep idle threads alive in the thread pool
 keep_alive_time:     10
-job_limit:           20
+
+# job_limit is not used anymore, will be deleted in future releases
+# job_limit:           20
+
+# (relative) path to the plugin configuration file
 path:                config/datadock_jobs.xml
 
+# Configuration values relating to the fedora repository
 [fedora]
+
+# hostname of the server running the fedora repository
 host:       localhost
+
+# port on which the fedora repository is running (the tomcat http port)
 port:       8080
+
+# username for the fedora repository
 user:       fedoraAdmin
+
+# password for the fedora repository
 passphrase: fedoraAdmin
 
+# unused values, will be removed in future releases
 [filesystem]
 # trunk   = 
 # plugins = 
 
+# configuration relating to the harvester module
 [harvester]
+
+# folder name of the folder to harvest files from
 toharvest:    Harvest
+
+# folder name of the folder to put processes files in
 harvestdone:  HarvestDone
+
+# number of files to process in batches
 maxtoharvest: 1000
 
+# configuration of the fedora pid manager
 [pidmanager]
+
+# number of pids to return on a pid request
 num_of_pids: 10
 
+# configuration values for the pti module. Identical to those
+# specified in the datadock section
 [pti]
 main_poll_time:          1000
 rejected_sleep_time:     3000
