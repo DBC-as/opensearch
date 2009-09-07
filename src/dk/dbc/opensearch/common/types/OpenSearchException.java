@@ -18,21 +18,21 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.pluginframework;
-
-import dk.dbc.opensearch.common.types.OpenSearchException;
+package dk.dbc.opensearch.common.types;
 
 /**
  * Exception thrown in case of plugin processing or calculation errors. All
  * exceptions that are raised during plugin execution are wrapped in a
- * PluginException. In this way the pluginframework only exposes one kind of
+ * OpenSearchException. In this way the pluginframework only exposes one kind of
  * exception. The wrapped (original) exception can be accessed by the
  * getException() method.
  */
-public final class PluginException extends OpenSearchException
+public abstract class OpenSearchException extends Exception
 {
 
-    private static final long serialVersionUID = 4451067896581886657L;
+    private Exception e;
+    private String msg;
+
     
     /**
      * Constructor wrapping the original exception.
@@ -42,25 +42,27 @@ public final class PluginException extends OpenSearchException
      * @param e
      *            The originating exception
      */
-    public PluginException( Exception e )
+    public OpenSearchException( Exception e )
     {
-        super( e );
+        this.e = e;
+        this.msg = "";
     }
-    
+
     
     /**
      * Constructor with wrapped exception and message explaining the cause from
      * the plugin point of view.
      *
      * @param msg
-     *            The message to annotate the PluginException from the Catch of
+     *            The message to annotate the OpenSearchException from the Catch of
      *            the Exception e
      * @param e
      *            The original Exception that was caught
      */
-    public PluginException( String msg, Exception e )
+    public OpenSearchException( String msg, Exception e )
     {
-        super( msg, e );
+        this.msg = msg;
+        this.e = e;
     }
 
     
@@ -70,8 +72,33 @@ public final class PluginException extends OpenSearchException
      * @param msg
      *            The reason for the throwing of the Exception
      */
-    public PluginException( String msg )
+    public OpenSearchException( String msg )
     {
-        super( msg );
+        this.msg = msg;
+        this.e = null;
+    }
+
+    
+    /**
+     * Returns the wrapped (original) exception that was caught inside the
+     * plugin. Returns null if the OpenSearchException is the originating exception
+     *
+     * @return Exception the wrapped exception
+     */
+    public Exception getException() 
+    {
+        return e;
+    }
+
+    
+    /**
+     * Returns the message that was given from the plugin at the cathing of the
+     * original exception. Returns null if no message was given at the time of
+     * the catch.
+     */
+    @Override
+    public String getMessage() 
+    {
+        return msg;
     }
 }

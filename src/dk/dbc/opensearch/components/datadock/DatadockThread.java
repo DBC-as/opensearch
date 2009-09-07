@@ -189,7 +189,7 @@ public class DatadockThread implements Callable< Float >
         long length = 0;
         Float est = 0F;
         byte[] data = null;
-
+        long timer = 0;
         for( String classname : list)
         {
             log.trace( "DatadockThread getPlugin 'classname' " + classname );
@@ -214,7 +214,12 @@ public class DatadockThread implements Callable< Float >
                 log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
 
                 ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
+                timer = System.currentTimeMillis();
+                
                 cargo = harvestPlugin.getCargoContainer( datadockJob, data );
+                
+                timer = System.currentTimeMillis() - timer;
+                log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
 
                 checkCargoObjectCount( cargo );
 
@@ -226,14 +231,26 @@ public class DatadockThread implements Callable< Float >
 
                 checkCargoContainerIsNotNull( cargo );
 
+                timer = System.currentTimeMillis();
+                
                 cargo = annotatePlugin.getCargoContainer( cargo );
+
+                timer = System.currentTimeMillis() - timer;
+                log.trace( String.format( "Timing: ( ANNOTATE ) %s", timer ) );
 
                 break;
             case STORE:
                 log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
 
                 IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+
+                timer = System.currentTimeMillis();
+
                 cargo = repositoryStore.storeCargoContainer( cargo );
+                
+                timer = System.currentTimeMillis() - timer;
+                log.trace( String.format( "Timing: ( STORE ) %s", timer ) );
+                
                 // DO NOT CHANGE log level to trace or debug!
                 log.info( "STORE pid: " + cargo.getDCIdentifier() );
 
@@ -244,7 +261,13 @@ public class DatadockThread implements Callable< Float >
                 checkCargoContainerIsNotNull( cargo );
 
                 IRelation relationPlugin = (IRelation)plugin;
+
+                timer = System.currentTimeMillis();
+
                 cargo = relationPlugin.getCargoContainer( cargo );
+
+                timer = System.currentTimeMillis() - timer;
+                log.trace( String.format( "Timing: ( RELATION ) %s", timer ) );
 
                 break;
            //  case GETESTIMATE:

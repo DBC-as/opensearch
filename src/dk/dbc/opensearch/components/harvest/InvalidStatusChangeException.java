@@ -19,19 +19,54 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package dk.dbc.opensearch.components.harvest;
+
+import dk.dbc.opensearch.common.types.OpenSearchException;
+
 /**
  * 
  */
-public class InvalidStatusChangeException extends Exception{
+public final class InvalidStatusChangeException extends OpenSearchException{
     
-    private String message;
+    static final long serialVersionUID = 632739149100896128L;
+    
     /**
-     * 
+     * Constructor wrapping the original exception.
+     *
+     * Constructs the Exception with null as the message.
+     *
+     * @param e
+     *            The originating exception
      */
-    public InvalidStatusChangeException( String msg ) {
-        message = msg;
+    public InvalidStatusChangeException( Exception e )
+    {
+        super( e );
     }
-    public String getMsg(){
-        return message;
+    
+    
+    /**
+     * Constructor with wrapped exception and message explaining the cause from
+     * the plugin point of view.
+     *
+     * @param msg
+     *            The message to annotate the InvalidStatusChangeException from the Catch of
+     *            the Exception e
+     * @param e
+     *            The original Exception that was caught
+     */
+    public InvalidStatusChangeException( String msg, Exception e )
+    {
+        super( msg, e );
+    }
+
+    
+    /**
+     * Constructor for creating an Exception that origins from a plugin
+     *
+     * @param msg
+     *            The reason for the throwing of the Exception
+     */
+    public InvalidStatusChangeException( String msg )
+    {
+        super( msg );
     }
 }
