@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
 
 
 /**
- * 
+ *
  */
 public class DatadockManagerTest
 {
@@ -79,19 +79,33 @@ public class DatadockManagerTest
     DocumentBuilder docBuilder;
     IIdentifier mockIdentifier;
 
-    Document buildTestDocument( String submitter, String format ,String language ) throws ParserConfigurationException
+    /**
+     * helper method that builds a Document that pretends to be the referenceData
+     * @param infoIsNull decides whether the info element of the referenceData is 
+     * null
+     * @param rootIsNull decides whether the root element of the document is created
+     */
+
+    Document buildTestDocument( String submitter, String format, String language, boolean infoIsNull, boolean rootIsNull ) throws ParserConfigurationException
     {
         docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilder = docBuilderFactory.newDocumentBuilder();
         Document theDocument = docBuilder.newDocument();
-        Element root = theDocument.createElement( "referencedata" );
-        Element info = theDocument.createElement( "info" );
-        info.setAttribute( "submitter", submitter );
-        info.setAttribute( "format", format );
-        info.setAttribute( "language", language );
-        root.appendChild( (Node)info );
-        theDocument.appendChild( (Node)root);
+        if( !rootIsNull )
+        {
+            Element root = theDocument.createElement( "referencedata" );
+            if( !infoIsNull )
+            {
+                Element info = theDocument.createElement( "info" );
 
+                info.setAttribute( "submitter", submitter );
+                info.setAttribute( "format", format );
+                info.setAttribute( "language", language );
+                root.appendChild( (Node)info );
+                
+            }
+            theDocument.appendChild( (Node)root);
+        }
         return theDocument;
     }
 
@@ -129,15 +143,15 @@ public class DatadockManagerTest
     }
 
     @Test
-    public void testUpdate() throws Exception//InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, ConfigurationException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void testUpdate() throws Exception
     {
         /**
          * setup
          */
         ArrayList<IJob> jobs = new ArrayList<IJob>();
         jobs.add( mockJob );
-        testDocument = buildTestDocument( "submitter", "format", "language" );
-       
+        testDocument = buildTestDocument( "submitter", "format", "language", false, false );
+
 
         /**
          * expectations
@@ -149,7 +163,7 @@ public class DatadockManagerTest
         expect( mockJob.getReferenceData() ).andReturn( testDocument );
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockDatadockPool.submit( isA( DatadockJob.class ) );
-        //expect( mockDatadockJob.getUri() ).andReturn( testURI );
+
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
 
 
@@ -161,7 +175,7 @@ public class DatadockManagerTest
         replay( mockJob );
         replay( mockDatadockPool );
         replay( mockIdentifier );
-        //  replay( mockDatadockJob );
+
         /**
          * do stuff
          */
@@ -175,17 +189,16 @@ public class DatadockManagerTest
         verify( mockHarvester );
         verify( mockDatadockPool );
         verify( mockIdentifier );
-        //verify( mockDatadockJob );
+
     }
 
 
     @Test
-    public void testUpdate_reject() throws Exception//InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void testUpdate_reject() throws Exception
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
         jobs.add( mockJob );
- testDocument = buildTestDocument( "submitter", "format", "language" );
-        //        URI testURI = new URI( "testURI" );
+        testDocument = buildTestDocument( "submitter", "format", "language", false, false );
 
         mockHarvester.start();
         expect( mockHarvester.getJobs( 100 ) ).andReturn( jobs );
@@ -193,7 +206,7 @@ public class DatadockManagerTest
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockDatadockPool.submit( isA( DatadockJob.class ) );
         expectLastCall().andThrow( new RejectedExecutionException() );
-        
+
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
 
 
@@ -214,13 +227,12 @@ public class DatadockManagerTest
     }
 
     @Test
-    public void testUpdateWithRejectionAndContinuation() throws Exception//InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, URISyntaxException, ServiceException, RejectedExecutionException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void testUpdateWithRejectionAndContinuation() throws Exception
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
         jobs.add( mockJob );
         jobs.add( mockJob );
-testDocument = buildTestDocument( "submitter", "format", "language" );
-        //URI testURI = new URI( "testURI" );
+        testDocument = buildTestDocument( "submitter", "format", "language", false, false );
 
         mockHarvester.start();
         //calling update 1st time
@@ -229,17 +241,17 @@ testDocument = buildTestDocument( "submitter", "format", "language" );
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockDatadockPool.submit( isA( DatadockJob.class ) );
         expectLastCall().andThrow( new RejectedExecutionException() );
-         expect( mockJob.getReferenceData() ).andReturn( testDocument );
+        expect( mockJob.getReferenceData() ).andReturn( testDocument );
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockDatadockPool.submit( isA( DatadockJob.class ) );
-       
+
 
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
         //calling update 2nd time
- expect( mockJob.getReferenceData() ).andReturn( testDocument );
+        expect( mockJob.getReferenceData() ).andReturn( testDocument );
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockDatadockPool.submit( isA(DatadockJob.class ) );
-       
+
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
 
         replay( mockFinJobs );
@@ -258,6 +270,95 @@ testDocument = buildTestDocument( "submitter", "format", "language" );
         verify( mockIdentifier );
     }
 
+    @Test( expected = IllegalArgumentException.class )
+    public void testBuildDatadockJobIllegalArgumentExceptionRootIsNull() throws Exception
+    {
+        /**
+         * setup
+         */
+        ArrayList<IJob> jobs = new ArrayList<IJob>();
+        jobs.add( mockJob );
+        testDocument = buildTestDocument( "submitter", "format", "language", false, true );
+
+
+        /**
+         * expectations
+         */
+        mockHarvester.start();
+
+        expect( mockHarvester.getJobs( 100 ) ).andReturn( jobs );
+        //buildDadadockjob
+        expect( mockJob.getReferenceData() ).andReturn( testDocument );
+      
+
+        /**
+         * replay
+         */
+        replay( mockFinJobs );
+        replay( mockHarvester );
+        replay( mockJob );
+        replay( mockDatadockPool );
+        replay( mockIdentifier );
+
+        /**
+         * do stuff
+         */
+        DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
+        datadockManager.update();
+        /**
+         * verify
+         */
+        verify( mockJob );
+        verify( mockFinJobs );
+        verify( mockHarvester );
+        verify( mockDatadockPool );
+        verify( mockIdentifier );
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void testBuildDatadockJobIllegalArgumentExceptionInfoIsNull() throws Exception
+    {  
+        /**
+         * setup
+         */
+        ArrayList<IJob> jobs = new ArrayList<IJob>();
+        jobs.add( mockJob );
+        testDocument = buildTestDocument( "submitter", "format", "language", true, false );
+
+
+        /**
+         * expectations
+         */
+        mockHarvester.start();
+
+        expect( mockHarvester.getJobs( 100 ) ).andReturn( jobs );
+        //buildDadadockjob
+        expect( mockJob.getReferenceData() ).andReturn( testDocument );
+      
+
+        /**
+         * replay
+         */
+        replay( mockFinJobs );
+        replay( mockHarvester );
+        replay( mockJob );
+        replay( mockDatadockPool );
+        replay( mockIdentifier );
+
+        /**
+         * do stuff
+         */
+        DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
+        datadockManager.update();
+        /**
+         * verify
+         */
+        verify( mockJob );
+        verify( mockFinJobs );
+        verify( mockHarvester );
+        verify( mockDatadockPool );
+        verify( mockIdentifier );
+    }
 
     @Test
     public void testShutdown() throws InterruptedException, ConfigurationException, ParserConfigurationException, SAXException, IOException
