@@ -3,8 +3,8 @@
 # config file of the program.
 
 
-#the compass section specifies settings relating to the lucene wrapper
- framework Compass.
+# the compass section specifies settings relating to the lucene wrapper
+# framework Compass.
 [compass]
 
 # name of the compass main configuration file
@@ -75,7 +75,7 @@ max_poll_size:       1
 keep_alive_time:     10
 
 # job_limit is not used anymore, will be deleted in future releases
-# job_limit:           20
+job_limit:           20
 
 # (relative) path to the plugin configuration file
 path:                config/datadock_jobs.xml
