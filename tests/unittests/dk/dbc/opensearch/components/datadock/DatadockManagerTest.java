@@ -83,7 +83,7 @@ public class DatadockManagerTest
 
     /**
      * helper method that builds a Document that pretends to be the referenceData
-     * @param infoIsNull decides whether the info element of the referenceData is 
+     * @param infoIsNull decides whether the info element of the referenceData is
      * null
      * @param rootIsNull decides whether the root element of the document is created
      */
@@ -94,20 +94,20 @@ public class DatadockManagerTest
         docBuilder = docBuilderFactory.newDocumentBuilder();
         Document theDocument = docBuilder.newDocument();
         if( !rootIsNull )
-        {
-            Element root = theDocument.createElement( "referencedata" );
-            if( !infoIsNull )
             {
-                Element info = theDocument.createElement( "info" );
+                Element root = theDocument.createElement( "referencedata" );
+                if( !infoIsNull )
+                    {
+                        Element info = theDocument.createElement( "info" );
 
-                info.setAttribute( "submitter", submitter );
-                info.setAttribute( "format", format );
-                info.setAttribute( "language", language );
-                root.appendChild( (Node)info );
-                
+                        info.setAttribute( "submitter", submitter );
+                        info.setAttribute( "format", format );
+                        info.setAttribute( "language", language );
+                        root.appendChild( (Node)info );
+
+                    }
+                theDocument.appendChild( (Node)root);
             }
-            theDocument.appendChild( (Node)root);
-        }
         return theDocument;
     }
 
@@ -136,21 +136,13 @@ public class DatadockManagerTest
 
 
     @Test
-    public void testConstructor() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    public void testConstructor() throws HarvesterIOException, ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
-	try {
-	    mockHarvester.start();
-	} catch ( HarvesterIOException hioe ) {
-	    throw new IOException( "Could not start harvester" , hioe );
-	}
-	   
+        mockHarvester.start();
+
         replay( mockHarvester );
-	try {
-	    DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
-	} catch ( HarvesterIOException hioe ) {
-	    throw new IOException( "Harvester conncetion error" , hioe );
-	}
-	    
+        DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
+
         verify( mockHarvester );
     }
 
@@ -301,7 +293,7 @@ public class DatadockManagerTest
         expect( mockHarvester.getJobs( 100 ) ).andReturn( jobs );
         //buildDadadockjob
         expect( mockJob.getReferenceData() ).andReturn( testDocument );
-      
+
 
         /**
          * replay
@@ -329,7 +321,7 @@ public class DatadockManagerTest
 
     @Test( expected = IllegalArgumentException.class )
     public void testBuildDatadockJobIllegalArgumentExceptionInfoIsNull() throws Exception
-    {  
+    {
         /**
          * setup
          */
@@ -346,7 +338,7 @@ public class DatadockManagerTest
         expect( mockHarvester.getJobs( 100 ) ).andReturn( jobs );
         //buildDadadockjob
         expect( mockJob.getReferenceData() ).andReturn( testDocument );
-      
+
 
         /**
          * replay
@@ -373,24 +365,16 @@ public class DatadockManagerTest
     }
 
     @Test
-    public void testShutdown() throws InterruptedException, ConfigurationException, ParserConfigurationException, SAXException, IOException
+    public void testShutdown() throws HarvesterIOException, InterruptedException, ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
-	try {
-	    mockHarvester.start();
-	    mockHarvester.shutdown();
-	} catch ( HarvesterIOException hioe ) {
-	    throw new IOException( "Harvester connection error" , hioe );
-	}
+        mockHarvester.start();
+        mockHarvester.shutdown();
         mockDatadockPool.shutdown();
 
         replay( mockHarvester );
         replay( mockDatadockPool );
-	try { 
-	    DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
-	    datadockmanager.shutdown();
-	} catch ( HarvesterIOException hioe ) {
-	    throw new IOException( "Harvester connection error" , hioe );
-	}
+        DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
+        datadockmanager.shutdown();
 
         verify( mockDatadockPool );
         verify( mockHarvester );
