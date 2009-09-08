@@ -27,6 +27,8 @@ import dk.dbc.opensearch.common.xml.XMLUtils;
 //import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.IJob;
+import dk.dbc.opensearch.components.harvest.HarvesterIOException;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -73,17 +75,15 @@ public class DatadockManager
     /**
      * Constructs the the DatadockManager instance.
      */
-    public DatadockManager( DatadockPool pool, IHarvest harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    public DatadockManager( DatadockPool pool, IHarvest harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, HarvesterIOException
     {
         log.trace( "DatadockManager( pool, harvester ) called" );
 
         this.pool = pool;
         this.rejectedSleepTime = DatadockConfig.getRejectedSleepTime();
         this.harvester = harvester;
-        harvester.start();
-
+	harvester.start();
         registeredJobs = new ArrayList<IJob>();
-        //registeredJobs = new Vector< DatadockJob >();
     }
 
 
@@ -130,14 +130,14 @@ public class DatadockManager
     }
 
 
-    public void shutdown() throws InterruptedException
+    public void shutdown() throws InterruptedException, HarvesterIOException
     {
         log.debug( "Shutting down the pool" );
         pool.shutdown();
         log.debug( "The pool is down" );
 
         log.debug( "Stopping harvester" );
-        harvester.shutdown();
+	harvester.shutdown();
         log.debug( "The harvester is stopped" );
     }
 

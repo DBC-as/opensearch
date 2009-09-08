@@ -66,7 +66,7 @@ public class ESHarvest implements IHarvest
      *    Why do we want to call start on a Harvester?
      *    Shouldn't it not just start when it is created? (i.e. the constructor is called)
      */
-    public void start()
+    public void start() throws HarvesterIOException
     {
 
 	log.info( "Starting the ES-Harvester" );
@@ -77,13 +77,21 @@ public class ESHarvest implements IHarvest
             oracleInstance = new OracleDBConnection();
             conn = oracleInstance.getConnection();
         }
-        catch( Exception e )
+        catch( ConfigurationException ce )
         {
-	    log.fatal( "Error while trying to connect to Oracle ES-base: " );
-	    e.printStackTrace();
-	    // \todo: add stacktrace to log.
-	    // \todo: throw exception.
+	    log.fatal( "Error while trying to connect to Oracle ES-base: " , ce );
+	    throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", ce );
         }
+        catch( SQLException sqle )
+        {
+	    log.fatal( "Error while trying to connect to Oracle ES-base: " , sqle );
+	    throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", sqle );
+        }
+        catch( ClassNotFoundException cnfe )
+        {
+	    log.fatal( "Error while trying to connect to Oracle ES-base: " , cnfe );
+	    throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", cnfe );
+	}
 
         log.debug( "ESHarvest started" );
 
@@ -96,7 +104,7 @@ public class ESHarvest implements IHarvest
     /**
      *
      */
-    public void shutdown()
+    public void shutdown() throws HarvesterIOException
     {
         /**
            \Note: It could be discussed wheter the cleanup-method mentioned in the
@@ -117,10 +125,8 @@ public class ESHarvest implements IHarvest
         }
         catch( SQLException sqle )
         {
-	    log.fatal( "Error when closing the Oracle connection: " );
-	    sqle.printStackTrace();
-	    // \todo: add stacktrace to log.
-	    // \todo: throw exception.
+	    log.fatal( "Error when closing the Oracle connection" , sqle );
+	    throw new HarvesterIOException( "Error when closing the Oracle connection", sqle );
         }
     }
 

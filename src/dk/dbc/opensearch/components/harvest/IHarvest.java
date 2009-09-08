@@ -35,14 +35,14 @@ public interface IHarvest
      * The start method. This method initiates the service after an
      * instance has been constructed.
      */
-    void start();
+    void start() throws HarvesterIOException;
     
     
     /**
      * The shutdown method. Should be used to shutdown the harvester
      * completely and not after each request.
      */
-    void shutdown();
+    void shutdown() throws HarvesterIOException;
 
     /**
      * This method delivers information about which jobs the requestor

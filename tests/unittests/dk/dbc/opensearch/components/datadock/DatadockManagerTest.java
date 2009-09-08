@@ -36,6 +36,8 @@ import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.IJob;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.components.harvest.HarvesterIOException;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -136,9 +138,19 @@ public class DatadockManagerTest
     @Test
     public void testConstructor() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
-        mockHarvester.start();
+	try {
+	    mockHarvester.start();
+	} catch ( HarvesterIOException hioe ) {
+	    throw new IOException( "Could not start harvester" , hioe );
+	}
+	   
         replay( mockHarvester );
-        DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
+	try {
+	    DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
+	} catch ( HarvesterIOException hioe ) {
+	    throw new IOException( "Harvester conncetion error" , hioe );
+	}
+	    
         verify( mockHarvester );
     }
 
@@ -363,14 +375,22 @@ public class DatadockManagerTest
     @Test
     public void testShutdown() throws InterruptedException, ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
-        mockHarvester.start();
-        mockHarvester.shutdown();
+	try {
+	    mockHarvester.start();
+	    mockHarvester.shutdown();
+	} catch ( HarvesterIOException hioe ) {
+	    throw new IOException( "Harvester connection error" , hioe );
+	}
         mockDatadockPool.shutdown();
 
         replay( mockHarvester );
         replay( mockDatadockPool );
-        DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
-        datadockmanager.shutdown();
+	try { 
+	    DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
+	    datadockmanager.shutdown();
+	} catch ( HarvesterIOException hioe ) {
+	    throw new IOException( "Harvester connection error" , hioe );
+	}
 
         verify( mockDatadockPool );
         verify( mockHarvester );

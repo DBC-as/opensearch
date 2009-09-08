@@ -40,6 +40,8 @@ import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.components.harvest.HarvesterIOException;
+
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -119,7 +121,9 @@ public class DatadockMain
         {
             log.error( "Interrupted while waiting on main daemon thread to complete." );
         }
-
+	catch( HarvesterIOException hioe ) {
+	    log.fatal( "Some error occured while shutting down the harvester", hioe );
+	}
         log.info( "Exiting." );
     }
 

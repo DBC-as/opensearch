@@ -21,6 +21,8 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+//import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 /**
@@ -39,14 +41,20 @@ public class HarvestFunc {
 
     static void runTests()
     {
-        startESHarvestTest();
-        getJobsNDataTest();
+	try {
+	    startESHarvestTest();
+	    getJobsNDataTest();
+	} 
+	catch ( HarvesterIOException hioe ) {
+	    System.out.println( "Could not start the Harvester" );
+	    hioe.printStackTrace();
+	}
     }
 
-    private static void startESHarvestTest()
+    private static void startESHarvestTest() throws HarvesterIOException
     {
         esh = new ESHarvest();
-        esh.start();
+	esh.start();
     }
 
     private static void getJobsNDataTest()
@@ -54,7 +62,7 @@ public class HarvestFunc {
         byte[] data = null;
 	//        esh = new ESHarvest();
 	//        esh.start();
-	startESHarvestTest();
+	//	startESHarvestTest();
 
         ArrayList<IJob> jobL = esh.getJobs( 2 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
