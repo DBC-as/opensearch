@@ -203,8 +203,6 @@ public class ESHarvest implements IHarvest
         {
 	    log.fatal( "A Database Error occured" );
 	    throw new HarvesterIOException( "A database error occured" , sqle );
-	    //            sqle.printStackTrace();
-	    // \todo: throw exception and log.fatal
         }
 
         return theJobList;
@@ -215,7 +213,7 @@ public class ESHarvest implements IHarvest
     /**
      *
      */
-    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
+    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
         log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
 
@@ -255,10 +253,8 @@ public class ESHarvest implements IHarvest
         }
         catch( SQLException sqle )
         {
-	    log.fatal( "A database error occured: " );
-	    sqle.printStackTrace();
-	    // \todo: add stacktrace to log.
-	    // \todo: throw fatal exception
+	    log.fatal( "A database error occured " , sqle );
+	    throw new HarvesterIOException( "A database error occured", sqle );
         }
         return returnData;
     }
@@ -271,7 +267,7 @@ public class ESHarvest implements IHarvest
     /**
      * The setstatus only accepts failure and success right now. retry will come later
      */
-    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         log.info( String.format( "ESHarvester was requested to set status %s on data identified by the identifier %s", status, jobId ) );
 
@@ -348,8 +344,8 @@ public class ESHarvest implements IHarvest
 		
 	    }
         } catch( SQLException sqle ) {
-            sqle.printStackTrace();
-	    // \todo: log.fatal and throw exception
+	    log.fatal( "A database error occured", sqle );
+	    throw new HarvesterIOException( "A database error occured", sqle );
         }
 
 

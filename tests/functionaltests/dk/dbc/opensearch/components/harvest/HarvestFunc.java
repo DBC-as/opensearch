@@ -91,7 +91,7 @@ public class HarvestFunc {
     /**
      * testing the updating of jobs stetting the status to SUCCESS and then to FAILURE
      */
-    private static void setStatusTest( IIdentifier id )
+    private static void setStatusTest( IIdentifier id ) throws HarvesterIOException
     {
         try{
 	    if ( counter % 2 == 0 ) {
