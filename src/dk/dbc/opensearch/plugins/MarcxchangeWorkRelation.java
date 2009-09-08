@@ -17,8 +17,14 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * \file
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.plugins;
+
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
@@ -31,7 +37,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -96,8 +101,7 @@ public class MarcxchangeWorkRelation implements IRelation
         }
 
         boolean ok = false;
-        //ok = addWorkRelationForMaterial( cargo );
-        ok = addWorkRelationForMaterial2( cargo );
+        ok = addWorkRelationForMaterial( cargo );
 
         if ( ! ok )
         {
@@ -108,7 +112,7 @@ public class MarcxchangeWorkRelation implements IRelation
     }
 
 
-    private boolean addWorkRelationForMaterial2( CargoContainer cargo ) throws RemoteException, ConfigurationException, ServiceException, IOException
+    private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws RemoteException, ConfigurationException, ServiceException, IOException
     {
         String dcTitle = cargo.getDCTitle();
         String dcType = cargo.getDCType();
@@ -137,14 +141,13 @@ public class MarcxchangeWorkRelation implements IRelation
                 }
             }
 
-            if ( ! dcTitle.equals( "" ) )
+            if ( ! dcTitle.equals( "" ) && sSourceWorkRelations.isEmpty() && sTitleWorkRelations.isEmpty() )
             {
                 if ( ! dcSource.equals( "" ) )
                 {
                     tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
                 }
                 else
-                //if ( tSourceWorkRelations.isEmpty() )
                 {
                     tTitleWorkRelations = fedor.getSubjectRelations( "title", dcTitle, relation );
                 }
@@ -177,10 +180,8 @@ public class MarcxchangeWorkRelation implements IRelation
             List< String > titlePids = new ArrayList<String>();
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
-                fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation ); //fa.findMatchingFieldPids( "title", dcTitle );
+                titlePids = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation );
             }
-            /*List<String> creatorPids = fedor.getSubjectRelations( "creator", dcCreator, relation ); //fa.findMatchingFieldPids( "creator", dcCreator );
-            titlePids.retainAll( creatorPids );*/
 
             if( ! titlePids.isEmpty() )
             {
@@ -193,45 +194,14 @@ public class MarcxchangeWorkRelation implements IRelation
         }
         log.debug( String.format( "workRelations = %s", workRelations.toString() ) ); //Arrays.deepToString( resultPids.toArray() )
 
-        //find work-pid for all pids in pids
-        HashMap<String, String> workPids = new HashMap<String, String>();
-
         for( String wr : workRelations )
         {
-            //List<String> workRelationPid = fedor.getSubjectRelationships2( pid, "isMemberOf" );
             log.debug( String.format( "work %s, workRelationPid = %s", wr, wr.toString() ) );
-
-            /*if( workRelationPid.isEmpty() )
-            {
-                log.warn( String.format( "no workrelation was found for pid %s", pid ) );
-            }
-            else if( workRelationPid.size() > 1 )
-            {
-                //there should be only one work-pid per pid, ie. the work-relation
-                // should be identical for all found pids, as they match on the
-                // workrelation criteria
-                log.warn( String.format( "the pid %s has more than one work it relates to (works: %s)", pid, workRelationPid.toString() ) );
-                /** \todo: should more be done about this?*/
-            //}
-
-            /*if( workRelationPid.size() >= 1 )
-            {
-                // the client has been duly warned, now we'll just select the first
-                // (and hopefully only) of the returned workrelation pids
-                workPids.put( pid, workRelationPid.get( 0 ) );
-            }*/
         }
 
         // lets check that there was only one workpid for all the returned
         // materials:
         String theone = null;
-        /*ArrayList<String> howmany = new ArrayList<String>( workPids.values() );
-        log.debug( String.format( "workpids list = %s", howmany.toString() ) );
-        if( howmany.size() > 1 )
-        {
-            log.warn( String.format( "The CargoContainer %s matched more than one workrelation ( = %s)", cargo.getDCTitle(), howmany.toString() ) );
-        }
-        else if( howmany.isEmpty() )*/
         if ( workRelations.isEmpty() )
         {
             // this is a new workrelation, lets get a pid
@@ -242,133 +212,12 @@ public class MarcxchangeWorkRelation implements IRelation
             theone = workRelations.get( 0 );
         }
 
-        /*if( howmany.size() >= 1)
-        {
-            //again, the client has been duly warned, we simply take the first, and
-            //hopefully only value:
-            theone = howmany.get( 0 );
-            log.debug( String.format( "Adding workrelation %s to pid %s", theone, cargo.getDCIdentifier() ) );
-        }*/
-
         log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), theone ) );
+
         // and add this workrelation pid as the workrelationpid of the
-        // cargocontainer material:*/
         return fedor.addPidToCollection( cargo.getDCIdentifier(), theone );
     }
 
-
-    private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws RemoteException, ConfigurationException, ServiceException, IOException
-    {
-        String dcTitle = cargo.getDCTitle();
-        String dcType = cargo.getDCType();
-        String dcCreator = cargo.getDCCreator();
-        String dcSource = cargo.getDCSource();
-
-        FedoraObjectRelations fedor = new FedoraObjectRelations();
-
-        List<String> pids = new ArrayList<String>();
-        if( !types.contains( dcType ) )
-        {
-            List<String> titlePids = fa.findMatchingFieldPids( "title", dcTitle );
-            List<String> sTitlePids = fa.findMatchingFieldPids( "source", dcTitle );
-            List<String> sourcePids = fa.findMatchingFieldPids( "source", dcSource );
-            List<String> tSourcePids = fa.findMatchingFieldPids( "title", dcSource );
-
-            if( !titlePids.isEmpty() )
-            {
-                pids.addAll( titlePids );
-            }
-            else if( !sTitlePids.isEmpty() )
-            {
-                pids.addAll( sTitlePids );
-            }
-            else if( !sourcePids.isEmpty() )
-            {
-                pids.addAll( sourcePids );
-            }
-            else if( !tSourcePids.isEmpty() )
-            {
-                pids.addAll( tSourcePids );
-            }
-            else
-            {
-                log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcSource ) );
-            }
-        }
-        else
-        {
-            List<String> titlePids = fa.findMatchingFieldPids( "title", dcTitle );
-            List<String> creatorPids = fa.findMatchingFieldPids( "creator", dcCreator );
-            titlePids.retainAll( creatorPids );
-
-            if( !titlePids.isEmpty() )
-            {
-                pids.addAll( titlePids );
-            }
-            else
-            {
-                log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcCreator ) );
-            }
-        }
-        log.debug( String.format( "pids = %s", pids.toString() ) );
-
-        //find work-pid for all pids in pids
-        HashMap<String, String> workPids = new HashMap<String, String>();
-
-        for( String pid : pids )
-        {
-            List<String> workRelationPid = fedor.getSubjectRelationships( pid, "isMemberOf" );
-            log.debug( String.format( "pid %s, workRelationPid = %s", pid, workRelationPid.toString() ) );
-            if( workRelationPid.isEmpty() )
-            {
-                log.warn( String.format( "no workrelation was found for pid %s", pid ) );
-            }
-            else if( workRelationPid.size() > 1 )
-            {
-                //there should be only one work-pid per pid, ie. the work-relation 
-                // should be identical for all found pids, as they match on the
-                // workrelation criteria
-                log.warn( String.format( "the pid %s has more than one work it relates to (works: %s)", pid, workRelationPid.toString() ) );
-                /** \todo: should more be done about this?*/
-            }
-
-            if( workRelationPid.size() >= 1 )
-            {
-                // the client has been duly warned, now we'll just select the first
-                // (and hopefully only) of the returned workrelation pids
-                workPids.put( pid, workRelationPid.get( 0 ) );
-            }
-        }
-
-        // lets check that there was only one workpid for all the returned
-        // materials:
-        String theone = null;
-        ArrayList<String> howmany = new ArrayList<String>( workPids.values() );
-        log.debug( String.format( "workpids list = %s", howmany.toString() ) );
-        if( howmany.size() > 1 )
-        {
-            log.warn( String.format( "The CargoContainer %s matched more than one workrelation ( = %s)", cargo.getDCTitle(), howmany.toString() ) );
-        }
-        else if( howmany.isEmpty() )
-        {
-            // this is a new workrelation, lets get a pid
-            theone = PIDManager.getInstance().getNextPID( "work" );
-        }
-
-        if( howmany.size() >= 1)
-        {
-            //again, the client has been duly warned, we simply take the first, and
-            //hopefully only value:
-            theone = howmany.get( 0 );
-            log.debug( String.format( "Adding workrelation %s to pid %s", theone, cargo.getDCIdentifier() ) );
-        }
-
-        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), theone ) );
-        // and add this workrelation pid as the workrelationpid of the
-        // cargocontainer material:
-        return fedor.addPidToCollection( cargo.getDCIdentifier(), theone );
-    }
-    
 
     public PluginType getPluginType()
     {

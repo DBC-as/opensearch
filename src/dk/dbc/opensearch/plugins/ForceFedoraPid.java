@@ -1,12 +1,32 @@
+/*
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * \file
+ * \brief
+ */
+
+
 package dk.dbc.opensearch.plugins;
 
-import java.io.ByteArrayInputStream;
 
-import javax.xml.xpath.XPathExpressionException;
-
-import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-
+import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -14,23 +34,32 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import java.io.ByteArrayInputStream;
+
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.log4j.Logger;
+import org.xml.sax.InputSource;
 
-public class ForceFedoraPid implements IAnnotate {
 
+public class ForceFedoraPid implements IAnnotate
+{
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
 
+
 	@Override
-	public PluginType getPluginType() {
+	public PluginType getPluginType()
+    {
 		return PluginType.ANNOTATE;
 	}
 
-	private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException {
+
+	private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException
+    {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
         NamespaceContext nsc = new OpensearchNamespaceContext();
@@ -55,6 +84,7 @@ public class ForceFedoraPid implements IAnnotate {
         {
             throw new PluginException( String.format( "Could not compile xpath expression '%s'", "/docbook:article/docbook:title" ), e );
         }
+
         InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
 
         // Find title of the docbook document
@@ -71,21 +101,27 @@ public class ForceFedoraPid implements IAnnotate {
         
         log.trace( String.format("title found [%s]", title) );
        
-        String newID = co.getSubmitter() + ":" + title.substring(0,title.indexOf('|') );
-        if( newID.length() > 64 ) {
-        	log.warn( String.format("Constructed ID %s to long shortning to %s", newID, newID.substring(0,64) ));
-        	newID = newID.substring(0,64);
+        String newID = co.getSubmitter() + ":" + title.substring( 0, title.indexOf( '|' ) );
+        if( newID.length() > 64 )
+        {
+        	log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0,64 ) ) );
+        	newID = newID.substring( 0,64 );
         }
         
         return newID;
 	}
+
+
 	@Override
-	public CargoContainer getCargoContainer(CargoContainer cargo) throws PluginException {
-		String s=getDCIdentifierFromOriginal( cargo );
-		if( s != null && s.length()>3) {	
-			log.info( String.format("Forcing Store ID to %s", s) );
+	public CargoContainer getCargoContainer(CargoContainer cargo) throws PluginException
+    {
+		String s = getDCIdentifierFromOriginal( cargo );
+		if( s != null && s.length() > 3 )
+        {
+			log.info( String.format("Forcing Store ID to %s", s ) );
 			cargo.setDCIdentifier( s );
 		} 
-		return cargo;
+
+        return cargo;
 	}
 }
