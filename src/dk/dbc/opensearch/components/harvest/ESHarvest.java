@@ -134,7 +134,7 @@ public class ESHarvest implements IHarvest
     /**
      *
      */
-    public ArrayList<IJob> getJobs( int maxAmount )
+    public ArrayList<IJob> getJobs( int maxAmount ) throws HarvesterIOException
     {
 
 	log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
@@ -201,7 +201,9 @@ public class ESHarvest implements IHarvest
         }
         catch( SQLException sqle )
         {
-            sqle.printStackTrace();
+	    log.fatal( "A Database Error occured" );
+	    throw new HarvesterIOException( "A database error occured" , sqle );
+	    //            sqle.printStackTrace();
 	    // \todo: throw exception and log.fatal
         }
 

@@ -46,7 +46,7 @@ public class HarvestFunc {
 	    getJobsNDataTest();
 	} 
 	catch ( HarvesterIOException hioe ) {
-	    System.out.println( "Could not start the Harvester" );
+	    System.out.println( "An internal Harvester error occured" );
 	    hioe.printStackTrace();
 	}
     }
@@ -57,7 +57,7 @@ public class HarvestFunc {
 	esh.start();
     }
 
-    private static void getJobsNDataTest()
+    private static void getJobsNDataTest() throws HarvesterIOException
     {
         byte[] data = null;
 	//        esh = new ESHarvest();

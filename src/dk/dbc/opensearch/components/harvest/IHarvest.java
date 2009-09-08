@@ -53,7 +53,7 @@ public interface IHarvest
      * @param maxAmount specifies the maximum amount of jobs to be written to the {@link IJobList}
      * @returns an {@link IjobList} containing information about jobs that the requestor can obtain.
      */
-    List<IJob> getJobs( int maxAmount );
+    List<IJob> getJobs( int maxAmount ) throws HarvesterIOException; 
 
 
     /**
