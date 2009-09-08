@@ -81,7 +81,7 @@ public class DatadockMain
     
     public static void init() throws ConfigurationException 
     {
-    	log.debug( "DatadockMain init called" );
+    	log.trace( "DatadockMain init called" );
 
     	pollTime = DatadockConfig.getMainPollTime();
         queueSize = DatadockConfig.getQueueSize();
@@ -89,11 +89,13 @@ public class DatadockMain
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
 
-        log.debug( String.format( "---> queueSIZE = '%s'", queueSize ) );
+        log.trace( String.format( "queueSIZE = '%s'", queueSize ) );
     }
 
 
-    // Helper method to avoid static problems in init
+    /**
+     * Helper method to avoid static problems in init
+     */
     @SuppressWarnings( "unchecked" )
     public Class getClassType()
     {
@@ -159,8 +161,10 @@ public class DatadockMain
      */
     static public void main(String[] args) throws Throwable
     {
+        
+        /** \todo: the value of the configuration file is hardcoded */
         Log4jConfiguration.configure( "log4j_datadock.xml" );
-    	log.debug( "DatadockMain main called" );
+    	log.trace( "DatadockMain main called" );
 
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
@@ -174,7 +178,7 @@ public class DatadockMain
             /** -------------------- setup and start the datadockmanager -------------------- **/
             log.info( "Starting the datadock" );
 
-            log.debug( "initializing resources" );
+            log.trace( "initializing resources" );
 
             // DB access
             IDBConnection dbConnection = new PostgresqlDBConnection();
@@ -182,30 +186,30 @@ public class DatadockMain
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IFedoraAdministration fedoraAdministration = new FedoraAdministration();
 
-            log.debug( "Starting datadockPool" );
+            log.trace( "Starting datadockPool" );
 
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge(); 
             
-            log.debug( "Starting harvester" );
+            log.trace( "Starting harvester" );
             // harvester;
             IHarvest harvester = new FileHarvest();
             
             datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraAdministration, harvester);
             
-            log.debug( "Starting the manager" );
+            log.trace( "Starting the manager" );
             // Starting the manager
             datadockManager = new DatadockManager( datadockPool, harvester );
 
             /** --------------- setup and startup of the datadockmanager done ---------------- **/
-            log.debug( "Daemonizing" );
+            log.info( "Daemonizing" );
 
             daemonize();
             addDaemonShutdownHook();
         }
-        catch ( Throwable e )
+        catch ( Exception e )
         {
             System.out.println( "Startup failed." + e );
             log.fatal( "Startup failed.", e);
@@ -220,7 +224,7 @@ public class DatadockMain
         {
             try
             {
-            	log.debug( "DatadockMain calling datadockManager update" );
+            	log.trace( "DatadockMain calling datadockManager update" );
                 datadockManager.update();
                 Thread.currentThread();
                 Thread.sleep( pollTime );

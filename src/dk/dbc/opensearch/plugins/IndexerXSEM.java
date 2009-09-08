@@ -1,22 +1,21 @@
-/**
-   This file is part of opensearch.
-   Copyright © 2009, Dansk Bibliotekscenter a/s,
-   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+/*
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-   opensearch is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-   opensearch is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 
 package dk.dbc.opensearch.plugins;
 
@@ -150,7 +149,7 @@ public class IndexerXSEM implements IIndexer
 
                 if( ! isValidAlias )
                 {
-                    log.fatal( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
+                    log.fatal( String.format( "The format %s (from pid %s) has no alias in the XSEM mapping file", indexingAlias, cc.getDCIdentifier() ) );
                     throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
                 }
                 else
@@ -164,7 +163,7 @@ public class IndexerXSEM implements IIndexer
                     } catch (DocumentException de) {
                         log.trace( String.format( "While parsing xml: %s, I caught exception from SAX Parsing : %s", new String( co.getBytes() ), de.getMessage() ) );
                         log.fatal( String.format( "Error reading xml stream: %s", de.getMessage() ) );
-                        throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s", indexingAlias, co.getMimeType() ), de );
+                        throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s, pid=%s", indexingAlias, co.getMimeType(), cc.getDCIdentifier() ), de );
                     }
                     /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
                     HashMap< String, String> fieldMap = new HashMap< String, String >( 3 );
@@ -204,16 +203,7 @@ public class IndexerXSEM implements IIndexer
                         log.fatal( String.format( "Could not initiate transaction on the CompassSession" ) );
                         throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
                     }
-
                     
-                    
-
-                    /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
-                    //HashMap< String, String> fieldMap = new HashMap< String, String >( 2 );
-                    //log.debug( String.format( "Initializing new fields for the index" ) );
-                    //fieldMap.put( "fedoraPid", fedoraHandle );
-                    //fieldMap.put( "original_format", co.getFormat() );
-
                     //for( String key : fieldMap.keySet() )
                     //{
                     //    log.debug( String.format( "Setting new index field '%s' to '%s'", key, fieldMap.get( key ) ) );
