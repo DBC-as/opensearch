@@ -197,7 +197,7 @@ public class DatadockManagerTest
     }
 
 
-    @Test
+    @Test @Ignore
     public void testUpdate_reject() throws Exception
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
@@ -230,7 +230,7 @@ public class DatadockManagerTest
         verify( mockIdentifier );
     }
 
-    @Test
+    @Test @Ignore
     public void testUpdateWithRejectionAndContinuation() throws Exception
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
