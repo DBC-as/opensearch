@@ -28,8 +28,6 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.xml.XMLUtils;
-import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -42,7 +40,6 @@ import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -70,7 +67,6 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     
     private String submitter;
     private String format;
-    //private String path;
     private byte[] data;
 
     private PluginType pluginType = PluginType.HARVEST;
@@ -92,7 +88,6 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-        //        this.path = job.getUri().getPath();
         this.submitter = job.getSubmitter();
         this.format = job.getFormat();
         this.data = data;

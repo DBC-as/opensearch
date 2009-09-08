@@ -102,6 +102,7 @@ public class FedoraAuxiliaryMain
 
     static void DeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
+        int noOfPids = 0;
         for ( String str : labels )
         {
             for ( int i = 0; i < runsPerLabel; i++ )
@@ -115,14 +116,22 @@ public class FedoraAuxiliaryMain
                 {
                     re.printStackTrace();
                 }
-                System.out.println( "testDeleteObjectPids - pids.length: " + pids.length );
+
+                if ( pids.length > 0 )
+                {
+                    System.out.println( "testDeleteObjectPids - pids.length: " + pids.length );
+                }
+                
                 for ( int j = 0; j < pids.length; j++ )
                 {
-                    System.out.println( pids[j] );
                     testDeleteObject( pids[j] );
                 }
+
+                noOfPids =+ pids.length;
             }
         }
+
+        System.out.println( String.format( "No of pids deleted: %s", noOfPids ) );
     }
 
 

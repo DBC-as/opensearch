@@ -141,7 +141,7 @@ public class MarcxchangeWorkRelation implements IRelation
                 }
             }
 
-            if ( ! dcTitle.equals( "" ) && sSourceWorkRelations.isEmpty() && sTitleWorkRelations.isEmpty() )
+            if ( sSourceWorkRelations.isEmpty() && sTitleWorkRelations.isEmpty() && ! dcTitle.equals( "" ) )
             {
                 if ( ! dcSource.equals( "" ) )
                 {
@@ -194,28 +194,27 @@ public class MarcxchangeWorkRelation implements IRelation
         }
         log.debug( String.format( "workRelations = %s", workRelations.toString() ) ); //Arrays.deepToString( resultPids.toArray() )
 
+        // Only one is found!
         for( String wr : workRelations )
         {
             log.debug( String.format( "work %s, workRelationPid = %s", wr, wr.toString() ) );
         }
 
-        // lets check that there was only one workpid for all the returned
-        // materials:
-        String theone = null;
+        String workRelation = null;
         if ( workRelations.isEmpty() )
         {
             // this is a new workrelation, lets get a pid
-            theone = PIDManager.getInstance().getNextPID( "work" );
+            workRelation = PIDManager.getInstance().getNextPID( "work" );
         }
         else
         {
-            theone = workRelations.get( 0 );
+            workRelation = workRelations.get( 0 );
         }
 
-        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), theone ) );
+        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), workRelation ) );
 
         // and add this workrelation pid as the workrelationpid of the
-        return fedor.addPidToCollection( cargo.getDCIdentifier(), theone );
+        return fedor.addPidToCollection( cargo.getDCIdentifier(), workRelation );
     }
 
 
