@@ -1,12 +1,3 @@
-/**
- * \file DatadockManagerTest.java
- * \brief The DatadockManagerTest class
- * \package tests;
- */
-
-package dk.dbc.opensearch.components.datadock;
-
-
 /*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -26,12 +17,16 @@ package dk.dbc.opensearch.components.datadock;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file DatadockManagerTest.java
+ * \brief The DatadockManagerTest class
+ * \package tests;
+ */
 
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
+package dk.dbc.opensearch.components.datadock;
+
+
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.components.datadock.DatadockManager;
-import dk.dbc.opensearch.components.datadock.DatadockPool;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.IJob;
@@ -39,11 +34,7 @@ import dk.dbc.opensearch.components.harvest.IIdentifier;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.RejectedExecutionException;
@@ -51,12 +42,9 @@ import java.util.concurrent.RejectedExecutionException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -111,6 +99,7 @@ public class DatadockManagerTest
         return theDocument;
     }
 
+
     @Before
     public void Setup()
     {
@@ -145,6 +134,7 @@ public class DatadockManagerTest
 
         verify( mockHarvester );
     }
+
 
     @Test
     public void testUpdate() throws Exception
@@ -234,6 +224,7 @@ public class DatadockManagerTest
         verify( mockIdentifier );
     }
 
+
     @Test
     public void testUpdateWithRejectionAndMoreElements() throws Exception
     {
@@ -273,6 +264,7 @@ public class DatadockManagerTest
         verify( mockJob );
         verify( mockIdentifier );
     }
+
 
     @Test( expected = IllegalArgumentException.class )
     public void testBuildDatadockJobIllegalArgumentExceptionRootIsNull() throws Exception
@@ -319,6 +311,7 @@ public class DatadockManagerTest
         verify( mockIdentifier );
     }
 
+
     @Test( expected = IllegalArgumentException.class )
     public void testBuildDatadockJobIllegalArgumentExceptionInfoIsNull() throws Exception
     {
@@ -363,6 +356,7 @@ public class DatadockManagerTest
         verify( mockDatadockPool );
         verify( mockIdentifier );
     }
+
 
     @Test
     public void testShutdown() throws HarvesterIOException, InterruptedException, ConfigurationException, ParserConfigurationException, SAXException, IOException

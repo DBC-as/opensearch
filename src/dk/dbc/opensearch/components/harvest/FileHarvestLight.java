@@ -51,7 +51,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+
+
 /**
  * this is a class for testuse!
  * It looks in the directory named harvest at the root of execution and reads
@@ -62,6 +63,8 @@ import org.xml.sax.SAXException;
 public class FileHarvestLight implements IHarvest
 {
     static Logger log = Logger.getLogger( FileHarvestLight.class );
+
+    
     private Vector<String> FileVector;
     private Iterator iter;
     private String dir = "Harvest";
@@ -93,11 +96,13 @@ public class FileHarvestLight implements IHarvest
 
     }
 
+
     public void shutdown()
     {
     }
 
-    public List<IJob> getJobs( int maxAmount )
+
+    public List< IJob > getJobs( int maxAmount )
     {
         Element root = null;
         String fileName;

@@ -122,52 +122,52 @@ public class MarcxchangeWorkRelation implements IRelation
         FedoraObjectRelations fedor = new FedoraObjectRelations();
 
         String relation = "isMemberOf";
-        List< String > workRelations = new ArrayList<String>();
+        String workRelation = null;
         if( ! types.contains( dcType ) )
         {
             log.debug( String.format( "finding work relations for dcType %s", dcType ) );
-            List< String > tTitleWorkRelations = new ArrayList< String >();
-            List< String > sTitleWorkRelations = new ArrayList< String >();
-            List< String > sSourceWorkRelations = new ArrayList< String >();
-            List< String > tSourceWorkRelations = new ArrayList< String >();
+            String sSourceWorkRelation = null;
+            String sTitleWorkRelation = null;
+            String tTitleWorkRelation = null;
+            String tSourceWorkRelation = null;
 
             log.debug( String.format( "WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle) );
             if ( ! dcSource.equals( "" ) )
             {
-                sSourceWorkRelations = fedor.getSubjectRelations( "source", dcSource, relation );
-                if ( sSourceWorkRelations.isEmpty() && ! dcTitle.equals( "" ) ) 
+                sSourceWorkRelation = fedor.getSubjectRelations( "source", dcSource, relation );
+                if ( sSourceWorkRelation == null && ! dcTitle.equals( "" ) )
                 {
-                    sTitleWorkRelations = fedor.getSubjectRelations( "source", dcTitle, relation );
+                    sTitleWorkRelation = fedor.getSubjectRelations( "source", dcTitle, relation );
                 }
             }
 
-            if ( sSourceWorkRelations.isEmpty() && sTitleWorkRelations.isEmpty() && ! dcTitle.equals( "" ) )
+            if ( sSourceWorkRelation == null && sTitleWorkRelation == null && ! dcTitle.equals( "" ) )
             {
                 if ( ! dcSource.equals( "" ) )
                 {
-                    tSourceWorkRelations = fedor.getSubjectRelations( "title", dcSource, relation );
+                    tSourceWorkRelation = fedor.getSubjectRelations( "title", dcSource, relation );
                 }
                 else
                 {
-                    tTitleWorkRelations = fedor.getSubjectRelations( "title", dcTitle, relation );
+                    tTitleWorkRelation = fedor.getSubjectRelations( "title", dcTitle, relation );
                 }
             }
             
-            if( ! sSourceWorkRelations.isEmpty() )
+            if( sSourceWorkRelation != null )
             {
-                workRelations.addAll( sSourceWorkRelations );
+                workRelation = sSourceWorkRelation;
             }
-            else if( ! sTitleWorkRelations.isEmpty() )
+            else if( sTitleWorkRelation != null )
             {
-                workRelations.addAll( sTitleWorkRelations );
+                workRelation = sTitleWorkRelation;
             }
-            else if( ! tSourceWorkRelations.isEmpty() )
+            else if( tSourceWorkRelation != null )
             {
-                workRelations.addAll( tSourceWorkRelations );
+                workRelation = tSourceWorkRelation;
             }
-            else if( ! tTitleWorkRelations.isEmpty() )
+            else if( tTitleWorkRelation != null )
             {
-                workRelations.addAll( tTitleWorkRelations );
+                workRelation = tTitleWorkRelation;
             }
             else
             {
@@ -177,38 +177,27 @@ public class MarcxchangeWorkRelation implements IRelation
         else
         {
 
-            List< String > titlePids = new ArrayList<String>();
+            //String titlePid = null;
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
-                titlePids = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation );
+                //titlePid = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation );
+                workRelation = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation );
             }
-
-            if( ! titlePids.isEmpty() )
+            /*if( titlePid != null )
             {
-                workRelations.addAll( titlePids );
-            }
+                workRelation = titlePid;
+            }*/
             else
             {
                 log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcCreator ) );
             }
         }
-        log.debug( String.format( "workRelations = %s", workRelations.toString() ) ); //Arrays.deepToString( resultPids.toArray() )
+        log.debug( String.format( "workRelation = %s", workRelation) );
 
-        // Only one is found!
-        for( String wr : workRelations )
-        {
-            log.debug( String.format( "work %s, workRelationPid = %s", wr, wr.toString() ) );
-        }
-
-        String workRelation = null;
-        if ( workRelations.isEmpty() )
+        if ( workRelation == null )
         {
             // this is a new workrelation, lets get a pid
             workRelation = PIDManager.getInstance().getNextPID( "work" );
-        }
-        else
-        {
-            workRelation = workRelations.get( 0 );
         }
 
         log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), workRelation ) );

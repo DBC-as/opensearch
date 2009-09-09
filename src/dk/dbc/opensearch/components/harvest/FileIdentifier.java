@@ -18,9 +18,12 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 package dk.dbc.opensearch.components.harvest;
 
+
 import java.net.URI;
+
 
 /**
  * Impementation of the IIdentifer interface for identification of Files
@@ -28,14 +31,16 @@ import java.net.URI;
 public class FileIdentifier implements IIdentifier
 {
     private URI uri;
-  /**
-   * 
-   */
+
+    /**
+     *
+     */
     FileIdentifier( URI uri ) 
     {
         this.uri = uri;  
     }
 
+    
     URI getURI()
     {
         return uri;

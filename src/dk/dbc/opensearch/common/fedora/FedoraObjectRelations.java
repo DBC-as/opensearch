@@ -52,34 +52,8 @@ public class FedoraObjectRelations
 {
     private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
 
-    /**
-     * Helper class providing a type-safe way of referring relations in the
-     * fedora repository
-     */
-//    public enum Relationship
-//    {
-//
-//        /**
-//         * expresses the relation isMemberOfCollection
-//         */
-//        IS_MEMBER_OF_COLLECTION( "isMemberOfCollection" );
-//
-//        RDFName predicate;
-//        private RDFNamespace relNS;
-//
-//        Relationship( String predicate )
-//        {
-//            relNS = new FedoraRelsExtNamespace();
-//            this.predicate = new RDFName( relNS, predicate );
-//        }
-//
-//
-//    }
-//
-//    public FedoraObjectRelations()
-//    {
-//    }
-
+    
+    private static String p = "p"; // used to extract value from
 
     /**
      * Returns the matching objects from the simple rdf query of selecting all
@@ -94,7 +68,7 @@ public class FedoraObjectRelations
      * @throws IOException
      * @throws FedoraCommunicationException
      */
-    public List<String> getSubjectRelationships( String subject, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    /*public List<String> getSubjectRelationships( String subject, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         List<String> foundObjects = new ArrayList<String>();
         for( InputPair<String, String> objects : getRelationships( subject, relation, null ) )
@@ -102,35 +76,40 @@ public class FedoraObjectRelations
             foundObjects.add( objects.getSecond() );
         }
         return foundObjects;
-    }
+    }*/
 
 
-    public List< String > getSubjectRelations( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public String getSubjectRelations( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        object = object.replace( "'", "" );
-        
-        List< String > foundRelations = new ArrayList<String>();
-        for( InputPair<String, String> relations : getRelationships2( predicate, object, relation ) )
+        object = object.replace( "'", "" );        
+        InputPair<String, String> ret = getRelationships2( predicate, object, null, null, relation );
+
+        try
         {
-            foundRelations.add( relations.getSecond() );
+            return ret.getSecond();
         }
-        
-        return foundRelations;
+        catch ( NullPointerException npex )
+        {
+            return null;
+        }
     }
 
 
-    public List< String > getSubjectRelations( String predicate_1, String object_1, String predicate_2, String object_2, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public String getSubjectRelations( String predicate_1, String object_1, String predicate_2, String object_2, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         object_1 = object_1.replace( "'", "" );
         object_2 = object_2.replace( "'", "" );
-        
-        List< String > foundRelations = new ArrayList<String>();
-        for( InputPair<String, String> relations : getRelationships2( predicate_1, object_1, predicate_2, object_2, relation ) )
+        InputPair<String, String> ret = getRelationships2( predicate_1, object_1, predicate_2, object_2, relation );
+
+        try
         {
-            foundRelations.add( relations.getSecond() );
+            return ret.getSecond();
+        }
+        catch ( NullPointerException npex )
+        {
+            return null;
         }
 
-        return foundRelations;
     }
 
 
@@ -147,7 +126,7 @@ public class FedoraObjectRelations
      * @throws IOException
      * @throws FedoraCommunicationException
      */
-    public List<String> getObjectRelationships( String relation, String object ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    /*public List<String> getObjectRelationships( String relation, String object ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         List<String> foundObjects = new ArrayList<String>();
         for( InputPair<String, String> objects : getRelationships( null, relation, object ) )
@@ -155,44 +134,67 @@ public class FedoraObjectRelations
             foundObjects.add( objects.getFirst() );
         }
         return foundObjects;
-    }
+    }*/
 
 
-    private List< InputPair< String, String > > getRelationships2( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    /*private List< InputPair< String, String > > getRelationships2( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String query;
-        String p = "p";
-
+        
         String relsNS = "fedora-rels-ext";
 
         String select = "select $s $p from <#ri> where $s";
 
         //rewrite rules, specific for itql:
-        query = String.format( "%s <dc:%s> '%s' and $s <%s> $%s limit 1", select, predicate, object, relsNS + ":" + relation, p );
+        query = String.format( "%s <dc:%s> '%s' and $s <%s> $p limit 1", select, predicate, object, relsNS + ":" + relation );
 
         return executeGetTuples( query, p );
-    }
+    }*/
 
 
-    private List< InputPair< String, String > > getRelationships2( String predicate_1, String object_1, String predicate_2, String object_2, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    /**
+     *
+     * @param predicate_1 Must be set
+     * @param object_1 Must be set
+     * @param predicate_2 Null value accepted
+     * @param object_2 Null value accepted
+     * @param relation Name of relation Fedora object must have
+     * @return InputPair of
+     * @throws ConfigurationException
+     * @throws ServiceException
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    private InputPair< String, String > getRelationships2( String predicate_1, String object_1, String predicate_2, String object_2, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String query;
-        String p = "p";
+        String select = String.format(  "select $s $%s from <#ri> ", p );
+        String where = "where ";
+        String relsNS = String.format( "and $s <fedora-rels-ext:%s> $%s ", relation, p );
 
-        String relsNS = "fedora-rels-ext";
+        if ( predicate_1 != null && object_1 != null )
+        {
+            where += String.format( "$s <dc:%s> '%s' ", predicate_1, object_1 );
+        }
+        else
+        {
+            throw new MalformedURLException( "parameters 'predicate_1' and object_1' must be set!" );
+        }
 
-        String select = "select $s $p from <#ri> where";
-        String where_1 = String.format( "$s <dc:%s> '%s'", predicate_1, object_1 );
-        String where_2 = String.format( "$s <dc:%s> '%s'", predicate_2, object_2 );
+        if ( predicate_2 != null && object_2 != null )
+        {
+            where += "and " + String.format( "$s <dc:%s> '%s' ", predicate_2, object_2 );
+        }
 
-        //rewrite rules, specific for itql:
-        query = String.format( " %s %s and %s and $s <%s> $%s limit 1", select, where_1, where_2, relsNS + ":" + relation, p );
+        String limit = "limit 1";
 
-        return executeGetTuples( query, p );
+        query = select + where + relsNS + limit; // String.format( " %s %s and %s and $s <%s> $%s limit 1", select, where_1, where_2, relsNS + ":" + relation, p );
+        System.out.println( "QUERY: " + query );
+        return executeGetTuples( query );
     }
 
 
-    private List< InputPair< String, String > > executeGetTuples( String query, String p ) throws ConfigurationException, ServiceException, IOException
+    private InputPair< String, String > executeGetTuples( String query ) throws ConfigurationException, ServiceException, IOException
     {
         log.debug( String.format( "using query %s", query ) );
         Map<String, String> qparams = new HashMap< String, String >( 3 );
@@ -206,29 +208,35 @@ public class FedoraObjectRelations
          * Question: Are we to catch this error, and try again? What are we to do?
          */
         TupleIterator tuples = FedoraHandle.getInstance().getFC().getTuples( qparams );
-        ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
-        try
+        InputPair ret = null; // = new InputPair< String, String >( "", "" );
+        //ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
+        if ( tuples != null )
         {
-            while( tuples.hasNext() )
+            try
             {
-                Map<String, Node> row = tuples.next();
-                for( String key : row.keySet() )
+                while( tuples.hasNext() )
                 {
-                    if ( key.equals( p ) )
+                    Map<String, Node> row = tuples.next();
+                    for( String key : row.keySet() )
                     {
-                        String workRelation = row.get( key ).toString();
-                        tupleList.add( new InputPair< String, String >( key, workRelation ) );
+                        if ( key.equals( p ) )
+                        {
+                            String workRelation = row.get( key ).toString();
+                            log.debug( "returning tupleList" );
+                            ret = new InputPair< String, String >( key, workRelation );
+                            //tupleList.add( new InputPair< String, String >( key, workRelation ) );
+                        }
                     }
                 }
             }
-        }
-        catch( TrippiException ex )//ok, nothing we can do but return an empty list
-        {
-            log.error( String.format( "Could not retrieve tuples from TupleIterator from Fedora: %s", ex.getMessage() ) );
+            catch( TrippiException ex )//ok, nothing we can do but return an empty list
+            {
+                log.error( String.format( "Could not retrieve tuples from TupleIterator from Fedora: %s", ex.getMessage() ) );
+            }
         }
 
-        log.debug( "returning tupleList" );
-        return tupleList;
+        return ret;
+        //return tupleList;
     }
 
 
@@ -248,7 +256,7 @@ public class FedoraObjectRelations
      * @throws MalformedURLException
      * @throws IOException
      */
-    private List< InputPair< String, String > > getRelationships( String subject, String relation, String object ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    /*private List< InputPair< String, String > > getRelationships( String subject, String relation, String object ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String query;
 
@@ -268,7 +276,7 @@ public class FedoraObjectRelations
         else
         {
             query = String.format( "select <%s> <%s> from <#ri> where <%s> <%s> <%s>", fedoraNS + ":" + subject, fedoraNS + ":" + object, fedoraNS + ":" + subject, relsNS + ":" + relation, fedoraNS + ":" + object );
-        }
+        }*/
         /**
          * FedoraClient.getTuples might throw:
          * java.io.IOException: Error getting tuple iterator: Error parsing
@@ -296,7 +304,7 @@ public class FedoraObjectRelations
          * if we update the fedora-client.jar, we'll most probably need to update
          * the xmlpull jar and the  xpp3 jar
          */
-        log.debug( String.format( "using query %s", query ) );
+        /*log.debug( String.format( "using query %s", query ) );
         Map<String, String> qparams = new HashMap< String, String >( 3 );
         qparams.put( "lang", "itql" );
         qparams.put( "flush", "true" );
@@ -322,7 +330,7 @@ public class FedoraObjectRelations
         }
 
         return tupleList;
-    }
+    }*/
 
 
     /**
@@ -343,13 +351,12 @@ public class FedoraObjectRelations
     }
 
 
-    public boolean addOwnerToPid( String pid, String owner ) throws IOException, ServiceException, ConfigurationException
+    /*public boolean addOwnerToPid( String pid, String owner ) throws IOException, ServiceException, ConfigurationException
     {
         // \todo: Relationship.IS_MEMBER_OF_COLLECTION.toString() does not work, fix it.
         String predicate = "info:fedora/fedora-system:def/relations-external#isOwnedBy";
         log.debug( String.format( "addPidToCollection for pid: '%s'; predicate: '%s'; collectionpid: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, owner, false, null ) );
 
         return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, owner, false, null );
-    }
-
+    }*/
 }

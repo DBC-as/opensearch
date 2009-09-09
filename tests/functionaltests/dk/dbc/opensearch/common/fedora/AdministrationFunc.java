@@ -98,11 +98,11 @@ public class AdministrationFunc
 
         testFoxml11Document();
 */
-        System.out.println( "*** kalder testDeleteObjects ***" );
+        /*System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
-        testDeleteObjectPids( labels, 50 );
+        testDeleteObjectPids( labels, 50 );*/
 
-        //testGetSubjectRelations();
+        testGetSubjectRelations();
 
         /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
@@ -128,7 +128,7 @@ public class AdministrationFunc
     static void testGetSubjectRelations()
     {
         String predicate = "title"; // "source";
-        String object = "Harry Potter and the Order of the Phoenix s";
+        String object = "Harry Potter and the Order of the Phoenix";
         String predicate_2 = "creator";
         String object_2 = "J. K. Rowling s";
         String relation = "isMemberOf";
@@ -136,17 +136,11 @@ public class AdministrationFunc
         FedoraObjectRelations fedor = new FedoraObjectRelations();
         try
         {
-            List< String > workRelations = fedor.getSubjectRelations( "source", object, relation );
-            for ( String str : workRelations )
-            {
-                System.out.println( String.format( "first workRelation found:  %s", str ) );
-            }
-
-            workRelations = fedor.getSubjectRelations( predicate, object, predicate_2, object_2, relation );
-            for ( String str : workRelations )
-            {
-                System.out.println( String.format( "second workRelation found: %s", str ) );
-            }
+            String workRelation = fedor.getSubjectRelations( "source", object, relation );
+            System.out.println( String.format( "first workRelation found:  %s", workRelation ) );
+            
+            workRelation = fedor.getSubjectRelations( predicate, object, predicate_2, object_2, relation );
+            System.out.println( String.format( "second workRelation found: %s", workRelation ) );
         }
         catch ( ConfigurationException ce )
         {

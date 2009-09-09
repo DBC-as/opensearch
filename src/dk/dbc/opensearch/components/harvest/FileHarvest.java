@@ -305,17 +305,10 @@ public class FileHarvest implements IHarvest
             URI uri = job.getFirst().toURI();
             String grandParentFile = job.getFirst().getParentFile().getParentFile().getName();
             String parentFile = job.getFirst().getParentFile().getName();
-            //System.out.println( job.getFirst().getName() );
             FileIdentifier identifier = new FileIdentifier( uri );
             IJob theJob = buildTheJob( identifier, grandParentFile, parentFile );
-            //  DatadockJob datadockJob = new DatadockJob( uri, grandParentFile, parentFile );
-            //log.debug( String.format( "found new job: path='%s', submitter='%s', format='%s'",
-            //datadockJob.getUri().getRawPath(),
-            //datadockJob.getSubmitter(),
-            //datadockJob.getFormat() ) );
             log.debug( String.format( "found new job: path=%s, submitter=%s, format=%s ", theJob.getIdentifier(), grandParentFile, parentFile ) );
             jobs.add( theJob );
-            //            jobs.add( datadockJob );
         }
 
         return jobs;

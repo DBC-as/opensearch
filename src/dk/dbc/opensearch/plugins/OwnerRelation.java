@@ -1,25 +1,28 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
  * \file
  * \brief Adding owner relation information to fedora repository objects
  */
+
+
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
@@ -52,8 +55,9 @@ import org.apache.log4j.Logger;
  */
 public class OwnerRelation implements IRelation
 {
-
     private static Logger log = Logger.getLogger( OwnerRelation.class );
+
+
     private FedoraRelsExt rel;
     private PluginType pluginType = PluginType.RELATION;
     // Relations
@@ -239,10 +243,10 @@ public class OwnerRelation implements IRelation
         {
             cargo.add( DataStreamType.RelsExt, "rels-ext", "dbc", "en", "application/rdf+xml", IndexingAlias.None, baos.toByteArray() );
         }
-        catch( IOException ex )
+        catch( IOException ioex )
         {
             log.error( String.format( "Could not add RELS-EXT stream to CargoContainer (pid '%s')", pid ) );
-            throw new PluginException( String.format( "Could not add RELS-EXT stream to CargoContainer (pid '%s')", pid ) );
+            throw new PluginException( String.format( "Could not add RELS-EXT stream to CargoContainer (pid '%s')", pid ), ioex );
         }
         return cargo;
     }
@@ -289,15 +293,11 @@ public class OwnerRelation implements IRelation
 
     private boolean addRelationToRelsExt( String pid, String namespace )// throws PluginException
     {
-
         FedoraNamespaceContext fns = new FedoraNamespaceContext();
-        QName pred = new QName( fns.getNamespaceURI( "rel" ),
-                "isMemberOfCollection",
-                "fedora" );
-
+        QName pred = new QName( fns.getNamespaceURI( "rel" ), "isMemberOfCollection", "fedora" );
         QName obj = new QName( "", namespace, "" );
-        boolean added = false;
 
+        boolean added = false;
         added = rel.addRelationship( pred, obj );
 
         return added;
@@ -309,6 +309,4 @@ public class OwnerRelation implements IRelation
     {
         return pluginType;
     }
-
-
 }
