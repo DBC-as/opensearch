@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
@@ -36,8 +35,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
@@ -57,7 +54,6 @@ public class MarcxchangeWorkRelation implements IRelation
     private PluginType pluginType = PluginType.RELATION;
 
     private Vector<String> types;
-    private FedoraAdministration fa;
 
 
     /**
@@ -74,8 +70,6 @@ public class MarcxchangeWorkRelation implements IRelation
         types.add( "Avisartikel" );
         types.add( "Tidsskrift" );
         types.add( "Tidsskriftsartikel" );
-
-        fa = new FedoraAdministration();
     }
 
 
@@ -126,50 +120,29 @@ public class MarcxchangeWorkRelation implements IRelation
         if( ! types.contains( dcType ) )
         {
             log.debug( String.format( "finding work relations for dcType %s", dcType ) );
-            String sSourceWorkRelation = null;
-            String sTitleWorkRelation = null;
-            String tTitleWorkRelation = null;
-            String tSourceWorkRelation = null;
-
             log.debug( String.format( "WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle) );
             if ( ! dcSource.equals( "" ) )
             {
-                sSourceWorkRelation = fedor.getSubjectRelation( "source", dcSource, relation );
-                if ( sSourceWorkRelation == null && ! dcTitle.equals( "" ) )
+                workRelation = fedor.getSubjectRelation( "source", dcSource, relation );
+                if ( workRelation == null && ! dcTitle.equals( "" ) )
                 {
-                    sTitleWorkRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
+                    workRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
                 }
             }
 
-            if ( sSourceWorkRelation == null && sTitleWorkRelation == null && ! dcTitle.equals( "" ) )
+            if ( workRelation == null && ! dcTitle.equals( "" ) )
             {
                 if ( ! dcSource.equals( "" ) )
                 {
-                    tSourceWorkRelation = fedor.getSubjectRelation( "title", dcSource, relation );
+                    workRelation = fedor.getSubjectRelation( "title", dcSource, relation );
                 }
                 else
                 {
-                    tTitleWorkRelation = fedor.getSubjectRelation( "title", dcTitle, relation );
+                    workRelation = fedor.getSubjectRelation( "title", dcTitle, relation );
                 }
             }
-            
-            if( sSourceWorkRelation != null )
-            {
-                workRelation = sSourceWorkRelation;
-            }
-            else if( sTitleWorkRelation != null )
-            {
-                workRelation = sTitleWorkRelation;
-            }
-            else if( tSourceWorkRelation != null )
-            {
-                workRelation = tSourceWorkRelation;
-            }
-            else if( tTitleWorkRelation != null )
-            {
-                workRelation = tTitleWorkRelation;
-            }
-            else
+
+            if ( workRelation == null )
             {
                 log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcSource ) );
             }
@@ -177,16 +150,10 @@ public class MarcxchangeWorkRelation implements IRelation
         else
         {
 
-            //String titlePid = null;
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
-                //titlePid = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation );
                 workRelation = fedor.getSubjectRelation( "title", dcTitle, "creator", dcCreator, relation );
             }
-            /*if( titlePid != null )
-            {
-                workRelation = titlePid;
-            }*/
             else
             {
                 log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcCreator ) );
