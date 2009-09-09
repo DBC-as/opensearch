@@ -47,29 +47,4 @@ public class Job implements IJob
         return referenceData;
     }
 
-    public boolean equals( Object obj )
-    {
-        if( ! ( obj instanceof Job) )
-        {
-            throw new UnsupportedOperationException( String.format( "Type %s is not a Job type", obj.toString() ) );
-        }
-        
-        Job newJob = (Job)obj;
-        
-        if( identifier.equals( newJob.getIdentifier() ) )
-        {
-            if( referenceData == newJob.getReferenceData() )
-            {
-                return true;
-            }
-            else
-            {
-                throw new IllegalStateException( String.format( "The Identifier %s is associated with different referenceData", identifier.toString() ) );
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
 }
