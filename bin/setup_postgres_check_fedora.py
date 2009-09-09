@@ -70,7 +70,7 @@ if __name__ == '__main__':
     
     parser = OptionParser( usage="%prog [options]" )
     
-    parser.add_option( "-f", dest="harvest_folder", 
+    parser.add_option( "-d", dest="harvest_folder", 
                        action="store", help="The full path to the folder containing the data to be harvested."+
                        "\nIf not given, it is assumed that a harvest folder with data already exists, and nothing is copied or deleted."+
                        "\nE.g. /data1/harvest-test " )
