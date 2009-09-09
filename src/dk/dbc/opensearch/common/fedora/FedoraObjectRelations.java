@@ -59,16 +59,7 @@ public class FedoraObjectRelations
     public String getSubjectRelation( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         object = object.replace( "'", "" );        
-        InputPair<String, String> ret = getRelationship( predicate, object, null, null, relation );
-
-        try
-        {
-            return ret.getSecond();
-        }
-        catch ( NullPointerException npex )
-        {
-            return null;
-        }
+        return getRelationship( predicate, object, null, null, relation );
     }
 
 
@@ -76,17 +67,7 @@ public class FedoraObjectRelations
     {
         object_1 = object_1.replace( "'", "" );
         object_2 = object_2.replace( "'", "" );
-        InputPair<String, String> ret = getRelationship( predicate_1, object_1, predicate_2, object_2, relation );
-
-        try
-        {
-            return ret.getSecond();
-        }
-        catch ( NullPointerException npex )
-        {
-            return null;
-        }
-
+        return getRelationship( predicate_1, object_1, predicate_2, object_2, relation );
     }
 
    
@@ -103,7 +84,7 @@ public class FedoraObjectRelations
      * @throws MalformedURLException
      * @throws IOException
      */
-    private InputPair< String, String > getRelationship( String predicate_1, String object_1, String predicate_2, String object_2, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    private String getRelationship( String predicate_1, String object_1, String predicate_2, String object_2, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String query;
         String select = String.format(  "select $s $%s from <#ri> ", p );
@@ -129,7 +110,14 @@ public class FedoraObjectRelations
         query = select + where + relsNS + limit;        
         List< InputPair< String, String > > tuples = executeGetTuples( query );
 
-        return tuples.get( 0 );
+        if ( ! tuples.isEmpty() )
+        {
+            return tuples.get( 0 ).getSecond();
+        }
+        else
+        {
+            return null;
+        }
     }
 
 

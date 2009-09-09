@@ -136,10 +136,10 @@ public class AdministrationFunc
         FedoraObjectRelations fedor = new FedoraObjectRelations();
         try
         {
-            String workRelation = fedor.getSubjectRelations( "source", object, relation );
+            String workRelation = fedor.getSubjectRelation( "source", object, relation );
             System.out.println( String.format( "first workRelation found:  %s", workRelation ) );
             
-            workRelation = fedor.getSubjectRelations( predicate, object, predicate_2, object_2, relation );
+            workRelation = fedor.getSubjectRelation( predicate, object, predicate_2, object_2, relation );
             System.out.println( String.format( "second workRelation found: %s", workRelation ) );
         }
         catch ( ConfigurationException ce )

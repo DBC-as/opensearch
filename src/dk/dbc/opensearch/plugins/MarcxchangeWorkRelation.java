@@ -134,10 +134,10 @@ public class MarcxchangeWorkRelation implements IRelation
             log.debug( String.format( "WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle) );
             if ( ! dcSource.equals( "" ) )
             {
-                sSourceWorkRelation = fedor.getSubjectRelations( "source", dcSource, relation );
+                sSourceWorkRelation = fedor.getSubjectRelation( "source", dcSource, relation );
                 if ( sSourceWorkRelation == null && ! dcTitle.equals( "" ) )
                 {
-                    sTitleWorkRelation = fedor.getSubjectRelations( "source", dcTitle, relation );
+                    sTitleWorkRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
                 }
             }
 
@@ -145,11 +145,11 @@ public class MarcxchangeWorkRelation implements IRelation
             {
                 if ( ! dcSource.equals( "" ) )
                 {
-                    tSourceWorkRelation = fedor.getSubjectRelations( "title", dcSource, relation );
+                    tSourceWorkRelation = fedor.getSubjectRelation( "title", dcSource, relation );
                 }
                 else
                 {
-                    tTitleWorkRelation = fedor.getSubjectRelations( "title", dcTitle, relation );
+                    tTitleWorkRelation = fedor.getSubjectRelation( "title", dcTitle, relation );
                 }
             }
             
@@ -181,7 +181,7 @@ public class MarcxchangeWorkRelation implements IRelation
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
                 //titlePid = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation );
-                workRelation = fedor.getSubjectRelations( "title", dcTitle, "creator", dcCreator, relation );
+                workRelation = fedor.getSubjectRelation( "title", dcTitle, "creator", dcCreator, relation );
             }
             /*if( titlePid != null )
             {
