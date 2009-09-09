@@ -197,7 +197,7 @@ public class DatadockManagerTest
     }
 
 
-    @Test @Ignore
+    @Test 
     public void testUpdate_reject() throws Exception
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
@@ -210,6 +210,10 @@ public class DatadockManagerTest
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockDatadockPool.submit( isA( DatadockJob.class ) );
         expectLastCall().andThrow( new RejectedExecutionException() );
+
+        expect( mockJob.getReferenceData() ).andReturn( testDocument );
+        expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
+        mockDatadockPool.submit( isA( DatadockJob.class ) );
 
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
 
@@ -230,8 +234,8 @@ public class DatadockManagerTest
         verify( mockIdentifier );
     }
 
-    @Test @Ignore
-    public void testUpdateWithRejectionAndContinuation() throws Exception
+    @Test
+    public void testUpdateWithRejectionAndMoreElements() throws Exception
     {
         ArrayList< IJob > jobs = new ArrayList< IJob >();
         jobs.add( mockJob );
@@ -248,15 +252,11 @@ public class DatadockManagerTest
         expect( mockJob.getReferenceData() ).andReturn( testDocument );
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockDatadockPool.submit( isA( DatadockJob.class ) );
-
-
-        expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
-        //calling update 2nd time
         expect( mockJob.getReferenceData() ).andReturn( testDocument );
         expect( mockJob.getIdentifier() ).andReturn( mockIdentifier );
-        mockDatadockPool.submit( isA(DatadockJob.class ) );
-
+        mockDatadockPool.submit( isA( DatadockJob.class ) );
         expect( mockDatadockPool.checkJobs() ).andReturn( mockFinJobs );
+        //calling update 2nd time
 
         replay( mockFinJobs );
         replay( mockHarvester );
@@ -266,7 +266,7 @@ public class DatadockManagerTest
 
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
         datadockManager.update();
-        datadockManager.update();
+
         verify( mockFinJobs );
         verify( mockHarvester );
         verify( mockDatadockPool );

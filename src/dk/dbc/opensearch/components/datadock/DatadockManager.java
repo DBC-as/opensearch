@@ -99,6 +99,7 @@ public class DatadockManager
 
         while ( registeredJobs.size() > 0 )
         {
+            // System.out.println( String.format( "registeredJobs size: %s", registeredJobs.size() ) );
             log.trace( String.format( "processing job: %s", registeredJobs.get( 0 ).toString() ) );
 
             //build the DatadockJob
