@@ -33,6 +33,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
+import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,31 +41,30 @@ import java.net.URI;
 
 import org.junit.*;
 import static org.junit.Assert.*;
-
+import mockit.Mock;
+import mockit.MockClass;
+import mockit.Mockit;
 
 /**
  *
  */
 public class AnnotateTest 
 {
+    DocbookAnnotate dbAnnotate;
+    //OpensearchNamespaceContext osnsc;
     /**
      *
      */
-    @Ignore
-    @Test public void testatest() throws Exception 
+
+    @Before 
+    public void setUp()
+    {
+        // osnsc = createMock( OpensearchNamespaceContext.class );
+    }
+
+    @Test 
+    public void testConstructor() throws Exception 
     {        
-       //  File f = new File("/home/shm/amnesty.xml");
-//         FileInputStream fis = FileHandler.readFile( f.getPath() ); 
-//         URI uri = new URI( f.getPath() );
-//         byte[] fb = new byte[(int)f.length()];
-//         fis.read( fb );
-
-//         DatadockJob ddj = new DatadockJob( uri, "dbc", "faktalink", "dbc:100" );
-        
-//         CargoContainer cc = new CargoContainer();
-//         cc.add( DataStreamType.OriginalData, "faktalink", "dbc", "da", "text/xml", IndexingAlias.None, fb );
-//         DocbookAnnotate dba = new DocbookAnnotate();
-
-        // CargoContainer cc2 = dba.getCargoContainer( cc );
+        dbAnnotate = new DocbookAnnotate();
     }
 }
