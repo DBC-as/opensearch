@@ -28,6 +28,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -254,12 +255,12 @@ public class OwnerRelation implements IRelation
 
     private boolean addRelationship( String pid, String namespace ) throws PluginException
     {
-        FedoraAdministration fa = new FedoraAdministration();
+        FedoraObjectRelations fedor = new FedoraObjectRelations();
         boolean ok = false;
         try
         {
             log.debug( String.format( "OR addRelationship with pid: '%s'; namespace: '%s'", pid, namespace ) );
-            ok = fa.addIsMbrOfCollRelationship( pid, namespace );
+            ok = fedor.addIsMbrOfCollRelationship( pid, namespace );
         }
         catch( RemoteException re )
         {
@@ -291,7 +292,7 @@ public class OwnerRelation implements IRelation
     }
 
 
-    private boolean addRelationToRelsExt( String pid, String namespace )// throws PluginException
+    /*private boolean addRelationToRelsExt( String pid, String namespace )// throws PluginException
     {
         FedoraNamespaceContext fns = new FedoraNamespaceContext();
         QName pred = new QName( fns.getNamespaceURI( "rel" ), "isMemberOfCollection", "fedora" );
@@ -301,7 +302,7 @@ public class OwnerRelation implements IRelation
         added = rel.addRelationship( pred, obj );
 
         return added;
-    }
+    }*/
 
 
     @Override

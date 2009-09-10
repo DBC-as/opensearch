@@ -168,7 +168,7 @@ public interface IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
+    //public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 
     
     /**
@@ -202,7 +202,7 @@ public interface IFedoraAdministration
      * @throws MalformedURLException 
      * @throws ConfigurationException 
      */
-    public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
+    //public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException;
 
     
     /**

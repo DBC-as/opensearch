@@ -17,6 +17,11 @@
    along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.common.fedora;
 
@@ -103,6 +108,7 @@ public class FedoraAdministrationTest
     static File admStreamFile = new File( "admFile" );
     static String timeNow = "mockTime";
 
+
     /**
      * MockClasses
      */
@@ -115,10 +121,10 @@ public class FedoraAdministrationTest
         }
     }
 
+
     @MockClass( realClass = FedoraHandle.class )
     public static class MockFedoraHandle
     {
-
         @Mock public void $init()
         {
         }
@@ -138,14 +144,6 @@ public class FedoraAdministrationTest
         }
     }
 
-//    @MockClass( realClass = FedoraTools.class )
-//    public static class MockFedoraTools
-//    {
-//        @Mock public byte[] constructFoxml( CargoContainer cargo, String nextPid, String label )
-//        {
-//            return bytes;
-//        }
-//    }
 
     @MockClass( realClass = FedoraUtils.class )
     public static class MockFedoraUtils
@@ -156,6 +154,7 @@ public class FedoraAdministrationTest
         }
     }
 
+
     @MockClass( realClass = XMLUtils.class )
     public static class MockXMLUtils
     {
@@ -165,6 +164,7 @@ public class FedoraAdministrationTest
         }
 
     }
+
     
     @MockClass( realClass = FedoraAdministration.class )
     public static class MockFedoraAdministration
@@ -200,6 +200,7 @@ public class FedoraAdministrationTest
         }
     }
 
+
     @MockClass( realClass = DocumentBuilder.class )
     public static class MockDocumentBuilder
     {
@@ -210,7 +211,7 @@ public class FedoraAdministrationTest
     }
 
 
-    private byte[] createAdminStreamBytes() throws ParserConfigurationException, TransformerConfigurationException, TransformerException
+    /*private byte[] createAdminStreamBytes() throws ParserConfigurationException, TransformerConfigurationException, TransformerException
     {
         byte[] bytes;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -259,8 +260,9 @@ public class FedoraAdministrationTest
         //System.out.println( admString );
         bytes = admString.getBytes();
         return bytes;
-    } 
-    
+    }*/
+
+
     private static Element createAdminStreamElement()throws ParserConfigurationException, TransformerConfigurationException, TransformerException
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -311,7 +313,8 @@ public class FedoraAdministrationTest
 
         return root;
     }
-       
+
+
     @MockClass( realClass = FedoraAdministration.class )
     public static class MockFedoraAdministration2
     {
@@ -320,32 +323,37 @@ public class FedoraAdministrationTest
             return createAdminStreamElement();
         }
 
+
         @Mock public static String getIndexingAlias( Element adminStream )
         {
             return "article";
         }
+
 
         @Mock public static NodeList getStreamNodes( Element adminStream )
         {
             return mockNodeList;
         }
 
+
         @Mock public static String createFedoraResource( CargoObject cargo )
         {
             return "dsLocation";
         }
+
 
         @Mock public static String[] getEmptyStringArray()
         {
             return empty;
         }  
 
+
         @Mock public static String getTimeNow()
         {
             return timeNow;
-        } 
-
+        }
     }
+
     
     @MockClass( realClass = FileHandler.class )
     public static class MockFileHandler
@@ -387,14 +395,10 @@ public class FedoraAdministrationTest
         fa = null;
     }
 
-    /**
-     * Testing private helper methods so that they wont have to be tested again
-     * and again
-     */
+
     /**
      * Testing the happy path of the getAdminStream method
      */
-
     @Test public void testGetAdminStreamHappy() throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException, NoSuchMethodException, IllegalAccessException
     {
         //setup
@@ -433,6 +437,7 @@ public class FedoraAdministrationTest
         verify( mockFea );
     }
 
+
     /**
      * Testing the throwing of the IllegalStateException
      */
@@ -443,8 +448,8 @@ public class FedoraAdministrationTest
         Mockit.setUpMocks( MockFedoraHandle.class );
         //Mockit.setUpMocks( MockFedoraConfig.class );
         Mockit.setUpMocks( MockXMLUtils.class );
-        String byteString = "admindata";
-        byte[] bytearraystring = byteString.getBytes();
+        //String byteString = "admindata";
+        //byte[] bytearraystring = byteString.getBytes();
 
         String pid = "pid";
         Method method;
@@ -477,6 +482,7 @@ public class FedoraAdministrationTest
         }
     }
 
+
     /**
      * Testing the throwing of the IOException in getAdminStreamMethod
      */
@@ -488,7 +494,7 @@ public class FedoraAdministrationTest
         Mockit.setUpMocks( MockFedoraHandle.class );
         Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
-        byte[] bytearraystring = byteString.getBytes();
+        //byte[] bytearraystring = byteString.getBytes();
 
         String pid = "pid";
         Method method;
@@ -525,6 +531,7 @@ public class FedoraAdministrationTest
         verify( mockMTStream );
         verify( mockFea );
     }
+
 
     /**
      * Testing the getIndexingAlias methods happypath
@@ -566,7 +573,6 @@ public class FedoraAdministrationTest
         //verify
         verify( mockElement );
         verify( mockNodeList );
-
     }
 
 
@@ -612,8 +618,8 @@ public class FedoraAdministrationTest
 
         //verify
         verify( mockElement );
-
     }
+
 
     /**
      * Testing getStreamNodes method, so that it can be mocked for
@@ -653,8 +659,9 @@ public class FedoraAdministrationTest
         //verify
         verify( mockElement );
         verify( mockNodeList );
-
     }
+
+
     /**
      * Testing createFedoraResource method, so that it can be mocked
      * for testcases that calls it
@@ -665,7 +672,7 @@ public class FedoraAdministrationTest
         Mockit.setUpMocks( MockFedoraHandle.class);
         String byteString = "bytes";
         String returnString = "result";
-        byte[] bytes = byteString.getBytes();
+        //byte[] bytes = byteString.getBytes();
         String result = null;
         Method method;
         Class[] argClasses = new Class[]{ CargoObject.class };
@@ -698,17 +705,16 @@ public class FedoraAdministrationTest
         verify( mockCargoObject );
         verify( mockFedoraClient );
     }
-    /**
-     * Testing the constructor
-     */
+
+
     /**
      * Testing the happy path of the constructor, the only path.
      */
-
     @Test public void testConstructor()
     {
         fa = new FedoraAdministration();
     }
+
 
     /**
      * Testing public methods and mocking the private once.
@@ -721,6 +727,7 @@ public class FedoraAdministrationTest
         //nothing to test yet
     }
 
+
     /**
      * Testing the markObjectAsDeleted method
      */
@@ -728,6 +735,7 @@ public class FedoraAdministrationTest
     {
         //nothing to test yet
     }
+
 
     /**
      * Tests the happy path of the retrieveCargoContainer method
@@ -739,7 +747,7 @@ public class FedoraAdministrationTest
         Mockit.setUpMocks( MockFedoraAdministration.class );
         Mockit.setUpMocks( MockXMLUtils.class );
         String byteString = "admindata";
-        byte[] bytes = byteString.getBytes();
+        //byte[] bytes = byteString.getBytes();
 
         //expectations
         expect( mockNodeList.getLength()).andReturn( 1 );
@@ -824,6 +832,7 @@ public class FedoraAdministrationTest
         verify( mockCargoObject );
     }
 
+
     /**
      * Testing the storeCa the IllegalStateException when there are no
      * CargoObjects in the CargoContainer
@@ -843,6 +852,7 @@ public class FedoraAdministrationTest
         //verify
         verify( mockCC );
     }
+
 
     /**
      * Testing the getDataStreamsOfType method
@@ -890,6 +900,7 @@ public class FedoraAdministrationTest
         verify( mockFea );
     }
 
+
     /**
      * Testing the getDataStream method
      */
@@ -933,6 +944,7 @@ public class FedoraAdministrationTest
         verify( mockMTStream );
         verify( mockFea );
     }
+
 
     /**
      * Testing the addDataStreamToObject method
@@ -995,6 +1007,8 @@ public class FedoraAdministrationTest
         verify( mockFem );
         verify( mockFedoraClient );
     }
+
+
     /**
      * Testing the modifyDataStream method
      */
@@ -1009,7 +1023,7 @@ public class FedoraAdministrationTest
         String pid = "test:1";
         String format = "format";
         String mimeType = "mimeType";
-String logm = String.format( "modified the object with pid: %s", pid );
+        String logm = String.format( "modified the object with pid: %s", pid );
 
         //expectations
         expect( mockCargoObject.getFormat() ).andReturn( format );
@@ -1082,6 +1096,8 @@ String logm = String.format( "modified the object with pid: %s", pid );
         verify( mockFedoraClient );
 
     }
+
+    
     /**
      * Testing the returning of false by the removeDataStream method when not 
      * able to remove the desired stream. The adminstream should not be modified
@@ -1121,34 +1137,4 @@ String logm = String.format( "modified the object with pid: %s", pid );
         verify( mockFem );
         verify( mockFedoraClient );
     }
-
-
-    /**
-     * Testing the addRelation method, happy path
-     */
-
-    @Test
-    public void testAddRelation() throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
-    {
-        //setup
-        Mockit.setUpMocks( MockFedoraHandle.class);
-        String pid = "test:1";
-        String predicate = "predicate";
-String isMemberOfCollectionPredicate =  "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";
-        String targetDCIdentifier = "DCid";
-        boolean literal = false;
-        String datatype = "unknown";
-        //expectations
-        expect( mockFem.addRelationship( pid, isMemberOfCollectionPredicate, targetDCIdentifier, literal, datatype) ).andReturn( true );
-
-        //replay
-        replay( mockFem );
-        //do stuff
-        fa = new FedoraAdministration();
-        assertTrue( fa.addRelation( pid, predicate, targetDCIdentifier, literal, datatype ) );
-        //verify
-        verify( mockFem );
-
-    }
-   
 }

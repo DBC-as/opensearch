@@ -17,11 +17,17 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -180,11 +186,11 @@ public class ReviewRelation implements IRelation
     
     private boolean addRelationship( String dcIdentifier, String property_1, String dcVariable_1, String property_2, String dcVariable_2 ) throws PluginException
     {
-    	FedoraAdministration fa = new FedoraAdministration();        
+    	FedoraObjectRelations fedor = new FedoraObjectRelations();
     	boolean ok = false;
 		try 
 		{
-			ok = fa.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
+			ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
 		} 
 		catch ( RemoteException re ) 
 		{		
@@ -217,11 +223,11 @@ public class ReviewRelation implements IRelation
     
     private boolean addRelationship( String dcIdentifier, String property, String dcVariable ) throws PluginException
     {
-    	FedoraAdministration fa = new FedoraAdministration();        
+    	FedoraObjectRelations fedor = new FedoraObjectRelations();
     	boolean ok = false;
 		try 
 		{
-			ok = fa.addIsMbrOfCollRelationship( dcIdentifier, property, dcVariable, namespace );
+			ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property, dcVariable, namespace );
 		} 
 		catch ( RemoteException re ) 
 		{		

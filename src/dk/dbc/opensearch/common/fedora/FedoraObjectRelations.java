@@ -28,13 +28,16 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.types.InputPair;
 
 import fedora.common.Constants;
+import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -234,4 +237,238 @@ public class FedoraObjectRelations
 
         return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, owner, false, null );
     }*/
+
+
+    /**
+     * method for adding a relation to an object
+     * @param pid, the identifier of the digital object to add the relation to
+     * @param predicate, the predicate of the relation to add
+     * @param targetDCIdentifier, the object to relate the object to, can be a literal
+     * @param literal, true if the targetDCIdentifier is a literal
+     * @param datatype, the datatype of the literal, optional
+     * @return true if the relation was added
+     * @throws IOException
+     * @throws ServiceException
+     * @throws MalformedURLException
+     * @throws ConfigurationException
+     * @throws RemoteException
+     * @throws IOException
+     * @throws ServiceException
+     * @throws MalformedURLException
+     * @throws ConfigurationException
+     */
+    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+        log.debug( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
+
+        /**
+         * \todo: this string should be a type or the prdicate should be a type
+         * and the actual predicate should be chosen through the parameter
+         */
+        predicate = "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";//FedoraObjectRelations.Relationship.IS_MEMBER_OF_COLLECTION.toString();
+        literal = false;
+        log.debug( String.format( "modified addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
+
+        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
+    }
+
+
+    /**
+     * Wrapper method for adding the the relationship
+     * "isMemberOfCollection" on a RELS-EXT stream of the
+     * DigitalObject designated by `pid`
+     *
+     * @param pid the pid on the DigitalObject to add the relation on
+     * @param namespace
+     *
+     * @return true iff the relationship could be added, false otherwise
+     */
+    public boolean addIsMbrOfCollRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+        /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
+        log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
+        String predicate = "fedora:isMemberOfCollection";
+        return addRelation( pid, predicate, namespace, true, null );
+    }
+
+    public boolean addIsOwnedByRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+        /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
+        log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
+        String predicate = "fedora:isOwnedBy";
+        return addRelation( pid, predicate, namespace, true, null );
+    }
+
+    /**
+     * Method for adding relationship data
+     */
+    public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    {
+        log.debug( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1, value_1 ) );
+        FedoraAdministration fa = new FedoraAdministration();
+        String targetPid = fa.findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
+        log.debug( "targetPid found: " + targetPid );
+        return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
+    }
+
+
+    /**
+     * Method for adding relationship data
+     */
+    public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    {
+        log.debug( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
+        FedoraAdministration fa = new FedoraAdministration();
+        String targetPid = fa.findPropertyPid( sourcePid, property, value );
+        log.debug( "targetPid found: " + targetPid );
+        return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
+    }
+
+
+    /**
+     * Method for adding relationship data, used by other method
+     */
+    private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
+    {
+        String relationshipObject = null;
+        String predicate = "fedora:isMemberOfCollection";
+
+        if( targetPid != null ) // object with matching 'value' on 'property' found
+        {
+            log.debug( String.format( "targetPid: %s", targetPid ) );
+            RelationshipTuple[] rel = getRelationships( targetPid, predicate );
+
+            if( rel != null ) // existing relationships found
+            {
+                log.debug( "RelationshipTuple not null; existing relationship found" );
+                relationshipObject = rel[0].getObject();
+            }
+            else // no existing relationships found -> add relationship to new RELS-EXT object
+            {
+                log.debug( "no existing relationships found" );
+                relationshipObject = getNextRelationshipObject( namespace );
+            }
+        }
+        else // no object found -> add relationship to new RELS-EXT object
+        {
+            relationshipObject = getNextRelationshipObject( namespace );
+        }
+
+        log.debug( String.format( "relationshipObject: '%s'", relationshipObject ) );
+        return addIsMbrOfCollRelationshipNewRelsExt( sourcePid, predicate, relationshipObject );
+    }
+
+
+    /**
+     * Method for adding relationship data, used by other methods
+     */
+    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+        return addRelation( sourcePid, predicate, relationshipObject, true, null );
+    }
+
+
+    /**
+     *
+     */
+    private String getNextRelationshipObject( String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
+    {
+        String relationshipObject = PIDManager.getInstance().getNextPID( namespace );
+        relationshipObject = String.format( "info:fedora/%s", relationshipObject );
+
+        return relationshipObject;
+    }
+
+
+    /**
+     * method for getting the relationships an object has
+     * @param pid, the object to get relations for
+     * @param predicate, the predicate to search for, null means all
+     * @return RelationshipTuple[] containing the following for each relationship found:
+     * String subject, the object this method was called on
+     * String predicate,
+     * String object, the target of the predicate
+     * boolean isLiteral, tells if the object is a literal and not a pid
+     * String datatype, tells what datatype to pass the object as if it is a literal
+     * @throws IOException
+     * @throws ServiceException
+     * @throws MalformedURLException
+     * @throws ConfigurationException
+     */
+    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+        System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
+        try
+        {
+            return FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate );
+        }
+        catch( ConfigurationException ce )
+        {
+            throw ce;
+        }
+        catch( MalformedURLException mue )
+        {
+            throw mue;
+        }
+        catch( ServiceException se )
+        {
+            throw se;
+        }
+        catch( IOException ioe )
+        {
+            throw ioe;
+        }
+    }
+
+
+    /**
+     * method to see if an object has a certain relationship to another object
+     * Its a filtered version of the method getRelationships
+     * @param subject, the pid of the object in question
+     * @param predicate, the relationship in queation
+     * @param target, the target of the predicate
+     * @param isLiteral, true if the target is not an object in the base
+     * @return true if the relationship exists
+     * @throws IOException
+     * @throws ServiceException
+     * @throws MalformedURLException
+     * @throws ConfigurationException
+     */
+    public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    {
+        RelationshipTuple[] rt = FedoraHandle.getInstance().getAPIM().getRelationships( subject, predicate );
+        int rtLength = rt.length;
+        for( int i = 0; i < rtLength; i++ )
+        {
+            if( rt[i].getObject().equals( target ) && rt[i].isIsLiteral() == isLiteral )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Deletes the specified relationship. This method will remove the
+     * specified relationship(s) from the RELS-EXT datastream. If the
+     * Resource Index is enabled, this will also delete the
+     * corresponding triples from the Resource Index.
+     *
+     * If the object has state "Active" this method will fail. It is
+     * only allowed on Inactive and Deleted objects.
+     *
+     * @param pid fedora pid
+     * @param predicate relation on the object to remove
+     * @param targetDCIdentifier referenced fedora pid
+     * @param isLiteral set if the referenced rdf node is a Literal ( see http://www.w3.org/TR/rdf-concepts/#section-Literals)
+     * @param datatype datatype of the Literal, if any. If none should be specified, submit an empty String
+     *
+     * @return true iff the relationship could be removed from the object, false otherwise
+     */
+    public boolean removeRelation( String pid, String predicate, String targetDCIdentifier, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
+    }
 }

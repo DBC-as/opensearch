@@ -60,8 +60,9 @@ import org.apache.commons.configuration.ConfigurationException;
  */
 public class AdministrationFunc
 {
-
-    static FedoraAdministration fa;
+    private static FedoraAdministration fa;
+    private static FedoraObjectRelations fedor;
+    
 
     public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
@@ -74,6 +75,7 @@ public class AdministrationFunc
         try
         {
             fa = new FedoraAdministration();
+            fedor = new FedoraObjectRelations();
         }
         catch ( Exception e )
         {
@@ -295,7 +297,7 @@ public class AdministrationFunc
         try
         {
             //String[] resultFields = { "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights" };
-            subj = fa.getRelationships( "kkb:1979", "rel:isMemberOfCollection" );
+            subj = fedor.getRelationships( "kkb:1979", "rel:isMemberOfCollection" );
         }
         catch ( RemoteException re )
         {
@@ -317,14 +319,14 @@ public class AdministrationFunc
 
     static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter", "work" );
+        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter", "work" );
         System.out.println( "Everything ok: " + ret );
     }
 
 
     static void testFindObjectFieldsDouble() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        boolean ret = fa.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter og Fønixordenen", "creator", "Joanne K. Rowling", "work" );
+        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter og Fønixordenen", "creator", "Joanne K. Rowling", "work" );
         System.out.println( "Everything ok: " + ret );
     }
 

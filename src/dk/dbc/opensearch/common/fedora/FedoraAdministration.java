@@ -34,7 +34,6 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import fedora.common.Constants;
-import fedora.server.types.gen.RelationshipTuple;
 import fedora.server.types.gen.MIMETypedStream;
 import fedora.server.types.gen.ComparisonOperator;
 import fedora.server.types.gen.Condition;
@@ -48,11 +47,9 @@ import java.io.FileOutputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -329,12 +326,6 @@ public class FedoraAdministration implements IFedoraAdministration
         String adminLogm = "";
         String dsnName = cargo.getDataStreamType().getName();
 
-        //         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
-        //         byte[] adminStream = ds.getStream();
-        //         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        //         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        //         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        //         Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
         Element root = getAdminStream( pid );
 
         log.debug( String.format( "root element from adminstream == %s", root ) );
@@ -412,24 +403,13 @@ public class FedoraAdministration implements IFedoraAdministration
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
 
         //upload the admFile
-
         String[] empty = getEmptyStringArray();
 
         FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
         //upload the content
         String dsLocation = createFedoraResource( cargo );
-        // File tempFile = File.createTempFile( timeNow, "tmp" );
-        // //File theFile = new File( "tempFile" );
-        // tempFile.deleteOnExit();
-        // FileOutputStream fos = new FileOutputStream( tempFile );
-        // fos.write( cargo.getBytes() );
-        // fos.flush();
-        // fos.close();
-        // String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( tempFile );
-
         logm = String.format( "added %s to the object with pid: %s", dsLocation, pid );
-
         String returnedSID = FedoraHandle.getInstance().getAPIM().addDatastream( pid, sID, empty, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
 
         return returnedSID;
@@ -451,19 +431,7 @@ public class FedoraAdministration implements IFedoraAdministration
     public String modifyDataStream( CargoObject cargo, String sID, String pid, boolean versionable, boolean breakDependencies ) throws RemoteException, MalformedURLException, IOException, ConfigurationException, ServiceException
     {
         String logm = String.format( "modified the object with pid: %s", pid );
-        //String[] altIDs;
-
         String dsLocation = createFedoraResource( cargo );
-
-        // File theFile = new File( "tempFile" );
-        // theFile.deleteOnExit();
-        // FileOutputStream fos = new FileOutputStream( theFile );
-        // fos.write( cargo.getBytes() );
-        // fos.flush();
-        // fos.close();
-
-        // String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( theFile );
-
         String[] empty = getEmptyStringArray();
 
         return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, empty, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
@@ -495,13 +463,6 @@ public class FedoraAdministration implements IFedoraAdministration
         {
             return false;
         }
-        //10: get the adminstream to modify
-        //         MIMETypedStream ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid,DataStreamType.AdminData.getName(), null );
-        //         byte[] adminStream = ds.getStream();
-        //         log.debug( String.format( "Got adminstream from fedora == %s", new String( adminStream ) ) );
-        //         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        //         log.debug( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        //         Element rootOld = XMLUtils.getDocumentElement( new InputSource( bis ) );
 
         Element rootOld = getAdminStream( pid );
 
@@ -513,7 +474,6 @@ public class FedoraAdministration implements IFedoraAdministration
         //get indexingAlias
         NodeList indexingAliasElemOld = rootOld.getElementsByTagName( "indexingalias" );
         Node indexingAliasNodeOld = indexingAliasElemOld.item( 0 );
-        //System.out.println( ( (Element)indexingAliasNodeOld ).getAttribute( "name" ) );
         //make root and indexingAlias part of the new document
         Element root = (Element) admStream.importNode( (Node) rootOld, false );
         Node indexingAliasNode = admStream.importNode( indexingAliasNodeOld, true );
@@ -573,7 +533,6 @@ public class FedoraAdministration implements IFedoraAdministration
         // 18: make the admin info into a File ( and a String for current debug)
         Source source = new DOMSource( (Node) root );
         StringWriter stringWriter = new StringWriter();
-        //File admFile = new File( "admFile" );
         File admFile = FileHandler.getFile( "admFile" );
         admFile.deleteOnExit();
 
@@ -583,15 +542,12 @@ public class FedoraAdministration implements IFedoraAdministration
         Transformer transformer = transformerFactory.newTransformer();
         transformer.transform( source, result );
         transformer.transform( source, stringResult );
-        //debug
         String admStreamString = stringWriter.getBuffer().toString();
         log.debug( String.format( "printing new adminstream: %s", admStreamString ) );
 
         // 20:use modify by reference
         String adminLabel = "admin [text/xml]";
         String adminMime = "text/xml";
-        //SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.S" );
-        //String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
         String timeNow = getTimeNow();
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
@@ -602,251 +558,60 @@ public class FedoraAdministration implements IFedoraAdministration
 
         FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
-        // boolean retval = false;
-        //String logm = String.format( "removed stream %s from object %s", sID, pid );
-
         /**
          * \Todo: find out why the return val is String[] and not String. bug 9046
          */
-        // String[] stamp = FedoraHandle.getInstance().getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
-        // if( stamp != null )
-        //{
-        //  retval = true;
-        //}
         return true;
     }
 
 
     /**
-     * method for adding a relation to an object
-     * @param pid, the identifier of the digital object to add the relation to
-     * @param predicate, the predicate of the relation to add
-     * @param targetDCIdentifier, the object to relate the object to, can be a literal
-     * @param literal, true if the targetDCIdentifier is a literal
-     * @param datatype, the datatype of the literal, optional
-     * @return true if the relation was added
-     * @throws IOException
-     * @throws ServiceException
-     * @throws MalformedURLException
-     * @throws ConfigurationException
-     * @throws RemoteException
-     * @throws IOException
-     * @throws ServiceException
-     * @throws MalformedURLException
-     * @throws ConfigurationException
-     */
-    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
-    {
-        log.debug( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
-        //  try
-        //         {
-        /**
-         * \todo: this string should be a type or the prdicate should be a type
-         * and the actual predicate should be chosen through the parameter
-         */
-
-        predicate = "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";//FedoraObjectRelations.Relationship.IS_MEMBER_OF_COLLECTION.toString();
-        literal = false;
-        log.debug( String.format( "modified addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
-
-        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
-        // }
-        //         catch ( RemoteException re )
-        //         {
-        //             throw re;
-        //         }
-        //         catch ( ConfigurationException ce )
-        //         {
-        //             throw ce;
-        //         }
-        //         catch ( MalformedURLException mue )
-        //         {
-        //             throw mue;
-        //         }
-        //         catch ( ServiceException se )
-        //         {
-        //             throw se;
-        //         }
-        //         catch ( IOException ioe )
-        //         {
-        //             throw ioe;
-        //         }
-    }
-
-
-    /**
-     * Wrapper method for adding the the relationship
-     * "isMemberOfCollection" on a RELS-EXT stream of the
-     * DigitalObject designated by `pid`
+     * returns the administration stream of a given DigitalObject from
+     * the fedora repository
      *
-     * @param pid the pid on the DigitalObject to add the relation on
-     * @param namespace
+     * @param pid the fedora pid of a digital object
      *
-     * @return true iff the relationship could be added, false otherwise
+     * @return the administration stream as an Element
      */
-    public boolean addIsMbrOfCollRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    private static Element getAdminStream( String pid ) throws IOException,
+                                                               ParserConfigurationException,
+                                                               RemoteException,
+                                                               ServiceException,
+                                                               SAXException,
+                                                               ConfigurationException
     {
-        /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
-        log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
-        String predicate = "fedora:isMemberOfCollection";
-        return addRelation( pid, predicate, namespace, true, null );
-    }
-
-    public boolean addIsOwnedByRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
-    {
-        /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
-        log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
-        String predicate = "fedora:isOwnedBy";
-        return addRelation( pid, predicate, namespace, true, null );
-    }
-
-    /**
-     * Method for adding relationship data
-     */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
-    {
-        log.debug( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1, value_1 ) );
-        //log.debug( String.format( "Finding objects for pid '%s'", sourcePid) );
-        String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
-        log.debug( "targetPid found: " + targetPid );
-        return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
-    }
-
-
-    /**
-     * Method for adding relationship data
-     */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
-    {
-        log.debug( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
-        String targetPid = findPropertyPid( sourcePid, property, value );
-        log.debug( "targetPid found: " + targetPid );
-        return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
-    }
-
-
-    /**
-     * Method for adding relationship data, used by other method
-     */
-    private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
-    {
-        String relationshipObject = null;
-        String predicate = "fedora:isMemberOfCollection";
-
-        if( targetPid != null ) // object with matching 'value' on 'property' found
-        {
-            log.debug( String.format( "targetPid: %s", targetPid ) );
-            RelationshipTuple[] rel = getRelationships( targetPid, predicate );
-
-            if( rel != null ) // existing relationships found
-            {
-                log.debug( "RelationshipTuple not null; existing relationship found" );
-                relationshipObject = rel[0].getObject();
-            }
-            else // no existing relationships found -> add relationship to new RELS-EXT object
-            {
-                log.debug( "no existing relationships found" );
-                relationshipObject = getNextRelationshipObject( namespace );
-            }
-        }
-        else // no object found -> add relationship to new RELS-EXT object
-        {
-            relationshipObject = getNextRelationshipObject( namespace );
-        }
-
-        log.debug( String.format( "relationshipObject: '%s'", relationshipObject ) );
-        return addIsMbrOfCollRelationshipNewRelsExt( sourcePid, predicate, relationshipObject );
-    }
-
-
-    /**
-     * Method for adding relationship data, used by other methods
-     */
-    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
-    {
-        return addRelation( sourcePid, predicate, relationshipObject, true, null );
-    }
-
-
-    /**
-     *
-     */
-    private String getNextRelationshipObject( String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
-    {
-        String relationshipObject = PIDManager.getInstance().getNextPID( namespace );
-        relationshipObject = String.format( "info:fedora/%s", relationshipObject );
-
-        return relationshipObject;
-    }
-
-
-    /**
-     * method for getting the relationships an object has
-     * @param pid, the object to get relations for
-     * @param predicate, the predicate to search for, null means all
-     * @return RelationshipTuple[] containing the following for each relationship found:
-     * String subject, the object this method was called on
-     * String predicate,
-     * String object, the target of the predicate
-     * boolean isLiteral, tells if the object is a literal and not a pid
-     * String datatype, tells what datatype to pass the object as if it is a literal
-     * @throws IOException
-     * @throws ServiceException
-     * @throws MalformedURLException
-     * @throws ConfigurationException
-     */
-    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
-    {
-        System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
+        MIMETypedStream ds;
         try
         {
-            return FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate );
-        }
-        catch( ConfigurationException ce )
-        {
-            throw ce;
-        }
-        catch( MalformedURLException mue )
-        {
-            throw mue;
-        }
-        catch( ServiceException se )
-        {
-            throw se;
-        }
-        catch( IOException ioe )
-        {
-            throw ioe;
-        }
-    }
+            log.debug( "FEDORAADM. fedoraPid: " + pid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
 
-
-    /**
-     * method to see if an object has a certain relationship to another object
-     * Its a filtered version of the method getRelationships
-     * @param subject, the pid of the object in question
-     * @param predicate, the relationship in queation
-     * @param target, the target of the predicate
-     * @param isLiteral, true if the target is not an object in the base
-     * @return true if the relationship exists
-     * @throws IOException
-     * @throws ServiceException
-     * @throws MalformedURLException
-     * @throws ConfigurationException
-     */
-    public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
-    {
-        RelationshipTuple[] rt = FedoraHandle.getInstance().getAPIM().getRelationships( subject, predicate );
-        int rtLength = rt.length;
-        for( int i = 0; i < rtLength; i++ )
+            ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
+        }
+        catch( Exception e )//this looks a bit dubious, donnit?
         {
-            if( rt[i].getObject().equals( target ) && rt[i].isIsLiteral() == isLiteral )
-            {
-                return true;
-            }
+            log.debug( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
+            /*\todo: WTF?*/ throw new IOException( "test" );
+        }
+        byte[] adminStream = ds.getStream();
+        //log.debug( "getAdminstream 2" );
+        if( adminStream == null )
+        {
+            log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
+            throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
         }
 
-        return false;
+        log.trace( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
+
+        //CargoContainer cc = new CargoContainer();
+        //log.debug( "getAdminstream 3" );
+        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
+        log.trace( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
+        //log.debug( "getDocumentElement" );
+        Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
+
+        log.trace( String.format( "root element from adminstream == %s", root ) );
+
+        return root;
     }
 
 
@@ -863,25 +628,16 @@ public class FedoraAdministration implements IFedoraAdministration
      * @throws IOException
      * @throws ServiceException
      */
-    public List<String> findMatchingFieldPids( String fieldToMatch, String valueToFind ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
+    /*public List< String > findMatchingFieldPids( String fieldToMatch, String valueToFind ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
     {
+        String[] results = { "pid", "title" };
 
-        String[] results =
-            {
-                "pid", "title"
-            };
-
-        /** \todo: we're meddling with the contents here. Should no be so. Fixxit*/
+        / * * \todo: we're meddling with the contents here. Should no be so. Fixxit* /
         valueToFind = valueToFind.replace( "'", "" );
 
         log.debug( String.format( "fieldToMatch = %s, valueToFind = %s", fieldToMatch, valueToFind ) );
-        Condition[] cond =
-            {
-                new Condition( fieldToMatch, ComparisonOperator.has, valueToFind )
-            };
-
-        FieldSearchQuery fsq = new FieldSearchQuery( cond, null ); //fsq.setConditions( condArray );
-
+        Condition[] cond = { new Condition( fieldToMatch, ComparisonOperator.has, valueToFind ) };
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null ); 
         FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( results, new NonNegativeInteger( Integer.toString( Integer.MAX_VALUE ) ), fsq );
 
         List<ObjectFields> objectFields = Arrays.asList( fsr.getResultList() );
@@ -893,8 +649,9 @@ public class FedoraAdministration implements IFedoraAdministration
         {
             resultPids.add( f.getPid() );
         }
+
         return resultPids;
-    }
+    }*/
 
 
     /**
@@ -906,21 +663,12 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     public String[] findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        String[] resultFields =
-            {
-                "pid", "title"
-            };
-
-        //NonNegativeInteger maxResults = new NonNegativeInteger( "10000" );
+        String[] resultFields = { "pid", "title" };
 
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( operator );
-        Condition[] cond =
-            {
-                new Condition( property, comp, value )
-            };//cond.setProperty( property );//cond.setOperator( comp );//cond.setValue( value );//Condition[] condArray = { cond };
-        FieldSearchQuery fsq = new FieldSearchQuery( cond, null ); //fsq.setConditions( condArray );
-
+        Condition[] cond = { new Condition( property, comp, value ) };
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
         ObjectFields[] objectFields = fsr.getResultList();
 
@@ -994,7 +742,7 @@ public class FedoraAdministration implements IFedoraAdministration
     }
 
 
-    private String findPropertiesPid( String sourcePid, String property_1, String value_1, String property_2, String value_2 ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    public String findPropertiesPid( String sourcePid, String property_1, String value_1, String property_2, String value_2 ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
         /** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
         String[] resultFields =
@@ -1041,13 +789,9 @@ public class FedoraAdministration implements IFedoraAdministration
     }
 
 
-    private String findPropertyPid( String sourcePid, String property, String value ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    public String findPropertyPid( String sourcePid, String property, String value ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
-        String[] resultFields =
-            {
-                "pid"
-            };
-        //System.out.println( String.format( "findObjectFields with sourcePid: '%s'; property: '%s'; value: '%s'", sourcePid, property, value ) );
+        String[] resultFields = { "pid" };
         ObjectFields[] pids = findObjectFields( resultFields, property, value );
 
         if( pids != null )
@@ -1056,90 +800,14 @@ public class FedoraAdministration implements IFedoraAdministration
             for( int i = 0; i < pids.length; i++ )
             {
                 nextPid = pids[i].getPid();
-                //System.out.println( "pid " + i + ": " + nextPid + " sourcePid: " + sourcePid );
                 if( !nextPid.equals( sourcePid ) )
                 {
-                    //System.out.println( "return pid: " + nextPid );
                     return nextPid;
                 }
             }
         }
 
         return null;
-    }
-
-
-    /**
-     * Deletes the specified relationship. This method will remove the
-     * specified relationship(s) from the RELS-EXT datastream. If the
-     * Resource Index is enabled, this will also delete the
-     * corresponding triples from the Resource Index.
-     *
-     * If the object has state "Active" this method will fail. It is
-     * only allowed on Inactive and Deleted objects.
-     *
-     * @param pid fedora pid
-     * @param predicate relation on the object to remove
-     * @param targetDCIdentifier referenced fedora pid
-     * @param isLiteral set if the referenced rdf node is a Literal ( see http://www.w3.org/TR/rdf-concepts/#section-Literals)
-     * @param datatype datatype of the Literal, if any. If none should be specified, submit an empty String
-     *
-     * @return true iff the relationship could be removed from the object, false otherwise
-     */
-    public boolean removeRelation( String pid, String predicate, String targetDCIdentifier, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
-    {
-        return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
-    }
-
-
-    /**
-     * returns the administration stream of a given DigitalObject from
-     * the fedora repository
-     *
-     * @param pid the fedora pid of a digital object
-     *
-     * @return the administration stream as an Element
-     */
-    private static Element getAdminStream( String pid ) throws IOException,
-                                                               ParserConfigurationException,
-                                                               RemoteException,
-                                                               ServiceException,
-                                                               SAXException,
-                                                               ConfigurationException
-    {
-        MIMETypedStream ds;
-        try
-        {
-            log.debug( "FEDORAADM. fedoraPid: " + pid + "; AdminData.getName: " + DataStreamType.AdminData.getName() );
-
-            ds = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, DataStreamType.AdminData.getName(), null );
-        }
-        catch( Exception e )//this looks a bit dubious, donnit?
-        {
-            log.debug( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
-            /*\todo: WTF?*/ throw new IOException( "test" );
-        }
-        byte[] adminStream = ds.getStream();
-        //log.debug( "getAdminstream 2" );
-        if( adminStream == null )
-        {
-            log.error( String.format( "Could not retrieve adminstration stream from Digital Object, aborting." ) );
-            throw new IllegalStateException( String.format( "Could not retrieve administration stream from Digital Object with pid '%s'", pid ) );
-        }
-
-        log.trace( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
-
-        //CargoContainer cc = new CargoContainer();
-        //log.debug( "getAdminstream 3" );
-        ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
-        log.trace( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        //log.debug( "getDocumentElement" );
-        Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
-
-        log.trace( String.format( "root element from adminstream == %s", root ) );
-
-        return root;
-
     }
 
 
@@ -1231,9 +899,7 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     private String[] getEmptyStringArray()
     {
-        return new String[]
-        {
-        };
+        return new String[] { };
     }
 
 

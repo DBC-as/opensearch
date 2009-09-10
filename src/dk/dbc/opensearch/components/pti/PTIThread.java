@@ -17,6 +17,11 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.components.pti;
 
@@ -114,7 +119,6 @@ public class PTIThread implements Callable< Long >
     {
         log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
         CargoContainer cc = null;
-        CargoContainer cc2 = null;
         CargoObject co = null;
         String submitter =  null;
         String format = null;
