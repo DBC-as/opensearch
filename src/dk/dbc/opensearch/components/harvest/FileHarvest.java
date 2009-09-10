@@ -323,7 +323,8 @@ public class FileHarvest implements IHarvest
     @Override
     public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
-        log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status.getDescription() ) );
+	//        log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status.getDescription() ) );
+        log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status ) );
     }
 
 

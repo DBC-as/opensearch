@@ -52,7 +52,8 @@ import org.xml.sax.SAXException;
 
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
- * to a frontend, i.e. the DataDock, and maintains the state of the jobs in the ES-base.
+ * to a frontend, i.e. the DataDock, delivers data through {@link getData} and maintains the state of 
+ * the jobs in the ES-base through {@link setStatus}.
  */
 public class ESHarvest implements IHarvest
 {
@@ -240,7 +241,7 @@ public class ESHarvest implements IHarvest
 
 
     /**
-     *
+     *  Retrieves data from the ES-base associated with the jobId.
      */
     public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
@@ -294,8 +295,8 @@ public class ESHarvest implements IHarvest
 
 
     /**
-     *  setStatus changes the status of a post in the ES-base. 
-     *  If the status is Retry, then the status of post will be changed from inProgress to queued.
+     *  Changes the status of a post in the ES-base. 
+     *  If the status is {@link JobStatus.RETRY}, then the status of post will be changed from inProgress to queued.
      *  If the status is allready set to either Success or Failure, then an excpetion is thrown, since it
      *  is not allowed to change status on an allready finished post.
      */
@@ -326,8 +327,9 @@ public class ESHarvest implements IHarvest
 		    // in the above statement, and we should throw an exception.
 		    if (counter == 0) {
 			stmt.close();
-			// \todo: log.error
-			throw new HarvesterUnknownIdentifierException( String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() ) );
+			String errorMsg = String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() );
+			log.error( errorMsg );
+			throw new HarvesterUnknownIdentifierException( errorMsg );
 		    } 
 		} else {
 		    ++counter;
@@ -336,9 +338,10 @@ public class ESHarvest implements IHarvest
 		    int recordStatus = rs.getInt( "recordstatus" );
 		    if( recordStatus != 3 )
 			{
-			    // \todo: log.error
+			    String errorMsg = String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() );
+			    log.error( errorMsg );
 			    stmt.close();
-			    throw new HarvesterInvalidStatusChangeException( String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() ) );
+			    throw new HarvesterInvalidStatusChangeException( errorMsg );
 			}
 		
 		    // Set the status:
@@ -386,8 +389,7 @@ public class ESHarvest implements IHarvest
 
 
     /**
-     *
-     * This function updates the field taskpackagerecordstructure.recordstatus in ES to be 
+     * Updates the field taskpackagerecordstructure.recordstatus in ES to be 
      * inProgress (value: 3) for the taskpackagerecordstructure with targetRef and lbnr.
      */
     private void updateRecordStatus( int targetRef, int lbnr ) throws SQLException
@@ -407,8 +409,7 @@ public class ESHarvest implements IHarvest
 	// Testing all went well:
 	if (res1 != 1) {
 	    // Something went wrong - we did not lock a single row for update
-	    log.error( "Error: Result from select for update was " + res1 + ". Not 1" );
-	    // \todo: Throw an exception or just go to next row in rs?
+	    log.error( "Error: Result from select for update was " + res1 + ". Not 1." );
 	    return;
 	}
 
@@ -437,7 +438,7 @@ public class ESHarvest implements IHarvest
      * Finds all posts in ES-base with recordstatus 3, and changes them to recordstatus 2.
      *
      */
-    private void cleanupESBase( )
+    private void cleanupESBase( ) throws HarvesterIOException
     {
 	// \todo: Make sure only posts belonging to the correct databasename is changed
 
@@ -466,13 +467,14 @@ public class ESHarvest implements IHarvest
 	    }
         catch( SQLException sqle )
 	    {
-		sqle.printStackTrace();
-		// \todo: Log.fatal and throw exception
+		String errorMsg = new String( "An SQL error occured while cleaning up the ES-base" );
+		log.fatal( errorMsg, sqle );
+		throw new HarvesterIOException( errorMsg, sqle );
 	    }
     }
 
     /**
-     *
+     *  Changes the status on a taskpackage if all assoicated posts are finished.
      */
     private void setTaskPackageStatus( int targetref ) throws HarvesterInvalidStatusChangeException, SQLException
     {
@@ -496,6 +498,7 @@ public class ESHarvest implements IHarvest
 	    log.debug( String.format( "NoOfRecords: %s   NoOfRecordsTreated: %s",
 				      noofrecs, noofrecs_treated ) );
 	    if ( noofrecs < noofrecs_treated ) {
+
 		// This is an error. There were more treated records than actual records. 
 		// This _must_ never happen.
 		throw new HarvesterInvalidStatusChangeException( String.format( "Error: There were more treated records than actual records in taskpackage %s. This should never ever happen.", targetref ) );
@@ -526,6 +529,7 @@ public class ESHarvest implements IHarvest
 		    ++counter2;
 		}
 		if (counter2 != 1 ) {
+		    // \todo: 
 		    // either zero or more than one row retrieved - this should not happen.
 		    // Throw an exception?
 		}
@@ -554,9 +558,11 @@ public class ESHarvest implements IHarvest
 		while ( update_taskpackage_status_rs.next() ) {
 		    int current_update_status = update_taskpackage_status_rs.getInt( 1 );
 		    if ( current_update_status != 0 ) {
-			// \todo: This should never happen. Change exception - this one is not the right one!
+			// This should never happen.
+		        String errorMsg = String.format( "The status for the taskpackage with targetRef %s was allready set to %s", targetref, current_update_status );
+			log.error( errorMsg );
 			stmt.close();
-			throw new HarvesterInvalidStatusChangeException( String.format( "the update_status is already set to for taskpackage: %s", current_update_status, targetref ) );
+			throw new HarvesterInvalidStatusChangeException( errorMsg );
 		    } 
 
 		    String update_taskpackage_status = String.format( "UPDATE taskspecificupdate " + 

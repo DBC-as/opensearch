@@ -31,7 +31,7 @@ package dk.dbc.opensearch.components.harvest;
  * The Harvester will recognise three states of a {@link Job};
  * Success, failure or retry. The initial status of a {@link Job} in
  * {@link IHarvester} will be unset and the client is allowed to set
- * the status of a {@link Job} to one of the values in {@link JobStatus}
+ * the status of a {@link Job} to one of the values in {@link JobStatus}.
  * 
  */
 
@@ -39,19 +39,18 @@ import org.apache.log4j.Logger;
 
 public enum JobStatus
 {
-
     /**
      * Indicates that the job was processed correctly and no errors
      * encountered
      */
-    SUCCESS( "SUCCESS", "success"),
+    SUCCESS,
 
     /**
      * Indicates that an unrecoverable exception during job
      * processing has occured and that the client is unable to
      * process the job (at all).
      */
-        FAILURE( "FAILURE", "failure" ),
+    FAILURE,
 
     /**
      * Indicates the the client has encountered an error in the
@@ -63,50 +62,6 @@ public enum JobStatus
      * the correct course of action taken, if a {@link Job} is
      * marked {@code RETRY}. 
      */
-        RETRY( "RETRY", "retry" );
+     RETRY;
 
-    private static Logger log = Logger.getLogger( JobStatus.class );
-
-    String name;
-    String description;
-    JobStatus( String name, String description )
-    {
-       
-        this.name = name;
-        this.description = description;
-    }
-
-    public String getName()
-    {
-        return this.name;
-    }
-
-    public String getDescription()
-    {
-        return this.description;
-    }
-
-    public static boolean validJobStatus( String statustype )
-    {
-        JobStatus js = JobStatus.getJobStatus( statustype);
-    
-        if( js == null )
-        {
-            return false;
-        }
-        return true;
-    }
-    
-    public static JobStatus getJobStatus( String name )
-    {
-        JobStatus JS = null;
-        for( JobStatus js : JobStatus.values() )
-        {
-            if( name.equals( js.getName() ) )
-            {
-                JS = js;
-            }
-        } 
-        return JS;
-    }
 }
