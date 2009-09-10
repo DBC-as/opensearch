@@ -25,24 +25,28 @@ import urllib2
 import sys
 
 
-def test_fedora_conn( servername, port ):
+def test_fedora_connection( servername, port ):
     theurl = 'http://%s:%s/fedora'%( servername, port )
-    req = urllib2.Request(theurl)
+    req = urllib2.Request( theurl )
     try:                               
-        handle = urllib2.urlopen(req)
+        handle = urllib2.urlopen( req )
     except urllib2.HTTPError, her:
 
         if her.code == 401:
-            print her.headers
-            print her.headers['www-authenticate']
-            print 'FEDORA IS UP AND RUNNING!'
-            sys.exit( 0 )
+            return (True, her.headers )
         else:
-            sys.exit( "Could not connect to fedora at '%s' : '%s' (http status code '%s')"%( her.url, her.msg, her.code ) )
+            return (False, ( "Could not connect to fedora at '%s' : '%s' (http status code '%s')"%( her.url, her.msg, her.code ) ) )
     except urllib2.URLError, uer:
-        sys.exit( "Could not connect to fedora at '%s' : '%s' (urllib error code '%s')"%( theurl, uer.reason[1], uer.reason[0] ) )
+        return (False, ( "Could not connect to fedora at '%s' : '%s' (urllib error code '%s')"%( theurl, uer.reason[1], uer.reason[0] ) ) )
+            
+def main( servername, port ):
+    (success, answer_msg ) = test_fedora_connection( servername, port)
+    print answer_msg
+    if success:
+        print 'FEDORA IS UP AND RUNNING!'
+        
 
 if __name__ == '__main__':
     
-    test_fedora_conn( 'localhost', '8080' )
+    main( 'localhost', '8080' )
 

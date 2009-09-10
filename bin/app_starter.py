@@ -25,12 +25,23 @@ import os
 import sys
 import subprocess
 import logging as log
-
+import fedora_conn
 
 def main( app, action, monitor ):
+    
+    log_filename = 'app_starter.log'
+    log_path = os.path.abspath( 'log-files' )
+    fedora_host = 'localhost'
+    fedora_port = '8080'
+
+    if not os.path.isdir( log_path ):
+        print "log-path '%s' does exists. Creating it..." % log_path,
+        os.mkdir( log_path )
+        print "created log folder"
+    
     log.basicConfig( level = log.DEBUG,
                      format = '%(asctime)s %(levelname)s %(message)s',
-                     filename='app_starter.log' )
+                     filename= os.path.join( log_path, log_filename ) )
     log.getLogger( '' )
     
 
@@ -54,7 +65,7 @@ def main( app, action, monitor ):
         q_name       = "../dist/OpenSearch_DATADOCK.jar"
 
     pid_file = os.path.join( pid_location, pid_filename )
-
+    
     if ( get_pid( pid_file ) != "" ):
         pid = get_pid( pid_file )
 
@@ -73,7 +84,8 @@ def main( app, action, monitor ):
             print "stopping process with pid %s"%( pid )
             stop_daemon( pid )
             log.debug( "Removing pid_filename=%s"%( pid_filename ) )
-            os.unlink( pid_filename )
+            if( os.path.isfile( pid_filename ) ):
+                os.unlink( pid_filename )
         elif action == "start":
             print "Only one %s instance is allowed to run at a time"% ( app )
     elif action == "start":
@@ -85,6 +97,20 @@ def main( app, action, monitor ):
         sys.exit( "Cannot stop nonrunning process" )
 
     if do_start:
+        ### Check if fedora is up and running
+        print "Confirming Fedora is reachable...",
+        ( success, answer ) = fedora_conn.test_fedora_connection( fedora_host, fedora_port )
+        if success:
+            print "fedora is up and running"
+        else:
+            print "Cannot reach Fedora, exiting"
+            sys.exit( 1 )
+
+        ### check if jar file is available
+        if not os.path.isfile( q_name ):
+            print "\nCould not find jarfile '%s', exiting" % q_name
+            sys.exit( 1 )    
+        
         print "starting process"
         log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
         proc, pid = start_daemon( q_name, pid_filename, monitor )
