@@ -58,13 +58,15 @@ import org.xml.sax.SAXException;
 public class ESHarvest implements IHarvest
 {
     private IDBConnection oracleInstance;
-    private Connection conn;
+    private Connection    conn;
+    private String        databasename = "test";
+
     Logger log = Logger.getLogger( ESHarvest.class );
 
     /**
      *   Creates a new ES-Harvester 
      */
-    public ESHarvest()
+    public ESHarvest( )
     {
 
     }
@@ -135,8 +137,9 @@ public class ESHarvest implements IHarvest
 	    }
         catch( SQLException sqle )
 	    {
-		log.fatal( "Error when closing the Oracle connection" , sqle );
-		throw new HarvesterIOException( "Error when closing the Oracle connection", sqle );
+		String errorMsg = new String(  "Error when closing the Oracle connection" );
+		log.fatal( errorMsg , sqle );
+		throw new HarvesterIOException( errorMsg, sqle );
 	    }
     }
 
@@ -185,7 +188,7 @@ public class ESHarvest implements IHarvest
 			Document doc = null;
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			
-			boolean DocOK = true; // The Doc structure have no problems
+			boolean DocOK = true; // The Doc structure has no problems
 			try
 			    {
 				DocumentBuilder builder = factory.newDocumentBuilder();
@@ -207,33 +210,37 @@ public class ESHarvest implements IHarvest
 				DocOK = false;
 			    }
 
-			if ( DocOK ) {
-			    Job theJob = new Job( id, doc );
-			    theJobList.add( theJob );
-			} else {
+			if ( DocOK ) 
+			    {
+				Job theJob = new Job( id, doc );
+				theJobList.add( theJob );
+			    } 
+			else 
+			    {
 
-			    try
-				{
-				    setStatus( id, JobStatus.FAILURE );
-				} 
-			    catch ( HarvesterUnknownIdentifierException huie )
-				{
-				    log.error( String.format( "Error when changing JobStatus (unknown identifier) TargetRef = %s lbnr = %s : ", id.getTargetRef(), id.getLbNr(), huie.getMessage() ), huie );
-				}
-			    catch ( HarvesterInvalidStatusChangeException hisce )
-				{
-				    log.error( String.format( "Error when changing JobStatus (invalid status) TargetRef = %s lbnr = %s : ", id.getTargetRef(), id.getLbNr(), hisce.getMessage() ), hisce );
-				}
-			}
-
+				try
+				    {
+					setStatus( id, JobStatus.FAILURE );
+				    } 
+				catch ( HarvesterUnknownIdentifierException huie )
+				    {
+					log.error( String.format( "Error when changing JobStatus (unknown identifier) TargetRef = %s lbnr = %s : ", id.getTargetRef(), id.getLbNr(), huie.getMessage() ), huie );
+				    }
+				catch ( HarvesterInvalidStatusChangeException hisce )
+				    {
+					log.error( String.format( "Error when changing JobStatus (invalid status) TargetRef = %s lbnr = %s : ", id.getTargetRef(), id.getLbNr(), hisce.getMessage() ), hisce );
+				    }
+			    }
 		    }
-
 	    }
         catch( SQLException sqle )
 	    {
-		log.fatal( "A Database Error occured" );
-		throw new HarvesterIOException( "A database error occured" , sqle );
+		String errorMsg = new String( "A Database Error occured" );
+		log.fatal( errorMsg );
+		throw new HarvesterIOException( errorMsg , sqle );
 	    }
+
+	log.info( String.format( "Found %s available Jobs", theJobList.size() ) );
 
         return theJobList;
     }
@@ -248,9 +255,8 @@ public class ESHarvest implements IHarvest
         log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
 
         //get the data associated with the identifier from the record field
-        Blob data = null;
         byte[] returnData = null;
-        ESIdentifier theJobId = (ESIdentifier)jobId;
+        ESIdentifier ESJobId = (ESIdentifier)jobId;
 
         try
 	    {
@@ -259,32 +265,38 @@ public class ESHarvest implements IHarvest
 						    "FROM suppliedrecords " + 
 						    "WHERE targetreference = %s " + 
 						    "AND lbnr = %s" ,
-						    theJobId.getTargetRef() , theJobId.getLbNr() );
+						    ESJobId.getTargetRef() , ESJobId.getLbNr() );
 		log.debug( queryString );
 		ResultSet rs = stmt.executeQuery( queryString );
 		if( ! rs.next() )
 		    {
-			// \todo : log
-			throw new HarvesterUnknownIdentifierException( String.format( "the Identifier %s is unknown in the base", jobId.toString() ) );
+			// The ID does not exist
+			String errorMsg = String.format( "the Identifier %s is unknown in the base", jobId.toString() );
+			log.error( errorMsg );
+			throw new HarvesterUnknownIdentifierException( errorMsg );
 		    }
 		else
 		    {
-			data = rs.getBlob( "record" );
+			// The ID exist
+			Blob data = rs.getBlob( 1 );
 			long blobLength = data.length();
 			if( blobLength > 0 )
 			    {
+				// Return data
 				returnData = data.getBytes( 1l, (int)blobLength );
 			    }
 			else
 			    {
-				log.error( String.format( "No data associated with id %s", theJobId.toString() ) );
+				// For some unknown reason, there is no data associated with the ID.
+				log.error( String.format( "No data associated with id %s", ESJobId.toString() ) );
 			    }
 		    }
 	    }
         catch( SQLException sqle )
 	    {
-		log.fatal( "A database error occured " , sqle );
-		throw new HarvesterIOException( "A database error occured", sqle );
+		String errorMsg = new String( "A database error occured " );
+		log.fatal(  errorMsg, sqle );
+		throw new HarvesterIOException( errorMsg, sqle );
 	    }
         return returnData;
     }
@@ -300,90 +312,96 @@ public class ESHarvest implements IHarvest
      *  If the status is allready set to either Success or Failure, then an excpetion is thrown, since it
      *  is not allowed to change status on an allready finished post.
      */
-    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    public void setStatus( IIdentifier jobId, JobStatus status ) 
+	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         log.info( String.format( "ESHarvester was requested to set status %s on data identified by the identifier %s", status, jobId ) );
 
-        // check if the status associated with the identifier has previously been set to success or failure.
-        // if not set it to what the parameter says
-	// Otherwise it is an error - you cannot update a previuosly set status if it is success or failure.
-        ESIdentifier theJobId;
-        theJobId = (ESIdentifier)jobId;
+        // check if the status associated with the identifier has previously been set to success, failure 
+	// or is queued (i.e. the job is not in progress).
+        // If not, set it to what the parameter says.
+	// Otherwise it is an error - you cannot update a job which is not in progress.
+
+        ESIdentifier ESJobId = (ESIdentifier)jobId;
         try
 	    {
-
-		Statement stmt = conn.createStatement();
 		// Lock row for update
+		Statement stmt = conn.createStatement();
 		String fetchStatusString = String.format( "SELECT recordstatus " + 
 							  "FROM taskpackagerecordstructure " + 
 							  "WHERE targetreference = %s " + 
 							  "AND lbnr = %s " + 
 							  "FOR UPDATE OF recordstatus", 
-							  theJobId.getTargetRef() , theJobId.getLbNr() );
+							  ESJobId.getTargetRef() , ESJobId.getLbNr() );
 		ResultSet rs = stmt.executeQuery( fetchStatusString );
 		int counter = 0;
-		if ( !rs.next() ) {
-		    // No more rows. If this is the first time rs.next() is called, then no rows where found
-		    // in the above statement, and we should throw an exception.
-		    if (counter == 0) {
-			stmt.close();
-			String errorMsg = String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() );
-			log.error( errorMsg );
-			throw new HarvesterUnknownIdentifierException( errorMsg );
-		    } 
-		} else {
-		    ++counter;
-		
-		    //check if the status is set already, i.e. the post is _not_ inProgress:
-		    int recordStatus = rs.getInt( "recordstatus" );
-		    if( recordStatus != 3 )
-			{
-			    String errorMsg = String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() );
-			    log.error( errorMsg );
-			    stmt.close();
-			    throw new HarvesterInvalidStatusChangeException( errorMsg );
-			}
-		
-		    // Set the status:
-		    int new_recordStatus = 0;
-		    switch( status )
-			{
-			case SUCCESS:
-			    new_recordStatus = 1;
-			    break;
-			case RETRY:
-			    new_recordStatus = 2;
-			    break;
-			case FAILURE:
-			    new_recordStatus = 4;
-			    break;
-			default:
-			    stmt.close();
-			    throw new HarvesterInvalidStatusChangeException( "Unknown status" );
-			}
-		    String updateString = String.format( "UPDATE taskpackagerecordstructure " + 
-							 "SET recordstatus = %s " + 
-							 "WHERE targetreference = %s " + 
-							 "AND lbnr = %s ", new_recordStatus, 
-							 theJobId.getTargetRef(), theJobId.getLbNr()  );
+		if ( !rs.next() ) 
+		    {
+			// No more rows. If this is the first time rs.next() is called, then no rows where found
+			// with the above statement, and we should throw an exception.
+			if (counter == 0) 
+			    {
+				stmt.close();
+				String errorMsg = String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() );
+				log.error( errorMsg );
+				throw new HarvesterUnknownIdentifierException( errorMsg );
+			    } 
+		    }
+		else
+		    {
+			++counter;
+			
+			//check if the status is set already, i.e. the post is _not_ inProgress:
+			int recordStatus = rs.getInt( "recordstatus" );
+			if( recordStatus != 3 )
+			    {
+				String errorMsg = String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() );
+				log.error( errorMsg );
+				stmt.close();
+				throw new HarvesterInvalidStatusChangeException( errorMsg );
+			    }
+			
+			// Set the status:
+			int new_recordStatus = 0;
+			switch( status )
+			    {
+			    case SUCCESS:
+				new_recordStatus = 1;
+				break;
+			    case RETRY:
+				new_recordStatus = 2;
+				break;
+			    case FAILURE:
+				new_recordStatus = 4;
+				break;
+			    default:
+				// I suspect that this case cannot happen!
+				stmt.close();
+				throw new HarvesterInvalidStatusChangeException( "Unknown status" );
+			    }
+			String updateString = String.format( "UPDATE taskpackagerecordstructure " + 
+							     "SET recordstatus = %s " + 
+							     "WHERE targetreference = %s " + 
+							     "AND lbnr = %s ", new_recordStatus, 
+							     ESJobId.getTargetRef(), ESJobId.getLbNr()  );
+			
+			log.debug( String.format( "Updating with: %s", updateString ) );
+			int updateResult = stmt.executeUpdate( updateString );
 
-		    log.debug( String.format( "Updating with: %s", updateString ) );
+			if( updateResult != 1 )
+			    {
+				log.warn( String.format( "unknown status update attempt on identifier targetref: %s lbnr :%s  - updateResult=%s", ESJobId.getTargetRef(), ESJobId.getLbNr(), updateResult ) );
+			    }
 
-		    int updateResult = stmt.executeUpdate( updateString );
-		    if( updateResult != 1 )
-			{
-			    log.warn( String.format( "unknown status update attempt on identifier targetref: %s lbnr :%s ", theJobId.getTargetRef(), theJobId.getLbNr() ) );
-			}
-
-		    setTaskPackageStatus( theJobId.getTargetRef() );
-		
-		}
-	    } catch( SQLException sqle ) {
-	    log.fatal( "A database error occured", sqle );
-	    throw new HarvesterIOException( "A database error occured", sqle );
-        }
-
-
+			// Check the taskpackage for update of TP-status:			
+			setTaskPackageStatus( ESJobId.getTargetRef() );
+		    }
+	    } 
+	catch( SQLException sqle ) 
+	    {
+		log.fatal( "A database error occured", sqle );
+		throw new HarvesterIOException( "A database error occured", sqle );
+	    }
     }
 
 
