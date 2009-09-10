@@ -48,7 +48,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <property name="src.dir"          value="${base.dir}/src"/>
   <property name="opensearch.dir"   value="${src.dir}/dk/dbc/opensearch"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
-
+  <property name="log.dir"          value="${bin.dir}/log-files"/>
   <property name="xsd.dir"          value="${base.dir}/xsd"/>
   <property name="xsd_gen.dir"      value="${tmp.dir}/xsd" />
 
@@ -102,6 +102,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <delete dir="${testresults.dir}"/>
     <delete dir="${xsd_gen.dir}" />
     <delete dir="${base.dir}/plugins" />
+    <delete dir="${log.dir}"/>
 
     <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
       <arg line="create_test_suite_files.py clean"/>
@@ -232,6 +233,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
    </echo>
    <!-- Create the distribution directory -->
    <mkdir dir="${dist.dir}"/>
+   <mkdir dir="${log.dir}"/>
 
    <pathconvert property="jar_classpath" pathsep=" ../lib/">
      <path refid="classpath4jar" />
@@ -261,7 +263,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     
     <!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}"/>
-    
+    <mkdir dir="${log.dir}"/>
+
     <pathconvert property="jar_classpath" pathsep=" ../lib/">
       <path refid="classpath4jar" />
       <flattenmapper />
@@ -289,6 +292,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
    </echo>
    <!-- Create the distribution directory -->
    <mkdir dir="${dist.dir}"/>
+   <mkdir dir="${log.dir}"/>
 
    <pathconvert property="jar_classpath" pathsep=" ../lib/">
      <path refid="classpath4jar" />
@@ -318,7 +322,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     
     <!-- Create the distribution directory -->
     <mkdir dir="${dist.dir}"/>
-    
+    <mkdir dir="${log.dir}"/>
+
     <pathconvert property="jar_classpath" pathsep=" ../lib/">
       <path refid="classpath4jar" />
       <flattenmapper />

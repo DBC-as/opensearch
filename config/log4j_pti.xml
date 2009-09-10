@@ -21,7 +21,7 @@
 
   <appender name="RootConsoleAppender"
             class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="logs/pti.log"/>
+    <param name="File" value="log-files/pti.log"/>
     <param name="MaxFileSize" value="1000000KB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
