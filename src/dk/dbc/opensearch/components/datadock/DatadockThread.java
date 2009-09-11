@@ -265,7 +265,7 @@ public class DatadockThread implements Callable< Float >
                 cargo = relationPlugin.getCargoContainer( cargo );
 
                 timer = System.currentTimeMillis() - timer;
-                log.trace( String.format( "Timing: ( RELATION ) %s", timer ) );
+                log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
 
                 break;
             default:

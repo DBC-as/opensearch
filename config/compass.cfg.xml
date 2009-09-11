@@ -5,15 +5,6 @@
 
    <compass name="default">
 
-     <!-- <connection> -->
-     <!--     <jdbc dialect="org.apache.lucene.store.jdbc.dialect.OracleDialect"> -->
-     <!--         <dataSourceProvider> -->
-     <!--             <driverManager url="jdbc:oracle:thin:shm/shm@tora1.dbc.dk:1521" username="shm" password="shm" -->
-     <!--                            driverClass="oracle.jdbc.driver.OracleDriver" /> -->
-     <!--         </dataSourceProvider> -->
-     <!--     </jdbc> -->
-     <!-- </connection> -->
-
      <connection>
        <file path="indexes"/>
      </connection>
@@ -24,16 +15,17 @@
      />
 
      <converters>
+       
        <converter name="xmlContentMapping"
                   type="org.compass.core.converter.mapping.xsem.XmlContentMappingConverter">
          <setting name="xmlContentConverter.type"
                   value="org.compass.core.xml.dom4j.converter.SAXReaderXmlContentConverter" />
        </converter>
-     </converters>
-     
-     <searchEngine>
-       <analyzer name="KeywordLowerAnalyzer" type="CustomAnalyzer" analyzerClass="dk.dbc.opensearch.common.compass.KeywordLowerAnalyzer"/>       
-     </searchEngine>
-     
+       <converter name="lowercase"
+                  type="dk.dbc.opensearch.common.compass.LowercaseXmlConverter">
+       </converter>
+
+   </converters>
+          
    </compass>
 </compass-core-config>

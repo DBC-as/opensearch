@@ -225,7 +225,11 @@ public class FedoraObjectRelations
         String predicate = Constants.RELS_EXT.IS_MEMBER_OF.toString();
         log.debug( String.format( "addPidToCollection for pid: '%s'; predicate: '%s'; collectionpid: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, collectionpid, false, null ) );
 
-        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, collectionpid, false, null );
+        long timer = System.currentTimeMillis();
+        boolean ret = FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, collectionpid, false, null );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( addRelationship ) %s", timer ) );
+        return ret;
     }
 
 

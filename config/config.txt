@@ -104,10 +104,10 @@ passphrase: fedoraAdmin
 [harvester]
 
 # folder name of the folder to harvest files from
-toharvest:    Harvest
+toharvest:    ../../testdata/bug9009/testdata
 
 # folder name of the folder to put processes files in
-harvestdone:  HarvestDone
+harvestdone:  ../../testdata/bug9009/testdataDone
 
 # number of files to process in batches
 maxtoharvest: 1000
