@@ -90,17 +90,17 @@
   	</if>
   </target-->
 	
-  <target name="compile" depends="clean"> <!-- , xsd"> -->
+  <target name="compile"> <!-- , xsd"> -->
     <antcall target="_compile" />
   </target>
 
 
-  <target name="compile-with-warnings" depends="clean"> <!-- , xsd"> -->
+  <target name="compile-with-warnings" > <!-- , xsd"> -->
     <antcall target="_compile-with-warnings" />
   </target>
 
 
-  <target name="compile_project" depends="clean">
+  <target name="compile_project" >
     <antcall target="_compile" />
   </target>
 
@@ -134,7 +134,7 @@
   </target>
 
 
-  <target name="dist" depends="clean, config_py"> <!-- xsd, -->
+  <target name="dist" depends="config_py"> <!-- xsd, -->
     <antcall target="compile_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>
@@ -156,7 +156,7 @@
   </target> 
 
 
-  <target name="dist-aux" depends="clean, config_py"> <!-- xsd, -->
+  <target name="dist-aux" depends="config_py"> <!-- xsd, -->
     <antcall target="compile-tests" />
     <antcall target="_dist_testindexer">
       <param name="src.dir" value="${src.dir}" />
@@ -177,28 +177,28 @@
   </target> 
 
 
-  <target name="dist_datadock" depends="clean, compile"> <!-- xsd, "> -->
+  <target name="dist_datadock" depends="compile"> <!-- xsd, "> -->
     <antcall target="_dist_datadock">
       <!--param name="src.dir" value="${src.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
   </target>
 
-  <target name="dist_pti" depends="clean, compile">  <!-- xsd, "> -->
+  <target name="dist_pti" depends="compile">  <!-- xsd, "> -->
     <antcall target="_dist_pti">
       <!--param name="src.dir" value="${src.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
     </antcall>
   </target>
 
-  <target name="dist_adminfunc" depends="clean, compile-tests, config_py">  <!-- xsd, "> -->
+  <target name="dist_adminfunc" depends="compile-tests, config_py">  <!-- xsd, "> -->
     <antcall target="_dist_adminfunc">
       <!--param name="src.dir" value="${tests.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_ADMIN_FUNC.jar" />
     </antcall>
   </target>
 
-  <target name="dist_testindexer" depends="clean, compile"> <!-- xsd, "> -->
+  <target name="dist_testindexer" depends="compile"> <!-- xsd, "> -->
     <antcall target="_dist_testindexer">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />
@@ -206,7 +206,7 @@
   </target>
 
 
-  <target name="dist_readindex" depends="clean, compile"> <!-- xsd, "> -->
+  <target name="dist_readindex" depends="compile"> <!-- xsd, "> -->
     <antcall target="_dist_readindex">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_READINDEX.jar" />
@@ -214,14 +214,14 @@
   </target>
 
 
-  <target name="dist_indexchecker" depends="clean, compile-tests"> <!-- xsd, "> -->
+  <target name="dist_indexchecker" depends="compile-tests"> <!-- xsd, "> -->
     <antcall target="_dist_indexchecker">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_INDEXCHECKER.jar" />
     </antcall>
   </target>
 
-  <target name="dist_itqlquery" depends="clean, compile-tests"> <!-- xsd, "> -->
+  <target name="dist_itqlquery" depends="compile-tests"> <!-- xsd, "> -->
     <antcall target="_dist_itqlquery">
       <param name="src.dir" value="${src.dir}" />
       <param name="project.name" value="dist/${dist.jar}_ITQL.jar" />
@@ -274,7 +274,7 @@
   
 
   <!-- ANT TARGETS -->  
-  <target name="config" depends="test_Darg, clean">
+  <target name="config" depends="test_Darg">
     <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/config" />
       <param name="project.name" value="config" />
@@ -291,7 +291,7 @@
   </target>
 
 
-  <target name="db" depends="test_Darg, clean, types">
+  <target name="db" depends="test_Darg, types">
     <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/db" />
       <param name="project.name" value="db" />
@@ -308,7 +308,7 @@
   </target>
 
 
-  <target name="fedora" depends="test_Darg, clean, db, statistics, helpers">  <!-- xsd, -->
+  <target name="fedora" depends="test_Darg, db, statistics, helpers">  <!-- xsd, -->
     <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/fedora" />
       <param name="project.name" value="fedora" />
@@ -393,7 +393,7 @@
   </target>
 
 
-  <target name="types" depends="test_Darg, clean, config">
+  <target name="types" depends="test_Darg, config">
     <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/types" />
       <param name="project.name" value="types" />
