@@ -183,7 +183,7 @@ public class FedoraAdministration implements IFedoraAdministration
      * @return the pid of the object in the repository, null if unsuccessful
      */
     @Override
-    public synchronized String storeCargoContainer( CargoContainer cargo, String submitter ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, ServiceException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException
+    public synchronized String storeCargoContainer( CargoContainer cargo, String submitter ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException
     {
         log.trace( "Entering storeContainer( CargoContainer )" );
         if( cargo.getCargoObjectCount() == 0 )
@@ -205,10 +205,13 @@ public class FedoraAdministration implements IFedoraAdministration
         byte[] foxml = FedoraUtils.CargoContainerToFoxml( cargo );
         String logm = String.format( "%s purged", fedorPid); // cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
 
-        try {
+        try
+        {
              log.info( String.format("Purges object with pid %s", fedorPid ) );
-	     FedoraHandle.getInstance().getAPIM().purgeObject( fedorPid, logm, false);
-        } catch( Exception e ) {
+             FedoraHandle.getInstance().getAPIM().purgeObject( fedorPid, logm, false);
+        } 
+        catch( Exception e )
+        {
         	log.warn( String.format( "Ignored error from purgeObject for pid %s", fedorPid));
         }
         		

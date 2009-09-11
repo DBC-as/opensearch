@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -108,26 +107,29 @@ public class ReviewRelation implements IRelation
         }
 
         boolean ok = false;
-        ok = addReviewRelation( cargo );
+        /** code commented out because...well...I don't know why! Maybe someone could enligthen me?! */
+        /*ok = addReviewRelation( cargo );
 
         if ( ! ok )
         {
             log.error( String.format( "could not add review relation on pid %s", cargo.getDCIdentifier() ) );
-        }
+        }*/
 
         return cargo;
     }
 
 
-    private boolean addReviewRelation( CargoContainer cargo )
+    private boolean addReviewRelation( CargoContainer cargo ) throws PluginException
     {
+        boolean ok = false;
         String dcTitle = cargo.getDCTitle();
         String dcType = cargo.getDCType();
         String dcCreator = cargo.getDCCreator();
         String dcSource = cargo.getDCSource();
         String dcIdentifier = cargo.getDCIdentifier();
 
-        /*log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
+        /** \todo: Why WAS this code commented out?! Call to this method is commented out above where it is called */
+        log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
         
         log.debug( String.format( "RR dcType: '%s'", dcType ) );
         if ( dcType.equals( marterialevurderinger ) )
@@ -179,8 +181,7 @@ public class ReviewRelation implements IRelation
         log.debug( String.format( "MWR (pid: '%s') found dcVariables: '%s', '%s', '%s', and '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
         log.debug( "Adding relationship succeeded: " + ok );
         
-        return cargo;*/
-        return false;
+        return ok;
     }
     
     

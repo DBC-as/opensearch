@@ -245,9 +245,7 @@ public class DatadockThread implements Callable< Float >
                 IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
 
                 timer = System.currentTimeMillis();
-
-                cargo = repositoryStore.storeCargoContainer( cargo );
-                
+                cargo = repositoryStore.storeCargoContainer( cargo );                
                 timer = System.currentTimeMillis() - timer;
                 log.trace( String.format( "Timing: ( STORE ) %s", timer ) );
                 
@@ -270,17 +268,13 @@ public class DatadockThread implements Callable< Float >
                 log.trace( String.format( "Timing: ( RELATION ) %s", timer ) );
 
                 break;
-           //  case GETESTIMATE:
-//                 /*est = estimate.getEstimate( mimeType, length );
-//                   log.debug( String.format( "Got estimate of %s", est) );*/
-
-//                 break;
             default:
                 log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
             }
         }
 
         length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
+
         //push to processqueue job to processqueue and get estimate
         /**
          * \Todo: Mimetype is never changed form its initialisation value, 
