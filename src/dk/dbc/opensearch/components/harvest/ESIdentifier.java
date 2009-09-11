@@ -47,10 +47,10 @@ public class ESIdentifier implements IIdentifier
         return lbNr;
     }
     
-    //    @Override
-    //    public String toString()
-    //    {
-    //	return String.format("[TargetRef=%s Lbnr=%s]", targetReference, lbNr);
-    //    }
+    @Override
+	public String toString()
+    {
+    	return String.format("[TargetRef=%s Lbnr=%s]", targetReference, lbNr);
+    }
 
 }

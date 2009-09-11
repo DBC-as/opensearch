@@ -59,16 +59,17 @@ public class ESHarvest implements IHarvest
 {
     private IDBConnection oracleInstance;
     private Connection    conn;
-    private String        databasename = "test";
+    private String        databasename;
 
     Logger log = Logger.getLogger( ESHarvest.class );
 
     /**
      *   Creates a new ES-Harvester 
      */
-    public ESHarvest( )
+    public ESHarvest( IDBConnection oraInstance, String dbname )
     {
-
+	oracleInstance = oraInstance;
+	databasename = dbname;
     }
 
     /**
@@ -77,32 +78,21 @@ public class ESHarvest implements IHarvest
      *  Please notice, that as a consequence of the above, only one ES-Harvester is allowed to
      *  run on an ES-base.
      */
-    public void start() throws HarvesterIOException
+    public void start( ) throws HarvesterIOException
     {
 	// \todo: Why do we want to call start on a Harvester? Shouldn't it not just start when it is created? (i.e. the constructor is called)
 
 	log.info( "Starting the ES-Harvester" );
 
-        // create the DBconnection
+        // Instantiate the connection
         try
 	    {
-		oracleInstance = new OracleDBConnection();
 		conn = oracleInstance.getConnection();
-	    }
-        catch( ConfigurationException ce )
-	    {
-		log.fatal( "Error while trying to connect to Oracle ES-base: " , ce );
-		throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", ce );
 	    }
         catch( SQLException sqle )
 	    {
 		log.fatal( "Error while trying to connect to Oracle ES-base: " , sqle );
 		throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", sqle );
-	    }
-        catch( ClassNotFoundException cnfe )
-	    {
-		log.fatal( "Error while trying to connect to Oracle ES-base: " , cnfe );
-		throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", cnfe );
 	    }
 
         log.debug( "ESHarvest started" );
@@ -181,10 +171,11 @@ public class ESHarvest implements IHarvest
 			int lbnr             = rs.getInt( 2 );    // suppliedrecords.lbnr
 			String referenceData = rs.getString( 3 ); // suppliedrecords.supplementalId3
 			
-			// Update Recordstatus
-			updateRecordStatus( targetRef, lbnr );
-			
 			ESIdentifier id = new ESIdentifier( targetRef, lbnr );
+
+			// Update Recordstatus
+			updateRecordStatus( id );
+
 			Document doc = null;
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			
@@ -217,18 +208,18 @@ public class ESHarvest implements IHarvest
 			    } 
 			else 
 			    {
-
+				
 				try
 				    {
 					setStatus( id, JobStatus.FAILURE );
 				    } 
 				catch ( HarvesterUnknownIdentifierException huie )
 				    {
-					log.error( String.format( "Error when changing JobStatus (unknown identifier) TargetRef = %s lbnr = %s : ", id.getTargetRef(), id.getLbNr(), huie.getMessage() ), huie );
+					log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
 				    }
 				catch ( HarvesterInvalidStatusChangeException hisce )
 				    {
-					log.error( String.format( "Error when changing JobStatus (invalid status) TargetRef = %s lbnr = %s : ", id.getTargetRef(), id.getLbNr(), hisce.getMessage() ), hisce );
+					log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
 				    }
 			    }
 		    }
@@ -271,7 +262,7 @@ public class ESHarvest implements IHarvest
 		if( ! rs.next() )
 		    {
 			// The ID does not exist
-			String errorMsg = String.format( "the Identifier %s is unknown in the base", jobId.toString() );
+			String errorMsg = String.format( "the Identifier %s is unknown in the base", ESJobId );
 			log.error( errorMsg );
 			throw new HarvesterUnknownIdentifierException( errorMsg );
 		    }
@@ -288,7 +279,7 @@ public class ESHarvest implements IHarvest
 			else
 			    {
 				// For some unknown reason, there is no data associated with the ID.
-				log.error( String.format( "No data associated with id %s", ESJobId.toString() ) );
+				log.error( String.format( "No data associated with id %s", ESJobId ) );
 			    }
 		    }
 	    }
@@ -342,7 +333,7 @@ public class ESHarvest implements IHarvest
 			if (counter == 0) 
 			    {
 				stmt.close();
-				String errorMsg = String.format( "recordstatus requested for unknown identifier: %s ", jobId.toString() );
+				String errorMsg = String.format( "recordstatus requested for unknown identifier: %s ", ESJobId );
 				log.error( errorMsg );
 				throw new HarvesterUnknownIdentifierException( errorMsg );
 			    } 
@@ -355,7 +346,7 @@ public class ESHarvest implements IHarvest
 			int recordStatus = rs.getInt( "recordstatus" );
 			if( recordStatus != 3 )
 			    {
-				String errorMsg = String.format( "the status is already set to %s for identifier: %s", recordStatus, jobId.toString() );
+				String errorMsg = String.format( "the status is already set to %s for identifier: %s", recordStatus, ESJobId );
 				log.error( errorMsg );
 				stmt.close();
 				throw new HarvesterInvalidStatusChangeException( errorMsg );
@@ -390,7 +381,7 @@ public class ESHarvest implements IHarvest
 
 			if( updateResult != 1 )
 			    {
-				log.warn( String.format( "unknown status update attempt on identifier targetref: %s lbnr :%s  - updateResult=%s", ESJobId.getTargetRef(), ESJobId.getLbNr(), updateResult ) );
+				log.warn( String.format( "unknown status update attempt on identifier: %s - updateResult=%s", ESJobId, updateResult ) );
 			    }
 
 			// Check the taskpackage for update of TP-status:			
@@ -410,17 +401,17 @@ public class ESHarvest implements IHarvest
      * Updates the field taskpackagerecordstructure.recordstatus in ES to be 
      * inProgress (value: 3) for the taskpackagerecordstructure with targetRef and lbnr.
      */
-    private void updateRecordStatus( int targetRef, int lbnr ) throws SQLException
+    private void updateRecordStatus( ESIdentifier ESJobId ) throws SQLException
     {
 
-	log.debug( String.format("Updating recordstatus for targetRef=%s and lbnr%s", targetRef, lbnr) );
+	log.debug( String.format( "Updating recordstatus for ID: %s", ESJobId ) );
 
 	// Locking the row for update:
 	Statement stmt = conn.createStatement();
 	int res1 = stmt.executeUpdate("SELECT recordstatus " + 
 				      "FROM taskpackagerecordstructure " + 
-				      "WHERE targetreference = " + targetRef + 
-				      " AND lbnr = " + lbnr + 
+				      "WHERE targetreference = " + ESJobId.getTargetRef() + 
+				      " AND lbnr = " + ESJobId.getLbNr() + 
 				      " AND recordstatus = 2 " + 
 				      "FOR UPDATE OF recordstatus");
 
@@ -434,8 +425,8 @@ public class ESHarvest implements IHarvest
 	// Updating recordstatus in row:
 	int res2 = stmt.executeUpdate("UPDATE taskpackagerecordstructure " + 
 				      "SET recordstatus = 3 " + 
-				      "WHERE targetreference = " + targetRef + 
-				      " AND lbnr = " + lbnr + 
+				      "WHERE targetreference = " + ESJobId.getTargetRef() + 
+				      " AND lbnr = " + ESJobId.getLbNr() + 
 				      " AND recordstatus = 2");
 
 	if (res2 != 1) {

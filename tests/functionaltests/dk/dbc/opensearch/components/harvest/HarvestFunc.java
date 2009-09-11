@@ -29,19 +29,67 @@ package dk.dbc.opensearch.components.harvest;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import dk.dbc.opensearch.common.db.IDBConnection;
+import dk.dbc.opensearch.common.db.OracleDBConnection;
+import java.sql.Connection;
+
+import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+
+import dk.dbc.opensearch.components.harvest.ESIdentifier;
 
 /**
  *
  */
 public class HarvestFunc
 {
+
+
+    static Logger log = Logger.getLogger( HarvestFunc.class );
+
     static ESHarvest esh;
 
     private static int counter = 0;
 
     public static void main( String[] args )
     {
+	// Setting up the logging or bail out.
+	try 
+	    {
+		Log4jConfiguration.configure( "log4j_datadock.xml" );
+	    } 
+	catch (ConfigurationException ce )
+	    {
+		System.out.println( "ConfigurationException Caught. Exiting!");
+		System.exit(1);
+	    }
+
+        ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
+
+	log.info( "HarvestFunc.main started" );
         runTests();
+    }
+
+    private void resetESBase() {
+
+	IDBConnection oracleInstance;
+	Connection    conn;
+	String        databasename = "test";
+        try
+	    {
+		oracleInstance = new OracleDBConnection();
+		conn = oracleInstance.getConnection();
+	    }
+        catch( Exception e )
+	    {
+		log.fatal( "An error occured when trying to connect to the ESbase", e );
+		System.exit(1);
+	    }
+
+
     }
 
 
@@ -62,7 +110,28 @@ public class HarvestFunc
 
     private static void startESHarvestTest() throws HarvesterIOException
     {
-        esh = new ESHarvest();
+	String databasename = "test";
+	IDBConnection oracleInstance;
+	
+	try
+	    {
+		oracleInstance = new OracleDBConnection();
+	    }
+	catch (ConfigurationException ce )
+	    {
+		String errorMsg = "ConfigurationException caught when connection to ES-database."; 
+		log.fatal( errorMsg, ce );
+		throw new HarvesterIOException( errorMsg, ce );
+	    }
+        catch( ClassNotFoundException cnfe )
+	    {
+		String errorMsg = "ClassNotFoundException caught when connection to ES-database."; 
+		log.fatal( errorMsg , cnfe );
+		throw new HarvesterIOException( errorMsg, cnfe );
+	    }
+
+
+        esh = new ESHarvest( oracleInstance, databasename );
         esh.start();
     }
 
@@ -70,9 +139,6 @@ public class HarvestFunc
     private static void getJobsNDataTest() throws HarvesterIOException
     {
         byte[] data = null;
-        //esh = new ESHarvest();
-        //esh.start();
-        //startESHarvestTest();
 
         ArrayList<IJob> jobL = esh.getJobs( 2 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
@@ -83,6 +149,7 @@ public class HarvestFunc
             System.out.println("");
             IJob theJob = (IJob)iter.next();
             System.out.println( String.format( "job: %s", theJob.toString() ) );
+            log.info( String.format( "job ID: %s", theJob.getIdentifier() ) );
             try
             {
                 data = esh.getData( theJob.getIdentifier() );
