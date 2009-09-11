@@ -27,17 +27,14 @@ import subprocess
 import logging as log
 import fedora_conn
 
-def main( app, action, monitor ):
+def main( app, action, monitor, fedora_arg ):
     
     log_filename = 'app_starter.log'
     log_path = os.path.abspath( 'log-files' )
-    fedora_host = 'localhost'
-    fedora_port = '8080'
 
     if not os.path.isdir( log_path ):
-        print "log-path '%s' does exists. Creating it..." % log_path,
+        print "log-path '%s' does exists. Creating folder" % log_path,
         os.mkdir( log_path )
-        print "created log folder"
     
     log.basicConfig( level = log.DEBUG,
                      format = '%(asctime)s %(levelname)s %(message)s',
@@ -97,18 +94,20 @@ def main( app, action, monitor ):
         sys.exit( "Cannot stop nonrunning process" )
 
     if do_start:
-        ### Check if fedora is up and running
-        print "Confirming Fedora is reachable...",
-        ( success, answer ) = fedora_conn.test_fedora_connection( fedora_host, fedora_port )
-        if success:
-            print "fedora is up and running"
-        else:
-            print "Cannot reach Fedora, exiting"
-            sys.exit( 1 )
 
+        if fedora_arg:
+        ### Check if fedora is up and running
+            print "Checking Fedora %s:%s   "%( fedora_arg['host'], fedora_arg['port'] ),
+            ( success, answer ) = fedora_conn.test_fedora_connection( fedora_arg['host'], fedora_arg['port'] )
+            if success:
+                print "OK"
+            else:
+                print "FAIL\nExiting."
+                sys.exit( 1 )
+        
         ### check if jar file is available
         if not os.path.isfile( q_name ):
-            print "\nCould not find jarfile '%s', exiting" % q_name
+            print "Could not find jarfile '%s'\nExiting" % q_name
             sys.exit( 1 )    
         
         print "starting process"
@@ -189,35 +188,40 @@ def generate_config():
 
 if __name__ == '__main__':    
     from optparse import OptionParser
+
+    available_monitors = ["tijmp", "jconsole"]
+    app_list = [ 'datadock', 'pti', 'both' ]
+    fedora_arg = {'host': 'localhost',
+                  'port': '8080'
+                  }
+    
     parser = OptionParser( usage="%prog [options] start|stop|restart" )
 
     parser.add_option( "-a", type="string", action="store", dest="app",
-                       help="Name of app to execute")
-    parser.add_option( "-l", dest="listapps", action="store_true",
-                       default=False, help="List available apps" )
-
-    #parser.add_option( "-t", action="store_true", dest="use_jmp" )
-
-    parser.add_option( "-m", type="string", action="store", dest="monitor")
-
+                       help="Name of app to execute. Available apps: %s" % ", ".join( app_list ) )
+    parser.add_option( "-m", type="string", action="store", dest="monitor",
+                       help="monitor the application. available monitors: %s" % ", ".join( available_monitors ) )
+    parser.add_option( "-c", dest="checkFedora", action="store_true",
+                       default=False, help="Checks whether fedora is up and running" )
+    parser.add_option( "--host", type="string", action="store", dest="host",
+                       help="The hostname of the fedora repository. ignored without -c (default value: %s)" % fedora_arg['host'] )
+    parser.add_option( "--port", type="string", action="store", dest="port",
+                       help="The portnumber of the Fedora Repository. ignored without -c (default value: %s)" % fedora_arg['port']  )
     (options, args) = parser.parse_args()
 
-    app_list = [ 'datadock', 'pti', 'both' ]
+    if options.port:
+        fedora_arg['port'] = options.port
+    if options.host:
+        fedora_arg['host'] = options.host
+    if not options.checkFedora:
+        fedora_arg = None
 
-    #use_jmp = options.use_jmp
-
-    available_monitors = ["tijmp", "jconsole"]
     if options.monitor and not options.monitor in available_monitors:
         print "Available monitors:\n"
         print '\n'.join( available_monitors )
         sys.exit(2)
     if not options.monitor:
         options.monitor = ''
-
-    if options.listapps:
-        print "Available applications:\n"
-        print '\n'.join( app_list )
-        sys.exit()
 
     if options.app not in app_list:
         parser.print_help()
@@ -227,7 +231,7 @@ if __name__ == '__main__':
         sys.exit( parser.print_help() )
 
     if options.app == 'both':
-        main( 'pti', args[0], options.monitor )
-        main( 'datadock', args[0], options.monitor )
+        main( 'pti', args[0], options.monitor, fedora_arg )
+        main( 'datadock', args[0], options.monitor, fedora_arg )
     else:
-        main( options.app, args[0], options.monitor )
+        main( options.app, args[0], options.monitor, fedora_arg )
