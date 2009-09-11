@@ -25,8 +25,8 @@ import os
 import sys
 import subprocess
 import logging as log
-import fedora_conn
-
+#import ../tools/fedora_conn
+#from ..tools import fedora_conn
 def main( app, action, monitor, fedora_arg ):
     
     log_filename = 'app_starter.log'
@@ -201,20 +201,21 @@ if __name__ == '__main__':
                        help="Name of app to execute. Available apps: %s" % ", ".join( app_list ) )
     parser.add_option( "-m", type="string", action="store", dest="monitor",
                        help="monitor the application. available monitors: %s" % ", ".join( available_monitors ) )
-    parser.add_option( "-c", dest="checkFedora", action="store_true",
-                       default=False, help="Checks whether fedora is up and running" )
-    parser.add_option( "--host", type="string", action="store", dest="host",
-                       help="The hostname of the fedora repository. ignored without -c (default value: %s)" % fedora_arg['host'] )
-    parser.add_option( "--port", type="string", action="store", dest="port",
-                       help="The portnumber of the Fedora Repository. ignored without -c (default value: %s)" % fedora_arg['port']  )
+    # parser.add_option( "-c", dest="checkFedora", action="store_true",
+#                        default=False, help="Checks whether fedora is up and running" )
+#     parser.add_option( "--host", type="string", action="store", dest="host",
+#                        help="The hostname of the fedora repository. ignored without -c (default value: %s)" % fedora_arg['host'] )
+#     parser.add_option( "--port", type="string", action="store", dest="port",
+#                        help="The portnumber of the Fedora Repository. ignored without -c (default value: %s)" % fedora_arg['port']  )
     (options, args) = parser.parse_args()
 
-    if options.port:
-        fedora_arg['port'] = options.port
-    if options.host:
-        fedora_arg['host'] = options.host
-    if not options.checkFedora:
-        fedora_arg = None
+#     if options.port:
+#         fedora_arg['port'] = options.port
+#     if options.host:
+#         fedora_arg['host'] = options.host
+#     if not options.checkFedora:
+#         fedora_arg = None
+    fedora_arg = None
 
     if options.monitor and not options.monitor in available_monitors:
         print "Available monitors:\n"
