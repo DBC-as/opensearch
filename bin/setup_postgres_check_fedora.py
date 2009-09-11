@@ -44,18 +44,26 @@ def main( harvest_folder ):
 
     if harvest_folder != "":
 
-        dest = config.findall( '//toharvest' )[0].text
-        
-        target = config.findall( '//harvestdone' )[0].text
+        harvest = config.findall( '//toharvest' )[0].text
+        if os.path.exists( harvest ):
+            shutil.rmtree( harvest )
 
-        if os.path.exists( target ):
-            shutil.rmtree( target )
-        
-        if os.path.exists( dest ):
-            shutil.rmtree( dest )
+        progress = config.findall( '//harvestprogress' )[0].text
+        if os.path.exists( progress ):
+            shutil.rmtree( progress )
 
-        shutil.copytree( harvest_folder, dest )
-	os.mkdir( target )
+        done = config.findall( '//harvestdone' )[0].text
+        if os.path.exists( done ):
+            shutil.rmtree( done )
+
+        failure = config.findall( '//harvestfailure' )[0].text
+        if os.path.exists( failure ):
+            shutil.rmtree( failure )
+
+        shutil.copytree( harvest_folder, harvest )
+        os.mkdir( progress )
+	os.mkdir( done )
+        os.mkdir( failure )
 
     postgres_setup.main()
 
