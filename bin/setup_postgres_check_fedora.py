@@ -62,7 +62,7 @@ def main( harvest_folder ):
     host = config.findall( '//host' )[0].text
     port = config.findall( '//port' )[0].text
     
-    fedora_conn.test_fedora_conn( host, port )
+    fedora_conn.main( host, port )
 
 if __name__ == '__main__':
 
