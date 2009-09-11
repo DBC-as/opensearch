@@ -27,15 +27,15 @@ import org.w3c.dom.Document;
  *
  */
 public interface IJob
-{
-    
+{    
     /** 
      * gets the identifier for this job.
      * 
      * @return 
      */
-     public IIdentifier getIdentifier();
+    public IIdentifier getIdentifier();
 
+     
     /** 
      * gets the metadata (or reference data) associated with this job.
      * 

@@ -85,15 +85,18 @@ import org.xml.sax.SAXException;
  */
 public class FileHarvest implements IHarvest
 {
-
     static Logger log = Logger.getLogger( FileHarvest.class );
-    private File path;
+
+
+    private File toHarvestpath;
     private Vector<InputPair<File, Long>> submitters;
     private Vector<InputPair<File, Long>> formats;
     private Vector<InputPair<String, String>> submittersFormatsVector;
     private String datadockJobsFilePath;
     private String toHarvestFolder;
+    private String harvestProgressFolder;
     private String harvestDoneFolder;
+    private String harvestFailureFolder;
     private int max;
 
     /**
@@ -116,11 +119,28 @@ public class FileHarvest implements IHarvest
         // Getting path for the jobs file for the building of the submitterformatvector
         datadockJobsFilePath = DatadockConfig.getPath();
 
+        setHarvestFolders();
+
+        max = HarvesterConfig.getMaxToHarvest();
+    }
+
+
+    private void setHarvestFolders() throws ConfigurationException, FileNotFoundException
+    {
         toHarvestFolder = HarvesterConfig.getFolder();
-        path = FileHandler.getFile( toHarvestFolder );
-        if( !path.exists() )
+        toHarvestpath = FileHandler.getFile( toHarvestFolder );
+        if( ! toHarvestpath.exists() )
         {
-            String errMsg = String.format( "Harvest folder '%s' does not exist!", path );
+            String errMsg = String.format( "Harvest folder '%s' does not exist!", toHarvestpath );
+            log.error( "FileHarvest: " + errMsg );
+            throw new FileNotFoundException( errMsg );
+        }
+
+        harvestProgressFolder = HarvesterConfig.getProgressFolder();
+        File harvestProgressPath = FileHandler.getFile( harvestProgressFolder );
+        if ( ! harvestProgressPath.exists() )
+        {
+            String errMsg = String.format( "Harvest folder '%s' does not exist!", harvestProgressPath );
             log.error( "FileHarvest: " + errMsg );
             throw new FileNotFoundException( errMsg );
         }
@@ -134,7 +154,14 @@ public class FileHarvest implements IHarvest
             throw new FileNotFoundException( errMsg );
         }
 
-        max = HarvesterConfig.getMaxToHarvest();
+        harvestFailureFolder = HarvesterConfig.getFailureFolder();
+        File harvestFailurePath = FileHandler.getFile( harvestFailureFolder );
+        if ( ! harvestFailurePath.exists() )
+        {
+            String errMsg = String.format( "Harvest folder '%s' does not exist!", harvestFailurePath );
+            log.error( "FileHarvest: " + errMsg );
+            throw new FileNotFoundException( errMsg );
+        }
     }
 
 
@@ -214,7 +241,7 @@ public class FileHarvest implements IHarvest
         log.debug( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
         log.debug( "Submitters:" );
 
-        for( File submitter : path.listFiles() )
+        for( File submitter : toHarvestpath.listFiles() )
         {
             if( submitter.isDirectory() )
             {
@@ -384,7 +411,8 @@ public class FileHarvest implements IHarvest
             {
                 File job = files[i];
                 String jobpath = job.getPath();
-                String newPath = jobpath.replace( toHarvestFolder, harvestDoneFolder );
+                //String newPath = jobpath.replace( toHarvestFolder, harvestDoneFolder );
+                String newPath = jobpath.replace( toHarvestFolder, harvestProgressFolder );
                 String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
                 File destFldr = FileHandler.getFile( destFldrStr );
                 File dest = FileHandler.getFile( newPath );

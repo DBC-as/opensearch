@@ -29,10 +29,10 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.components.harvest.IJob;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
-
+import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.components.harvest.IJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

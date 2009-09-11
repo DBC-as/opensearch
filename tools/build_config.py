@@ -163,13 +163,17 @@ def build_config( path ):
     xsd.text     = os.path.join( path, "config/jobs.xsd" )
 
     #harvester settings
-    toharvestfolder   = ET.SubElement( harvest, "toharvest" )
-    harvestdonefolder = ET.SubElement( harvest, "harvestdone" )
-    maxtoharvest      = ET.SubElement( harvest, "maxtoharvest" )
-    harvest_section        = "harvester"
-    toharvestfolder.text   = path + '/' + config_txt.get( harvest_section, "toharvest" )
-    harvestdonefolder.text = path + '/' + config_txt.get( harvest_section, "harvestdone" )
-    maxtoharvest.text      = config_txt.get( harvest_section, "maxtoharvest" )
+    toharvestfolder       = ET.SubElement( harvest, "toharvest" )
+    harvestprogressfolder = ET.SubElement( harvest, "harvestprogress" )
+    harvestdonefolder     = ET.SubElement( harvest, "harvestdone" )
+    harvestfailurefolder  = ET.SubElement( harvest, "harvestfailure" )
+    maxtoharvest          = ET.SubElement( harvest, "maxtoharvest" )
+    harvest_section            = "harvester"
+    toharvestfolder.text       = path + '/' + config_txt.get( harvest_section, "toharvest" )
+    harvestprogressfolder.text = path + '/' + config_txt.get( harvest_section, "harvestprogress" )
+    harvestdonefolder.text     = path + '/' + config_txt.get( harvest_section, "harvestdone" )
+    harvestfailurefolder.text  = path + '/' + config_txt.get( harvest_section, "harvestfailure" )
+    maxtoharvest.text          = config_txt.get( harvest_section, "maxtoharvest" )
 
     #pidmanager settings
     num_of_pids = ET.SubElement( pidmng, "num-of-pids-to-retrieve" )

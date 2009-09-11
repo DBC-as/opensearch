@@ -1,12 +1,3 @@
-/**
- * \file FileHarvestTest.java
- * \brief The FileHarvestTest class
- * \package tests;
- */
-
-package dk.dbc.opensearch.components.harvest;
-
-
 /*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
@@ -26,12 +17,19 @@ package dk.dbc.opensearch.components.harvest;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file FileHarvestTest.java
+ * \brief The FileHarvestTest class
+ * \package tests;
+ */
+
+
+package dk.dbc.opensearch.components.harvest;
+
 
 import dk.dbc.opensearch.common.config.HarvesterConfig;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.xml.XMLUtils;
-import dk.dbc.opensearch.components.harvest.IJob;
 
 import java.io.File;
 import java.io.IOException;
@@ -222,9 +220,6 @@ public class FileHarvestTest
     @Test
     public void testHappyRunPath() throws IOException, IllegalArgumentException, ParserConfigurationException, SAXException, ConfigurationException, XMLStreamException
     {
-
-        //System.out.println( "1" );
-
         /**
          * setup
          */
