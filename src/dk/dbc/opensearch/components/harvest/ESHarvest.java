@@ -57,20 +57,61 @@ import org.xml.sax.SAXException;
  */
 public class ESHarvest implements IHarvest
 {
-    private IDBConnection oracleInstance;
-    private Connection    conn;
-    private String        databasename;
+    private Connection    conn;           // The ES-base connection - given through constructor
+    private String        databasename;   // The ES-base databasename - given through constructor
 
     Logger log = Logger.getLogger( ESHarvest.class );
 
     /**
      *   Creates a new ES-Harvester 
      */
-    public ESHarvest( IDBConnection oraInstance, String dbname )
+    public ESHarvest( Connection conn , String databasename ) throws HarvesterIOException
     {
-	oracleInstance = oraInstance;
-	databasename = dbname;
+	this.conn = conn;
+	this.databasename = databasename;
+
+        // Check that the connection is properly instantiated:
+        try
+	    {
+		// Test if connection is closed:
+		if ( conn.isClosed() )
+		    {
+			String errorMsg = "Database connection is closed at startup";
+			log.fatal( errorMsg );
+			throw new HarvesterIOException( errorMsg );
+		    }
+		
+		// Test if connection is valid:
+
+		
+	    }
+        catch( SQLException sqle )
+	    {
+		log.fatal( "Error while trying to connect to Oracle ES-base: " , sqle );
+		throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", sqle );
+	    }
+	
+
+	// Set AutoCommit	
+	try 
+	    {
+		boolean autoCommit = false;
+		log.debug( String.format( "Setting conn.autoCommit to %s", autoCommit ) );
+		conn.setAutoCommit( autoCommit );
+
+	    }
+	catch ( SQLException sqle ) 
+	    {
+		String errorMsg = "Error when setting auto commit";
+		log.fatal( errorMsg );
+		throw new HarvesterIOException( errorMsg, sqle );
+	    }
+
+        // Cleaning the ES-base, i.e. setting all "inProcess" to "queued":
+        cleanupESBase();
+
     }
+
 
     /**
      *  Starts the ES-Harvester. When the ES-harvester is started, it will look into the ES-base
@@ -82,23 +123,10 @@ public class ESHarvest implements IHarvest
     {
 	// \todo: Why do we want to call start on a Harvester? Shouldn't it not just start when it is created? (i.e. the constructor is called)
 
+	// \Note: Currently this function is "empty". At some point it should be removed completely.
 	log.info( "Starting the ES-Harvester" );
-
-        // Instantiate the connection
-        try
-	    {
-		conn = oracleInstance.getConnection();
-	    }
-        catch( SQLException sqle )
-	    {
-		log.fatal( "Error while trying to connect to Oracle ES-base: " , sqle );
-		throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", sqle );
-	    }
-
         log.debug( "ESHarvest started" );
 
-        // Cleaning the ES-base, i.e. setting all "inProcess" to "queued":
-        cleanupESBase();
 
     }
 
@@ -110,7 +138,7 @@ public class ESHarvest implements IHarvest
     {
         /**
            \Note: It could be discussed wheter the cleanup-method mentioned in the
-           * the above start()-method also should be called from here.
+           * the constructor also should be called from here.
            * The argument for doing this, is that in case the DataDock gracefully crashes,
            * then the ES-base could be updated, and if data-deliverers looks at the ES-base
            * then they will see their posts as (rightfully) queued and not (wrongfully)
@@ -154,7 +182,8 @@ public class ESHarvest implements IHarvest
 		String queryStr = new String( "SELECT suppliedrecords.targetreference, suppliedrecords.lbnr, suppliedrecords.supplementalId3 " + 
 					      "FROM taskpackagerecordstructure, suppliedrecords " + 
 					      "WHERE suppliedrecords.targetreference " + 
-					      "IN (SELECT targetreference FROM updatepackages  WHERE databasename = 'test' ) " +
+					      "IN (SELECT targetreference FROM updatepackages  WHERE databasename = '" +
+					      databasename + "') " +
 					      "AND taskpackagerecordstructure.recordstatus = 2 " + 
 					      "AND taskpackagerecordstructure.targetreference = suppliedrecords.targetreference " + 
 					      "AND taskpackagerecordstructure.lbnr = suppliedrecords.lbnr " + 
