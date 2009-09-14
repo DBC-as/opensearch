@@ -73,7 +73,7 @@ public class FileHarvestLight implements IHarvest
     /**
      *
      */
-    public FileHarvestLight() throws FileNotFoundException
+    public FileHarvestLight() throws HarvesterIOException
     {
         filterArray = new FilenameFilter[] { new NoRefFileFilter() };
 
@@ -81,8 +81,8 @@ public class FileHarvestLight implements IHarvest
         if( ! path.exists() )
         {
             String errMsg = String.format( "Harvest folder %s does not exist!", path );
-            log.error( "FileHarvest: " + errMsg );
-            throw new FileNotFoundException( errMsg );
+            log.fatal( "FileHarvestLight: " + errMsg );
+            throw new HarvesterIOException( errMsg );
         }
 
     }
