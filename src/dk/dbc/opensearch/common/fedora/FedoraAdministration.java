@@ -406,7 +406,7 @@ public class FedoraAdministration implements IFedoraAdministration
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
 
         //upload the admFile
-        String[] empty = getEmptyStringArray();
+        String[] empty = new String[]{};
 
         FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
@@ -435,7 +435,7 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         String logm = String.format( "modified the object with pid: %s", pid );
         String dsLocation = createFedoraResource( cargo );
-        String[] empty = getEmptyStringArray();
+        String[] empty = new String[]{};
 
         return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, empty, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
     }
@@ -557,7 +557,7 @@ public class FedoraAdministration implements IFedoraAdministration
         //upload the admFile
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
 
-        String[] empty = getEmptyStringArray();
+        String[] empty = new String[]{};
 
         FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
 
@@ -892,17 +892,6 @@ public class FedoraAdministration implements IFedoraAdministration
         String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( tempFile );
 
         return dsLocation;
-    }
-
-
-    /**
-     * Method for creating an empty array for use with the stream modificating
-     * methods in the Fedora API
-     * @return an empty array
-     */
-    private String[] getEmptyStringArray()
-    {
-        return new String[] { };
     }
 
 

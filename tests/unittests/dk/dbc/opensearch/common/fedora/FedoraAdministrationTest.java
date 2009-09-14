@@ -104,7 +104,7 @@ public class FedoraAdministrationTest
     
     //needed global variables
     static byte[] bytes = "bytes".getBytes();
-    static String[] empty = new String[] {};
+    
     static File admStreamFile = new File( "admFile" );
     static String timeNow = "mockTime";
 
@@ -189,10 +189,10 @@ public class FedoraAdministrationTest
             return "dsLocation";
         }
 
-        @Mock public static String[] getEmptyStringArray()
-        {
-            return empty;
-        }
+     //    @Mock public static String[] getEmptyStringArray()
+//         {
+//             return empty;
+//         }
 
         @Mock public static String getTimeNow()
         {
@@ -342,10 +342,11 @@ public class FedoraAdministrationTest
         }
 
 
-        @Mock public static String[] getEmptyStringArray()
-        {
-            return empty;
-        }  
+       //  @Mock public static String[] getEmptyStringArray()
+//         {
+//             return empty;
+//         }
+        
 
 
         @Mock public static String getTimeNow()
@@ -962,6 +963,8 @@ public class FedoraAdministrationTest
         DataStreamType testDST = DataStreamType.RelsExt;
         String testPid = "test:1";
         String returnString = "admLoc";
+        String[] empty = new String[] {};    
+        String nullString = null;
         String adminLogm =  "admin stream updated with added stream data"+timeNow;
         String logm = String.format( "added %s to the object with pid: %s", "dsLocation", testPid );
 
@@ -977,14 +980,14 @@ public class FedoraAdministrationTest
 
         expect( mockFedoraClient.uploadFile( isA( File.class ) ) ).andReturn( returnString );
 
-        expect( mockFem.modifyDatastreamByReference( testPid, "adminData", empty, "admin [text/xml]", "text/xml", null, returnString, null , null, adminLogm, true ) ).andReturn( "hat" );
+        expect( mockFem.modifyDatastreamByReference( eq( testPid ), eq( "adminData" ), aryEq( empty ), eq( "admin [text/xml]" ), eq( "text/xml" ), eq( nullString) , eq( returnString ), eq( nullString ) , eq( nullString ), eq( adminLogm ), eq( true ) ) ).andReturn( "hat" );
 
         //expect( mockFem.modifyDatastreamByReference( isA( String.class), isA( String.class), isA( String[].class), isA(String.class), isA(String.class),isA(String.class), isA(String.class), isA(String.class) , isA(String.class), isA(String.class), isA(Boolean.class) ) ).andReturn( "hat" );
 
         expect( mockCargoObject.getFormat() ).andReturn( "testFormat" );
         expect( mockCargoObject.getMimeType() ).andReturn( "text/xml" );
 
-        expect( mockFem.addDatastream( testPid, "relsExt.2", empty, "testFormat", false, "text/xml", null, "dsLocation", "M", "A", null, null, logm ) ).andReturn( "testSID" );
+        expect( mockFem.addDatastream( eq( testPid ), eq( "relsExt.2" ), aryEq( empty ), eq( "testFormat" ), eq( false ), eq( "text/xml" ), eq (nullString ), eq( "dsLocation" ), eq( "M" ), eq( "A" ), eq( nullString ), eq( nullString ), eq( logm ) ) ).andReturn( "testSID" );
 
         //replay
 
@@ -1023,12 +1026,14 @@ public class FedoraAdministrationTest
         String pid = "test:1";
         String format = "format";
         String mimeType = "mimeType";
+        String[] empty = new String[] {};
+        String nullString = null;
         String logm = String.format( "modified the object with pid: %s", pid );
 
         //expectations
         expect( mockCargoObject.getFormat() ).andReturn( format );
         expect( mockCargoObject.getMimeType() ).andReturn( mimeType );
-        expect( mockFem.modifyDatastreamByReference( pid, sID, empty, format, mimeType, null, "dsLocation", null, null, logm, true ) ).andReturn( sID );
+        expect( mockFem.modifyDatastreamByReference( eq( pid ), eq( sID ), aryEq( empty ), eq(format ), eq( mimeType ), eq( nullString ), eq( "dsLocation" ), eq( nullString ), eq( nullString ), eq( logm ) , eq( true ) ) ).andReturn( sID );
         //expect().andReturn();
 
         //replay
@@ -1063,13 +1068,15 @@ public class FedoraAdministrationTest
         String endDate = "end";
         String adminLabel = "admin [text/xml]";
         String mimeType = "text/xml";
+        String nullString = null;
+        String[] empty = new String[] {};
         String adminLogm =  "admin stream updated with added stream data"+ timeNow;
         String logm = String.format( "removed stream %s from object %s", sID, pid );
 
         //expectations
         expect( mockFem.purgeDatastream( pid, sID, startDate, endDate, logm, true )  ).andReturn( new String[] { "not", "used" });        
         expect( mockFedoraClient.uploadFile( isA( File.class ) ) ).andReturn( admLocation );
-        expect( mockFem.modifyDatastreamByReference( pid, "adminData", empty, adminLabel, mimeType, null, admLocation, null, null, adminLogm, true ) ).andReturn( "not used" );
+        expect( mockFem.modifyDatastreamByReference( eq( pid ), eq( "adminData" ), aryEq( empty ), eq( adminLabel ), eq( mimeType ), eq( nullString) , eq( admLocation ), eq( nullString ), eq( nullString ) , eq( adminLogm ) , eq( true ) ) ).andReturn( "not used" );
         
 
 
