@@ -87,7 +87,7 @@ public class DatadockPool
         this.estimate = estimate;
         this.processqueue = processqueue;
         this.fedoraAdministration = fedoraAdministration;
-        jobs = new Vector<FutureTask< Float >>();
+        jobs = new Vector<FutureTask< Float > >();
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
     }
 

@@ -88,16 +88,20 @@ public class FileHarvest implements IHarvest
     static Logger log = Logger.getLogger( FileHarvest.class );
 
 
-    private File toHarvestpath;
-    private Vector<InputPair<File, Long>> submitters;
-    private Vector<InputPair<File, Long>> formats;
-    private Vector<InputPair<String, String>> submittersFormatsVector;
+    private Vector< InputPair< File, Long > > submitters;
+    private Vector< InputPair< File, Long > > formats;
+    private Vector< InputPair< String, String > > submittersFormatsVector;
     private String datadockJobsFilePath;
     private String toHarvestFolder;
     private String harvestProgressFolder;
     private String harvestDoneFolder;
     private String harvestFailureFolder;
     private int max;
+    private File toHarvestFile;
+    private File harvestDoneFile;
+    private File harvestProgressFile;
+    private File harvestFailureFile;
+
 
     /**
      * Constructs the FileHarvest class, and starts polling the given path for
@@ -126,37 +130,37 @@ public class FileHarvest implements IHarvest
     private void setHarvestFolders() throws ConfigurationException, FileNotFoundException
     {
         toHarvestFolder = HarvesterConfig.getFolder();
-        toHarvestpath = FileHandler.getFile( toHarvestFolder );
-        if( ! toHarvestpath.exists() )
+        toHarvestFile = FileHandler.getFile( toHarvestFolder );
+        if( ! toHarvestFile.exists() )
         {
-            String errMsg = String.format( "Harvest folder '%s' does not exist!", toHarvestpath );
+            String errMsg = String.format( "Harvest folder '%s' does not exist!", toHarvestFile );
             log.error( "FileHarvest: " + errMsg );
             throw new FileNotFoundException( errMsg );
         }
 
         harvestProgressFolder = HarvesterConfig.getProgressFolder();
-        File harvestProgressPath = FileHandler.getFile( harvestProgressFolder );
-        if ( ! harvestProgressPath.exists() )
+        harvestProgressFile = FileHandler.getFile( harvestProgressFolder );
+        if ( ! harvestProgressFile.exists() )
         {
-            String errMsg = String.format( "Harvest folder '%s' does not exist!", harvestProgressPath );
+            String errMsg = String.format( "Harvest folder '%s' does not exist!", harvestProgressFile );
             log.error( "FileHarvest: " + errMsg );
             throw new FileNotFoundException( errMsg );
         }
 
         harvestDoneFolder = HarvesterConfig.getDoneFolder();
-        File harvestDonePath = FileHandler.getFile( harvestDoneFolder );
-        if( !harvestDonePath.exists() )
+        harvestDoneFile = FileHandler.getFile( harvestDoneFolder );
+        if( !harvestDoneFile.exists() )
         {
-            String errMsg = String.format( "'Harvest done folder' '%s' does not exist!", harvestDonePath );
+            String errMsg = String.format( "'Harvest done folder' '%s' does not exist!", harvestDoneFile );
             log.error( "FileHarvest: " + errMsg );
             throw new FileNotFoundException( errMsg );
         }
 
         harvestFailureFolder = HarvesterConfig.getFailureFolder();
-        File harvestFailurePath = FileHandler.getFile( harvestFailureFolder );
-        if ( ! harvestFailurePath.exists() )
+        harvestFailureFile = FileHandler.getFile( harvestFailureFolder );
+        if ( ! harvestFailureFile.exists() )
         {
-            String errMsg = String.format( "Harvest folder '%s' does not exist!", harvestFailurePath );
+            String errMsg = String.format( "Harvest folder '%s' does not exist!", harvestFailureFile );
             log.error( "FileHarvest: " + errMsg );
             throw new FileNotFoundException( errMsg );
         }
@@ -189,7 +193,7 @@ public class FileHarvest implements IHarvest
      * Private method to initialize the local vectors representing the
      * polling directory.
      */
-    private void initVectors()// throws ParserConfigurationException, SAXException, IOException
+    private void initVectors() // throws ParserConfigurationException, SAXException, IOException
     {
         log.debug( "initvectors() called" );
 
@@ -199,15 +203,15 @@ public class FileHarvest implements IHarvest
         {
             jobNodeList = XMLUtils.getNodeList( datadockJobsFile, "job" );
         }
-        catch( ParserConfigurationException ex )
+        catch( ParserConfigurationException pce )
         {
             log.error( String.format( "Could not get joblist from configurationfile %s", datadockJobsFilePath ) );
         }
-        catch( SAXException ex )
+        catch( SAXException se )
         {
             log.error( String.format( "Could not read xml in configurationfile %s", datadockJobsFilePath ) );
         }
-        catch( IOException ex )
+        catch( IOException ioe )
         {
             log.error( String.format( "Could not open file '%s' for reading", datadockJobsFilePath ) );
         }
@@ -239,11 +243,10 @@ public class FileHarvest implements IHarvest
         log.debug( "submitterFormatsVector: \n" + submittersFormatsVector.toString() );
         log.debug( "Submitters:" );
 
-        for( File submitter : toHarvestpath.listFiles() )
+        for( File submitter : toHarvestFile.listFiles() )
         {
             if( submitter.isDirectory() )
             {
-
                 log.debug( String.format( "adding submitter: path='%s'", submitter.getAbsolutePath() ) );
                 submitters.add( new InputPair<File, Long>( submitter, submitter.lastModified() ) );
             }
@@ -258,7 +261,6 @@ public class FileHarvest implements IHarvest
                 if( checkSubmitterFormat( submitterFile, format ) )
                 {
                     log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
-                    //System.out.println( String.format( "format added: %s", format.toString() ) );
                     formats.add( new InputPair<File, Long>( format, format.lastModified() ) );
                 }
             }
@@ -268,7 +270,6 @@ public class FileHarvest implements IHarvest
 
     private boolean checkSubmitterFormat( File submitterFile, File formatFile )
     {
-        //System.out.println( "hep" );
         String submitterFilePath = submitterFile.getAbsolutePath().substring( submitterFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );
         log.debug( "FileHarvest.checkSubmitterFormat -> submitter: " + submitterFilePath );
         String formatFilePath = formatFile.getAbsolutePath().substring( formatFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );
@@ -306,8 +307,7 @@ public class FileHarvest implements IHarvest
     public ArrayList<IJob> getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
     {
         ArrayList<IJob> jobs = new ArrayList<IJob>();
-        //Vector< DatadockJob > jobs = new Vector< DatadockJob>();
-        HashSet<InputPair<File, Long>> newJobs = new HashSet<InputPair<File, Long>>( 0 );
+        HashSet<InputPair< File, Long > > newJobs = new HashSet< InputPair< File, Long > >( 0 );
         try
         {
             newJobs = getNewJobs();
@@ -348,7 +348,37 @@ public class FileHarvest implements IHarvest
     @Override
     public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
-	//        log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status.getDescription() ) );
+        FileIdentifier fi = (FileIdentifier)jobId;
+        URI uri = fi.getURI();
+        File file = new File( uri );
+        
+        log.trace( String.format( "STATUS: '%s'. URI for jobId '%s': %s", status.toString(), jobId, uri ) );
+
+        switch ( status )
+        {
+            case SUCCESS:
+                try
+                {
+                    move( file, harvestProgressFolder, harvestDoneFolder );
+                }
+                catch ( IOException ioe )
+                {
+                    throw new HarvesterUnknownIdentifierException( "IOException caught", ioe );
+                }
+                break;
+            case FAILURE:
+                try
+                {
+                    move( file, harvestProgressFolder, harvestFailureFolder );
+                }
+                catch ( IOException ioe )
+                {
+                    throw new HarvesterUnknownIdentifierException( "IOException caught", ioe );
+                }
+                break;
+            default:
+        }
+        //log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status.getDescription() ) );
         log.trace( String.format( "the File %s had its status set to %s", jobId.toString(), status ) );
     }
 
@@ -392,15 +422,13 @@ public class FileHarvest implements IHarvest
      *
      * @return
      */
-    private HashSet<InputPair<File, Long>> getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
+    private HashSet< InputPair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
         log.debug( "Calling FileHarvest.getNewJobs" );
-        HashSet<InputPair<File, Long>> jobs = new HashSet<InputPair<File, Long>>();
+        HashSet< InputPair< File, Long > > jobs = new HashSet< InputPair< File, Long > >();
 
-        //int max = HarvesterConfig.getMaxToHarvest();
-        //System.out.println( String.format( "formats vector: %s", formats.toString() ) );
         log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
-        for( InputPair<File, Long> format : formats )
+        for( InputPair< File, Long > format : formats )
         {
             File[] files = format.getFirst().listFiles();
             int l = files.length;
@@ -408,33 +436,39 @@ public class FileHarvest implements IHarvest
             while( i < l && i < max )
             {
                 File job = files[i];
-                String jobpath = job.getPath();
-                //String newPath = jobpath.replace( toHarvestFolder, harvestDoneFolder );
+
+                /*String jobpath = job.getPath();
                 String newPath = jobpath.replace( toHarvestFolder, harvestProgressFolder );
                 String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
                 File destFldr = FileHandler.getFile( destFldrStr );
-                File dest = FileHandler.getFile( newPath );
-                move( job, destFldr, dest );
+                File dest = FileHandler.getFile( newPath );                
+                move( job, destFldr, dest );*/
+
+                File dest = move( job, toHarvestFolder, harvestProgressFolder );
                 jobs.add( new InputPair<File, Long>( dest, dest.length() ) );
                 i++;
             }
         }
 
-        // System.out.println( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
         log.debug( "FileHarvest.getNewsJobs done harvesting first files max: " + max );
 
         return jobs;
     }
 
 
-    private void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException
+    //private void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException
+    private File move( File src, String fromFldr, String toFldr ) throws FileNotFoundException, IOException
     {
-        //System.out.println( "1");
+        String srcPath = src.getPath();
+        String newPath = srcPath.replace( fromFldr, toFldr );
+        String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
+        File destFldr = FileHandler.getFile( destFldrStr );
+        File dest = FileHandler.getFile( newPath );
+
         log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
         boolean ok = false;
-        if( !destFldr.exists() )
+        if( ! destFldr.exists() )
         {
-            //System.out.println( "hep" );
             ok = destFldr.mkdirs();
         }
         else
@@ -446,7 +480,7 @@ public class FileHarvest implements IHarvest
         {
             log.debug( "destFldr created: " + destFldr.getPath().toString() );
             ok = src.renameTo( dest );
-            if( !ok )
+            if( ! ok )
             {
                 log.warn( String.format( "Could not rename file: %s to %s", src.getAbsolutePath().toString(), dest.getAbsolutePath().toString() ) );
                 throw new IOException( "IOException thrown in FileHarvest.move: Could not create new file: " + src.getAbsolutePath().toString() );
@@ -458,13 +492,13 @@ public class FileHarvest implements IHarvest
             throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
 
         }
+
+        return dest;
     }
 
 
     private IJob buildTheJob( FileIdentifier identifier, String submitter, String format )
     {
-        //byte[] referenceData = null;
-        //build the referencedata
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
         try
@@ -475,6 +509,7 @@ public class FileHarvest implements IHarvest
         {
             log.error( pce.getMessage() );
         }
+
         Document refStream = builder.newDocument();
         Element root = refStream.createElement( "referencedata" );
         Element info = refStream.createElement( "info" );
@@ -496,6 +531,4 @@ public class FileHarvest implements IHarvest
 
         return (IJob) theJob;
     }
-
-
 }

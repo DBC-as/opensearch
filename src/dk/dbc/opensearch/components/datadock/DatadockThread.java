@@ -190,112 +190,117 @@ public class DatadockThread implements Callable< Float >
         Float est = 0F;
         byte[] data = null;
         long timer = 0;
-        for( String classname : list)
-        {
-            log.trace( "DatadockThread getPlugin 'classname' " + classname );
 
-            IPluggable plugin = pluginResolver.getPlugin( classname );
-            log.trace( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
-
-            switch ( plugin.getPluginType() )
-            {
-            case HARVEST:
-                //get data from harvester
-                try
-                {
-                    data = harvester.getData( datadockJob.getIdentifier() );
-                }
-                catch( HarvesterUnknownIdentifierException huie )
-                {
-                    log.error( String.format( "could not get data from harvester, exception message: %s, terminating thread", huie.getMessage() ) );
-                    throw new HarvesterUnknownIdentifierException( huie.getMessage() );
-                }
-      
-                log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
-
-                ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
-                timer = System.currentTimeMillis();
-                
-                cargo = harvestPlugin.getCargoContainer( datadockJob, data );
-                
-                timer = System.currentTimeMillis() - timer;
-                log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
-
-                checkCargoObjectCount( cargo );
-
-                break;
-            case ANNOTATE:
-                log.trace( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
-
-                IAnnotate annotatePlugin = (IAnnotate)plugin;
-
-                checkCargoContainerIsNotNull( cargo );
-
-                timer = System.currentTimeMillis();
-                
-                cargo = annotatePlugin.getCargoContainer( cargo );
-
-                timer = System.currentTimeMillis() - timer;
-                log.trace( String.format( "Timing: ( ANNOTATE ) %s", timer ) );
-
-                break;
-            case STORE:
-                log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
-
-                IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-
-                timer = System.currentTimeMillis();
-                cargo = repositoryStore.storeCargoContainer( cargo );                
-                timer = System.currentTimeMillis() - timer;
-                log.trace( String.format( "Timing: ( STORE ) %s", timer ) );
-                
-                // DO NOT CHANGE log level to trace or debug!
-                log.info( "STORE pid: " + cargo.getDCIdentifier() );
-
-                break;
-            case RELATION:
-                log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
-
-                checkCargoContainerIsNotNull( cargo );
-
-                IRelation relationPlugin = (IRelation)plugin;
-
-                timer = System.currentTimeMillis();
-
-                cargo = relationPlugin.getCargoContainer( cargo );
-
-                timer = System.currentTimeMillis() - timer;
-                log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
-
-                break;
-            default:
-                log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
-            }
-        }
-
-        length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
-
-        //push to processqueue job to processqueue and get estimate
-        /**
-         * \Todo: Mimetype is never changed form its initialisation value, 
-         * which is NULL bug: 9388
-         */
-        est = estimate.getEstimate( mimeType, length );
-        log.debug( String.format( "Got estimate of %s", est) );
-        queue.push( cargo.getDCIdentifier() );
-        //inform the harvester that it was a success
         try
         {
-            harvester.setStatus( datadockJob.getIdentifier(), JobStatus.SUCCESS );
+            for( String classname : list)
+            {
+                log.trace( "DatadockThread getPlugin 'classname' " + classname );
 
+                IPluggable plugin = pluginResolver.getPlugin( classname );
+                log.trace( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
+
+                switch ( plugin.getPluginType() )
+                {
+                case HARVEST:
+                    //get data from harvester
+                    try
+                    {
+                        data = harvester.getData( datadockJob.getIdentifier() );
+                    }
+                    catch( HarvesterUnknownIdentifierException huie )
+                    {
+                        log.error( String.format( "could not get data from harvester, exception message: %s, terminating thread", huie.getMessage() ) );
+                        throw new HarvesterUnknownIdentifierException( huie.getMessage() );
+                    }
+
+                    log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
+
+                    ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
+                    timer = System.currentTimeMillis();
+
+                    cargo = harvestPlugin.getCargoContainer( datadockJob, data );
+
+                    timer = System.currentTimeMillis() - timer;
+                    log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
+
+                    checkCargoObjectCount( cargo );
+
+                    break;
+                case ANNOTATE:
+                    log.trace( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
+
+                    IAnnotate annotatePlugin = (IAnnotate)plugin;
+
+                    checkCargoContainerIsNotNull( cargo );
+
+                    timer = System.currentTimeMillis();
+
+                    cargo = annotatePlugin.getCargoContainer( cargo );
+
+                    timer = System.currentTimeMillis() - timer;
+                    log.trace( String.format( "Timing: ( ANNOTATE ) %s", timer ) );
+
+                    break;
+                case STORE:
+                    log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
+
+                    IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+
+                    timer = System.currentTimeMillis();
+                    cargo = repositoryStore.storeCargoContainer( cargo );
+                    timer = System.currentTimeMillis() - timer;
+                    log.trace( String.format( "Timing: ( STORE ) %s", timer ) );
+
+                    // DO NOT CHANGE log level to trace or debug!
+                    log.info( "STORE pid: " + cargo.getDCIdentifier() );
+
+                    break;
+                case RELATION:
+                    log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
+
+                    checkCargoContainerIsNotNull( cargo );
+
+                    IRelation relationPlugin = (IRelation)plugin;
+
+                    timer = System.currentTimeMillis();
+
+                    cargo = relationPlugin.getCargoContainer( cargo );
+
+                    timer = System.currentTimeMillis() - timer;
+                    log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
+
+                    break;
+                default:
+                    log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
+                }
+            }
+
+            length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
+
+            //push to processqueue job to processqueue and get estimate
+            queue.push( cargo.getDCIdentifier() );
+
+            //inform the harvester that it was a success
+            try
+            {
+                harvester.setStatus( datadockJob.getIdentifier(), JobStatus.SUCCESS );
+
+            }
+            catch( HarvesterInvalidStatusChangeException hisce )
+            {
+                log.error( hisce.getMessage() );
+                return 1F;
+            }
+
+            return est;
         }
-        catch( HarvesterInvalidStatusChangeException hisce )
+        catch ( Exception e )
         {
-            log.error( hisce.getMessage() );
-            return 0F;
+            log.error( String.format( "Error in %s plugin handling. Messag: %s", this.getClass().toString(), e.getMessage() ) );
+            harvester.setStatus( datadockJob.getIdentifier(), JobStatus.FAILURE );
+            return 0f;
         }
-
-        return est;
     }
 
 

@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.components.harvest.FileIdentifier;
 import dk.dbc.opensearch.components.harvest.IJob;
 
 import java.io.FileNotFoundException;
@@ -112,10 +112,12 @@ public class DatadockManager
             {
                 pool.submit( job );
                 registeredJobs.remove( 0 );
+                // move from progress to done
                 log.debug( String.format( "submitted job: '%s'", job ) );
             }
             catch( RejectedExecutionException re )
             {
+                // move from progress to failure
                 /** \todo: explanation on the frequency of this exception.*/
                 log.warn( String.format( "job: '%s' rejected, trying again", job) );
                 Thread.sleep( rejectedSleepTime );
