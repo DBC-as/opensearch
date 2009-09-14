@@ -1,26 +1,21 @@
 /*
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-  
+
   opensearch is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
-  
+
   opensearch is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/**
- * \file
- * \brief
- */
 
 
 package dk.dbc.opensearch.components.pti;
@@ -83,18 +78,18 @@ public class PTIThread implements Callable< Long >
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
     public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IFedoraAdministration fedoraAdministration ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
-    {
-        super();
+        {
+            super();
 
-        log.debug( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
+            log.debug( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
 
-        this.fedoraAdministration = fedoraAdministration;
-        this.estimate = estimate;
-        this.session = session;
-        this.fedoraPid = fedoraPid;
-        
-        log.debug( "constructor done" );
-    }
+            this.fedoraAdministration = fedoraAdministration;
+            this.estimate = estimate;
+            this.session = session;
+            this.fedoraPid = fedoraPid;
+
+            log.debug( "constructor done" );
+        }
 
 
     /**
@@ -116,70 +111,70 @@ public class PTIThread implements Callable< Long >
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
     public Long call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, MarshalException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException, ValidationException
-    {
-        log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
-        CargoContainer cc = null;
-        CargoObject co = null;
-        String submitter =  null;
-        String format = null;
-        
-        try
         {
-        	log.debug( String.format( "PTIThread -> fedoraPid: ", fedoraPid ) );
-            cc = fedoraAdministration.retrieveCargoContainer( fedoraPid );
-        }
-        catch( Exception e )
-        {
-            log.fatal( String.format( "Caught exception with cause: %s, message: %s", e.getCause(), e.getMessage() ) );
-            throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
-        }
-        
-        co = cc.getCargoObject( DataStreamType.OriginalData );
-        submitter =  co.getSubmitter();
-        format = co.getFormat();
+            log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
+            CargoContainer cc = null;
+            CargoContainer cc2 = null;
+            CargoObject co = null;
+            String submitter =  null;
+            String format = null;
 
-        long result = 0l;
-        
-        // Get the job from the jobMap
-        list = PTIJobsMap.getPtiPluginsList( submitter, format );
-        if ( list == null )
-        {
-            log.fatal( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
-            throw new NullPointerException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
-        }
+            try
+                {
+                    log.debug( String.format( "PTIThread -> fedoraPid: ", fedoraPid ) );
+                    cc = fedoraAdministration.retrieveCargoContainer( fedoraPid );
+                }
+            catch( Exception e )
+                {
+                    log.fatal( String.format( "Caught exception with cause: %s, message: %s", e.getCause(), e.getMessage() ) );
+                    throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
+                }
 
-        PluginResolver pluginResolver = new PluginResolver();
-        
-        log.debug( "Entering switch" );
-        log.debug( "PluginsList: " + list.toString() );
-        for ( String classname : list )
-        {
-            log.debug( "PTIThread running through plugins list" );
-            IPluggable plugin = pluginResolver.getPlugin( classname );
-            log.debug( "PTIThread plugin resolved" );
-            PluginType taskName = plugin.getPluginType();
-            log.debug( "PTIThread taskName: " + taskName );
-            switch ( taskName )
-            {                
-                case PROCESS:
-                    log.debug( "calling processerplugin" );
-                    IProcesser processPlugin = ( IProcesser )plugin;
-                    cc = processPlugin.getCargoContainer( cc );
-                    log.debug( "PTIThread PROCESS plugin done" );
-                    break;
-                case INDEX:
-                    log.debug( "calling indexerplugin" );
-                    IIndexer indexPlugin = ( IIndexer )plugin;
-                    result = indexPlugin.getProcessTime( cc, session, fedoraPid, estimate );
-                    log.debug( "PTIThread INDEX plugin done" );
-                    //update statistics database
-                    break;
+            co = cc.getCargoObject( DataStreamType.OriginalData );
+            submitter =  co.getSubmitter();
+            format = co.getFormat();
+
+            long result = 0l;
+
+            // Get the job from the jobMap
+            list = PTIJobsMap.getPtiPluginsList( submitter, format );
+            if ( list == null )
+                {
+                    log.warn( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
+                }
+            else{
+                PluginResolver pluginResolver = new PluginResolver();
+
+                log.debug( "Entering switch" );
+                log.debug( "PluginsList: " + list.toString() );
+                for ( String classname : list )
+                    {
+                        log.debug( "PTIThread running through plugins list" );
+                        IPluggable plugin = pluginResolver.getPlugin( classname );
+                        log.debug( "PTIThread plugin resolved" );
+                        PluginType taskName = plugin.getPluginType();
+                        log.debug( "PTIThread taskName: " + taskName );
+                        switch ( taskName )
+                            {
+                            case PROCESS:
+                                log.debug( "calling processerplugin" );
+                                IProcesser processPlugin = ( IProcesser )plugin;
+                                cc = processPlugin.getCargoContainer( cc );
+                                log.debug( "PTIThread PROCESS plugin done" );
+                                break;
+                            case INDEX:
+                                log.debug( "calling indexerplugin" );
+                                IIndexer indexPlugin = ( IIndexer )plugin;
+                                result = indexPlugin.getProcessTime( cc, session, fedoraPid, estimate );
+                                log.debug( "PTIThread INDEX plugin done" );
+                                //update statistics database
+                                break;
+                            }
+                    }
             }
-        }
-    
-        log.debug( "PTIThread done with result: " + result );
+            log.debug( "PTIThread done with result: " + result );
 
-        return result;
-    }
+            return result;
+        }
 }
 
