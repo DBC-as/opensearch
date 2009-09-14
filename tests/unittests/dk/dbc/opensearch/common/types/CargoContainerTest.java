@@ -1,6 +1,3 @@
-
-package dk.dbc.opensearch.common.types;
-
 /*
    
 This file is part of opensearch.
@@ -20,10 +17,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** \brief UnitTest for CargoContainerT **/
 
+/**
+ * \file
+ * \brief UnitTest for CargoContainer
+ **/
 
-
+package dk.dbc.opensearch.common.types;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
