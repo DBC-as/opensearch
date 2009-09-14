@@ -31,13 +31,28 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
+import java.lang.Enum;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.Namespace;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -244,7 +259,7 @@ public class XMLUtils
     /**
      * Creates a string representation of xml document
      * 
-     * @param The Document to transform
+     * @param document The {@link Document} to transform
      * 
      * @return a string representation of the document
      * 
@@ -283,5 +298,71 @@ public class XMLUtils
 
         return doc;
     }
+
+    
+    /** 
+     * Constructs a {@link Document} instance from an {@link InputStream}
+     * 
+     * @param in the {@link InputStream} to be parsed into a {@link Document}
+     * 
+     * @return a {@link Document} implementation if the {@link InputStream} {@code in} could be parsed
+     * @throws ParserConfigurationException if the preconditions for creating a Document is not met
+     * @throws SAXException if the {@code in} fails to meet the expectations that it can be transformed into a DOM structure
+     * @throws IOException if the bytes cannot be read from the InputStream {@code in}
+     */
+    public static Document documentFromInputStream( InputStream in ) throws ParserConfigurationException, SAXException, IOException
+    {
+        Document doc = null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        doc = builder.parse( new InputSource( in ) );
+        return doc;
+    }
+
+
+    /**
+     * Returns a {@link List} of all namespaces found in the {@link InputStream}
+     * {@code in}, iff {@code in} is parsable as an XML Document. This method is
+     * interested in constructing {@link Namespace}s, so global namespaces
+     * declared in {@code in} will have a default prefix assigned to it. This is,
+     * of course, not the case with the reserved namespace uris, see
+     * {@code http://www.w3.org/TR/REC-xml-names/#ns-decl}
+     * 
+     * @param in assumed parsable xml
+     * @return a {@link List} of {@link Namespace}s found in {@code in}
+     * @throws XMLStreamException if {@code in} is not parsable as an XML Document
+     */
+    public static List<Namespace> getNamespaces( InputStream in ) throws XMLStreamException
+    {
+        List< Namespace > namespaces = new ArrayList< Namespace >();
+        XMLInputFactory infac = XMLInputFactory.newInstance();
+        XMLStreamReader parser = infac.createXMLStreamReader( in );
+        XMLEventFactory eventfac = XMLEventFactory.newInstance();
+        Set<Integer> eventtypes = new HashSet<Integer>();
+        eventtypes.add( new Integer( XMLStreamConstants.START_ELEMENT ) );
+        eventtypes.add( new Integer( XMLStreamConstants.NAMESPACE ) );
+
+        int event;
+        while( parser.hasNext() )
+        {
+            event = parser.next();
+            if( eventtypes.contains( event ) && parser.getNamespaceCount() > 0 )
+            {
+                for( int i = 0; i < parser.getNamespaceCount(); i++ )
+                {
+                    String prefix = parser.getNamespacePrefix( i );
+                    if( prefix == null )
+                    {
+                        //when constructing Namespaces, null prefixes are not allowed, so we'll provide one:
+                        prefix = "_"+new Integer( i ).toString();
+                    }
+                    namespaces.add( eventfac.createNamespace( prefix, parser.getNamespaceURI( i ) ) );
+                }
+            }
+        }
+
+        return namespaces;
+    }
+    
 
 }
