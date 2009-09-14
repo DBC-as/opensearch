@@ -56,7 +56,7 @@ public enum CargoMimeType
     /**
      * Returns The description of the mimetype.
      *
-     * @returns The description of the mimetype.
+     * @return The description of the mimetype.
      */
     public String getDescription()
     {
@@ -68,7 +68,7 @@ public enum CargoMimeType
      * use instanceOfCargoMimeType.getMimeType() to get the (official)
      * name of the mimetype
      *
-     * @returns The mimetype
+     * @return The mimetype
      */
     public String getMimeType()
     {
@@ -76,10 +76,15 @@ public enum CargoMimeType
     }
 
 
+    /**
+     * Checks for the validity of the mimetype
+     * @param mimetype the mimetype to check the validity off
+     * @return true if mimetype is valid, false otherwise
+     */
     public static boolean validMimetype( String mimetype )
     {
         CargoMimeType CMT = CargoMimeType.getMimeFrom( mimetype );
-        log.debug( "checking mimetype" );
+        log.trace( "checking mimetype" );
 
         if( CMT == null )
         {
@@ -91,8 +96,9 @@ public enum CargoMimeType
 
 
     /**
-     * @param mime
-     * @return
+     * @param mime the mimetype to look up a CargoMimeType from
+     * @return the CargoMimeType that matched {@code mime}, or null if no match
+     * was found
      */
     public static CargoMimeType getMimeFrom( String mime )
     {

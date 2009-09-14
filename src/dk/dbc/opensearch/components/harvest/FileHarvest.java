@@ -103,8 +103,6 @@ public class FileHarvest implements IHarvest
      * Constructs the FileHarvest class, and starts polling the given path for
      * files and subsequent file-changes.
      *
-     * @param path The path to the directory to harvest from.
-     *
      * @throws IllegalArgumentException if the path given is not a directory.
      * @throws IOException
      * @throws SAXException
@@ -302,7 +300,7 @@ public class FileHarvest implements IHarvest
      * vector, and generate a new snapshot of the harvest directory.
      * @throws ConfigurationException
      *
-     * @returns A vector of Datadockjobs containing the necessary information to process the jobs.
+     * @return A vector of Datadockjobs containing the necessary information to process the jobs.
      */
     @Override
     public ArrayList<IJob> getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException

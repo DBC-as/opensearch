@@ -200,7 +200,7 @@ public final class FoxmlDocument
     /**
      * Helper class to specify the LocationType of a referring String if the
      * {@link ControlGroup} has specified referenced content
-     * ({@link FoxmlDocument.ControlGroup.R})
+     * ({@code FoxmlDocument.ControlGroup.R})
      */
     public enum LocationType
     {

@@ -139,7 +139,7 @@ public class CargoObject
      * Checks if the submitter of the submitted data is allowed in a
      * CargoObject
      * 
-     * @param submitter the submitter to be checked
+     * @param name the submitter to be checked
      * @return True if mimetype is allowed, False otherwise
      */
     public boolean validSubmitter( String name ) throws IllegalArgumentException
@@ -214,7 +214,7 @@ public class CargoObject
      * Returns the mimetype of the data associated with the underlying
      * CargoObjectInfo
      *
-     * @returns the mimetype of the data as a String
+     * @return the mimetype of the data as a String
      */
     public String getMimeType()
     {
@@ -226,7 +226,7 @@ public class CargoObject
      * Returns the name of the submitter of the data associated with
      * the underlying CargoObjectInfo
      *
-     * @returns the submitter as a String
+     * @return the submitter as a String
      */
     public String getSubmitter()
     {
@@ -237,7 +237,7 @@ public class CargoObject
     /**
      * Returns this CargoObject CargoObjectInfo's timestamp
      *
-     * @returns the timestamp of the underlying CargoObjectInfo
+     * @return the timestamp of the underlying CargoObjectInfo
      */
     public long getTimestamp()
     {

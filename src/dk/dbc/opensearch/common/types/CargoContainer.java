@@ -87,7 +87,7 @@ public class CargoContainer
      * @param mimetype
      *            specifies the MIME (really the Internet Media Type) of the
      *            datastream (see http://tools.ietf.org/html/rfc2388)
-     * @param indexingAlias
+     * @param alias
      *            specifies which alias should be used when indexing the
      *            datastream
      * @param data
@@ -165,7 +165,7 @@ public class CargoContainer
      * return false.
      *
      * @param id of the data to be removed from the CargoContainer
-     * @returns true iff the referenced data could be deleted from the CargoContainer, false otherwise
+     * @return true iff the referenced data could be deleted from the CargoContainer, false otherwise
      */
     public boolean remove( long id )
     {

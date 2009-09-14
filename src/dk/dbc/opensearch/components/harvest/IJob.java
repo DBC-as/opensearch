@@ -29,9 +29,7 @@ import org.w3c.dom.Document;
 public interface IJob
 {    
     /** 
-     * gets the identifier for this job.
-     * 
-     * @return 
+     * @return identifier for this job.
      */
     public IIdentifier getIdentifier();
 

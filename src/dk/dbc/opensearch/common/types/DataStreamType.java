@@ -72,8 +72,8 @@ public enum DataStreamType
 	
 	
     /**
-     * @param mime
-     * @return
+     * @param name the name of the DataStreamType
+     * @return the DataStreamType matching {@code name} or null, if no match was found
      */
     public static DataStreamType getDataStreamTypeFrom( String name )
     {

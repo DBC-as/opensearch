@@ -128,7 +128,7 @@ public final class FedoraNamespaceContext implements NamespaceContext
 
 
     /**
-     * returns an {@link Iterator<String>} of prefixes that matches
+     * returns an {@link Iterator} of prefixes that matches
      * {@code namespaceURI}
      *
      * @param namespaceURI the uri to search for prefixes for

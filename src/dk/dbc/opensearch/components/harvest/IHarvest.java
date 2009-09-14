@@ -46,12 +46,12 @@ public interface IHarvest
 
     /**
      * This method delivers information about which jobs the requestor
-     * can recieve. A {@link IJobList} should contain
+     * can recieve. A {@link IJob} should contain
      * information on how the requestor can or must obtain data from
      * the harvester.
      * 
-     * @param maxAmount specifies the maximum amount of jobs to be written to the {@link IJobList}
-     * @returns an {@link IjobList} containing information about jobs that the requestor can obtain.
+     * @param maxAmount specifies the maximum amount of jobs to be written to the {@link List}
+     * @return an {@link IJob} containing information about jobs that the requestor can obtain.
      */
     List<IJob> getJobs( int maxAmount ) throws HarvesterIOException; 
 
@@ -59,11 +59,11 @@ public interface IHarvest
     /**
      * Given an {@link IIdentifier} the requestor can obtain the data
      * associated with the {@code jobId}. {@code jobId} is usually
-     * obtained from a {@link IJobList}, which in turn can be obtained
+     * obtained from a {@link IJob}, which in turn can be obtained
      * from {@link #getJobs(int)}.
      * 
      * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvester}
-     * @returns a byte[] containing the data identified by the {@code jobId}
+     * @return a byte[] containing the data identified by the {@code jobId}
      * 
      * @throws UnknownIdentifierException if the {@link IIdentifier} is not known to the {@link IHarvester}. I.e. if the jobId can not be found
      */

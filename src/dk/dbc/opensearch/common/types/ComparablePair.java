@@ -29,7 +29,7 @@ package dk.dbc.opensearch.common.types;
  * sorts on the first element and only considers the second if the two
  * first elements are equal. If the client needs sorting on the second
  * element and not the first, please consider using a
- * {@link http://java.sun.com/javase/6/docs/api/java/util/Comparator.html}
+ * {@code http://java.sun.com/javase/6/docs/api/java/util/Comparator.html}
  * Please bear in mind, that {@link java.lang.Comparable} is used to define
  * the natural sort order of a class. In contrast,
  * java.util.Comparator is used to define an alternative sort order for
@@ -125,7 +125,7 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
 
     /**
      *
-     * @return
+     * @return the hashcode for this ComparablePair object
      */
     @Override
     public int hashCode()
@@ -140,7 +140,8 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
      * specification
      * 
      * @param pair the {@link ComparablePair} to compare
-     * @return
+     * @return -1 if {@code pair} is smaller than {@code this} 0 if they're equal
+     * and 1 otherwise
      */
     @Override
     public int compareTo( ComparablePair<E, V> pair )
