@@ -61,6 +61,8 @@ public class FileHarvestTest
     FileHarvest fileHarvest;
     static File harvestdir = new File( "harvesttestdir" );
     static File destDir = new File( "desttestdir" );
+    static File progressDir = new File( "harvestprogresstestdir" );
+    static File failureDir =new File( "harvestfailuretestdir" );
     static File mockFile = createMock( File.class );
     static NodeList mockNodeList = createMock( NodeList.class );
     Element mockElement;
@@ -99,6 +101,17 @@ public class FileHarvestTest
         {
             return destDir.getAbsolutePath();
         }
+
+        @Mock public static String getProgressFolder()
+        {
+            return progressDir.getAbsolutePath();
+        }
+
+        @Mock public static String getFailureFolder()
+        {
+            return failureDir.getAbsolutePath();
+        }
+
         @Mock public static int getMaxToHarvest()
         {
             return 100;
@@ -118,7 +131,18 @@ public class FileHarvestTest
         @Mock public static String getDoneFolder()
         {
             return destDir.getAbsolutePath();
+        } 
+
+        @Mock public static String getProgressFolder()
+        {
+            return progressDir.getAbsolutePath();
         }
+
+        @Mock public static String getFailureFolder()
+        {
+            return failureDir.getAbsolutePath();
+        }
+
         @Mock public static int getMaxToHarvest()
         {
             return 2;
@@ -160,6 +184,10 @@ public class FileHarvestTest
         harvestdir.deleteOnExit();
         destDir.mkdir();
         destDir.deleteOnExit();
+        progressDir.mkdir();
+        progressDir.deleteOnExit();
+        failureDir.mkdir();
+        failureDir.deleteOnExit();
 
     }
 
@@ -172,18 +200,7 @@ public class FileHarvestTest
         reset( mockElement );
         reset( mockNodeList );
         // removing the moved files and created directories
-        for( File submitterFile : destDir.listFiles() )
-        {
-            for( File formatFile : submitterFile.listFiles() )
-            {
-                for( File file : formatFile.listFiles() )
-                {
-                    file.delete();
-                }
-                formatFile.delete();
-            }
-            submitterFile.delete();
-        }
+     
         //removing the files not moved to have a clean dir again
         for( File submitterFile : harvestdir.listFiles() )
         {
@@ -205,6 +222,32 @@ public class FileHarvestTest
                 }
             }
 
+            submitterFile.delete();
+        }
+        //removing the files in the progressfolder
+        for( File submitterFile : progressDir.listFiles() )
+        {
+            for( File formatFile : submitterFile.listFiles() )
+            {
+                for( File file : formatFile.listFiles() )
+                {
+                    file.delete();
+                }
+                formatFile.delete();
+            }
+            submitterFile.delete();
+        }
+        //removing the files in the failure folder
+        for( File submitterFile : failureDir.listFiles() )
+        {
+            for( File formatFile : submitterFile.listFiles() )
+            {
+                for( File file : formatFile.listFiles() )
+                {
+                    file.delete();
+                }
+                formatFile.delete();
+            }
             submitterFile.delete();
         }
     }
