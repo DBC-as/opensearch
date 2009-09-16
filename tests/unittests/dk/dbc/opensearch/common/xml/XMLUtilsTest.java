@@ -42,7 +42,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.junit.*;
 import static org.junit.Assert.*;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.*;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
@@ -59,31 +64,27 @@ public class XMLUtilsTest
     String expectedResult = "<html><body><h2>My CD Collection</h2><table border=\"1\"><tr bgcolor=\"#9acd32\"><th>Title</th><th>Artist</th></tr><tr><td>Empire Burlesque</td><td>Bob Dylan</td></tr></table></body></html>";   
     
 
-        
-    /**
-     *
-     */
-    @Before
-    public void SetUp()
-    {} 
-
-
-    /**
-     *
-     */
-    @After
-    public void TearDown() { }
-
-
     /**
      *
      */
     @Test
-    public void testGetDocumentElement() { }
+    public void testGetDocument() throws ParserConfigurationException, SAXException, IOException, TransformerException
+    {
+
+        Document root = XMLUtils.getDocument( new InputSource( new ByteArrayInputStream( xmlString.getBytes( ) ) ) );
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        Document xmlDoc = documentBuilder.parse( new ByteArrayInputStream( xmlString.getBytes( ) ) );
+
+        XMLAssert.assertXMLEqual( xmlDoc, root );
+    }
 
 
     @Test
-    public void testGetNodeList() { }
+    public void testGetNodeList() 
+    {
+
+    }
 
 
     @Test
@@ -100,9 +101,9 @@ public class XMLUtilsTest
     @Test
     public void testTransform() throws IOException, ParserConfigurationException, SAXException, TransformerException
     {
-        String xsltString = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"><html><body><h2>My CD Collection</h2><table border=\"1\"><tr bgcolor=\"#9acd32\"><th>Title</th><th>Artist</th></tr><xsl:for-each select=\"catalog/cd\"><tr><td><xsl:value-of select=\"title\"/></td><td><xsl:value-of select=\"artist\"/></td></tr></xsl:for-each></table></body></html></xsl:template></xsl:stylesheet>";
+     //   String xsltString = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"><html><body><h2>My CD Collection</h2><table border=\"1\"><tr bgcolor=\"#9acd32\"><th>Title</th><th>Artist</th></tr><xsl:for-each select=\"catalog/cd\"><tr><td><xsl:value-of select=\"title\"/></td><td><xsl:value-of select=\"artist\"/></td></tr></xsl:for-each></table></body></html></xsl:template></xsl:stylesheet>";
 
-        String expectedResult = "<html><body><h2>My CD Collection</h2><table border=\"1\"><tr bgcolor=\"#9acd32\"><th>Title</th><th>Artist</th></tr><tr><td>Empire Burlesque</td><td>Bob Dylan</td></tr></table></body></html>";
+       // String expectedResult = "<html><body><h2>My CD Collection</h2><table border=\"1\"><tr bgcolor=\"#9acd32\"><th>Title</th><th>Artist</th></tr><tr><td>Empire Burlesque</td><td>Bob Dylan</td></tr></table></body></html>";
         InputStream xsltStringStream = new ByteArrayInputStream( xsltString.getBytes() );
         InputStream xmlStringStream = new ByteArrayInputStream( xmlString.getBytes() );
 

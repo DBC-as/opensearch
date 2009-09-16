@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
+import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,6 +52,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -104,7 +106,7 @@ public class FileHarvestLight implements IHarvest
 
     public List< IJob > getJobs( int maxAmount )
     {
-        Element root = null;
+        //Element root = null;
         String fileName;
         String refFileName;
         URI fileURI;
@@ -125,7 +127,7 @@ public class FileHarvestLight implements IHarvest
         }
         doc = docBuilder.newDocument();
 
-        ArrayList<IJob> list = new ArrayList();
+        List<IJob> list = new ArrayList<IJob>();
         for( int i = 0; i < maxAmount && iter.hasNext() ; i++ )
         {
             fileName = (String)iter.next();
@@ -144,14 +146,20 @@ public class FileHarvestLight implements IHarvest
                 }
                 try
                 {
-                    root = XMLUtils.getDocumentElement( new InputSource( ISrefData ) );
+                    doc = XMLUtils.getDocument( new InputSource( ISrefData ) );
                 }
-                catch( Exception e )
+                catch( ParserConfigurationException ex )
                 {
-                    log.error( e.getMessage() );
+                    log.error( ex.getMessage() );
                 }
-                                
-                doc.importNode( (Node)root, true );
+                catch( SAXException ex )
+                {
+                    log.error( ex.getMessage() );
+                }
+                catch( IOException ex )
+                {
+                    log.error( ex.getMessage() );
+                }
 
                 File theFile = FileHandler.getFile( fileName );
 

@@ -32,17 +32,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
-import java.lang.Enum;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -58,7 +53,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -94,17 +88,16 @@ public class XMLUtils
      * @throws SAXException Could not parse xmlFile
      * @throws IOException could not read xmlFile
      */
-    public static Element getDocumentElement( byte[] data ) throws ParserConfigurationException, SAXException, IOException
+    public static Document getDocumentElement( byte[] data ) throws ParserConfigurationException, SAXException, IOException
     {
         ByteArrayInputStream bis = new ByteArrayInputStream( data );
 
-        return getDocumentElement( new InputSource( bis ) );
+        return getDocument( new InputSource( bis ) );
     }
 
 
     /**
-     * creates a Document from is, and returns the root element of the
-     * created document.
+     * creates and returns a Document from is.
      *
      * @param is the inputsource to build the Document from
      *
@@ -114,14 +107,11 @@ public class XMLUtils
      * @throws SAXException Could not parse xmlFile
      * @throws IOException could not read xmlFile
      */
-    public static Element getDocumentElement( InputSource is ) throws ParserConfigurationException, SAXException, IOException
+    public static Document getDocument( InputSource is ) throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFact.newDocumentBuilder();
-        Document admDoc = docBuilder.parse( is );
-        Element root = admDoc.getDocumentElement();
-
-        return root;
+        return docBuilder.parse( is );
     }
 
 
@@ -165,34 +155,16 @@ public class XMLUtils
      */
     public static NodeList getNodeList( String xmlFile, String tagName, EntityResolver er ) throws ParserConfigurationException, SAXException, IOException
     {
-        log.debug( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, tagName ) );
+        log.trace( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, tagName ) );
 
-        try
-        {
-            DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-            docBuilder.setEntityResolver( er );
-            Document jobDocument = docBuilder.parse( xmlFile );
-            Element xmlRoot = jobDocument.getDocumentElement();
+        DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+        docBuilder.setEntityResolver( er );
+        Document jobDocument = docBuilder.parse( xmlFile );
+        Element xmlRoot = jobDocument.getDocumentElement();
 
-            log.debug( "getNodeList done" );
-            return xmlRoot.getElementsByTagName( tagName );
-        }
-        catch( ParserConfigurationException pce )
-        {
-            log.error( String.format( "Could not parse xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + pce );
-            throw pce;
-        }
-        catch( SAXException se )
-        {
-            log.error( String.format( "SAXException caught parsing xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + se );
-            throw se;
-        }
-        catch( IOException ioe )
-        {
-            log.error( String.format( "IOException caught parsing xmlFile '%s' with tagName '%s'\n", xmlFile, tagName ) + "Exception messag: " + ioe );
-            throw ioe;
-        }
+        log.trace( "getNodeList done" );
+        return xmlRoot.getElementsByTagName( tagName );
     }
 
 
@@ -363,6 +335,4 @@ public class XMLUtils
 
         return namespaces;
     }
-    
-
 }

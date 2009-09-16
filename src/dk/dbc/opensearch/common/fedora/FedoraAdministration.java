@@ -91,10 +91,19 @@ import org.xml.sax.SAXException;
  */
 public class FedoraAdministration implements IFedoraAdministration
 {
-    static Logger log = Logger.getLogger( FedoraAdministration.class );
+    /**
+     * Standard logger on the class.
+     */
+    private static Logger log = Logger.getLogger( FedoraAdministration.class );
 
-    
+    /**
+     * Dateformat conforming to the fedora requirements.
+     */
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
+
+    /**
+     * Maximum results to return from queries on the fedora repository.
+     */
     private final NonNegativeInteger maxResults = new NonNegativeInteger( "1000000" );
 
 
@@ -106,13 +115,14 @@ public class FedoraAdministration implements IFedoraAdministration
 
 
     /**
-     * Permanently deletes a DigitalObject from the underlying repository
-     * @param pid, the identifier of the object to be removed
-     * @param force, tells whether to purge the object even if it
-     * breaks dependencies to other objects
-     * @throws IOException
-     * @throws ServiceException
-     * @throws MalformedURLException
+     * Permanently deletes a DigitalObject from the underlying repository.
+     *
+     * @param pid the identifier of the object to be removed
+     * @param force tells whether to purge the object even if it breaks dependencies to other objects
+     * @throws ConfigurationException if the FedoraHandle instance could not be obtained
+     * @throws IOException  if the FedoraHandle instance could not be obtained
+     * @throws ServiceException if the purgeObject method on the fedora APIM could not be executed
+     * @throws MalformedURLException if the fedora service has no endpoint
      */
     public void deleteObject( String pid, boolean force ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
@@ -153,15 +163,14 @@ public class FedoraAdministration implements IFedoraAdministration
         {
             Element stream = (Element) streamNodeList.item( i );
             String streamID = stream.getAttribute( "id" );
-            
+
             if (streamID.equals( DataStreamType.DublinCoreData.getName() + ".0"  ) )
             { // the dc stream
                 streamID = "DC";
             }
-            
+
             MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null );
 
-           
             cc.add( DataStreamType.getDataStreamTypeFrom( stream.getAttribute( "streamNameType" ) ),
                     stream.getAttribute( "format" ),
                     stream.getAttribute( "submitter" ),
@@ -207,17 +216,17 @@ public class FedoraAdministration implements IFedoraAdministration
 
         try
         {
-             log.info( String.format("Purges object with pid %s", fedorPid ) );
-             FedoraHandle.getInstance().getAPIM().purgeObject( fedorPid, logm, false);
-        } 
+            log.info( String.format("Purges object with pid %s", fedorPid ) );
+            FedoraHandle.getInstance().getAPIM().purgeObject( fedorPid, logm, false);
+        }
         catch( Exception e )
         {
-        	log.warn( String.format( "Ignored error from purgeObject for pid %s", fedorPid));
+            log.warn( String.format( "Ignored error from purgeObject for pid %s", fedorPid));
         }
-        		
+
         logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
         String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, Constants.FOXML1_1.toString(), logm );// "info:fedora/fedora-system:FOXML-1.1", logm );
-        
+
         //log.trace( String.format( "Submitted data %s", new String( foxml ) ) );
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
@@ -609,12 +618,13 @@ public class FedoraAdministration implements IFedoraAdministration
         //log.debug( "getAdminstream 3" );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.trace( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        //log.debug( "getDocumentElement" );
-        Element root = XMLUtils.getDocumentElement( new InputSource( bis ) );
+        //log.debug( "getDocumentRootElement" );
+        Document doc = XMLUtils.getDocument( new InputSource( bis ) );
+        //Element root = XMLUtils.getDocumentRootElement( new InputSource( bis ) );
 
-        log.trace( String.format( "root element from adminstream == %s", root ) );
+        log.trace( String.format( "root element from adminstream == %s", doc ) );
 
-        return root;
+        return doc.getDocumentElement();
     }
 
 
@@ -640,7 +650,7 @@ public class FedoraAdministration implements IFedoraAdministration
 
         log.debug( String.format( "fieldToMatch = %s, valueToFind = %s", fieldToMatch, valueToFind ) );
         Condition[] cond = { new Condition( fieldToMatch, ComparisonOperator.has, valueToFind ) };
-        FieldSearchQuery fsq = new FieldSearchQuery( cond, null ); 
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( results, new NonNegativeInteger( Integer.toString( Integer.MAX_VALUE ) ), fsq );
 
         List<ObjectFields> objectFields = Arrays.asList( fsr.getResultList() );

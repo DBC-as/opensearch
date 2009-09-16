@@ -40,7 +40,6 @@ import fedora.server.types.gen.MIMETypedStream;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
@@ -48,20 +47,14 @@ import java.text.ParseException;
 import java.sql.SQLException;
 import java.net.MalformedURLException;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.Result;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.rpc.ServiceException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.stream.StreamResult;
 
 import mockit.Mock;
 import mockit.Mockit;
@@ -158,9 +151,9 @@ public class FedoraAdministrationTest
     @MockClass( realClass = XMLUtils.class )
     public static class MockXMLUtils
     {
-        @Mock public static Element getDocumentElement( InputSource is)
+        @Mock public static Document getDocument( InputSource is)
         {
-            return mockElement;
+            return mockDocument;
         }
 
     }
