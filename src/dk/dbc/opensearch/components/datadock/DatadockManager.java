@@ -31,7 +31,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.components.harvest.FileIdentifier;
 import dk.dbc.opensearch.components.harvest.IJob;
 
 import java.io.FileNotFoundException;

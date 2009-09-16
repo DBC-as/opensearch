@@ -436,14 +436,6 @@ public class FileHarvest implements IHarvest
             while( i < l && i < max )
             {
                 File job = files[i];
-
-                /*String jobpath = job.getPath();
-                String newPath = jobpath.replace( toHarvestFolder, harvestProgressFolder );
-                String destFldrStr = newPath.substring( 0, newPath.lastIndexOf( "/" ) );
-                File destFldr = FileHandler.getFile( destFldrStr );
-                File dest = FileHandler.getFile( newPath );                
-                move( job, destFldr, dest );*/
-
                 File dest = move( job, toHarvestFolder, harvestProgressFolder );
                 jobs.add( new InputPair<File, Long>( dest, dest.length() ) );
                 i++;
@@ -456,7 +448,6 @@ public class FileHarvest implements IHarvest
     }
 
 
-    //private void move( File src, File destFldr, File dest ) throws FileNotFoundException, IOException
     private File move( File src, String fromFldr, String toFldr ) throws FileNotFoundException, IOException
     {
         String srcPath = src.getPath();
