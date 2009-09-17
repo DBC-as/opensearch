@@ -39,6 +39,7 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -70,6 +71,22 @@ public class DatadockPool
     private IFedoraAdministration fedoraAdministration;
     private IHarvest harvester;
     
+    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
+
+		@Override
+		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  {
+			if( executor.isShutdown())  {
+					throw new RejectedExecutionException();
+			}
+			try {
+				executor.getQueue().put(r);
+			} catch (InterruptedException e) {		
+				e.printStackTrace();
+				throw new RejectedExecutionException();
+			};
+		}
+    	
+    }
     /**
      * Constructs the the datadockPool instance
      *
@@ -89,6 +106,8 @@ public class DatadockPool
         this.fedoraAdministration = fedoraAdministration;
         jobs = new Vector<FutureTask< Float > >();
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
+        
+        threadpool.setRejectedExecutionHandler( new BlockingRejectedExecutionHandler() );
     }
 
     
