@@ -96,6 +96,7 @@ public class FedoraAdministration implements IFedoraAdministration
      */
     private static Logger log = Logger.getLogger( FedoraAdministration.class );
 
+
     /**
      * Dateformat conforming to the fedora requirements.
      */
@@ -127,7 +128,11 @@ public class FedoraAdministration implements IFedoraAdministration
     public void deleteObject( String pid, boolean force ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
         String logm = "";
+
+        long timer = System.currentTimeMillis();
         FedoraHandle.getInstance().getAPIM().purgeObject( pid, logm, force );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Fedora call end: %s", timer ) );
     }
 
 
@@ -195,6 +200,9 @@ public class FedoraAdministration implements IFedoraAdministration
     public synchronized String storeCargoContainer( CargoContainer cargo, String submitter ) throws MalformedURLException, RemoteException, ServiceException, IOException, SAXException, MarshalException, ValidationException, ParseException, ParserConfigurationException, TransformerException, ConfigurationException, XPathExpressionException
     {
         log.trace( "Entering storeContainer( CargoContainer )" );
+
+        long timer = 0;
+
         if( cargo.getCargoObjectCount() == 0 )
         {
             log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
@@ -205,19 +213,26 @@ public class FedoraAdministration implements IFedoraAdministration
         log.debug( String.format( " ja7: old pid = %s" , old_DC ) );
         if( old_DC == null )
         {
-           String nextPid = PIDManager.getInstance().getNextPID( submitter );
-           cargo.setDCIdentifier( nextPid );
+            timer = System.currentTimeMillis();
+            String nextPid = PIDManager.getInstance().getNextPID( submitter );
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: ( getNextPid ) %s", timer ) );
+
+            cargo.setDCIdentifier( nextPid );
         }
+
         String fedorPid = cargo.getDCIdentifier();
         log.debug( String.format( "CargoContainer will have pid '%s'", fedorPid ) );
-        //byte[] foxml = FedoraTools.constructFoxml( cargo, nextPid, format );
         byte[] foxml = FedoraUtils.CargoContainerToFoxml( cargo );
-        String logm = String.format( "%s purged", fedorPid); // cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
+        String logm = String.format( "%s purged", fedorPid); 
 
         try
         {
             log.info( String.format("Purges object with pid %s", fedorPid ) );
+            timer = System.currentTimeMillis();
             FedoraHandle.getInstance().getAPIM().purgeObject( fedorPid, logm, false);
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: ( purgeObject ) %s", timer ) );
         }
         catch( Exception e )
         {
@@ -225,9 +240,12 @@ public class FedoraAdministration implements IFedoraAdministration
         }
 
         logm = String.format( "%s inserted", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-        String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, Constants.FOXML1_1.toString(), logm );// "info:fedora/fedora-system:FOXML-1.1", logm );
 
-        //log.trace( String.format( "Submitted data %s", new String( foxml ) ) );
+        timer = System.currentTimeMillis();
+        String pid = FedoraHandle.getInstance().getAPIM().ingest( foxml, Constants.FOXML1_1.toString(), logm );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( ingest ) %s", timer ) );
+
         log.info( String.format( "Submitted data, returning pid %s", pid ) );
 
         return pid;
@@ -258,10 +276,14 @@ public class FedoraAdministration implements IFedoraAdministration
             String typeOfStream = stream.getAttribute( "streamNameType" );
             if( typeOfStream.equals( streamtype.getName() ) )
             {
-
                 //build the CargoObject and add it to the list
                 String streamID = stream.getAttribute( "id" );
+
+                long timer = System.currentTimeMillis();
                 MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null );
+                timer = System.currentTimeMillis() - timer;
+                log.trace( String.format( "Timing: ( getDatastreamDissemination ) %s", timer ) );
+
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( streamtype,
@@ -301,7 +323,12 @@ public class FedoraAdministration implements IFedoraAdministration
             if( streamID.equals( idOfStream ) )
             {
                 //build the CargoObject and add it to the list
+
+                long timer = System.currentTimeMillis();
                 MIMETypedStream dstream = FedoraHandle.getInstance().getAPIA().getDatastreamDissemination( pid, streamID, null );
+                timer = System.currentTimeMillis() - timer;
+                log.trace( String.format( "Timing: ( getDatastreamDissemination ) %s", timer ) );
+
                 byte[] bytestream = dstream.getStream();
 
                 cc.add( DataStreamType.getDataStreamTypeFrom( stream.getAttribute( "streamNameType" ) ),
@@ -311,7 +338,7 @@ public class FedoraAdministration implements IFedoraAdministration
                         stream.getAttribute( "mimetype" ),
                         IndexingAlias.getIndexingAlias( indexingAlias ),
                         bytestream );
-            }
+                }
         }
 
         return cc;
@@ -412,17 +439,27 @@ public class FedoraAdministration implements IFedoraAdministration
 
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
+        long timer = System.currentTimeMillis();
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( uploadFile ) %s", timer ) );
 
         //upload the admFile
         String[] empty = new String[]{};
 
-        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        timer = System.currentTimeMillis();
+        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[]{}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( modifyDatastreamByReference ) %s", timer ) );
 
         //upload the content
         String dsLocation = createFedoraResource( cargo );
         logm = String.format( "added %s to the object with pid: %s", dsLocation, pid );
-        String returnedSID = FedoraHandle.getInstance().getAPIM().addDatastream( pid, sID, empty, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
+
+        timer = System.currentTimeMillis();
+        String returnedSID = FedoraHandle.getInstance().getAPIM().addDatastream( pid, sID, new String[]{}, cargo.getFormat(), versionable, cargo.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( addDatastream ) %s", timer ) );
 
         return returnedSID;
     }
@@ -446,7 +483,12 @@ public class FedoraAdministration implements IFedoraAdministration
         String dsLocation = createFedoraResource( cargo );
         String[] empty = new String[]{};
 
-        return FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, empty, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
+        long timer = System.currentTimeMillis();
+        String retval =  FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, sID, new String[]{}, cargo.getFormat(), cargo.getMimeType(), null, dsLocation, null, null, logm, breakDependencies );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( modifyDatastreamByReference ) %s", timer ) );
+
+        return retval;
     }
 
 
@@ -470,8 +512,12 @@ public class FedoraAdministration implements IFedoraAdministration
         /**
          * \Todo: find out why the return val is String[] and not String. bug 9046
          */
+        long timer = System.currentTimeMillis();
         String[] stamp = FedoraHandle.getInstance().getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies );
-        if( stamp == null )
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( purgeDatastream ) %s", timer ) );
+
+        if ( stamp == null )
         {
             return false;
         }
@@ -531,7 +577,7 @@ public class FedoraAdministration implements IFedoraAdministration
                 if( currentStreamTypeName.equals( purgeStreamTypeName ) )
                 {
                     currentIndex = Integer.valueOf( stream.getAttribute( "index" ) );
-                    if( currentIndex > purgeIndex )
+                    if ( currentIndex > purgeIndex )
                     {
                         newVal = currentIndex - 1;
                         stream.setAttribute( "index", Integer.toString( newVal ) );
@@ -564,11 +610,15 @@ public class FedoraAdministration implements IFedoraAdministration
         adminLogm = "admin stream updated with added stream data" + timeNow;
 
         //upload the admFile
+        timer = System.currentTimeMillis();
         String admLocation = FedoraHandle.getInstance().getFC().uploadFile( admFile );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( uploadFile ) %s", timer ) );
 
-        String[] empty = new String[]{};
-
-        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        timer = System.currentTimeMillis();
+        FedoraHandle.getInstance().getAPIM().modifyDatastreamByReference( pid, DataStreamType.AdminData.getName(), new String[]{}, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( modifyDatastreamByReference ) %s", timer ) );
 
         /**
          * \Todo: find out why the return val is String[] and not String. bug 9046
@@ -578,6 +628,9 @@ public class FedoraAdministration implements IFedoraAdministration
 
 
     /**
+     * Wrapper method for adding the the relationship
+     * "isMemberOfCollection" on a RELS-EXT stream of the
+     * DigitalObject designated by `pid`
      * returns the administration stream of a given DigitalObject from
      * the fedora repository
      *
@@ -585,12 +638,7 @@ public class FedoraAdministration implements IFedoraAdministration
      *
      * @return the administration stream as an Element
      */
-    private static Element getAdminStream( String pid ) throws IOException,
-                                                               ParserConfigurationException,
-                                                               RemoteException,
-                                                               ServiceException,
-                                                               SAXException,
-                                                               ConfigurationException
+    private static Element getAdminStream( String pid ) throws IOException, ParserConfigurationException, RemoteException, ServiceException, SAXException, ConfigurationException
     {
         MIMETypedStream ds;
         try
@@ -602,7 +650,8 @@ public class FedoraAdministration implements IFedoraAdministration
         catch( Exception e )//this looks a bit dubious, donnit?
         {
             log.debug( "Exception in getDatastreamDissemination: " + e.getMessage() + e.getCause() );
-            /*\todo: WTF?*/ throw new IOException( "test" );
+            /*\todo: WTF?*/
+            throw new IOException( "test" );
         }
         byte[] adminStream = ds.getStream();
         //log.debug( "getAdminstream 2" );
@@ -614,57 +663,13 @@ public class FedoraAdministration implements IFedoraAdministration
 
         log.trace( String.format( "Got adminstream from fedora: %s", new String( adminStream ) ) );
 
-        //CargoContainer cc = new CargoContainer();
-        //log.debug( "getAdminstream 3" );
         ByteArrayInputStream bis = new ByteArrayInputStream( adminStream );
         log.trace( String.format( "Trying to get root element from adminstream with length %s", bis.available() ) );
-        //log.debug( "getDocumentRootElement" );
-        Document doc = XMLUtils.getDocument( new InputSource( bis ) );
-        //Element root = XMLUtils.getDocumentRootElement( new InputSource( bis ) );
-
+        Document doc = XMLUtils.getDocument( new InputSource( bis ) );        
         log.trace( String.format( "root element from adminstream == %s", doc ) );
 
         return doc.getDocumentElement();
     }
-
-
-    /**
-     * Given a field to match (in the DublinCore streams of the underlying
-     * repository digital objects), {@code fieldToMatch} and a value to match
-     * on, {@code valueToMatch}, this method returns a list of matching pids
-     *
-     * @param fieldToMatch field in the repository objects to match in
-     * @param valueToFind value to match in the fields
-     * @return a list of pids of objects that matched the parameters
-     * @throws ConfigurationException
-     * @throws MalformedURLException
-     * @throws IOException
-     * @throws ServiceException
-     */
-    /*public List< String > findMatchingFieldPids( String fieldToMatch, String valueToFind ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
-    {
-        String[] results = { "pid", "title" };
-
-        / * * \todo: we're meddling with the contents here. Should no be so. Fixxit* /
-        valueToFind = valueToFind.replace( "'", "" );
-
-        log.debug( String.format( "fieldToMatch = %s, valueToFind = %s", fieldToMatch, valueToFind ) );
-        Condition[] cond = { new Condition( fieldToMatch, ComparisonOperator.has, valueToFind ) };
-        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
-        FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( results, new NonNegativeInteger( Integer.toString( Integer.MAX_VALUE ) ), fsq );
-
-        List<ObjectFields> objectFields = Arrays.asList( fsr.getResultList() );
-        List<String> resultPids = new ArrayList<String>( objectFields.size() );
-
-        log.debug( String.format( "value '%s' matched pids=%s", valueToFind, Arrays.deepToString( resultPids.toArray() ) ) );
-
-        for( ObjectFields f : objectFields )
-        {
-            resultPids.add( f.getPid() );
-        }
-
-        return resultPids;
-    }*/
 
 
     /**
@@ -682,16 +687,21 @@ public class FedoraAdministration implements IFedoraAdministration
         ComparisonOperator comp = ComparisonOperator.fromString( operator );
         Condition[] cond = { new Condition( property, comp, value ) };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+
+        long timer = System.currentTimeMillis();
         FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Fedora call end: %s", timer ) );
+
         ObjectFields[] objectFields = fsr.getResultList();
 
         int ofLength = objectFields.length;
         String[] pids = new String[ofLength];
         for( int i = 0; i < ofLength; i++ )
-        {
-            pids[i] = objectFields[i].getPid();
-            log.debug( "pid " + i + ": " + pids[i].toString() );
-        }
+            {
+                pids[i] = objectFields[i].getPid();
+                log.debug( "pid " + i + ": " + pids[i].toString() );
+            }
 
         return pids;
     }
@@ -716,10 +726,7 @@ public class FedoraAdministration implements IFedoraAdministration
          */
         value = value.replace( "'", "" );
         log.debug( String.format( "value after replace: '%s'", value ) );
-        Condition[] cond =
-            {
-                new Condition( property, ComparisonOperator.has, value )
-            };
+        Condition[] cond = { new Condition( property, ComparisonOperator.has, value ) };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
         String msg = "just before findObjects";
@@ -727,8 +734,12 @@ public class FedoraAdministration implements IFedoraAdministration
         FieldSearchResult fsr = null;
         try
         {
-            log.debug( "calling fedora apia findObjects" );
+            log.trace( "calling fedora apia findObjects" );
+
+            long timer = System.currentTimeMillis();
             fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Fedora call end: %s", timer ) );
         }
         catch( Exception ex )
         {
@@ -750,6 +761,7 @@ public class FedoraAdministration implements IFedoraAdministration
             log.debug( String.format( "findObjectFields returning ObjectFields[]", "" ) );
             objectFields = fsr.getResultList();
         }
+
         log.debug( String.format( "Returning objectFields", "" ) );
         return objectFields;
     }
@@ -758,14 +770,11 @@ public class FedoraAdministration implements IFedoraAdministration
     public String findPropertiesPid( String sourcePid, String property_1, String value_1, String property_2, String value_2 ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
     {
         /** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
-        String[] resultFields =
-            {
-                "pid"
-            };
+        String[] resultFields = { "pid" };
         ObjectFields[] pids_1 = findObjectFields( resultFields, property_1, value_1 );
         ObjectFields[] pids_2 = findObjectFields( resultFields, property_2, value_2 );
 
-        if( pids_1 == null || pids_2 == null )
+        if ( pids_1 == null || pids_2 == null )
         {
             return null;
         }
@@ -777,20 +786,21 @@ public class FedoraAdministration implements IFedoraAdministration
         {
             pidsArrLst_2.add( pids_2[i].getPid() );
         }
+
         Collections.sort( pidsArrLst_2 );
 
-        if( pids_1 != null && pids_2 != null )
+        if ( pids_1 != null && pids_2 != null )
         {
             String nextPid = null;
             int pids_1_len = pids_1.length;
             for( int i = 0; i < pids_1_len; i++ )
             {
                 nextPid = pids_1[i].getPid();
-                if( pidsArrLst_2.contains( nextPid ) )
+                if ( pidsArrLst_2.contains( nextPid ) )
                 {
                     int index = pidsArrLst_2.indexOf( nextPid );
                     String ret = pidsArrLst_2.get( index );
-                    if( ret.equals( nextPid ) && !ret.equals( sourcePid ) )
+                    if ( ret.equals( nextPid ) && !ret.equals( sourcePid ) )
                     {
                         return ret;
                     }
@@ -835,11 +845,11 @@ public class FedoraAdministration implements IFedoraAdministration
     {
         NodeList indexingAliasElem = adminStream.getElementsByTagName( "indexingalias" );
         if( indexingAliasElem == null )
-        {
-            /** \todo: this if statement doesnt skip anything. What should we do? bug: 8878 */
-            log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
-            throw new NullPointerException( "An Adminstream didnt contain a indexingAslias" );
-        }
+            {
+                /** \todo: this if statement doesnt skip anything. What should we do? bug: 8878 */
+                log.error( String.format( "Could not get indexingalias from adminstream, skipping " ) );
+                throw new NullPointerException( "An Adminstream didnt contain a indexingAslias" );
+            }
         //this might throw a NullPointerException....
         String indexingAliasName = ((Element) indexingAliasElem.item( 0 )).getAttribute( "name" );
 
@@ -867,10 +877,9 @@ public class FedoraAdministration implements IFedoraAdministration
 
     /**
      * Returns a reference to a resource uploadable to Fedora. This
-     * method creates a unique name for the temporary file. If you for
-     * some reason needs to give your own, use createFedoraResource(
-     * CargoContainer cargo, String prefix ), where prefix will be the
-     * filename prefix
+     * method creates a unique name for the temporary file. A
+     * userdefined name for prefix can be given using the method
+     * {@link #createFedoraResource(CargoContainer, String)}
      *
      * @param cargo The data to be uploaded
      *
@@ -884,7 +893,8 @@ public class FedoraAdministration implements IFedoraAdministration
 
 
     /**
-     *
+     * Returns a reference to a resource uploadable to Fedora. This
+     * method creates a unique name for the temporary file.      
      *
      * @param cargo The data to be uploaded
      * @param prefix the prefix of the filename
@@ -899,7 +909,11 @@ public class FedoraAdministration implements IFedoraAdministration
         fos.write( cargo.getBytes() );
         fos.flush();
         fos.close();
+
+        long timer = System.currentTimeMillis();
         String dsLocation = FedoraHandle.getInstance().getFC().uploadFile( tempFile );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Fedora call end: %s", timer ) );
 
         return dsLocation;
     }

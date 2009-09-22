@@ -182,6 +182,8 @@ public class DatadockThread implements Callable< Float >
         // Method is to be extended when we connect to 'Posthuset'
         log.trace( "DatadockThread call method called" );
 
+        long jobTime = System.currentTimeMillis();
+
         // Validate plugins
         PluginResolver pluginResolver = new PluginResolver();
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
@@ -218,9 +220,7 @@ public class DatadockThread implements Callable< Float >
 
                     ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
                     timer = System.currentTimeMillis();
-
                     cargo = harvestPlugin.getCargoContainer( datadockJob, data );
-
                     timer = System.currentTimeMillis() - timer;
                     log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
 
@@ -235,9 +235,7 @@ public class DatadockThread implements Callable< Float >
                     checkCargoContainerIsNotNull( cargo );
 
                     timer = System.currentTimeMillis();
-
                     cargo = annotatePlugin.getCargoContainer( cargo );
-
                     timer = System.currentTimeMillis() - timer;
                     log.trace( String.format( "Timing: ( ANNOTATE ) %s", timer ) );
 
@@ -264,9 +262,7 @@ public class DatadockThread implements Callable< Float >
                     IRelation relationPlugin = (IRelation)plugin;
 
                     timer = System.currentTimeMillis();
-
                     cargo = relationPlugin.getCargoContainer( cargo );
-
                     timer = System.currentTimeMillis() - timer;
                     log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
 
@@ -276,10 +272,10 @@ public class DatadockThread implements Callable< Float >
                 }
             }
 
-            length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
-
             //push to processqueue job to processqueue and get estimate
             queue.push( cargo.getDCIdentifier() );
+
+            length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
 
             //inform the harvester that it was a success
             try

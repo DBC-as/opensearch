@@ -17,6 +17,11 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.plugins;
 
@@ -69,6 +74,7 @@ public class Store implements IRepositoryStore
         {
             submitter = cargo.getDCCreator();
         }
+
         fa.storeCargoContainer( cargo, submitter );
         
         return cargo;

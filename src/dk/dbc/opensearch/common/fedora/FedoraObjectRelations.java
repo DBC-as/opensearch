@@ -181,7 +181,12 @@ public class FedoraObjectRelations
         qparams.put( "lang", "itql" );
         qparams.put( "flush", "true" );
         qparams.put( "query", query );
+
+        long timer = System.currentTimeMillis();
         TupleIterator tuples = FedoraHandle.getInstance().getFC().getTuples( qparams );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( getTuples ) %s", timer ) );
+
         ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
         if ( tuples != null )
         {
@@ -272,8 +277,12 @@ public class FedoraObjectRelations
         predicate = "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";//FedoraObjectRelations.Relationship.IS_MEMBER_OF_COLLECTION.toString();
         literal = false;
         log.debug( String.format( "modified addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
+        long timer = System.currentTimeMillis();
+        boolean ret = FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( addRelationship ) %s", timer ) );
 
-        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
+        return ret;
     }
 
 
@@ -295,6 +304,7 @@ public class FedoraObjectRelations
         return addRelation( pid, predicate, namespace, true, null );
     }
 
+
     public boolean addIsOwnedByRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
         /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
@@ -302,6 +312,7 @@ public class FedoraObjectRelations
         String predicate = "fedora:isOwnedBy";
         return addRelation( pid, predicate, namespace, true, null );
     }
+
 
     /**
      * Method for adding relationship data
@@ -404,7 +415,11 @@ public class FedoraObjectRelations
         System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
         try
         {
-            return FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate );
+            long timer = System.currentTimeMillis();
+            RelationshipTuple[] ret = FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate );
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: ( getRelationships ) %s", timer ) );
+            return ret;
         }
         catch( ConfigurationException ce )
         {
@@ -440,7 +455,11 @@ public class FedoraObjectRelations
      */
     public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
+        long timer = System.currentTimeMillis();
         RelationshipTuple[] rt = FedoraHandle.getInstance().getAPIM().getRelationships( subject, predicate );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( getRelationships ) %s", timer ) );
+
         int rtLength = rt.length;
         for( int i = 0; i < rtLength; i++ )
         {
@@ -473,6 +492,11 @@ public class FedoraObjectRelations
      */
     public boolean removeRelation( String pid, String predicate, String targetDCIdentifier, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        return FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
+        long timer = System.currentTimeMillis();
+        boolean ret = FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Timing: ( purgeRelationships ) %s", timer ) );
+        return ret;
+
     }
 }
