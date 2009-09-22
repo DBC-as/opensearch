@@ -62,6 +62,8 @@ public class ESHarvest implements IHarvest
 
     Logger log = Logger.getLogger( ESHarvest.class );
 
+
+
     /**
      *   Creates a new ES-Harvester 
      */
@@ -81,8 +83,7 @@ public class ESHarvest implements IHarvest
 			throw new HarvesterIOException( errorMsg );
 		    }
 		
-		// Test if connection is valid:
-
+		// \todo: Test if connection is valid?
 		
 	    }
         catch( SQLException sqle )
@@ -90,15 +91,13 @@ public class ESHarvest implements IHarvest
 		log.fatal( "Error while trying to connect to Oracle ES-base: " , sqle );
 		throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", sqle );
 	    }
-	
 
-	// Set AutoCommit	
+	// unset AutoCommit	
 	try 
 	    {
 		boolean autoCommit = false;
 		log.debug( String.format( "Setting conn.autoCommit to %s", autoCommit ) );
 		conn.setAutoCommit( autoCommit );
-
 	    }
 	catch ( SQLException sqle ) 
 	    {
@@ -109,8 +108,8 @@ public class ESHarvest implements IHarvest
 
         // Cleaning the ES-base, i.e. setting all "inProcess" to "queued":
         cleanupESBase();
-
     }
+
 
 
     /**
@@ -190,8 +189,6 @@ public class ESHarvest implements IHarvest
 					      "ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr" );
 		log.debug( queryStr );
 		ResultSet rs = stmt.executeQuery( queryStr );
-		// \todo: databasename ('test' in above) should come from config-file-thingy.
-		
 		
 		while( rs.next() )
 		    {
@@ -471,6 +468,9 @@ public class ESHarvest implements IHarvest
 	conn.commit();
     }
 
+
+
+
     /**
      *
      * Finds all posts in ES-base with recordstatus 3, and changes them to recordstatus 2.
@@ -488,13 +488,16 @@ public class ESHarvest implements IHarvest
 		// Locking the rows:
 		int res1 = stmt.executeUpdate( "SELECT recordstatus " + 
 					       "FROM taskpackagerecordstructure " + 
-					       "WHERE recordstatus = 3 " + 
+					       "WHERE recordstatus = 3 " +
+					       "AND databasename = '" + databasename + "' " +
 					       "FOR UPDATE OF recordstatus" );
+
 		log.debug("Select for update: " + res1);
 		if (res1 > 0) {
 		    int res2 = stmt.executeUpdate( "UPDATE taskpackagerecordstructure " + 
 						   "SET recordstatus = 2 " + 
-						   "WHERE recordstatus = 3" );
+						   "WHERE recordstatus = 3 " +
+						   "AND databasename = '" + databasename + "'");
 		    log.debug("Update: " + res2);
 		    stmt.close();
 		    conn.commit();
@@ -510,6 +513,9 @@ public class ESHarvest implements IHarvest
 		throw new HarvesterIOException( errorMsg, sqle );
 	    }
     }
+
+
+
 
     /**
      *  Changes the status on a taskpackage if all assoicated posts are finished.
@@ -576,13 +582,13 @@ public class ESHarvest implements IHarvest
 		int update_status = 0;
 		// update the TaskSpecificUpdate:
 		if ( success_count == noofrecs ) {
-		    // All was posts was succesfully handled:
+		    // All records was succesfully handled:
 		    update_status = 1;
 		} else if ( failure_count == noofrecs ) {
-		    // All was posts was handled with failure:
+		    // All records was handled with failure:
 		    update_status = 3;
 		} else {
-		    // Posts were mixed with both success and failure:
+		    // Records were mixed with both success and failure:
 		    update_status = 2;
 		}
 			
