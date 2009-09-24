@@ -231,15 +231,18 @@ public class DatadockMain
                 long timer = System.currentTimeMillis();
                 int jobsSubmited = datadockManager.update();                
                 timer = System.currentTimeMillis() - timer;
-                            	
-                if( jobsSubmited > 0 ) {
-                	log.info( String.format("%1$d Jobs submittet in %2$d ms - %3$f jobs/s", jobsSubmited, timer, jobsSubmited/(timer/1000.0)));
-                } else {
-                	log.info( String.format("%1$d Jobs submittet in %2$d ms - ", jobsSubmited, timer));
-                    Thread.currentThread();
-                    Thread.sleep( pollTime );
-                }
                 
+                if (jobsSubmited > 0)
+                {
+                    log.info(String.format("%1$d Jobs submittet in %2$d ms - %3$f jobs/s", jobsSubmited, timer, jobsSubmited/ (timer / 1000.0)));
+                }
+                else
+                {
+                    log.info(String.format("%1$d Jobs submittet in %2$d ms - ",jobsSubmited, timer));
+                    Thread.currentThread();
+                    Thread.sleep(pollTime);
+                }
+
             }
             catch( InterruptedException ie )
             {
