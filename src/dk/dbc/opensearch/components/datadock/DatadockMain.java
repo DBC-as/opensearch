@@ -38,7 +38,6 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
-import dk.dbc.opensearch.components.harvest.IHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
@@ -171,7 +170,7 @@ public class DatadockMain
     	log.trace( "DatadockMain main called" );
 
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
-
+        
         try
         {
             init();
@@ -223,15 +222,24 @@ public class DatadockMain
         {
             log.removeAppender( startupAppender );
         }
-
+        
         while( ! isShutdownRequested() )
-        {
+        {	 
             try
             {
             	log.trace( "DatadockMain calling datadockManager update" );
-                datadockManager.update();
-                Thread.currentThread();
-                Thread.sleep( pollTime );
+                long timer = System.currentTimeMillis();
+                int jobsSubmited = datadockManager.update();                
+                timer = System.currentTimeMillis() - timer;
+                            	
+                if( jobsSubmited > 0 ) {
+                	log.info( String.format("%1$d Jobs submittet in %2$d ms - %3$f jobs/s", jobsSubmited, timer, timer/1000.0/jobsSubmited));
+                } else {
+                	log.info( String.format("%1$d Jobs submittet in %2$d ms - ", jobsSubmited, timer));
+                    Thread.currentThread();
+                    Thread.sleep( pollTime );
+                }
+                
             }
             catch( InterruptedException ie )
             {

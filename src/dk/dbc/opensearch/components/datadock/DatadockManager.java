@@ -82,7 +82,7 @@ public class DatadockManager
     }
 
 
-    public void update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, TransformerException, HarvesterIOException
+    public int update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, TransformerException, HarvesterIOException
     {
         log.trace( "DatadockManager update called" );
 
@@ -95,7 +95,8 @@ public class DatadockManager
         }
 
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
-
+        int jobs_submitted = 0;
+        
         while ( registeredJobs.size() > 0 )
         {
             // System.out.println( String.format( "registeredJobs size: %s", registeredJobs.size() ) );
@@ -111,6 +112,7 @@ public class DatadockManager
             {
                 pool.submit( job );
                 registeredJobs.remove( 0 );
+                ++jobs_submitted;
                 // move from progress to done
                 log.debug( String.format( "submitted job: '%s'", job ) );
             }
@@ -122,9 +124,11 @@ public class DatadockManager
                 Thread.sleep( rejectedSleepTime );
             }
         }
-
+        
         //checking jobs
         Vector<CompletedTask> finishedJobs = pool.checkJobs();
+        
+        return jobs_submitted;
     }
 
 
