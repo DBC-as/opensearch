@@ -26,6 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
 
@@ -91,6 +93,16 @@ public class MarcxchangeHarvesterTest
         }
     }
 
+    @MockClass( realClass = CargoContainer.class )
+    public static class MockCargoContainer
+    {
+
+        @Mock( invocations = 1 )
+        public CargoObject getCargoObject( DataStreamType type )
+        {
+            return null;
+        }
+    }
 
     @Before
     public void setUp()
@@ -101,6 +113,7 @@ public class MarcxchangeHarvesterTest
     @After
     public void tearDown()
     {
+        Mockit.tearDownMocks();
         reset( mockIdentifier );
     }
 
@@ -115,16 +128,35 @@ public class MarcxchangeHarvesterTest
         DatadockJob ddj = new DatadockJob( submitter, format, mockIdentifier, referenceData );
         //expectations
 
-
+        //replay
         replay( mockIdentifier );
 
+        //do stuff
         harvestPlugin = new MarcxchangeHarvester();
         CargoContainer cc = harvestPlugin.getCargoContainer( ddj, data );
-        //assert something
 
-
+        //verify
         verify( mockIdentifier );
 
     } 
 
+    @Test
+    public void constructDCFailsTest() throws Exception
+    {
+        Mockit.setUpMocks( MockCargoContainer.class );
+         String dataString = "dataString";
+        byte[] data = dataString.getBytes();
+        referenceData = buildTestDocument( submitter, format, language, false, false );
+        DatadockJob ddj = new DatadockJob( submitter, format, mockIdentifier, referenceData );
+        //replay
+        replay( mockIdentifier );
+
+        //do stuff
+        harvestPlugin = new MarcxchangeHarvester();
+        CargoContainer cc = harvestPlugin.getCargoContainer( ddj, data );
+
+        //verify
+        verify( mockIdentifier );
+
+    }
 }
