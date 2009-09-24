@@ -133,8 +133,6 @@ public class DatadockPoolTest extends TestCase
     }
 
 
-    // se bug 9555
-    // Commented out se bug
     @Test
 
     public void testConstructor() throws ConfigurationException

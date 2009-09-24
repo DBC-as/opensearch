@@ -71,16 +71,21 @@ public class DatadockPool
     private IFedoraAdministration fedoraAdministration;
     private IHarvest harvester;
     
-    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
-
+    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler 
+    {
 		@Override
-		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  {
-			if( executor.isShutdown())  {
+		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  
+		{
+			if( executor.isShutdown())  
+			{
 					throw new RejectedExecutionException();
 			}
-			try {
+			try 
+			{
 				executor.getQueue().put(r);
-			} catch (InterruptedException e) {		
+			} 
+			catch (InterruptedException e) 
+			{		
 				e.printStackTrace();
 				throw new RejectedExecutionException();
 			};
