@@ -98,10 +98,10 @@ public class PTIManagerTest
     @MockClass( realClass =  PTIPool.class )
     public static class MockPTIPool
     {
-        @Mock public void $init( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair < String, String >, ArrayList< String > > jobMap ) 
-        {
+      //   @Mock public void $init( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair < String, String >, ArrayList< String > > jobMap ) 
+//         {
         
-        }
+//         }
 
         @Mock public void submit( String fedoraHandle, Integer queueID ) 
         {
@@ -121,20 +121,20 @@ public class PTIManagerTest
     }
 
 
-    // @MockClass( realClass =  .class )
-
-
     /**
      *
      */
     @Before 
-    public void SetUp() { }
+    public void SetUp() 
+    { 
+    }
 
     /**
      *
      */
-    @After public void TearDown() {
-
+    @After 
+    public void TearDown() 
+    {
         Mockit.tearDownMocks();
         reset( mockPQ );
         reset( mockPTIPool );
@@ -149,7 +149,8 @@ public class PTIManagerTest
     /**
      * Testing the instantiation of the PTIManager.
      */
-    @Test public void testConstructor() throws ClassNotFoundException, SQLException, ConfigurationException 
+    @Test 
+    public void testConstructor() throws ClassNotFoundException, SQLException, ConfigurationException 
     {
         /**
          * setup
@@ -159,20 +160,17 @@ public class PTIManagerTest
         /**
          * expectations
          */
-
         expect( mockPQ.deActivate() ).andReturn( 0 );
 
         /**
          * replay
          */
-
         replay( mockPQ );
         replay( mockPTIPool );
 
         /**
          * do stuff
          */
-
         ptiManager = new PTIManager( mockPTIPool, mockPQ );
 
         /**
@@ -244,7 +242,6 @@ public class PTIManagerTest
     /**
      * Tests the handling of the RejectedExecutionException in the update method
      */
-    @Ignore
     @Test public void testUpdateMethodRejectedExecutionException() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
     {
     /**
