@@ -30,16 +30,12 @@ import com.mockrunner.mock.jdbc.MockResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 
-// import mockit.Mock;
-// import mockit.Mockit;
-// import mockit.MockClass;
-
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.junit.runner.*;
 
-// import mockit.*;
-// import mockit.integration.junit4.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 
 public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
@@ -48,20 +44,19 @@ public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
     MockConnection mockConn;
     ESHarvest harvester;
 
-//     @MockClass( realClass = ESHarvest.class ) 
-//     public static class MockESHarvest
-//     {
-// 	@Mock public void cleanupESBase() 
-// 	{
-// 	    System.out.println( "Ignoring cleanupESBase." );
-// 	}
-//     }
-
     protected void setUp() throws Exception
     {
 	super.setUp();
-
 	mockConn = getJDBCMockObjectFactory().getMockConnection();
+    }
+
+    private void prepareUpdateCount()
+    {
+	StatementResultSetHandler statementHandler = getJDBCMockObjectFactory().getMockConnection().getStatementResultSetHandler();
+
+	statementHandler.prepareUpdateCount("SELECT recordstatus", 1);
+
+
     }
 
 
@@ -74,102 +69,71 @@ public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
     public void testConstructor() throws HarvesterIOException
     {
 
-	//	Mockit.setUpMocks( MockESHarvest.class );
-
 	harvester = new ESHarvest(mockConn, "test");
 
 	verifyAllResultSetsClosed();
 	verifyAllStatementsClosed();
     }
 
-}
-
-// @RunWith( JMockit.class )
-// public class ESHarvestTest 
-// {
-
-//     @Mocked public Connection mockConn = null;
-
-//     @Test
-//     public void testConstructor() 
-//     {
-// 	new Expectations() 
-// 	{
-// 	    conn.isClosed(); returns(false);
-// 	};
-//     }
-
-//     new ESHarvest(mockConn, "test");
-// }
 
 
+    @Test( expected = HarvesterIOException.class )
+    public void testConstructorClosedConnection() throws SQLException
+    {
 
-// @RunWith( JMockit.class )
-// public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
-// {
+	// testStr is taken from ESHarvester constructor:
+	String testStr = new String("Database connection is closed at startup");
+	String resStr = "";
 
-//     MockConnection mockConn;
-//     ESHarvest harvester;
+	// close the connection:
+	mockConn.close();
+	try
+	{
+	    harvester = new ESHarvest(mockConn, "test");
+	}
+	catch( HarvesterIOException hioe )
+	{
+	    // Expected!
+	    resStr = hioe.getMessage();
+	}
 
-//     @MockClass( realClass = ESHarvest.class ) 
-//     public static class MockESHarvest
-//     {
-// 	@Mock public void cleanupESBase() 
-// 	{
-// 	    //    System.out.println( "This is the real deal!" );
-// 	}
-//     }
+	assertEquals( testStr, resStr );
 
+    }
 
-//     protected void setUp() throws Exception
-//     {
-// 	super.setUp();
-
-// 	mockConn = getJDBCMockObjectFactory().getMockConnection();
-//     }
-
-//     protected void tearDown() 
-//     {
-// 	Mockit.tearDownMocks();
-
-//     }
-
-
-//     /**
-//      *  Test of constructor when all is allright.
-//      *  Notice that we do not call the method cleanupESBase 
-//      *  in the class, but in a mock.
-//      */ 
-//     @Test
-//     public void testConstructor() throws HarvesterIOException
-//     {
-
-// 	Mockit.setUpMocks( MockESHarvest.class );
-
-// 	harvester = new ESHarvest(mockConn, "test");
-
-// 	verifyAllStatementsClosed();
-// 	verifyAllResultSetsClosed();
-//     }
-
-//     @Test( expected = HarvesterIOException.class )
-//     public void testConstructorClosedConnection() throws SQLException
-//     {
-
-// 	new Expectations() 
-// 	{
-// 	    throwsException( new HarvesterIOException() );
-// 	};
-
-// 	Mockit.setUpMocks( MockESHarvest.class );
-
-// 	// close the connection:
-// 	mockConn.close();
-// 	harvester = new ESHarvest(mockConn, "test");
-
-// 	verifyAllStatementsClosed();
-// 	verifyAllResultSetsClosed();
-//     }
     
+    @Test
+    public void testCleanupESBaseNoInProgress() throws IllegalAccessException, InvocationTargetException, HarvesterIOException, NoSuchMethodException, SQLException
+    {
+	harvester = new ESHarvest(mockConn, "test"); // previously tested.
 
-// }
+	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
+	method.setAccessible( true );
+	method.invoke( harvester );
+
+	verifySQLStatementExecuted("select recordstatus");
+	verifySQLStatementNotExecuted("update taskpackagerecordstructure");
+	verifyNotCommitted();
+        verifyAllStatementsClosed();
+
+    }
+
+    @Test
+    public void testCleanupESBaseWithInProgress() throws IllegalAccessException, InvocationTargetException, HarvesterIOException, NoSuchMethodException, SQLException
+    {
+	prepareUpdateCount();
+
+	harvester = new ESHarvest(mockConn, "test"); // previously tested.
+
+	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
+	method.setAccessible( true );
+	method.invoke( harvester );
+
+	verifySQLStatementExecuted("select recordstatus");
+	verifySQLStatementExecuted("update taskpackagerecordstructure");
+	verifyCommitted();
+        verifyAllStatementsClosed();
+
+    }
+    
+}

@@ -475,8 +475,6 @@ public class ESHarvest implements IHarvest
      */
     private void cleanupESBase( ) throws HarvesterIOException
     {
-	// \todo: Make sure only posts belonging to the correct databasename is changed
-
         log.info( "Cleaning up ES-base" );
 
         try
@@ -488,9 +486,15 @@ public class ESHarvest implements IHarvest
 					       "WHERE recordstatus = 3 " +
 					       "AND databasename = '" + databasename + "' " +
 					       "FOR UPDATE OF recordstatus" );
-
+		// Updating the rows:
 		log.debug("Select for update: " + res1);
-		if (res1 > 0) {
+		if (res1 == 0) 
+		{
+		    // no rows for update - just close down the statement:
+		    stmt.close();
+		} 
+		else 
+		{
 		    int res2 = stmt.executeUpdate( "UPDATE taskpackagerecordstructure " + 
 						   "SET recordstatus = 2 " + 
 						   "WHERE recordstatus = 3 " +
@@ -498,14 +502,12 @@ public class ESHarvest implements IHarvest
 		    log.debug("Update: " + res2);
 		    stmt.close();
 		    conn.commit();
-		} else {
-		    // no rows for update - just close down the statement:
-		    stmt.close();
 		}
 	    }
         catch( SQLException sqle )
 	    {
 		String errorMsg = new String( "An SQL error occured while cleaning up the ES-base" );
+		System.out.println( errorMsg );
 		log.fatal( errorMsg, sqle );
 		throw new HarvesterIOException( errorMsg, sqle );
 	    }
