@@ -122,6 +122,15 @@ public class PTIManagerTest
         @Mock public void update()
         {
         }
+    }  
+
+    @MockClass( realClass = PTIManager.class )
+    public static class MockPTIManager2
+    {
+        @Mock public void update()
+        {
+            throw new NullPointerException( "test" );
+        }
     }
 
 
@@ -383,14 +392,8 @@ public class PTIManagerTest
         /**
          * setup
          */
-       Mockit.setUpMocks( MockPTIManagerConfig.class );
-        Vector< InputPair< String, Integer > > newJobs = new Vector< InputPair< String, Integer > >();
-        newJobs.add( new InputPair< String, Integer >( "test1", 1 ) );
-        newJobs.add( new InputPair< String, Integer >( "test2", 2 ) );
-       
-
-        Vector< CompletedTask<InputPair<Long, Integer>> > finishedJobs =  new Vector< CompletedTask<InputPair<Long, Integer>> >();
-        finishedJobs.add( mockCompletedTask );
+       Mockit.setUpMocks( MockPTIManagerConfig.class ); 
+       Mockit.setUpMocks( MockPTIManager.class );//avoids the update method call
 
         /**
          * expectations
@@ -399,25 +402,14 @@ public class PTIManagerTest
         expect( mockPQ.deActivate() ).andReturn( 0 );
         //shutdown
         mockPTIPool.shutdown();
-        //update method
-        expect( mockPQ.pop( 2 ) ).andReturn( newJobs );
-        //while loop on newJobs
-        mockPTIPool.submit( "test1", 1 );
-        mockPTIPool.submit( "test2", 2 );
-
-        //out of while loop
-        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
-        expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Long, Integer >( 1l, 1 ) );
-        mockPQ.commit( 1 );
-        
+       
         /**
          * replay
          */
         
         replay( mockPQ );
         replay( mockPTIPool);
-        replay( mockCompletedTask );
-            
+       
         /**
          * do stuff
          */
@@ -430,27 +422,28 @@ public class PTIManagerTest
          */
         verify( mockPTIPool );
         verify( mockPQ );
-        verify( mockCompletedTask );
-
     }
 
     @Test
     public void shutdownExceptionTest()throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
     {
-        //setup
-        Mockit.setUpMocks( MockPTIManager.class );//avoids the update method call
+        //setup 
+        Mockit.setUpMocks( MockPTIManagerConfig.class );
+        Mockit.setUpMocks( MockPTIManager2.class );//avoids the update method call
         
-        //expectations
+        //expectations 
+        expect( mockPQ.deActivate() ).andReturn( 0 );
         mockPTIPool.shutdown();
 
         //replay
         replay( mockPTIPool );
-
+        replay( mockPQ );
         //do stuff
         ptiManager = new PTIManager( mockPTIPool, mockPQ );
         ptiManager.shutdown();
         
         //verify
+        verify( mockPQ );
         verify( mockPTIPool );
     }
 }
