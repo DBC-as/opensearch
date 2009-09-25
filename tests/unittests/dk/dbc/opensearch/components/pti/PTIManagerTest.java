@@ -68,7 +68,8 @@ public class PTIManagerTest
     Processqueue mockPQ = createMock( Processqueue.class );
     PTIPool mockPTIPool = createMock( PTIPool.class);
     CompletedTask mockCompletedTask = createMock( CompletedTask.class );
-    
+    FedoraAdministration mockFedoraAdministration = createMock( FedoraAdministration.class );
+
     static FutureTask mockFuture = createMock( FutureTask.class );
     static CompletedTask dummyTask = new CompletedTask( mockFuture, new InputPair< Long, Integer >( 1l, 1 ) );
     static Vector< CompletedTask > checkJobsVector =  new Vector< CompletedTask >();
@@ -144,6 +145,7 @@ public class PTIManagerTest
         reset( mockCompass );
         reset( mockFuture );
         reset( mockExecutor );
+        reset( mockFedoraAdministration );
     }
 
     /**
@@ -292,12 +294,13 @@ public class PTIManagerTest
         replay( mockCompass );
         //replay( mockMap );
         replay( mockInputPair);
+        replay( mockFedoraAdministration );
             
             /**
          * do stuff
          */
-        IFedoraAdministration fedoraAdministration = new FedoraAdministration();
-        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, fedoraAdministration);
+        //IFedoraAdministration fedoraAdministration = new FedoraAdministration();
+        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, mockFedoraAdministration);
         ptiManager = new PTIManager( ptiPool, mockPQ );
         ptiManager.update();
 
@@ -310,10 +313,64 @@ public class PTIManagerTest
         verify( mockEstimate );
         verify( mockCompass);
         verify( mockInputPair );
+        verify( mockFedoraAdministration );
     }
 
     /**
-     * Tests the behaviour of the update method when the finishedjobs contains a 
+     * Tests the behaviour of the checkJobs method when the finishedjobs contains a 
      * CompletedTask with a null value 
      */
+    @Test
+    public void updateGetsNullFromTask() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
+    { 
+        /**
+         * setup
+         */
+        Mockit.setUpMocks( MockPTIManagerConfig.class );
+        Vector< InputPair< String, Integer > > newJobs = new Vector< InputPair< String, Integer > >();
+        newJobs.add( new InputPair< String, Integer >( "test1", 1 ) );
+        newJobs.add( new InputPair< String, Integer >( "test2", 2 ) );
+       
+
+        Vector< CompletedTask<InputPair<Long, Integer>> > finishedJobs =  new Vector< CompletedTask<InputPair<Long, Integer>> >();
+        finishedJobs.add( mockCompletedTask );
+
+        /**
+         * expectations
+         */
+        //constructor
+        expect( mockPQ.deActivate() ).andReturn( 0 );
+        //update method
+        expect( mockPQ.pop( 2 ) ).andReturn( newJobs );
+        //while loop on newJobs
+        mockPTIPool.submit( "test1", 1 );
+        mockPTIPool.submit( "test2", 2 );
+
+        //out of while loop
+        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
+        expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Long, Integer >( null, 1 ) );
+        mockPQ.notIndexed( 1 );
+        
+        /**
+         * replay
+         */
+        
+        replay( mockPQ );
+        replay( mockPTIPool);
+        replay( mockCompletedTask );
+            
+        /**
+         * do stuff
+         */
+
+        ptiManager = new PTIManager( mockPTIPool, mockPQ );
+        ptiManager.update();
+
+        /**
+         * verify
+         */
+        verify( mockPTIPool );
+        verify( mockPQ );
+        verify( mockCompletedTask );
+    }
 }
