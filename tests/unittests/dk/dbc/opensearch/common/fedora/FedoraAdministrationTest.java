@@ -94,10 +94,9 @@ public class FedoraAdministrationTest
     static FedoraClient mockFedoraClient = createMock( FedoraClient.class);
     static NodeList mockNodeList = createMock( NodeList.class );
     static Document mockDocument = createMock( Document.class );
-    
+
     //needed global variables
     static byte[] bytes = "bytes".getBytes();
-    
     static File admStreamFile = new File( "admFile" );
     static String timeNow = "mockTime";
 
@@ -158,7 +157,7 @@ public class FedoraAdministrationTest
 
     }
 
-    
+
     @MockClass( realClass = FedoraAdministration.class )
     public static class MockFedoraAdministration
     {
@@ -182,10 +181,10 @@ public class FedoraAdministrationTest
             return "dsLocation";
         }
 
-     //    @Mock public static String[] getEmptyStringArray()
-//         {
+//      @Mock public static String[] getEmptyStringArray()
+//      {
 //             return empty;
-//         }
+//      }
 
         @Mock public static String getTimeNow()
         {
@@ -290,7 +289,7 @@ public class FedoraAdministrationTest
         stream2.setAttribute( "index", "0" );
         stream2.setAttribute( "streamNameType" , "originalData" );
         streams.appendChild( (Node) stream2 );
-   
+
         Element stream3 = admStream.createElement( "stream" );
 
         stream3.setAttribute( "id",  "relsExt.1");
@@ -312,7 +311,7 @@ public class FedoraAdministrationTest
     public static class MockFedoraAdministration2
     {
         @Mock public static Element getAdminStream( String pid ) throws ParserConfigurationException, TransformerConfigurationException, TransformerException
-        {  
+        {
             return createAdminStreamElement();
         }
 
@@ -335,11 +334,10 @@ public class FedoraAdministrationTest
         }
 
 
-       //  @Mock public static String[] getEmptyStringArray()
-//         {
-//             return empty;
-//         }
-        
+//       @Mock public static String[] getEmptyStringArray()
+//       {
+//           return empty;
+//       }
 
 
         @Mock public static String getTimeNow()
@@ -348,7 +346,7 @@ public class FedoraAdministrationTest
         }
     }
 
-    
+
     @MockClass( realClass = FileHandler.class )
     public static class MockFileHandler
     {
@@ -956,7 +954,7 @@ public class FedoraAdministrationTest
         DataStreamType testDST = DataStreamType.RelsExt;
         String testPid = "test:1";
         String returnString = "admLoc";
-        String[] empty = new String[] {};    
+        String[] empty = new String[] {};
         String nullString = null;
         String adminLogm =  "admin stream updated with added stream data"+timeNow;
         String logm = String.format( "added %s to the object with pid: %s", "dsLocation", testPid );
@@ -1011,7 +1009,7 @@ public class FedoraAdministrationTest
     @Test
     public void testModifyDataStream()throws RemoteException, MalformedURLException, IOException, ConfigurationException, ServiceException
     {
-       
+
         //setup
         Mockit.setUpMocks( MockFedoraAdministration.class);
         Mockit.setUpMocks( MockFedoraHandle.class);
@@ -1030,9 +1028,9 @@ public class FedoraAdministrationTest
         //expect().andReturn();
 
         //replay
-        replay( mockCargoObject ); 
-        replay( mockFem ); 
-        
+        replay( mockCargoObject );
+        replay( mockFem );
+
         //do stuff
         fa = new FedoraAdministration();
         String result = fa.modifyDataStream( mockCargoObject, sID, pid, false, true );
@@ -1041,7 +1039,7 @@ public class FedoraAdministrationTest
         verify( mockCargoObject );
         verify( mockFem );
     }
-    
+
 
     /**
      * Testing the removeDataStream method
@@ -1049,7 +1047,7 @@ public class FedoraAdministrationTest
     @Test
     public void testRemoveDataStream() throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException, ConfigurationException, ServiceException
     {
-        //setup 
+        //setup
         Mockit.setUpMocks( MockFedoraAdministration2.class );
         Mockit.setUpMocks( MockFedoraHandle.class );
         Mockit.setUpMocks( MockFileHandler.class );
@@ -1067,11 +1065,9 @@ public class FedoraAdministrationTest
         String logm = String.format( "removed stream %s from object %s", sID, pid );
 
         //expectations
-        expect( mockFem.purgeDatastream( pid, sID, startDate, endDate, logm, true )  ).andReturn( new String[] { "not", "used" });        
+        expect( mockFem.purgeDatastream( pid, sID, startDate, endDate, logm, true )  ).andReturn( new String[] { "not", "used" });
         expect( mockFedoraClient.uploadFile( isA( File.class ) ) ).andReturn( admLocation );
         expect( mockFem.modifyDatastreamByReference( eq( pid ), eq( "adminData" ), aryEq( empty ), eq( adminLabel ), eq( mimeType ), eq( nullString) , eq( admLocation ), eq( nullString ), eq( nullString ) , eq( adminLogm ) , eq( true ) ) ).andReturn( "not used" );
-        
-
 
         //replay
         replay( mockFem );
@@ -1082,7 +1078,7 @@ public class FedoraAdministrationTest
         boolean result = fa.removeDataStream( pid, sID, startDate, endDate, true );
         //verify
         assertTrue( result );
-        //check the modified adminstream  
+        //check the modified adminstream
         NodeList streamsNL = XMLUtils.getNodeList( admStreamFile, "streams" );
         assertTrue( streamsNL.getLength() == 1 );
         Element streams = (Element)streamsNL.item( 0 );
@@ -1097,15 +1093,15 @@ public class FedoraAdministrationTest
 
     }
 
-    
+
     /**
-     * Testing the returning of false by the removeDataStream method when not 
+     * Testing the returning of false by the removeDataStream method when not
      * able to remove the desired stream. The adminstream should not be modified
      */
     @Test
     public void testFailureRemoveDataStream() throws RemoteException, ParserConfigurationException, TransformerConfigurationException, TransformerException, IOException, SAXException, ConfigurationException, ServiceException
     {
-        //setup 
+        //setup
         Mockit.setUpMocks( MockFedoraAdministration2.class );
         Mockit.setUpMocks( MockFedoraHandle.class );
         Mockit.setUpMocks( MockFileHandler.class );

@@ -100,6 +100,7 @@ public class DatadockThread implements Callable< Float >
     private String format;
     private ArrayList< String > list;
     private String result;
+    private PluginResolver pluginResolver;
 
     /**
      *\todo: Wheet out in the Exceptions
@@ -122,13 +123,13 @@ public class DatadockThread implements Callable< Float >
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
         this.datadockJob = datadockJob;
         this.harvester = harvester;
-
+        this.pluginResolver = pluginResolver;
         // Each pair identifies a plugin by p1:submitter and p2:format
         submitter = datadockJob.getSubmitter();
         format = datadockJob.getFormat();
@@ -183,9 +184,7 @@ public class DatadockThread implements Callable< Float >
         log.trace( "DatadockThread call method called" );
 
         long jobTime = System.currentTimeMillis();
-
-        // Validate plugins
-        PluginResolver pluginResolver = new PluginResolver();
+        // PluginResolver pluginResolver = new PluginResolver();
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
         String mimeType = null;
         long length = 0;
@@ -274,7 +273,7 @@ public class DatadockThread implements Callable< Float >
 
             //push to processqueue job to processqueue and get estimate
             queue.push( cargo.getDCIdentifier() );
-
+            log.trace( String.format( "Timing: (DatadockThread) %s", System.currentTimeMillis() - jobTime ) );
             length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
 
             //inform the harvester that it was a success

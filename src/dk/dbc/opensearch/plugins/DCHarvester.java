@@ -44,10 +44,10 @@ public class DCHarvester implements ICreateCargoContainer
     Logger log = Logger.getLogger( DCHarvester.class );
 
 
-    private String submitter;
-    private String format;
-    private byte[] data;
-    private Document referenceData;
+    //private String submitter;
+    //private String format;
+    //private byte[] data;
+    //private Document referenceData;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -68,12 +68,12 @@ public class DCHarvester implements ICreateCargoContainer
 
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-        this.referenceData = job.getReferenceData();
-        this.data = data;
-        this.submitter = job.getSubmitter();
-        this.format = job.getFormat();
+//         this.referenceData = job.getReferenceData();
+//         this.data = data;
+//         this.submitter = job.getSubmitter();
+//         this.format = job.getFormat();
 
-        return createCargoContainerFromFile();
+        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), job.getReferenceData() ,data );
     }
 
 
@@ -82,7 +82,7 @@ public class DCHarvester implements ICreateCargoContainer
      * @return the CargoContainer from
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile() throws PluginException
+    private CargoContainer createCargoContainerFromFile( String submitter, String format, Document referenceData, byte[] data ) throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
 

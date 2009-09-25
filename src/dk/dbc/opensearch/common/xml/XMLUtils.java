@@ -215,39 +215,39 @@ public class XMLUtils
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         StreamResult res = new StreamResult( os );
-        
+
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer( xslt );
-        
+
         transformer.transform( xml, res ); // do the transformation
-        
+
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        
+
         return documentBuilder.parse( new ByteArrayInputStream( os.toByteArray() ) );
     }
-    
-    
+
+
     /**
      * Creates a string representation of xml document
-     * 
+     *
      * @param document The {@link Document} to transform
-     * 
+     *
      * @return a string representation of the document
-     * 
+     *
      * @throws TransformerException
      */
     public static String xmlToString( Document document ) throws TransformerException
     {
         Node rootNode = (Node) document.getDocumentElement();
         Source source = new DOMSource( rootNode );
-        
+
         StringWriter stringWriter = new StringWriter();
         Result result = new StreamResult( stringWriter );
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer = factory.newTransformer();
         transformer.transform( source, result );
-        
+
         return stringWriter.getBuffer().toString().replace( "\n", "");
     }
 
@@ -272,11 +272,11 @@ public class XMLUtils
     }
 
     
-    /** 
+    /**
      * Constructs a {@link Document} instance from an {@link InputStream}
-     * 
+     *
      * @param in the {@link InputStream} to be parsed into a {@link Document}
-     * 
+     *
      * @return a {@link Document} implementation if the {@link InputStream} {@code in} could be parsed
      * @throws ParserConfigurationException if the preconditions for creating a Document is not met
      * @throws SAXException if the {@code in} fails to meet the expectations that it can be transformed into a DOM structure
@@ -290,7 +290,7 @@ public class XMLUtils
         doc = builder.parse( new InputSource( in ) );
         return doc;
     }
-
+       
 
     /**
      * Returns a {@link List} of all namespaces found in the {@link InputStream}
@@ -299,7 +299,7 @@ public class XMLUtils
      * declared in {@code in} will have a default prefix assigned to it. This is,
      * of course, not the case with the reserved namespace uris, see
      * {@code http://www.w3.org/TR/REC-xml-names/#ns-decl}
-     * 
+     *
      * @param in assumed parsable xml
      * @return a {@link List} of {@link Namespace}s found in {@code in}
      * @throws XMLStreamException if {@code in} is not parsable as an XML Document

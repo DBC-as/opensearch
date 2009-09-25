@@ -32,6 +32,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -70,6 +71,7 @@ public class DatadockPool
     private int i = 0;
     private IFedoraAdministration fedoraAdministration;
     private IHarvest harvester;
+    private PluginResolver pluginResolver;
     
     private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler 
     {
@@ -100,7 +102,7 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
@@ -109,7 +111,9 @@ public class DatadockPool
         this.estimate = estimate;
         this.processqueue = processqueue;
         this.fedoraAdministration = fedoraAdministration;
-        jobs = new Vector<FutureTask< Float > >();
+        this.pluginResolver = pluginResolver;
+
+        jobs = new Vector<FutureTask< Float >>();
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
         
         threadpool.setRejectedExecutionHandler( new BlockingRejectedExecutionHandler() );
@@ -147,7 +151,7 @@ public class DatadockPool
     
     public FutureTask<Float> getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration, harvester ) );
+    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration, harvester, pluginResolver ) );
     }
 
 

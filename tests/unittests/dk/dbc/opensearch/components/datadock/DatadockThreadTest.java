@@ -29,6 +29,7 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.Estimate;
@@ -90,6 +91,7 @@ public class DatadockThreadTest
     FedoraAdministration mockFedoraAdministration;
     IIdentifier mockIdentifier;
     CargoObject mockCargoObject;
+    PluginResolver mockPluginResolver;
     
     @MockClass( realClass = DatadockJobsMap.class )
     public static class MockDDJobsMap
@@ -149,6 +151,7 @@ public class DatadockThreadTest
             return mockCC;
         }
     } 
+
     
     @MockClass( realClass = Store.class )
     public static class MockStore
@@ -167,6 +170,7 @@ public class DatadockThreadTest
             return mockCC;
         }
     } 
+
     
     @MockClass( realClass = OwnerRelation.class )
     public static class MockRelation
@@ -185,6 +189,7 @@ public class DatadockThreadTest
             return mockCC;
         }
     }    
+
         
     @MockClass( realClass = DocbookAnnotate.class )
     public static class MockAnnotate2
@@ -217,6 +222,7 @@ public class DatadockThreadTest
         mockProcessqueue = createMock( Processqueue.class );
         mockFedoraAdministration = createMock( FedoraAdministration.class );
         mockIdentifier = createMock( IIdentifier.class );
+        mockPluginResolver = createMock( PluginResolver.class);
     }
 
 
@@ -235,6 +241,7 @@ public class DatadockThreadTest
         reset( mockHarvester );
         reset( mockIdentifier );
         reset( mockCargoObject );
+        reset( mockPluginResolver );
     }
 
 
@@ -258,16 +265,18 @@ public class DatadockThreadTest
         replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockFedoraAdministration );
+        replay( mockPluginResolver );
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
 
         //verify
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockFedoraAdministration );
+        verify( mockPluginResolver );
     }
 
 
@@ -290,16 +299,18 @@ public class DatadockThreadTest
         replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockFedoraAdministration );
+        replay( mockPluginResolver );
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
 
         //verify
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockFedoraAdministration );
+        verify( mockPluginResolver );
     }
 
 
@@ -361,12 +372,12 @@ public class DatadockThreadTest
         replay( mockCC );
         replay( mockCargoObject );
         replay( mockIdentifier );
-
+        replay( mockPluginResolver );
         /**
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         Float result = ddThread.call();
 
         assertTrue( result == 1f );
@@ -381,6 +392,7 @@ public class DatadockThreadTest
         verify( mockCC );
         verify( mockCargoObject );
         verify( mockIdentifier );
+        verify( mockPluginResolver );
     } 
   
 
@@ -420,12 +432,13 @@ public class DatadockThreadTest
         replay( mockFedoraAdministration );
         replay( mockCC );
         replay( mockIdentifier );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         Float result = ddThread.call();
 
         /**
@@ -438,6 +451,7 @@ public class DatadockThreadTest
         verify( mockFedoraAdministration );
         verify( mockCC );
         verify( mockIdentifier );
+        verify( mockPluginResolver );
     }   
 
 
@@ -471,12 +485,13 @@ public class DatadockThreadTest
         replay( mockProcessqueue );
         replay( mockFedoraAdministration );
         replay( mockCC );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         Float result = ddThread.call();
 
         /**
@@ -487,6 +502,7 @@ public class DatadockThreadTest
         verify( mockProcessqueue );
         verify( mockFedoraAdministration );
         verify( mockCC );
+        verify( mockPluginResolver );
     }
 
     @Test( expected = HarvesterUnknownIdentifierException.class ) @Ignore
@@ -514,9 +530,10 @@ public class DatadockThreadTest
         replay( mockFedoraAdministration );
         replay( mockCC );
         replay( mockHarvester );
+        replay( mockPluginResolver );
 
         //do stuff
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         Float result = ddThread.call();
 
         //verify
@@ -526,6 +543,7 @@ public class DatadockThreadTest
         verify( mockFedoraAdministration );
         verify( mockHarvester );
         verify( mockCC );
+        verify( mockPluginResolver );
     }
 
     /**
@@ -587,11 +605,12 @@ public class DatadockThreadTest
         replay( mockCC );
         replay( mockCargoObject );
         replay( mockIdentifier );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         Float result = ddThread.call();
 
         assertFalse( result == estimateval );
@@ -607,5 +626,6 @@ public class DatadockThreadTest
         verify( mockCC );
         verify( mockCargoObject );
         verify( mockIdentifier );
+        verify( mockPluginResolver );
     }
 }

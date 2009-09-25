@@ -91,6 +91,7 @@ public class DatadockPoolTest extends TestCase
     DatadockThread datadockThread;
     FedoraAdministration mockFedoraAdministration;
     IHarvest mockHarvester;
+    PluginResolver mockPluginResolver;
 
     /**
      * After each test the mock are reset
@@ -116,6 +117,7 @@ public class DatadockPoolTest extends TestCase
         mockHarvester = createMock( IHarvest.class );
         mockFedoraAdministration = createMock( FedoraAdministration.class );
         mockDatadockJob = createMock( DatadockJob.class );
+        mockPluginResolver = createMock( PluginResolver.class );
     }
 
 
@@ -130,6 +132,7 @@ public class DatadockPoolTest extends TestCase
         reset( mockDatadockJob );
         reset( mockFuture );
         reset( mockHarvester );
+        reset( mockPluginResolver );
     }
 
 
@@ -156,11 +159,12 @@ public class DatadockPoolTest extends TestCase
         replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockFedoraAdministration );
-
+        replay( mockPluginResolver );
+        
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
 
         /**
          * verify
@@ -169,6 +173,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockFedoraAdministration );
+        verify( mockPluginResolver );
     }
 
 
@@ -206,11 +211,12 @@ public class DatadockPoolTest extends TestCase
         replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         datadockPool.submit( mockDatadockJob );
         /**
          * verify
@@ -221,6 +227,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
+        verify( mockPluginResolver );
     }
 
 
@@ -260,11 +267,12 @@ public class DatadockPoolTest extends TestCase
         replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 0 );
@@ -278,6 +286,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
+        verify( mockPluginResolver );
     }
 
 
@@ -319,11 +328,12 @@ public class DatadockPoolTest extends TestCase
         replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
         assertTrue( checkedJobs.size() == 1 );
@@ -337,6 +347,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
+        verify( mockPluginResolver );
     }
 
 
@@ -385,11 +396,12 @@ public class DatadockPoolTest extends TestCase
         replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         datadockPool.submit( mockDatadockJob );
         datadockPool.submit( mockDatadockJob );
         Vector< CompletedTask > checkedJobs = datadockPool.checkJobs();
@@ -404,6 +416,7 @@ public class DatadockPoolTest extends TestCase
         verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
+        verify( mockPluginResolver );
     }
 
 
@@ -444,11 +457,12 @@ public class DatadockPoolTest extends TestCase
         replay( mockFedoraAdministration );
         replay( mockDatadockJob );
         replay( mockFuture );
+        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
-        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester );
+        datadockPool = new DatadockPool( mockThreadPoolExecutor, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
         datadockPool.submit( mockDatadockJob );
         datadockPool.shutdown();
 
@@ -461,5 +475,6 @@ public class DatadockPoolTest extends TestCase
         verify( mockFedoraAdministration );
         verify( mockDatadockJob );
         verify( mockFuture );
+        verify( mockPluginResolver );
     }
 }

@@ -65,9 +65,9 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     private static Logger log = Logger.getLogger( MarcxchangeHarvester.class );
 
     
-    private String submitter;
-    private String format;
-    private byte[] data;
+    //    private String submitter;
+    //private String format;
+    //private byte[] data;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -88,11 +88,11 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-        this.submitter = job.getSubmitter();
-        this.format = job.getFormat();
-        this.data = data;
+//         this.submitter = job.getSubmitter();
+//         this.format = job.getFormat();
+//         this.data = data;
 
-        return createCargoContainerFromFile();
+        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat() , data );
     }
 
 
@@ -104,7 +104,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
      * @throws XPathExpressionException 
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile() throws PluginException
+    private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data ) throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
         /** \todo: hardcoded values for mimetype, langugage and data type */
@@ -114,7 +114,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
  
         try 
         {
-            cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Danmarcxchange, data );
+            cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Danmarcxchange, data );
 
             // CONSTRUCTING DC DATASTREAM
             log.debug( "Constructing DC datastream" );

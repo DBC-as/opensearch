@@ -48,10 +48,10 @@ public class DocbookHarvester implements ICreateCargoContainer
     Logger log = Logger.getLogger( DocbookHarvester.class );
 
     
-    private String submitter;
-    private String format;
+//     private String submitter;
+//     private String format;
     //    private String path;
-    private byte[] data;
+    // private byte[] data;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -73,10 +73,10 @@ public class DocbookHarvester implements ICreateCargoContainer
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
     	//this.path = job.getUri().getPath();
-    	this.submitter = job.getSubmitter();
-    	this.format = job.getFormat();
-        this.data = data;
-    	return createCargoContainerFromFile();
+   //  	this.submitter = job.getSubmitter();
+//     	this.format = job.getFormat();
+//         this.data = data;
+    	return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), data );
     }
 
 
@@ -85,7 +85,7 @@ public class DocbookHarvester implements ICreateCargoContainer
      * @return the CargoContainer from
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile() throws PluginException
+    private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data ) throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
         
@@ -117,7 +117,7 @@ public class DocbookHarvester implements ICreateCargoContainer
 
         try
         {
-            id = cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Article, data );
+            id = cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Article, data );
             log.info( String.format( "Added data to the cargocontainer. Id = %s", id ) );
         } 
         catch (IOException ioe) 

@@ -25,9 +25,8 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
-import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -44,7 +43,6 @@ import java.rmi.RemoteException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.apache.commons.configuration.ConfigurationException;
@@ -290,19 +288,6 @@ public class OwnerRelation implements IRelation
         log.trace( String.format( "Added relation: '%s' (pid: '%s')", ok, pid ) );
         return ok;
     }
-
-
-    /*private boolean addRelationToRelsExt( String pid, String namespace )// throws PluginException
-    {
-        FedoraNamespaceContext fns = new FedoraNamespaceContext();
-        QName pred = new QName( fns.getNamespaceURI( "rel" ), "isMemberOfCollection", "fedora" );
-        QName obj = new QName( "", namespace, "" );
-
-        boolean added = false;
-        added = rel.addRelationship( pred, obj );
-
-        return added;
-    }*/
 
 
     @Override

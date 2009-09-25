@@ -102,7 +102,6 @@ public class DatadockManager
             // System.out.println( String.format( "registeredJobs size: %s", registeredJobs.size() ) );
             log.trace( String.format( "processing job: %s", registeredJobs.get( 0 ).toString() ) );
 
-            //build the DatadockJob
             IJob theJob = registeredJobs.get( 0 );
             DatadockJob job = buildDatadockJob( theJob );
             log.trace( String.format( "submitting job %s as datadockJob %s", theJob.toString(), job.toString() ) );

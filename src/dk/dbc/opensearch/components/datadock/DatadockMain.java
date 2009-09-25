@@ -35,6 +35,7 @@ import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
@@ -188,7 +189,7 @@ public class DatadockMain
             IEstimate estimate = new Estimate( dbConnection );
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IFedoraAdministration fedoraAdministration = new FedoraAdministration();
-
+            PluginResolver pluginResolver = new PluginResolver();
             log.trace( "Starting datadockPool" );
 
             // datadockpool
@@ -200,7 +201,7 @@ public class DatadockMain
             // harvester;
             IHarvest harvester = new FileHarvest();
             
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraAdministration, harvester);
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraAdministration, harvester, pluginResolver );
             
             log.trace( "Starting the manager" );
             // Starting the manager
@@ -242,7 +243,6 @@ public class DatadockMain
                     Thread.currentThread();
                     Thread.sleep(pollTime);
                 }
-
             }
             catch( InterruptedException ie )
             {
