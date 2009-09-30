@@ -685,6 +685,7 @@ public class FedoraAdministration implements IFedoraAdministration
 
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( operator );
+        value = value.replaceAll( "'", "" );
         Condition[] cond = { new Condition( property, comp, value ) };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
@@ -698,10 +699,40 @@ public class FedoraAdministration implements IFedoraAdministration
         int ofLength = objectFields.length;
         String[] pids = new String[ofLength];
         for( int i = 0; i < ofLength; i++ )
-            {
-                pids[i] = objectFields[i].getPid();
-                log.debug( "pid " + i + ": " + pids[i].toString() );
-            }
+        {
+            pids[i] = objectFields[i].getPid();
+            log.debug( "pid " + i + ": " + pids[i].toString() );
+        }
+
+        return pids;
+    }
+
+
+    public String[] findObjectPids( String property_1, String property_2, String operator, String value_1, String value_2 ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        String[] resultFields = { "pid", "title" };
+
+        // \Todo: check needed on the operator
+        ComparisonOperator comp = ComparisonOperator.fromString( operator );
+        Condition cond_1 = new Condition( property_1, comp, value_1 );
+        Condition cond_2 = new Condition( property_2, comp, value_2 );
+        Condition[] cond = { cond_1, cond_2 };
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+
+        long timer = System.currentTimeMillis();
+        FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
+        timer = System.currentTimeMillis() - timer;
+        log.trace( String.format( "Fedora call end: %s", timer ) );
+
+        ObjectFields[] objectFields = fsr.getResultList();
+
+        int ofLength = objectFields.length;
+        String[] pids = new String[ofLength];
+        for( int i = 0; i < ofLength; i++ )
+        {
+            pids[i] = objectFields[i].getPid();
+            log.debug( "pid " + i + ": " + pids[i].toString() );
+        }
 
         return pids;
     }
