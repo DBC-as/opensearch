@@ -78,14 +78,37 @@ public class FedoraHandle
     	log.trace( "FedoraHandle getInstance" );
         if ( INSTANCE == null )
         {
-        	INSTANCE = new FedoraHandle();
+            /*try
+            {*/
+                INSTANCE = new FedoraHandle();
+            /*}
+            catch ( ConfigurationException ce )
+            {
+                log.error ( String.format( "ConfigurationException caught", ce.getMessage() ) );
+                throw ce;
+            }
+            catch ( ServiceException se )
+            {
+                log.error ( String.format( "ServiceException caught", se.getMessage() ) );
+                throw se;
+            }
+            catch ( MalformedURLException me )
+            {
+                log.error ( String.format( "MalformedURLException caught", me.getMessage() ) );
+                throw me;
+            }
+            catch ( IOException ioe )
+            {
+                log.error ( String.format( "IOException caught", ioe.getMessage() ) );
+                throw ioe;
+            }*/
         }
         
         return INSTANCE;
     }
 
 
-    public FedoraAPIA getAPIA() throws ServiceException
+    public FedoraAPIA getAPIA() 
     {
     	log.trace( "FedoraHandle getAPIA" );
     	return fea;

@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
  */
 public class MarcxchangeWorkRelation_1 implements IRelation
 {
-    private static Logger log = Logger.getLogger( MarcxchangeWorkRelation.class );
+    private static Logger log = Logger.getLogger( MarcxchangeWorkRelation_1.class );
 
 
     private PluginType pluginType = PluginType.RELATION;
@@ -127,13 +127,13 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         if( ! types.contains( dcType ) )
         {
             log.debug( String.format( "finding work relations for dcType %s", dcType ) );
-            log.debug( String.format( "WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle) );
             if ( ! dcSource.equals( "" ) )
             {
+                log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
                 //workRelation = fedor.getSubjectRelation( "source", dcSource, relation );
                 fedoraPids = fa.findObjectPids( "source", operator, dcSource );
                 //if ( workRelation == null && ! dcTitle.equals( "" ) )
-                if ( fedoraPids == null && ! dcTitle.equals( "" ) )
+                if ( fedoraPids.length == 0 && ! dcTitle.equals( "" ) )
                 {
                     //workRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
                     fedoraPids = fa.findObjectPids( "source", operator, dcTitle );
@@ -141,8 +141,9 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             }
 
             //if ( workRelation == null && ! dcTitle.equals( "" ) )
-            if ( fedoraPids == null && ! dcTitle.equals( "" ) )
+            if ( ( fedoraPids == null || fedoraPids.length == 0 ) && ! dcTitle.equals( "" ) )
             {
+                log.debug( String.format( "2 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
                 if ( ! dcSource.equals( "" ) )
                 {
                     //workRelation = fedor.getSubjectRelation( "title", dcSource, relation );
@@ -156,7 +157,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             }
 
             //if ( workRelation == null )
-            if ( fedoraPids == null )
+            if ( fedoraPids == null || fedoraPids.length == 0 )
             {
                 log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcSource ) );
             }
@@ -165,6 +166,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         {
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
+                log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle, dcCreator ) );
                 //workRelation = fedor.getSubjectRelation( "title", dcTitle, "creator", dcCreator, relation );
                 fedoraPids = fa.findObjectPids( "title", "creator", operator, dcTitle, dcCreator );
             }
@@ -174,18 +176,21 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             }
         }
         //log.debug( String.format( "workRelation = %s", workRelation ) );
-        log.debug( String.format( "Pid with matching title, source, or creator = %s", fedoraPids[0] ) );
+        if ( fedoraPids != null && fedoraPids.length > 0 )
+        {
+            log.debug( String.format( "Pid with matching title, source, or creator = %s", fedoraPids[0] ) );
+        }
 
         String nextWorkPid = null;
         RelationshipTuple[] rels = null;
         //if ( workRelation == null )
-        if ( fedoraPids == null )
+        if ( fedoraPids == null || fedoraPids.length == 0 )
         {
             //workRelation = PIDManager.getInstance().getNextPID( "work" );
             nextWorkPid = PIDManager.getInstance().getNextPID( "work" );
             log.debug( String.format( "nextWorkPid found: %s", nextWorkPid ) );
         }
-        else // fedoraPids != null
+        else // fedoraPids.length > 0
         {
             String pid = cargo.getDCIdentifier();
             log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPids.length ) );
@@ -195,7 +200,9 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 if ( ! fedoraPids[i].equals( pid ) )
                 {
                     log.debug( String.format( "New PID found: %s (curr pid is: %s)", fedoraPids[i], pid ) );
-                    rels = fedor.getRelationships( pid, "isMemberOf" );
+                    String predicate = "info:fedora/fedora-system:def/relations-external#isMemberOf";
+                    rels = fedor.getRelationships( fedoraPids[i], predicate );
+                    log.debug( String.format( "Relationships as tuple: %s, length %s", rels.toString(), rels.length ) );
                     break;
                 }
             }
@@ -203,7 +210,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( rels != null )
             {
                 RelationshipTuple rel = rels[0];
-                nextWorkPid = rel.getPredicate();
+                nextWorkPid = rel.getObject();
                 log.debug( String.format( "Relationship found: %s (from rel: %s)", nextWorkPid, rel ) );
             }
             else
@@ -213,7 +220,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         }
 
         //log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), workRelation ) );
-        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), fedoraPids[0] ) );
+        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), nextWorkPid ) );
 
         // and add this workrelation pid as the workrelationpid of the
         //return fedor.addPidToCollection( cargo.getDCIdentifier(), workRelation );

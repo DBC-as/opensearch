@@ -412,29 +412,42 @@ public class FedoraObjectRelations
      */
     public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        System.out.println( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
+        log.debug( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
         try
         {
             long timer = System.currentTimeMillis();
             RelationshipTuple[] ret = FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate );
+            //RelationshipTuple[] ret = FedoraHandle.getInstance().getAPIM().getRelationships( pid, null );
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( getRelationships ) %s", timer ) );
+
+            for ( int i = 0; i < ret.length; i++ )
+            {
+                RelationshipTuple r = ret[i];
+                log.debug( String.format( "Tuple ->subject: %s; ->predicate: %s; ->object: %s", r.getSubject(), r.getPredicate(), r.getObject() ) );
+            }
+
             return ret;
         }
-        catch( ConfigurationException ce )
+        catch ( ConfigurationException ce )
         {
+            log.error ( String.format( "ConfigurationException caught", ce.getMessage() ) );
             throw ce;
         }
-        catch( MalformedURLException mue )
+        catch ( ServiceException se )
         {
-            throw mue;
-        }
-        catch( ServiceException se )
-        {
+            log.error ( String.format( "ServiceException caught", se.getMessage() ) );
             throw se;
         }
-        catch( IOException ioe )
+        catch ( MalformedURLException me )
         {
+            log.error ( String.format( "MalformedURLException caught", me.getMessage() ) );
+            throw me;
+        }
+        catch ( IOException ioe )
+        {
+            /** \todo: This IOException appears to be thrown if the object queried does not have a relation of the type asked for */
+            log.error ( String.format( "IOException caught", ioe.getMessage() ) );
             throw ioe;
         }
     }
