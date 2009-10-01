@@ -72,7 +72,16 @@ public class DatadockPool
     private IFedoraAdministration fedoraAdministration;
     private IHarvest harvester;
     private PluginResolver pluginResolver;
-    
+
+    /**
+     * \brief private class that handles RejectedExecutions.
+     *
+     * This class Handles RejectedExecutions by implementing
+     * RejectedExecutionHandler, which is thrown if the
+     * threadpoolqueue is full.  . When one is encountered The Handler
+     * waits until it can put the element on queue, and only throws an
+     * exception if the queue is shutdown
+     */
     private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler 
     {
 		@Override
@@ -94,6 +103,7 @@ public class DatadockPool
 		}
     	
     }
+
     /**
      * Constructs the the datadockPool instance
      *

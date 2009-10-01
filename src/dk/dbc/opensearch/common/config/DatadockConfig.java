@@ -58,22 +58,6 @@ public class DatadockConfig extends Config
 		return ddc.getDatadockMainPollTime();
 	}
 	
-	
-	/* REJECTED SLEEP TIME */
-	private int getDatadockRejectedSleepTime()
-	{
-		int ret = config.getInt( "datadock.rejected-sleep-time" );
-		return ret;
-	}
-	
-	
-	public static int getRejectedSleepTime() throws ConfigurationException
-	{
-		DatadockConfig ddc = new DatadockConfig();
-		return ddc.getDatadockRejectedSleepTime();
-	}
-	
-	
 	/* SHUTDOWN POLL TIME */
 	private int getDatadockShutdownPollTime()
 	{

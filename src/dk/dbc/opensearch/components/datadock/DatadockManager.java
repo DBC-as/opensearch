@@ -18,12 +18,13 @@
 */
 
 /**
- * \file
- * \brief
+ * \file DatadockManager.java
+ * \brief manages thr responsebilities of the datadock.
  */
 
 
 package dk.dbc.opensearch.components.datadock;
+
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
@@ -35,14 +36,13 @@ import dk.dbc.opensearch.components.harvest.IJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Vector;
 import java.util.ArrayList;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
-
 import javax.xml.transform.TransformerException;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
@@ -59,29 +59,50 @@ public class DatadockManager
 {
     static Logger log = Logger.getLogger( DatadockManager.class );
 
-
     private DatadockPool pool= null;
     private IHarvest harvester = null;
     XMLConfiguration config = null;
     ArrayList<IJob> registeredJobs = null;
-    static int rejectedSleepTime;
 
 
     /**
      * Constructs the the DatadockManager instance.
+     *
+     * @param pool the threadpool used for executing datadock jobs
+     * @param harvester the harvester to supply the datadock with jobs
+     * @throws ConfigurationException
+     * @throws HarvesterIOException
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * 
      */
     public DatadockManager( DatadockPool pool, IHarvest harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, HarvesterIOException
     {
         log.trace( "DatadockManager( pool, harvester ) called" );
 
         this.pool = pool;
-        this.rejectedSleepTime = DatadockConfig.getRejectedSleepTime();
         this.harvester = harvester;
         harvester.start();
         registeredJobs = new ArrayList<IJob>();
     }
 
-
+    /**
+     * The update method asks for new jobs, put them on the execution
+     * queue, cleans up the pool, and return the number of submitted
+     * jobs.
+     *
+     * @throws ClassNotFoundException
+     * @throws ConfigurationException
+     * @throws FileNotFoundException
+     * @throws HarvesterIOException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws ParserConfigurationException
+     * @throws PluginResolverException
+     * @throws SAXException
+     * @throws TransformerException
+     */
     public int update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, TransformerException, HarvesterIOException
     {
         log.trace( "DatadockManager update called" );
@@ -105,23 +126,12 @@ public class DatadockManager
             IJob theJob = registeredJobs.get( 0 );
             DatadockJob job = buildDatadockJob( theJob );
             log.trace( String.format( "submitting job %s as datadockJob %s", theJob.toString(), job.toString() ) );
-
-            // execute jobs
-            try
-            {
-                pool.submit( job );
-                registeredJobs.remove( 0 );
-                ++jobs_submitted;
-                // move from progress to done
-                log.debug( String.format( "submitted job: '%s'", job ) );
-            }
-            catch( RejectedExecutionException re )
-            {
-                // move from progress to failure
-                /** \todo: explanation on the frequency of this exception.*/
-                log.warn( String.format( "job: '%s' rejected, trying again", job) );
-                Thread.sleep( rejectedSleepTime );
-            }
+            
+            pool.submit( job );
+            registeredJobs.remove( 0 );
+            ++jobs_submitted;
+            
+            log.debug( String.format( "submitted job: '%s'", job ) );
         }
         
         //checking jobs
@@ -130,7 +140,12 @@ public class DatadockManager
         return jobs_submitted;
     }
 
-
+    /**
+     * shuts down the resources of the datadock and the datadock
+     * itself.
+     * @throws InterruptedException
+     * @throws HarvesterIOException
+     */
     public void shutdown() throws InterruptedException, HarvesterIOException
     {
         log.debug( "Shutting down the pool" );
@@ -144,7 +159,9 @@ public class DatadockManager
 
 
     /**
-     * method for building a Datadockjob from the information in a IJob
+     * method for building a Datadockjob from the information in a
+     * IJob.
+     * @param theJob the Ijob to build DatadockJob from
      */
     private DatadockJob buildDatadockJob( IJob theJob )
     {

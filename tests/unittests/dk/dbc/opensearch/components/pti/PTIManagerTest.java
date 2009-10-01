@@ -22,41 +22,42 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.statistics.Estimate;
+import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.components.pti.PTIManager;
 import dk.dbc.opensearch.components.pti.PTIPool;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.lang.ClassNotFoundException;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.Vector;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static org.junit.Assert.*;
-import org.junit.*;
-import org.compass.core.Compass;
+import javax.xml.rpc.ServiceException;
+
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
 
-import static org.easymock.classextension.EasyMock.*;
-
-import java.lang.ClassNotFoundException;
-import java.sql.SQLException;
 import org.apache.commons.configuration.ConfigurationException;
-import java.net.MalformedURLException;
-import java.util.concurrent.RejectedExecutionException;
-import java.io.IOException;
-import javax.xml.rpc.ServiceException;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import org.compass.core.Compass;
+import org.junit.*;
+
+import static org.easymock.classextension.EasyMock.*;
+import static org.junit.Assert.*;
 
 
 /**
@@ -250,82 +251,6 @@ public class PTIManagerTest
         verify( mockPTIPool );
         verify( mockPQ );
         verify( mockCompletedTask );
-    }
-
-
-    /**
-     * Tests the handling of the RejectedExecutionException in the update method
-     */
-    @Test public void testUpdateMethodRejectedExecutionException() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
-    {
-    /**
-         * setup
-         */
-        Mockit.setUpMocks( MockPTIManagerConfig.class );
-        Mockit.setUpMocks( MockPTIPool.class );
-        Vector< InputPair< String, Integer > > newJobs = new Vector< InputPair< String, Integer > >();
-        HashMap<InputPair<String,String>,ArrayList<String> > dummyMap = new HashMap();
-       
-        newJobs.add( mockInputPair );
-        newJobs.add( mockInputPair );
-       
-        /**
-         * expectations
-         */
-        //constructor
-        expect( mockPQ.deActivate() ).andReturn( 0 );
-        //update method
-        expect( mockPQ.pop( 2 ) ).andReturn( newJobs );
-        //while loop on newJobs
-       
-        expect( mockInputPair.getFirst() ).andReturn( "test" );
-        expect( mockInputPair.getSecond() ).andReturn( 1 ); //provokes exception
-        expect( mockInputPair.getFirst() ).andReturn( "test" );//log warn
-        expect( mockInputPair.getSecond() ).andReturn( 1 );//log warn
-        expect( mockInputPair.getFirst() ).andReturn( "test" );
-        expect( mockInputPair.getSecond() ).andReturn( 2 );
-        expect( mockInputPair.getFirst() ).andReturn( "test" );//log
-        expect( mockInputPair.getSecond() ).andReturn( 2 );//log
-        expect( mockInputPair.getFirst() ).andReturn( "test" );
-        expect( mockInputPair.getSecond() ).andReturn( 2 );
-        expect( mockInputPair.getFirst() ).andReturn( "test" );//log
-        expect( mockInputPair.getSecond() ).andReturn( 2 );//log
-
-        //out of while loop
-        //expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Long, Integer >( 1l, 1 ) );
-        mockPQ.commit( 1 );
-        
-        /**
-         * replay
-         */
-        
-        replay( mockPQ );
-        replay( mockCompletedTask );
-        replay( mockExecutor );
-        replay( mockEstimate );        
-        replay( mockCompass );
-        //replay( mockMap );
-        replay( mockInputPair);
-        replay( mockFedoraAdministration );
-            
-            /**
-         * do stuff
-         */
-        //IFedoraAdministration fedoraAdministration = new FedoraAdministration();
-        PTIPool ptiPool = new PTIPool( mockExecutor, mockEstimate, mockCompass, mockFedoraAdministration);
-        ptiManager = new PTIManager( ptiPool, mockPQ );
-        ptiManager.update();
-
-        /**
-         * verify
-         */
-        verify( mockPQ );
-        verify( mockCompletedTask );
-        verify( mockExecutor );
-        verify( mockEstimate );
-        verify( mockCompass);
-        verify( mockInputPair );
-        verify( mockFedoraAdministration );
     }
 
     /**

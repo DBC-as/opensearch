@@ -1,21 +1,26 @@
-/**
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+/*
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/**
+ * \file PTIPool.java
+ * \brief manages threads used for execution of ptijobs
+ */
 
 
 package dk.dbc.opensearch.components.pti;
@@ -23,6 +28,7 @@ package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
@@ -33,6 +39,7 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.xml.rpc.ServiceException;
@@ -41,7 +48,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 
 
 /**
@@ -63,6 +69,35 @@ public class PTIPool
     private Compass compass;
     private int shutDownPollTime;
 
+    /**
+     * \brief private class that handles RejectedExecutions.
+     *
+     * This class Handles RejectedExecutions by implementing
+     * RejectedExecutionHandler, which is thrown if the
+     * threadpoolqueue is full.  . When one is encountered The Handler
+     * waits until it can put the element on queue, and only throws an
+     * exception if the queue is shutdown
+     */
+    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler 
+    {
+		@Override
+		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  
+		{
+			if( executor.isShutdown())  
+			{
+					throw new RejectedExecutionException();
+			}
+			try 
+			{
+				executor.getQueue().put(r);
+			} 
+			catch (InterruptedException e) 
+			{		
+				e.printStackTrace();
+				throw new RejectedExecutionException();
+			};
+		}    	
+    }
     
     /**
      * Constructs the the PTIPool instance
@@ -81,7 +116,9 @@ public class PTIPool
          this.estimate = estimate;
          this.compass = compass;
          jobs = new Vector< InputPair< FutureTask< Long >, Integer > >();         
-         shutDownPollTime = PtiConfig.getShutdownPollTime();         
+         shutDownPollTime = PtiConfig.getShutdownPollTime();
+
+         threadpool.setRejectedExecutionHandler( new BlockingRejectedExecutionHandler() );
      }
     
     
@@ -97,6 +134,7 @@ public class PTIPool
     	log.debug( String.format( "submit( fedoraHandle='%s', queueID='%s' )", fedoraHandle, queueID ) );
     
         FutureTask<Long> future = getTask( fedoraHandle );
+
         threadpool.submit( future );
         InputPair< FutureTask< Long >, Integer > pair = new InputPair< FutureTask< Long >, Integer >( future, queueID );
         jobs.add( pair );
