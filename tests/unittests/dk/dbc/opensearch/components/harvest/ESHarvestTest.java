@@ -136,4 +136,23 @@ public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
 
     }
     
+
+    @Test
+    public void testCleanupESBaseWithException() throws IllegalAccessException, InvocationTargetException, HarvesterIOException, NoSuchMethodException, SQLException
+    {
+	prepareUpdateCount();
+
+	harvester = new ESHarvest(mockConn, "test"); // previously tested.
+
+	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
+	method.setAccessible( true );
+	method.invoke( harvester );
+
+	verifySQLStatementExecuted("select recordstatus");
+	verifySQLStatementExecuted("update taskpackagerecordstructure");
+	verifyCommitted();
+        verifyAllStatementsClosed();
+
+    }
+    
 }
