@@ -27,13 +27,17 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 
+import fedora.common.Constants;
 import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.IOException;
@@ -189,6 +193,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             //workRelation = PIDManager.getInstance().getNextPID( "work" );
             nextWorkPid = PIDManager.getInstance().getNextPID( "work" );
             log.debug( String.format( "nextWorkPid found: %s", nextWorkPid ) );
+            CreateWorkObject( nextWorkPid );
         }
         else // fedoraPids.length > 0
         {
@@ -216,15 +221,46 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             else
             {
                 nextWorkPid = PIDManager.getInstance().getNextPID( "work" );
+                CreateWorkObject( nextWorkPid );
+                
             }
         }
 
         //log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), workRelation ) );
         log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), nextWorkPid ) );
 
-        // and add this workrelation pid as the workrelationpid of the
-        //return fedor.addPidToCollection( cargo.getDCIdentifier(), workRelation );
-        return fedor.addPidToCollection( cargo.getDCIdentifier(), nextWorkPid );
+        // and add this workrelation pid as the workrelationpid of the        
+        
+        fedor.addPidToCollection( cargo.getDCIdentifier(), nextWorkPid );
+        try 
+        {            
+            FedoraHandle.getInstance().getAPIM().addRelationship( nextWorkPid, "info:fedora/fedora-system:def/relations-external#Contains", cargo.getDCIdentifier(), true, null );
+        }
+        catch( Exception e)
+        {
+            log.error( String.format("Problem in addPidToCollection %s -> %s",nextWorkPid, cargo.getDCIdentifier()), e);
+        }
+        return true;
+    }
+
+
+    private void CreateWorkObject(String nextWorkPid) throws IOException
+    {      
+        // todo: Clean up work object xml and language. 
+        CargoContainer cargo = new CargoContainer();       
+        String fakexml="<fisk></fisk>";
+        cargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", IndexingAlias.None , fakexml.getBytes());
+        cargo.setDCIdentifier( nextWorkPid );
+        try 
+        { 
+            
+            fa.storeCargoContainer(cargo, "internal");
+            log.debug(String.format("ja7: added work object %s", nextWorkPid));
+        } 
+        catch(Exception e) 
+        {
+            log.error("ja7:error in fs.storeCargocontiner for new work item", e);
+        }   
     }
 
 
