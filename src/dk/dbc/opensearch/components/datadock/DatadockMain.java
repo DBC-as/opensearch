@@ -172,6 +172,14 @@ public class DatadockMain
 
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
         
+        boolean terminateOnZeroSubmitted = false;
+        for( String a : args ) 
+        {           
+            if( a.equals("--shutDownOnJobsDone") ) 
+            {
+                terminateOnZeroSubmitted = true;
+            }
+        }
         try
         {
             init();
@@ -209,9 +217,9 @@ public class DatadockMain
 
             /** --------------- setup and startup of the datadockmanager done ---------------- **/
             log.info( "Daemonizing" );
-
+           
             daemonize();
-            addDaemonShutdownHook();
+            addDaemonShutdownHook();            
         }
         catch ( Exception e )
         {
@@ -224,14 +232,22 @@ public class DatadockMain
             log.removeAppender( startupAppender );
         }
         
+        long mainTimer = System.currentTimeMillis();
+        int mainJobsSubmitted = 0;
+        
+        
+        
         while( ! isShutdownRequested() )
         {	 
             try
             {
             	log.trace( "DatadockMain calling datadockManager update" );
-                long timer = System.currentTimeMillis();
+
+            	long timer = System.currentTimeMillis();
                 int jobsSubmited = datadockManager.update();                
                 timer = System.currentTimeMillis() - timer;
+               
+                mainJobsSubmitted += jobsSubmited;
                 
                 if (jobsSubmited > 0)
                 {
@@ -240,8 +256,15 @@ public class DatadockMain
                 else
                 {
                     log.info(String.format("%1$d Jobs submittet in %2$d ms - ",jobsSubmited, timer));
-                    Thread.currentThread();
-                    Thread.sleep(pollTime);
+                    if( terminateOnZeroSubmitted ) 
+                    {
+                             shutdown();
+                    } 
+                    else 
+                    {
+                        Thread.currentThread();
+                        Thread.sleep(pollTime);
+                    }                                          
                 }
             }
             catch( InterruptedException ie )
@@ -266,5 +289,18 @@ public class DatadockMain
                 log.error( "Exception caught in mainloop: " + e.toString() );
             }
         }
+        
+        mainTimer = System.currentTimeMillis() - mainTimer;
+        
+        if (mainJobsSubmitted > 0)
+        {
+            log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - %3$f jobs/s", mainJobsSubmitted, mainTimer, mainJobsSubmitted/ (mainTimer / 1000.0)));
+        }
+        else
+        {
+            log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - ", mainJobsSubmitted, mainTimer));
+                           
+        }
+
     }
 }

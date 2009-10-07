@@ -42,6 +42,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
@@ -227,18 +228,8 @@ public class DatadockPool
     public void shutdown() throws InterruptedException 
     {
         log.debug( "shutdown() called" );
-    
-        boolean activeJobs = true;
-        while( activeJobs )
-        {
-            activeJobs = false;
-            for( FutureTask job : jobs )
-            {
-                if( ! job.isDone() )
-                {
-                    activeJobs = true;
-                }
-            }
-        }
+        
+        threadpool.shutdown();
+        threadpool.awaitTermination(1, TimeUnit.DAYS);
     }
 }

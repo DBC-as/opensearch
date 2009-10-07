@@ -51,6 +51,7 @@ def main( app, action, monitor, fedora_arg ):
     q_name       = ""
     new_pid      = ""
     do_start     = False
+    do_bench     = False
     
     if app == "pti":
         pid_filename = "ptiDaemon.pid"
@@ -90,6 +91,8 @@ def main( app, action, monitor, fedora_arg ):
     elif action == "restart":
         print "No running process"
         do_start = True
+    elif action == "bench":
+        do_bench = True
     else:
         sys.exit( "Cannot stop nonrunning process" )
 
@@ -117,8 +120,16 @@ def main( app, action, monitor, fedora_arg ):
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
 
+    if do_bench :
+        print "starting process"
         
-def start_daemon( q_name, pid_filename, monitor ):
+        proc, pid = start_daemon( q_name, pid_filename, monitor, args="--shutDownOnJobsDone" )
+        print "Waiting for process to stop "
+        os.waitpid( pid -1, 0 );
+        
+        print "print done waiting"
+        
+def start_daemon( q_name, pid_filename, monitor, args=None ):
     
     """
     Starts the Application daemon
@@ -136,6 +147,8 @@ def start_daemon( q_name, pid_filename, monitor ):
             '-Ddaemon.pidfile=%s'%( pid_filename ),
             '-jar',
             q_name ]
+    if not args is None :
+        cmd.append(args)
    
     cmd = ' '.join( cmd )
         
@@ -206,6 +219,7 @@ if __name__ == '__main__':
                        help="The hostname of the fedora repository. ignored without -c (default value: %s)" % fedora_arg['host'] )
     parser.add_option( "--port", type="string", action="store", dest="port",
                        help="The portnumber of the Fedora Repository. ignored without -c (default value: %s)" % fedora_arg['port']  )
+    
     (options, args) = parser.parse_args()
 
     if options.port:
