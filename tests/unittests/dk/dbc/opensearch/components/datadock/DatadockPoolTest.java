@@ -52,6 +52,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -443,10 +444,9 @@ public class DatadockPoolTest extends TestCase
         expect( mockDatadockJob.getFormat() ).andReturn( "test" );
         //getTask is called and the method is mocked to return mockFuture
         expect( mockThreadPoolExecutor.submit( mockFuture ) ).andReturn( mockFuture );
-        //calling shutdown
-        expect( mockFuture.isDone() ).andReturn( false );
-        expect( mockFuture.isDone() ).andReturn( false );
-        expect( mockFuture.isDone() ).andReturn( true );
+        //calling shutdown        
+        mockThreadPoolExecutor.shutdown();
+        expect( mockThreadPoolExecutor.awaitTermination( 1 , TimeUnit.DAYS)).andReturn(true);
 
         /**
          * replay
