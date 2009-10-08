@@ -206,8 +206,10 @@ if __name__ == '__main__':
     fedora_arg = {'host': 'localhost',
                   'port': '8080'
                   }
+    actions = ["start", "stop", "restart", "bench"]
     
-    parser = OptionParser( usage="%prog [options] start|stop|restart" )
+    
+    parser = OptionParser( usage="%prog [options] " + "|".join( actions ) )
 
     parser.add_option( "-a", type="string", action="store", dest="app",
                        help="Name of app to execute. Available apps: %s" % ", ".join( app_list ) )
@@ -229,6 +231,9 @@ if __name__ == '__main__':
     if not options.checkFedora:
         fedora_arg = None
         
+    if not args[0] in actions:
+        print "Action '%s' not supported. Use one of the following: %s" % ( args[0], "|".join( actions ) )
+        sys.exit( parser.print_help() )
 
     if options.monitor and not options.monitor in available_monitors:
         print "Available monitors:\n"
