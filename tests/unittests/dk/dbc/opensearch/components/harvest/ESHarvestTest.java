@@ -106,10 +106,11 @@ public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
     public void testCleanupESBaseNoInProgress() throws IllegalAccessException, InvocationTargetException, HarvesterIOException, NoSuchMethodException, SQLException
     {
 	harvester = new ESHarvest(mockConn, "test"); // previously tested.
+	harvester.changeRecordstatusFromInProgressToQueued();
 
-	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
-	method.setAccessible( true );
-	method.invoke( harvester );
+	//	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
+	//	method.setAccessible( true );
+	//	method.invoke( harvester );
 
 	verifySQLStatementExecuted("select recordstatus");
 	verifySQLStatementNotExecuted("update taskpackagerecordstructure");
@@ -123,11 +124,12 @@ public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
     {
 	prepareUpdateCount();
 
-	harvester = new ESHarvest(mockConn, "test"); // previously tested.
+	harvester = new ESHarvest(mockConn, "test"); // previously tested
+	harvester.changeRecordstatusFromInProgressToQueued();
 
-	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
-	method.setAccessible( true );
-	method.invoke( harvester );
+	//	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
+	//	method.setAccessible( true );
+	//	method.invoke( harvester );
 
 	verifySQLStatementExecuted("select recordstatus");
 	verifySQLStatementExecuted("update taskpackagerecordstructure");
@@ -143,10 +145,11 @@ public final class ESHarvestTest extends BasicJDBCTestCaseAdapter
 	prepareUpdateCount();
 
 	harvester = new ESHarvest(mockConn, "test"); // previously tested.
+	harvester.changeRecordstatusFromInProgressToQueued();
 
-	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
-	method.setAccessible( true );
-	method.invoke( harvester );
+	//	Method method = harvester.getClass().getDeclaredMethod( "cleanupESBase" );
+	//	method.setAccessible( true );
+	//	method.invoke( harvester );
 
 	verifySQLStatementExecuted("select recordstatus");
 	verifySQLStatementExecuted("update taskpackagerecordstructure");
