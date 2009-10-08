@@ -90,8 +90,6 @@ public class DatadockMain
         corePoolSize = DatadockConfig.getCorePoolSize();
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
-
-        log.trace( String.format( "queueSIZE = '%s'", queueSize ) );
     }
 
 
@@ -201,7 +199,7 @@ public class DatadockMain
             log.trace( "Starting datadockPool" );
 
             // datadockpool
-            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 10 );
+            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
             threadpool.purge(); 
             
