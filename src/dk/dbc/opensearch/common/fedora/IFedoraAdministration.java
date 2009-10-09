@@ -17,6 +17,11 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file
+ * \brief
+ */
+
 
 package dk.dbc.opensearch.common.fedora;
 
@@ -29,6 +34,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
@@ -50,7 +56,30 @@ import org.xml.sax.SAXException;
  * Parts of objects (Datastreams) are worked with as CargoObjects 
  */
 public interface IFedoraAdministration
-{    
+{
+    public enum FedoraConstants
+    {
+        TITLE( "title" ),
+        SOURCE( "source" ),
+        CREATOR( "creator" );
+
+
+        private final String value;
+
+
+        FedoraConstants( String value )
+        {
+            this.value = value;
+        }
+
+
+        public String getValue()
+        {
+            return value;
+        }
+    }
+
+    
     /**
      * method for getting an object in a CargoContainer based on its pid
      * @param pid, the identifier of the object to get
@@ -212,5 +241,5 @@ public interface IFedoraAdministration
      * @param value, the value the property adheres to
      * @return an array o pids of the matching objects
      */
-    public String[] findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException;
+    public ArrayList findQualifiedObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException;
 }

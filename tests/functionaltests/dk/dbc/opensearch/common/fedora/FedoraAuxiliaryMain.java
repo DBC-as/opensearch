@@ -29,8 +29,9 @@ package dk.dbc.opensearch.common.fedora;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-
+import java.util.ArrayList;
 import java.util.Vector;
+
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -74,6 +75,8 @@ public class FedoraAuxiliaryMain
             }
         }
     }
+
+    
     public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String arg = args[0];
@@ -107,7 +110,7 @@ public class FedoraAuxiliaryMain
         {
             for ( int i = 0; i < runsPerLabel; i++ )
             {
-                String[] pids = null;
+                ArrayList< String > pids = null;
                 try
                 {
                     pids = fa.findObjectPids( "label", "eq", str );
@@ -117,17 +120,18 @@ public class FedoraAuxiliaryMain
                     re.printStackTrace();
                 }
 
-                if ( pids.length > 0 )
+                int pidsSize = pids.size();
+                if ( pidsSize > 0 )
                 {
-                    System.out.println( "testDeleteObjectPids - pids.length: " + pids.length );
+                    System.out.println( "testDeleteObjectPids - pids.length: " + pidsSize );
                 }
                 
-                for ( int j = 0; j < pids.length; j++ )
+                for ( int j = 0; j < pidsSize; j++ )
                 {
-                    testDeleteObject( pids[j] );
+                    testDeleteObject( pids.get( j ) );
                 }
 
-                noOfPids =+ pids.length;
+                noOfPids =+ pidsSize;
             }
         }
 

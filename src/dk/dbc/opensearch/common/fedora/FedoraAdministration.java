@@ -108,6 +108,11 @@ public class FedoraAdministration implements IFedoraAdministration
     private final NonNegativeInteger maxResults = new NonNegativeInteger( "1000000" );
 
 
+    private final String title = FedoraConstants.TITLE.getValue();
+    private final String source = FedoraConstants.SOURCE.getValue();
+    private final String creator = FedoraConstants.CREATOR.getValue();
+
+
     /**
      */
     public FedoraAdministration()
@@ -672,14 +677,7 @@ public class FedoraAdministration implements IFedoraAdministration
     }
 
 
-    /**
-     * method for finding pids of objects based on object properties
-     * @param property, the property to match
-     * @param operator, the operator to apply, "has", "eq", "lt", "le","gt" and "ge" are valid
-     * @param value, the value the property adheres to
-     * @return an array o pids of the matching objects
-     */
-    public String[] findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    public ArrayList findObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         // \Todo: check needed on the operator
         value = value.replaceAll( "'", "" );
@@ -690,11 +688,32 @@ public class FedoraAdministration implements IFedoraAdministration
         Condition[] cond = { new Condition( property, comp, value ) };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
-        return findObjectPids( fsq );
+        return findObjectPids( fsq, property, value );
+    }
+
+    /**
+     * method for finding pids of objects based on object properties
+     * @param property, the property to match
+     * @param operator, the operator to apply, "has", "eq", "lt", "le","gt" and "ge" are valid
+     * @param value, the value the property adheres to
+     * @return an array o pids of the matching objects
+     */
+    public ArrayList findQualifiedObjectPids( String property, String operator, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        // \Todo: check needed on the operator
+        value = value.replaceAll( "'", "" );
+
+        log.debug( String.format( "1 findObjectPids ->property: %s; ->operator: %s; ->value: %s", property, operator, value ) );
+
+        ComparisonOperator comp = ComparisonOperator.fromString( operator );
+        Condition[] cond = { new Condition( property, comp, value ) };
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+
+        return findQualifiedObjectPids( fsq, property, null, value, null );
     }
 
 
-    public String[] findObjectPids( String property_1, String property_2, String operator, String value_1, String value_2 ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    public ArrayList findQualifiedObjectPids( String property_1, String property_2, String operator, String value_1, String value_2 ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         // \Todo: check needed on the operator
         value_1 = value_1.replaceAll( "'", "" );
@@ -709,18 +728,78 @@ public class FedoraAdministration implements IFedoraAdministration
         Condition[] cond = { cond_1, cond_2 };
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
 
-        return findObjectPids( fsq );
+        return findQualifiedObjectPids( fsq, property_1, property_1, value_1, value_2 );
     }
 
 
-    private String[] findObjectPids( FieldSearchQuery fsq ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    private boolean doAddToPids( ObjectFields objectFields, String property_1, String property_2, String value_1, String value_2 ) throws ServiceException
+    {
+        String getTitle = "";
+        String getCreator = "";
+        String getSource = "";
+        
+        try { getTitle = objectFields.getTitle( 0 ) != null ? objectFields.getTitle( 0 ) : ""; } catch ( Exception ex ) { }
+        try { getCreator = objectFields.getCreator( 0 ) != null ? objectFields.getCreator( 0 ) : ""; } catch ( Exception ex ) { }
+        try { getSource = objectFields.getSource( 0 ) != null ? objectFields.getSource( 0 ) : ""; } catch ( Exception ex ) { }
+        
+        log.debug( String.format( "objectField ->title: %s; ->creator: %s; ->source: %s", getTitle, getCreator, getSource ) );
+        log.debug( String.format( "property_1: %s; value_1: %s; property_2: %s; value_2: %s", property_1, value_1, property_2, value_2 ) );
+
+        try
+        {
+        if ( property_2 == null )
+        {
+            if ( property_1.equals( source ) )
+            {
+                log.debug( String.format( "Comparing getSource '%s' with value_1 '%s", getSource, value_1 ) );
+                if ( getSource.equals( value_1 ) )
+                {
+                    log.debug( String.format( "source (property_1: %s) equals value (value_1: %s)", property_1, value_1 ) );
+                    return true;
+                }
+            }
+            else if ( property_1.equals( title ) )
+            {
+                if ( getTitle.equals( value_1 ) )
+                {
+                    return true;
+                }
+            }
+        }
+        else if ( property_2 != null )
+        {
+            // title og creator
+            if ( property_1.equals( title ) && property_2.equals( creator ) )
+            {
+                if ( getTitle.equals( value_1 ) && getCreator.equals( value_2 ) )
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            log.debug( String.format( "This error should not occur!", "" ) );
+            throw new ServiceException( "This error should not occour!" );
+        }
+        }
+        catch ( Exception ex )
+        {
+            log.debug( "exception caught!!!" );
+        }
+
+        return false;
+    }
+
+
+    private ArrayList findQualifiedObjectPids( FieldSearchQuery fsq, String property_1, String property_2, String value_1, String value_2  ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String[] resultFields = { "pid", "title", "source", "creator" };
         
         long timer = System.currentTimeMillis();
         try
         {
-            log.debug( String.format( "Calling FedoraHanle.getInstance.getAPIA.findObjects", "" ) );
+            log.debug( String.format( "Calling FedoraHandle.getInstance.getAPIA.findObjects", "" ) );
             FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( private findObjectPids ) %s", timer ) );
@@ -730,11 +809,22 @@ public class FedoraAdministration implements IFedoraAdministration
             
             int ofLength = objectFields.length;
             log.debug( String.format( "ObjectFields.length: %s", ofLength ) );
-            String[] pids = new String[ofLength];
+            ArrayList pids = new ArrayList();
             for( int i = 0; i < ofLength; i++ )
             {
-                pids[i] = objectFields[i].getPid();
-                log.debug( "pid " + i + ": " + pids[i].toString() );
+                try
+                {
+                 if ( doAddToPids( objectFields[i], property_1, property_2, value_1, value_2 ) )
+                 {
+                     pids.add( objectFields[i].getPid() );
+                     log.debug( "pid " + i + ": " + pids.get( i ).toString() );
+                 }
+                 //pids.add( objectFields[i].getPid() );
+                }
+                catch( Exception ex )
+                {
+                    log.debug( "This error should not occur in for loop!");
+                }
             }
 
             log.debug( String.format( "returning pids: %s", pids.toString() ) );
@@ -742,7 +832,68 @@ public class FedoraAdministration implements IFedoraAdministration
         }
         catch( RemoteException re )
         {
-            log.error ( String.format( "ConfigurationException caught", re.getMessage() ) );
+            log.error ( String.format( "RemoteException caught", re.getMessage() ) );
+            throw re;
+        }
+        catch ( ConfigurationException ce )
+        {
+            log.error ( String.format( "ConfigurationException caught", ce.getMessage() ) );
+            throw ce;
+        }
+        catch ( ServiceException se )
+        {
+            log.error ( String.format( "ServiceException caught", se.getMessage() ) );
+            throw se;
+        }
+        catch ( MalformedURLException me )
+        {
+            log.error ( String.format( "MalformedURLException caught", me.getMessage() ) );
+            throw me;
+        }
+        catch ( IOException ioe )
+        {
+            log.error ( String.format( "IOException caught", ioe.getMessage() ) );
+            throw ioe;
+        }
+    }
+
+
+    private ArrayList findObjectPids( FieldSearchQuery fsq, String property, String value ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        String[] resultFields = { "pid", "title", "source", "creator" };
+
+        long timer = System.currentTimeMillis();
+        try
+        {
+            log.debug( String.format( "Calling FedoraHandle.getInstance.getAPIA.findObjects", "" ) );
+            FieldSearchResult fsr = FedoraHandle.getInstance().getAPIA().findObjects( resultFields, maxResults, fsq );
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: ( private findObjectPids ) %s", timer ) );
+
+            ObjectFields[] objectFields = fsr.getResultList();
+            log.debug( "result list obtained" );
+
+            int ofLength = objectFields.length;
+            log.debug( String.format( "ObjectFields.length: %s", ofLength ) );
+            ArrayList pids = new ArrayList();
+            for( int i = 0; i < ofLength; i++ )
+            {
+                try
+                {
+                    pids.add( objectFields[i].getPid() );
+                }
+                catch( Exception ex )
+                {
+                    log.error( "This error should not occur in for loop!");
+                }
+            }
+
+            log.debug( String.format( "returning pids: %s", pids.toString() ) );
+            return pids;
+        }
+        catch( RemoteException re )
+        {
+            log.error ( String.format( "RemoteException caught", re.getMessage() ) );
             throw re;
         }
         catch ( ConfigurationException ce )

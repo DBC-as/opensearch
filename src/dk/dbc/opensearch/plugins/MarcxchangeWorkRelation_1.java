@@ -29,6 +29,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
+import dk.dbc.opensearch.common.fedora.IFedoraAdministration.FedoraConstants;
 import dk.dbc.opensearch.common.fedora.PIDManager;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -37,11 +38,11 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
-import fedora.common.Constants;
 import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
@@ -125,43 +126,40 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         String dcSource = cargo.getDCSource();
         String operator = "has";
 
-        //String relation = "isMemberOf";
-        //String workRelation = null;
-        String fedoraPids[] = null;
+        String title = FedoraConstants.TITLE.getValue();
+        String source = FedoraConstants.SOURCE.getValue();
+        String creator = FedoraConstants.CREATOR.getValue();
+
+
+        ArrayList< String > fedoraPids = null;
         if( ! types.contains( dcType ) )
         {
             log.debug( String.format( "finding work relations for dcType %s", dcType ) );
             if ( ! dcSource.equals( "" ) )
             {
                 log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
-                //workRelation = fedor.getSubjectRelation( "source", dcSource, relation );
-                fedoraPids = fa.findObjectPids( "source", operator, dcSource );
-                //if ( workRelation == null && ! dcTitle.equals( "" ) )
-                if ( fedoraPids.length == 0 && ! dcTitle.equals( "" ) )
+                
+                fedoraPids = fa.findQualifiedObjectPids( source, operator, dcSource );
+                if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
                 {
-                    //workRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
-                    fedoraPids = fa.findObjectPids( "source", operator, dcTitle );
+                    fedoraPids = fa.findQualifiedObjectPids( source, operator, dcTitle );
                 }
             }
 
-            //if ( workRelation == null && ! dcTitle.equals( "" ) )
-            if ( ( fedoraPids == null || fedoraPids.length == 0 ) && ! dcTitle.equals( "" ) )
+            if ( ( fedoraPids == null || fedoraPids.size() == 0 ) && ! dcTitle.equals( "" ) )
             {
                 log.debug( String.format( "2 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
                 if ( ! dcSource.equals( "" ) )
                 {
-                    //workRelation = fedor.getSubjectRelation( "title", dcSource, relation );
-                    fedoraPids = fa.findObjectPids( "title", operator, dcSource );
+                    fedoraPids = fa.findQualifiedObjectPids( title, operator, dcSource );
                 }
                 else
                 {
-                    //workRelation = fedor.getSubjectRelation( "title", dcTitle, relation );
-                    fedoraPids = fa.findObjectPids( "title", operator, dcTitle );
+                    fedoraPids = fa.findQualifiedObjectPids( title, operator, dcTitle );
                 }
             }
 
-            //if ( workRelation == null )
-            if ( fedoraPids == null || fedoraPids.length == 0 )
+            if ( fedoraPids == null || fedoraPids.size() == 0 )
             {
                 log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcSource ) );
             }
@@ -171,42 +169,42 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
                 log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle, dcCreator ) );
-                //workRelation = fedor.getSubjectRelation( "title", dcTitle, "creator", dcCreator, relation );
-                fedoraPids = fa.findObjectPids( "title", "creator", operator, dcTitle, dcCreator );
+                fedoraPids = fa.findQualifiedObjectPids( title, creator, operator, dcTitle, dcCreator );
             }
             else
             {
                 log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcCreator ) );
             }
         }
-        //log.debug( String.format( "workRelation = %s", workRelation ) );
-        if ( fedoraPids != null && fedoraPids.length > 0 )
+
+        if ( fedoraPids != null && fedoraPids.size() > 0 )
         {
-            log.debug( String.format( "Pid with matching title, source, or creator = %s", fedoraPids[0] ) );
+            log.debug( String.format( "Pid with matching title, source, or creator = %s", fedoraPids.get( 0 ) ) );
         }
 
         String nextWorkPid = null;
         RelationshipTuple[] rels = null;
-        //if ( workRelation == null )
-        if ( fedoraPids == null || fedoraPids.length == 0 )
+        int fedoraPidsSize = fedoraPids.size();
+        if ( fedoraPids == null || fedoraPidsSize == 0 )
         {
             //workRelation = PIDManager.getInstance().getNextPID( "work" );
             nextWorkPid = PIDManager.getInstance().getNextPID( "work" );
             log.debug( String.format( "nextWorkPid found: %s", nextWorkPid ) );
             CreateWorkObject( nextWorkPid );
         }
-        else // fedoraPids.length > 0
+        else // fedoraPids.size() > 0
         {
             String pid = cargo.getDCIdentifier();
-            log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPids.length ) );
-            for ( int i = 0; i < fedoraPids.length; i++ )
+            log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPidsSize ) );
+            for ( int i = 0; i < fedoraPidsSize; i++ )
             {
-                log.debug( String.format( "checking fedoraPid for equality: %s with pid: %s", fedoraPids[i], pid ) );
-                if ( ! fedoraPids[i].equals( pid ) )
+                String fedoraPid = fedoraPids.get( i );
+                log.debug( String.format( "checking fedoraPid for equality: %s with pid: %s", fedoraPid, pid ) );
+                if ( ! fedoraPid.equals( pid ) )
                 {
-                    log.debug( String.format( "New PID found: %s (curr pid is: %s)", fedoraPids[i], pid ) );
+                    log.debug( String.format( "New PID found: %s (curr pid is: %s)", fedoraPid, pid ) );
                     String predicate = "info:fedora/fedora-system:def/relations-external#isMemberOf";
-                    rels = fedor.getRelationships( fedoraPids[i], predicate );
+                    rels = fedor.getRelationships( fedoraPid, predicate );
                     log.debug( String.format( "Relationships as tuple: %s, length %s", rels.toString(), rels.length ) );
                     break;
                 }

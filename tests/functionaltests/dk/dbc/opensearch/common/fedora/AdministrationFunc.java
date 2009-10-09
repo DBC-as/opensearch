@@ -246,7 +246,7 @@ public class AdministrationFunc
 
     static void testFindObjectPids() throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        String[] pids = null;
+        ArrayList< String > pids = null;
         try
         {
             pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration" );
@@ -256,9 +256,9 @@ public class AdministrationFunc
             re.printStackTrace();
         }
 
-        for ( int i = 0; i < pids.length; i++ )
+        for ( int i = 0; i < pids.size(); i++ )
         {
-            System.out.println( pids[i] );
+            System.out.println( pids.get( i ) );
         }
     }
 
@@ -337,10 +337,9 @@ public class AdministrationFunc
         {
             for ( int i = 0; i < runsPerLabel; i++ )
             {
-                String[] pids = null;
+                ArrayList< String > pids = null;
                 try
                 {
-                    //pids = fa.findObjectPids( "label", "eq", "materialevurderinger" );
                     pids = fa.findObjectPids( "label", "eq", str );
                 }
                 catch ( RemoteException re )
@@ -348,15 +347,15 @@ public class AdministrationFunc
                     re.printStackTrace();
                 }
 
-                if ( pids.length > 0 )
+                int pidsSize = pids.size();
+                if ( pidsSize > 0 )
                 {
-                    System.out.println( "testDeleteObjectPids - pids.length: " + pids.length );
+                    System.out.println( "testDeleteObjectPids - pids.length: " + pidsSize );
                 }
                 
-                for ( int j = 0; j < pids.length; j++ )
+                for ( int j = 0; j < pidsSize; j++ )
                 {
-                    //System.out.println( pids[j] );
-                    testDeleteObject( pids[j] );
+                    testDeleteObject( pids.get( j ) );
                 }
             }
         }
