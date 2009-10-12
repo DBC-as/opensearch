@@ -306,6 +306,7 @@ public class FileHarvest implements IHarvest
     @Override
     public ArrayList<IJob> getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
     {
+        max = maxAmount;
         ArrayList<IJob> jobs = new ArrayList<IJob>();
         HashSet<InputPair< File, Long > > newJobs = new HashSet< InputPair< File, Long > >( 0 );
         try

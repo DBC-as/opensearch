@@ -449,6 +449,8 @@ public class FileHarvestTest
      * than the max config value specifies
      * We verify this by having 3 files that should be harvested, but only get 1
      * because thats the max to harvest at a time
+     * This est is invalid since we tell the harvester how many files we want through the  
+     * argument maxAmount in the getJobs method
      */
     @Test
     public void testGetNewJobsMax() throws Exception
@@ -534,7 +536,7 @@ public class FileHarvestTest
         fileHarvest = new FileHarvest();
         fileHarvest.start();
         //System.out.println( "calling getjobs 1" );
-        ArrayList<IJob> result1 = fileHarvest.getJobs( 30 );
+        ArrayList<IJob> result1 = fileHarvest.getJobs( 2 );
         assertTrue( result1.size() == 2 );
         //System.out.println( "calling getjobs 2" );
         result1 = fileHarvest.getJobs( 30 );
