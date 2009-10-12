@@ -136,7 +136,8 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         catch ( Exception e )
         {
             log.error( String.format( "Exception of type: %s cast with message: %s", e.getClass(), e.getMessage() ) );
-
+            String msg = "Exception caught in the MarcxchangeHarvester";
+            throw new PluginException( msg, e );
             /**
              * \Todo: the error should be propagated out to the caller. bug 9582
              */

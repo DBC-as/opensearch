@@ -30,6 +30,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -140,7 +141,7 @@ public class MarcxchangeHarvesterTest
 
     } 
 
-    @Test
+    @Test( expected = PluginException.class )
     public void constructDCFailsTest() throws Exception
     {
         Mockit.setUpMocks( MockCargoContainer.class );
