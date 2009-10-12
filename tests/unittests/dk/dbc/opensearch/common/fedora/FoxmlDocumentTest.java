@@ -76,8 +76,7 @@ public class FoxmlDocumentTest
     public void SetUp() throws UnsupportedEncodingException, IOException
     {
         byte[] cargoBytes = utf8Str.getBytes( "UTF-8" );
-        cargo = new CargoContainer( );
-        cargo.setDCIdentifier( pid );
+        cargo = new CargoContainer( pid );
         cargo.add( DataStreamType.OriginalData, "test", "dbc", "da", "text/xml", IndexingAlias.Article , cargoBytes);
     }
 

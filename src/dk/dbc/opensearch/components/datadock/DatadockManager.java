@@ -87,6 +87,7 @@ public class DatadockManager
         registeredJobs = new ArrayList<IJob>();
     }
 
+
     /**
      * The update method asks for new jobs, put them on the execution
      * queue, cleans up the pool, and return the number of submitted
@@ -117,12 +118,13 @@ public class DatadockManager
 
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
         int jobs_submitted = 0;
-        
+
         while ( registeredJobs.size() > 0 )
         {
             // System.out.println( String.format( "registeredJobs size: %s", registeredJobs.size() ) );
             log.trace( String.format( "processing job: %s", registeredJobs.get( 0 ).toString() ) );
 
+            //build the DatadockJob
             IJob theJob = registeredJobs.get( 0 );
             DatadockJob job = buildDatadockJob( theJob );
             log.trace( String.format( "submitting job %s as datadockJob %s", theJob.toString(), job.toString() ) );
@@ -133,12 +135,13 @@ public class DatadockManager
             
             log.debug( String.format( "submitted job: '%s'", job ) );
         }
-        
+
         //checking jobs
         Vector<CompletedTask> finishedJobs = pool.checkJobs();
-        
+
         return jobs_submitted;
     }
+
 
     /**
      * shuts down the resources of the datadock and the datadock
@@ -190,7 +193,7 @@ public class DatadockManager
         String submitter = info.getAttribute( "submitter" );
         String format = info.getAttribute( "format" );
 
-        DatadockJob ddjob = new DatadockJob( submitter, format, theJob.getIdentifier(), referenceData );
+        DatadockJob ddjob = new DatadockJob( theJob.getIdentifier(), referenceData );
         return ddjob;
     }
 }

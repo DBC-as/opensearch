@@ -21,8 +21,6 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.compass.CPMAlias;
-import dk.dbc.opensearch.common.config.CompassConfig;
-import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -32,14 +30,11 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -56,7 +51,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
@@ -68,6 +62,7 @@ public class IndexerXSEM implements IIndexer
     PluginType pluginType = PluginType.INDEX;
 
 
+    @Override
     public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle, IEstimate estimate ) throws PluginException, ConfigurationException
     {
         long processTime = 0;
@@ -149,7 +144,7 @@ public class IndexerXSEM implements IIndexer
 
                 if( ! isValidAlias )
                 {
-                    log.fatal( String.format( "The format %s (from pid %s) has no alias in the XSEM mapping file", indexingAlias, cc.getDCIdentifier() ) );
+                    log.fatal( String.format( "The format %s (from pid %s) has no alias in the XSEM mapping file", indexingAlias, cc.getIdentifier() ) );
                     throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
                 }
                 else
@@ -163,7 +158,7 @@ public class IndexerXSEM implements IIndexer
                     } catch (DocumentException de) {
                         log.trace( String.format( "While parsing xml: %s, I caught exception from SAX Parsing : %s", new String( co.getBytes() ), de.getMessage() ) );
                         log.fatal( String.format( "Error reading xml stream: %s", de.getMessage() ) );
-                        throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s, pid=%s", indexingAlias, co.getMimeType(), cc.getDCIdentifier() ), de );
+                        throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s, pid=%s", indexingAlias, co.getMimeType(), cc.getIdentifier() ), de );
                     }
                     /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
                     HashMap< String, String> fieldMap = new HashMap< String, String >( 3 );

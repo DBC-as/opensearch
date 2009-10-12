@@ -26,22 +26,15 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import fedora.client.FedoraClient;
-import fedora.server.access.FedoraAPIA;
-import fedora.server.management.FedoraAPIM;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.net.MalformedURLException;
 
-import javax.xml.rpc.ServiceException;
 
 import mockit.Mock;
 import mockit.Mockit;
 import mockit.MockClass;
+import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
 
-import org.apache.commons.configuration.ConfigurationException;
-import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
 import org.junit.*;
 
@@ -55,34 +48,21 @@ import org.junit.*;
 public class FedoraObjectRelationsTest
 {
     FedoraObjectRelations fedor;
-    
-    static FedoraAPIA mockFea = createMock( FedoraAPIA.class );
-    static FedoraAPIM mockFem = createMock( FedoraAPIM.class );
-    static FedoraClient mockFedoraClient = createMock( FedoraClient.class);
-    
-    
+    IObjectRepository instance;
     @MockClass( realClass = FedoraHandle.class )
     public static class MockFedoraHandle
     {
-        @Mock public void $init()
+        @Mock
+        public MockFedoraHandle()
         {
         }
 
-        @Mock public static FedoraAPIA getAPIA()
+        @Mock
+        public boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype )
         {
-            return mockFea;
-        }
-
-        @Mock public static FedoraAPIM getAPIM()
-        {
-            return mockFem;
-        }
-        @Mock public static FedoraClient getFC()
-        {
-            return mockFedoraClient;
+            return true;
         }
     }
-    
        
     @MockClass( realClass = FedoraObjectRelations.class )
     public static class MockFedoraObjectRelations
@@ -93,8 +73,12 @@ public class FedoraObjectRelationsTest
     /**
      *setup
      */
-    @Before public void SetUp()
+    @Before public void SetUp() throws ObjectRepositoryException
     {
+        setUpMocks( MockFedoraHandle.class );
+
+        instance = new FedoraObjectRepository();
+
     }
 
 
@@ -103,10 +87,7 @@ public class FedoraObjectRelationsTest
      */
     @After public void TearDown()
     {
-        Mockit.tearDownMocks();
-        reset( mockFem );
-        reset( mockFea );
-        reset( mockFedoraClient );
+        tearDownMocks();
 
         fedor = null;
     }
@@ -118,9 +99,10 @@ public class FedoraObjectRelationsTest
     /**
      * Testing the happy path of the constructor, the only path.
      */
-    @Test public void testConstructor()
+    @Test public void testConstructor() throws Exception
     {
-        fedor = new FedoraObjectRelations();
+        IObjectRepository objectRepository = new FedoraObjectRepository();
+        fedor = new FedoraObjectRelations( objectRepository );
     }
 
 
@@ -128,7 +110,7 @@ public class FedoraObjectRelationsTest
      * Testing the addRelation method, happy path
      */
     @Test
-    public void testAddRelation() throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public void testAddRelation() throws Exception
     {
         //setup
         Mockit.setUpMocks( MockFedoraHandle.class);
@@ -139,16 +121,17 @@ public class FedoraObjectRelationsTest
         boolean literal = false;
         String datatype = "unknown";
         //expectations
-        expect( mockFem.addRelationship( pid, isMemberOfCollectionPredicate, targetDCIdentifier, literal, datatype) ).andReturn( true );
+        //expect( mockFem.addRelationship( pid, isMemberOfCollectionPredicate, targetDCIdentifier, literal, datatype) ).andReturn( true );
 
         //replay
-        replay( mockFem );
+        //replay( mockFem );
 
         //do stuff
-        fedor = new FedoraObjectRelations();
+        IObjectRepository objectRepository = new FedoraObjectRepository();
+        fedor = new FedoraObjectRelations( objectRepository );
         assertTrue( fedor.addRelation( pid, predicate, targetDCIdentifier, literal, datatype ) );
         
         //verify
-        verify( mockFem );
+        //verify( mockFem );
     }
 }

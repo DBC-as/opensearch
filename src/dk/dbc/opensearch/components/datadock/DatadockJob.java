@@ -30,23 +30,24 @@ package dk.dbc.opensearch.components.datadock;
 import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
 import dk.dbc.opensearch.components.harvest.IIdentifier; 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
  * The purpose of the datadockJob is to hold the information about a
- * job for the datadock. it provides get and set methods
+ * job for the datadock.
  */
 public class DatadockJob
 {    
     private Logger log = Logger.getLogger( DatadockJob.class );
  
-    //    private URI uri;
     private String submitter;
     private String format;
-    private String PID;
+    
     private IIdentifier identifier;
     private Document referenceData;
-
 
     /**
      * Constructor that initializes the DatadockJob
@@ -56,14 +57,12 @@ public class DatadockJob
      * @param referenceData, the data concerning the job
      */
 
-    public DatadockJob( String submitter, String format, IIdentifier identifier, Document referenceData )
+    public DatadockJob( IIdentifier identifier, Document referenceData )
     {
-        this.submitter = submitter;
-        this.format = format;
         this.identifier = identifier;
         this.referenceData = referenceData;
 
-        log.debug( String.format( "Constructor submitter= %s format= %s indentifier = %s", submitter, format, identifier ) );
+        initValuesFromReferenceData();
     }    
     
     /**
@@ -85,84 +84,46 @@ public class DatadockJob
         return format;
     }
 
-    
-    /**
-     * Gets the PID from the job
-     * @return The PID of the job
-     */
-    public String getPID()
-    {
-        return PID;
-    }
-    
+
     /**
      * Gets the identifier from the job
      * @returns the identifier of the job
      */
-
     public IIdentifier getIdentifier()
     {
         return identifier;
     }
 
     /**
-     * gets the reference data (typically metadata) from the job
+     * gets the reference data (typically metadata) from the job. When we start
+     * using JavaScript for business logic, this is to be used instead of the
+     * field accessors
      */
-    public Document getReferenceData()
-    {
-        return referenceData;
-    }
-    
-    /**
-     * Sets the path
-     * @param The path 
-     */
-//     public void setUri( URI uri )
-//     {
-//         log.debug( String.format( "setUri( uri='%s' ) called", uri.getRawPath() ) ); 
-//            this.uri = uri;
-//     }
-    
-    
-    /**
-     * Sets the submitter
-     * @param The submitter
-     */
-    public void setSubmitter( String submitter )
-    {
-        log.debug( String.format( "setSubmitter( submitter='%s' ) called", submitter ) ); 
-        this.submitter = submitter;
-    }
+//    public Document getReferenceData()
+//    {
+//        return referenceData;
+//    }
 
-    
-    /**
-     * Sets the format
-     * @param The format 
-     */
-    public void setFormat( String format )
+    private void initValuesFromReferenceData()
     {
-        log.debug( String.format( "setFormat( format='%s' ) called", format ) );
-        this.format = format;
-    }
-    
-    
-    /**
-     * Sets the PID
-     * @param The PID 
-     */
-    public void setPID( String PID )
-    {
-        log.debug( String.format( "setPID( PID='%s' ) called", PID ) );
-        this.PID = PID;
-    }
+        if( this.referenceData == null )
+        {
+            String error = "ReferenceData is empty or null. Aborting";
+            log.error( error );
+            throw new IllegalStateException( error );
+        }
 
-    /**
-     * Sets the Identifier
-     * @param the Identifier
-     */
-    public void setIdentifier( IIdentifier identifier )
-    {
-        log.debug( "setIdentifier called" );
-        this.identifier = identifier;
+        NodeList elementSet = this.referenceData.getElementsByTagName( "info" );
+        
+        if( elementSet.getLength() == 0 )
+        {
+            String error = "Failed to get Document Element named 'info' from referencedata";
+            log.error( error );
+            throw new IllegalArgumentException( error );
+        }
+        Node info = elementSet.item( 0 );
+        NamedNodeMap attributes = info.getAttributes();
+        this.format = attributes.getNamedItem( "format" ).getNodeValue();
+        this.submitter = attributes.getNamedItem( "submitter" ).getNodeValue();
     }
 }

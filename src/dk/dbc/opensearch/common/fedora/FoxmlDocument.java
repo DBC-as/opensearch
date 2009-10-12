@@ -395,6 +395,9 @@ public final class FoxmlDocument
     {
         String dsId = addDatastream( datastreamId, State.A, ControlGroup.X, versionable );
         String dsvId = dsId + ".0";
+
+        log.debug( String.format( "addXmlContent: %s, %s, %s, %s", datastreamId, xmlContent, label, dsId ) );
+
         addDatastreamVersion( dsId, dsvId, "text/xml", label, xmlContent.length(), getTimestamp( timenow ) );
         Document contentDoc = builder.parse( new InputSource( new StringReader( xmlContent ) ) );
         Node importedContent = doc.adoptNode( contentDoc.getDocumentElement() );

@@ -21,8 +21,6 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -31,7 +29,6 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -44,10 +41,10 @@ public class DCHarvester implements ICreateCargoContainer
     Logger log = Logger.getLogger( DCHarvester.class );
 
 
-    //private String submitter;
-    //private String format;
-    //private byte[] data;
-    //private Document referenceData;
+    private String submitter;
+    private String format;
+    private byte[] data;
+    private Document referenceData;
 
     private PluginType pluginType = PluginType.HARVEST;
 
@@ -68,12 +65,11 @@ public class DCHarvester implements ICreateCargoContainer
 
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-//         this.referenceData = job.getReferenceData();
-//         this.data = data;
-//         this.submitter = job.getSubmitter();
-//         this.format = job.getFormat();
+        this.data = data;
+        this.submitter = job.getSubmitter();
+        this.format = job.getFormat();
 
-        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), job.getReferenceData() ,data );
+        return createCargoContainerFromFile();
     }
 
 
@@ -82,7 +78,7 @@ public class DCHarvester implements ICreateCargoContainer
      * @return the CargoContainer from
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile( String submitter, String format, Document referenceData, byte[] data ) throws PluginException
+    private CargoContainer createCargoContainerFromFile() throws PluginException
     {
         CargoContainer cargo = new CargoContainer();
 
@@ -101,14 +97,12 @@ public class DCHarvester implements ICreateCargoContainer
         try
         {
             cargo.add( dataStreamName, format, submitter, lang, dataMimetype, IndexingAlias.None, data );
-                }
+        }
         catch (IOException ioe)
         {
-            throw new PluginException( "Could not construct CargoContainer", ioe );
-        }
-        catch(Exception e)
-        {
-            log.error( String.format( "Exception of type: %s cast with message: %s", e.getClass(), e.getMessage() ) );
+            String error = String.format( "Failed to add DublinCore metadata to CargoContainer", ioe.getMessage() );
+            log.error( error );
+            throw new PluginException( error, ioe );
         }
 
         log.debug(String.format("num of objects in cargo: %s", cargo.getCargoObjectCount()) );

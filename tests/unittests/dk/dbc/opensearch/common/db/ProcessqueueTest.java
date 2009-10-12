@@ -21,23 +21,18 @@
 package dk.dbc.opensearch.common.db;
 
 
-import dk.dbc.opensearch.common.db.Processqueue;
 
 import com.mockrunner.jdbc.*;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockResultSet;
 
-import java.lang.ClassNotFoundException;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import java.util.ArrayList;
 import java.util.Vector;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.db.IDBConnection;
-import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 
 
 /** \brief Unittest for Processqueue */

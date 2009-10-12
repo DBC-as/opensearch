@@ -16,15 +16,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 package dk.dbc.opensearch.common.types;
 
-
+import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.MetaData;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import java.util.Set;
 import org.apache.log4j.Logger;
 
 
@@ -33,8 +34,11 @@ import org.apache.log4j.Logger;
  * \brief CargoContainer is a data structure used throughout
  *  OpenSearch for carrying information submitted for
  *  indexing. CargoContainer retains data in a private data structure
- *  consisting of CargoObject objects. All verification and work with
- *  theses objects are done through the CargoObject class.
+ *  consisting of CargoObject objects. Although the CargoContainer
+ *  class is mutable, the CargoObjects themselves are immutable. Any
+ *  updates made on these objects must be made by the client as
+ *  deletes and adds.  All verification and work with the data 
+ *  are done through the CargoObject objects.
  */
 public class CargoContainer
 {
@@ -42,13 +46,8 @@ public class CargoContainer
     Logger log = Logger.getLogger( CargoContainer.class );
     /** The internal representation of the data contained in the CargoContainer*/
     private ArrayList<CargoObject> data;
-    private String dcIdentifier = null;
-    private String dcTitle = null;
-    private String dcCreator = null;
-    private String dcType = null;
-    private String dcSource = null;
-    private String _001_a = null;
-    private String dcRelation = null;
+    private Set<MetaData> metadata;
+    private String identifier;
 
     /**
      * Constructor initializes internal representation of data, i.e.,
@@ -57,7 +56,62 @@ public class CargoContainer
     public CargoContainer()
     {
         data = new ArrayList<CargoObject>();
+        metadata = new HashSet<MetaData>();
         log.trace( String.format( "Constructing new CargoContainer" ) );
+    }
+
+    /**
+     * Initializes a CargoContainer object with an identifier, which would
+     * typically be an object identifier for a digital object that this
+     * CargoContainer will contain
+     * 
+     * @param identifier identifier for this CargoContainer
+     */
+    public CargoContainer( String identifier )
+    {
+        this();
+        this.identifier = identifier;
+    }
+
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
+
+    public void setIdentifier( String identifier )
+    {
+        if( null != this.identifier || ! "".equals( this.identifier ) )
+        {
+            log.warn( String.format( "Overwriting existing identifier '%s' with new one: '%s'", this.identifier, identifier ) );
+        }
+        this.identifier = identifier;
+    }
+
+    /**
+     * Adds a metadata elment conforming to the {@link MetaData} interface. If
+     * this class already contains a {@link MetaData} element with the same
+     * identifier, the supplied metadata will not be added to this 
+     * {@link CargoContainer}
+     * 
+     * @param metadataelement the MetaData element to be added to this CargoContainer
+     */
+    public boolean addMetaData( MetaData metadataelement )
+    {
+        boolean alreadyHasMetadata = false;
+        for( MetaData meta : metadata )
+        {
+            if( meta.getClass() == metadataelement.getClass() )
+            {
+                log.warn( String.format( "CargoContainer already contains the metadata element. Will not add metadata with identifier %s", metadataelement.getIdentifier() ) );
+                alreadyHasMetadata = true;
+            }
+        }
+        if( !alreadyHasMetadata )
+        {
+            metadata.add( metadataelement );
+            return true;
+        }
+        return false;
     }
 
 
@@ -247,7 +301,11 @@ public class CargoContainer
             }
         }
 
-        /** \todo: is it okay to return null? */
+        if( null == ret_co )
+        {
+            log.warn( String.format( "Could not retrieve CargoObject with id %s", id ) );
+            //we'll let the client deal with null.
+        }
         return ret_co;
     }
 
@@ -286,8 +344,7 @@ public class CargoContainer
         if( null == ret_co )
         {
             log.warn( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
-            //we'll let the client deal with null;
-            //throw new NullPointerException( String.format( "Could not retrieve CargoObject with DataStreamType %s", type ) );
+            //we'll let the client deal with null.
         }
 
         return ret_co;
@@ -398,6 +455,11 @@ public class CargoContainer
                 ret_ia = co.getIndexingAlias();
             }
         }
+        if( null == ret_ia )
+        {
+            log.warn( String.format( "Could not retrieve IndexingAlias with id %s", id ) );
+            //we'll let the client deal with null.
+        }
 
         return ret_ia;
     }
@@ -420,178 +482,100 @@ public class CargoContainer
                 ret_ia = co.getIndexingAlias();
             }
         }
+        if( null == ret_ia )
+        {
+            log.warn( String.format( "Could not retrieve IndexingAlias with DataStreamType %s", dataStreamType ) );
+            //we'll let the client deal with null.
+        }
 
         return ret_ia;
     }
 
-
-    /**
-     * \todo: all the following values are implementation specific for
-     * dublin core and marc data, they should not be exposed in a
-     * CargoContainer type. A preferrable way of handling (almost)
-     * arbitrary fields would be a string dictionary restricted to
-     * namespaces. Something along the lines of
-     * 
-     * HashMap<Pair<NamespaceContext, String>, <String>> datafields = new HashMap<Pair<NamespaceContext, String>, <String>>();
-     * ...
-     * cargo.addDatafield( new InputPair<NamespaceContext, String>( new FedoraNamespaceContext().FedoraNamespace.DublinCore, "identifier" ), "data subject id" );
-     */
-
-    public void setDCIdentifier( String dcIdentifier )
+    public boolean hasMetadata( DataStreamType type )
     {
-        this.dcIdentifier = dcIdentifier;
-    }
-
-
-    public String getDCIdentifier() throws IllegalStateException
-    {
-        if( this.dcIdentifier == null || this.dcIdentifier.isEmpty() || this.dcIdentifier.equals( "" ) )
+        for( MetaData meta : metadata )
         {
-            log.warn( String.format( "Identifier for CargoContainer not specified" ) );
-            //if identifier is not given in the constructor, a missing identifier is a valid state.
-            //throw new IllegalStateException(  );
-            }
-
-        return this.dcIdentifier;
-    }
-
-
-    public void setDCTitle( String dcTitle )
-    {
-        //\todo: clean up this code
-        if( this.dcTitle == null )
-        {
-            if( dcTitle.contains( "[Materialevurdering]" ) )
+            if( meta.getType() == type )
             {
-                dcTitle = dcTitle.replaceAll( "[Materialevurdering]", "" );
+                return true;
             }
-
-            this.dcTitle = dcTitle;
         }
+        return false;
     }
 
 
-    public String getDCTitle()
+    public List<MetaData> getMetaData()
     {
-        if( this.dcTitle != null )
+        List<MetaData> retval = new ArrayList<MetaData>();
+        for( MetaData meta : metadata )
         {
-            return this.dcTitle;
+            retval.add( meta );
         }
-        else
+
+        if( retval == null )
         {
-            return "";
+            log.warn( "Could not retrieve MetaData elements from CargoContainer" );
         }
+        return retval;
     }
 
 
-    public void setDCCreator( String dcCreator )
+    public MetaData getMetaData( DataStreamType mdst )
     {
-        if( this.dcCreator == null )
+        MetaData retval = null;
+        for( MetaData meta : metadata )
         {
-            this.dcCreator = dcCreator;
+            if( meta.getType() == mdst )
+            {
+                retval = meta;
+            }
         }
+
+        if( retval == null )
+        {
+            log.warn( String.format( "No metadata with type %s in CargoContainer", mdst.getName() ) );
+        }
+        return retval;
+
     }
 
 
-    public String getDCCreator()
+    public DublinCore getDublinCoreMetaData()
     {
-        if( this.dcCreator != null )
+        DublinCore retval = null;
+        for( MetaData elems : metadata )
         {
-            return this.dcCreator;
+            if( elems.getType() == DataStreamType.DublinCoreData )
+            {
+                retval = (DublinCore) elems;
+            }
         }
-        else
+        if( retval == null )
         {
-            return "";
+            log.warn( "No DublinCore element found in CargoContainer" );
         }
+        return retval;
     }
 
 
-    public void setDCType( String dcType )
-    {
-        if( this.dcType == null )
-        {
-            this.dcType = dcType;
-        }
-    }
-
-
-    public String getDCType()
-    {
-        if( this.dcType != null )
-        {
-            return this.dcType;
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-
-    public void setDCSource( String dcSource )
-    {
-        if( this.dcSource == null )
-        {
-            this.dcSource = dcSource;
-        }
-    }
-
-
-    public String getDCSource()
-    {
-        if( this.dcSource != null )
-        {
-            return this.dcSource;
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-
-    public void set_001_a( String _001_a )
-    {
-        if( this._001_a == null )
-        {
-            this._001_a = _001_a;
-        }
-    }
-
-
-    public String get_001_a()
-    {
-        if( this._001_a != null )
-        {
-            return this._001_a;
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-
-    public void setDCRelation( String dcRelation )
-    {
-        if( this.dcRelation == null )
-        {
-            this.dcRelation = dcRelation;
-        }
-    }
-
-
-    public String getDCRelation()
-    {
-        if( this.dcRelation != null )
-        {
-            return this.dcRelation;
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-
+//    public void set_001_a( String _001_a )
+//    {
+//        if( this._001_a == null )
+//        {
+//            this._001_a = _001_a;
+//        }
+//    }
+//
+//
+//    public String get_001_a()
+//    {
+//        if( this._001_a != null )
+//        {
+//            return this._001_a;
+//        }
+//        else
+//        {
+//            return "";
+//        }
+//    }
 }

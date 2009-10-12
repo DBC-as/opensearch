@@ -27,9 +27,8 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.statistics.Estimate;
@@ -61,8 +60,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import static org.easymock.classextension.EasyMock.*;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.xml.sax.SAXException;
@@ -88,10 +85,10 @@ public class DatadockThreadTest
     DatadockJob mockDatadockJob;
     Processqueue mockProcessqueue;
     IHarvest mockHarvester;
-    FedoraAdministration mockFedoraAdministration;
     IIdentifier mockIdentifier;
     CargoObject mockCargoObject;
-    PluginResolver mockPluginResolver;
+    IObjectRepository mockObjectRepository = createMock( IObjectRepository.class );
+
     
     @MockClass( realClass = DatadockJobsMap.class )
     public static class MockDDJobsMap
@@ -151,7 +148,6 @@ public class DatadockThreadTest
             return mockCC;
         }
     } 
-
     
     @MockClass( realClass = Store.class )
     public static class MockStore
@@ -170,7 +166,6 @@ public class DatadockThreadTest
             return mockCC;
         }
     } 
-
     
     @MockClass( realClass = OwnerRelation.class )
     public static class MockRelation
@@ -189,7 +184,6 @@ public class DatadockThreadTest
             return mockCC;
         }
     }    
-
         
     @MockClass( realClass = DocbookAnnotate.class )
     public static class MockAnnotate2
@@ -220,9 +214,7 @@ public class DatadockThreadTest
         mockDatadockJob = createMock( DatadockJob.class );
         mockEstimate = createMock( Estimate.class );
         mockProcessqueue = createMock( Processqueue.class );
-        mockFedoraAdministration = createMock( FedoraAdministration.class );
         mockIdentifier = createMock( IIdentifier.class );
-        mockPluginResolver = createMock( PluginResolver.class);
     }
 
 
@@ -235,13 +227,11 @@ public class DatadockThreadTest
         reset( mockDatadockJob );
         reset( mockEstimate );
         reset( mockProcessqueue );
-        reset( mockFedoraAdministration );
         reset( mockCC );
         testArrayList.clear();
         reset( mockHarvester );
         reset( mockIdentifier );
         reset( mockCargoObject );
-        reset( mockPluginResolver );
     }
 
 
@@ -264,19 +254,15 @@ public class DatadockThreadTest
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockFedoraAdministration );
-        replay( mockPluginResolver );
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester );
 
         //verify
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockFedoraAdministration );
-        verify( mockPluginResolver );
     }
 
 
@@ -298,19 +284,15 @@ public class DatadockThreadTest
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockFedoraAdministration );
-        replay( mockPluginResolver );
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester );
 
         //verify
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockFedoraAdministration );
-        verify( mockPluginResolver );
     }
 
 
@@ -320,7 +302,7 @@ public class DatadockThreadTest
      */
 
     @Test @Ignore
-	public void testCall() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+	public void testCall() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException,  IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         //System.out.println( "3");
         /**
@@ -352,10 +334,10 @@ public class DatadockThreadTest
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getContentLength() ).andReturn( 5 );
 
-        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
 
         expect( mockEstimate.getEstimate( null, 5 ) ).andReturn( 1F );
-        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
@@ -368,16 +350,15 @@ public class DatadockThreadTest
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockFedoraAdministration );
         replay( mockCC );
         replay( mockCargoObject );
         replay( mockIdentifier );
-        replay( mockPluginResolver );
+
         /**
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester );
         Float result = ddThread.call();
 
         assertTrue( result == 1f );
@@ -388,16 +369,14 @@ public class DatadockThreadTest
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockFedoraAdministration );
         verify( mockCC );
         verify( mockCargoObject );
         verify( mockIdentifier );
-        verify( mockPluginResolver );
     } 
   
 
     @Test( expected = IllegalStateException.class ) @Ignore
-	public void testCallIllegalState() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+	public void testCallIllegalState() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         //System.out.println( "4");
         /**
@@ -429,16 +408,14 @@ public class DatadockThreadTest
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockFedoraAdministration );
         replay( mockCC );
         replay( mockIdentifier );
-        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester );
         Float result = ddThread.call();
 
         /**
@@ -448,15 +425,13 @@ public class DatadockThreadTest
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockFedoraAdministration );
         verify( mockCC );
         verify( mockIdentifier );
-        verify( mockPluginResolver );
     }   
 
 
     @Test( expected = NullPointerException.class ) @Ignore
-	public void testCallNullCargoContainer() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+	public void testCallNullCargoContainer() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         //System.out.println( "5");
         /**
@@ -483,15 +458,13 @@ public class DatadockThreadTest
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockFedoraAdministration );
         replay( mockCC );
-        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester );
         Float result = ddThread.call();
 
         /**
@@ -500,13 +473,11 @@ public class DatadockThreadTest
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockFedoraAdministration );
         verify( mockCC );
-        verify( mockPluginResolver );
     }
 
     @Test( expected = HarvesterUnknownIdentifierException.class ) @Ignore
-	public void testUnknownIdentifier() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException, HarvesterIOException
+	public void testUnknownIdentifier() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException, HarvesterIOException
     {
         //System.out.println( "unknownidentifiertest" );
         //setup
@@ -527,23 +498,19 @@ public class DatadockThreadTest
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockFedoraAdministration );
         replay( mockCC );
         replay( mockHarvester );
-        replay( mockPluginResolver );
 
         //do stuff
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester );
         Float result = ddThread.call();
 
         //verify
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockFedoraAdministration );
         verify( mockHarvester );
         verify( mockCC );
-        verify( mockPluginResolver );
     }
 
     /**
@@ -553,7 +520,7 @@ public class DatadockThreadTest
      */
 
     @Test @Ignore
-	public void testHarvesterInvalidStatusChangeException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, MarshalException, IllegalAccessException, ValidationException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException, HarvesterIOException
+	public void testHarvesterInvalidStatusChangeException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException, HarvesterIOException
     {
         /**
          *setup
@@ -585,10 +552,10 @@ public class DatadockThreadTest
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getContentLength() ).andReturn( 5 );
 
-        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
 
         expect( mockEstimate.getEstimate( null, 5 ) ).andReturn( estimateval );
-        expect( mockCC.getDCIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
         mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
@@ -601,16 +568,14 @@ public class DatadockThreadTest
         replay( mockDatadockJob );
         replay( mockEstimate );
         replay( mockProcessqueue );
-        replay( mockFedoraAdministration );
         replay( mockCC );
         replay( mockCargoObject );
         replay( mockIdentifier );
-        replay( mockPluginResolver );
 
         /**
          * do stuff
          */
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockFedoraAdministration, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester );
         Float result = ddThread.call();
 
         assertFalse( result == estimateval );
@@ -622,10 +587,8 @@ public class DatadockThreadTest
         verify( mockDatadockJob );
         verify( mockEstimate );
         verify( mockProcessqueue );
-        verify( mockFedoraAdministration );
         verify( mockCC );
         verify( mockCargoObject );
         verify( mockIdentifier );
-        verify( mockPluginResolver );
     }
 }

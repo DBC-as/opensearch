@@ -20,20 +20,9 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.SAXException;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 
@@ -50,18 +39,9 @@ public interface IRepositoryStore extends IPluggable
      * @param submitter
      * @return
      * @throws PluginException
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws MalformedURLException
-     * @throws RemoteException
-     * @throws ConfigurationException
-     * @throws ServiceException
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParseException
-     * @throws ParserConfigurationException
-     * @throws TransformerException
-     * @throws XPathExpressionException
      */
-    CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException;
+    CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException;
+
+    void setObjectRepository( IObjectRepository objectRepository );
+
 }

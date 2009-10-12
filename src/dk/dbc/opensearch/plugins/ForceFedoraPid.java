@@ -27,6 +27,8 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -51,26 +53,26 @@ public class ForceFedoraPid implements IAnnotate
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
 
 
-    @Override
-    public PluginType getPluginType()
+	@Override
+	public PluginType getPluginType()
     {
-	return PluginType.ANNOTATE;
-    }
+		return PluginType.ANNOTATE;
+	}
 
 
-    private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException 
+	private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException
     {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-        
+
         NamespaceContext nsc = new OpensearchNamespaceContext();
-        
+
         if( co == null )
         {
             String error = "Could not retrieve CargoObject with original data from CargoContainer";
             log.error( error );
             throw new PluginException( String.format( error ) );
         }
-        
+
         byte[] b = co.getBytes();
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
@@ -86,7 +88,7 @@ public class ForceFedoraPid implements IAnnotate
         }
 
         InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
-        
+
         // Find title of the docbook document
         String title;
         try
@@ -97,31 +99,31 @@ public class ForceFedoraPid implements IAnnotate
         {
             throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
         }
-        
+
         
         log.trace( String.format("title found [%s]", title) );
-        
+       
         String newID = co.getSubmitter() + ":" + title.substring( 0, title.indexOf( '|' ) );
         if( newID.length() > 64 )
         {
-            log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0,64 ) ) );
-            newID = newID.substring( 0,64 );
+        	log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0,64 ) ) );
+        	newID = newID.substring( 0,64 );
         }
         
         return newID;
-    }
+	}
 
 
-    @Override
-    public CargoContainer getCargoContainer(CargoContainer cargo) throws PluginException
+	@Override
+	public CargoContainer getCargoContainer(CargoContainer cargo) throws PluginException
     {
- 	String s = getDCIdentifierFromOriginal( cargo );
-	if( s != null && s.length() > 3 )
+		String s = getDCIdentifierFromOriginal( cargo );
+		if( s != null && s.length() > 3 )
         {
-            log.info( String.format("Forcing Store ID to %s", s ) );
-	    cargo.setDCIdentifier( s );
-	} 
+			log.info( String.format("Forcing Store ID to %s", s ) );
+            cargo.setIdentifier( s );
+		} 
 
         return cargo;
-    }
+	}
 }

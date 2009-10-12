@@ -32,7 +32,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -50,7 +49,7 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
 
 /**
@@ -64,15 +63,15 @@ public class DatadockPool
     static Logger log = Logger.getLogger( DatadockPool.class );
     
     
-    private Vector< FutureTask<Float> > jobs;
+    private Vector< FutureTask > jobs;
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
     private int shutDownPollTime;
     private int i = 0;
-    private IFedoraAdministration fedoraAdministration;
+//    private IFedoraAdministration fedoraAdministration;
+    private IObjectRepository objectRepository;
     private IHarvest harvester;
-    private PluginResolver pluginResolver;
 
     /**
      * \brief private class that handles RejectedExecutions.
@@ -83,21 +82,16 @@ public class DatadockPool
      * waits until it can put the element on queue, and only throws an
      * exception if the queue is shutdown
      */
-    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler 
-    {
+    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
+
 		@Override
-		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  
-		{
-			if( executor.isShutdown())  
-			{
+		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  {
+			if( executor.isShutdown())  {
 					throw new RejectedExecutionException();
 			}
-			try 
-			{
+			try {
 				executor.getQueue().put(r);
-			} 
-			catch (InterruptedException e) 
-			{		
+			} catch (InterruptedException e) {		
 				e.printStackTrace();
 				throw new RejectedExecutionException();
 			};
@@ -113,7 +107,7 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IObjectRepository fedoraObjectRepository, IHarvest harvester ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
@@ -121,10 +115,9 @@ public class DatadockPool
         this.threadpool = threadpool;
         this.estimate = estimate;
         this.processqueue = processqueue;
-        this.fedoraAdministration = fedoraAdministration;
-        this.pluginResolver = pluginResolver;
+        this.objectRepository = fedoraObjectRepository;
 
-        jobs = new Vector<FutureTask< Float >>();
+        jobs = new Vector<FutureTask>();
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
         
         threadpool.setRejectedExecutionHandler( new BlockingRejectedExecutionHandler() );
@@ -147,7 +140,7 @@ public class DatadockPool
         log.debug( String.format( "submitter='%s', format='%s' )", datadockJob.getSubmitter(), datadockJob.getFormat() ) );
         log.debug( String.format( "counter = %s", ++i  ) );
 
-        FutureTask<Float> future = getTask( datadockJob );
+        FutureTask future = getTask( datadockJob );
         
         if ( future == null )
         {
@@ -160,9 +153,9 @@ public class DatadockPool
     }
 
     
-    public FutureTask<Float> getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public FutureTask getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-    	return new FutureTask<Float>( new DatadockThread( datadockJob, estimate, processqueue, fedoraAdministration, harvester, pluginResolver ) );
+    	return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, objectRepository, harvester ) );
     }
 
 
@@ -175,12 +168,12 @@ public class DatadockPool
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Vector< CompletedTask > checkJobs() throws InterruptedException 
+    public Vector< CompletedTask > checkJobs() throws InterruptedException
     {
         log.debug( "DatadockPool method checkJobs called" );
     
         Vector< CompletedTask > finishedJobs = new Vector< CompletedTask >();
-        for( FutureTask job : jobs )        
+        for( FutureTask job : jobs )
         {
             if( job.isDone() )
             {
@@ -198,14 +191,14 @@ public class DatadockPool
                     log.error( String.format( "DatadockPool checkJobs %s", ee.getMessage() ) );
                     log.error( String.format( "Exception Caught: '%s' Message: '%s'", cause.getClass() , cause.getMessage() ) );
                     StackTraceElement[] trace = cause.getStackTrace();
-                    for( int i = 0; i < trace.length; i++ )
+                    for( int j = 0; j < trace.length; j++ )
                     {
-                    	log.error( "DatadockPool StackTrace element " + i + " " + trace[i].toString() );
+                    	log.error( "DatadockPool StackTrace element " + j + " " + trace[j].toString() );
                     }
                 }
                 
                 log.debug( "DatadockPool adding to finished jobs" );
-                finishedJobs.add( new CompletedTask<Float>( job, f ) );
+                finishedJobs.add( new CompletedTask( job, f ) );
             }
         }
         
@@ -227,7 +220,7 @@ public class DatadockPool
      */
     public void shutdown() throws InterruptedException 
     {
-        log.debug( "shutdown() called" );
+        log.trace( "shutdown() called" );
         
         threadpool.shutdown();
         threadpool.awaitTermination(1, TimeUnit.DAYS);

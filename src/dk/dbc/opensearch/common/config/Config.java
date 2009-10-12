@@ -75,13 +75,13 @@ public class Config
     {
         try 
         {
-            log.trace( String.format( "Creating config XMLConfiguration object from '%s'", cfgURL ) );
+            //log.trace( String.format( "Creating config XMLConfiguration object from '%s'", cfgURL ) );
             config = new XMLConfiguration( cfgURL );
         } 
         catch ( ConfigurationException e ) 
         {
-            log.fatal( "ConfigurationException caught in class Config:" );
-            log.fatal( e.getStackTrace().toString() );
+            /** \todo: it's sort of an anti-exception pattern to log and rethrow. Should we wrap this?*/
+            log.fatal( String.format( "ConfigurationException caught in class Config: %s", e.getMessage() ) );
             throw e;
         }
     }

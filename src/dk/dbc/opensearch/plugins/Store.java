@@ -17,37 +17,21 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * \file
- * \brief
- */
-
 
 package dk.dbc.opensearch.plugins;
 
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
 
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -59,23 +43,24 @@ public class Store implements IRepositoryStore
 
 
     private PluginType pluginType = PluginType.STORE;
+    private IObjectRepository objectRepository;
 
 
-    public CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException, MarshalException, ValidationException, MalformedURLException, RemoteException, ConfigurationException, ServiceException, IOException, SAXException, ParseException, ParserConfigurationException, TransformerException, XPathExpressionException
+    public CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException
     {
-    	log.trace( "Entering storeCargoContainer( CargoContainer, String, String)" );
-    	FedoraAdministration fa = new FedoraAdministration();
-        String submitter = null;
-        if( cargo.hasCargo( DataStreamType.OriginalData ) )
-        {
-            submitter = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
-        }
-        else
-        {
-            submitter = cargo.getDCCreator();
-        }
+    	log.trace( "Entering storeCargoContainer( CargoContainer )" );
 
-        fa.storeCargoContainer( cargo, submitter );
+        String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
+        try
+        {
+            this.objectRepository.storeObject( cargo, logm );
+        }
+        catch( ObjectRepositoryException ex )
+        {
+            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
         
         return cargo;
     }
@@ -84,5 +69,10 @@ public class Store implements IRepositoryStore
     public PluginType getPluginType()
     {
         return pluginType;
+    }
+
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {
+        this.objectRepository = objectRepository;
     }
 }

@@ -19,13 +19,13 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -40,6 +40,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
@@ -187,12 +188,12 @@ public class DocbookAnnotate implements IAnnotate
         }
         catch( NumberFormatException nfe )
         {
-            log.fatal( String.format( "Could not format number of records returned by the webservice" ) );
+            log.error( String.format( "Could not format number of records returned by the webservice" ) );
             throw new PluginException( "Could not format number of records returned by the webservice", nfe );
         }
         catch( XPathExpressionException xpee )
         {
-            log.fatal( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
+            log.error( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
             throw new PluginException( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ), xpee );
         }
 
@@ -211,7 +212,7 @@ public class DocbookAnnotate implements IAnnotate
             }
             catch( IOException ioe )
             {
-                log.fatal( String.format( "Caugth IOException: Could not get result from webservice = %s.", queryURL ) );
+                log.error( String.format( "Caugth IOException: Could not get result from webservice = %s.", queryURL ) );
                 throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe );
             }
             log.debug( String.format( "data: title='%s', serverChose(format)=\"\"\nxml retrieved\n%s", title, xmlString ) );
@@ -224,7 +225,7 @@ public class DocbookAnnotate implements IAnnotate
         }
         catch( UnsupportedEncodingException uee )
         {
-            log.fatal( String.format( "Could not convert string to UTF-8 ByteArrayInputStream" ) );
+            log.error( String.format( "Could not convert string to UTF-8 ByteArrayInputStream" ) );
             throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
         }
         annotateSource = new InputSource( bis );
@@ -239,13 +240,13 @@ public class DocbookAnnotate implements IAnnotate
         }
         catch( NumberFormatException nfe )
         {
-            log.fatal( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
+            log.error( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
             throw new PluginException( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int",
                     xpath_evaluation ), nfe );
         }
         catch( XPathExpressionException xpe )
         {
-            log.fatal( String.format( "Could not evaluate xpath expression to find number of returned records" ) );
+            log.error( String.format( "Could not evaluate xpath expression to find number of returned records" ) );
             throw new PluginException( "Could not evaluate xpath expression to find number of returned records", xpe );
         }
 
@@ -253,18 +254,23 @@ public class DocbookAnnotate implements IAnnotate
 
         if( numOfRec == 1 )
         {
+            log.trace( "Adding annotation to CargoContainer" );
+            String isolatedDCData = isolateDCData( xmlString );
+
+            ByteArrayInputStream bais = new ByteArrayInputStream( isolatedDCData.getBytes() );
+            DublinCore dc;
             try
             {
-                log.trace( "Adding annotation to CargoContainer" );
-                String isolatedDCData = isolateDCData( xmlString );
-                /** \todo: use of deprecated method from CargoContainer */
-                cargo.add( DataStreamType.DublinCoreData, co.getFormat(), co.getSubmitter(), "da", "text/xml", IndexingAlias.None, isolatedDCData.getBytes() );
+                dc = new DublinCore( bais );
             }
-            catch( IOException ioe )
+            catch( XMLStreamException ex )
             {
-                log.fatal( "Could not add DC data to CargoContainer" );
-                throw new PluginException( "Could not add DC data to CargoContainer", ioe );
+                String error = String.format( "Failed to construct DublinCore stream from xml string: %s", ex.getMessage() );
+                log.error( error );
+                throw new PluginException( error );
             }
+
+            cargo.addMetaData( dc );
         }
 
         return cargo;
@@ -294,17 +300,17 @@ public class DocbookAnnotate implements IAnnotate
         }
         catch( ParserConfigurationException pce )
         {
-            log.fatal( String.format( "Caught error while trying to instanciate documentbuilder '%s'", pce ) );
+            log.error( String.format( "Caught error while trying to instanciate documentbuilder '%s'", pce ) );
             throw new PluginException( "Caught error while trying to instanciate documentbuilder", pce );
         }
         catch( SAXException se )
         {
-            log.fatal( String.format( "Could not parse annotation data: '%s'", se ) );
+            log.error( String.format( "Could not parse annotation data: '%s'", se ) );
             throw new PluginException( "Could not parse annotation data ", se );
         }
         catch( IOException ioe )
         {
-            log.fatal( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
+            log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
             throw new PluginException( "Could not cast the bytearrayinputstream to a inputsource", ioe );
         }
 

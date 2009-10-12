@@ -28,10 +28,13 @@ package dk.dbc.opensearch.common.fedora;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -44,7 +47,8 @@ import org.apache.commons.configuration.ConfigurationException;
 public class FedoraAuxiliaryMain
 {
 
-    static FedoraAdministration fa;
+    static IObjectRepository objectRepository;
+    private static FedoraHandle fedoraHandle;
 
 
     Vector< String > types = new Vector< String >();
@@ -55,7 +59,7 @@ public class FedoraAuxiliaryMain
     }
 
 
-    private void run( String arg ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    private void run( String arg ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
        init();
         
@@ -75,9 +79,7 @@ public class FedoraAuxiliaryMain
             }
         }
     }
-
-    
-    public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         String arg = args[0];
         
@@ -86,16 +88,8 @@ public class FedoraAuxiliaryMain
     }
 
 
-    static void deletePids() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void deletePids() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
-        try
-        {
-            fa = new FedoraAdministration();
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
 
         System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
@@ -103,55 +97,37 @@ public class FedoraAuxiliaryMain
     }
 
 
-    static void DeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void DeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
-        int noOfPids = 0;
+        objectRepository = new FedoraObjectRepository();
+        List<String> pids = new ArrayList<String>();
+        List<String> fieldSearchList = Arrays.asList( labels );
         for ( String str : labels )
         {
             for ( int i = 0; i < runsPerLabel; i++ )
             {
-                ArrayList< String > pids = null;
-                try
-                {
-                    pids = fa.findObjectPids( "label", "eq", str );
-                }
-                catch ( RemoteException re )
-                {
-                    re.printStackTrace();
-                }
+                pids = objectRepository.getIdentifiers( str, fieldSearchList, 10000 );
 
-                int pidsSize = pids.size();
-                if ( pidsSize > 0 )
-                {
-                    System.out.println( "testDeleteObjectPids - pids.length: " + pidsSize );
-                }
-                
-                for ( int j = 0; j < pidsSize; j++ )
-                {
-                    testDeleteObject( pids.get( j ) );
-                }
+            }
+            if( pids.size() > 0 )
+            {
+                System.out.println( "testDeleteObjectPids - pids.length: " + pids.size() );
+            }
 
-                noOfPids =+ pidsSize;
+            for( String pid: pids )
+            {
+                testDeleteObject( pid );
             }
         }
 
-        System.out.println( String.format( "No of pids deleted: %s", noOfPids ) );
+        System.out.println( String.format( "No of pids deleted: %s", pids.size() ) );
     }
 
 
-    static void testDeleteObject( String pid ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testDeleteObject( String pid ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
-        try
-        {
-            fa.deleteObject( pid, false );
-        }
-        catch ( RemoteException re )
-        {
-            System.out.println( "printing trace:" );
-            re.printStackTrace();
-            return;
-        }
-
+        objectRepository = new FedoraObjectRepository();
+        objectRepository.deleteObject( pid, "test delete", false );
         System.out.println( String.format( "Object with pid: %s deleted", pid ) );
     }
 }

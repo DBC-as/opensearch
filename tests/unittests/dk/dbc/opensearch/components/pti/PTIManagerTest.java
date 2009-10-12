@@ -22,42 +22,35 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
-import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.components.pti.PTIManager;
-import dk.dbc.opensearch.components.pti.PTIPool;
 
-import java.io.IOException;
-import java.lang.ClassNotFoundException;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.NoSuchElementException;
 import java.util.Vector;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.xml.rpc.ServiceException;
+import org.junit.*;
+import org.compass.core.Compass;
 
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
 
+
+import java.sql.SQLException;
 import org.apache.commons.configuration.ConfigurationException;
-import org.compass.core.Compass;
-import org.junit.*;
+import java.net.MalformedURLException;
+import java.util.concurrent.RejectedExecutionException;
+import java.io.IOException;
+import javax.xml.rpc.ServiceException;
 
 import static org.easymock.classextension.EasyMock.*;
-import static org.junit.Assert.*;
 
 
 /**
@@ -69,7 +62,8 @@ public class PTIManagerTest
     Processqueue mockPQ = createMock( Processqueue.class );
     PTIPool mockPTIPool = createMock( PTIPool.class);
     CompletedTask mockCompletedTask = createMock( CompletedTask.class );
-    FedoraAdministration mockFedoraAdministration = createMock( FedoraAdministration.class );
+
+    IObjectRepository objectRepository = createMock( IObjectRepository.class );
 
     static FutureTask mockFuture = createMock( FutureTask.class );
     static CompletedTask dummyTask = new CompletedTask( mockFuture, new InputPair< Long, Integer >( 1l, 1 ) );
@@ -90,6 +84,11 @@ public class PTIManagerTest
  
     }
 
+//    @MockClass( realClass = FedoraObjectRepository.class )
+//    public static class MockObjectRepository
+//    {
+//
+//    }
 
     ThreadPoolExecutor mockExecutor = createMock( ThreadPoolExecutor.class );
     Estimate mockEstimate = createMock( Estimate.class );
@@ -100,6 +99,11 @@ public class PTIManagerTest
     @MockClass( realClass =  PTIPool.class )
     public static class MockPTIPool
     {
+        @Mock public void $init( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair < String, String >, ArrayList< String > > jobMap ) 
+        {
+        
+        }
+
         @Mock public void submit( String fedoraHandle, Integer queueID ) 
         {
             if( queueID == 1 )
@@ -117,38 +121,21 @@ public class PTIManagerTest
     
     }
 
-    @MockClass( realClass = PTIManager.class )
-    public static class MockPTIManager
-    {
-        @Mock public void update()
-        {
-        }
-    }  
 
-    @MockClass( realClass = PTIManager.class )
-    public static class MockPTIManager2
-    {
-        @Mock public void update()
-        {
-            throw new NullPointerException( "test" );
-        }
-    }
+    // @MockClass( realClass =  .class )
 
 
     /**
      *
      */
     @Before 
-    public void SetUp() 
-    { 
-    }
+    public void SetUp() { }
 
     /**
      *
      */
-    @After 
-    public void TearDown() 
-    {
+    @After public void TearDown() {
+
         Mockit.tearDownMocks();
         reset( mockPQ );
         reset( mockPTIPool );
@@ -158,14 +145,12 @@ public class PTIManagerTest
         reset( mockCompass );
         reset( mockFuture );
         reset( mockExecutor );
-        reset( mockFedoraAdministration );
     }
 
     /**
      * Testing the instantiation of the PTIManager.
      */
-    @Test 
-    public void testConstructor() throws ClassNotFoundException, SQLException, ConfigurationException 
+    @Test public void testConstructor() throws ClassNotFoundException, SQLException, ConfigurationException 
     {
         /**
          * setup
@@ -175,17 +160,20 @@ public class PTIManagerTest
         /**
          * expectations
          */
+
         expect( mockPQ.deActivate() ).andReturn( 0 );
 
         /**
          * replay
          */
+
         replay( mockPQ );
         replay( mockPTIPool );
 
         /**
          * do stuff
          */
+
         ptiManager = new PTIManager( mockPTIPool, mockPQ );
 
         /**
@@ -254,121 +242,7 @@ public class PTIManagerTest
     }
 
     /**
-     * Tests the behaviour of the checkJobs method when the finishedjobs contains a 
+     * Tests the behaviour of the update method when the finishedjobs contains a 
      * CompletedTask with a null value 
      */
-    @Test
-    public void updateGetsNullFromTask() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
-    { 
-        /**
-         * setup
-         */
-        Mockit.setUpMocks( MockPTIManagerConfig.class );
-        Vector< InputPair< String, Integer > > newJobs = new Vector< InputPair< String, Integer > >();
-        newJobs.add( new InputPair< String, Integer >( "test1", 1 ) );
-        newJobs.add( new InputPair< String, Integer >( "test2", 2 ) );
-       
-
-        Vector< CompletedTask<InputPair<Long, Integer>> > finishedJobs =  new Vector< CompletedTask<InputPair<Long, Integer>> >();
-        finishedJobs.add( mockCompletedTask );
-
-        /**
-         * expectations
-         */
-        //constructor
-        expect( mockPQ.deActivate() ).andReturn( 0 );
-        //update method
-        expect( mockPQ.pop( 2 ) ).andReturn( newJobs );
-        //while loop on newJobs
-        mockPTIPool.submit( "test1", 1 );
-        mockPTIPool.submit( "test2", 2 );
-
-        //out of while loop
-        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
-        expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Long, Integer >( null, 1 ) );
-        mockPQ.notIndexed( 1 );
-        
-        /**
-         * replay
-         */
-        
-        replay( mockPQ );
-        replay( mockPTIPool);
-        replay( mockCompletedTask );
-            
-        /**
-         * do stuff
-         */
-
-        ptiManager = new PTIManager( mockPTIPool, mockPQ );
-        ptiManager.update();
-
-        /**
-         * verify
-         */
-        verify( mockPTIPool );
-        verify( mockPQ );
-        verify( mockCompletedTask );
-    }
-
-    @Test
-    public void shutdownTest() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
-    {
-        /**
-         * setup
-         */
-       Mockit.setUpMocks( MockPTIManagerConfig.class ); 
-       Mockit.setUpMocks( MockPTIManager.class );//avoids the update method call
-
-        /**
-         * expectations
-         */
-        //constructor
-        expect( mockPQ.deActivate() ).andReturn( 0 );
-        //shutdown
-        mockPTIPool.shutdown();
-       
-        /**
-         * replay
-         */
-        
-        replay( mockPQ );
-        replay( mockPTIPool);
-       
-        /**
-         * do stuff
-         */
-
-        ptiManager = new PTIManager( mockPTIPool, mockPQ );
-        ptiManager.shutdown();
-
-        /**
-         * verify
-         */
-        verify( mockPTIPool );
-        verify( mockPQ );
-    }
-
-    @Test
-    public void shutdownExceptionTest()throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
-    {
-        //setup 
-        Mockit.setUpMocks( MockPTIManagerConfig.class );
-        Mockit.setUpMocks( MockPTIManager2.class );//avoids the update method call
-        
-        //expectations 
-        expect( mockPQ.deActivate() ).andReturn( 0 );
-        mockPTIPool.shutdown();
-
-        //replay
-        replay( mockPTIPool );
-        replay( mockPQ );
-        //do stuff
-        ptiManager = new PTIManager( mockPTIPool, mockPQ );
-        ptiManager.shutdown();
-        
-        //verify
-        verify( mockPQ );
-        verify( mockPTIPool );
-    }
 }

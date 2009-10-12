@@ -27,19 +27,17 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 import java.util.Vector;
 
-import javax.xml.rpc.ServiceException;
-
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -57,6 +55,7 @@ public class ReviewRelation implements IRelation
     private final String marterialevurderinger = "Materialevurdering:?";
     private final String anmeldelse = "Anmeldelse";
     private final String namespace = "review";
+    private IObjectRepository objectRepository;
 
 
     /**
@@ -64,7 +63,7 @@ public class ReviewRelation implements IRelation
      */
     public ReviewRelation()
     {
-        log.debug( "ReviewRelation constructor called" );
+        log.trace( "ReviewRelation constructor called" );
         //nsc = new OpensearchNamespaceContext();
         
         types = new Vector< String >();
@@ -94,26 +93,21 @@ public class ReviewRelation implements IRelation
      */
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-    	log.debug( "RR -> getCargoContainer() called" );
+    	log.trace( "getCargoContainer() called" );
 
         if ( cargo == null )
         {
             log.error( "ReviewRelation getCargoContainer cargo is null" );
-            throw new PluginException( new NullPointerException( "ReviewRelation getCargoContainer throws NullPointerException" ) );
-        }
-        else 
-        {
-            log.debug( "ReviewRelation getCargoContainer cargo is not null" );
+            throw new PluginException( "CargoContainer contains no data, aborting" );
         }
 
         boolean ok = false;
-        /** code commented out because...well...I don't know why! Maybe someone could enligthen me?! */
-        /*ok = addReviewRelation( cargo );
+        ok = addReviewRelation( cargo );
 
         if ( ! ok )
         {
-            log.error( String.format( "could not add review relation on pid %s", cargo.getDCIdentifier() ) );
-        }*/
+            log.error( String.format( "could not add review relation on pid %s", cargo.getIdentifier() ) );
+        }
 
         return cargo;
     }
@@ -122,25 +116,33 @@ public class ReviewRelation implements IRelation
     private boolean addReviewRelation( CargoContainer cargo ) throws PluginException
     {
         boolean ok = false;
-        String dcTitle = cargo.getDCTitle();
-        String dcType = cargo.getDCType();
-        String dcCreator = cargo.getDCCreator();
-        String dcSource = cargo.getDCSource();
-        String dcIdentifier = cargo.getDCIdentifier();
+        DublinCore dc = cargo.getDublinCoreMetaData();
+        String dcTitle = dc.getDCValue( DublinCoreElement.ELEMENT_TITLE );
+        String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
+        String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
+        String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
+        String identifier = cargo.getIdentifier();
 
-        /** \todo: Why WAS this code commented out?! Call to this method is commented out above where it is called */
-        log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
+        log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
         
-        log.debug( String.format( "RR dcType: '%s'", dcType ) );
         if ( dcType.equals( marterialevurderinger ) )
         {        	
-        	log.debug( String.format( "MWR entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
+        	log.trace( String.format( "entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
         	
         	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
         	if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
         	{
-        		ok = addRelationship( dcIdentifier, "title", dcTitle, "creator", dcCreator );
-        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, dcIdentifier ) );
+                try
+                {
+                    ok = addRelationship( identifier, "title", dcTitle, "creator", dcCreator );
+                }
+                catch( ObjectRepositoryException ex )
+                {
+                    String error = String.format( "Failed to add Relationship on %s with %s and %s",identifier, dcTitle, dcCreator );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
         	}
         	else
         	{
@@ -152,8 +154,17 @@ public class ReviewRelation implements IRelation
         	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
         	if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
         	{
-        		ok = addRelationship( dcIdentifier, "title", dcTitle, "creator", dcCreator );
-        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, dcIdentifier ) );
+                try
+                {
+                    ok = addRelationship( identifier, "title", dcTitle, "creator", dcCreator );
+                }
+                catch( ObjectRepositoryException ex )
+                {
+                    String error = String.format( "Failed to add Relationship on %s with %s and %s",identifier, dcTitle, dcCreator );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
         	}
         	else
         	{
@@ -162,98 +173,49 @@ public class ReviewRelation implements IRelation
         }
         else if ( dcType.equals( anmeldelse ) )
         {
-        	// match SOURCE: dcRelation on TARGET: dcIdentifier
+        	// match SOURCE: dcRelation on TARGET: identifier
         	if ( ! dcTitle.equals( "" ) )
         	{
-        		ok = addRelationship( dcIdentifier, "source", dcTitle );
-        		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, dcIdentifier ) );
+                try
+                {
+                    ok = addRelationship( identifier, "source", dcTitle );
+                }
+                catch( ObjectRepositoryException ex )
+                {
+                    String error = String.format( "Failed to add Relationship on %s with source -> %s",identifier, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+        		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, identifier ) );
         	}
         	else
         	{
         		log.warn( String.format( "dcCreator '%s' is empty", dcCreator ) ); 
         	}
         }
-        else
-        {
-        	
-        }
         
-        log.debug( String.format( "MWR (pid: '%s') found dcVariables: '%s', '%s', '%s', and '%s'", dcIdentifier, dcTitle, dcType, dcCreator, dcSource ) );
-        log.debug( "Adding relationship succeeded: " + ok );
+        log.debug( String.format( "MWR (pid: '%s') found dcVariables: '%s', '%s', '%s', and '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
+        log.trace( "Adding relationship succeeded: " + ok );
         
         return ok;
     }
     
     
-    private boolean addRelationship( String dcIdentifier, String property_1, String dcVariable_1, String property_2, String dcVariable_2 ) throws PluginException
+    private boolean addRelationship( String dcIdentifier, String property_1, String dcVariable_1, String property_2, String dcVariable_2 ) throws ObjectRepositoryException
     {
-    	FedoraObjectRelations fedor = new FedoraObjectRelations();
-    	boolean ok = false;
-		try 
-		{
-			ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
-		} 
-		catch ( RemoteException re ) 
-		{		
-			throw new PluginException( "RemoteException thrown from FedoraAdministration.addIsMbrOfCollRelationship", re );
-		} 
-		catch ( ConfigurationException ce ) 
-		{	
-			throw new PluginException( "ConfigurationException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ce );
-		} 
-		catch ( MalformedURLException mue ) 
-		{
-			throw new PluginException( "MalformedURLException thrown from FedoraAdministration.addIsMbrOfCollRelationship", mue );
-		} 
-		catch ( NullPointerException npe ) 
-		{
-			throw new PluginException( "NullPointerException thrown from FedoraAdministration.addIsMbrOfCollRelationship", npe );
-		} 
-		catch ( ServiceException se ) 
-		{
-			throw new PluginException( "ServiceException thrown from FedoraAdministration.addIsMbrOfCollRelationship", se );
-		} 
-		catch ( IOException ioe ) 
-		{
-			throw new PluginException( "IOException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ioe );
-		} 
+    	FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
+
+		boolean	ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
 		
 		return ok;
     }
     
     
-    private boolean addRelationship( String dcIdentifier, String property, String dcVariable ) throws PluginException
+    private boolean addRelationship( String dcIdentifier, String property, String dcVariable ) throws ObjectRepositoryException
     {
-    	FedoraObjectRelations fedor = new FedoraObjectRelations();
-    	boolean ok = false;
-		try 
-		{
-			ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property, dcVariable, namespace );
-		} 
-		catch ( RemoteException re ) 
-		{		
-			throw new PluginException( "RemoteException thrown from FedoraAdministration.addIsMbrOfCollRelationship", re );
-		} 
-		catch ( ConfigurationException ce ) 
-		{	
-			throw new PluginException( "ConfigurationException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ce );
-		} 
-		catch ( MalformedURLException mue ) 
-		{
-			throw new PluginException( "MalformedURLException thrown from FedoraAdministration.addIsMbrOfCollRelationship", mue );
-		} 
-		catch ( NullPointerException npe ) 
-		{
-			throw new PluginException( "NullPointerException thrown from FedoraAdministration.addIsMbrOfCollRelationship", npe );
-		} 
-		catch ( ServiceException se ) 
-		{
-			throw new PluginException( "ServiceException thrown from FedoraAdministration.addIsMbrOfCollRelationship", se );
-		} 
-		catch ( IOException ioe ) 
-		{
-			throw new PluginException( "IOException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ioe );
-		}
+    	FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
+        
+        boolean  ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property, dcVariable, namespace );
 		
 		return ok;
     }
@@ -262,6 +224,11 @@ public class ReviewRelation implements IRelation
     public PluginType getPluginType()
     {
         return pluginType;
+    }
+
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {
+        this.objectRepository = objectRepository;
     }
 
 }

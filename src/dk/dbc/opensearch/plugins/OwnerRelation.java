@@ -26,26 +26,21 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
-import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
-import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
+import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.apache.commons.configuration.ConfigurationException;
+import javax.xml.namespace.QName;
 import org.apache.log4j.Logger;
 
 
@@ -62,24 +57,44 @@ public class OwnerRelation implements IRelation
     // Relations
     /** \todo: this is a subject for configuration/javascripting */
     private final String info = "info:fedora/%s";
-    private final String free = String.format( info, "free" );
-    private final String materialevurderinger = String.format( info, "materialevurderinger" );
-    private final String forfatterweb = String.format( info, "forfatterweb" );
-    private final String faktalink = String.format( info, "faktalink" );
-    private final String artikler = String.format( info, "artikler" );
-    private final String aakb_catalog = String.format( info, "aakb_catalog" );
-    private final String aakb_ebrary = String.format( info, "aakb_ebrary" );
-    private final String aakb_ebsco = String.format( info, "aakb_ebsco" );
-    private final String kkb_catalog = String.format( info, "kkb_catalog" );
-    private final String louisiana = String.format( info, "louisiana" );
-    private final String nota = String.format( info, "nota" );
 
+    private final Map<ComparablePair<String,String>, String> ownertable;
     /**
      * Constructor for the OwnerRelation plugin.
      */
     public OwnerRelation()
     {
+        ownertable = new HashMap<ComparablePair<String, String>, String>();
+        ownertable.put( new ComparablePair<String, String>( "dbc", "anmeldelser" ), String.format( info, "free" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "anmeld" ), String.format( info, "free" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "materialevurderinger" ), String.format( info, "materialevurderinger" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "matvurd" ), String.format( info, "materialevurderinger" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "forfatterweb" ), String.format( info, "forfatterweb" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "forfatterw" ), String.format( info, "forfatterweb" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "faktalink" ), String.format( info, "faktalink" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "dr_forfatteratlas" ), String.format( info, "free" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "dr_atlas" ), String.format( info, "free" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "dr_bonanza" ), String.format( info, "free" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "louisiana" ), String.format( info, "louisiana" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "artikler" ), String.format( info, "artikler" ) );
+        ownertable.put( new ComparablePair<String, String>( "dbc", "dsd" ), String.format( info, "free" ) );
 
+        ownertable.put( new ComparablePair<String, String>( "kkb", "danmarcxchange" ), String.format( info, "kkb_catalog" ) );
+        ownertable.put( new ComparablePair<String, String>( "kkb", "katalog" ), String.format( info, "kkb_catalog" ) );
+        ownertable.put( new ComparablePair<String, String>( "710100", "danmarcxchange" ), String.format( info, "kkb_catalog" ) );
+        ownertable.put( new ComparablePair<String, String>( "710100", "katalog" ), String.format( info, "kkb_catalog" ) );
+
+        ownertable.put( new ComparablePair<String, String>( "aakb", "danmarcxchange" ), String.format( info, "aakb_catalog" ) );
+        ownertable.put( new ComparablePair<String, String>( "aakb", "katalog" ), String.format( info, "aakb_catalog" ) );
+        ownertable.put( new ComparablePair<String, String>( "aakb", "ebrary" ), String.format( info, "aakb_ebrary" ) );
+        ownertable.put( new ComparablePair<String, String>( "aakb", "ebsco" ), String.format( info, "aakb_ebsco" ) );
+        ownertable.put( new ComparablePair<String, String>( "775100", "danmarcxchange" ), String.format( info, "aakb_catalog" ) );
+        ownertable.put( new ComparablePair<String, String>( "775100", "katalog" ), String.format( info, "aakb_catalog" ) );
+        ownertable.put( new ComparablePair<String, String>( "775100", "ebrary" ), String.format( info, "aakb_ebrary" ) );
+        ownertable.put( new ComparablePair<String, String>( "775100", "ebsco" ), String.format( info, "aakb_ebsco" ) );
+
+        ownertable.put( new ComparablePair<String, String>( "nota", "" ), String.format( info, "" ) );
+        ownertable.put( new ComparablePair<String, String>( "874310", "" ), String.format( info, "" ) );
         log.trace( "OwnerRelation constructor called" );
     }
 
@@ -119,7 +134,7 @@ public class OwnerRelation implements IRelation
             throw new PluginException( new IllegalStateException( "CargoContainer has no OriginalData to contruct relations from, aborting" ) );
         }
 
-        String pid = cargo.getDCIdentifier();
+        String pid = cargo.getIdentifier();
 
         try
         {
@@ -131,168 +146,35 @@ public class OwnerRelation implements IRelation
             throw new PluginException( String.format( "Could not create RELS-EXT stream for cargo with pid='%s'", pid ), pce );
         }
 
-        log.debug( String.format( "owner relation with values: submitter: '%s'; format: '%s'", submitter, format ) );
-        if( submitter.equals( "dbc" ) )
-        {
-            log.trace( String.format( "submitter 'dbc' format: %s", format ) );
-            if( format.equals( "anmeldelser" ) || format.equals( "anmeld" ) )
-            {
-                addRelationship( pid, free );
-            }
-            else if( format.equals( "materialevurderinger" ) || format.equals( "matvurd" ) )
-            {
-                addRelationship( pid, materialevurderinger );
-            }
-            else if( format.equals( "forfatterweb" ) || format.equals( "forfatterw" ) )
-            {
-                addRelationship( pid, forfatterweb );
-            }
-            else if( format.equals( "faktalink" ) )
-            {
-                addRelationship( pid, faktalink );
-            }
-            else if( format.equals( "dr_forfatteratlas" ) || format.equals( "dr_atlas" ) )
-            {
-                addRelationship( pid, free );
-            }
-            else if( format.equals( "dr_bonanza" ) )
-            {
-                addRelationship( pid, free );
-            }
-            else if( format.equals( "louisiana" ) )
-            {
-                addRelationship( pid, louisiana );
-            }
-            else if( format.equals( "artikler" ) )
-            {
-                addRelationship( pid, artikler );
-            }
-            else if( format.equals( "dsd" ) )
-            {
-                addRelationship( pid, free );
-            }
-            else
-            {
-                log.error( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
-                throw new PluginException( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
-            }
-        }
-        else if( submitter.equals( "kkb" ) || submitter.equals( "710100" ) )
-        {
-            log.debug( String.format( "submitter 'kkb' or '710100' format: %s", format ) );
-            if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
-            {
-                addRelationship( pid, kkb_catalog );
-            }
-            else
-            {
-                log.error( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
-                throw new PluginException( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
-            }
-        }
-        else if( submitter.equals( "aakb" ) || submitter.equals( "775100" ) )
-        {
-            log.debug( String.format( "submitter 'aakb' or '775100' format: %s", format ) );
-            if( format.equals( "danmarcxchange" ) || format.equals( "katalog" ) )
-            {
-                addRelationship( pid, aakb_catalog );
-            }
-            else if( format.equals( "ebrary" ) )
-            {
-                addRelationship( pid, aakb_ebrary );
-            }
-            else if( format.equals( "ebsco" ) )
-            {
-                addRelationship( pid, aakb_ebsco );
-            }
-            else
-            {
-                log.error( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
-                throw new PluginException( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
-            }
-        }
-        else if( submitter.equals( "nota" ) || submitter.equals( "874310" ) )
-        {
-            addRelationship( pid, nota );
-        }
-        else
+        String owner = ownertable.get( new ComparablePair<String, String>( submitter, format ) );
+        if( owner == null )
         {
             log.error( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
             throw new PluginException( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
         }
 
-        log.trace( "getCargoContainer() returning" );
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
-            rel.serialize( baos );
-        }
-        catch( TransformerConfigurationException tcex )
-        {
-            log.error( String.format( "Could not construct byte[] from rels ext document on pid '%s'", pid ) );
-            throw new PluginException( String.format( "Could not construct byte[] from rels ext document on pid '%s'", pid ), tcex );
-        }
-        catch( TransformerException tex )
-        {
-            log.error( String.format( "Could not construct byte[] from rels ext document on pid '%s'", pid ) );
-            throw new PluginException( String.format( "Could not construct byte[] from rels ext document on pid '%s'", pid ), tex );
-        }
-        try
-        {
-            cargo.add( DataStreamType.RelsExt, "rels-ext", "dbc", "en", "application/rdf+xml", IndexingAlias.None, baos.toByteArray() );
-        }
-        catch( IOException ioex )
-        {
-            log.error( String.format( "Could not add RELS-EXT stream to CargoContainer (pid '%s')", pid ) );
-            throw new PluginException( String.format( "Could not add RELS-EXT stream to CargoContainer (pid '%s')", pid ), ioex );
-        }
+        //target xml is <isMemberOfCollection rdf:resource="info:fedora/{owner}" xmlns="info:fedora/fedora-system:def/relations-external#"/>
+        QName predicate = new QName( FedoraNamespaceContext.FedoraNamespace.FEDORARELSEXT.getURI(),
+                "isMemberOfCollection",
+                FedoraNamespaceContext.FedoraNamespace.FEDORARELSEXT.getPrefix() );
+        QName object = new QName( "",
+                owner,
+                FedoraNamespaceContext.FedoraNamespace.FEDORA.getURI() );
+        
+        rel.addRelationship( predicate, object);
+       
+        cargo.addMetaData( rel );
         return cargo;
     }
-
-
-    private boolean addRelationship( String pid, String namespace ) throws PluginException
-    {
-        FedoraObjectRelations fedor = new FedoraObjectRelations();
-        boolean ok = false;
-        try
-        {
-            log.debug( String.format( "OR addRelationship with pid: '%s'; namespace: '%s'", pid, namespace ) );
-            ok = fedor.addIsMbrOfCollRelationship( pid, namespace );
-        }
-        catch( RemoteException re )
-        {
-            throw new PluginException( "RemoteException thrown from FedoraAdministration.addIsMbrOfCollRelationship", re );
-        }
-        catch( ConfigurationException ce )
-        {
-            throw new PluginException( "ConfigurationException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ce );
-        }
-        catch( MalformedURLException mue )
-        {
-            throw new PluginException( "MalformedURLException thrown from FedoraAdministration.addIsMbrOfCollRelationship", mue );
-        }
-        catch( NullPointerException npe )
-        {
-            throw new PluginException( "NullPointerException thrown from FedoraAdministration.addIsMbrOfCollRelationship", npe );
-        }
-        catch( ServiceException se )
-        {
-            throw new PluginException( "ServiceException thrown from FedoraAdministration.addIsMbrOfCollRelationship", se );
-        }
-        catch( IOException ioe )
-        {
-            throw new PluginException( "IOException thrown from FedoraAdministration.addIsMbrOfCollRelationship", ioe );
-        }
-
-        log.trace( String.format( "Added relation: '%s' (pid: '%s')", ok, pid ) );
-        return ok;
-    }
-
 
     @Override
     public PluginType getPluginType()
     {
         return pluginType;
+    }
+
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {
+        //just do nothing. We need no objectRepository here anymore.
     }
 }

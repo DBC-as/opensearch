@@ -37,7 +37,11 @@ import org.w3c.dom.Document;
 
 import fedora.common.xml.format.FedoraRELSExt1_0Format;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
+import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoMimeType;
+
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import fedora.utilities.XmlTransformUtility;
 import java.io.OutputStream;
 import java.util.Set;
@@ -49,7 +53,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.OutputKeys;
-
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 
@@ -59,15 +63,17 @@ import org.w3c.dom.Element;
  * instances could accidentally make duplicate relations on the same rels-ext
  * stream.
  */
-public class FedoraRelsExt
+public class FedoraRelsExt implements MetaData
 {
-
+    private String id;
     private DocumentBuilder builder;
     private Document doc;
     private Element relsext;
     private Element fedoraObject;
     private Set<Long> relations;
+    public static final DataStreamType type = DataStreamType.RelsExtData;
 
+    private static Logger log = Logger.getLogger( FedoraRelsExt.class );
 
     /**
      * Constructs an empty RELS-EXT document. {@code id} is used as
@@ -80,6 +86,7 @@ public class FedoraRelsExt
      */
     public FedoraRelsExt( String id ) throws ParserConfigurationException
     {
+        this.id = id;
         createEmptyRelsExt( id );
         relations = new HashSet<Long>();
     }
@@ -145,17 +152,36 @@ public class FedoraRelsExt
      * @throws TransformerConfigurationException
      * @throws TransformerException
      */
-    public void serialize( OutputStream out ) throws TransformerConfigurationException, TransformerException
+    @Override
+    public void serialize( OutputStream out ) throws OpenSearchTransformException
     {
         Transformer idTransform;
         TransformerFactory xformFactory = XmlTransformUtility.getTransformerFactory();
-        idTransform = xformFactory.newTransformer();
+        try
+        {
+            idTransform = xformFactory.newTransformer();
+        }
+        catch( TransformerConfigurationException ex )
+        {
+            String error = String.format( "Could not create transformerfactory to serialize RelsExt" );
+            log.error( error );
+            throw new OpenSearchTransformException( error, ex );
+        }
         idTransform.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
         idTransform.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
 
         Source input = new DOMSource( doc );
         Result output = new StreamResult( out );
-        idTransform.transform( input, output );
+        try
+        {
+            idTransform.transform( input, output );
+        }
+        catch( TransformerException ex )
+        {
+            String error = String.format( "Could not serialize RelsExt document to Stream" );
+            log.error( error );
+            throw new OpenSearchTransformException( error, ex );
+        }
     }
 
 
@@ -195,6 +221,17 @@ public class FedoraRelsExt
         fedoraObject = doc.createElement( "rdf:Description" );
         fedoraObject.setAttribute( "rdf:about", id );
         rdf.appendChild( fedoraObject );
+    }
+
+    @Override
+    public String getIdentifier()
+    {
+        return this.id;
+    }
+
+    public DataStreamType getType()
+    {
+        return type;
     }
 
 

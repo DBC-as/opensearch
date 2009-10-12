@@ -20,34 +20,31 @@
 
 package dk.dbc.opensearch.common.fedora;
 
+import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.axis.utils.XMLUtils;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 
@@ -58,6 +55,7 @@ import org.xml.sax.SAXException;
 public class FedoraUtils
 {
     static Logger log = Logger.getLogger( FedoraUtils.class );
+    private static FedoraHandle fedoraHandle;
 
 
     /**
@@ -70,10 +68,76 @@ public class FedoraUtils
      * @throws TransformerConfigurationException
      * @throws TransformerException
      */
-    public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws ParserConfigurationException, TransformerConfigurationException, TransformerException, ServiceException, ConfigurationException, IOException, MalformedURLException, UnsupportedEncodingException, XPathExpressionException, SAXException
+    public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws OpenSearchTransformException, ObjectRepositoryException// ParserConfigurationException, TransformerConfigurationException, TransformerException, ServiceException, ConfigurationException, IOException, MalformedURLException, UnsupportedEncodingException, XPathExpressionException, SAXException, ObjectRepositoryException, OpenSearchTransformException
     {
-        //\todo: we always create active objects (until told otherwise)
-        FoxmlDocument foxml = new FoxmlDocument( FoxmlDocument.State.A, cargo.getDCIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
+        List<String> pid = new ArrayList<String>(1);
+        fedoraHandle = new FedoraHandle();
+        if( null == cargo.getIdentifier() || cargo.getIdentifier().equals( "" ) )
+        {
+            log.warn( "Could not find identifier for CargoContainer" );
+            log.info( "Obtaining new pid for CargoContainer" );
+
+            String prefix = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
+            try
+            {
+
+                pid = Arrays.asList( fedoraHandle.getNextPID( 1,  prefix ) );
+            }
+            catch( ServiceException ex )
+            {
+                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+            }
+            catch( ConfigurationException ex )
+            {
+                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+            }
+            catch( MalformedURLException ex )
+            {
+                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+            }
+            catch( IOException ex )
+            {
+                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+            }
+            catch( IllegalStateException ex )
+            {
+                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+            }
+            if( null == pid && 1 != pid.size() )
+            {
+                log.warn( String.format( "pid is empty for namespace '%s', but no exception was caught.", prefix ) );
+                return null;
+            }
+
+            cargo.setIdentifier( pid.get( 0 ) );
+        }
+        else
+        {
+            pid.add( cargo.getIdentifier() );
+        }
+        
+        //\note: we always create inactive objects
+        FoxmlDocument foxml;
+        try
+        {
+            foxml = new FoxmlDocument( FoxmlDocument.State.I, pid.get( 0 ), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
+        }
+        catch( ParserConfigurationException ex )
+        {
+                String error  = String.format( "Failed to construct fedora xml with pid %s", pid.get( 0 ) );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+        }
 
         /**
          * \todo:
@@ -84,29 +148,116 @@ public class FedoraUtils
          * then constructDataStream must be called with true, false, true, that is, Versionable = true, External = false, and
          *      InlineData = true.
          */
+        // get normal data from cargocontainer
         int cargo_count = cargo.getCargoObjectCount();
         List< ? extends Pair< Integer, String > > ordering = getOrderedMapping( cargo );
         for( int i = 0; i < cargo_count; i++ )
         {
             CargoObject c = cargo.getCargoObjects().get( i );
-            if( c.getDataStreamType() == DataStreamType.DublinCoreData )
-            {
-                foxml.addDublinCoreDatastream( new String( c.getBytes() ), c.getTimestamp() );
-            }
-            else
+            try
             {
                 foxml.addBinaryContent( ordering.get( i ).getSecond(), c.getBytes(), c.getFormat(), c.getMimeType(), c.getTimestamp() );
             }
+            catch( IOException ex )
+            {
+                String error  = String.format( "Failed to add binary data to foxml from cargoobject %s", c.getDataStreamType().getName() );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+            }
+            catch( XPathExpressionException ex )
+            {
+                String error  = String.format( "Failed to add binary data to foxml from cargoobject %s", c.getDataStreamType().getName() );
+                log.error( error );
+                throw new ObjectRepositoryException( error, ex );
+            }
+        }
+        
+        //get metadata from cargocontainer
+        for( MetaData meta: cargo.getMetaData() )
+        {
+            ByteArrayOutputStream baos = baos = new ByteArrayOutputStream();
+            meta.serialize( baos );
+            if( meta.getClass() == DublinCore.class )
+            {
+                try
+                {
+                    log.trace( "DublinCore output from serialization: "+new String( baos.toByteArray() ) );
+                    foxml.addDublinCoreDatastream( new String( baos.toByteArray() ), System.currentTimeMillis() );
+                }
+                catch( XPathExpressionException ex )
+                {
+                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    log.error( error );
+                    throw new ObjectRepositoryException( error, ex );
+                }
+                catch( SAXException ex )
+                {
+                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    log.error( error );
+                    throw new ObjectRepositoryException( error, ex );
+                }
+                catch( IOException ex )
+                {
+                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    log.error( error );
+                    throw new ObjectRepositoryException( error, ex );
+                }
+            }
+            else
+            {
+                try{
+                    foxml.addXmlContent( meta.getIdentifier(), new String( baos.toByteArray() ), String.format( "Metadata: %s", meta.getIdentifier() ), System.currentTimeMillis(), true );
+                }
+                catch( XPathExpressionException ex )
+                {
+                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    log.error( error );
+                    throw new ObjectRepositoryException( error, ex );
+                }
+                catch( SAXException ex )
+                {
+                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    log.error( error );
+                    throw new ObjectRepositoryException( error, ex );
+                }
+                catch( IOException ex )
+                {
+                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    log.error( error );
+                    throw new ObjectRepositoryException( error, ex );
+                }
+            }
         }
 
-        Element admstream = FedoraUtils.constructAdminStream( cargo );
-        String administrationStream = XMLUtils.ElementToString( admstream );
-
-        foxml.addXmlContent( DataStreamType.AdminData.getName(), administrationStream, "administration stream", System.currentTimeMillis(), true );
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
-        foxml.serialize( baos, null );
+        try
+        {
+            foxml.serialize( baos, null );
+        }
+        catch( TransformerConfigurationException ex )
+        {
+            String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
+            log.error( error );
+            throw new OpenSearchTransformException( error, ex );
+        }
+        catch( TransformerException ex )
+        {
+            String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
+            log.error( error );
+            throw new OpenSearchTransformException( error, ex );
+        }
+        catch( SAXException ex )
+        {
+            String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
+            log.error( error );
+            throw new OpenSearchTransformException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
+            log.error( error );
+            throw new OpenSearchTransformException( error, ex );
+        }
 
         return baos.toByteArray();
     }
@@ -120,44 +271,43 @@ public class FedoraUtils
      * @return An element representing the adminstream xml
      * @throws ParserConfigurationException
      */
-    private static Element constructAdminStream( CargoContainer cargo ) throws ParserConfigurationException
-    {
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-
-        Document admStream = builder.newDocument();
-        Element root = admStream.createElement( "admin-stream" );
-
-        Element indexingaliasElem = admStream.createElement( "indexingalias" );
-        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-        root.appendChild( (Node) indexingaliasElem );
-
-        Node streams = admStream.createElement( "streams" );
-
-        int counter = cargo.getCargoObjectCount();
-        List<? extends Pair<Integer, String>> lst2 = getOrderedMapping( cargo );
-        for( int i = 0; i < counter; i++ )
-        {
-            CargoObject c = cargo.getCargoObjects().get( i );
-
-            Element stream = admStream.createElement( "stream" );
-
-            stream.setAttribute( "id", lst2.get( i ).getSecond() );
-            stream.setAttribute( "lang", c.getLang() );
-            stream.setAttribute( "format", c.getFormat() );
-            stream.setAttribute( "mimetype", c.getMimeType() );
-            stream.setAttribute( "submitter", c.getSubmitter() );
-            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-            stream.setAttribute( "streamNameType", c.getDataStreamType().getName() );
-            streams.appendChild( (Node) stream );
-        }
-
-        root.appendChild( streams );
-
-        return root;
-    }
-
+//    private static Element constructAdminStream( CargoContainer cargo ) throws ParserConfigurationException
+//    {
+//
+//        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder builder = factory.newDocumentBuilder();
+//
+//        Document admStream = builder.newDocument();
+//        Element root = admStream.createElement( "admin-stream" );
+//
+//        Element indexingaliasElem = admStream.createElement( "indexingalias" );
+//        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
+//        root.appendChild( (Node) indexingaliasElem );
+//
+//        Node streams = admStream.createElement( "streams" );
+//
+//        int counter = cargo.getCargoObjectCount();
+//        List<? extends Pair<Integer, String>> lst2 = getOrderedMapping( cargo );
+//        for( int i = 0; i < counter; i++ )
+//        {
+//            CargoObject c = cargo.getCargoObjects().get( i );
+//
+//            Element stream = admStream.createElement( "stream" );
+//
+//            stream.setAttribute( "id", lst2.get( i ).getSecond() );
+//            stream.setAttribute( "lang", c.getLang() );
+//            stream.setAttribute( "format", c.getFormat() );
+//            stream.setAttribute( "mimetype", c.getMimeType() );
+//            stream.setAttribute( "submitter", c.getSubmitter() );
+//            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
+//            stream.setAttribute( "streamNameType", c.getDataStreamType().getName() );
+//            streams.appendChild( (Node) stream );
+//        }
+//
+//        root.appendChild( streams );
+//
+//        return root;
+//    }
 
     private static List<? extends Pair<Integer, String>> getOrderedMapping( CargoContainer cargo )
     {

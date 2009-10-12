@@ -33,6 +33,10 @@ import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import fedora.common.PID;
+import fedora.server.types.gen.FieldSearchQuery;
+import fedora.server.types.gen.ComparisonOperator;
+import fedora.server.types.gen.Condition;
+import fedora.server.types.gen.FieldSearchResult;
 import fedora.utilities.Foxml11Document.Property;
 import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.RelationshipTuple;
@@ -52,6 +56,7 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 
 
@@ -60,22 +65,23 @@ import org.apache.commons.configuration.ConfigurationException;
  */
 public class AdministrationFunc
 {
-    private static FedoraAdministration fa;
     private static FedoraObjectRelations fedor;
-    
+    private static FedoraHandle fedoraHandle;
+    private static IObjectRepository objectRepository;
 
-    public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         runTests();
     }
 
 
-    static void runTests() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void runTests() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
+
         try
         {
-            fa = new FedoraAdministration();
-            fedor = new FedoraObjectRelations();
+            objectRepository = new FedoraObjectRepository();
+            fedor = new FedoraObjectRelations( objectRepository );
         }
         catch ( Exception e )
         {
@@ -127,7 +133,7 @@ public class AdministrationFunc
     }
 
 
-    static void testGetSubjectRelations()
+    static void testGetSubjectRelations() throws ObjectRepositoryException
     {
         String predicate = "title"; // "source";
         String object = "Harry Potter and the Order of the Phoenix";
@@ -135,7 +141,7 @@ public class AdministrationFunc
         String object_2 = "J. K. Rowling s";
         String relation = "isMemberOf";
 
-        FedoraObjectRelations fedor = new FedoraObjectRelations();
+        fedor = new FedoraObjectRelations( objectRepository );
         try
         {
             String workRelation = fedor.getSubjectRelation( "source", object, relation );
@@ -166,8 +172,9 @@ public class AdministrationFunc
         }
     }
 
-    static void testFoxml11Document()
+    static void testFoxml11Document() throws ObjectRepositoryException
     {
+        fedoraHandle = new FedoraHandle();
         try
         {
             String pid = "admin:func";
@@ -175,7 +182,8 @@ public class AdministrationFunc
             //String contentLocation = "copy:///data1/harvest-test/kkb/danmarcxchange/pot1.xml";
             byte[] b = getFoxmlObject ( pid, contentLocation );
             System.out.println( String.format( "byte[]: %s", new String( b ) ) );
-            String retPid = FedoraHandle.getInstance().getAPIM().ingest( b, "info:fedora/fedora-system:FOXML-1.1", null );
+
+            String retPid = fedoraHandle.ingest( b, "info:fedora/fedora-system:FOXML-1.1", null );
             System.out.println( String.format( "return pid: %s", retPid ) );
         }
         catch ( RemoteException re )
@@ -244,35 +252,37 @@ public class AdministrationFunc
     }
 
 
-    static void testFindObjectPids() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testFindObjectPids() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException, ObjectRepositoryException
     {
-        ArrayList< String > pids = null;
-        try
-        {
-            pids = fa.findObjectPids( "label", "eq", "testObject for testing FedoraAdministration" );
-        }
-        catch ( RemoteException re )
-        {
-            re.printStackTrace();
-        }
+        fedoraHandle = new FedoraHandle();
+        objectRepository = new FedoraObjectRepository();
+        List<String> pids = new ArrayList<String>();
+        pids = objectRepository.getIdentifiers( "label", 10000 );
 
-        for ( int i = 0; i < pids.size(); i++ )
+        for( String pid: pids )
         {
-            System.out.println( pids.get( i ) );
+            System.out.println( pid );
         }
     }
 
 
-    static void testFindObjectRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testFindObjectRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         ObjectFields[] objs = null;
+        fedoraHandle = new FedoraHandle();
         try
         {
             String[] resultFields =
             {
                 "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights"
             };
-            objs = fa.findObjectFields( resultFields, "pid", "harry:1" );
+
+            Condition[] cond = { new Condition( "pid", ComparisonOperator.has, "harry:1" ) };
+            FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+            FieldSearchResult fsr = new FieldSearchResult();
+
+            fsr = fedoraHandle.findObjects( resultFields, new NonNegativeInteger( "10000"), fsq);
+            objs = fsr.getResultList();
         }
         catch ( RemoteException re )
         {
@@ -291,18 +301,11 @@ public class AdministrationFunc
     }
 
 
-    static void testGetRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testGetRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         RelationshipTuple[] subj = null;
-        try
-        {
             //String[] resultFields = { "pid", "label", "state", "ownerId", "cDate", "mDate", "dcmDate", "title", "creator", "subject", "description", "publisher", "contributor", "date", "format", "identifier", "source", "language", "relation", "coverage", "rights" };
             subj = fedor.getRelationships( "kkb:1979", "rel:isMemberOfCollection" );
-        }
-        catch ( RemoteException re )
-        {
-            re.printStackTrace();
-        }
         if ( subj != null )
         {
             for ( int i = 0; i < subj.length; i++ )
@@ -317,37 +320,53 @@ public class AdministrationFunc
     }
 
 
-    static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter", "work" );
         System.out.println( "Everything ok: " + ret );
     }
 
 
-    static void testFindObjectFieldsDouble() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testFindObjectFieldsDouble() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", "title", "Harry Potter og Fønixordenen", "creator", "Joanne K. Rowling", "work" );
         System.out.println( "Everything ok: " + ret );
     }
 
 
-    static void testDeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testDeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
+
         for ( String str : labels )
         {
             for ( int i = 0; i < runsPerLabel; i++ )
             {
-                ArrayList< String > pids = null;
+                
+                ObjectFields[] pids = null;
                 try
                 {
-                    pids = fa.findObjectPids( "label", "eq", str );
+                    String[] resultFields =
+                    {
+                        "pid"
+                    };
+
+                    Condition[] cond =
+                    {
+                        new Condition( "label", ComparisonOperator.eq, str )
+                    };
+                    FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+                    FieldSearchResult fsr = new FieldSearchResult();
+
+                    fsr = fedoraHandle.findObjects( resultFields, new NonNegativeInteger( "10000" ), fsq );
+                    pids = fsr.getResultList();
+
                 }
                 catch ( RemoteException re )
                 {
                     re.printStackTrace();
                 }
 
-                int pidsSize = pids.size();
+                int pidsSize = pids.length;
                 if ( pidsSize > 0 )
                 {
                     System.out.println( "testDeleteObjectPids - pids.length: " + pidsSize );
@@ -355,20 +374,21 @@ public class AdministrationFunc
                 
                 for ( int j = 0; j < pidsSize; j++ )
                 {
-                    testDeleteObject( pids.get( j ) );
+                    testDeleteObject( pids[j].getPid() );
                 }
             }
         }
     }
 
 
-    static void testDeleteObject( String pid ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    static void testDeleteObject( String pid ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
+        objectRepository = new FedoraObjectRepository();
         try
         {
-            fa.deleteObject( pid, false );
+            objectRepository.deleteObject( pid, "deleting", false );
         }
-        catch ( RemoteException re )
+        catch ( ObjectRepositoryException re )
         {
             System.out.println( "printing trace:" );
             re.printStackTrace();
@@ -379,13 +399,14 @@ public class AdministrationFunc
     }
 
 
-    static void testRemoveDataStream( String pid )
+    static void testRemoveDataStream( String pid ) throws ObjectRepositoryException
     {
+        objectRepository = new FedoraObjectRepository();
         boolean success = false;
         String sID = DataStreamType.OriginalData.getName() + ".0";
         try
         {
-            success = fa.removeDataStream( pid, sID, null, null, false );
+            success = objectRepository.deleteDataFromObject( sID, sID );
         }
         catch ( Exception e )
         {
@@ -403,8 +424,10 @@ public class AdministrationFunc
     }
 
 
-    static void testModifyDataStream( String pid )
+    static void testModifyDataStream( String pid ) throws ObjectRepositoryException
     {
+        objectRepository = new FedoraObjectRepository();
+
         CargoObject cargo = null;
         try
         {
@@ -416,10 +439,10 @@ public class AdministrationFunc
         }
         String sID = DataStreamType.OriginalData.getName() + ".0";
 
-        String checksum = null;
+        boolean checksum = false;
         try
         {
-            checksum = fa.modifyDataStream( cargo, sID, pid, false, true );
+            checksum = objectRepository.replaceDataInObject( pid, sID, cargo);
         }
         catch ( Exception e )
         {
@@ -431,8 +454,10 @@ public class AdministrationFunc
     }
 
 
-    static void testAddDataStreamToObject( String pid )
+    static void testAddDataStreamToObject( String pid ) throws ObjectRepositoryException
     {
+        objectRepository = new FedoraObjectRepository();
+
         CargoObject cargo = null;
         try
         {
@@ -442,11 +467,11 @@ public class AdministrationFunc
         {
             e.printStackTrace();
         }
-        String retID = "";
+        boolean retID = false;
 
         try
         {
-            retID = fa.addDataStreamToObject( cargo, pid, false, true );
+            retID = objectRepository.storeDataInObject( pid, cargo, false, true);
         }
         catch ( Exception e )
         {
@@ -458,13 +483,14 @@ public class AdministrationFunc
     }
 
 
-    static void testGetDataStream( String pid )
+    static void testGetDataStream( String pid ) throws ObjectRepositoryException
     {
+        objectRepository = new FedoraObjectRepository();
         String streamID = (DataStreamType.OriginalData).getName() + ".0";
         CargoContainer cc = new CargoContainer();
         try
         {
-            cc = fa.getDataStream( streamID, pid );
+            cc = objectRepository.getDataFromObject( pid, streamID);
         }
         catch ( Exception e )
         {
@@ -482,13 +508,14 @@ public class AdministrationFunc
     }
 
 
-    static void testGetDataStreamsOfType( String pid )
+    static void testGetDataStreamsOfType( String pid ) throws ObjectRepositoryException
     {
+        objectRepository = new FedoraObjectRepository();
         CargoContainer cc = new CargoContainer();
         DataStreamType dst = DataStreamType.OriginalData;
         try
         {
-            cc = fa.getDataStreamsOfType( pid, dst );
+            cc = objectRepository.getDataFromObject( pid, dst );
         }
         catch ( Exception e )
         {
@@ -507,19 +534,10 @@ public class AdministrationFunc
     }
 
 
-    static void testMarkObjectWithDelete( String pid )
-    {
-        boolean result = false;
-
-        result = fa.markObjectAsDeleted( pid );
-        System.out.println( result );
-
-    }
-
-
     //method for testing the storeCC method
-    static String testStoreCC()
+    static String testStoreCC() throws ObjectRepositoryException
     {
+        objectRepository = new FedoraObjectRepository();
         System.out.println( "testStoreCC called" );
 
         CargoContainer cc = new CargoContainer();
@@ -539,7 +557,7 @@ public class AdministrationFunc
         String pid = "";
         try
         {
-            pid = fa.storeCargoContainer( cc, submitter);
+            pid = objectRepository.storeObject( cc, format );
         }
         catch ( Exception e )
         {
@@ -553,17 +571,15 @@ public class AdministrationFunc
 
 
     //method for testing the getObject method
-    static void testGetObject( String pid )
+    static void testGetObject( String pid ) throws ObjectRepositoryException
     {
         System.out.println( String.format( "testGetObject called with pid: %s", pid ) );
         List<CargoObject> coList = new ArrayList<CargoObject>();
         CargoContainer cc = new CargoContainer();
-
+        objectRepository = new FedoraObjectRepository();
         try
         {
-            FedoraAdministration fa = new FedoraAdministration();
-            //cc = FedoraAdministration.retrieveCargoContainer( pid );
-            cc = fa.retrieveCargoContainer( pid );
+            cc = objectRepository.getObject( pid );
         }
         catch ( Exception e )
         {

@@ -1,39 +1,38 @@
 /*
-  This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
-  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+This file is part of opensearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s,
+Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-  opensearch is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+opensearch is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  opensearch is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+opensearch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+You should have received a copy of the GNU General Public License
+along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /**
  * \file 
  * \brief 
  */
-
 package dk.dbc.opensearch.common.fedora;
-
 
 import dk.dbc.opensearch.common.types.InputPair;
 
 import fedora.common.Constants;
+import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,15 +52,23 @@ import org.trippi.TupleIterator;
  */
 public class FedoraObjectRelations
 {
-    private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
 
-    
+    private final IObjectRepository objectRepository;
+    private final FedoraHandle fedoraHandle;
+
+    public FedoraObjectRelations( IObjectRepository objectRepository ) throws ObjectRepositoryException
+    {
+        this.objectRepository = objectRepository;
+        this.fedoraHandle = new FedoraHandle();
+    }
+
+
+    private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
     private static String p = "p"; // used to extract value from InputPair. Depends on itql statement!!!
 
-    
     public String getSubjectRelation( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        object = object.replace( "'", "" );        
+        object = object.replace( "'", "" );
         return getRelationship( predicate, object, null, null, relation );
     }
 
@@ -73,7 +80,7 @@ public class FedoraObjectRelations
         return getRelationship( predicate_1, object_1, predicate_2, object_2, relation );
     }
 
-   
+
     /**
      *
      * @param predicate_1 Must be set
@@ -90,11 +97,11 @@ public class FedoraObjectRelations
     private String getRelationship( String predicate_1, String object_1, String predicate_2, String object_2, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String query;
-        String select = String.format(  "select $s $%s from <#ri> ", p );
+        String select = String.format( "select $s $%s from <#ri> ", p );
         String where = "where ";
         String relsNS = String.format( "and $s <fedora-rels-ext:%s> $%s ", relation, p );
 
-        if ( predicate_1 != null && object_1 != null )
+        if( predicate_1 != null && object_1 != null )
         {
             where += String.format( "$s <dc:%s> '%s' ", predicate_1, object_1 );
         }
@@ -103,17 +110,17 @@ public class FedoraObjectRelations
             throw new MalformedURLException( "parameters 'predicate_1' and object_1' must be set!" );
         }
 
-        if ( predicate_2 != null && object_2 != null )
+        if( predicate_2 != null && object_2 != null )
         {
             where += "and " + String.format( "$s <dc:%s> '%s' ", predicate_2, object_2 );
         }
 
         String limit = "limit 1";
 
-        query = select + where + relsNS + limit;        
-        List< InputPair< String, String > > tuples = executeGetTuples( query );
+        query = select + where + relsNS + limit;
+        List<InputPair<String, String>> tuples = executeGetTuples( query );
 
-        if ( ! tuples.isEmpty() )
+        if( !tuples.isEmpty() )
         {
             return tuples.get( 0 ).getSecond();
         }
@@ -140,7 +147,7 @@ public class FedoraObjectRelations
      * @throws MalformedURLException
      * @throws IOException
      */
-    private List< InputPair< String, String > > executeGetTuples( String query ) throws ConfigurationException, ServiceException, IOException
+    private List<InputPair<String, String>> executeGetTuples( String query ) throws ConfigurationException, ServiceException, IOException
     {
         log.debug( String.format( "using query %s", query ) );
 
@@ -177,18 +184,13 @@ public class FedoraObjectRelations
          *
          * Question: Are we to catch this error, and try again? What are we to do?
          */
-        Map<String, String> qparams = new HashMap< String, String >( 3 );
+        Map<String, String> qparams = new HashMap<String, String>( 3 );
         qparams.put( "lang", "itql" );
         qparams.put( "flush", "true" );
         qparams.put( "query", query );
-
-        long timer = System.currentTimeMillis();
-        TupleIterator tuples = FedoraHandle.getInstance().getFC().getTuples( qparams );
-        timer = System.currentTimeMillis() - timer;
-        log.trace( String.format( "Timing: ( getTuples ) %s", timer ) );
-
-        ArrayList< InputPair< String, String > > tupleList = new ArrayList< InputPair< String, String > >();
-        if ( tuples != null )
+        TupleIterator tuples = this.fedoraHandle.getTuples( qparams );
+        ArrayList<InputPair<String, String>> tupleList = new ArrayList<InputPair<String, String>>();
+        if( tuples != null )
         {
             try
             {
@@ -197,11 +199,11 @@ public class FedoraObjectRelations
                     Map<String, Node> row = tuples.next();
                     for( String key : row.keySet() )
                     {
-                        if ( key.equals( p ) )
+                        if( key.equals( p ) )
                         {
                             String workRelation = row.get( key ).toString();
                             log.debug( "returning tupleList" );
-                            tupleList.add( new InputPair< String, String >( key, workRelation ) );
+                            tupleList.add( new InputPair<String, String>( key, workRelation ) );
                         }
                     }
                 }
@@ -230,22 +232,10 @@ public class FedoraObjectRelations
         String predicate = Constants.RELS_EXT.IS_MEMBER_OF.toString();
         log.debug( String.format( "addPidToCollection for pid: '%s'; predicate: '%s'; collectionpid: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, collectionpid, false, null ) );
 
-        long timer = System.currentTimeMillis();
-        boolean ret = FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, collectionpid, false, null );
-        timer = System.currentTimeMillis() - timer;
-        log.trace( String.format( "Timing: ( addRelationship ) %s", timer ) );
+        boolean ret = this.fedoraHandle.addRelationship( pid, predicate, collectionpid, false, null );
+
         return ret;
     }
-
-
-    /*public boolean addOwnerToPid( String pid, String owner ) throws IOException, ServiceException, ConfigurationException
-    {
-        // \todo: Relationship.IS_MEMBER_OF_COLLECTION.toString() does not work, fix it.
-        String predicate = "info:fedora/fedora-system:def/relations-external#isOwnedBy";
-        log.debug( String.format( "addPidToCollection for pid: '%s'; predicate: '%s'; collectionpid: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, owner, false, null ) );
-
-        return FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, owner, false, null );
-    }*/
 
 
     /**
@@ -266,7 +256,7 @@ public class FedoraObjectRelations
      * @throws MalformedURLException
      * @throws ConfigurationException
      */
-    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public boolean addRelation( String pid, String predicate, String targetDCIdentifier, boolean literal, String datatype ) throws ObjectRepositoryException
     {
         log.debug( String.format( "addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
 
@@ -277,12 +267,38 @@ public class FedoraObjectRelations
         predicate = "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";//FedoraObjectRelations.Relationship.IS_MEMBER_OF_COLLECTION.toString();
         literal = false;
         log.debug( String.format( "modified addRelation for pid: '%s'; predicate: '%s'; targetDCIdentifier: '%s'; literal: '%s'; datatype: '%s'", pid, predicate, targetDCIdentifier, literal, datatype ) );
-        long timer = System.currentTimeMillis();
-        boolean ret = FedoraHandle.getInstance().getAPIM().addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
-        timer = System.currentTimeMillis() - timer;
-        log.trace( String.format( "Timing: ( addRelationship ) %s", timer ) );
 
-        return ret;
+        boolean couldAddRelation = false;
+        try
+        {
+            couldAddRelation = this.fedoraHandle.addRelationship( pid, predicate, targetDCIdentifier, literal, datatype );
+        }
+        catch( ConfigurationException ex )
+        {
+            String error = String.format( "Could not add relation '%s''%s' on '%s'", predicate, targetDCIdentifier, pid );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( ServiceException ex )
+        {
+            String error = String.format( "Could not add relation '%s''%s' on '%s'", predicate, targetDCIdentifier, pid );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( MalformedURLException ex )
+        {
+            String error = String.format( "Could not add relation '%s''%s' on '%s'", predicate, targetDCIdentifier, pid );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "Could not add relation '%s''%s' on '%s'", predicate, targetDCIdentifier, pid );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+
+        return couldAddRelation;
     }
 
 
@@ -296,7 +312,7 @@ public class FedoraObjectRelations
      *
      * @return true iff the relationship could be added, false otherwise
      */
-    public boolean addIsMbrOfCollRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public boolean addIsMbrOfCollRelationship( String pid, String namespace ) throws ObjectRepositoryException
     {
         /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
         log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
@@ -305,7 +321,7 @@ public class FedoraObjectRelations
     }
 
 
-    public boolean addIsOwnedByRelationship( String pid, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public boolean addIsOwnedByRelationship( String pid, String namespace ) throws ObjectRepositoryException
     {
         /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
         log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
@@ -317,11 +333,10 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace ) throws ObjectRepositoryException
     {
-        log.debug( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1, value_1 ) );
-        FedoraAdministration fa = new FedoraAdministration();
-        String targetPid = fa.findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
+        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1, value_1 ) );
+        String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
         log.debug( "targetPid found: " + targetPid );
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
     }
@@ -330,11 +345,10 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws RemoteException, ConfigurationException, MalformedURLException, NullPointerException, ServiceException, IOException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws ObjectRepositoryException
     {
-        log.debug( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
-        FedoraAdministration fa = new FedoraAdministration();
-        String targetPid = fa.findPropertyPid( sourcePid, property, value );
+        log.trace( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
+        String targetPid = findPropertyPid( sourcePid, property, value );
         log.debug( "targetPid found: " + targetPid );
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
     }
@@ -343,7 +357,7 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data, used by other method
      */
-    private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
+    private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ObjectRepositoryException
     {
         String relationshipObject = null;
         String predicate = "fedora:isMemberOfCollection";
@@ -377,7 +391,7 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data, used by other methods
      */
-    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject ) throws RemoteException, ConfigurationException, MalformedURLException, ServiceException, IOException
+    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject ) throws ObjectRepositoryException
     {
         return addRelation( sourcePid, predicate, relationshipObject, true, null );
     }
@@ -386,12 +400,51 @@ public class FedoraObjectRelations
     /**
      *
      */
-    private String getNextRelationshipObject( String namespace ) throws ConfigurationException, MalformedURLException, IllegalStateException, ServiceException, IOException
+    private String getNextRelationshipObject( String namespace ) throws ObjectRepositoryException
     {
-        String relationshipObject = PIDManager.getInstance().getNextPID( namespace );
-        relationshipObject = String.format( "info:fedora/%s", relationshipObject );
+        String[] relationshipObject;
+        try
+        {
+            relationshipObject = fedoraHandle.getNextPID( 1,  namespace );
+        }
+        catch( ServiceException ex )
+        {
+            String error = String.format( "Could not get pid for prefix '%s'", namespace );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( ConfigurationException ex )
+        {
+            String error = String.format( "Could not get pid for prefix '%s'", namespace );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( MalformedURLException ex )
+        {
+            String error = String.format( "Could not get pid for prefix '%s'", namespace );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "Could not get pid for prefix '%s'", namespace );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( IllegalStateException ex )
+        {
+            String error = String.format( "Could not get pid for prefix '%s'", namespace );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        if( null == relationshipObject && 1 != relationshipObject.length )
+        {
+            log.warn( String.format( "pid is empty for namespace '%s', but no exception was caught.", namespace ) );
+            return null;
+        }
+        relationshipObject[0] = String.format( "info:fedora/%s", relationshipObject[0] );
 
-        return relationshipObject;
+        return relationshipObject[0];
     }
 
 
@@ -410,45 +463,36 @@ public class FedoraObjectRelations
      * @throws MalformedURLException
      * @throws ConfigurationException
      */
-    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
+    public RelationshipTuple[] getRelationships( String pid, String predicate ) throws ObjectRepositoryException
     {
-        log.debug( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
+        log.trace( String.format( "getting relationships with pid '%s' and predicate '%s'", pid, predicate ) );
         try
         {
-            long timer = System.currentTimeMillis();
-            RelationshipTuple[] ret = FedoraHandle.getInstance().getAPIM().getRelationships( pid, predicate );
-            //RelationshipTuple[] ret = FedoraHandle.getInstance().getAPIM().getRelationships( pid, null );
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( getRelationships ) %s", timer ) );
-
-            for ( int i = 0; i < ret.length; i++ )
-            {
-                RelationshipTuple r = ret[i];
-                log.debug( String.format( "Tuple ->subject: %s; ->predicate: %s; ->object: %s", r.getSubject(), r.getPredicate(), r.getObject() ) );
-            }
-
-            return ret;
+            return this.fedoraHandle.getRelationships( pid, predicate );
         }
-        catch ( ConfigurationException ce )
+        catch( ConfigurationException ce )
         {
-            log.error ( String.format( "ConfigurationException caught", ce.getMessage() ) );
-            throw ce;
+            String error = String.format( "Could not retrieve relationships on pid '%s' for predicate '%s'", pid, predicate );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ce );
         }
-        catch ( ServiceException se )
+        catch( MalformedURLException mue )
         {
-            log.error ( String.format( "ServiceException caught", se.getMessage() ) );
-            throw se;
+            String error = String.format( "Could not retrieve relationships on pid '%s' for predicate '%s'", pid, predicate );
+            log.error( error );
+            throw new ObjectRepositoryException( error, mue );
         }
-        catch ( MalformedURLException me )
+        catch( ServiceException se )
         {
-            log.error ( String.format( "MalformedURLException caught", me.getMessage() ) );
-            throw me;
+            String error = String.format( "Could not retrieve relationships on pid '%s' for predicate '%s'", pid, predicate );
+            log.error( error );
+            throw new ObjectRepositoryException( error, se );
         }
-        catch ( IOException ioe )
+        catch( IOException ioe )
         {
-            /** \todo: This IOException appears to be thrown if the object queried does not have a relation of the type asked for */
-            log.error ( String.format( "IOException caught", ioe.getMessage() ) );
-            throw ioe;
+            String error = String.format( "Could not retrieve relationships on pid '%s' for predicate '%s'", pid, predicate );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ioe );
         }
     }
 
@@ -468,11 +512,7 @@ public class FedoraObjectRelations
      */
     public boolean hasRelationship( String subject, String predicate, String target, boolean isLiteral ) throws ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-        long timer = System.currentTimeMillis();
-        RelationshipTuple[] rt = FedoraHandle.getInstance().getAPIM().getRelationships( subject, predicate );
-        timer = System.currentTimeMillis() - timer;
-        log.trace( String.format( "Timing: ( getRelationships ) %s", timer ) );
-
+        RelationshipTuple[] rt = this.fedoraHandle.getRelationships( subject, predicate );
         int rtLength = rt.length;
         for( int i = 0; i < rtLength; i++ )
         {
@@ -503,13 +543,108 @@ public class FedoraObjectRelations
      *
      * @return true iff the relationship could be removed from the object, false otherwise
      */
-    public boolean removeRelation( String pid, String predicate, String targetDCIdentifier, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
+    private boolean removeRelation( String pid, String predicate, String targetDCIdentifier, boolean isLiteral, String datatype ) throws RemoteException, ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        long timer = System.currentTimeMillis();
-        boolean ret = FedoraHandle.getInstance().getAPIM().purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
-        timer = System.currentTimeMillis() - timer;
-        log.trace( String.format( "Timing: ( purgeRelationships ) %s", timer ) );
-        return ret;
+        return this.fedoraHandle.purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
+    }
 
+    private String findPropertiesPid( String sourcePid, String property_1, String value_1, String property_2, String value_2 )
+    {
+        /** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
+        String[] resultFields =
+        {
+            "pid"
+        };
+
+        String[] values_1 =
+        {
+            value_1
+        };
+
+        String[] values_2 =
+        {
+            value_2
+        };
+
+        FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
+        ObjectFields[] pids_1 = fedoraObjectRepository.searchRepository( resultFields, property_1, values_1, "has", 100000 );
+        ObjectFields[] pids_2 = fedoraObjectRepository.searchRepository( resultFields, property_2, values_2, "has", 100000 );
+
+        if( pids_1 == null || pids_2 == null )
+        {
+            log.warn( String.format( "no matches found for either '%s', '%s' or both", value_1, value_2 ) );
+            return null;
+        }
+
+        // move pids to ArrayList and sort for quicker search and match
+        int pids_2_len = pids_2.length;
+        ArrayList<String> pidsArrLst_2 = new ArrayList<String>( pids_2_len );
+        for( int i = 0; i < pids_2_len; i++ )
+        {
+            pidsArrLst_2.add( pids_2[i].getPid() );
+        }
+        Collections.sort( pidsArrLst_2 );
+
+        String retval = null;
+        if( pids_1 != null && pids_2 != null )
+        {
+            String nextPid = null;
+            int pids_1_len = pids_1.length;
+            for( int i = 0; i < pids_1_len; i++ )
+            {
+                nextPid = pids_1[i].getPid();
+                if( pidsArrLst_2.contains( nextPid ) )
+                {
+                    int index = pidsArrLst_2.indexOf( nextPid );
+                    String ret = pidsArrLst_2.get( index );
+                    if( ret.equals( nextPid ) && !ret.equals( sourcePid ) )
+                    {
+                        retval = ret;
+                    }
+                }
+            }
+        }
+        if( retval == null )
+        {
+            log.warn( String.format( "Found no pids that match the search criterias '%s', '%s'", value_1, value_2 ) );
+        }
+        return retval;
+    }
+
+
+    private String findPropertyPid( String sourcePid, String property, String value )
+    {
+        String[] resultFields =
+        {
+            "pid"
+        };
+
+        String[] values =
+        {
+            value
+        };
+
+        FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
+        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, property, values, "has", 100000 );
+
+        String retval = null;
+        if( pids != null )
+        {
+            String nextPid = null;
+            for( int i = 0; i < pids.length; i++ )
+            {
+                nextPid = pids[i].getPid();
+                if( !nextPid.equals( sourcePid ) )
+                {
+                    retval = nextPid;
+                }
+            }
+        }
+
+        if( retval == null )
+        {
+            log.warn( String.format( "no pids matched the search '%s'", value ) );
+        }
+        return retval;
     }
 }

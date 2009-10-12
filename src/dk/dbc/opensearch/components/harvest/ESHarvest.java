@@ -1,30 +1,29 @@
-/**
-  This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
-  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
- 
-  opensearch is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  
-  opensearch is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ *
+ *This file is part of opensearch.
+ *Copyright © 2009, Dansk Bibliotekscenter a/s,
+ *Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+ *
+ *opensearch is free software: you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License as published by
+ *the Free Software Foundation, either version 3 of the License, or
+ *(at your option) any later version.
+ *
+ *opensearch is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /**
  * \file ESHarvest.java
  * \brief
  */
 
-
 package dk.dbc.opensearch.components.harvest ;
-
 
 import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.OracleDBConnection;
@@ -33,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -50,7 +50,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
  * to a frontend, i.e. the DataDock, delivers data through {@link getData} and maintains the state of 
@@ -62,8 +61,6 @@ public class ESHarvest implements IHarvest
     private String        databasename;   // The ES-base databasename - given through constructor
 
     Logger log = Logger.getLogger( ESHarvest.class );
-
-
 
     /**
      *   Creates a new ES-Harvester 
@@ -92,8 +89,9 @@ public class ESHarvest implements IHarvest
 	    log.fatal( "Error while trying to connect to Oracle ES-base: " , sqle );
 	    throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", sqle );
 	}
+	
 
-	// unset AutoCommit	
+	// Set AutoCommit	
 	try 
 	{
 	    boolean autoCommit = false;
@@ -106,6 +104,7 @@ public class ESHarvest implements IHarvest
 	    log.fatal( errorMsg );
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
+
 
     }
 
@@ -164,11 +163,12 @@ public class ESHarvest implements IHarvest
      */
     public ArrayList<IJob> getJobs( int maxAmount ) throws HarvesterIOException
     {
+
 	log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
         ArrayList<IJob> theJobList = new ArrayList<IJob>();
 	try 
-	{
-	    Statement stmt = conn.createStatement();
+	    {
+		Statement stmt = conn.createStatement();
 	    stmt.setMaxRows( maxAmount );
 	    ArrayList<Integer> takenList = new ArrayList<Integer>();
 		
@@ -186,6 +186,7 @@ public class ESHarvest implements IHarvest
 					  "ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr" );
 	    log.debug( queryStr );
 	    ResultSet rs = stmt.executeQuery( queryStr );
+		// \todo: databasename ('test' in above) should come from config-file-thingy.
 		
 	    while( rs.next() )
             {
@@ -517,8 +518,6 @@ public class ESHarvest implements IHarvest
     }
 
 
-
-
     /**
      *  Changes the status on a taskpackage if all assoicated records are finished.
      */
@@ -591,17 +590,17 @@ public class ESHarvest implements IHarvest
 		// update the TaskSpecificUpdate:
 		if ( success_count == noofrecs ) 
 		{
-		    // All records was succesfully handled:
+		    // All was posts was succesfully handled:
 		    update_status = 1;
 		} 
 		else if ( failure_count == noofrecs ) 
 		{
-		    // All records was handled with failure:
+		    // All was posts was handled with failure:
 		    update_status = 3;
 		} 
 		else 
 		{
-		    // Records were mixed with both success and failure:
+		    // Posts were mixed with both success and failure:
 		    update_status = 2;
 		}
 			
@@ -657,6 +656,7 @@ public class ESHarvest implements IHarvest
 	    }
 	}
 	stmt.close();
+
     }
 
 }

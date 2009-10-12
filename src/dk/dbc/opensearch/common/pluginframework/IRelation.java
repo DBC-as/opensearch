@@ -21,17 +21,12 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.types.CargoContainer;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-
-import javax.xml.rpc.ServiceException;
-
-import org.apache.commons.configuration.ConfigurationException;
 
 
 public interface IRelation extends IPluggable
 {
-    CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, ConfigurationException, MalformedURLException, ServiceException, IOException;
+    CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException;
+    void setObjectRepository( IObjectRepository objectRepository );
 }

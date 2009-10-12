@@ -1,12 +1,3 @@
-/**
- * \file AnnotateTest.java
- * \brief The AnnotateTest class
- * \package tests;
- */
-
-package dk.dbc.opensearch.plugins;
-
-
 /*   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
@@ -26,21 +17,16 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.plugins.DocbookAnnotate;
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URI;
+/**
+ * \file AnnotateTest.java
+ * \brief The AnnotateTest class
+ * \package tests;
+ */
 
 import org.junit.*;
-import static org.junit.Assert.*;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;

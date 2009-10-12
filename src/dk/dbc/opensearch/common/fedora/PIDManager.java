@@ -31,7 +31,6 @@ import java.net.MalformedURLException;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -43,21 +42,23 @@ public class PIDManager
 
     private Stack<String> pidList;
     private HashMap<String, Stack<String>> pidMap;
-    private NonNegativeInteger numPIDs;
+    private int numPIDs;
 
 
     private static PIDManager INSTANCE;
+    private FedoraHandle fedoraHandle;
 
 
-    private PIDManager() throws ConfigurationException
+    private PIDManager() throws ObjectRepositoryException, ConfigurationException
     {	
-    	pidList = new Stack<String>();
+        this.fedoraHandle = new FedoraHandle();
+        pidList = new Stack<String>();
     	pidMap = new HashMap<String, Stack<String>>();    	
-        numPIDs =  new NonNegativeInteger( PidManagerConfig.getNumberOfPidsToRetrieve() );
+        numPIDs =  PidManagerConfig.getNumberOfPidsToRetrieve();
     }
 
 
-    public static synchronized PIDManager getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public static synchronized PIDManager getInstance() throws ObjectRepositoryException, ConfigurationException
     {
         if ( INSTANCE == null )
         {	
@@ -89,20 +90,12 @@ public class PIDManager
             throw new IllegalStateException( "Prefix was not specified, and I have no default, exiting" );
         }
 
-        log.trace( String.format( "Calling through FedoraHandle.getInstance().getAPIM().getNextPID( %s, %s)", numPIDs, prefix ) );
-
         Stack<String> pidStack = new Stack<String>();
 
-        fedora.server.management.FedoraAPIM fem = FedoraHandle.getInstance().getAPIM();
-        log.debug( "numPids: " + numPIDs.toString() );
+        log.debug( String.format( "numPids: %s", numPIDs ) );
         log.debug( "PIDManager prefix: " + prefix );
-        String[] pids = fem.getNextPID( numPIDs, prefix );
+        String[] pids = this.fedoraHandle.getNextPID( numPIDs, prefix );
         log.debug( "pids: " + pids.toString() );
-        if ( pids == null )
-        {
-            log.error( "Could not retrieve pids from Fedora repository" );
-            throw new IllegalStateException( "Could not retrieve pids from Fedora repository" );
-        }
 
         for( String pid : pids )
         { 	

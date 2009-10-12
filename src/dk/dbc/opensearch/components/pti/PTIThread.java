@@ -21,10 +21,11 @@
 package dk.dbc.opensearch.components.pti;
 
 
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
+import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,8 +49,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.compass.core.CompassException;
 import org.compass.core.CompassSession;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.SAXException;
 
 
@@ -67,7 +67,7 @@ public class PTIThread implements Callable< Long >
     private String fedoraPid;
     private IEstimate estimate;
     private ArrayList< String > list;
-    private IFedoraAdministration fedoraAdministration;
+    private IObjectRepository objectRepository;
 
     /**
      * \brief Constructs the PTI instance with the given parameters
@@ -77,18 +77,17 @@ public class PTIThread implements Callable< Long >
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IFedoraAdministration fedoraAdministration ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IObjectRepository objectRepository ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
         {
             super();
 
-            log.debug( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
-
-            this.fedoraAdministration = fedoraAdministration;
+            log.trace( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
+            this.objectRepository = objectRepository;
             this.estimate = estimate;
             this.session = session;
             this.fedoraPid = fedoraPid;
 
-            log.debug( "constructor done" );
+            log.trace( "constructor done" );
         }
 
 
@@ -110,19 +109,18 @@ public class PTIThread implements Callable< Long >
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Long call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, MarshalException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException, ValidationException
+    public Long call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException
         {
-            log.debug( String.format( "Entering with handle: '%s'", fedoraPid ) );
+            log.trace( String.format( "Entering with handle: '%s'", fedoraPid ) );
             CargoContainer cc = null;
-            CargoContainer cc2 = null;
             CargoObject co = null;
             String submitter =  null;
             String format = null;
 
             try
                 {
-                    log.debug( String.format( "PTIThread -> fedoraPid: ", fedoraPid ) );
-                    cc = fedoraAdministration.retrieveCargoContainer( fedoraPid );
+                    log.trace( String.format( "PTIThread -> objectId: ", fedoraPid ) );
+                    cc = objectRepository.getObject( fedoraPid );
                 }
             catch( Exception e )
                 {
@@ -145,36 +143,55 @@ public class PTIThread implements Callable< Long >
             else{
                 PluginResolver pluginResolver = new PluginResolver();
 
-                log.debug( "Entering switch" );
-                log.debug( "PluginsList: " + list.toString() );
+                IPluggable plugin = null;
+                PluginType taskName = null;
+
+                log.debug( "PluginsList: " + Arrays.deepToString( list.toArray() ) );
                 for ( String classname : list )
                     {
-                        log.debug( "PTIThread running through plugins list" );
-                        IPluggable plugin = pluginResolver.getPlugin( classname );
-                        log.debug( "PTIThread plugin resolved" );
-                        PluginType taskName = plugin.getPluginType();
+                        log.trace( "PTIThread running through plugins list" );
+                        plugin = pluginResolver.getPlugin( classname );
+                        log.trace( "PTIThread plugin resolved" );
+
+                        if( plugin == null )
+                        {
+                            String error = String.format( "Could not plugin name for '%s'", classname );
+                            log.error( error );
+                            throw new IllegalStateException( error );
+                        }
+
+                        taskName = plugin.getPluginType();
                         log.debug( "PTIThread taskName: " + taskName );
-                        switch ( taskName )
-                            {
-                            case PROCESS:
+
+                        log.trace( "Entering switch" );
+                        switch( taskName )
+                        {
+                        case PROCESS:
                                 log.debug( "calling processerplugin" );
-                                IProcesser processPlugin = ( IProcesser )plugin;
+                                IProcesser processPlugin = (IProcesser) plugin;
                                 cc = processPlugin.getCargoContainer( cc );
                                 log.debug( "PTIThread PROCESS plugin done" );
                                 break;
+                            case RELATION:
+                                log.trace( "calling relation plugin" );
+                                IRelation relationPlugin = (IRelation) plugin;
+                                relationPlugin.setObjectRepository( objectRepository );
+                                cc = relationPlugin.getCargoContainer( cc );
+                                log.trace( "PTIThread RELATION plugin done" );
+                                break;
                             case INDEX:
                                 log.debug( "calling indexerplugin" );
-                                IIndexer indexPlugin = ( IIndexer )plugin;
+                                IIndexer indexPlugin = (IIndexer) plugin;
                                 result = indexPlugin.getProcessTime( cc, session, fedoraPid, estimate );
                                 log.debug( "PTIThread INDEX plugin done" );
                                 //update statistics database
                                 break;
-                            }
-                    }
+                        }
+                }
             }
             log.debug( "PTIThread done with result: " + result );
 
             return result;
-        }
+    }
 }
 

@@ -26,54 +26,75 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
+import java.net.MalformedURLException;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 
+/**
+ * The MarcxchangeHarvester plugin creates a {@link CargoContainer} with
+ * {@link DublinCore} metadata from a marcxchange XML formatted inputdata.
+ * The plugin does no explicit validation on the incoming material, and only
+ * tries to construct dublin core metadata elements from the input data. If
+ * this fails, an empty metadata element will be added to the CargoContainer,
+ * which will also contain the (incorrect) data given to the plugin.
+ */
 public class MarcxchangeHarvester implements ICreateCargoContainer
 {
     private static Logger log = Logger.getLogger( MarcxchangeHarvester.class );
 
     
-    //    private String submitter;
-    //private String format;
-    //private byte[] data;
+    private String submitter;
+    private String format;
+    private byte[] data;
 
     private PluginType pluginType = PluginType.HARVEST;
+    private final FedoraHandle fedoraHandle;
 
-
+    public MarcxchangeHarvester() throws PluginException
+    {
+        try
+        {
+            this.fedoraHandle = new FedoraHandle();
+        }
+        catch( ObjectRepositoryException ex )
+        {
+            String error = String.format( "Failed to get connection to fedora base" );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+    }
     /**
      * \todo: Implement this method
+     * \todo: why? Or: does it have an issue tracker?
      *
      * @param data
      * @param xml
@@ -88,11 +109,11 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-//         this.submitter = job.getSubmitter();
-//         this.format = job.getFormat();
-//         this.data = data;
+        this.submitter = job.getSubmitter();
+        this.format = job.getFormat();
+        this.data = data;
 
-        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat() , data );
+        return createCargoContainerFromFile();
     }
 
 
@@ -104,163 +125,89 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
      * @throws XPathExpressionException 
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data ) throws PluginException
+    private CargoContainer createCargoContainerFromFile() throws PluginException
     {
-        CargoContainer cargo = new CargoContainer();
-        /** \todo: hardcoded values for mimetype, langugage and data type */
-        String mimetype = "text/xml";
-        String lang = "da";
-        DataStreamType dataStreamName = DataStreamType.OriginalData;
- 
-        try 
+        String[] pid = null;
+        try
         {
-            cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Danmarcxchange, data );
+            pid = fedoraHandle.getNextPID( 1,  this.submitter );
+        }
+        catch( ServiceException ex )
+        {
+            String error = String.format( "Could not get pid for %s", this.submitter );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        catch( ConfigurationException ex )
+        {
+            String error = String.format( "Could not get pid for %s", this.submitter );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        catch( MalformedURLException ex )
+        {
+            String error = String.format( "Could not get pid for %s", this.submitter );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "Could not get pid for %s", this.submitter );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        catch( IllegalStateException ex )
+        {
+            String error = String.format( "Could not get pid for %s", this.submitter );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        if( null == pid && 1 != pid.length )
+        {
+            String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", this.submitter );
+            log.error( error );
+            throw new PluginException( new IllegalStateException( error ) );
+        }
 
-            // CONSTRUCTING DC DATASTREAM
-            log.debug( "Constructing DC datastream" );
-            //byte[] dcByteArray = constructDC( cargo );
-            Pair< byte[], CargoContainer > pair = constructDC( cargo );
-            byte[] dcByteArray = pair.getFirst();
-            log.debug( "MH dcByteArray: " + new String( dcByteArray ) );
-            cargo = pair.getSecond();
-            log.debug( String.format( "MH cargo dcTitle '%s'", cargo.getDCTitle() ) );
-            cargo.add( DataStreamType.DublinCoreData, "dc", "dbc", "da", "text/xml", IndexingAlias.None, dcByteArray );
-            
-        } 
-        catch ( IOException ioe ) 
+        CargoContainer cargo = new CargoContainer( pid[0] );
+ 
+        try
         {
-        	String msg = "Could not construct CargoContainer";
+            /** \todo: hardcoded values for mimetype, language*/
+            cargo.add( DataStreamType.OriginalData, this.format, this.submitter, "da", "text/xml", IndexingAlias.Danmarcxchange, data );
+
+            log.trace( "Constructing DC datastream" );
+
+            DublinCore dcStream = createDublinCore( cargo );
+            if( dcStream.elementCount() == 0 )
+            {
+                log.warn( String.format( "No information was added to dublin core data for data with pid '%s'", cargo.getIdentifier() ) );
+            }
+            else
+            {
+                log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
+            }
+            boolean succeeded = cargo.addMetaData( dcStream );
+            if( ! succeeded )
+            {
+                log.warn( String.format( "Failed to add DublinCore stream to CargoContainer with id '%s'", cargo.getIdentifier() ) );
+            }
+        }
+        catch ( IOException ioe )
+        {
+        	String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
         	log.error( msg );
             throw new PluginException( msg, ioe );
         }
-        catch ( Exception e )
+        if( cargo.getCargoObjectCount() < 1 )
         {
-            log.error( String.format( "Exception of type: %s cast with message: %s", e.getClass(), e.getMessage() ) );
-            String msg = "Exception caught in the MarcxchangeHarvester";
-            throw new PluginException( msg, e );
-            /**
-             * \Todo: the error should be propagated out to the caller. bug 9582
-             */
+            log.warn( "No objects added to CargoContanier" );
         }
-        
-        log.debug(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );        
+        log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
+        log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() == 0 ) );
         return cargo;
     }
 
-    
-    private Pair< byte[], CargoContainer > constructDC( CargoContainer cargo ) throws PluginException 
-    {
-    	log.debug( "Entering constructDC" );
-    	byte[] byteArray = null;
-    	
-    	CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-            
-        if ( co == null )
-        {
-            String error = "Original data CargoObject is null";
-            log.error( error );
-            throw new IllegalStateException( error );
-        }
-        
-        byte[] b = co.getBytes();       
-        log.debug( "CargoObject byteArray: " + new String( b ) );
-        
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); //factory.setNamespaceAware(true);
-	    DocumentBuilder builder;
-		try 
-		{
-			builder = factory.newDocumentBuilder();
-		} 
-		catch ( ParserConfigurationException pce ) 
-		{
-			String msg = "Could not parse configuration";
-			log.error( msg );
-			throw new PluginException( msg, pce );
-		}
-		
-		log.debug( "Building new document before xpath stuff" );
-	    Document dcDoc = builder.newDocument();
-	    Element rootElement = dcDoc.createElementNS( "http://www.openarchives.org/OAI/2.0/oai_dc/", "oai_dc:dc" );    	    
-	    rootElement.setAttributeNS( "http://www.w3.org/2000/xmlns/", "xmlns:oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/" );
-	    rootElement.setAttributeNS( "http://www.w3.org/2000/xmlns/", "xmlns:dc", "http://purl.org/dc/elements/1.1/" );
-	    dcDoc.appendChild( rootElement );
-        
-	    Element e; 
-	    
-	    /*e = dcDoc.createElement( "dc:identifier" );
-	    e.appendChild( dcDoc.createTextNode( cargo.getDCIdentifier() ) );
-        rootElement.appendChild( e );*/
-	    
-	    e = dcDoc.createElement( "dc:title" );    	    
-	    String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
-	    log.debug( String.format( "finding dcTitle using xpath: '%s'", titleXpathStr ) );
-        String dcTitle;
-		dcTitle = getDCVariable( b, titleXpathStr );
-		e.appendChild( dcDoc.createTextNode( dcTitle ) );
-	    rootElement.appendChild( e );
-	    log.debug( String.format( "cargo setting dcTitle with value '%s'", dcTitle ) );
-	    cargo.setDCTitle( dcTitle );
-	 
-	    e = dcDoc.createElement( "dc:creator" );
-	    String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1]";
-	    log.debug( String.format( "finding dcCreator using xpath: '%s'", creatorXpathStr ) );
-        String dcCreator = getDCVariable( b, creatorXpathStr );
-        e.appendChild( dcDoc.createTextNode( dcCreator ) );
-	    rootElement.appendChild( e );
-	    log.debug( String.format( "cargo setting dcCreator with value '%s'", dcCreator ) );
-	    cargo.setDCCreator( dcCreator );
-	 
-	    e = dcDoc.createElement( "dc:type" );
-	    String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
-	    log.debug( String.format( "finding dcType using xpath: '%s'", typeXpathStr ) );
-        String dcType = getDCVariable( b, typeXpathStr );
-	    e.appendChild( dcDoc.createTextNode( dcType ) );
-	    rootElement.appendChild( e );
-	    log.debug( String.format( "cargo setting dcType with value '%s'", dcType ) );
-	    cargo.setDCType( dcType );
-	    
-	    e = dcDoc.createElement( "dc:source" );
-	    String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
-	    log.debug( String.format( "finding dcSource using xpath: '%s'", sourceXpathStr ) );
-        String dcSource = getDCVariable( b, sourceXpathStr );            
-		e.appendChild( dcDoc.createTextNode( dcSource ) );
-	    rootElement.appendChild( e );
-	    log.debug( String.format( "cargo setting dcSource with value '%s'", dcSource ) );
-	    cargo.setDCSource( dcSource );
-	    
-	    e = dcDoc.createElement( "dc:relation" );
-	    String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a']";
-	    log.debug( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
-        String dcRelation = getDCVariable( b, relationXpathStr );            
-		e.appendChild( dcDoc.createTextNode( dcRelation ) );
-	    rootElement.appendChild( e );
-	    log.debug( String.format( "cargo setting dcRelation with value '%s'", dcRelation ) );
-	    cargo.setDCRelation( dcRelation );	    
-    	    
-	    log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
-    	try 
-    	{
-			byteArray = XMLUtils.getByteArray( rootElement );
-		} 
-    	catch ( UnsupportedEncodingException uee ) 
-    	{
-    		String msg = String.format( "Could obtain byte array due to unsupported encoding. Exception thrown in class '%s'", XMLUtils.class.toString() );
-    		log.error( msg );
-			throw new PluginException( msg, uee );
-		} 
-    	catch ( TransformerException te ) 
-    	{
-    		String msg = String.format( "Could not transform dom to stream. Exception thrown in class", XMLUtils.class.toString() );
-    		log.error( msg );
-			throw new PluginException( msg, te );
-		}
-    	System.out.println( "byte array: " + new String( byteArray ) );    	    	
-
-    	Pair< byte[], CargoContainer > ret = new InputPair< byte[], CargoContainer >( byteArray, cargo );    	
-    	
-		return ret;
-	}
-    
     
     private String getDCVariable( byte[] bytes, String xPathStr ) throws PluginException
     {
@@ -272,7 +219,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         InputSource workRelationSource = new InputSource( new ByteArrayInputStream( bytes ) );        
         String dcVariable = null;
         
-        log.debug( String.format( "MWR xpathStr = '%s'", xPathStr ) );
+        log.debug( String.format( "xpathStr = '%s'", xPathStr ) );
         try 
         {
 			xPathExpression = xpath.compile( xPathStr );
@@ -285,7 +232,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
 			throw new PluginException( msg, xpee );
 		}
         
-        log.debug( String.format( "MWR found dcVariable: '%s'", dcVariable ) );
+        log.debug( String.format( "Found dcVariable: '%s'", dcVariable ) );
         
         return dcVariable;
     }
@@ -294,5 +241,55 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     public PluginType getPluginType()
     {
         return pluginType;
+    }
+
+    private DublinCore createDublinCore( CargoContainer cargo ) throws PluginException
+    {
+        String identifier = cargo.getIdentifier();
+        DublinCore dc = new DublinCore( identifier );
+    	CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+
+        if ( co == null )
+        {
+            String error = "Original data CargoObject is null";
+            log.error( error );
+            throw new IllegalStateException( error );
+        }
+
+        byte[] b = co.getBytes();
+
+	    String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
+	    log.trace( String.format( "finding dcTitle using xpath: '%s'", titleXpathStr ) );
+		String dcTitle = getDCVariable( b, titleXpathStr );
+	    log.trace( String.format( "cargo setting dcTitle with value '%s'", dcTitle ) );
+        dc.setTitle( dcTitle );
+
+        String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1]";
+	    log.trace( String.format( "finding dcCreator using xpath: '%s'", creatorXpathStr ) );
+        String dcCreator = getDCVariable( b, creatorXpathStr );
+	    log.trace( String.format( "cargo setting dcCreator with value '%s'", dcCreator ) );
+        dc.setCreator( dcCreator );
+
+        String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
+	    log.trace( String.format( "finding dcType using xpath: '%s'", typeXpathStr ) );
+        String dcType = getDCVariable( b, typeXpathStr );
+	    log.trace( String.format( "cargo setting dcType with value '%s'", dcType ) );
+        dc.setType( dcType );
+
+        String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
+	    log.trace( String.format( "finding dcSource using xpath: '%s'", sourceXpathStr ) );
+        String dcSource = getDCVariable( b, sourceXpathStr );
+	    log.trace( String.format( "cargo setting dcSource with value '%s'", dcSource ) );
+        dc.setSource( dcSource );
+
+        String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a']";
+	    log.trace( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
+        String dcRelation = getDCVariable( b, relationXpathStr );
+	    log.trace( String.format( "cargo setting dcRelation with value '%s'", dcRelation ) );
+        dc.setRelation( dcRelation );
+
+	    log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
+
+        return dc;
     }
 }

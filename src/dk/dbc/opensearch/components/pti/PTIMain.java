@@ -27,22 +27,16 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.compass.CompassFactory;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
-import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-import dk.dbc.opensearch.common.types.InputPair;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -52,9 +46,8 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.compass.core.Compass;
-import org.xml.sax.SAXException;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
 
 /**
@@ -71,7 +64,6 @@ public class PTIMain
 
 
     static protected boolean shutdownRequested = false;
-    static PTIPool ptiPool = null;
     static PTIManager ptiManager = null;
     static int queueSize;
     static int corePoolSize;
@@ -177,7 +169,7 @@ public class PTIMain
             IDBConnection dbConnection = new PostgresqlDBConnection();
             IEstimate estimate = new Estimate( dbConnection );
             IProcessqueue processqueue = new Processqueue( dbConnection );
-            IFedoraAdministration fedoraAdministration = new FedoraAdministration();
+            IObjectRepository repository = new FedoraObjectRepository();
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
 
@@ -185,7 +177,7 @@ public class PTIMain
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
 
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, fedoraAdministration );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, repository );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 

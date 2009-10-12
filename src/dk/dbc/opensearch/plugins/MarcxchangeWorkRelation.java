@@ -26,15 +26,19 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
-import dk.dbc.opensearch.common.fedora.PIDManager;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
+import java.net.MalformedURLException;
 import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
@@ -54,12 +58,14 @@ public class MarcxchangeWorkRelation implements IRelation
     private PluginType pluginType = PluginType.RELATION;
 
     private Vector<String> types;
+    private IObjectRepository objectRepository;
+    private final FedoraHandle fedoraHandle;
 
 
     /**
      * Constructor for the MarcxchangeWorlkRelation plugin.
      */
-    public MarcxchangeWorkRelation()
+    public MarcxchangeWorkRelation() throws PluginException
     {
         log.debug( "MarcxchangeWorkRelation constructor called" );
     
@@ -70,9 +76,22 @@ public class MarcxchangeWorkRelation implements IRelation
         types.add( "Avisartikel" );
         types.add( "Tidsskrift" );
         types.add( "Tidsskriftsartikel" );
+        try
+        {
+            this.fedoraHandle = new FedoraHandle();
+        }
+        catch( ObjectRepositoryException ex )
+        {
+            String error = String.format( "Failed to get connection to fedora base" );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+}
+
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {
+        this.objectRepository = objectRepository;
     }
-
-
     /**
      * The "main" method of this plugin. Request a relation from
      * a webservice. If a relation is available it is added to the
@@ -84,7 +103,7 @@ public class MarcxchangeWorkRelation implements IRelation
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException, RemoteException, ConfigurationException, ServiceException, IOException//, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
 
@@ -99,21 +118,39 @@ public class MarcxchangeWorkRelation implements IRelation
 
         if ( ! ok )
         {
-            log.error( String.format( "could not add work relation on pid %s", cargo.getDCIdentifier() ) );
+            log.error( String.format( "could not add work relation on pid %s", cargo.getIdentifier() ) );
         }
 
         return cargo;
     }
 
 
-    private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws RemoteException, ConfigurationException, ServiceException, IOException
+    private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws PluginException
     {
-        String dcTitle = cargo.getDCTitle();
-        String dcType = cargo.getDCType();
-        String dcCreator = cargo.getDCCreator();
-        String dcSource = cargo.getDCSource();
+        DublinCore dc = cargo.getDublinCoreMetaData();
+        if( dc == null )
+        {
+            String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
+            log.error( error );
+            throw new PluginException( error );
+        }
 
-        FedoraObjectRelations fedor = new FedoraObjectRelations();
+        String dcTitle = dc.getDCValue( DublinCoreElement.ELEMENT_TITLE );
+        String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
+        String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
+        String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
+
+        FedoraObjectRelations fedor;
+        try
+        {
+            fedor = new FedoraObjectRelations( objectRepository );
+        }
+        catch( ObjectRepositoryException ex )
+        {
+            String error = String.format( "Failed to obtain connection to fedora repository" );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
 
         String relation = "isMemberOf";
         String workRelation = null;
@@ -123,23 +160,77 @@ public class MarcxchangeWorkRelation implements IRelation
             log.debug( String.format( "WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle) );
             if ( ! dcSource.equals( "" ) )
             {
-                workRelation = fedor.getSubjectRelation( "source", dcSource, relation );
-                if ( workRelation == null && ! dcTitle.equals( "" ) )
+                try
                 {
-                    workRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
+                    workRelation = fedor.getSubjectRelation( "source", dcSource, relation );
+                    if( workRelation == null && !dcTitle.equals( "" ) )
+                    {
+                        workRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
+                    }
+                }
+                catch( ConfigurationException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( ServiceException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( MalformedURLException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( IOException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
                 }
             }
 
             if ( workRelation == null && ! dcTitle.equals( "" ) )
             {
-                if ( ! dcSource.equals( "" ) )
-                {
-                    workRelation = fedor.getSubjectRelation( "title", dcSource, relation );
+                try{
+                    if( !dcSource.equals( "" ) )
+                    {
+                        workRelation = fedor.getSubjectRelation( "title", dcSource, relation );
+                    }
+                    else
+                    {
+                        workRelation = fedor.getSubjectRelation( "title", dcTitle, relation );
+                    }
                 }
-                else
+                catch( ConfigurationException ex )
                 {
-                    workRelation = fedor.getSubjectRelation( "title", dcTitle, relation );
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
                 }
+                catch( ServiceException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( MalformedURLException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( IOException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcSource, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+
             }
 
             if ( workRelation == null )
@@ -152,25 +243,124 @@ public class MarcxchangeWorkRelation implements IRelation
 
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
-                workRelation = fedor.getSubjectRelation( "title", dcTitle, "creator", dcCreator, relation );
+                try
+                {
+                    workRelation = fedor.getSubjectRelation( "title", dcTitle, "creator", dcCreator, relation );
+                }
+                catch( ConfigurationException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcCreator, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( ServiceException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcCreator, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( MalformedURLException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcCreator, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
+                catch( IOException ex )
+                {
+                    String error = String.format( "Failed to retrieve work relation for rules on %s and %s", dcCreator, dcTitle );
+                    log.error( error );
+                    throw new PluginException( error, ex );
+                }
             }
             else
             {
                 log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcCreator ) );
             }
         }
-        log.debug( String.format( "workRelation = %s", workRelation) );
 
         if ( workRelation == null )
         {
-            // this is a new workrelation, lets get a pid
-            workRelation = PIDManager.getInstance().getNextPID( "work" );
+                String[] newPid = null;
+            try
+            {
+                // this is a new workrelation, lets get a pid
+                newPid = fedoraHandle.getNextPID( 1,  "work" );
+            }
+            catch( ServiceException ex )
+            {
+                String error = String.format( "Failed to retrieve work relation for new workrelation" );
+                log.error( error );
+                throw new PluginException( error, ex );
+            }
+            catch( ConfigurationException ex )
+            {
+                String error = String.format( "Failed to retrieve work relation for new workrelation" );
+                log.error( error );
+                throw new PluginException( error, ex );
+            }
+            catch( MalformedURLException ex )
+            {
+                String error = String.format( "Failed to retrieve work relation for new workrelation" );
+                log.error( error );
+                throw new PluginException( error, ex );
+            }
+            catch( IOException ex )
+            {
+                String error = String.format( "Failed to retrieve work relation for new workrelation" );
+                log.error( error );
+                throw new PluginException( error, ex );
+            }
+            catch( IllegalStateException ex )
+            {
+                String error = String.format( "Failed to retrieve work relation for new workrelation" );
+                log.error( error );
+                throw new PluginException( error, ex );
+            }
+
+            if( null == newPid && 1 != newPid.length )
+        {
+            String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", "work" );
+            log.error( error );
+            throw new PluginException( new IllegalStateException( error ) );
         }
 
-        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), workRelation ) );
+            workRelation = newPid[0];
+        }
+        log.debug( String.format( "workRelation = %s", workRelation) );
 
-        // and add this workrelation pid as the workrelationpid of the
-        return fedor.addPidToCollection( cargo.getDCIdentifier(), workRelation );
+        String identifier = cargo.getIdentifier();
+        if( identifier == null )
+        {
+            String error = String.format( "cargo contained no identifier, shouldn't have gotten this far without" );
+            log.error( error );
+            throw new PluginException( error );
+        }
+        log.debug( String.format( "Trying to add %s to the collection %s", identifier, workRelation ) );
+        boolean addedPidToCollection = false;
+        try
+        {
+            // and add this workrelation pid as the workrelationpid of the
+             addedPidToCollection = fedor.addPidToCollection( identifier, workRelation );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "Failed to contruct work relation between %s and %s", identifier, workRelation );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        catch( ServiceException ex )
+        {
+            String error = String.format( "Failed to contruct work relation between %s and %s", identifier, workRelation );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        catch( ConfigurationException ex )
+        {
+            String error = String.format( "Failed to contruct work relation between %s and %s", identifier, workRelation );
+            log.error( error );
+            throw new PluginException( error, ex );
+        }
+        return addedPidToCollection;
     }
 
 

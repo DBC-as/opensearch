@@ -28,7 +28,6 @@ package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
@@ -48,6 +47,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
 
 /**
@@ -65,7 +65,7 @@ public class PTIPool
     private final ThreadPoolExecutor threadpool;
     private IEstimate estimate;
     private IProcessqueue processqueue;
-    private IFedoraAdministration fedoraAdministration;
+    private IObjectRepository objectRepository;
     private Compass compass;
     private int shutDownPollTime;
 
@@ -80,23 +80,23 @@ public class PTIPool
      */
     private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler 
     {
-		@Override
-		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  
-		{
-			if( executor.isShutdown())  
-			{
-					throw new RejectedExecutionException();
-			}
-			try 
-			{
-				executor.getQueue().put(r);
-			} 
-			catch (InterruptedException e) 
-			{		
-				e.printStackTrace();
-				throw new RejectedExecutionException();
-			};
-		}    	
+        @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  
+        {
+            if( executor.isShutdown())  
+                {
+                    throw new RejectedExecutionException();
+                }
+            try 
+                {
+                    executor.getQueue().put(r);
+                } 
+            catch (InterruptedException e) 
+                {		
+                    e.printStackTrace();
+                    throw new RejectedExecutionException();
+                };
+        }    	
     }
     
     /**
@@ -107,11 +107,11 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, IFedoraAdministration fedoraAdministration ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, IObjectRepository objectRepository ) throws ConfigurationException
     {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
-         this.fedoraAdministration = fedoraAdministration;
+         this.objectRepository = objectRepository;
          this.threadpool = threadpool;
          this.estimate = estimate;
          this.compass = compass;
@@ -148,7 +148,7 @@ public class PTIPool
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
 
-        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, fedoraAdministration ) );
+        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, objectRepository ) );
     }
 
     
@@ -168,7 +168,7 @@ public class PTIPool
         Vector<CompletedTask<InputPair<Long, Integer>>> finishedJobs = new Vector<CompletedTask<InputPair<Long, Integer>>>();
         for( InputPair<FutureTask<Long>, Integer> jobpair : jobs )        
         {
-            FutureTask job = jobpair.getFirst();
+            FutureTask<Long> job = jobpair.getFirst();
             Integer queueID = jobpair.getSecond();
             if( job.isDone() )
             {
@@ -177,7 +177,7 @@ public class PTIPool
                 {
                     log.debug( "Checking job" );
                     
-                    l = (Long) job.get();
+                    l = job.get();
                 }
                 catch( ExecutionException ee )
                 {                    
@@ -195,6 +195,7 @@ public class PTIPool
 
                 log.debug( String.format( "adding (queueID='%s') to finished jobs", queueID ) );
                 InputPair< Long, Integer > pair = new InputPair< Long, Integer >( l, queueID );
+                // \todo: CompletedTask suffers from ambiguous use of it's constructor. If we use the one provided, CompletedTask will live with a lot of warnings.
                 finishedJobs.add( new CompletedTask<InputPair< Long, Integer >>( job, pair ) );
             }
         }
@@ -231,14 +232,14 @@ public class PTIPool
      */
     public void shutdown() throws InterruptedException 
     {
-        log.debug( "shutdown() called" );    
+        log.info( "shutdown() called" );
         boolean activeJobs = true;
         while( activeJobs )
         {
             activeJobs = false;
             for( InputPair<FutureTask<Long>, Integer> jobpair : jobs )
             {
-                FutureTask job = jobpair.getFirst(); 
+                FutureTask<Long> job = jobpair.getFirst();
                 if( ! job.isDone() )
                 {
                     activeJobs = true;

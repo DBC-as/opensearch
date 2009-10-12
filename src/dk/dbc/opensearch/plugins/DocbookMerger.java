@@ -22,6 +22,7 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.pluginframework.IProcesser;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -68,23 +69,23 @@ public class DocbookMerger implements IProcesser
     {
 
         log.debug( String.format( "Entered getCargoContainer, streams in container: %s", cargo.getCargoObjectCount() ) );
-        CargoObject dc = null;
+        DublinCore dc = null;
         Element annotation = null;
-        if( cargo.hasCargo( DataStreamType.DublinCoreData ) )
+        if( cargo.hasMetadata( DataStreamType.DublinCoreData ) )
         {
-            dc = cargo.getCargoObject( DataStreamType.DublinCoreData );
-            byte[] dc_data_bytes = dc.getBytes();
-            ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_data_bytes );
-
-            Document dc_doc = null;
-            try{
-                SAXReader reader = new SAXReader();
-                dc_doc = reader.read( dc_is );
-            }catch( DocumentException docex){
-                log.fatal( String.format( "Could not read the dublin core inputstream into a Document: '%s'", docex ) );
-                throw new PluginException( "Could not read the dublin core inputstream into a Document", docex );
-            }
-            annotation = dc_doc.getRootElement();
+            dc = cargo.getDublinCoreMetaData();
+//            byte[] dc_data_bytes = dc.getBytes();
+//            ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_data_bytes );
+//
+//            Document dc_doc = null;
+//            try{
+//                SAXReader reader = new SAXReader();
+//                dc_doc = reader.read( dc_is );
+//            }catch( DocumentException docex){
+//                log.fatal( String.format( "Could not read the dublin core inputstream into a Document: '%s'", docex ) );
+//                throw new PluginException( "Could not read the dublin core inputstream into a Document", docex );
+//            }
+//            annotation = dc_doc.getRootElement();
         }
 
 

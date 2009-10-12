@@ -19,12 +19,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
+import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import org.junit.BeforeClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +66,7 @@ public class FedoraRelsExtTest
      * Conformance test that verifies the minimal expectancies of a RELS-EXT stream
      */
     @Test
-    public void testRelsExtXML() throws ParserConfigurationException, TransformerConfigurationException, TransformerException
+    public void testRelsExtXML() throws OpenSearchTransformException
     {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -83,7 +82,7 @@ public class FedoraRelsExtTest
      * stream
      */
     @Test
-    public void testAddRelation() throws ParserConfigurationException, TransformerConfigurationException, TransformerException
+    public void testAddRelation() throws OpenSearchTransformException
     {
         // lets try adding the triple "test:1 isMemberOfCollection work:1"
         instance.addRelationship( new QName( FedoraNamespace.FEDORARELSEXT.getURI(),
@@ -106,7 +105,7 @@ public class FedoraRelsExtTest
      * the object unchanged.
      */
     @Test
-    public void testIdenticalRelationsDisallowed() throws TransformerConfigurationException, TransformerException
+    public void testIdenticalRelationsDisallowed() throws OpenSearchTransformException
     {
         QName pred = new QName( FedoraNamespace.FEDORARELSEXT.getURI(),
                 "isMemberOfCollection",

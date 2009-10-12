@@ -36,7 +36,7 @@ public final class FedoraNamespaceContext implements NamespaceContext
 
     private static Logger log = Logger.getLogger( OpensearchNamespaceContext.class );
 
-    enum FedoraNamespace
+    public enum FedoraNamespace
     {
 
         XML( XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI ),
@@ -93,7 +93,7 @@ public final class FedoraNamespaceContext implements NamespaceContext
      * @param prefix the prefix to look in the enums for
      * @return FedoraNamespace type if found, null otherwise
      */
-    FedoraNamespace getNamespace( String prefix )
+    public FedoraNamespace getNamespace( String prefix )
     {
         FedoraNamespace ns = null;
         for( FedoraNamespace osns : FedoraNamespace.values() )

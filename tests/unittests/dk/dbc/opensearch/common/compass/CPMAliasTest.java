@@ -20,49 +20,100 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.compass;
 
 
-import dk.dbc.opensearch.common.compass.CPMAlias;
 
+import dk.dbc.opensearch.common.config.CompassConfig;
+import dk.dbc.opensearch.common.xml.XMLUtils;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import mockit.Mock;
+import mockit.MockClass;
+import mockit.Mocked;
 import org.junit.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
+import static mockit.Mockit.redefineMethods;
+import mockit.Expectations;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 
 
 public class CPMAliasTest 
 {
-    /**
-      * This test is not a strict unittest because we are dependant on a file on the disc.
-      */
+
+
+    private static NodeList getNodeList() throws Exception
+    {
+        String xsemxml = "<compass-core-mapping><xml-object alias=\"article\" sub-index=\"opensearch-index\"></xml-object></compass-core-mapping>";
+        DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+        Document jobDocument = docBuilder.parse( new ByteArrayInputStream( xsemxml.getBytes() ) );
+        Element xmlRoot = jobDocument.getDocumentElement();
+        NodeList ret = xmlRoot.getElementsByTagName( "xml-object" );
+        return ret;
+    }
+
+     @MockClass( realClass=CompassConfig.class)
+     public static class MockCompassConfig
+     {
+         @Mock public static String getXSEMPath(){ return "mockPath"; }
+         @Mock public static String getHttpUrl(){ return "httpurl";}
+         @Mock public static String getDTDPath(){ return "dtdpath"; }
+     }
+
+    @MockClass( realClass = CPMAlias.class )
+    public static class MockCPMAlias
+    {
+        @Mocked
+        NodeList cpmNodeList;
+        
+        @Mock public void $init() throws Exception{}
+    }
+
     CPMAlias cpmAlias;
+
     @Before
     public void setUp() throws Exception
     {
-       	cpmAlias = new CPMAlias();
+        setUpMocks( MockCompassConfig.class );
+        setUpMocks(MockCPMAlias.class);
     }
 
-    
     @After
     public void tearDown() throws Exception
     {
+        tearDownMocks();
         cpmAlias = null;
     }
 
     
 	@Test
-	public void cpmIsValidAliasTest() throws ParserConfigurationException, SAXException, IOException
+	public void cpmIsValidAliasTest() throws Exception
 	{
-            boolean valid = cpmAlias.isValidAlias( "article" );
-            assertTrue( valid );
+       	cpmAlias = new CPMAlias();
+        //injecting our own list, as the mock constructor has not created one
+        cpmAlias.cpmNodeList = CPMAliasTest.getNodeList();
+        boolean valid = cpmAlias.isValidAlias( "article" );
+        assertTrue( valid );
     }
 	
 	
 	@Test
-	public void cpmIsValidAliasFailTest() throws ParserConfigurationException, SAXException, IOException
+	public void cpmIsValidAliasFailTest() throws Exception
 	{
+       	cpmAlias = new CPMAlias();
+        //injecting our own list, as the mock constructor has not created one
+        cpmAlias.cpmNodeList = CPMAliasTest.getNodeList();
 		boolean inValid = cpmAlias.isValidAlias( "fejlmester" );
 		assertFalse( inValid );
 	}

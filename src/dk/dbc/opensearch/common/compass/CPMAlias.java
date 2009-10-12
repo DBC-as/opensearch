@@ -46,7 +46,7 @@ public class CPMAlias
     
     public CPMAlias() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
     {
-        log.debug( "Entering CPMAlias constructor" );
+        log.trace( "Entering CPMAlias constructor" );
         xsemFile = CompassConfig.getXSEMPath();
         
         String publicUrl = CompassConfig.getHttpUrl();
@@ -55,12 +55,12 @@ public class CPMAlias
         EntityResolver cer = new CompassEntityResolver( publicUrl, systemUrl );
            
         cpmNodeList = XMLUtils.getNodeList( xsemFile, "xml-object", cer );
-        log.debug( "XMLUtils returned node list" );
+        log.trace( "XMLUtils returned node list" );
     }
 
 
     public boolean isValidAlias( String alias ) throws ParserConfigurationException, SAXException, IOException
-    {        
+    {
         for( int i = 0; i < cpmNodeList.getLength(); i++ )
         {
             Element aliasNode = (Element)cpmNodeList.item( i );

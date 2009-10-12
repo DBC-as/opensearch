@@ -20,7 +20,6 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
@@ -86,7 +85,6 @@ public class RUBHarvester implements ICreateCargoContainer
         this.data = data;
         submitter = job.getSubmitter();
         format = job.getFormat();
-        this.referenceData = job.getReferenceData();
         String mimetype = "application/pdf";
         Element root = null;
         root = referenceData.getDocumentElement();

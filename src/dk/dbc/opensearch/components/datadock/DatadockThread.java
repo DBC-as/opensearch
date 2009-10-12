@@ -18,7 +18,7 @@
 */
 
 /**
- * \file DatadockThread.java
+ * \file
  * \brief Thread handling in datadock framework
  */
 
@@ -27,7 +27,7 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -60,8 +60,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.SAXException;
 
 
@@ -100,7 +98,7 @@ public class DatadockThread implements Callable< Float >
     private String format;
     private ArrayList< String > list;
     private String result;
-    private PluginResolver pluginResolver;
+    private final IObjectRepository objectRepository;
 
     /**
      *\todo: Wheet out in the Exceptions
@@ -123,13 +121,14 @@ public class DatadockThread implements Callable< Float >
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IFedoraAdministration fedoraAdministration, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
         this.datadockJob = datadockJob;
         this.harvester = harvester;
-        this.pluginResolver = pluginResolver;
+        this.objectRepository = objectRepository;
+
         // Each pair identifies a plugin by p1:submitter and p2:format
         submitter = datadockJob.getSubmitter();
         format = datadockJob.getFormat();
@@ -177,14 +176,14 @@ public class DatadockThread implements Callable< Float >
      * @throws IOException
      * @throws ParseException
      */
-    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, MarshalException, ValidationException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         // Must be implemented due to class implementing Callable< Float > interface.
         // Method is to be extended when we connect to 'Posthuset'
         log.trace( "DatadockThread call method called" );
 
-        long jobTime = System.currentTimeMillis();
-        // PluginResolver pluginResolver = new PluginResolver();
+        // Validate plugins
+        PluginResolver pluginResolver = new PluginResolver();
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
         String mimeType = null;
         long length = 0;
@@ -219,11 +218,18 @@ public class DatadockThread implements Callable< Float >
 
                     ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
                     timer = System.currentTimeMillis();
+
                     cargo = harvestPlugin.getCargoContainer( datadockJob, data );
+
                     timer = System.currentTimeMillis() - timer;
                     log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
 
-                    checkCargoObjectCount( cargo );
+                    if( cargo.getCargoObjectCount() < 1 )
+                    {
+                        String error = String.format( "Plugin returned a null CargoContainer" );
+                        log.error( error );
+                        throw new IllegalStateException( error );
+                    }
 
                     break;
                 case ANNOTATE:
@@ -231,39 +237,53 @@ public class DatadockThread implements Callable< Float >
 
                     IAnnotate annotatePlugin = (IAnnotate)plugin;
 
-                    checkCargoContainerIsNotNull( cargo );
+                    if( cargo == null)
+                    {
+                        String error = String.format( "Previous plugin returned a null CargoContainer" );
+                        log.error( error );
+                        throw new IllegalStateException( error );
+                    }
 
                     timer = System.currentTimeMillis();
+
                     cargo = annotatePlugin.getCargoContainer( cargo );
+
                     timer = System.currentTimeMillis() - timer;
                     log.trace( String.format( "Timing: ( ANNOTATE ) %s", timer ) );
+
+                    break;
+                case RELATION:
+                    log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
+
+                    if( cargo == null)
+                    {
+                        String error = String.format( "Previous plugin returned a null CargoContainer" );
+                        log.error( error );
+                        throw new IllegalStateException( error );
+                    }
+
+                    IRelation relationPlugin = (IRelation)plugin;
+
+                    timer = System.currentTimeMillis();
+
+                    cargo = relationPlugin.getCargoContainer( cargo );
+
+                    timer = System.currentTimeMillis() - timer;
+                    log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
 
                     break;
                 case STORE:
                     log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
 
                     IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-
+                    repositoryStore.setObjectRepository( this.objectRepository );
                     timer = System.currentTimeMillis();
                     cargo = repositoryStore.storeCargoContainer( cargo );
                     timer = System.currentTimeMillis() - timer;
                     log.trace( String.format( "Timing: ( STORE ) %s", timer ) );
 
                     // DO NOT CHANGE log level to trace or debug!
-                    log.info( "STORE pid: " + cargo.getDCIdentifier() );
-
-                    break;
-                case RELATION:
-                    log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
-
-                    checkCargoContainerIsNotNull( cargo );
-
-                    IRelation relationPlugin = (IRelation)plugin;
-
-                    timer = System.currentTimeMillis();
-                    cargo = relationPlugin.getCargoContainer( cargo );
-                    timer = System.currentTimeMillis() - timer;
-                    log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
+                    log.info( "STORE pid: " + cargo.getIdentifier() );
 
                     break;
                 default:
@@ -271,10 +291,10 @@ public class DatadockThread implements Callable< Float >
                 }
             }
 
-            //push to processqueue job to processqueue and get estimate
-            queue.push( cargo.getDCIdentifier() );
-            log.trace( String.format( "Timing: (DatadockThread) %s", System.currentTimeMillis() - jobTime ) );
             length = cargo.getCargoObject( DataStreamType.OriginalData ).getContentLength();
+
+            //push to processqueue job to processqueue and get estimate
+            queue.push( cargo.getIdentifier() );
 
             //inform the harvester that it was a success
             try
@@ -295,26 +315,6 @@ public class DatadockThread implements Callable< Float >
             log.error( String.format( "Error in %s plugin handling. Messag: %s", this.getClass().toString(), e.getMessage() ) );
             harvester.setStatus( datadockJob.getIdentifier(), JobStatus.FAILURE );
             return 0f;
-        }
-    }
-
-
-    private void checkCargoContainerIsNotNull( CargoContainer cargo ) throws NullPointerException
-    {
-        if ( cargo == null )
-        {
-            log.error( "DatadockThread call throws NullPointerException, cc is null" );
-            throw new NullPointerException( "DatadockThread call throws NullPointerException" );
-        }
-    }
-
-
-    private void checkCargoObjectCount( CargoContainer cargo ) throws IllegalStateException
-    {
-        if( cargo.getCargoObjectCount() < 1 ) // no data in the cargocontainer, so no reason to continue
-        {
-            log.error( String.format( "no cargoobjects in the cargocontainer" ) );
-            throw new IllegalStateException( String.format( "no cargoobjects in the cargocontainer " ) );
         }
     }
 }

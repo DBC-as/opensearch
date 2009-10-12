@@ -27,7 +27,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.os.FileFilter;
 
 import java.io.File;
 

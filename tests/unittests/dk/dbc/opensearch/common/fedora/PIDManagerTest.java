@@ -26,25 +26,65 @@ import java.net.MalformedURLException;
 
 import javax.xml.rpc.ServiceException;
 
+import mockit.Mock;
+import mockit.MockClass;
 import org.apache.commons.configuration.ConfigurationException;
 import static org.junit.Assert.*;
 import org.junit.*;
+import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
 
 
 public class PIDManagerTest
 {
 
-    @Test ( expected=IllegalStateException.class )
-    public void testPrefixMustBeSpecified() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandle
     {
-        String pid = PIDManager.getInstance().getNextPID( "" );
+        @Mock
+        public MockFedoraHandle()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int maxPids, String prefix )
+        {
+            if( null == prefix || prefix.isEmpty() )
+            {
+                throw new IllegalStateException();
+            }
+            return new String[]
+                    {
+                        prefix + ":1"
+                    };
+        }
+    }
+    private FedoraHandle fedoraHandle;
+
+    @Before
+    public void setUp() throws Exception
+    {
+        setUpMocks( MockFedoraHandle.class );
+    }
+
+    @After
+    public void tearDown() throws Exception
+    {
+        tearDownMocks();
+    }
+
+    @Test ( expected=IllegalStateException.class )
+    public void testPrefixMustBeSpecified() throws ObjectRepositoryException, ServiceException, ConfigurationException, MalformedURLException, IllegalStateException, IOException
+    {
+        FedoraHandle fedoraHandle = new FedoraHandle();
+        String[] pid = fedoraHandle.getNextPID( 1,  "" );
     }
 
 
-    @Ignore
     @Test //( expected=IllegalStateException.class )
-    public void testFedoraConnectionMustBePresent() throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public void testFedoraConnectionMustBePresent() throws ObjectRepositoryException, ServiceException, ConfigurationException, MalformedURLException, IllegalStateException, IOException
     {
-        PIDManager.getInstance().getNextPID( "a" );
+        FedoraHandle fedoraHandle = new FedoraHandle();
+        fedoraHandle.getNextPID( 1,  "a" );
     }
 }

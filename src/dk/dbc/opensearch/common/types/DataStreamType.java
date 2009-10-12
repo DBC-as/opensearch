@@ -20,23 +20,19 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import org.apache.log4j.Logger;
-
 
 public enum DataStreamType 
-{	
+{
+    DublinCoreData( "dublinCoreData", "dublin core data" ),
+	AdminData( "adminData", "Administration" ),
+    RelsExtData( "relsExtData", "fedora relationship expressions" ),
+
 	OriginalData ( "originalData", "original data" ),
-	DublinCoreData( "dublinCoreData", "dublin core data" ),
-	AdminData( "adminData", "Administration" ), 
-    IndexableData( "indexableData", "data prepared for indexing" ),
-    RelsExt( "relsExt", "relationship expressions" );
-	
-	
-	private static Logger log = Logger.getLogger( DataStreamType.class );
+    AnnotationData ( "annotationData", "annotated data" ),
+    IndexableData( "indexableData", "data prepared for indexing" );
 	
 	String name;
 	String description;
-	
 	
 	DataStreamType( String name, String description ) 
 	{		
@@ -60,7 +56,6 @@ public enum DataStreamType
 	public static boolean validDataStreamType( String nametype )
     {
         DataStreamType DSN = DataStreamType.getDataStreamTypeFrom( nametype );
-        log.debug( "checking dataStreamName" );
         
         if( DSN == null )
         {
@@ -80,7 +75,8 @@ public enum DataStreamType
         DataStreamType DSN = null;
         for (DataStreamType dsn : DataStreamType.values() )
         {
-            if( name.equals( dsn.getName() ) )
+            //yes, we are very forgiving
+            if( name.toLowerCase().equals( dsn.getName().toLowerCase() ) )
             {
                 DSN = dsn;
             }

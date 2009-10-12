@@ -31,11 +31,10 @@ import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
-import dk.dbc.opensearch.common.fedora.IFedoraAdministration;
-import dk.dbc.opensearch.common.fedora.FedoraAdministration;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
@@ -153,7 +152,13 @@ public class DatadockMain
      */
     static protected void addDaemonShutdownHook()
     {
-        Runtime.getRuntime().addShutdownHook( new Thread() { public void run() { shutdown(); } } );
+        Runtime.getRuntime().addShutdownHook( new Thread() {
+            @Override
+            public void run()
+            {
+                shutdown();
+            }
+        } );
     }
 
 
@@ -169,7 +174,7 @@ public class DatadockMain
     	log.trace( "DatadockMain main called" );
 
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
-        
+
         boolean terminateOnZeroSubmitted = false;
         for( String a : args ) 
         {           
@@ -194,8 +199,9 @@ public class DatadockMain
             IDBConnection dbConnection = new PostgresqlDBConnection();
             IEstimate estimate = new Estimate( dbConnection );
             IProcessqueue processqueue = new Processqueue( dbConnection );
-            IFedoraAdministration fedoraAdministration = new FedoraAdministration();
-            PluginResolver pluginResolver = new PluginResolver();
+            IObjectRepository repository = new FedoraObjectRepository();
+            //IFedoraAdministration fedoraAdministration = new FedoraAdministration( repository );
+
             log.trace( "Starting datadockPool" );
 
             // datadockpool
@@ -207,7 +213,7 @@ public class DatadockMain
             // harvester;
             IHarvest harvester = new FileHarvest();
             
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, fedoraAdministration, harvester, pluginResolver );
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, repository, harvester);
             
             log.trace( "Starting the manager" );
             // Starting the manager
@@ -229,20 +235,20 @@ public class DatadockMain
         {
             log.removeAppender( startupAppender );
         }
-        
+
         long mainTimer = System.currentTimeMillis();
         int mainJobsSubmitted = 0;
         
         
         
         while( ! isShutdownRequested() )
-        {	 
+        {
             try
             {
             	log.trace( "DatadockMain calling datadockManager update" );
 
             	long timer = System.currentTimeMillis();
-                int jobsSubmited = datadockManager.update();                
+                int jobsSubmited = datadockManager.update();     
                 timer = System.currentTimeMillis() - timer;
                
                 mainJobsSubmitted += jobsSubmited;
@@ -264,6 +270,7 @@ public class DatadockMain
                         Thread.sleep(pollTime);
                     }                                          
                 }
+
             }
             catch( InterruptedException ie )
             {
