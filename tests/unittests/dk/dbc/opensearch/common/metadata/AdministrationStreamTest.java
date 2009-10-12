@@ -127,7 +127,6 @@ public class AdministrationStreamTest
         AdministrationStream instance = new AdministrationStream( bais, true );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         instance.serialize( baos );
-        System.out.println( new String( baos.toByteArray() ) );
         assertXpathEvaluatesTo( "article", "/admin-stream[1]/indexingalias[1]/@name", new String( baos.toByteArray() ) );
     }
 

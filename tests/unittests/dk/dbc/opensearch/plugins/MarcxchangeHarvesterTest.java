@@ -114,7 +114,6 @@ public class MarcxchangeHarvesterTest
      * CargoContainer will contain a CargoObject with the incorrect data and an
      * empty metadata-element.
      */
-    @Test( expected = PluginException.class )
     public void getCargoContainerWithInvalidData() throws Exception
     {
         harvestPlugin = new MarcxchangeHarvester();
