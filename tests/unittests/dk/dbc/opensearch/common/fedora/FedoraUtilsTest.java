@@ -225,6 +225,6 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Test
     public void testHasAdminStreamInDigitalObjectAfterSerialization() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( "adminData", "/x:digitalObject[1]/x:datastream[2]/@ID", origStr );
+        XMLAssert.assertXpathEvaluatesTo( "adminData", "/x:digitalObject[1]/x:datastream[3]/@ID", origStr );
     }
 }

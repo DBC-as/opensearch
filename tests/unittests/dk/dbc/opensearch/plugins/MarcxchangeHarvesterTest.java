@@ -27,8 +27,10 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
+import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
@@ -106,6 +108,8 @@ public class MarcxchangeHarvesterTest
         assertEquals( true, cc.hasCargo( DataStreamType.OriginalData ) );
         assertEquals( testPid1, cc.getIdentifier() );
         assertEquals( 1, cc.getMetaData().size() );
+
+
     }
 
     /**

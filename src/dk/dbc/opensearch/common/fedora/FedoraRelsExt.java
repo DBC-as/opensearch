@@ -70,7 +70,7 @@ public class FedoraRelsExt implements MetaData
     private Document doc;
     private Element relsext;
     private Element fedoraObject;
-    private Set<Long> relations;
+    private Set<String> relations;
     public static final DataStreamType type = DataStreamType.RelsExtData;
 
     private static Logger log = Logger.getLogger( FedoraRelsExt.class );
@@ -88,7 +88,7 @@ public class FedoraRelsExt implements MetaData
     {
         this.id = id;
         createEmptyRelsExt( id );
-        relations = new HashSet<Long>();
+        relations = new HashSet<String>();
     }
 
 
@@ -134,7 +134,7 @@ public class FedoraRelsExt implements MetaData
     public boolean addRelationship( QName predicate, QName object )
     {
         Element triple = doc.createElement( predicate.getPrefix() + ":" + predicate.getLocalPart() );
-        boolean added = relations.add( new Long( new Integer( predicate.hashCode() ).toString()+new Integer( object.hashCode() ).toString() ) );
+        boolean added = relations.add( new Integer( predicate.hashCode() ).toString()+new Integer( object.hashCode() ).toString() );
         if( added )
         {
             triple.setAttribute( "rdf:resource", object.getNamespaceURI() + object.getPrefix() + ":" + object.getLocalPart() );

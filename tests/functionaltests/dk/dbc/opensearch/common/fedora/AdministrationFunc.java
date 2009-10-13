@@ -386,7 +386,7 @@ public class AdministrationFunc
         objectRepository = new FedoraObjectRepository();
         try
         {
-            objectRepository.deleteObject( pid, "deleting", false );
+            objectRepository.deleteObject( pid, "deleting" );
         }
         catch ( ObjectRepositoryException re )
         {
@@ -406,21 +406,13 @@ public class AdministrationFunc
         String sID = DataStreamType.OriginalData.getName() + ".0";
         try
         {
-            success = objectRepository.deleteDataFromObject( sID, sID );
+            objectRepository.deleteDataFromObject( sID, sID );
         }
         catch ( Exception e )
         {
             e.printStackTrace();
         }
-        if ( !success )
-        {
-            System.out.println( "testRemoveDataStream failed" );
-        }
-        else
-        {
-            System.out.println( "testRemoveDataStream succeded" );
-        }
-
+        System.out.println( "testRemoveDataStream succeded" );
     }
 
 
@@ -442,14 +434,14 @@ public class AdministrationFunc
         boolean checksum = false;
         try
         {
-            checksum = objectRepository.replaceDataInObject( pid, sID, cargo);
+            objectRepository.replaceDataInObject( pid, sID, cargo);
         }
         catch ( Exception e )
         {
             e.printStackTrace();
         }
 
-        System.out.println( String.format( "the returned checksum: ", checksum ) );
+        System.out.println( String.format( "object replaced" ) );
 
     }
 
@@ -467,18 +459,16 @@ public class AdministrationFunc
         {
             e.printStackTrace();
         }
-        boolean retID = false;
-
         try
         {
-            retID = objectRepository.storeDataInObject( pid, cargo, false, true);
+            objectRepository.storeDataInObject( pid, cargo, false, true);
         }
         catch ( Exception e )
         {
             e.printStackTrace();
         }
 
-        System.out.println( String.format( "got the id: %s from the addDataStreamToObject method", retID ) );
+        System.out.println( String.format( "object stored in object '%s'", pid ) );
 
     }
 

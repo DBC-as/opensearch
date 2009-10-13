@@ -45,30 +45,183 @@ import java.util.regex.Pattern;
  */
 public interface IObjectRepository
 {
+    /** 
+     * Stores the object {@code cargo} in the object repository, using
+     * {@code logmessage} to describe the nature of the object
+     * storage.  
+     * The returned String must provide the client with a unique
+     * (within the object repository) identification of the stored
+     * object.
+     *
+     * @param cargo A {@link CargoContainer} containing the data to be stored.
+     * @param logmessage Message describing the storage operation
+     * 
+     * @return A unique identifer for the object in the object repository
+     * @throws ObjectRepositoryException if the object cannot be stored
+     */
     public String storeObject( CargoContainer cargo, String logmessage ) throws ObjectRepositoryException;
 
+    /** 
+     * Retrieves the object identified by {@code identifier}. The
+     * identifier must be unique for the object repository and thereby
+     * designate one single object or none at all within the
+     * repository.
+     * 
+     * @param identifier identifying the object in the scope of the object repository
+     * 
+     * @return A {@link CargoContainer} containing the object data from the repository
+     * @throws ObjectRepositoryException if the object cannot be retrieved
+     */
     public CargoContainer getObject( String identifier ) throws ObjectRepositoryException;
 
-    public boolean deleteObject( String identifier, String logmessage, boolean force ) throws ObjectRepositoryException;
+    /** 
+     * Deletes the object identified by {@code identifier} from the
+     * repository. The implementation can choose whether the object
+     * should be permanently deleted or just hidden from the client.
+     * 
+     * @param identifier identifying the object in the repository
+     * @param logmessage describing the reasons for the deletion
+     * 
+     * @throws ObjectRepositoryException if the object cannot be deleted
+     */
+    public void deleteObject( String identifier, String logmessage ) throws ObjectRepositoryException;
 
-    public boolean replaceObject( String identifier, CargoContainer cargo ) throws ObjectRepositoryException;
+    /** 
+     * Replaces the object identified by {@code identifier} with the
+     * data contained in the {@code cargo} from the {@link
+     * CargoContainer}. 
+     * 
+     * @param identifier identifying the data to be replaced 
+     * @param cargo containing the data to replace the data identified by {@code identifier}
+     *
+     * @throws ObjectRepositoryException if the object cannot be replaced with the data in {@code cargo}
+     */
+    public void replaceObject( String identifier, CargoContainer cargo ) throws ObjectRepositoryException;
     
+
+    /** 
+     * Searches the object repository using the regular expression in
+     * {@code searchExpression} and returns all identifiers that
+     * matches the query limited by {@code maximumResult}
+     * 
+     * @param searchExpression a regular expression expressing the search query
+     * @param maximumResult integer limiting the returned {@link List} of identifiers
+     * 
+     * @return a {@link List} of identifiers that matched {@code searchExpression}
+     */
     public List<String> getIdentifiers( Pattern searchExpression, int maximumResult );
     
+
+    /** 
+     * Searches the object repository using the query expression in
+     * {@code verbatimSearchString} and returns all identifiers that
+     * matches the query limited by {@code maximumResult}
+     * 
+     * @param verbatimSearchString string that is used as query 
+     * @param maximumResult integer limiting the returned {@link List} of identifiers
+     * 
+     * @return a {@link List} of identifiers that matched {@code verbatimSearchString}
+     */    
     public List<String> getIdentifiers( String verbatimSearchString, int maximumResult );
 
+    /** 
+     * Searches the object repository using the {@code
+     * verbatimSearchString} as query limiting the search to the
+     * {@link List} of {@code searchableFields} and limiting {@link
+     * List} of returned identifiers with {@code maximumResult}
+     * 
+     * @param verbatimSearchString string that is used as query
+     * @param searchableFields {@link List} of fields to search in
+     * @param maximumResult integer limiting the returned {@link List} of identifiers
+     * 
+     * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
+     */
     public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, int maximumResult );
 
+    /** 
+     * Searches the object repository using the a {@link List} of
+     * {@code searchStrings} as query, limiting the search to the
+     * {@link List} of {@code searchableFields} and limiting {@link
+     * List} of returned identifiers with {@code maximumResult}
+     * 
+     * @param searchStrings {@link List} of strings to search for in {@code searchableFields}
+     * @param searchableFields {@link List} of fields to search in for {@code searchStrings}
+     * @param maximumResult integer limiting the returned {@link List} of identifiers
+     * 
+     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
+     */
     public List<String> getIdentifiers( List<String> searchStrings, List<String> searchableFields, int maximumResult );
 
-    public boolean storeDataInObject( String identifier, CargoObject cargo, boolean versionable, boolean overwrite ) throws ObjectRepositoryException;
+    /** 
+     * Stores data supplied in {@code cargo} in the object identified
+     * by {@code identifier}, overwriting any existing data for that
+     * type if {@code overwrite} has been set. The implementation can
+     * choose to make {@code versionable} and {@code overwrite}
+     * orthogonal, even though setting data as {@code versionable} in
+     * most cases would imply that it should be made inactive rather
+     * than overwritten.
+     * 
+     * @param identifier identifying the object which the data should be stored in. 
+     * @param cargo a {@link CargoObject} containing one unit of data that should be stored in the object
+     * @param versionable indicating whether the data should be versionable in the object repository
+     * @param overwrite indicating whether existing data for the type of the {@link CargoObject} should be overwritten with the one provided.
+     * 
+     * @throws ObjectRepositoryException if the data could not be stored on the object 
+     */
+    public void storeDataInObject( String identifier, CargoObject cargo, boolean versionable, boolean overwrite ) throws ObjectRepositoryException;
 
+    /** 
+     * Retrieves data identified by {@code identifier} and qualified
+     * with {@code streamtype} from the object repository, encoded in
+     * a {@link CargoContainer}. If no data matching {@code
+     * streamtype} was found in the object identified by {@code
+     * objectIdentifier}, an empty CargoContainer will be returned.
+     * 
+     * @param objectIdentifier identifying the object to retrieve data from
+     * @param streamtype qualifying the data that is to be retrieved
+     * 
+     * @return a {@link CargoContainer} containing the data matching the parameters given, or empty if nothing matched
+     *
+     * @throws ObjectRepositoryException if the CargoContainer could not be constructed.
+     */
     public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException;
 
+    /** 
+     * Retrieves data identified by {@code identifier} and qualified
+     * with {@code dataIdentifier} from the object repository, encoded in
+     * a {@link CargoContainer}. If no data matching {@code
+     * dataIdentifier} was found in the object identified by {@code
+     * objectIdentifier}, an empty CargoContainer will be returned.
+     * 
+     * @param objectIdentifier identifying the object to retrieve data from
+     * @param dataIdentifier qualifying the data that is to be retrieved
+     * 
+     * @return a {@link CargoContainer} containing the data matching the parameters given, or empty if nothing matched
+     *
+     * @throws ObjectRepositoryException if the CargoContainer could not be constructed.
+     */
     public CargoContainer getDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
 
-    public boolean deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
+    /** 
+     * Deletes data from the object identified by {@code objectIdentifier}, identified by {@code dataIdentifier}.
+     * 
+     * @param objectIdentifier identifying the object from which the data is to be deleted
+     * @param dataIdentifier identifying the data that is to be deleted
+     * 
+     * @throws ObjectRepositoryException if the data could not be deleted from the object
+     */
+    public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
 
-    public boolean replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException;
-
+    /** 
+     * Replaces data in the object identified by {@code
+     * objectIdentifier}, identified by {@code dataIdentifier} with
+     * the data enclosed in the {@link CargoObject}
+     * 
+     * @param objectIdentifier identifying the object in which the data is to be replaced
+     * @param dataIdentifier identifying the data that is to be replaced
+     * @param cargo a {@link CargoObject} containing the data that is to replace the data in the object
+     * 
+     * @throws ObjectRepositoryException if the data could not be replaced in the object
+     */
+    public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException;
 }

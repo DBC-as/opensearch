@@ -19,13 +19,15 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.types;
 
 import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.metadata.MetaData;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 
@@ -46,8 +48,7 @@ public class CargoContainer
     Logger log = Logger.getLogger( CargoContainer.class );
     /** The internal representation of the data contained in the CargoContainer*/
     private ArrayList<CargoObject> data;
-    private Set<MetaData> metadata;
-    private String identifier;
+    private Map<DataStreamType, MetaData> metadata;
 
     /**
      * Constructor initializes internal representation of data, i.e.,
@@ -55,10 +56,9 @@ public class CargoContainer
      */
     public CargoContainer()
     {
-        data = new ArrayList<CargoObject>();
-        metadata = new HashSet<MetaData>();
-        log.trace( String.format( "Constructing new CargoContainer" ) );
+        this( "" );
     }
+
 
     /**
      * Initializes a CargoContainer object with an identifier, which would
@@ -69,49 +69,48 @@ public class CargoContainer
      */
     public CargoContainer( String identifier )
     {
-        this();
-        this.identifier = identifier;
+        data = new ArrayList<CargoObject>();
+        metadata = new HashMap<DataStreamType, MetaData>();
+        this.addMetaData( new DublinCore( identifier ) );
+        log.trace( String.format( "Constructing new CargoContainer" ) );
     }
+
 
     public String getIdentifier()
     {
-        return this.identifier;
+        return this.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
     }
+
 
     public void setIdentifier( String identifier )
     {
-        if( null != this.identifier || ! "".equals( this.identifier ) )
+        String id = this.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
+        if( null != id || !"".equals( id ) || identifier.equals( id ) )
         {
-            log.warn( String.format( "Overwriting existing identifier '%s' with new one: '%s'", this.identifier, identifier ) );
+            log.warn( String.format( "Overwriting existing identifier '%s' with new one: '%s'", id, identifier ) );
         }
-        this.identifier = identifier;
+        this.getDublinCoreMetaData().setIdentifier( identifier );
     }
 
+
     /**
-     * Adds a metadata elment conforming to the {@link MetaData} interface. If
-     * this class already contains a {@link MetaData} element with the same
-     * identifier, the supplied metadata will not be added to this 
-     * {@link CargoContainer}
+     * Adds a metadata element conforming to the {@link MetaData}
+     * interface. If this class already contains a {@link MetaData}
+     * element with the same identifier, the supplied metadata will
+     * overwrite the existing metadata in this {@link CargoContainer}
      * 
      * @param metadataelement the MetaData element to be added to this CargoContainer
      */
-    public boolean addMetaData( MetaData metadataelement )
+    public void addMetaData( MetaData metadataelement )
     {
-        boolean alreadyHasMetadata = false;
-        for( MetaData meta : metadata )
+        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
         {
-            if( meta.getClass() == metadataelement.getClass() )
+            if( meta.getValue().getClass() == metadataelement.getClass() )
             {
-                log.warn( String.format( "CargoContainer already contains the metadata element. Will not add metadata with identifier %s", metadataelement.getIdentifier() ) );
-                alreadyHasMetadata = true;
+                log.warn( String.format( "CargoContainer already contains the metadata element. Will overwrite with metadata type '%s'", metadataelement.getClass() ) );
             }
         }
-        if( !alreadyHasMetadata )
-        {
-            metadata.add( metadataelement );
-            return true;
-        }
-        return false;
+        metadata.put( metadataelement.getType(), metadataelement );
     }
 
 
@@ -491,11 +490,12 @@ public class CargoContainer
         return ret_ia;
     }
 
+
     public boolean hasMetadata( DataStreamType type )
     {
-        for( MetaData meta : metadata )
+        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
         {
-            if( meta.getType() == type )
+            if( meta.getKey() == type )
             {
                 return true;
             }
@@ -507,9 +507,9 @@ public class CargoContainer
     public List<MetaData> getMetaData()
     {
         List<MetaData> retval = new ArrayList<MetaData>();
-        for( MetaData meta : metadata )
+        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
         {
-            retval.add( meta );
+            retval.add( meta.getValue() );
         }
 
         if( retval == null )
@@ -523,11 +523,11 @@ public class CargoContainer
     public MetaData getMetaData( DataStreamType mdst )
     {
         MetaData retval = null;
-        for( MetaData meta : metadata )
+        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
         {
-            if( meta.getType() == mdst )
+            if( meta.getKey() == mdst )
             {
-                retval = meta;
+                retval = meta.getValue();
             }
         }
 
@@ -543,11 +543,11 @@ public class CargoContainer
     public DublinCore getDublinCoreMetaData()
     {
         DublinCore retval = null;
-        for( MetaData elems : metadata )
+        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
         {
-            if( elems.getType() == DataStreamType.DublinCoreData )
+            if( meta.getKey() == DataStreamType.DublinCoreData )
             {
-                retval = (DublinCore) elems;
+                retval = (DublinCore) meta.getValue();
             }
         }
         if( retval == null )

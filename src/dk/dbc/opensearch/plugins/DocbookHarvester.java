@@ -162,11 +162,7 @@ public class DocbookHarvester implements ICreateCargoContainer
 
             DublinCore dcStream = new DublinCore( pid[0] );
 
-            boolean succeeded = cargo.addMetaData( dcStream );
-            if( ! succeeded )
-            {
-                log.warn( String.format( "Failed to add DublinCore stream to CargoContainer with id '%s'", cargo.getIdentifier() ) );
-            }
+            cargo.addMetaData( dcStream );
         }
         catch ( IOException ioe )
         {

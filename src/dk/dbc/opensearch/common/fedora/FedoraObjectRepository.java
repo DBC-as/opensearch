@@ -28,6 +28,7 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -87,12 +88,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public boolean deleteObject( String identifier, String logmessage, boolean force ) throws ObjectRepositoryException
+    public void deleteObject( String identifier, String logmessage ) throws ObjectRepositoryException
     {
         String timestamp = null;
         try
         {
-            timestamp = this.fedoraHandle.purgeObject( identifier, logmessage, force );
+            //note that we're never forcing a deletion
+            timestamp = this.fedoraHandle.purgeObject( identifier, logmessage, false );
         }
         catch( ConfigurationException ex )
         {
@@ -127,11 +129,10 @@ public class FedoraObjectRepository implements IObjectRepository
 
         if( timestamp == null )
         {
-            log.warn( String.format( "Could not delete object reference by pid %s", identifier ) );
-            return false;
+            String error = String.format( "Could not delete object reference by pid %s", identifier );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
         }
-
-        return true;
     }
 
 
@@ -156,7 +157,17 @@ public class FedoraObjectRepository implements IObjectRepository
         String identifier = cargo.getIdentifier();
         if( identifier == null )
         {
-            log.warn( "No objectIdentifier found in cargocontainer. Don't worry, we'll get one from fedora" );
+            DublinCore dc = cargo.getDublinCoreMetaData();
+            if( null == dc) 
+            {
+                log.warn( "No dublin core stream found on CargoContainer, debug information will be severely impeded" );
+            }else
+            {
+                String format = dc.getDCValue( DublinCoreElement.ELEMENT_FORMAT );
+                String submitter = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
+                log.info( String.format( "No objectIdentifier found in cargocontainer with format '%s', submitter '%s'.", format, submitter ) );
+            }
+            log.info( "We'll get an identifier from fedora" );
             identifier = "";
         }
 
@@ -202,10 +213,15 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
 
-        if( identifier != null && ! returnedobjectIdentifier.equals( identifier ) )
+        if( "".equals( identifier ) )
+        {
+            log.info( String.format( "For empty identifier, we recieved '%s' from the ingest", returnedobjectIdentifier ) );
+        }
+        else if( ! returnedobjectIdentifier.equals( identifier ) )
         {
             log.warn( String.format( "I expected pid '%s' to be returned from the repository, but got '%s'", identifier, returnedobjectIdentifier ) );
         }
+
         return returnedobjectIdentifier;
     }
 
@@ -216,11 +232,11 @@ public class FedoraObjectRepository implements IObjectRepository
      *
      * @param identifier the object to replace
      * @param cargo the data to replace object with
-     * @return true iff data could be replaced, false otherwise
+     *
      * @throws ObjectRepositoryException if either deletion of the old object or storage of the new went wrong
      */
     @Override
-    public boolean replaceObject( String identifier, CargoContainer cargo ) throws ObjectRepositoryException
+    public void replaceObject( String identifier, CargoContainer cargo ) throws ObjectRepositoryException
     {
         if( cargo.getCargoObjectCount() == 0 )
         {
@@ -271,37 +287,29 @@ public class FedoraObjectRepository implements IObjectRepository
             }
             if( null == newPid && 1 != newPid.length )
             {
-                log.warn( String.format( "pid is empty for namespace '%s', but no exception was caught.", prefix ) );
-                return false;
+                String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", prefix );
+                log.error( error );
+                throw new ObjectRepositoryException( error );
             }
             cargoIdentifier = newPid[0];
             cargo.setIdentifier( cargoIdentifier );
         }
 
         String logm = String.format( "Replacing object referenced by pid %s with data previously identified by id %s", identifier, cargoIdentifier );
-        boolean deletedObject = deleteObject( identifier, logm, true );
+        deleteObject( identifier, logm );
 
-        if( deletedObject )
-        {
-            cargo.setIdentifier( identifier );
-        }
-        else
-        {
-            log.warn( String.format( "Could not delete object with pid '%s'", identifier ) );
-            return false;
-        }
+        cargo.setIdentifier( identifier );
 
         String storedObjectPid = storeObject( cargo, logm );
 
         if( ! storedObjectPid.equals( identifier ) )
         {
-            log.warn( String.format( "Could not store replacement object with pid '%s': stored with pid '%s' instead", identifier, storedObjectPid ) );
+            String error = String.format( "Could not store replacement object with pid '%s': stored with pid '%s' instead", identifier, storedObjectPid );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
             //rollback?
             // perhaps instead of a purge, we should use mark-as-deleted and then commit if storedObjectPid.equals( identifier )
-            return false;
         }
-
-        return true;
     }
 
 
@@ -408,9 +416,11 @@ public class FedoraObjectRepository implements IObjectRepository
             }
 
             CargoObject co = cargoobjects.getSecond().getSecond();
+
+            
             try
             {
-                if( co.getDataStreamType().compareTo( DataStreamType.DublinCoreData ) == 0 )
+                if( co.getDataStreamType() == DataStreamType.DublinCoreData )
                 {
                     DublinCore dc;
                     try
@@ -423,6 +433,18 @@ public class FedoraObjectRepository implements IObjectRepository
                         log.error( error );
                         throw new ObjectRepositoryException( error, ex );
                     }
+                    String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
+                    if( null == dcid )
+                    {
+                        System.out.println( identifier );
+                        log.warn( String.format( "Dublin Core data has no identifier, will use '%s' one from the CargoContainer", identifier ) );
+                        dc.setIdentifier( identifier );
+                    }
+                    else
+                    {
+                        log.info( String.format( "Adding DublinCore data with id '%s' to CargoContainer", dcid ) );
+                    }
+
                     cargo.addMetaData( dc );
                 }
                 else
@@ -569,7 +591,7 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
     @Override
-    public boolean storeDataInObject( String identifier, CargoObject object, boolean versionable, boolean overwrite ) throws ObjectRepositoryException
+    public void storeDataInObject( String identifier, CargoObject object, boolean versionable, boolean overwrite ) throws ObjectRepositoryException
     {
 
         AdministrationStream admStream = getAdministrationStream( identifier );
@@ -639,16 +661,14 @@ public class FedoraObjectRepository implements IObjectRepository
 
         if( returnedSID == null )
         {
-            String warn = String.format( "Failed to add datastream to object with pid '%s'", identifier );
-            log.error( warn );
-            return false;
+            String error = String.format( "Failed to add datastream to object with pid '%s'", identifier );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
         }
-        return true;
-
     }
 
     @Override
-    public boolean deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
+    public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
     {
 
         String logm = String.format( "removed stream %s from object %s", dataIdentifier, objectIdentifier );
@@ -683,22 +703,38 @@ public class FedoraObjectRepository implements IObjectRepository
 
         if( stamp == null )
         {
-            String warn = String.format( "Failed to remove data with id '%s' from object with pid '%s'", dataIdentifier, objectIdentifier );
-            log.warn( warn );
-            return false;
+            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s'", dataIdentifier, objectIdentifier );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
         }
 
         boolean updated = removeDataUpdateAdminstream( objectIdentifier, dataIdentifier );
 
-
-        return updated;
-
+        if( ! updated )
+        {
+            /** \todo: what to do here? the data was deleted, but we
+             * could no update the administration stream. We're in
+             * deep manure. We should do a rollback here or instead of
+             * purging the datastream, we should mark it as deleted
+             * and then try to unmark it here.*/
+            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s'", dataIdentifier, objectIdentifier );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
+        }
     }
 
     @Override
     public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException
     {
+
+        if( null == streamtype)
+        {
+            String error = String.format( "DataStreamType was null, cannot perform search in repository" );
+            log.error( error );
+            throw new ObjectRepositoryException( new IllegalArgumentException( error ) );
+        }
         AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
+
         CargoContainer cargo = new CargoContainer( objectIdentifier );
         try
         {
@@ -742,6 +778,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
+        log.warn( String.format( "Returning empty CargoContainer for request of %s on %s", streamtype.getName(), objectIdentifier ) );
         return cargo;
     }
 
@@ -796,21 +833,16 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
-    public boolean replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException
+    public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException
     {
-        boolean couldRemoveStream = deleteDataFromObject( objectIdentifier, dataIdentifier );
-        if( ! couldRemoveStream )
-        {
-            log.warn( String.format( "The object identified by '%s' has no datastream identified by '%s'", objectIdentifier, dataIdentifier ) );
-        }
-        
-        boolean couldAddStream = storeDataInObject( objectIdentifier, cargo, true, true );
-        if( couldAddStream )
-        {
-            log.warn( String.format( "The stream identified by '%s' could not be added to the object identified by '%s'", dataIdentifier, objectIdentifier ) );
-        }
 
-        return couldRemoveStream && couldAddStream;
+        /** \todo: this is just a wrapper for the two-phase operation
+         * of deleting and storing data. It inherits the weaknesses
+         * from both methods, as an exception thrown somewhere in the
+         * operations renders the object repository in an inconsistent
+         * state*/
+        deleteDataFromObject( objectIdentifier, dataIdentifier );
+        storeDataInObject( objectIdentifier, cargo, true, true );
     }
 
     /**

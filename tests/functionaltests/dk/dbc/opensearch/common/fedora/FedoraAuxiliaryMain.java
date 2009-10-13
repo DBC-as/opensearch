@@ -127,7 +127,7 @@ public class FedoraAuxiliaryMain
     static void testDeleteObject( String pid ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         objectRepository = new FedoraObjectRepository();
-        objectRepository.deleteObject( pid, "test delete", false );
+        objectRepository.deleteObject( pid, "test delete" );
         System.out.println( String.format( "Object with pid: %s deleted", pid ) );
     }
 }

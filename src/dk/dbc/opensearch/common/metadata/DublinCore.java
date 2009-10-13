@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.XMLEvent;
 import org.apache.log4j.Logger;
 
@@ -102,27 +103,21 @@ public class DublinCore implements MetaData{
      */
     public DublinCore( InputStream dcIn ) throws XMLStreamException
     {
-
+        dcvalues = new HashMap<DublinCoreElement, String>();
+        
         XMLInputFactory infac = XMLInputFactory.newInstance();
-        XMLStreamReader parser = infac.createXMLStreamReader( dcIn );
-        XMLEventReader eventReader = infac.createXMLEventReader( parser );
-
-        XMLEvent event;
+        XMLEventReader eventReader = infac.createXMLEventReader( dcIn );
 
         StartElement element;
         Characters chars;
 
-        DublinCoreElement elementName;
-        String elementText;
-
-        while( parser.hasNext() )
-        {
-            elementName = null;
-            elementText = null;
-            event = eventReader.nextEvent();
-
-            if( XMLStreamConstants.START_ELEMENT == event.getEventType() )
+        DublinCoreElement elementName = null;
+        String elementText = null;
+        while (eventReader.hasNext()) {
+            XMLEvent event = (XMLEvent)eventReader.next();
+            switch ( event.getEventType() )
             {
+            case XMLStreamConstants.START_ELEMENT:
                 element = event.asStartElement();
                 if( element.getName().getPrefix().equals( dc.getPrefix() ) )
                 {
@@ -131,17 +126,22 @@ public class DublinCore implements MetaData{
                         elementName = DublinCoreElement.fromString( element.getName().getLocalPart() );
                     }
                 }
-            }
-            if( XMLStreamConstants.CHARACTERS == event.getEventType() )
-            {
+                break;
+            case XMLStreamConstants.CHARACTERS:
                 chars = event.asCharacters();
                 elementText = chars.getData();
+                break;
             }
             if( elementName != null && elementText != null )
             {
                 dcvalues.put( elementName, elementText );
+                elementName = null;
+                elementText = null;
             }
+
         }
+        eventReader.close();
+
     }
     
     public void setContributor( String contributor )

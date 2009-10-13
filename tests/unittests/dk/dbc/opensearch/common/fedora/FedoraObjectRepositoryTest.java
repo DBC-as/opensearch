@@ -71,7 +71,10 @@ public class FedoraObjectRepositoryTest {
     
     static final String expectedFoxml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><foxml:digitalObject xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" PID=\"test:1\" VERSION=\"1.1\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"A\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"testFormat\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"testSubmitter\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\"2009-09-26T21:27:00.065\"/><foxml:property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\"2009-09-26T21:27:00.065\"/></foxml:objectProperties><foxml:datastream CONTROL_GROUP=\"M\" ID=\"originalData.0\" STATE=\"A\" VERSIONABLE=\"false\"><foxml:datastreamVersion CREATED=\"2009-09-26T21:27:00.058\" ID=\"originalData.0.0\" LABEL=\"testFormat\" MIMETYPE=\"text/xml\" SIZE=\"1\"><foxml:binaryContent>IA==</foxml:binaryContent></foxml:datastreamVersion></foxml:datastream><foxml:datastream CONTROL_GROUP=\"X\" ID=\"adminData\" STATE=\"A\" VERSIONABLE=\"true\"><foxml:datastreamVersion CREATED=\"2009-09-26T21:27:00.269\" ID=\"adminData.0\" LABEL=\"administration stream\" MIMETYPE=\"text/xml\" SIZE=\"221\"><foxml:xmlContent><admin-stream><indexingalias name=\"article\"/><streams><stream format=\"testFormat\" id=\"originalData.0\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"testSubmitter\"/></streams></admin-stream></foxml:xmlContent></foxml:datastreamVersion></foxml:datastream></foxml:digitalObject>";
     static final String administrationStream = "<admin-stream><indexingalias name=\"article\"/><streams><stream format=\"testFormat\" id=\"originalData.0\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"testSubmitter\"/><stream format=\"testFormat\" id=\"DC\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"dublinCoreData\" submitter=\"testSubmitter\"/></streams></admin-stream>";
-    static final String dublinCoreStream = "<?xml version=\"1.0\"?><oai_dc:dc xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\"><dc:title>Test title</dc:title></oai_dc:dc>";
+    
+    static final String dublinCoreStream = "<?xml version=\"1.0\"?><oai_dc:dc xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\"><dc:title>Test title</dc:title><dc:identifier>test:1</dc:identifier></oai_dc:dc>";
+
+    //static final String dublinCoreStream = "<?xml version=\"1.0\"?><dc xmlns=\"http://purl.org/dc/elements/1.1/\"><title>Test title</title><identifier>test:1</identifier></dc>";
 
     @MockClass( realClass = FedoraHandle.class )
     public static class MockFedoraHandle
@@ -108,12 +111,17 @@ public class FedoraObjectRepositoryTest {
             {
                 return samePid;
             }
+            else if( foundPid.equals( testPid ) )
+            {
+                return testPid;
+            }
             return newPid;
         }
 
         @Mock
         public byte[] getDatastreamDissemination( String pid, String datastreamId, String asOfDateTime )
         {
+
             byte[] retarray = null;
             if( pid.equals( samePid ) )
             {
@@ -124,6 +132,16 @@ public class FedoraObjectRepositoryTest {
                 else if( datastreamId.equals( "DC" ) )
                 {
                     retarray = dublinCoreStream.getBytes();
+                }
+                else if( datastreamId.equals( "adminData" ) )
+                {
+                    retarray = administrationStream.getBytes();
+                }
+            } else if( pid.equals( testPid ) ) // with no dc data
+            {
+                if( datastreamId.equals( "originalData.0" ) )
+                {
+                    retarray = "original data".getBytes();
                 }
                 else if( datastreamId.equals( "adminData" ) )
                 {
@@ -225,21 +243,17 @@ public class FedoraObjectRepositoryTest {
     {
         String identifier = "test:1";
         String logmessage = "log";
-        boolean force = false;
 
-        boolean result = instance.deleteObject( identifier, logmessage, force );
-        assertTrue( result );
+        instance.deleteObject( identifier, logmessage );
     }
 
-    @Test
+    @Test( expected = ObjectRepositoryException.class )
     public void testDeleteObjectFailsWithNonExistingObject() throws Exception
     {
         String identifier = "idontexist";
         String logmessage = "log";
-        boolean force = false;
 
-        boolean result = instance.deleteObject( identifier, logmessage, force );
-        assertFalse( result );
+        instance.deleteObject( identifier, logmessage );
     }
 
 
@@ -274,18 +288,6 @@ public class FedoraObjectRepositoryTest {
         instance.storeObject( cargo, logmessage );
     }
 
-    @Test
-    public void testStoreObjectWithDifferentPidReturnsNewPid() throws Exception
-    {
-        CargoContainer cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", IndexingAlias.Article, " ".getBytes() );
-        cargo.setIdentifier( "test:2" );
-        String logmessage = "log";
-        String expResult = "new:1";
-        String result = instance.storeObject( cargo, logmessage );
-        assertEquals( expResult, result );
-    }
-
     /**
      * Replaces object identified by 'test:1' with data in cargocontainer
      * identified by 'test:2'
@@ -293,25 +295,24 @@ public class FedoraObjectRepositoryTest {
     @Test
     public void testReplaceObject() throws Exception
     {
-        CargoContainer cargo = new CargoContainer();
+        CargoContainer cargo = new CargoContainer( testPid );
         cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", IndexingAlias.Article, " ".getBytes() );
-        cargo.setIdentifier( "test:2" );
 
-        boolean replaceObject = instance.replaceObject( "test:1", cargo );
-
-        assertTrue( replaceObject );
-        
+        instance.replaceObject( "test:1", cargo );
     }
 
+    /** 
+     * Should throw an exception
+     * 
+     */
     @Test
     public void testReplaceNonExistingObjectFails() throws Exception
     {
-        CargoContainer cargo = new CargoContainer();
+        CargoContainer cargo = new CargoContainer( "test:3" );
         cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", IndexingAlias.Article, " ".getBytes() );
-        cargo.setIdentifier( "test:3" );
 
-        boolean replaceObject = instance.replaceObject( "test:2", cargo );
-        assertFalse( replaceObject );
+        instance.replaceObject( "test:2", cargo );
+        
     }
 
     @Test( expected=IllegalStateException.class )
@@ -319,21 +320,17 @@ public class FedoraObjectRepositoryTest {
     {
         CargoContainer cargo = new CargoContainer();
 
-        boolean replaceObject = instance.replaceObject( "test:1", cargo );
-        assertFalse( replaceObject );
+        instance.replaceObject( "test:1", cargo );
     }
 
     @Test
     public void testReplaceObjectIgnoresPidInReplacementObject() throws Exception
     {
-        CargoContainer cargo = new CargoContainer();
+        CargoContainer cargo = new CargoContainer( testPid );
         cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", IndexingAlias.Article, " ".getBytes() );
-        cargo.setIdentifier( "test:2" );
-        //String expResult = "new:1";
-        boolean replaceObject = instance.replaceObject( "test:1", cargo);
 
+        instance.replaceObject( "test:1", cargo);
         // \todo needs functionality to check internal in the middle of the replace-process
-        assertTrue( replaceObject );
     }
 
     @Test
@@ -407,9 +404,7 @@ public class FedoraObjectRepositoryTest {
         boolean versionable = false;
         boolean overwrite = false;
 
-        boolean expResult = true;
-        boolean result = instance.storeDataInObject( identifier, object, versionable, overwrite );
-        assertEquals( expResult, result );
+        instance.storeDataInObject( identifier, object, versionable, overwrite );
     }
 
 
@@ -420,13 +415,11 @@ public class FedoraObjectRepositoryTest {
         String dataIdentifier = "originalData.0";
 
         boolean expResult = true;
-        boolean result = instance.deleteDataFromObject( objectIdentifier, dataIdentifier );
-        assertEquals( expResult, result );
-
+        instance.deleteDataFromObject( objectIdentifier, dataIdentifier );
     }
 
 
-    @Test
+    @Test( expected = ObjectRepositoryException.class )
     public void testGetDataFromObject_String_DataStreamType() throws Exception
     {
 
@@ -470,10 +463,8 @@ public class FedoraObjectRepositoryTest {
         CargoContainer cargo = new CargoContainer( objectIdentifier );
         cargo.add( DataStreamType.OriginalData, "artikel", "testSubmitter", "da", "text/xml", IndexingAlias.Article, "<root><child/></root>".getBytes() );
         CargoObject cargoobject = cargo.getCargoObject( DataStreamType.OriginalData );
-
-        boolean expResult = true;
-        boolean result = instance.replaceDataInObject( objectIdentifier, dataIdentifier, cargoobject );
-        assertEquals( expResult, result );
+        
+        instance.replaceDataInObject( objectIdentifier, dataIdentifier, cargoobject );
     }
 
 
