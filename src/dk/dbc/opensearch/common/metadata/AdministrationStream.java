@@ -183,6 +183,36 @@ public class AdministrationStream implements MetaData
         return added;
     }
 
+    public boolean addStream( MetaData obj, String id )
+    {
+        boolean added = false;
+        if( obj.getType() == DataStreamType.AdminData )
+        {
+            log.warn( "Refusing to add adminstream data information to admin stream" );
+            added = false;
+        }
+        else if( obj.getType() == DataStreamType.DublinCoreData )
+        {
+            DublinCore dc = (DublinCore) obj;
+
+            int pos = admvalues.size();
+            HashMap<AdministrationStreamElement, String> map = new HashMap<AdministrationStreamElement, String>( 6 );
+            map.put( AdministrationStreamElement.FORMAT, dc.getType().getName() );
+            map.put( AdministrationStreamElement.INDEX, Integer.toString( pos ) );
+            map.put( AdministrationStreamElement.LANG, "dc" );
+            map.put( AdministrationStreamElement.MIMETYPE, "text/xml" );
+            map.put( AdministrationStreamElement.STREAMNAMETYPE, dc.getType().getName() );
+            map.put( AdministrationStreamElement.SUBMITTER, "dbc" );
+            map.put( AdministrationStreamElement.ID, id );
+            admvalues.put( new Integer( pos ), map );
+            if( pos + 1 == admvalues.size() )
+            {
+                added = true;
+            }
+        }
+        return added;
+    }
+
 
     /**
      * Returns a {@link List} containing an {@link InputPair}
@@ -356,6 +386,7 @@ public class AdministrationStream implements MetaData
      *
      * @return the type of this metadata element
      */
+    @Override
     public DataStreamType getType()
     {
         return type;

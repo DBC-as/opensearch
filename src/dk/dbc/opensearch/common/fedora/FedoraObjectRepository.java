@@ -1,37 +1,35 @@
 /*
-  This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
-  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+This file is part of opensearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s,
+Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-  opensearch is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+opensearch is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  opensearch is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+opensearch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+You should have received a copy of the GNU General Public License
+along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /**
  * \file
  * \brief
  */
-
-
 package dk.dbc.opensearch.common.fedora;
-
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
+import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import fedora.common.Constants;
@@ -68,12 +66,10 @@ public class FedoraObjectRepository implements IObjectRepository
 {
 
     private static Logger log = Logger.getLogger( FedoraObjectRepository.class );
-
     /**
      * Dateformat conforming to the fedora requirements.
      */
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
-
     private FedoraHandle fedoraHandle;
 
     /**
@@ -158,10 +154,11 @@ public class FedoraObjectRepository implements IObjectRepository
         if( identifier == null )
         {
             DublinCore dc = cargo.getDublinCoreMetaData();
-            if( null == dc) 
+            if( null == dc )
             {
                 log.warn( "No dublin core stream found on CargoContainer, debug information will be severely impeded" );
-            }else
+            }
+            else
             {
                 String format = dc.getDCValue( DublinCoreElement.ELEMENT_FORMAT );
                 String submitter = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
@@ -170,6 +167,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.info( "We'll get an identifier from fedora" );
             identifier = "";
         }
+        cargo.addMetaData( constructAdministrationStream( cargo ) );
 
         byte[] foxml;
         try
@@ -217,7 +215,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             log.info( String.format( "For empty identifier, we recieved '%s' from the ingest", returnedobjectIdentifier ) );
         }
-        else if( ! returnedobjectIdentifier.equals( identifier ) )
+        else if( !returnedobjectIdentifier.equals( identifier ) )
         {
             log.warn( String.format( "I expected pid '%s' to be returned from the repository, but got '%s'", identifier, returnedobjectIdentifier ) );
         }
@@ -246,14 +244,14 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         String cargoIdentifier = cargo.getIdentifier();
-        
+
         if( cargoIdentifier == null )
         {
             String[] newPid = null;
             String prefix = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
             try
             {
-                newPid = fedoraHandle.getNextPID( 1,  prefix );
+                newPid = fedoraHandle.getNextPID( 1, prefix );
             }
             catch( ServiceException ex )
             {
@@ -302,7 +300,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         String storedObjectPid = storeObject( cargo, logm );
 
-        if( ! storedObjectPid.equals( identifier ) )
+        if( !storedObjectPid.equals( identifier ) )
         {
             String error = String.format( "Could not store replacement object with pid '%s': stored with pid '%s' instead", identifier, storedObjectPid );
             log.error( error );
@@ -384,7 +382,7 @@ public class FedoraObjectRepository implements IObjectRepository
                 streamId = "DC";
             }
             log.debug( String.format( "id: %s, streamId: %s", identifier, streamId ) );
-            
+
             byte[] datastream;
             try
             {
@@ -417,7 +415,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
             CargoObject co = cargoobjects.getSecond().getSecond();
 
-            
+
             try
             {
                 if( co.getDataStreamType() == DataStreamType.DublinCoreData )
@@ -545,18 +543,20 @@ public class FedoraObjectRepository implements IObjectRepository
         return pids;
     }
 
+
+    @Override
     public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, int maximumResults )
     {
 
-        String[] resultFields = new String[searchableFields.size() ];
+        String[] resultFields = new String[searchableFields.size()];
         int i = 0;
         for( String field : searchableFields )
         {
-            resultFields[ i ] = field;
+            resultFields[i] = field;
             i++;
         }
 
-        ObjectFields[] objectFields = searchRepository( resultFields, "pid",(String[]) searchableFields.toArray(), "has", maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, "pid", (String[]) searchableFields.toArray(), "has", maximumResults );
 
         int ofLength = objectFields.length;
         List<String> pids = new ArrayList<String>( ofLength );
@@ -568,17 +568,19 @@ public class FedoraObjectRepository implements IObjectRepository
         return pids;
     }
 
+
+    @Override
     public List<String> getIdentifiers( List<String> searchStrings, List<String> searchableFields, int maximumResults )
     {
-        String[] resultFields = new String[searchableFields.size() ];
+        String[] resultFields = new String[searchableFields.size()];
         int i = 0;
         for( String field : searchableFields )
         {
-            resultFields[ i ] = field;
+            resultFields[i] = field;
             i++;
         }
 
-        ObjectFields[] objectFields = searchRepository( resultFields, "pid", searchableFields.toArray( new String[searchableFields.size() ] ) , "has", maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, "pid", searchableFields.toArray( new String[searchableFields.size()] ), "has", maximumResults );
 
         int ofLength = objectFields.length;
         List<String> pids = new ArrayList<String>( ofLength );
@@ -589,6 +591,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
+
 
     @Override
     public void storeDataInObject( String identifier, CargoObject object, boolean versionable, boolean overwrite ) throws ObjectRepositoryException
@@ -596,7 +599,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         AdministrationStream admStream = getAdministrationStream( identifier );
         int count = admStream.getCount( object.getDataStreamType() );
-        String dsId = object.getDataStreamType().getName()+ Integer.toString( count+1 );
+        String dsId = object.getDataStreamType().getName() + Integer.toString( count + 1 );
         boolean addedData = addDataUpdateAdminstream( identifier, dsId, object );
 
         if( !addedData )
@@ -625,13 +628,14 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
         /** end ugly code hack ;)*/
-
         String dsLocation = uploadDatastream( baos );
         String logm = String.format( "added %s to the object with pid: %s", dsLocation, identifier );
         String returnedSID = null;
         try
         {
-            returnedSID = this.fedoraHandle.addDatastream( identifier, dsId, new String[]{  }, object.getFormat(), versionable, object.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
+            returnedSID = this.fedoraHandle.addDatastream( identifier, dsId, new String[]
+                    {
+                    }, object.getFormat(), versionable, object.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
         }
         catch( ConfigurationException ex )
         {
@@ -667,6 +671,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
     }
 
+
     @Override
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
     {
@@ -687,17 +692,20 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         catch( ServiceException ex )
         {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );            log.error( error );
+            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );
+            log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( MalformedURLException ex )
         {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );            log.error( error );
+            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );
+            log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( IOException ex )
         {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );            log.error( error );
+            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );
+            log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
 
@@ -710,7 +718,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         boolean updated = removeDataUpdateAdminstream( objectIdentifier, dataIdentifier );
 
-        if( ! updated )
+        if( !updated )
         {
             /** \todo: what to do here? the data was deleted, but we
              * could no update the administration stream. We're in
@@ -723,11 +731,12 @@ public class FedoraObjectRepository implements IObjectRepository
         }
     }
 
+
     @Override
     public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException
     {
 
-        if( null == streamtype)
+        if( null == streamtype )
         {
             String error = String.format( "DataStreamType was null, cannot perform search in repository" );
             log.error( error );
@@ -758,7 +767,7 @@ public class FedoraObjectRepository implements IObjectRepository
                     }
                     catch( MalformedURLException ex )
                     {
-                        String error = String.format( "Failed to retrieve data identified by '%s' from objectrepository pid '%s': %s", dsId, objectIdentifier, ex.getMessage() );    
+                        String error = String.format( "Failed to retrieve data identified by '%s' from objectrepository pid '%s': %s", dsId, objectIdentifier, ex.getMessage() );
                         log.error( error );
                         throw new ObjectRepositoryException( error, ex );
                     }
@@ -781,6 +790,7 @@ public class FedoraObjectRepository implements IObjectRepository
         log.warn( String.format( "Returning empty CargoContainer for request of %s on %s", streamtype.getName(), objectIdentifier ) );
         return cargo;
     }
+
 
     @Override
     public CargoContainer getDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
@@ -833,6 +843,7 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
+    @Override
     public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException
     {
 
@@ -844,6 +855,45 @@ public class FedoraObjectRepository implements IObjectRepository
         deleteDataFromObject( objectIdentifier, dataIdentifier );
         storeDataInObject( objectIdentifier, cargo, true, true );
     }
+
+
+    private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
+    {
+        IndexingAlias originalData = cargo.getIndexingAlias( DataStreamType.OriginalData );
+        if( originalData == null )
+        {
+            log.warn( "Supplied CargoContainer has no Original Data, I find it hard to construct an indexing alias given the circumstances. Instead, it'll be IndexingAlias.None" );
+            originalData = IndexingAlias.None;
+        }
+        AdministrationStream adminStream = new AdministrationStream( originalData.getName() );
+
+        if( 0 == cargo.getCargoObjectCount() )
+        {
+            String error = String.format( "Refusing to construct AdministrationStream when CargoContainer (%s) has no data in it", cargo.getIdentifier() );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
+        }
+        int streamtypecounter = 0;
+
+        log.debug( String.format( "Constructing administration stream for %s cargo objects", cargo.getTotalObjectCount()-1 ) );
+        for( CargoObject co : cargo.getCargoObjects() )
+        {
+            streamtypecounter = adminStream.getCount( co.getDataStreamType() );
+            String id = co.getDataStreamType().getName() + "." + Integer.toString( streamtypecounter );
+            log.debug( String.format( "Adding stream '%s' with id '%s' to adminstream", co.getDataStreamType().getName(), id ) );
+            adminStream.addStream( co, id );
+        }
+        streamtypecounter = 0;
+        for( MetaData meta : cargo.getMetaData() )
+        {
+            streamtypecounter = adminStream.getCount( meta.getType() );
+            String id = meta.getType().getName() + "." + Integer.toString( streamtypecounter );
+            log.debug( String.format( "Adding stream '%s' with id '%s' to adminstream", meta.getType().getName(), id ) );
+            adminStream.addStream( meta, id );
+        }
+        return adminStream;
+    }
+
 
     /**
      * Wrapper around {@link #getDataStream(java.lang.String, dk.dbc.opensearch.common.types.DataStreamType)}
@@ -887,13 +937,14 @@ public class FedoraObjectRepository implements IObjectRepository
         return adminStream;
     }
 
+
     private boolean addDataUpdateAdminstream( String objectIdentifier, String dataIdentifier, CargoObject obj ) throws ObjectRepositoryException
     {
         AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
 
         boolean added = adminStream.addStream( obj, dataIdentifier );
 
-        if( ! added )
+        if( !added )
         {
             log.warn( "Could not add information on added stream to administration stream" );
         }
@@ -915,7 +966,9 @@ public class FedoraObjectRepository implements IObjectRepository
         String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
         String adminLogm = "admin stream updated with added stream data" + timeNow;
         String location = uploadDatastream( baos );
-        String[] alternatedsids = new String[]{};
+        String[] alternatedsids = new String[]
+        {
+        };
 
         try
         {
@@ -930,6 +983,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return added;
     }
+
 
     private boolean removeDataUpdateAdminstream( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
     {
@@ -965,24 +1019,25 @@ public class FedoraObjectRepository implements IObjectRepository
         String[] empty = new String[]
         {
         };
-        
+
         try
         {
             this.fedoraHandle.modifyDatastreamByReference( objectIdentifier, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
         }
         catch( RemoteException ex )
         {
-             String error = String.format( "Failed to replace administration stream on object with objectIdentifier '%s'", objectIdentifier );
+            String error = String.format( "Failed to replace administration stream on object with objectIdentifier '%s'", objectIdentifier );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
- 
+
         return removed;
     }
 
-    private byte[] getDataStream( String objectIdentifier, String dataStreamTypeName) throws ObjectRepositoryException
+
+    private byte[] getDataStream( String objectIdentifier, String dataStreamTypeName ) throws ObjectRepositoryException
     {
-        if( null == objectIdentifier || null == dataStreamTypeName || objectIdentifier.isEmpty() || dataStreamTypeName.isEmpty()  )
+        if( null == objectIdentifier || null == dataStreamTypeName || objectIdentifier.isEmpty() || dataStreamTypeName.isEmpty() )
         {
             String error = String.format( "Necessary parameters for retrieving datastream was null" );
             log.error( error );
@@ -1018,7 +1073,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
-        if ( null == ds )
+        if( null == ds )
         {
             String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': Got nothing back from the object repository", dataStreamTypeName, objectIdentifier );
             log.error( error );
@@ -1027,13 +1082,14 @@ public class FedoraObjectRepository implements IObjectRepository
         return ds;
     }
 
+
     private String uploadDatastream( ByteArrayOutputStream datastream ) throws ObjectRepositoryException
     {
         File tmpFile;
         try
         {
             String timeStamp = Long.toString( System.currentTimeMillis() ) + Integer.toString( datastream.hashCode() );
-            tmpFile = File.createTempFile( "datastream"+timeStamp, ".tmp" );
+            tmpFile = File.createTempFile( "datastream" + timeStamp, ".tmp" );
         }
         catch( IOException ex )
         {
@@ -1080,12 +1136,13 @@ public class FedoraObjectRepository implements IObjectRepository
         return location;
     }
 
+
     ObjectFields[] searchRepository( String[] fieldsToReturn, String fieldsToSearch, String[] searchString, String comparisonOperator, int maximumResults )
     {
 
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
-        
+
         Condition[] cond = new Condition[searchString.length];
         for( int i = 0; i < searchString.length; i++ )
         {
@@ -1100,31 +1157,35 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         catch( ConfigurationException ex )
         {
-            String warn =  String.format( "Could not conduct query: %s", ex.getMessage() );
+            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
             log.warn( warn );
         }
         catch( ServiceException ex )
         {
-            String warn =  String.format( "Could not conduct query: %s", ex.getMessage() );
+            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
             log.warn( warn );
         }
         catch( MalformedURLException ex )
         {
-            String warn =  String.format( "Could not conduct query: %s", ex.getMessage() );
+            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
             log.warn( warn );
         }
         catch( IOException ex )
         {
-            String warn =  String.format( "Could not conduct query: %s", ex.getMessage() );
+            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
             log.warn( warn );
         }
         if( fsr == null )
         {
             log.warn( "Retrieved no hits from search, returning empty List<String>" );
-            return new ObjectFields[]{};
+            return new ObjectFields[]
+                    {
+                    };
         }
         ObjectFields[] objectFields = fsr.getResultList();
 
         return objectFields;
     }
+
+
 }

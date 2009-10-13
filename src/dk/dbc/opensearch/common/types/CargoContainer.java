@@ -382,6 +382,10 @@ public class CargoContainer
         return data.size();
     }
 
+    public int getTotalObjectCount()
+    {
+        return data.size() + metadata.size();
+    }
 
     /**
      * Returns a List of CargoObjects that matches the DataStreamType. If you
