@@ -87,4 +87,7 @@ public interface IHarvest
      * @throws HarvesterInvalidStatusChangeException if the client tries to set the status more than once on a given {@code jobId}
      */
     void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
+//     void setStatusFailure( IIdentifier jobId, JobStatus status, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
+//     void setStatusSuccess( IIdentifier jobId, JobStatus status, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
+//     void setStatusRetry( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
 }

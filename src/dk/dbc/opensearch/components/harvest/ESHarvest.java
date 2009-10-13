@@ -123,7 +123,6 @@ public class ESHarvest implements IHarvest
 	log.info( "Starting the ES-Harvester" );
         log.debug( "ESHarvest started" );
 
-
     }
 
 
@@ -658,5 +657,118 @@ public class ESHarvest implements IHarvest
 	stmt.close();
 
     }
+
+
+    private void setFailureDiagnostic( ESIdentifier Id, String failureDiagnostic ) throws HarvesterIOException, SQLException
+    {
+	// \Note: It is only possible to add one diagnostic to a record, since you can only make one
+	//        call to either setSuccess or setFailure.
+
+	int diagnosticId = 0;
+	Statement stmt = null;
+	try
+	{
+	    stmt = conn.createStatement();
+
+	    // Get unique diagnostics.number:
+	    ResultSet rs = stmt.executeQuery( "select diagIdSeq.nextval from dual" );
+	    if ( !rs.next() ) 
+	    {
+		String errorMsg = String.format( "Could not create a unique identifier for diagIdSeq in the ES base for ESId: %s.", Id );
+		log.fatal( errorMsg );
+		conn.rollback();
+		stmt.close();
+		throw new HarvesterIOException( errorMsg );
+	    }
+	    diagnosticId = rs.getInt( 1 );
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = String.format( "A database error occured when trying to retrive unique id from diagIdSeq in ES base for ESId: %s.", Id );
+	    log.fatal( errorMsg, sqle );
+	    stmt.close();
+	    conn.rollback();
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
+	// Create new row in diagnostics table:
+	try 
+	{
+	    int lbnr = 1;
+	    String diagSetId = new String("");
+	    int condition = 100;
+	    String insert_stmt = String.format( "INSERT INTO " +
+						"diagnostics (id, lbnr, diagnosticsSetId, condition, addInfo) " +
+						"VALUES ( " + 
+						diagnosticId + " " +
+						lbnr + " " +
+						diagSetId + " " +
+						condition + " " +
+						failureDiagnostic + " )" );
+	    log.debug( "Inserting into diagnostics using: [" + insert_stmt + "]" );
+	    stmt.executeQuery( insert_stmt );
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String( "Could not insert diagnostic with id: " + diagnosticId );
+	    log.fatal( errorMsg, sqle );
+	    conn.rollback();
+	    stmt.close();
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+	
+	// Attach diagnostic to failed record:
+	try
+	{
+	    String update_query = String.format( "SELECT recordOrSurDiag2 " + 
+						 "FROM taskpackagerecordstructure " +
+						 "WHERE targetreference = %s " +
+						 "AND lbnr = %s " +
+						 "FOR UPDATE OF recordOrSurDiag2",
+						 Id.getTargetRef(), Id.getLbNr() );
+	    int res = stmt.executeUpdate( update_query );
+
+	    // Testing all went well:
+	    if (res != 1) 
+	    {
+		// Something went wrong - we did not lock a single row for update
+		log.error( "Error: Result from select for update was " + res + ". Not 1." );
+		conn.rollback();
+		return;
+	    }
+	    
+	    // Updating recordOrSurDiag2 in row:
+
+	    String update_query2 = String.format( "UPDATE taskpackagerecordstructure " + 
+						  "SET recordOrSurDiag2 = %s " + 
+						  "WHERE targetreference = %s " +
+						  "AND lbnr = %s ",
+						  diagnosticId, 
+						  Id.getTargetRef(), Id.getLbNr() );
+	    int res2 = stmt.executeUpdate( update_query2 ); 
+
+	    if (res2 != 1) 
+	    {
+		// Something went wrong - we did not update a single row
+		log.error( "Error: Result from update was " + res2 + ". Not 1" );
+		conn.rollback();
+		return;
+	    }
+
+	    stmt.close();
+	    conn.commit();
+	    
+	}
+	catch ( SQLException sqle )
+	{
+	    String errorMsg = String.format( "Could not attach diagnostic (Id: %s) to taskpackagerecordstructure (Id: %s) with text: [%s]", diagnosticId, Id, failureDiagnostic );
+	    log.fatal( errorMsg, sqle );
+	    stmt.close();
+	    conn.rollback();
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
+    }
+
 
 }
