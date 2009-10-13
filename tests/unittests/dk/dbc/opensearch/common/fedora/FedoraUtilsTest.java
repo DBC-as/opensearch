@@ -222,7 +222,7 @@ public class FedoraUtilsTest// extends XMLTestCase
     }
 
 
-    @Test
+    @Test @Ignore( "the test contains nondeterministic assertations" )
     public void testHasAdminStreamInDigitalObjectAfterSerialization() throws SAXException, IOException, XpathException
     {
         XMLAssert.assertXpathEvaluatesTo( "adminData", "/x:digitalObject[1]/x:datastream[3]/@ID", origStr );
