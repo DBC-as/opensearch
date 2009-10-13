@@ -78,13 +78,13 @@ passphrase: fedoraAdmin
 # HARVEST configuration relating to the harvester module
 [harvester]
 # folder name of the folder to harvest files from
-toharvest:      Harvest
+toharvest:      ../../testdata/minikanon/harvest-kanon
 # folder name of the folder to temporarily store files while in progress
-harvestprogress: HarvestProgress
+harvestprogress: ../../testdata/minikanon/harvest-kanonProgress
 # folder name of the folder to put processed files in
-harvestdone:    HarvestDone
+harvestdone:    ../../testdata/minikanon/harvest-kanonDone
 # folder name of the folder to put files in which didn't get progressed properly
-harvestfailure: HarvestFailure
+harvestfailure: ../../testdata/minikanon/harvest-kanonFailure
 # number of files to process in batches
 maxtoharvest: 1000
 

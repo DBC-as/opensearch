@@ -21,10 +21,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 <project name="build" default="_compile">
-  
+
   <tstamp/>
   <property name="now"              value="${DSTAMP}-${TSTAMP}" />
-  <property name="dist.jar"         value="OpenSearch" />
 
   <!-- directory definitions -->
   <property name="base.dir"         value="${basedir}" />
@@ -37,8 +36,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <property name="classes.dir"      value="${build.dir}/classes"/>
   <property name="config.dir"       value="${base.dir}/config" />
   <property name="dist.dir"         value="${base.dir}/dist"/>
-  <property name="distdatadock.dir" value="${dist.dir}/datadock" />
-  <property name="distpti.dir"      value="${dist.dir}/pti" />
   <property name="info.dir"         value="${src.dir}/info" />
   <property name="lib.dir"          value="${base.dir}/lib"/>  
   <property name="tests.dir"        value="${base.dir}/tests" />
@@ -49,9 +46,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <property name="opensearch.dir"   value="${src.dir}/dk/dbc/opensearch"/>
   <property name="testresults.dir"  value="${base.dir}/test-results"/>
   <property name="log.dir"          value="${bin.dir}/log-files"/>
-  <property name="xsd.dir"          value="${base.dir}/xsd"/>
-  <property name="xsd_gen.dir"      value="${tmp.dir}/xsd" />
-
   <property name="instrumented.dir" value="${build.dir}/instrumented-classes"/>
  
 
@@ -88,6 +82,49 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </classpath>
   </taskdef>
 
+
+  <!-- MACRODEFS -->
+  <macrodef name="opensearch_dist" description="macro used for building jar files">
+    <attribute name="Built-By" default="DBC" 
+               description="The Built-By attribute for the manifest-file"/>
+    <attribute name="Implementation-Vendor" default="DBC A/S" 
+               description="Implementation-Vendor attribute for the manifest-file"/>
+    <attribute name="Implementation-Title" default="${ant.project.name}"
+               description="Implementation-Title attribute for the manifest-file"/>
+    <attribute name="Implementation-Version" default="${version}"
+               description="Implementation-Version attribute for the manifest-file"/>
+    <attribute name="Class-Path" default="../lib/${jar_classpath} ../config/ " 
+               description="Class-Path attribute for the manifest-file"/>
+    <attribute name="Main-Class" 
+               description="Main-Class attribute for the manifest-file. No default value, remember to specify"/>
+    <attribute name="dist.name"  
+               description="name postfix for the jar file. jart filename build like this: Opensearch-${dist-name}.jar"/>
+    <sequential>
+      <echo>
+        Building jar file for @{dist.name}
+      </echo>
+      <!-- Create the distribution directory -->
+      <mkdir dir="${dist.dir}"/>
+      <mkdir dir="${log.dir}"/>
+      <pathconvert property="jar_classpath" pathsep=" ../lib/">
+        <path refid="classpath4jar" />
+        <flattenmapper />
+      </pathconvert>
+      <jar destfile="${dist.dir}/${ant.project.name}_@{dist.name}.jar"
+           basedir="${classes.dir}">
+        <manifest>
+          <attribute name="Built-By" value="@{Built-By}"/>
+          <attribute name="Implementation-Vendor" value="@{Implementation-Vendor}"/>
+          <attribute name="Implementation-Title" value="@{Implementation-Title}"/>
+          <attribute name="Implementation-Version" value="@{Implementation-Version}"/>
+          <attribute name="Class-Path" value="@{Class-Path}"/>
+          <attribute name="Main-Class" value="@{Main-Class}" />
+        </manifest>
+      </jar>
+    </sequential>
+  </macrodef>
+
+
   <!-- TARGETS -->
   <target name="_clean" description="Deletes files created during the build">
     <delete file="${base.dir}/doxygen-warnings"/>
@@ -100,10 +137,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <delete dir="${report.dir}"/>    
     <delete dir="${src.dir}/info"/>
     <delete dir="${testresults.dir}"/>
-    <delete dir="${xsd_gen.dir}" />
     <delete dir="${base.dir}/plugins" />
-    <!--delete dir="${log.dir}"/-->
-
     <exec dir="${base.dir}/tools" executable="/usr/bin/python" os="Linux">
       <arg line="create_test_suite_files.py clean"/>
     </exec>    
@@ -114,17 +148,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <mkdir dir="${classes.dir}"/>
     <echo>
       Building from '${src.dir}',
-      building project '${project.name}',
+      building project '${ant.project.name}',
       and putting it all into '${classes.dir}'
     </echo>
     <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/**" debug="on">
       <classpath refid="classpath"/>
     </javac>
-
-    <!-- Copy .plugin files to .../opensearch/.../plugins/ folder -->
-    <!--copy todir="${base.dir}/plugins">
-      <fileset dir="${opensearch.dir}/plugins/" includes="*.plugin" excludes="*.java" />
-    </copy-->  
   </target>
 
 
@@ -132,11 +161,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <mkdir dir="${classes.dir}"/>
     <echo>
       Building from '${src.dir}',
-      building project '${project.name}',
+      building project '${ant.project.name}',
       and putting it all into '${classes.dir}'
     </echo>
     <javac srcdir="${src.dir}" destdir="${classes.dir}" 
-           excludes="**/xsd/* **/tests/* Harvest/** testdir/**" debug="on">
+           excludes="**/tests/* Harvest/** testdir/**" debug="on">
       <classpath refid="classpath"/> 
       <compilerarg value="-Xlint"/>
     </javac>
@@ -146,7 +175,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <target name="_compile-tests" description="builds the tests for the component" >
     <echo>
       Building from '${tests.dir}',
-      building project '${project.name}',
+      building project '${ant.project.name}',
       and putting it all into '${classes.dir}'
     </echo>
     <javac srcdir="${tests.dir}" destdir="${classes.dir}" debug="on">
@@ -158,7 +187,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <target name="_compile-tests_project" description="builds the tests for the component" >
     <echo>
       Building from '${src.dir}',
-      building project '${project.name}',
+      building project '${ant.project.name}',
       and putting it all into '${classes.dir}'
     </echo>
     <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on">
@@ -226,260 +255,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   </target>
 
 
-  <target name="_dist_datadock"
-          description="generates jar file _DATADOCK.jar">
-    <echo>
-      Building jar file for DATADOCK
-   </echo>
-   <!-- Create the distribution directory -->
-   <mkdir dir="${dist.dir}"/>
-   <mkdir dir="${log.dir}"/>
-
-   <pathconvert property="jar_classpath" pathsep=" ../lib/">
-     <path refid="classpath4jar" />
-     <flattenmapper />
-   </pathconvert>
-
-   <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-   <jar destfile="${dist.dir}/${dist.jar}_DATADOCK.jar" 
-        basedir="${classes.dir}">
-     <manifest>    
-       <attribute name="Built-By" value="DBC"/>
-       <attribute name="Implementation-Vendor" value="DBC A/S"/>
-       <attribute name="Implementation-Title" value="Opensearch"/>
-       <attribute name="Implementation-Version" value="0.3"/>
-       <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/ " />
-       <attribute name="Main-Class" value="dk.dbc.opensearch.components.datadock.DatadockMain" />
-     </manifest>
-   </jar>
-  </target>
-  
-  
-  <target name="_dist_pti"
-          description="generates jar file _PTI.jar" >
-    <echo>
-      Building jar file for PTI  
-    </echo>
-    
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${log.dir}"/>
-
-    <pathconvert property="jar_classpath" pathsep=" ../lib/">
-      <path refid="classpath4jar" />
-      <flattenmapper />
-    </pathconvert>
-    
-    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/${dist.jar}_PTI.jar" 
-         basedir="${classes.dir}">	    
-      <manifest>    
-        <attribute name="Built-By" value="DBC"/>
-        <attribute name="Implementation-Vendor" value="DBC A/S"/>
-        <attribute name="Implementation-Title" value="Opensearch"/>
-        <attribute name="Implementation-Version" value="0.3"/>
-        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
-        <attribute name="Main-Class" value="dk.dbc.opensearch.components.pti.PTIMain" />
-      </manifest>
-    </jar>
-  </target>
-
-
-  <target name="_dist_adminfunc"
-          description="generates jar file _ADMIN_FUNC.jar">
-    <echo>
-      Building jar file for ADMINISTRATION_FUNC
-   </echo>
-   <!-- Create the distribution directory -->
-   <mkdir dir="${dist.dir}"/>
-   <mkdir dir="${log.dir}"/>
-
-   <pathconvert property="jar_classpath" pathsep=" ../lib/">
-     <path refid="classpath4jar" />
-     <flattenmapper />
-   </pathconvert>
-
-   <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-   <jar destfile="${dist.dir}/${dist.jar}_ADMIN_FUNC.jar" 
-        basedir="${classes.dir}">
-     <manifest>    
-       <attribute name="Built-By" value="DBC"/>
-       <attribute name="Implementation-Vendor" value="DBC A/S"/>
-       <attribute name="Implementation-Title" value="Opensearch"/>
-       <attribute name="Implementation-Version" value="0.3"/>
-       <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/ " />
-       <attribute name="Main-Class" value="dk.dbc.opensearch.common.fedora.AdministrationFunc" />
-     </manifest>
-   </jar>
-  </target>
-
-
-  <target name="_dist_testindexer"
-          description="generates jar file _testindexer.jar" >
-    <echo>
-      Building jar file for testindexer
-    </echo>
-    
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${log.dir}"/>
-
-    <pathconvert property="jar_classpath" pathsep=" ../lib/">
-      <path refid="classpath4jar" />
-      <flattenmapper />
-    </pathconvert>
-    
-    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/${dist.jar}_TESTINDEXER.jar" 
-         basedir="${classes.dir}">	    
-      <manifest>    
-        <attribute name="Built-By" value="DBC"/>
-        <attribute name="Implementation-Vendor" value="DBC A/S"/>
-        <attribute name="Implementation-Title" value="Opensearch"/>
-        <attribute name="Implementation-Version" value="0.3"/>
-        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
-        <attribute name="Main-Class" value="dk.dbc.opensearch.tools.testindexer.IndexerMain" />
-      </manifest>
-    </jar>
-  </target>
-
-
-  <target name="_dist_readindex"
-          description="generates jar file _readindex.jar" >
-    <echo>
-      Building jar file for readindex
-    </echo>
-    
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist.dir}"/>
-    
-    <pathconvert property="jar_classpath" pathsep=" ../lib/">
-      <path refid="classpath4jar" />
-      <flattenmapper />
-    </pathconvert>
-    
-    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/${dist.jar}_READINDEX.jar" 
-         basedir="${classes.dir}">	    
-      <manifest>    
-        <attribute name="Built-By" value="DBC"/>
-        <attribute name="Implementation-Vendor" value="DBC A/S"/>
-        <attribute name="Implementation-Title" value="Opensearch"/>
-        <attribute name="Implementation-Version" value="0.3"/>
-        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
-        <attribute name="Main-Class" value="dk.dbc.opensearch.tools.readindex.ReadIndexMain" />
-      </manifest>
-    </jar>
-  </target>
-
-  <target name="_dist_itqlquery"
-          description="generates jar file _itqlquery.jar" >
-    <echo>
-      Building jar file for itqlquery program
-    </echo>
-    
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist.dir}"/>
-    
-    <pathconvert property="jar_classpath" pathsep=" ../lib/">
-      <path refid="classpath4jar" />
-      <flattenmapper />
-    </pathconvert>
-    
-    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/${dist.jar}_ITQL.jar" 
-         basedir="${classes.dir}">	    
-      <manifest>
-        <attribute name="Built-By" value="DBC"/>
-        <attribute name="Implementation-Vendor" value="DBC A/S"/>
-        <attribute name="Implementation-Title" value="Opensearch"/>
-        <attribute name="Implementation-Version" value="0.3"/>
-        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
-        <attribute name="Main-Class" value="dk.dbc.opensearch.tools.relations.Main" />
-      </manifest>
-    </jar>
-  </target>
-
-  <target name="_dist_indexchecker"
-          description="generates jar file _INDEXCHECKER.jar" >
-    <echo>
-      Building jar file for indexchecker
-    </echo>
-    
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist.dir}"/>
-    
-    <pathconvert property="jar_classpath" pathsep=" ../lib/">
-      <path refid="classpath4jar" />
-      <flattenmapper />
-    </pathconvert>
-    
-    <!-- Put everything from ${build} into the ${opensearch}.jar file -->
-    <jar destfile="${dist.dir}/${dist.jar}_INDEXCHECKER.jar" 
-         basedir="${classes.dir}">	    
-      <manifest>    
-        <attribute name="Built-By" value="DBC"/>
-        <attribute name="Implementation-Vendor" value="DBC A/S"/>
-        <attribute name="Implementation-Title" value="Opensearch"/>
-        <attribute name="Implementation-Version" value="0.3"/>
-        <attribute name="Class-Path" value="../lib/${jar_classpath} ../config/" />
-        <attribute name="Main-Class" value="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain" />
-      </manifest>
-    </jar>
-  </target>
-    
-
-  <target name="_xsd-classes" description="Generate Java source files from the Schemas found in ${xsd.dir}.">
-    <taskdef name="castor-srcgen"
-             classname="org.castor.anttask.CastorCodeGenTask"
-             classpathref="classpath" />
-	    
-    <delete dir="${tmp.dir}"/>
-    <mkdir dir="${tmp.dir}"/>
-    
-    <castor-srcgen todir="${tmp.dir}/"
-                   package="dk.dbc.opensearch.xsd"
-                   types="j2"
-                   warnings="true" >
-      <fileset dir="${xsd.dir}">
-        <include name="*.xsd"/>
-      </fileset>
-    </castor-srcgen>
-
-    <copy todir="${xsd_gen.dir}">
-      <fileset dir="${tmp.dir}/dk/dbc/opensearch/xsd" includes="**/*.java">
-        <different targetdir="${xsd_gen.dir}" ignoreFileTimes="true"/>
-      </fileset>	      
-    </copy>
-	    
-    <!-- remove java files not present in the tmp dir -->
-    <delete>
-      <fileset dir="${xsd_gen.dir}" includes="**/*.java">
-        <present present="srconly" targetdir="${tmp.dir}/dk/dbc/opensearch/xsd"/>
-      </fileset>      
-    </delete>	    
-  </target>
-
-
-  <target name="_xsd-jar" description="compiles xsd and bundles it in a jar file">
-    <mkdir dir="${tmp.dir}/classes"/>
-
-    <javac srcdir="${xsd_gen.dir}" destdir="${tmp.dir}/classes">
-      <classpath refid="classpath"/>
-    </javac>
-
-    <jar destfile="${lib.dir}/fedora_xsd_classes.jar" 
-         basedir="${tmp.dir}/classes">	    
-      <manifest>    
-        <attribute name="Built-By" value="DBC"/>
-        <attribute name="Implementation-Vendor" value="DBC A/S"/>
-        <attribute name="Implementation-Title" value="Opensearch"/>
-      </manifest>
-    </jar>
-
-  </target>
-
-
   <target name="_doc" description="generates documentation for ${src.dir}">
     <taskdef name="doxygen"
              classname="org.doxygen.tools.DoxygenTask"
@@ -487,6 +262,36 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <doxygen configFilename="${base.dir}/Doxyfile" />
   </target>
   
+
+  <!-- Distribution targets -->
+  <target name="_dist_datadock">
+    <opensearch_dist dist.name="DATADOCK" Main-Class="dk.dbc.opensearch.components.datadock.DatadockMain"/>
+  </target>
+
+  <target name="_dist_pti">
+    <opensearch_dist dist.name="PTI" Main-Class="dk.dbc.opensearch.components.pti.PTIMain"/>
+  </target>
+
+  <target name="_dist_adminfunc">
+    <opensearch_dist dist.name="ADMIN_FUNC" Main-Class="dk.dbc.opensearch.common.fedora.AdministrationFunc"/>
+  </target>
+
+  <target name="_dist_testindexer">
+    <opensearch_dist dist.name="TESTINDEXER" Main-Class="dk.dbc.opensearch.tools.testindexer.IndexerMain"/>
+  </target>
+
+  <target name="_dist_readindex">
+    <opensearch_dist dist.name="READINDEXER" Main-Class="dk.dbc.opensearch.tools.readindex.ReadIndexMain"/>
+  </target>
+
+  <target name="_dist_itqlquery">
+    <opensearch_dist dist.name="ITQL" Main-Class="dk.dbc.opensearch.tools.relations.Main"/>
+  </target>
+
+  <target name="_dist_indexchecker">
+    <opensearch_dist dist.name="INDEXCHECKER" Main-Class="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain"/>
+  </target>
+ 
     
   <!-- ============================ -->
   <!-- Cobertura code coverage tool -->
@@ -502,7 +307,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </fileset>
   </path>
   
-
   <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
 
   <!--   The instrument target - building instrumented code -->
@@ -526,7 +330,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
         -->
         <include name="**/*.class" />
         <exclude name="**/*Test*.class" />
-        <exclude name="**/xsd/**/*.class" />
         <exclude name="**/*Main*.class"/>
       </fileset>
     </cobertura-instrument>
@@ -575,9 +378,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <cobertura-report format="xml" 
                       destdir="${testresults.dir}/cobertura/xml" 
                       datafile="${instrumented.dir}/cobertura.ser">
-      <!--fileset dir="${src.dir}">
-        <include name="**/*.java"/>
-      </fileset-->
       <fileset dir="${src.dir}">
         <include name="**/*.java" />
       </fileset>
@@ -587,7 +387,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </cobertura-report>
   </target>
 
-
   <!-- <target name="_coverage-check" depends="_coverage-test"> -->
   <!--   <cobertura-check branchrate="100" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" > -->
   <!--     < ! - -  Vi skal have fundet nogle fornuftige værdier her - - > -->
@@ -595,9 +394,5 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   <!--     < ! - -  <regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/> - - > -->
   <!--   </cobertura-check> -->
   <!-- </target> -->
-
-
   <!--target name="toplevel.coverage-reports" depends="toplevel.coverage-test, toplevel.coverage-report-html, toplevel.coverage-report-xml" /-->
-
-
 </project>

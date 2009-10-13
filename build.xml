@@ -20,8 +20,9 @@
 -->
 
 
-<project name="targets" default="compile" >
-
+<project name="OpenSearch" default="compile" >
+  <property name="version" value="0.9"/>
+  
   <import file="build-common.xml" />
 
   <dirname property="targets.basedir" file="${ant.file.targets}"/>
@@ -74,7 +75,7 @@
   </target>
   	 
    
-  <!--target name="compile" depends="clean, xsd">
+  <!--target name="compile" depends="clean">
   	<if>
   	  <equals arg1="${project.name}" arg2="${project.name}" />
   	  <then>
@@ -90,12 +91,12 @@
   	</if>
   </target-->
 	
-  <target name="compile"> <!-- , xsd"> -->
+  <target name="compile"> 
     <antcall target="_compile" />
   </target>
 
 
-  <target name="compile-with-warnings" > <!-- , xsd"> -->
+  <target name="compile-with-warnings" >
     <antcall target="_compile-with-warnings" />
   </target>
 
@@ -134,7 +135,7 @@
   </target>
 
 
-  <target name="dist" depends="config_py"> <!-- xsd, -->
+  <target name="dist" depends="config_py">
     <antcall target="compile_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>
@@ -156,7 +157,7 @@
   </target> 
 
 
-  <target name="dist-aux" depends="config_py"> <!-- xsd, -->
+  <target name="dist-aux" depends="config_py">
     <antcall target="compile-tests" />
     <antcall target="_dist_testindexer">
       <param name="src.dir" value="${src.dir}" />
@@ -177,55 +178,38 @@
   </target> 
 
 
-  <target name="dist_datadock" depends="compile"> <!-- xsd, "> -->
-    <antcall target="_dist_datadock">
-      <!--param name="src.dir" value="${src.dir}" /-->
-      <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
-    </antcall>
-  </target>
-
-  <target name="dist_pti" depends="compile">  <!-- xsd, "> -->
-    <antcall target="_dist_pti">
-      <!--param name="src.dir" value="${src.dir}" /-->
-      <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
-    </antcall>
-  </target>
-
-  <target name="dist_adminfunc" depends="compile-tests, config_py">  <!-- xsd, "> -->
-    <antcall target="_dist_adminfunc">
-      <!--param name="src.dir" value="${tests.dir}" /-->
-      <param name="project.name" value="dist/${dist.jar}_ADMIN_FUNC.jar" />
-    </antcall>
-  </target>
-
-  <target name="dist_testindexer" depends="compile"> <!-- xsd, "> -->
-    <antcall target="_dist_testindexer">
-      <param name="src.dir" value="${src.dir}" />
-      <param name="project.name" value="dist/${dist.jar}_TESTINDEXER.jar" />
-    </antcall>
+  <target name="dist_datadock" depends="compile">
+    <antcall target="_dist_datadock"/>
   </target>
 
 
-  <target name="dist_readindex" depends="compile"> <!-- xsd, "> -->
-    <antcall target="_dist_readindex">
-      <param name="src.dir" value="${src.dir}" />
-      <param name="project.name" value="dist/${dist.jar}_READINDEX.jar" />
-    </antcall>
+  <target name="dist_pti" depends="compile">
+    <antcall target="_dist_pti"/>
   </target>
 
 
-  <target name="dist_indexchecker" depends="compile-tests"> <!-- xsd, "> -->
-    <antcall target="_dist_indexchecker">
-      <param name="src.dir" value="${src.dir}" />
-      <param name="project.name" value="dist/${dist.jar}_INDEXCHECKER.jar" />
-    </antcall>
+  <target name="dist_adminfunc" depends="compile-tests, config_py">
+    <antcall target="_dist_adminfunc"/>
   </target>
 
-  <target name="dist_itqlquery" depends="compile-tests"> <!-- xsd, "> -->
-    <antcall target="_dist_itqlquery">
-      <param name="src.dir" value="${src.dir}" />
-      <param name="project.name" value="dist/${dist.jar}_ITQL.jar" />
-    </antcall>
+
+  <target name="dist_testindexer" depends="compile">
+    <antcall target="_dist_testindexer"/>
+  </target>
+
+
+  <target name="dist_readindex" depends="compile">
+    <antcall target="_dist_readindex"/>
+  </target>
+
+
+  <target name="dist_indexchecker" depends="compile-tests">
+    <antcall target="_dist_indexchecker"/>
+  </target>
+
+
+  <target name="dist_itqlquery" depends="compile-tests">
+    <antcall target="_dist_itqlquery"/>
   </target>
 
 
@@ -308,7 +292,7 @@
   </target>
 
 
-  <target name="fedora" depends="test_Darg, db, statistics, helpers">  <!-- xsd, -->
+  <target name="fedora" depends="test_Darg, db, statistics, helpers">
     <antcall target="compile_project">
       <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/fedora" />
       <param name="project.name" value="fedora" />
@@ -496,16 +480,6 @@
 
 
   <!--
-      XSD TARGET
-  -->
-
-  <target name="xsd-jar">
-    <antcall target="_xsd-classes" />
-    <antcall target="_xsd-jar" />
-  </target>
-
-
-  <!--
       EXPERIMENTAL TARGETS
   -->
 
@@ -537,7 +511,5 @@
       </else>
     </if>
   </target>
-    
-
 </project>
 
