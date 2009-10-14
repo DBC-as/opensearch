@@ -92,19 +92,6 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
             throw new PluginException( error, ex );
         }
     }
-    /**
-     * \todo: Implement this method
-     * \todo: why? Or: does it have an issue tracker?
-     *
-     * @param data
-     * @param xml
-     * @return
-     * @throws PluginException
-     */
-    public CargoContainer getCargoContainer( InputStream data, InputStream xml) throws PluginException
-    {
-        throw new PluginException( "Not implemented yet!" );
-    }
     
     
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException

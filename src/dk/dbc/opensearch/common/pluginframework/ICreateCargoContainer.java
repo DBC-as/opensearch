@@ -44,14 +44,4 @@ public interface ICreateCargoContainer extends IPluggable
 	 */
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException;
 
-
-    /**
-     * \todo: describe
-     *
-     * @param data
-     * @param xml
-     * @return the CargoContainer that results from the plugin activity
-     * @throws PluginException
-     */
-    public CargoContainer getCargoContainer( InputStream data, InputStream xml ) throws PluginException;
 }

@@ -56,20 +56,6 @@ public class RUBHarvester implements ICreateCargoContainer
     private String lang;
 
     /**
-     * \todo: Implement this method
-     *
-     * @param data
-     * @param xml
-     * @return
-     * @throws PluginException
-     */
-    public CargoContainer getCargoContainer( InputStream data, InputStream xml ) throws PluginException
-    {
-        throw new PluginException( "Not implemented yet!" );
-    }
-
-
-    /**
      * The getCargoContainer returns a cargoContainer with the data
      * described in the datadockJob given in the init method.
      *

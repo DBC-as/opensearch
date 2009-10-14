@@ -49,20 +49,6 @@ public class DCHarvester implements ICreateCargoContainer
     private PluginType pluginType = PluginType.HARVEST;
 
 
-    /**
-     * \todo: Implement this method
-     *
-     * @param data
-     * @param xml
-     * @return cargocontainer
-     * @throws PluginException
-     */
-    public CargoContainer getCargoContainer( InputStream data, InputStream xml) throws PluginException
-    {
-        throw new PluginException( "Not implemented yet!" );
-    }
-
-
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
         this.data = data;
@@ -96,7 +82,7 @@ public class DCHarvester implements ICreateCargoContainer
         //add the data to the CargoContainer
         try
         {
-            cargo.add( dataStreamName, format, submitter, lang, dataMimetype, IndexingAlias.None, data );
+            cargo.add( dataStreamName, format, submitter, lang, dataMimetype, IndexingAlias.DC, data );
         }
         catch (IOException ioe)
         {
