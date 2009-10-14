@@ -48,7 +48,7 @@
   </job>
   <job submitter="710100" format="danmarcxchange">
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
   </job>
 
 </job_list>
