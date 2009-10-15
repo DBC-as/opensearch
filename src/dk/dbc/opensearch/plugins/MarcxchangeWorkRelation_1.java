@@ -27,7 +27,6 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
@@ -44,7 +43,6 @@ import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -119,6 +117,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
+    @Override
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
@@ -192,11 +191,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
 
         List<String> fedoraPids = new ArrayList<String>();
         List<String> searchFields = new ArrayList<String>( 1 );
-        if( !types.contains( dcType ) )
-
-        //String title = FedoraConstants.TITLE.getValue();
-        //String source = FedoraConstants.SOURCE.getValue();
-        //String creator = FedoraConstants.CREATOR.getValue();
 
         if( ! types.contains( dcType ) )
         {
@@ -204,29 +198,15 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! dcSource.equals( "" ) )
             {
                 log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
-                //<<<<<<< .working
-                //workRelation = fedor.getSubjectRelation( "source", dcSource, relation );
 
                 searchFields.add( "source" );
                 fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, 10000 );
 
-                //if ( workRelation == null && ! dcTitle.equals( "" ) )
                 if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
-// =======
-                
-//                 fedoraPids = fa.findQualifiedObjectPids( source, operator, dcSource );
-//                 if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
-//>>>>>>> .merge-right.r6436
                 {
-                    //<<<<<<< .working
-                    //workRelation = fedor.getSubjectRelation( "source", dcTitle, relation );
                     searchFields.clear();
                     searchFields.add( "title" );
                     fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, 10000 );
-                    
-// =======
-//                     fedoraPids = fa.findQualifiedObjectPids( source, operator, dcTitle );
-//>>>>>>> .merge-right.r6436
                 }
             }
 
@@ -235,26 +215,17 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 log.debug( String.format( "2 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
                 if ( ! dcSource.equals( "" ) )
                 {
-                    //<<<<<<< .working
                     searchFields.clear();
                     searchFields.add( "title" );
 
                     fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, 10000 );
-                    //fedoraPids = fa.findObjectPids( "title", operator, dcSource );
-// =======
-//                     fedoraPids = fa.findQualifiedObjectPids( title, operator, dcSource );
-// >>>>>>> .merge-right.r6436
                 }
                 else
                 {
-                    //<<<<<<< .working
                     searchFields.clear();
                     searchFields.add( "title" );
 
                     fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, 10000 );
-// =======
-//                     fedoraPids = fa.findQualifiedObjectPids( title, operator, dcTitle );
-// >>>>>>> .merge-right.r6436
                 }
             }
 
@@ -268,16 +239,11 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
                 log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle, dcCreator ) );
-                //<<<<<<< .working
                 searchFields.clear();
                 searchFields.add( "title" );
                 searchFields.add( "creator" );
 
                 fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, 10000 );
-
-// =======
-//                 fedoraPids = fa.findQualifiedObjectPids( title, creator, operator, dcTitle, dcCreator );
-// >>>>>>> .merge-right.r6436
             }
             else
             {
@@ -296,9 +262,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         String workPid;
         if ( fedoraPids == null || fedoraPids.size() == 0 )
         {
-            //workRelation = PIDManager.getInstance().getNextPID( "work" );
             nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
-            //nextWorkPid = PIDManager.getInstance().getNextPID( "work" );
             log.debug( String.format( "nextWorkPid found: %s", nextWorkPid[0] ) );
             CreateWorkObject( nextWorkPid[0] );
         }
@@ -340,16 +304,8 @@ public class MarcxchangeWorkRelation_1 implements IRelation
 
         // and add this workrelation pid as the workrelationpid of the
         fedor.addPidToCollection( cargo.getIdentifier(), nextWorkPid[0] );
-        // try 
-        // {  
-            this.fedoraHandle.addRelationship( nextWorkPid[0], "info:fedora/fedora-system:def/relations-external#Contains", cargo.getIdentifier(), true, null );
-          
-            //            FedoraHandle.getInstance().getAPIM().addRelationship( nextWorkPid, "info:fedora/fedora-system:def/relations-external#Contains", cargo.getIdentifier(), true, null );
-        // }
-        // catch( OpenSearchRepositoryException e)
-        // {
-            //log.error( String.format("Problem in addPidToCollection %s -> %s", nextWorkPid, cargo.getIdentifier()), e);
-            //        }
+        this.fedoraHandle.addRelationship( nextWorkPid[0], "info:fedora/fedora-system:def/relations-external#Contains", cargo.getIdentifier(), true, null );
+
         return true;
     }
 
@@ -373,11 +329,13 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     }
 
 
+    @Override
     public PluginType getPluginType()
     {
         return pluginType;
     }
 
+    @Override
     public void setObjectRepository( IObjectRepository objectRepository )
     {
         this.objectRepository = objectRepository;
