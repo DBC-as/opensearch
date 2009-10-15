@@ -421,6 +421,7 @@ public class FedoraObjectRepository implements IObjectRepository
                 if( co.getDataStreamType() == DataStreamType.DublinCoreData )
                 {
                     DublinCore dc;
+                    log.trace( String.format( "Trying to contruct DublinCore element from string: %s", new String( datastream ) ) );
                     try
                     {
                         dc = new DublinCore( new ByteArrayInputStream( datastream ) );
@@ -432,6 +433,7 @@ public class FedoraObjectRepository implements IObjectRepository
                         throw new ObjectRepositoryException( error, ex );
                     }
                     String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
+                    log.trace( String.format( "Got dc:identifier '%s' from datastream", dcid ) );
                     if( null == dcid )
                     {
                         log.warn( String.format( "Dublin Core data has no identifier, will use '%s' one from the CargoContainer", identifier ) );
@@ -808,6 +810,7 @@ public class FedoraObjectRepository implements IObjectRepository
                     byte[] data;
                     try
                     {
+                        log.trace( String.format( "getDatastreamDissemination( %s, %s, null )", objectIdentifier, dsId ) );
                         data = this.fedoraHandle.getDatastreamDissemination( objectIdentifier, dsId, null );
                     }
                     catch( ConfigurationException ex )
@@ -858,13 +861,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
     {
-        IndexingAlias originalData = cargo.getIndexingAlias( DataStreamType.OriginalData );
-        if( originalData == null )
+        IndexingAlias indexingAlias = cargo.getIndexingAlias( DataStreamType.OriginalData );
+        if( indexingAlias == null )
         {
-            log.warn( "Supplied CargoContainer has no Original Data, I find it hard to construct an indexing alias given the circumstances. Instead, it'll be IndexingAlias.None" );
-            originalData = IndexingAlias.None;
+            log.warn( String.format( "Supplied CargoContainer (format %s) has no Original Data, I find it hard to construct an indexing alias given the circumstances. Instead, it'll be IndexingAlias.None", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() ) );
+            indexingAlias = IndexingAlias.None;
         }
-        AdministrationStream adminStream = new AdministrationStream( originalData.getName() );
+        AdministrationStream adminStream = new AdministrationStream( indexingAlias.getName() );
 
         if( 0 == cargo.getCargoObjectCount() )
         {
