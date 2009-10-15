@@ -434,7 +434,6 @@ public class FedoraObjectRepository implements IObjectRepository
                     String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
                     if( null == dcid )
                     {
-                        System.out.println( identifier );
                         log.warn( String.format( "Dublin Core data has no identifier, will use '%s' one from the CargoContainer", identifier ) );
                         dc.setIdentifier( identifier );
                     }
