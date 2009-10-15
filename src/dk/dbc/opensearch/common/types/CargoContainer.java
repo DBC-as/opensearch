@@ -85,7 +85,7 @@ public class CargoContainer
     public void setIdentifier( String identifier )
     {
         String id = this.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
-        if( null != id || !"".equals( id ) || identifier.equals( id ) )
+        if( null != id || !"".equals( id.trim() ) || identifier.trim().equals( id.trim() ) )
         {
             log.warn( String.format( "Overwriting existing identifier '%s' with new one: '%s'", id, identifier ) );
         }
@@ -164,22 +164,22 @@ public class CargoContainer
             log.fatal( "dataStreamName cannot be null" );
             throw new IllegalArgumentException( "dataStreamName cannot be null" );
         }
-        else if( (mimetype == null) || (mimetype.equals( "" )) )
+        else if( (mimetype == null) || ( "".equals( mimetype.trim() ) ) )
         {
             log.fatal( "mimetype must be specified" );
             throw new IllegalArgumentException( "mimetype must be specified" );
         }
-        else if( (language == null) || (language.equals( "" )) )
+        else if( (language == null) || ( "".equals( language.trim() ) ) )
         {
             log.fatal( "language must be specified" );
             throw new IllegalArgumentException( "language must be specified" );
         }
-        else if( (submitter == null) || (submitter.equals( "" )) )
+        else if( (submitter == null) || ( "".equals( submitter.trim() ) ) )
         {
             log.fatal( "submitter must be specified" );
             throw new IllegalArgumentException( "submitter must be specified" );
         }
-        else if( (format == null) || (format.equals( "" )) )
+        else if( (format == null) || ( "".equals( format.trim() ) ) )
         {
             log.fatal( "format must be specified" );
             throw new IllegalArgumentException( "format must be specified" );
