@@ -71,18 +71,12 @@ public class DCHarvester implements ICreateCargoContainer
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
-        String dataMimetype = "application/pdf";
+        // String dataMimetype = "application/pdf";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
 
-        //build the DC-data from the referenceData
-        //byte[] DCData;
-
-        //DCData = getDCData( referenceData );
-
-        //add the data to the CargoContainer
         try
         {
-            cargo.add( dataStreamName, format, submitter, lang, dataMimetype, IndexingAlias.DC, data );
+            cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.DC, data );
         }
         catch (IOException ioe)
         {
