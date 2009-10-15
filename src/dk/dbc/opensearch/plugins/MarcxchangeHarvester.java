@@ -187,7 +187,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
             log.warn( "No objects added to CargoContanier" );
         }
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
-        log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() == 0 ) );
+        log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
         return cargo;
     }
 
