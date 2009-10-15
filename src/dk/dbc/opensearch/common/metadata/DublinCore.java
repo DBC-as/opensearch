@@ -119,6 +119,7 @@ public class DublinCore implements MetaData{
             {
             case XMLStreamConstants.START_ELEMENT:
                 element = event.asStartElement();
+                log.trace( String.format( "Got element: %s", element.getName().toString() ) );
                 if( element.getName().getPrefix().equals( dc.getPrefix() ) )
                 {
                     if( DublinCoreElement.hasLocalName( element.getName().getLocalPart() ) )
@@ -129,11 +130,16 @@ public class DublinCore implements MetaData{
                 break;
             case XMLStreamConstants.CHARACTERS:
                 chars = event.asCharacters();
-                elementText = chars.getData();
+                if( ! chars.getData().trim().isEmpty() )
+                {
+                    elementText = chars.getData();
+                    log.trace( String.format( "Got text: %s", elementText ) );
+                }
                 break;
             }
             if( elementName != null && elementText != null )
             {
+                log.trace( String.format( "Adding element: '%s':'%s'", elementName, elementText ) );
                 dcvalues.put( elementName, elementText );
                 elementName = null;
                 elementText = null;
@@ -216,12 +222,23 @@ public class DublinCore implements MetaData{
     }
 
 
+
+    /** 
+     * Retrieves values associated with the {@link DublinCoreElement} {@code
+     * dcElement}. If no value was registered with the element, this
+     * method will return an empty String.
+     * 
+     * @param dcElement a {@link DublinCoreElement}
+     * 
+     * @return the value associated with {@code dcElement} or an empty String
+     */
     public String getDCValue( DublinCoreElement dcElement )
     {
         String retval = dcvalues.get( dcElement );
         if( retval == null )
         {
-            throw new IllegalArgumentException( String.format( "Cannot lookup value for %s, no such element", dcElement ) );
+            log.warn( String.format( "No value registered for element %s", dcElement ) );
+            retval = "";
         }
         return retval;
     }
