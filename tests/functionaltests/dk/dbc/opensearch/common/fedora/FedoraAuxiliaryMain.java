@@ -26,13 +26,12 @@
 package dk.dbc.opensearch.common.fedora;
 
 
+import dk.dbc.opensearch.common.types.InputPair;
+import fedora.server.search.ObjectFields;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import javax.xml.rpc.ServiceException;
@@ -48,13 +47,22 @@ public class FedoraAuxiliaryMain
 {
 
     static IObjectRepository objectRepository;
-    private static FedoraHandle fedoraHandle;
+    //private static FedoraHandle fedoraHandle;
 
 
     Vector< String > types = new Vector< String >();
 
     private void init()
     {
+        try
+        {
+            objectRepository = new FedoraObjectRepository();
+        }
+        catch( ObjectRepositoryException ore )
+        {
+            System.out.println( "Could not initialize objectRepository" );
+        }
+
         types.add( "deletepids" );
     }
 
@@ -92,12 +100,27 @@ public class FedoraAuxiliaryMain
     {
 
         System.out.println( "*** kalder testDeleteObjects ***" );
-        String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
-        DeleteObjectPids( labels, 50 );
+        String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
+        List< InputPair< String, String > > resultSearchFields = new ArrayList< InputPair< String, String > >();
+        int maximumResult = 10000;
+        for ( int i = 0; i < labels.length; i++ )
+        {
+            InputPair< String, String > pair = new InputPair< String, String >( "label", labels[i] );
+            resultSearchFields.add( pair );
+            List< String > pids = objectRepository.getIdentifiers( resultSearchFields, null, maximumResult );
+
+            for ( String pid : pids )
+            {
+                System.out.println( String.format( "Deleting object pid: %s", pid ) );
+                objectRepository.deleteObject( pid, "Deleting from FedoraAuxiliaryMain" );
+            }
+
+            resultSearchFields.clear();
+        }
     }
 
 
-    static void DeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
+    /*static void DeleteObjectPids( String[] labels, int runsPerLabel ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         objectRepository = new FedoraObjectRepository();
         List<String> pids = new ArrayList<String>();
@@ -106,9 +129,9 @@ public class FedoraAuxiliaryMain
         {
             for ( int i = 0; i < runsPerLabel; i++ )
             {
-                pids = objectRepository.getIdentifiers( str, fieldSearchList, 10000 );
-
+                pids = objectRepository.getIdentifiers( str, fieldSearchList, "", 10000 );
             }
+            
             if( pids.size() > 0 )
             {
                 System.out.println( "testDeleteObjectPids - pids.length: " + pids.size() );
@@ -121,7 +144,7 @@ public class FedoraAuxiliaryMain
         }
 
         System.out.println( String.format( "No of pids deleted: %s", pids.size() ) );
-    }
+    }*/
 
 
     static void testDeleteObject( String pid ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException

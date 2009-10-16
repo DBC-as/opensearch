@@ -358,7 +358,7 @@ public class FedoraObjectRepositoryTest {
     }
     
 
-    @Test
+    /*@Test
     public void testGetIdentifiers_Pattern_int() throws Exception
     {
         Pattern searchExpression = Pattern.compile( "test:1" );
@@ -367,9 +367,10 @@ public class FedoraObjectRepositoryTest {
         expResult.add( "test:1" );
         List<String> result = instance.getIdentifiers( searchExpression, maximumResults );
         assertEquals( expResult, result );
-    }
+    }*/
 
-    @Test
+
+    /*@Test
     public void testGetIdentifiers_Pattern_int2() throws Exception
     {
         Pattern searchExpression = Pattern.compile( "test.+" );
@@ -379,9 +380,10 @@ public class FedoraObjectRepositoryTest {
         expResult.add( "test:2" );
         List<String> result = instance.getIdentifiers( searchExpression, maximumResults );
         assertEquals( expResult, result );
-    }
+    }*/
 
-    @Test
+
+    /*@Test
     public void testGetIdentifiers_String_int() throws Exception
     {
         String verbatimSearch = "test";
@@ -391,7 +393,7 @@ public class FedoraObjectRepositoryTest {
         expResult.add( "test:2" );
         List<String> result = instance.getIdentifiers( verbatimSearch, maximumResults );
         assertEquals( expResult, result );
-    }
+    }*/
 
 
     @Test
@@ -468,7 +470,7 @@ public class FedoraObjectRepositoryTest {
     }
 
 
-    @Test
+    /*@Test
     public void testSearchRepository() throws Exception
     {
         String[] fieldsToReturn = null;
@@ -485,7 +487,8 @@ public class FedoraObjectRepositoryTest {
         {
             "test:1"
         };
+
         ObjectFields[] result = instance.searchRepository( fieldsToReturn, fieldsToSearch, searchString, comparisonOperator, maximumResults );
         assertEquals( expResult[0].getPid(), result[0].getPid() );
-    }
+    }*/
 }

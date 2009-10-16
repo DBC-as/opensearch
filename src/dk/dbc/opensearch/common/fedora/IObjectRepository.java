@@ -30,6 +30,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
+import dk.dbc.opensearch.common.types.InputPair;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -114,7 +115,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchExpression}
      */
-    public List<String> getIdentifiers( Pattern searchExpression, int maximumResult );
+    //public List<String> getIdentifiers( Pattern searchExpression, String cutIdentifier, int maximumResult );
     
 
     /** 
@@ -127,7 +128,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code verbatimSearchString}
      */    
-    public List<String> getIdentifiers( String verbatimSearchString, int maximumResult );
+    //public List<String> getIdentifiers( String verbatimSearchString, String cutIdentifier, int maximumResult );
 
 
     /** 
@@ -142,7 +143,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
      */
-    public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, int maximumResult );
+    public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, String cutIdentifier, int maximumResult );
 
 
     /** 
@@ -157,7 +158,8 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List<String> getIdentifiers( List<String> searchStrings, List<String> searchableFields, int maximumResult );
+    //public List<String> getIdentifiers( List<String> searchStrings, List<String> searchableFields, String cutIdentifier, int maximumResult );
+    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults );
 
 
     /** 

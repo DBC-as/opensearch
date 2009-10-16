@@ -252,7 +252,7 @@ public class AdministrationFunc
     }
 
 
-    static void testFindObjectPids() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException, ObjectRepositoryException
+    /*static void testFindObjectPids() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException, ObjectRepositoryException
     {
         fedoraHandle = new FedoraHandle();
         objectRepository = new FedoraObjectRepository();
@@ -263,7 +263,7 @@ public class AdministrationFunc
         {
             System.out.println( pid );
         }
-    }
+    }*/
 
 
     static void testFindObjectRelationships() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException

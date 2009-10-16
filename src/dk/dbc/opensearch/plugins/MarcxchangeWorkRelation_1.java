@@ -188,6 +188,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
         String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
         String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
+        String pid = cargo.getIdentifier();
         
         List< String > fedoraPids = new ArrayList< String >();
         List< String > searchFields = new ArrayList< String >( 1 );
@@ -200,13 +201,13 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             {
                 log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
                 searchFields.add( "source" );
-                fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, maximumResults );
+                fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, pid, maximumResults );
 
                 if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
                 {
                     searchFields.clear();
                     searchFields.add( "title" );
-                    fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, 10000 );
+                    fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, pid, 10000 );
                 }
             }
 
@@ -218,14 +219,14 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                     searchFields.clear();
                     searchFields.add( "title" );
 
-                    fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, 10000 );
+                    fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, pid, 10000 );
                 }
                 else
                 {
                     searchFields.clear();
                     searchFields.add( "title" );
 
-                    fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, 10000 );
+                    fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, pid, 10000 );
                 }
             }
 
@@ -243,7 +244,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 searchFields.add( "title" );
                 searchFields.add( "creator" );
 
-                fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, 10000 );
+                fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, pid, 10000 );
             }
             else
             {
@@ -267,7 +268,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         }
         else // fedoraPids.size() > 0
         {
-            String pid = cargo.getIdentifier();
             log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPids.size() ) );
             for( String foundpid : fedoraPids )
             {

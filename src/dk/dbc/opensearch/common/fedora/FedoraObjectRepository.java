@@ -56,7 +56,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
@@ -80,8 +79,8 @@ public class FedoraObjectRepository implements IObjectRepository
      */
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
 
-    private final String has = "has";
-    private final String pid = "pid";
+    private final String hasStr = "has";
+    private final String pidStr = "pid";
     private FedoraHandle fedoraHandle;
 
 
@@ -502,8 +501,8 @@ public class FedoraObjectRepository implements IObjectRepository
      * method)
      * @return a {@link List<String>} of matching pids from the repository
      */
-    @Override
-    public List< String > getIdentifiers( Pattern searchExpression, int maximumResults )
+    /*@Override
+    public List< String > getIdentifiers( Pattern searchExpression, String cutPid, int maximumResults )
     {
         String[] resultFields =
         {
@@ -529,13 +528,13 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         return pids;
-    }
+    }*/
 
 
-    @Override
-    public List<String> getIdentifiers( String verbatimSearch, int maximumResults )
+    /*@Override
+    public List<String> getIdentifiers( String verbatimSearch, String cutPid, int maximumResults )
     {
-        String[] resultFields =
+        String[] resultFields = 
         {
             pid
         };
@@ -545,7 +544,8 @@ public class FedoraObjectRepository implements IObjectRepository
             verbatimSearch
         };
 
-        ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
+        //ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
 
         int ofLength = objectFields.length;
         List<String> pids = new ArrayList<String>( ofLength );
@@ -555,24 +555,34 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         return pids;
-    }
+    }*/
 
 
     @Override
-    public List<String> getIdentifiers( String verbatimSearchString, List< String > searchableFields, int maximumResults )
+    public List<String> getIdentifiers( String verbatimSearchString, List< String > searchableFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[searchableFields.size()];
+        //HashMap< String, String > propertiesAndValues = new HashMap< String, String >();
+        List< InputPair< String, String > > resultSearchFields = new ArrayList< InputPair< String, String > >();
+
         int i = 0;
         for( String field : searchableFields )
         {
+            String property = field;
             resultFields[i] = field;
+            //propertiesAndValues.put( field, verbatimSearchString );
+            InputPair< String, String > pair = new InputPair<String, String>( property, verbatimSearchString );
+            resultSearchFields.add( pair );
             i++;
         }
 
-        ObjectFields[] objectFields = searchRepository( resultFields, pid, (String[])searchableFields.toArray(), has, maximumResults );
+        //ObjectFields[] objectFields = searchRepository( resultFields, verbatimSearchString, (String[])searchableFields.toArray(), has, maximumResults );
+        //ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
 
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
+        log.debug( String.format( "No of objectFields lines %s", objectFields.length ) );
         for( int j = 0; j < ofLength; j++ )
         {
             pids.add( objectFields[j].getPid() );
@@ -583,26 +593,113 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiers( List< String > searchStrings, List< String > searchableFields, int maximumResults )
+    //public List< String > getIdentifiers( List< String > searchStrings, List< String > searchableFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults )
     {
-        String[] resultFields = new String[ searchableFields.size() ];
+        String[] resultFields = new String[ resultSearchFields.size() + 1 ];
+        //HashMap propertiesAndValues = new HashMap();
         int i = 0;
-        for( String field : searchableFields )
+        for( InputPair field : resultSearchFields )
         {
-            resultFields[i] = field;
+            //resultFields[i] = field;
+            String property = (String)field.getFirst();
+            String value = (String)field.getSecond();
+            resultFields[i] = property;
+            //propertiesAndValues.put( property, value );
             i++;
         }
 
-        ObjectFields[] objectFields = searchRepository( resultFields, pid, searchableFields.toArray( new String[searchableFields.size()] ), has, maximumResults );
+        resultFields[i++] = "pid";
+
+        //ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
 
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
         for( int j = 0; j < ofLength; j++ )
         {
-            pids.add( objectFields[j].getPid() );
+            String pidValue = objectFields[j].getPid();
+            if ( cutPid ==  null )
+            {
+                pids.add( pidValue );
+            }
+            else if ( ! pidValue.equals( cutPid ) )
+            {
+                pids.add( pidValue );
+                return pids;
+            }
         }
 
         return pids;
+    }
+    
+
+    ObjectFields[] searchRepository( String[] resultFields, List< InputPair< String, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults )
+    {
+        // \Todo: check needed on the operator
+        ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
+        Condition[] cond = new Condition[ propertiesAndVaulues.size() ];
+
+        System.out.println( String.format( "propertiesAndValues length: %s", propertiesAndVaulues.size() ) );
+        /*Set< String > keys = propertiesAndVaulues.keySet();
+        System.out.println( String.format( "keys length: %s", keys.size() ) );
+        Iterator< String > iter = keys.iterator();
+        int i = 0;
+        while ( iter.hasNext() )
+        {
+            String property = iter.next();
+            String value = propertiesAndVaulues.get( property );
+            System.out.println( String.format( "property '%s' and value '%s'", property, value ) );
+            cond[i] = new Condition( property, comp, value );
+        }*/
+
+        int size = propertiesAndVaulues.size();
+        for ( int i = 0; i < size; i++ )
+        {
+            InputPair pair = propertiesAndVaulues.get( i );
+            String property = (String)pair.getFirst();
+            String value = (String)pair.getSecond();
+            System.out.println( String.format( "property '%s' and value '%s'", property, value  ) );
+            cond[i] = new Condition( property, comp, value );
+        }
+        
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+        FieldSearchResult fsr = null;
+        try
+        {
+            NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );            
+            fsr = this.fedoraHandle.findObjects( resultFields, maxResults, fsq );
+        }
+        catch( ConfigurationException ex )
+        {
+            String warn = String.format( "ConfigurationException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+        catch( ServiceException ex )
+        {
+            String warn = String.format( "ServiceException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+        catch( MalformedURLException ex )
+        {
+            String warn = String.format( "MalformedURLException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+        catch( IOException ex )
+        {
+            String warn = String.format( "IOException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+
+        if( fsr == null )
+        {
+            log.warn( "Retrieved no hits from search, returning empty List<String>" );
+            return new ObjectFields[] { };
+        }
+
+        ObjectFields[] objectFields = fsr.getResultList();
+
+        return objectFields;
     }
 
 
@@ -675,7 +772,6 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
-
 
         if( returnedSID == null )
         {
@@ -1150,57 +1246,4 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         return location;
     }
-
-
-    ObjectFields[] searchRepository( String[] fieldsToReturn, String fieldsToSearch, String[] searchString, String comparisonOperator, int maximumResults )
-    {
-        // \Todo: check needed on the operator
-        ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
-
-        Condition[] cond = new Condition[searchString.length];
-        for( int i = 0; i < searchString.length; i++ )
-        {
-            cond[i] = new Condition( fieldsToSearch, comp, searchString[i] );
-        }
-
-        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
-        FieldSearchResult fsr = null;
-        try
-        {
-            NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );
-            fsr = this.fedoraHandle.findObjects( fieldsToReturn, maxResults, fsq );
-        }
-        catch( ConfigurationException ex )
-        {
-            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-        catch( ServiceException ex )
-        {
-            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-        catch( MalformedURLException ex )
-        {
-            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-        catch( IOException ex )
-        {
-            String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-
-        if( fsr == null )
-        {
-            log.warn( "Retrieved no hits from search, returning empty List<String>" );
-            return new ObjectFields[] { };
-        }
-        
-        ObjectFields[] objectFields = fsr.getResultList();
-
-        return objectFields;
-    }
-
-
 }

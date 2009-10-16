@@ -551,8 +551,8 @@ public class FedoraObjectRelations
     private String findPropertiesPid( String sourcePid, String property_1, String value_1, String property_2, String value_2 )
     {
         /** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
-        String[] resultFields =
-        {
+        String[] resultFields = { property_1, property_1 };
+        /*{
             "pid"
         };
 
@@ -564,13 +564,29 @@ public class FedoraObjectRelations
         String[] values_2 =
         {
             value_2
-        };
+        };*/
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        ObjectFields[] pids_1 = fedoraObjectRepository.searchRepository( resultFields, property_1, values_1, "has", 100000 );
-        ObjectFields[] pids_2 = fedoraObjectRepository.searchRepository( resultFields, property_2, values_2, "has", 100000 );
+        //HashMap< String, String > propertiesAndValues = new HashMap<String, String>();
+        List< InputPair< String, String > > propertiesAndValues = new ArrayList< InputPair< String, String > >();
+        propertiesAndValues.add( new InputPair< String, String >( property_1, value_1 ) );
+        propertiesAndValues.add( new InputPair< String, String >( property_2, value_2 ) );
 
-        if( pids_1 == null || pids_2 == null )
+        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000 );        
+        String retVal = null;
+        
+        for ( ObjectFields field : pids )
+        {
+            retVal = field.getPid();
+            if ( ! sourcePid.equals( retVal ) )
+            {
+                return retVal;
+            }
+        }
+        //ObjectFields[] pids_1 = fedoraObjectRepository.searchRepository( resultFields, property_1, values_1, "has", 100000 );
+        //ObjectFields[] pids_2 = fedoraObjectRepository.searchRepository( resultFields, property_2, values_2, "has", 100000 );
+
+        /*if( pids_1 == null || pids_2 == null )
         {
             log.warn( String.format( "no matches found for either '%s', '%s' or both", value_1, value_2 ) );
             return null;
@@ -603,29 +619,34 @@ public class FedoraObjectRelations
                     }
                 }
             }
-        }
-        if( retval == null )
+        }*/
+
+        if( retVal == null )
         {
             log.warn( String.format( "Found no pids that match the search criterias '%s', '%s'", value_1, value_2 ) );
         }
-        return retval;
+
+        return retVal;
     }
 
 
     private String findPropertyPid( String sourcePid, String property, String value )
     {
-        String[] resultFields =
-        {
+        String[] resultFields = { property };
+        /*{
             "pid"
         };
 
         String[] values =
         {
             value
-        };
+        };*/
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, property, values, "has", 100000 );
+        //HashMap< String, String > propertiesAndValues = new HashMap< String, String >();
+        List< InputPair< String, String > > propertiesAndValues = new ArrayList< InputPair< String, String > >();
+        propertiesAndValues.add( new InputPair< String, String >( property, value ) );
+        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000 );
 
         String retval = null;
         if( pids != null )
@@ -634,14 +655,14 @@ public class FedoraObjectRelations
             for( int i = 0; i < pids.length; i++ )
             {
                 nextPid = pids[i].getPid();
-                if( !nextPid.equals( sourcePid ) )
+                if( ! nextPid.equals( sourcePid ) )
                 {
-                    retval = nextPid;
+                    return retval; // = nextPid;
                 }
             }
         }
 
-        if( retval == null )
+        if ( retval == null )
         {
             log.warn( String.format( "no pids matched the search '%s'", value ) );
         }
