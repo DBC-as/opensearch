@@ -128,6 +128,9 @@ public class PTIThread implements Callable< Long >
                     throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
                 }
 
+            log.trace( String.format( "Value of CargoContainer %s", cc.getCargoObjectCount() ) );
+            
+
             co = cc.getCargoObject( DataStreamType.OriginalData );
             submitter =  co.getSubmitter();
             format = co.getFormat();
@@ -138,7 +141,8 @@ public class PTIThread implements Callable< Long >
             list = PTIJobsMap.getPtiPluginsList( submitter, format );
             if ( list == null )
                 {
-                    log.warn( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
+                    log.error( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
+                    throw new PluginException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
                 }
             else{
                 PluginResolver pluginResolver = new PluginResolver();
