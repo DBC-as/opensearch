@@ -391,6 +391,4 @@ public class AdministrationStream implements MetaData
     {
         return type;
     }
-
-
 }

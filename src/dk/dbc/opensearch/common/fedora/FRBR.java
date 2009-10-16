@@ -75,14 +75,12 @@ public enum FRBR
     FRBR_RELATEDENDEAVOUR( "relatedEndeavour" ),
     FRBR_REPRODUCTION( "reproduction" ),
     FRBR_REPRODUCTIONOF( "reproductionOf" ),
-    //FRBR_RESPONSIBLEENTITY( "ResponsibleEntity" ),
     FRBR_RESPONSIBLEENTITY( "responsibleEntity" ),
     FRBR_RESPONSIBLEENTITYOF( "responsibleEntityOf" ),
     FRBR_REVISION( "revision" ),
     FRBR_REVISIONOF( "revisionOf" ),
     FRBR_SCHOLARLYWORK( "ScholarlyWork" ),
     FRBR_SOUND( "Sound" ),
-    //FRBR_SUBJECT( "Subject" ),
     FRBR_SUBJECT( "subject" ),
     FRBR_SUCCESSOR( "successor" ),
     FRBR_SUCCESSOROF( "successorOf" ),
@@ -99,9 +97,15 @@ public enum FRBR
 
     private String literal;
     private final String FRBR_NS = "http://purl.org/vocab/frbr/core#";
+    private final String prefix = "frbr";
 
     FRBR( String literal )
     {
         this.literal = literal;
+    }
+
+    public QName getName()
+    {
+        return new QName( FRBR_NS, this.literal, prefix );
     }
 }
