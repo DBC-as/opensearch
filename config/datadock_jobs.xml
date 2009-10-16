@@ -26,7 +26,6 @@
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" position="1"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />
-
     <!--plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1" position="4" /-->
   </job>
   <job submitter="775100" format="ebrary">
@@ -34,17 +33,15 @@
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" position="1"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />
-
     <!--plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1" position="4" /--> 
- </job>
+  </job>
   <job submitter="710100" format="katalog">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" position="1"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />
-
     <!--plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1" position="4" /--> 
- </job>
+  </job>
   <job submitter="dbc" format="matvurd">
     <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" position="0"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="1" />
@@ -55,15 +52,13 @@
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" position="1"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />
-
     <!--plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1" position="4" /-->  
-</job>  
+  </job>  
   <job submitter="dbc" format="anmeld">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" position="0"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" position="1"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />
-
     <!--plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1" position="4" /-->
   </job>  
   <job submitter="dbc" format="artikler">
@@ -71,7 +66,6 @@
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" position="1"/>
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store" position="2" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" position="3" />
-
     <!--plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1" position="4" /-->
   </job>  
   <job submitter="dbc" format="dr_bonanza">

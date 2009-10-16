@@ -29,26 +29,25 @@ import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.xml.namespace.QName;
+
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.XMLEvent;
+
 import org.apache.log4j.Logger;
 
 
@@ -57,17 +56,18 @@ import org.apache.log4j.Logger;
  * Version 1.1 (http://dublincore.org/documents/dces/)
  *
  */
-public class DublinCore implements MetaData{
-
+public class DublinCore implements MetaData
+{
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
 
-    private Map<DublinCoreElement, String> dcvalues;
+    private Map< DublinCoreElement, String > dcvalues;
 
     public static final DataStreamType type = DataStreamType.DublinCoreData;
 
     private Logger log = Logger.getLogger( DublinCore.class );
     private static FedoraNamespace dc = new FedoraNamespaceContext().getNamespace( "dc" );
     private static FedoraNamespace oai_dc = new FedoraNamespaceContext().getNamespace( "oai_dc" );
+
 
     /**
      * Initializes an empty Dublin Core element, identified by {@code identifier}
@@ -77,9 +77,10 @@ public class DublinCore implements MetaData{
      */
     public DublinCore( String identifier )
     {
-        dcvalues = new HashMap<DublinCoreElement, String>();
+        dcvalues = new HashMap< DublinCoreElement, String >();
         dcvalues.put( DublinCoreElement.ELEMENT_IDENTIFIER, identifier);
     }
+
 
     /**
      * Initializes a Dublin Core element with values taken from {@code
@@ -88,12 +89,12 @@ public class DublinCore implements MetaData{
      * context. Recommended best practice is to use the digital repository object
      * identifier.
      */
-    public DublinCore( String identifier, Map<DublinCoreElement, String> inputValues )
+    public DublinCore( String identifier, Map< DublinCoreElement, String > inputValues )
     {
-        dcvalues = new HashMap<DublinCoreElement, String>( inputValues );
+        dcvalues = new HashMap< DublinCoreElement, String >( inputValues );
         dcvalues.put( DublinCoreElement.ELEMENT_IDENTIFIER, identifier);
-
     }
+
 
     /**
      * Initializes a dublin core object based on the dublin core
@@ -103,7 +104,7 @@ public class DublinCore implements MetaData{
      */
     public DublinCore( InputStream dcIn ) throws XMLStreamException
     {
-        dcvalues = new HashMap<DublinCoreElement, String>();
+        dcvalues = new HashMap< DublinCoreElement, String >();
         
         XMLInputFactory infac = XMLInputFactory.newInstance();
         XMLEventReader eventReader = infac.createXMLEventReader( dcIn );
@@ -113,108 +114,140 @@ public class DublinCore implements MetaData{
 
         DublinCoreElement elementName = null;
         String elementText = null;
-        while (eventReader.hasNext()) {
+        while (eventReader.hasNext())
+        {
             XMLEvent event = (XMLEvent)eventReader.next();
             switch ( event.getEventType() )
             {
-            case XMLStreamConstants.START_ELEMENT:
-                element = event.asStartElement();
-                log.trace( String.format( "Got element: %s", element.getName().toString() ) );
-                if( element.getName().getPrefix().equals( dc.getPrefix() ) )
-                {
-                    if( DublinCoreElement.hasLocalName( element.getName().getLocalPart() ) )
+                case XMLStreamConstants.START_ELEMENT:
+                    element = event.asStartElement();
+                    log.trace( String.format( "Got element: %s", element.getName().toString() ) );
+                    if ( element.getName().getPrefix().equals( dc.getPrefix() ) )
                     {
-                        elementName = DublinCoreElement.fromString( element.getName().getLocalPart() );
+                        if( DublinCoreElement.hasLocalName( element.getName().getLocalPart() ) )
+                        {
+                            elementName = DublinCoreElement.fromString( element.getName().getLocalPart() );
+                        }
                     }
-                }
-                break;
-            case XMLStreamConstants.CHARACTERS:
-                chars = event.asCharacters();
-                if( ! chars.getData().trim().isEmpty() )
-                {
-                    elementText = chars.getData();
-                    log.trace( String.format( "Got text: %s", elementText ) );
-                }
-                break;
+                    break;
+                case XMLStreamConstants.CHARACTERS:
+                    chars = event.asCharacters();
+                    if( ! chars.getData().trim().isEmpty() )
+                    {
+                        elementText = chars.getData();
+                        log.trace( String.format( "Got text: %s", elementText ) );
+                    }
+                    break;
             }
-            if( elementName != null && elementText != null )
+
+            if ( elementName != null && elementText != null )
             {
                 log.trace( String.format( "Adding element: '%s':'%s'", elementName, elementText ) );
                 dcvalues.put( elementName, elementText );
                 elementName = null;
                 elementText = null;
             }
-
         }
-        eventReader.close();
 
+        eventReader.close();
     }
+
     
     public void setContributor( String contributor )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_CONTRIBUTOR, contributor );
     }
+
+
     public void setCoverage( String coverage )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_COVERAGE, coverage );
     }
+
+
     public void setCreator( String creator )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_CREATOR, creator );
     }
+
+
     public void setDate( Date date )
     {
         String stringdate = dateFormat.format( date );
         dcvalues.put( DublinCoreElement.ELEMENT_DATE, stringdate );
     }
+
+
     public void setDescription( String description )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_DESCRIPTION, description );
     }
+
+
     public void setFormat( String format )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_FORMAT, format );
     }
+
+
     public void setIdentifier( String identifier )
     {
         if( dcvalues.containsKey( DublinCoreElement.ELEMENT_IDENTIFIER ) )
         {
             log.warn( String.format( "Overwriting DC identifier %s with %s", dcvalues.get( DublinCoreElement.ELEMENT_IDENTIFIER ), identifier ) );
         }
+
         dcvalues.put( DublinCoreElement.ELEMENT_IDENTIFIER, identifier );
     }
+
+
     public void setLanguage( String language )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_LANGUAGE, language );
     }
+
+
     public void setPublisher( String publisher)
     {
         dcvalues.put( DublinCoreElement.ELEMENT_PUBLISHER, publisher );
     }
+
+
     public void setRelation( String relation )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_RELATION, relation );
     }
+
+
     public void setRights( String rights )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_RIGHTS, rights );
     }
+
+
     public void setSource( String source )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_SOURCE, source );
     }
+
+
     public void setSubject( String subject )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_SUBJECT, subject );
     }
+
+
     public void setTitle( String title )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_TITLE, title );
     }
+
+
     public void setType( String type )
     {
         dcvalues.put( DublinCoreElement.ELEMENT_TYPE, type );
     }
+
 
     public int elementCount()
     {
@@ -240,8 +273,10 @@ public class DublinCore implements MetaData{
             log.warn( String.format( "No value registered for element %s", dcElement ) );
             retval = "";
         }
+        
         return retval;
     }
+
 
     /* Example of output:
     <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -260,10 +295,10 @@ public class DublinCore implements MetaData{
     @Override
     public void serialize( OutputStream out )throws OpenSearchTransformException
     {
-
         // Create an output factory
         XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
         XMLStreamWriter xmlw;
+
         try
         {
             xmlw = xmlof.createXMLStreamWriter( out );
@@ -278,13 +313,14 @@ public class DublinCore implements MetaData{
             for( Entry<DublinCoreElement, String> set : dcvalues.entrySet() )
             {
                 xmlw.writeStartElement( dc.getURI(), set.getKey().localName() );
-                if( set.getValue() != null )
+                if ( set.getValue() != null )
                 {
                     xmlw.writeCharacters( set.getValue() );
                 }
-                xmlw.writeEndElement();
 
+                xmlw.writeEndElement();
             }
+
             xmlw.writeEndElement();//closes "oai_dc:dc" element
             xmlw.writeEndDocument();//closes document
             xmlw.flush();
@@ -297,11 +333,13 @@ public class DublinCore implements MetaData{
         }
     }
 
+
     @Override
     public String getIdentifier()
     {
         return dcvalues.get( DublinCoreElement.ELEMENT_IDENTIFIER );
     }
+
 
     /**
      *
@@ -310,6 +348,5 @@ public class DublinCore implements MetaData{
     public DataStreamType getType()
     {
         return type;
-    }
-    
+    }    
 }

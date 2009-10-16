@@ -176,6 +176,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
     {
         DublinCore dc = cargo.getDublinCoreMetaData();
+
         if( dc == null )
         {
             String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
@@ -187,10 +188,10 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
         String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
         String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
-        String operator = "has";
-
-        List<String> fedoraPids = new ArrayList<String>();
-        List<String> searchFields = new ArrayList<String>( 1 );
+        
+        List< String > fedoraPids = new ArrayList< String >();
+        List< String > searchFields = new ArrayList< String >( 1 );
+        int maximumResults = 10000;
 
         if( ! types.contains( dcType ) )
         {
@@ -198,9 +199,8 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! dcSource.equals( "" ) )
             {
                 log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
-
                 searchFields.add( "source" );
-                fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, 10000 );
+                fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, maximumResults );
 
                 if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
                 {
@@ -259,7 +259,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         String[] nextWorkPid = null;
         RelationshipTuple[] rels = null;
 
-        String workPid;
         if ( fedoraPids == null || fedoraPids.size() == 0 )
         {
             nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
@@ -272,7 +271,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPids.size() ) );
             for( String foundpid : fedoraPids )
             {
-
                 log.debug( String.format( "checking fedoraPid for equality: %s with pid: %s", foundpid, pid ) );
                 if ( ! foundpid.equals( pid ) )
                 {
@@ -282,7 +280,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                     log.debug( String.format( "Relationships as tuple: %s, length %s", rels.toString(), rels.length ) );
                     break;
                 }
-
             }
 
             if ( rels != null )
@@ -299,7 +296,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             }
         }
 
-        //log.debug( String.format( "Trying to add %s to the collection %s", cargo.getDCIdentifier(), workRelation ) );
         log.debug( String.format( "Trying to add %s to the collection %s", cargo.getIdentifier(), nextWorkPid[0] ) );
 
         // and add this workrelation pid as the workrelationpid of the
@@ -334,6 +330,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     {
         return pluginType;
     }
+
 
     @Override
     public void setObjectRepository( IObjectRepository objectRepository )

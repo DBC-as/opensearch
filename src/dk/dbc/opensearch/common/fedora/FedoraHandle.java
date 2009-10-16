@@ -31,17 +31,17 @@ import dk.dbc.opensearch.common.config.FedoraConfig;
 import fedora.client.FedoraClient;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
-
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.MIMETypedStream;
 import fedora.server.types.gen.RelationshipTuple;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.io.IOException;
-
 import java.rmi.RemoteException;
 import java.util.Map;
+
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.types.NonNegativeInteger;
@@ -54,22 +54,21 @@ public class FedoraHandle
 {
     private static Logger log = Logger.getLogger( FedoraHandle.class );
 
+
     private FedoraAPIM fem;
     private FedoraAPIA fea;
     private FedoraClient fc;
 
 
-    //private static FedoraHandle INSTANCE = null;
-
-
     public FedoraHandle() throws ObjectRepositoryException
     {
-            log.debug( "FedoraHandle constructor" );
-            String fedora_base_url;
-            String host;
-            String port;
-            String user;
-            String pass;
+        log.debug( "FedoraHandle constructor" );
+        String fedora_base_url;
+        String host;
+        String port;
+        String user;
+        String pass;
+
         try
         {
             host = FedoraConfig.getHost();
@@ -83,8 +82,9 @@ public class FedoraHandle
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
-            fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
-            log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
+
+        fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
+        log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
         try
         {
             fc = new FedoraClient( fedora_base_url, user, pass );
@@ -95,6 +95,7 @@ public class FedoraHandle
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
+
         try
         {
             fea = fc.getAPIA();
@@ -113,18 +114,6 @@ public class FedoraHandle
             throw new ObjectRepositoryException( error, ex );
         }
     }
-
-//
-//    public static synchronized FedoraHandle getInstance() throws ConfigurationException, ServiceException, MalformedURLException, IOException
-//    {
-//    	log.trace( "FedoraHandle getInstance" );
-//        if ( INSTANCE == null )
-//        {
-//        	INSTANCE = new FedoraHandle();
-//        }
-//
-//        return INSTANCE;
-//    }
 
 
     private FedoraAPIA getAPIA() throws ServiceException
@@ -147,6 +136,7 @@ public class FedoraHandle
     	return fc;
     }
 
+
     public String ingest( byte[] data, String datatype, String logmessage ) throws ConfigurationException, ServiceException, ServiceException, IOException
     {
         long timer = 0;
@@ -165,6 +155,7 @@ public class FedoraHandle
 
         return pid;
     }
+
 
     public String uploadFile( File fileToUpload ) throws IOException
     {
@@ -186,9 +177,9 @@ public class FedoraHandle
         return msg;
     }
 
+
     public String modifyDatastreamByReference( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, String MIMEType, String formatURI, String dsLocation, String checksumType, String checksum, String logMessage, boolean force ) throws RemoteException
     {
-
         long timer = 0;
 
         if( log.isDebugEnabled() )
@@ -207,6 +198,7 @@ public class FedoraHandle
         return timestamp;
     }
 
+
     public String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
@@ -215,28 +207,31 @@ public class FedoraHandle
         {
             timer = System.currentTimeMillis();
         }
+
         String returnedSID = this.getAPIM().addDatastream( pid, datastreamID, alternativeDsIds, dsLabel, versionable, MIMEType, formatURI, dsLocation, controlGroup, datastreamState, checksumType, checksum, logmessage );
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
+
         return returnedSID;
     }
+
 
     public byte[] getDatastreamDissemination( String pid, String datastreamId, String asOfDateTime ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
     {
         MIMETypedStream ds = null;
         long timer = 0;
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
 
         ds = this.getAPIA().getDatastreamDissemination( pid, datastreamId, asOfDateTime );
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
@@ -245,22 +240,24 @@ public class FedoraHandle
         return ds.getStream();
     }
 
+
     public String[] getNextPID( int numberOfPids, String prefix ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String[] pidlist = null;
         long timer = 0;
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
         pidlist = this.getAPIM().getNextPID( new NonNegativeInteger( Integer.toString( numberOfPids ) ) , prefix);
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
+
         if ( pidlist == null )
         {
             log.error( "Could not retrieve pids from Fedora repository" );
@@ -271,7 +268,7 @@ public class FedoraHandle
     }
 
 
-    public TupleIterator getTuples( Map<String,String> params ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public TupleIterator getTuples( Map< String,String > params ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -286,9 +283,10 @@ public class FedoraHandle
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
-        return tuples;
-    
+
+        return tuples;    
     }
+
 
     public boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
@@ -314,14 +312,14 @@ public class FedoraHandle
     {
         long timer = 0;
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
 
         boolean ret = this.getAPIM().purgeRelationship( pid, predicate, object, isLiteral, datatype );
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
@@ -330,78 +328,86 @@ public class FedoraHandle
         return ret;
     }
 
+
     FieldSearchResult findObjects( String[] resultFields, NonNegativeInteger maxResults, FieldSearchQuery fsq ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
     {
         long timer = 0;
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
 
         FieldSearchResult fsr = this.getAPIA().findObjects( resultFields, maxResults, fsq );
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
+
         return fsr;
     }
+
 
     public RelationshipTuple[] getRelationships( String subject, String predicate ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
 
         RelationshipTuple[] rt = this.getAPIM().getRelationships( subject, predicate);
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
+
         return rt;
     }
+
 
     public String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
 
         String[] rt = this.getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies);
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
+
         return rt;
     }
+
 
     public String purgeObject( String identifier, String logmessage, boolean force ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, RemoteException
     {
         long timer = 0;
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
         String timestamp = this.getAPIM().purgeObject( identifier, logmessage, force );
 
-        if( log.isDebugEnabled() )
+        if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
+        
         return timestamp;
     }
 }

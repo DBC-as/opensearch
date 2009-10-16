@@ -1,26 +1,30 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
  * \file
  * \brief
  */
+
+
 package dk.dbc.opensearch.common.fedora;
+
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
@@ -32,12 +36,14 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
+
 import fedora.common.Constants;
 import fedora.server.types.gen.Condition;
 import fedora.server.types.gen.ComparisonOperator;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -51,8 +57,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
+
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -64,13 +72,18 @@ import org.xml.sax.SAXException;
  */
 public class FedoraObjectRepository implements IObjectRepository
 {
-
     private static Logger log = Logger.getLogger( FedoraObjectRepository.class );
+
+
     /**
      * Dateformat conforming to the fedora requirements.
      */
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
+
+    private final String has = "has";
+    private final String pid = "pid";
     private FedoraHandle fedoraHandle;
+
 
     /**
      * Initializes the FedoraObjectRepository; tries to connect to the
@@ -283,12 +296,14 @@ public class FedoraObjectRepository implements IObjectRepository
                 log.error( error );
                 throw new ObjectRepositoryException( error, ex );
             }
+
             if( null == newPid && 1 != newPid.length )
             {
                 String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", prefix );
                 log.error( error );
                 throw new ObjectRepositoryException( error );
             }
+
             cargoIdentifier = newPid[0];
             cargo.setIdentifier( cargoIdentifier );
         }
@@ -358,7 +373,6 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
 
-
         List<InputPair<Integer, InputPair<String, CargoObject>>> adminstreamlist;
         try
         {
@@ -414,7 +428,6 @@ public class FedoraObjectRepository implements IObjectRepository
             }
 
             CargoObject co = cargoobjects.getSecond().getSecond();
-
 
             try
             {
@@ -490,11 +503,11 @@ public class FedoraObjectRepository implements IObjectRepository
      * @return a {@link List<String>} of matching pids from the repository
      */
     @Override
-    public List<String> getIdentifiers( Pattern searchExpression, int maximumResults )
+    public List< String > getIdentifiers( Pattern searchExpression, int maximumResults )
     {
         String[] resultFields =
         {
-            "pid"
+            pid
         };
 
         String[] searchFields =
@@ -502,10 +515,10 @@ public class FedoraObjectRepository implements IObjectRepository
             "*"
         };
 
-        ObjectFields[] objectFields = searchRepository( resultFields, "pid", searchFields, "has", maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
 
         int ofLength = objectFields.length;
-        List<String> pids = new ArrayList<String>( ofLength );
+        List< String > pids = new ArrayList< String >( ofLength );
         for( int i = 0; i < ofLength; i++ )
         {
             String pidToMatch = objectFields[i].getPid();
@@ -524,7 +537,7 @@ public class FedoraObjectRepository implements IObjectRepository
     {
         String[] resultFields =
         {
-            "pid"
+            pid
         };
 
         String[] searchFields =
@@ -532,7 +545,7 @@ public class FedoraObjectRepository implements IObjectRepository
             verbatimSearch
         };
 
-        ObjectFields[] objectFields = searchRepository( resultFields, "pid", searchFields, "has", maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
 
         int ofLength = objectFields.length;
         List<String> pids = new ArrayList<String>( ofLength );
@@ -546,9 +559,8 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, int maximumResults )
+    public List<String> getIdentifiers( String verbatimSearchString, List< String > searchableFields, int maximumResults )
     {
-
         String[] resultFields = new String[searchableFields.size()];
         int i = 0;
         for( String field : searchableFields )
@@ -557,10 +569,10 @@ public class FedoraObjectRepository implements IObjectRepository
             i++;
         }
 
-        ObjectFields[] objectFields = searchRepository( resultFields, "pid", (String[]) searchableFields.toArray(), "has", maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, pid, (String[])searchableFields.toArray(), has, maximumResults );
 
         int ofLength = objectFields.length;
-        List<String> pids = new ArrayList<String>( ofLength );
+        List< String > pids = new ArrayList< String >( ofLength );
         for( int j = 0; j < ofLength; j++ )
         {
             pids.add( objectFields[j].getPid() );
@@ -571,9 +583,9 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List<String> getIdentifiers( List<String> searchStrings, List<String> searchableFields, int maximumResults )
+    public List< String > getIdentifiers( List< String > searchStrings, List< String > searchableFields, int maximumResults )
     {
-        String[] resultFields = new String[searchableFields.size()];
+        String[] resultFields = new String[ searchableFields.size() ];
         int i = 0;
         for( String field : searchableFields )
         {
@@ -581,10 +593,10 @@ public class FedoraObjectRepository implements IObjectRepository
             i++;
         }
 
-        ObjectFields[] objectFields = searchRepository( resultFields, "pid", searchableFields.toArray( new String[searchableFields.size()] ), "has", maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, pid, searchableFields.toArray( new String[searchableFields.size()] ), has, maximumResults );
 
         int ofLength = objectFields.length;
-        List<String> pids = new ArrayList<String>( ofLength );
+        List< String > pids = new ArrayList< String >( ofLength );
         for( int j = 0; j < ofLength; j++ )
         {
             pids.add( objectFields[j].getPid() );
@@ -628,6 +640,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
+        
         /** end ugly code hack ;)*/
         String dsLocation = uploadDatastream( baos );
         String logm = String.format( "added %s to the object with pid: %s", dsLocation, identifier );
@@ -1141,7 +1154,6 @@ public class FedoraObjectRepository implements IObjectRepository
 
     ObjectFields[] searchRepository( String[] fieldsToReturn, String fieldsToSearch, String[] searchString, String comparisonOperator, int maximumResults )
     {
-
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
 
@@ -1150,6 +1162,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             cond[i] = new Condition( fieldsToSearch, comp, searchString[i] );
         }
+
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = null;
         try
@@ -1177,13 +1190,13 @@ public class FedoraObjectRepository implements IObjectRepository
             String warn = String.format( "Could not conduct query: %s", ex.getMessage() );
             log.warn( warn );
         }
+
         if( fsr == null )
         {
             log.warn( "Retrieved no hits from search, returning empty List<String>" );
-            return new ObjectFields[]
-                    {
-                    };
+            return new ObjectFields[] { };
         }
+        
         ObjectFields[] objectFields = fsr.getResultList();
 
         return objectFields;

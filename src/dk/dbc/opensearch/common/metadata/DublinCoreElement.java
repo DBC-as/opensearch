@@ -25,10 +25,12 @@
 
 package dk.dbc.opensearch.common.metadata;
 
+
 /**
  *
  */
-public enum DublinCoreElement {
+public enum DublinCoreElement
+{
     ELEMENT_TITLE( "title"),
     ELEMENT_CREATOR( "creator"),
     ELEMENT_SUBJECT( "subject"),
@@ -45,31 +47,41 @@ public enum DublinCoreElement {
     ELEMENT_COVERAGE( "coverage"),
     ELEMENT_RIGHTS( "rights");
 
+
     private String localname;
     DublinCoreElement( String localName )
     {
         this.localname = localName;
     }
+
+
     public String localName()
     {
         return this.localname;
     }
+
+
     public static boolean hasLocalName( String name )
     {
-        for( DublinCoreElement dcee: DublinCoreElement.values() )
+        for( DublinCoreElement dcee : DublinCoreElement.values() )
         {
-            if( dcee.localName().equals( name ) ){
+            if ( dcee.localName().equals( name ) )
+            {
                 return true;
             }
         }
+
         return false;
     }
+
+
     public static DublinCoreElement fromString( String localName )
     {
-        if( DublinCoreElement.hasLocalName( localName ) )
+        if ( DublinCoreElement.hasLocalName( localName ) )
         {
-            return DublinCoreElement.valueOf( "ELEMENT_"+localName.toUpperCase() );
+            return DublinCoreElement.valueOf( "ELEMENT_" + localName.toUpperCase() );
         }
-        throw new IllegalArgumentException( String.format( "No enum value %s", "ELEMENT_"+localName.toUpperCase() ) );
+
+        throw new IllegalArgumentException( String.format( "No enum value %s", "ELEMENT_" + localName.toUpperCase() ) );
     }
 }

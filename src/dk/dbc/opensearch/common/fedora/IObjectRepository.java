@@ -25,9 +25,11 @@
 
 package dk.dbc.opensearch.common.fedora;
 
+
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -61,6 +63,7 @@ public interface IObjectRepository
      */
     public String storeObject( CargoContainer cargo, String logmessage ) throws ObjectRepositoryException;
 
+
     /** 
      * Retrieves the object identified by {@code identifier}. The
      * identifier must be unique for the object repository and thereby
@@ -74,6 +77,7 @@ public interface IObjectRepository
      */
     public CargoContainer getObject( String identifier ) throws ObjectRepositoryException;
 
+
     /** 
      * Deletes the object identified by {@code identifier} from the
      * repository. The implementation can choose whether the object
@@ -85,6 +89,7 @@ public interface IObjectRepository
      * @throws ObjectRepositoryException if the object cannot be deleted
      */
     public void deleteObject( String identifier, String logmessage ) throws ObjectRepositoryException;
+
 
     /** 
      * Replaces the object identified by {@code identifier} with the
@@ -124,6 +129,7 @@ public interface IObjectRepository
      */    
     public List<String> getIdentifiers( String verbatimSearchString, int maximumResult );
 
+
     /** 
      * Searches the object repository using the {@code
      * verbatimSearchString} as query limiting the search to the
@@ -138,6 +144,7 @@ public interface IObjectRepository
      */
     public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, int maximumResult );
 
+
     /** 
      * Searches the object repository using the a {@link List} of
      * {@code searchStrings} as query, limiting the search to the
@@ -151,6 +158,7 @@ public interface IObjectRepository
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
     public List<String> getIdentifiers( List<String> searchStrings, List<String> searchableFields, int maximumResult );
+
 
     /** 
      * Stores data supplied in {@code cargo} in the object identified
@@ -170,6 +178,7 @@ public interface IObjectRepository
      */
     public void storeDataInObject( String identifier, CargoObject cargo, boolean versionable, boolean overwrite ) throws ObjectRepositoryException;
 
+
     /** 
      * Retrieves data identified by {@code identifier} and qualified
      * with {@code streamtype} from the object repository, encoded in
@@ -185,6 +194,7 @@ public interface IObjectRepository
      * @throws ObjectRepositoryException if the CargoContainer could not be constructed.
      */
     public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException;
+
 
     /** 
      * Retrieves data identified by {@code identifier} and qualified
@@ -202,6 +212,7 @@ public interface IObjectRepository
      */
     public CargoContainer getDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
 
+
     /** 
      * Deletes data from the object identified by {@code objectIdentifier}, identified by {@code dataIdentifier}.
      * 
@@ -212,6 +223,7 @@ public interface IObjectRepository
      */
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
 
+    
     /** 
      * Replaces data in the object identified by {@code
      * objectIdentifier}, identified by {@code dataIdentifier} with
