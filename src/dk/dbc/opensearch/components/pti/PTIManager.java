@@ -112,13 +112,8 @@ public class PTIManager
         // Starting new Jobs
         for( Pair<String, Integer> job : newJobs )
         {
-            boolean submitted = false;
-            while( ! submitted )
-            {
-                pool.submit( job.getFirst(), job.getSecond() );
-                submitted = true;
-                log.debug( String.format( "submitted job: fedorahandle='%s' and queueID='%s'",job.getFirst(), job.getSecond() ) );
-            }
+            pool.submit( job.getFirst(), job.getSecond() );
+            log.debug( String.format( "submitted job: fedorahandle='%s' and queueID='%s'",job.getFirst(), job.getSecond() ) );
         }
 
         // Checking jobs and commiting jobs
