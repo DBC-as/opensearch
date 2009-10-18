@@ -57,8 +57,7 @@ public class DatadockJobsMap extends JobMapCreator
         if( !initiated )
         {
             String path = DatadockConfig.getPath();
-            JobMapCreator.validateXsdJobXmlFile( path );
-            JobMapCreator.validateJobXmlFilePosition( path );
+            JobMapCreator.validateXsdJobXmlFile( path );            
             JobMapCreator.init( path );
 
             datadockJobMap = jobMap;

@@ -29,10 +29,7 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.ComparablePair;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,7 +74,6 @@ public class JobMapCreator
     	log.debug( "JobMapCreator constructor called" );
     	
     	jobMap = new HashMap<InputPair<String, String>, ArrayList<String>>();
-        ArrayList<String> sortedPluginList = new ArrayList<String>();
 
         File jobFile = FileHandler.getFile( path );
 
@@ -85,14 +81,10 @@ public class JobMapCreator
         log.debug( String.format( "init calling getNodeList with jobFile %s ", jobFile ) );
         NodeList jobNodeList = XMLUtils.getNodeList( jobFile, "job" );
         int listLength = jobNodeList.getLength();
-
-        List< ComparablePair<Integer, String>> pluginAndPriority = new ArrayList<ComparablePair<Integer, String>>();
-
-        // For each node read the task name and position        
+        // For each node read the task name         
         Element jobElement;
         String submitter = "";
         String format = "";
-        int position;
 
         for( int x = 0; x < listLength ; x++ )
         {
@@ -104,7 +96,7 @@ public class JobMapCreator
             NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
             int pluginListLength = pluginList.getLength();
 
-            pluginAndPriority.clear();
+            ArrayList<String> sortedPluginList = new ArrayList<String>();
 
             String plugin;
             // Store the classname in a List
@@ -112,21 +104,9 @@ public class JobMapCreator
             {
                 Element pluginElement = (Element)pluginList.item( y );
                 plugin = pluginElement.getAttribute( "classname" );
-                position = Integer.decode( pluginElement.getAttribute( "position" ) );
-                pluginAndPriority.add( new ComparablePair< Integer, String >( position, plugin ) );
-            }
+                sortedPluginList.add( plugin );             
+            }           
             
-            // Sort the plugin classname based on the position (order)
-            Collections.sort( pluginAndPriority );
-
-            // Store in sorted list
-            sortedPluginList.clear();
-            for( int z = 0; z < pluginListLength; z++ )
-            {
-                plugin = ( (Pair<Integer, String>)pluginAndPriority.get( z ) ).getSecond();
-                sortedPluginList.add( plugin );
-            }
-
             // Put it into the map with  <submitter, format> as key and List as value
             jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
         }
@@ -161,37 +141,4 @@ public class JobMapCreator
         }
     }
 
-
-    public static void validateJobXmlFilePosition( String path ) throws ParserConfigurationException, SAXException, IOException, IllegalStateException
-    {
-        File jobsXmlFile = new File( path );
-        NodeList jobsNodeList = XMLUtils.getNodeList( jobsXmlFile, "job" );
-
-        int nodeListLen = jobsNodeList.getLength();
-        for ( int i = 0; i < nodeListLen; i++ )
-        {
-            Element jobElement = (Element)jobsNodeList.item( i );
-                
-            NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
-            int pluginListLength = pluginList.getLength();
-
-            ArrayList<Integer> testPosition = new ArrayList<Integer>();
-            int position = -1;
-
-            for( int y = 0; y < pluginListLength; y++ )
-            {
-                Element pluginElement = (Element)pluginList.item( y );
-                position = Integer.decode( pluginElement.getAttribute( "position" ) );
-                if ( ! testPosition.contains( position ) )
-                {
-                    testPosition.add( position );
-                }
-                else 
-                {                    
-                    String msg = "Two position values in a job node from a *_jobs.xml are equal!";
-                    throw new IllegalStateException( msg );
-                }
-            }
-        }
     }
-}

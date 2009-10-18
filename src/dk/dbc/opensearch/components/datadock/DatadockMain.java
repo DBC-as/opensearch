@@ -277,13 +277,13 @@ public class DatadockMain
                 /**
                  * \todo: dont we want to get the trace?
                  */
-                log.error( "InterruptedException caught in mainloop: "  + ie );
-                log.error( "  " + ie.getMessage() );
+                log.error( "InterruptedException caught in mainloop: "  + ie, ie);
+                log.error( "  " + ie.getMessage(), ie );
             }
             catch( RuntimeException re )
             {
-                log.error( "RuntimeException caught in mainloop: " + re );
-                log.error( "  " + re.getCause().getMessage() );
+                log.error( "RuntimeException caught in mainloop: " + re, re);
+                log.error( "  " + re.getCause().getMessage(), re);               
                 throw re;
             }
             catch( Exception e )
@@ -291,7 +291,7 @@ public class DatadockMain
                 /**
                  * \todo: dont we want to get the trace?
                  */
-                log.error( "Exception caught in mainloop: " + e.toString() );
+                log.error( "Exception caught in mainloop: " + e.toString(), e );                
             }
         }
         

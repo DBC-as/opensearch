@@ -191,10 +191,9 @@ public class JobMapCreatorTest
         //inner loop
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( "1" );
+        
         expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
         //outer loop
         expect( mockNodeList.item( 1 ) ).andReturn( mockElement  );
         expect( mockElement.getAttribute( "submitter" ) ).andReturn( "sub1" );
@@ -204,10 +203,9 @@ public class JobMapCreatorTest
         //inner loop
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
+        
         expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( "1" );
         /**
          * replay
          */
@@ -251,10 +249,10 @@ public class JobMapCreatorTest
         //inner loop
         expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
+        
         expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
         expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( "0" );
+        
         /**
          * replay
          */
@@ -510,33 +508,4 @@ public class JobMapCreatorTest
          */      
     }
 
-    
-    @Test( expected = IllegalStateException.class )
-    public void testValidateJobXmlPosition() throws ParserConfigurationException, SAXException, IOException, IllegalStateException, ConfigurationException
-    {
-        String datadockStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<job_list xmlns=\"info:opensearch.dbc.dk#\">" +
-              "<job submitter=\"dbc\" format=\"faktalink\">" +
-                "<plugin name=\"docbookharvester\" classname=\"dk.dbc.opensearch.plugins.DocbookHarvester\" position=\"0\"/>" + 
-                "<plugin name=\"docbookannotate\" classname=\"dk.dbc.opensearch.plugins.DocbookAnnotate\" position=\"0\"/>" + 
-              "</job>" +
-            "</job_list>";
-        
-        String path = FileSystemConfig.getConfigPath() + "test.xml";
-        
-        BufferedWriter out = new BufferedWriter( new FileWriter( path ) );
-        out.write( datadockStr );
-        out.close();
-
-        try
-        {
-            JobMapCreator.validateJobXmlFilePosition( path );
-        }
-        catch ( IllegalStateException ise )
-        {
-            File file = new File( path );
-            file.delete();
-            throw new IllegalStateException( ise.getMessage() );
-        }
-    }    
 }

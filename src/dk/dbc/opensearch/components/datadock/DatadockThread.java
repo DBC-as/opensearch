@@ -304,7 +304,7 @@ public class DatadockThread implements Callable< Float >
             }
             catch( HarvesterInvalidStatusChangeException hisce )
             {
-                log.error( hisce.getMessage() );
+                log.error( hisce.getMessage() , hisce);
                 return 1F;
             }
 
@@ -313,6 +313,7 @@ public class DatadockThread implements Callable< Float >
         catch ( Exception e )
         {
             log.error( String.format( "Error in %s plugin handling. Messag: %s", this.getClass().toString(), e.getMessage() ) );
+            log.error("Trace ", e );
             harvester.setStatus( datadockJob.getIdentifier(), JobStatus.FAILURE );
             return 0f;
         }

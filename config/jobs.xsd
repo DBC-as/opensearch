@@ -35,9 +35,13 @@
   </xsd:complexType>
 
   <xsd:complexType name="pluginType">
+    <xsd:sequence >
+    	<xsd:element name="parms" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:any minOccurs="0"/>	
+    </xsd:sequence>
     <xsd:attribute name="name" use="required"/>
     <xsd:attribute name="classname" type="xsd:string" use="required"/>
-    <xsd:attribute name="position" type="xsd:int" use="required"/>
+    <xsd:attribute name="position" type="xsd:int" use="optional"/>
   </xsd:complexType>
 
 </xsd:schema>

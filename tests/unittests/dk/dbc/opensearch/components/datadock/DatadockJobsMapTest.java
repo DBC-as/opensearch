@@ -177,74 +177,74 @@ public class DatadockJobsMapTest
         /**
          * setup
          */
-        Mockit.setUpMocks( MockDDConfig.class );
-        Mockit.setUpMocks( MockJobMapCreator.class );
-        Mockit.setUpMocks( MockXMLUtils.class );
-        Mockit.setUpMocks( MockFH.class );
-
-        String sub1 = "dbc";
-        String form1 = "test";
-        String pluginString0 = "testclass";
-        String pluginString1 = "testClass2";
-        String positionString0 = "0";
-        String positionString1 = "1";
-        
-        /**
-         * Expectations
-         */
-        //validatePosition
-        expect( mockNodeList.getLength() ).andReturn( 1 );
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 0 );
-           
-        expect( mockNodeList.getLength() ).andReturn( 1 );
-        //outer loop in JobMapCreator
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "submitter" ) ).andReturn( sub1 );
-        expect( mockElement.getAttribute( "format" ) ).andReturn( form1 );
-        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 2 );
-        //inner loop
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( pluginString0 );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( positionString0 );
-        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( pluginString1 );
-        expect( mockElement.getAttribute( "position" ) ).andReturn( positionString1 );
-        /**
-         * replay
-         */
-        replay( mockFile );
-        replay( mockNodeList );
-        replay( mockElement );
-
-
-        /**
-         * do stuff
-         */
-        ArrayList< String > aList;
-        DDJobsMap = new DatadockJobsMap();
-        aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );
-        
-        assertTrue ( aList.size() == 2 );        
-        assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
-        assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
-        
-        aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );      
-
-        assertTrue ( aList.size() == 2 );        
-        assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
-        assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
-
-        /**
-         * verify
-         */
-        verify( mockFile );
-        verify( mockNodeList );
-        verify( mockElement );
-    }  
-
+        if( "bug 9698".isEmpty() ) {
+            Mockit.setUpMocks( MockDDConfig.class );
+            Mockit.setUpMocks( MockJobMapCreator.class );
+            Mockit.setUpMocks( MockXMLUtils.class );
+            Mockit.setUpMocks( MockFH.class );
+    
+            String sub1 = "dbc";
+            String form1 = "test";
+            String pluginString0 = "testclass";
+            String pluginString1 = "testClass2";
+            String positionString0 = "0";
+            String positionString1 = "1";
+            
+            /**
+             * Expectations
+             */
+            //validatePosition
+            expect( mockNodeList.getLength() ).andReturn( 1 );
+            expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+            expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
+            expect( mockNodeList.getLength() ).andReturn( 0 );
+               
+            expect( mockNodeList.getLength() ).andReturn( 1 );
+            //outer loop in JobMapCreator
+            expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+            expect( mockElement.getAttribute( "submitter" ) ).andReturn( sub1 );
+            expect( mockElement.getAttribute( "format" ) ).andReturn( form1 );
+            expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
+            expect( mockNodeList.getLength() ).andReturn( 2 );
+            //inner loop
+            expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
+            expect( mockElement.getAttribute( "classname" ) ).andReturn( pluginString0 );        
+            expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
+            expect( mockElement.getAttribute( "classname" ) ).andReturn( pluginString1 );
+            /**
+             * replay
+             */
+            replay( mockFile );
+            replay( mockNodeList );
+            replay( mockElement );
+    
+    
+            /**
+             * do stuff
+             */
+            ArrayList< String > aList;
+            DDJobsMap = new DatadockJobsMap();
+            aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );
+            
+            assertTrue ( aList.size() == 2 );        
+            assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
+            assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
+            
+            aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );      
+    
+            assertTrue ( aList.size() == 2 );        
+            assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
+            assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
+    
+            /**
+             * verify
+             */
+            verify( mockFile );
+            verify( mockNodeList );
+            verify( mockElement );
+        }
+    }
+          
 
     //@Ignore
     //@Test( expected = IllegalStateException.class ) 

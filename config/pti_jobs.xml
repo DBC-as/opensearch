@@ -3,52 +3,52 @@
 <job_list xmlns="info:opensearch.dbc.dk#">
 
   <job submitter="dbc" format="faktalink">
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
-    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" position="0"/>    
+    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="dbc" format="forfatterw">
-    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" position="0"/>
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="dbc" format="matvurd">
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="dbc" format="anmeld">
-    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"  />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>  
   <job submitter="dbc" format="artikler">
-    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"  />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>  
   <job submitter="dbc" format="dr_atlas">
-    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"  />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job> 
   <job submitter="dbc" format="dr_bonanza">
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="dbc" format="louisiana">
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="dbc" format="dsd">
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="0"/>
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="775100" format="katalog">
-    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"  />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="775100" format="ebsco">
-    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"  />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="775100" format="ebrary">
-    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"  />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="710100" format="danmarcxchange">
-    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation" position="0" />
-    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" position="1"/>
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"  />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
 
 </job_list>
