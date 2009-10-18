@@ -161,13 +161,13 @@ public class FedoraUtils
             catch( IOException ex )
             {
                 String error  = String.format( "Failed to add binary data to foxml from cargoobject %s", c.getDataStreamType().getName() );
-                log.error( error );
+                log.error( error , ex);
                 throw new ObjectRepositoryException( error, ex );
             }
             catch( XPathExpressionException ex )
             {
                 String error  = String.format( "Failed to add binary data to foxml from cargoobject %s", c.getDataStreamType().getName() );
-                log.error( error );
+                log.error( error , ex);
                 throw new ObjectRepositoryException( error, ex );
             }
         }
@@ -187,19 +187,19 @@ public class FedoraUtils
                 catch( XPathExpressionException ex )
                 {
                     String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
-                    log.error( error );
+                    log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( SAXException ex )
                 {
                     String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
-                    log.error( error );
+                    log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( IOException ex )
                 {
                     String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
-                    log.error( error );
+                    log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
             }
@@ -211,19 +211,19 @@ public class FedoraUtils
                 catch( XPathExpressionException ex )
                 {
                     String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
-                    log.error( error );
+                    log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( SAXException ex )
                 {
                     String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
-                    log.error( error );
+                    log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( IOException ex )
                 {
                     String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
-                    log.error( error );
+                    log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
             }
