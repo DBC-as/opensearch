@@ -25,9 +25,11 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -37,10 +39,14 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.rpc.ServiceException;
 import javax.xml.namespace.QName;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -57,12 +63,14 @@ public class OwnerRelation implements IRelation
     // Relations
     /** \todo: this is a subject for configuration/javascripting */
     private final String info = "info:fedora/%s";
+    private final FedoraHandle fedoraHandle;
 
     private final Map<ComparablePair<String,String>, String> ownertable;
     /**
      * Constructor for the OwnerRelation plugin.
+     * @throws PluginException 
      */
-    public OwnerRelation()
+    public OwnerRelation() throws PluginException
     {
         ownertable = new HashMap<ComparablePair<String, String>, String>();
         ownertable.put( new ComparablePair<String, String>( "dbc", "anmeldelser" ), String.format( info, "free" ) );
@@ -96,6 +104,18 @@ public class OwnerRelation implements IRelation
         ownertable.put( new ComparablePair<String, String>( "nota", "" ), String.format( info, "" ) );
         ownertable.put( new ComparablePair<String, String>( "874310", "" ), String.format( info, "" ) );
         log.trace( "OwnerRelation constructor called" );
+        
+        try
+        {
+            this.fedoraHandle = new FedoraHandle();
+        }
+        catch (ObjectRepositoryException e)
+        {         
+            String error = String.format( "Failed to get connection to fedora base" );
+            log.error( error, e);
+            throw new PluginException( error, e );           
+            
+        }
     }
 
 
@@ -153,6 +173,7 @@ public class OwnerRelation implements IRelation
             throw new PluginException( String.format( "no processing rule found for format '%s', submitter '%s' (pid '%s')", format, submitter, pid ) );
         }
 
+        if( false ) {
         //target xml is <isMemberOfCollection rdf:resource="info:fedora/{owner}" xmlns="info:fedora/fedora-system:def/relations-external#"/>
         QName predicate = new QName( FedoraNamespaceContext.FedoraNamespace.FEDORARELSEXT.getURI(),
                 "isMemberOfCollection",
@@ -164,6 +185,32 @@ public class OwnerRelation implements IRelation
         rel.addRelationship( predicate, object);
        
         cargo.addMetaData( rel );
+        }
+        try
+        {
+            this.fedoraHandle.addRelationship( pid, "info:fedora/fedora-system:def/relations-external#isMemberOfCollection", owner, false, null );            
+        }
+        catch (ConfigurationException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (MalformedURLException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (ServiceException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         return cargo;
     }
 
