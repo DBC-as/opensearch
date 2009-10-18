@@ -245,7 +245,7 @@ public class DatadockThread implements Callable< Float >
                     }
 
                     timer = System.currentTimeMillis();
-
+                    
                     cargo = annotatePlugin.getCargoContainer( cargo );
 
                     timer = System.currentTimeMillis() - timer;
@@ -263,7 +263,7 @@ public class DatadockThread implements Callable< Float >
                     }
 
                     IRelation relationPlugin = (IRelation)plugin;
-
+                    relationPlugin.setObjectRepository( this.objectRepository );
                     timer = System.currentTimeMillis();
 
                     cargo = relationPlugin.getCargoContainer( cargo );
