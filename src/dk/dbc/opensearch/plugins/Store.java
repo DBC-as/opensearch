@@ -53,12 +53,22 @@ public class Store implements IRepositoryStore
         String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
         try
         {
+            String new_pid = cargo.getIdentifier();
+            log.debug( String.format("ja7: new pid %s", new_pid));
+            
+            if( ! new_pid.isEmpty())
+            try { 
+                this.objectRepository.deleteObject( new_pid, "delte before store hack");
+            } catch( Exception e) {
+                log.trace( String.format("ja7: ignoring error from deleteObject of %s", new_pid));
+            }
+            
             this.objectRepository.storeObject( cargo, logm );
         }
         catch( ObjectRepositoryException ex )
         {
             String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-            log.error( error );
+            log.error( error, ex);
             throw new PluginException( error, ex );
         }
         
