@@ -33,7 +33,6 @@ public class PTIJobsMap extends JobMapCreator
         {
             String path = PtiConfig.getPath();
             JobMapCreator.validateXsdJobXmlFile( path );
-            JobMapCreator.validateJobXmlFilePosition( path );
             JobMapCreator.init( path );
 
             ptiJobMap = jobMap;
