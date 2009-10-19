@@ -27,7 +27,7 @@ import subprocess
 import logging as log
 import fedora_conn
 
-def main( app, action, monitor, fedora_arg ):
+def main( app, action, monitor, fedora_arg, harvester ):
     
     log_filename = 'app_starter.log'
     log_path = os.path.abspath( 'log-files' )
@@ -95,8 +95,22 @@ def main( app, action, monitor, fedora_arg ):
         do_bench = True
     else:
         sys.exit( "Cannot stop nonrunning process" )
-
+        
+    print "harvester value: '%s'end"%harvester
+    if harvester == "file":
+        harvester = "--runWithFileHarvest"
+    elif harvester == "light":
+        harvester = "--runWithFileHarvestLight"  
+    elif harvester == "es":
+        harvester = "--runWithESHarvest"
+    
     if do_start:
+        if harvester == "file":
+            harvester = "--runWithFileHarvest"
+        elif harvester == "light":
+            harvester = "--runWithFileHarvestLight"  
+        elif harvester == "es":
+            harvester = "--runWithESHarvest"
 
         if fedora_arg:
         ### Check if fedora is up and running
@@ -115,20 +129,24 @@ def main( app, action, monitor, fedora_arg ):
         
         print "starting process"
         log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
-        proc, pid = start_daemon( q_name, pid_filename, monitor )
+        proc, pid = start_daemon( q_name, pid_filename, monitor, args = harvester )
         log.debug( "Started process with pid=%s"%( pid ) )
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
 
     if do_bench :
         print "starting process"
-        
-        proc, pid = start_daemon( q_name, pid_filename, monitor, args="--shutDownOnJobsDone" )
+        if not harvester is None:
+            args = "--shutDownOnJobsDone %s" % harvester
+        else:
+            args = "--shutDownOnJobsDone"
+
+        proc, pid = start_daemon( q_name, pid_filename, monitor, args )
         print "Waiting for process to stop "
         os.waitpid( pid -1, 0 );
         
         print "print done waiting"
-        
+
 def start_daemon( q_name, pid_filename, monitor, args=None ):
     
     """
@@ -207,6 +225,7 @@ if __name__ == '__main__':
                   'port': '8080'
                   }
     actions = ["start", "stop", "restart", "bench"]
+    harvester_list = [ "file", "light", "es" ]
     
     
     parser = OptionParser( usage="%prog [options] " + "|".join( actions ) )
@@ -221,9 +240,14 @@ if __name__ == '__main__':
                        help="The hostname of the fedora repository. ignored without -c (default value: %s)" % fedora_arg['host'] )
     parser.add_option( "--port", type="string", action="store", dest="port",
                        help="The portnumber of the Fedora Repository. ignored without -c (default value: %s)" % fedora_arg['port']  )
+    parser.add_option( "--harvester", type="string", action="store", dest="harvester",
+                       help="Selects which harvester type to use. Available options: %s" % ", ".join( harvester_list ) )
     
     (options, args) = parser.parse_args()
 
+    if len(args) == 0:
+        print "\nPlease supply some arguments!\n"
+        sys.exit( parser.print_help() )
     if options.port:
         fedora_arg['port'] = options.port
     if options.host:
@@ -250,7 +274,7 @@ if __name__ == '__main__':
         sys.exit( parser.print_help() )
 
     if options.app == 'both':
-        main( 'pti', args[0], options.monitor, fedora_arg )
-        main( 'datadock', args[0], options.monitor, fedora_arg )
+        main( 'pti', args[0], options.monitor, fedora_arg, options.harvester )
+        main( 'datadock', args[0], options.monitor, fedora_arg, options.harvester )
     else:
-        main( options.app, args[0], options.monitor, fedora_arg )
+        main( options.app, args[0], options.monitor, fedora_arg, options.harvester )

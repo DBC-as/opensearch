@@ -1,20 +1,20 @@
-/** 
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+/**
+   This file is part of opensearch.
+   Copyright © 2009, Dansk Bibliotekscenter a/s,
+   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   opensearch is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   opensearch is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
@@ -38,6 +38,8 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
+import dk.dbc.opensearch.components.harvest.FileHarvestLight;
+import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
@@ -73,18 +75,19 @@ public class DatadockMain
     static int maxPoolSize;
     static long keepAliveTime;
     static int pollTime;
+    static IHarvest harvester;
 
     static java.util.Date startTime = null;
 
 
     public DatadockMain() {}
-    
-    
-    public static void init() throws ConfigurationException 
-    {
-    	log.trace( "DatadockMain init called" );
 
-    	pollTime = DatadockConfig.getMainPollTime();
+
+    public static void init() throws ConfigurationException
+    {
+        log.trace( "DatadockMain init called" );
+
+        pollTime = DatadockConfig.getMainPollTime();
         queueSize = DatadockConfig.getQueueSize();
         corePoolSize = DatadockConfig.getCorePoolSize();
         maxPoolSize = DatadockConfig.getMaxPoolSize();
@@ -98,10 +101,10 @@ public class DatadockMain
     @SuppressWarnings( "unchecked" )
     public Class getClassType()
     {
-    	return this.getClass();
+        return this.getClass();
     }
 
-    
+
     /**
      * The shutdown hook. This method is called when the program catches the kill signal.
      */
@@ -118,9 +121,9 @@ public class DatadockMain
         {
             log.error( "Interrupted while waiting on main daemon thread to complete." );
         }
-	catch( HarvesterIOException hioe ) {
-	    log.fatal( "Some error occured while shutting down the harvester", hioe );
-	}
+        catch( HarvesterIOException hioe ) {
+            log.fatal( "Some error occured while shutting down the harvester", hioe );
+        }
         log.info( "Exiting." );
     }
 
@@ -153,12 +156,12 @@ public class DatadockMain
     static protected void addDaemonShutdownHook()
     {
         Runtime.getRuntime().addShutdownHook( new Thread() {
-            @Override
-            public void run()
-            {
-                shutdown();
-            }
-        } );
+                @Override
+                public void run()
+                {
+                    shutdown();
+                }
+            } );
     }
 
 
@@ -168,21 +171,58 @@ public class DatadockMain
      */
     static public void main(String[] args) throws Throwable
     {
-        
+
         /** \todo: the value of the configuration file is hardcoded */
         Log4jConfiguration.configure( "log4j_datadock.xml" );
-    	log.trace( "DatadockMain main called" );
+        log.trace( "DatadockMain main called" );
 
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         boolean terminateOnZeroSubmitted = false;
-        for( String a : args ) 
-        {           
-            if( a.equals("--shutDownOnJobsDone") ) 
+        boolean runWithFileHarvest = true; //hardcoded default
+        boolean runWithFileHarvestLight = false;
+        boolean runWithESHarvest = false;
+
+        for( String a : args )
+        {
+            log.warn( String.format( "argument: '%s'", a ) );
+            if( a.equals( "--shutDownOnJobsDone" ) )
             {
                 terminateOnZeroSubmitted = true;
+                log.warn( "BENCH" );
+            }
+            else
+            {
+                if( a.equals( "--runWithFileHarvest" ) )
+                {
+                    runWithFileHarvest = true;
+                    runWithESHarvest = false;
+                    runWithFileHarvestLight = false;
+                    log.warn( "FILE" );
+                }
+                else
+                {
+                    if( a.equals( "--runWithESHarvest" ) )
+                    {
+                        runWithESHarvest = true;
+                        runWithFileHarvest = false;
+                        runWithFileHarvestLight = false;
+                        log.warn( "ES" );
+                    }
+                    else
+                    {
+                        if( a.equals( "--runWithFileHarvestLight" ) )
+                        {
+                            runWithFileHarvestLight = true;
+                            runWithFileHarvest = false;
+                            runWithESHarvest = false;
+                            log.warn( "LIGHT" );
+                        }
+                    }
+                }
             }
         }
+
         try
         {
             init();
@@ -206,24 +246,43 @@ public class DatadockMain
 
             // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
-            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );            
-            threadpool.purge(); 
-            
+            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
+            threadpool.purge();
+
             log.trace( "Starting harvester" );
             // harvester;
-            IHarvest harvester = new FileHarvest();
-            
+            if ( runWithESHarvest )
+            {
+                log.trace( "selecting ES" );
+                //harvester = new ESHarvest(); /Todo: give it dbconnection and name
+                log.fatal("ESHarvester not able to run yet, so the --runWithESHarvest option should not be used");
+            }
+            else
+            {
+                if ( runWithFileHarvest )
+                {
+                    log.trace( "selecting FileHarvest" );
+                    harvester = new FileHarvest();
+                }
+                else
+                {
+                    log.trace( "selecting FileHarvestLight" );
+                    harvester = new FileHarvestLight();
+                }
+            }
+
+
             datadockPool = new DatadockPool( threadpool, estimate, processqueue, repository, harvester);
-            
+
             log.trace( "Starting the manager" );
             // Starting the manager
             datadockManager = new DatadockManager( datadockPool, harvester );
 
             /** --------------- setup and startup of the datadockmanager done ---------------- **/
             log.info( "Daemonizing" );
-           
+
             daemonize();
-            addDaemonShutdownHook();            
+            addDaemonShutdownHook();
         }
         catch ( Exception e )
         {
@@ -238,21 +297,21 @@ public class DatadockMain
 
         long mainTimer = System.currentTimeMillis();
         int mainJobsSubmitted = 0;
-        
-        
-        
+
+
+
         while( ! isShutdownRequested() )
         {
             try
             {
-            	log.trace( "DatadockMain calling datadockManager update" );
+                log.trace( "DatadockMain calling datadockManager update" );
 
-            	long timer = System.currentTimeMillis();
-                int jobsSubmited = datadockManager.update();     
+                long timer = System.currentTimeMillis();
+                int jobsSubmited = datadockManager.update();
                 timer = System.currentTimeMillis() - timer;
-               
+
                 mainJobsSubmitted += jobsSubmited;
-                
+
                 if (jobsSubmited > 0)
                 {
                     log.info(String.format("%1$d Jobs submittet in %2$d ms - %3$f jobs/s", jobsSubmited, timer, jobsSubmited/ (timer / 1000.0)));
@@ -260,15 +319,15 @@ public class DatadockMain
                 else
                 {
                     log.info(String.format("%1$d Jobs submittet in %2$d ms - ",jobsSubmited, timer));
-                    if( terminateOnZeroSubmitted ) 
+                    if( terminateOnZeroSubmitted )
                     {
-                             shutdown();
-                    } 
-                    else 
+                        shutdown();
+                    }
+                    else
                     {
                         Thread.currentThread();
                         Thread.sleep(pollTime);
-                    }                                          
+                    }
                 }
 
             }
@@ -283,7 +342,7 @@ public class DatadockMain
             catch( RuntimeException re )
             {
                 log.error( "RuntimeException caught in mainloop: " + re, re);
-                log.error( "  " + re.getCause().getMessage(), re);               
+                log.error( "  " + re.getCause().getMessage(), re);
                 throw re;
             }
             catch( Exception e )
@@ -291,12 +350,12 @@ public class DatadockMain
                 /**
                  * \todo: dont we want to get the trace?
                  */
-                log.error( "Exception caught in mainloop: " + e.toString(), e );                
+                log.error( "Exception caught in mainloop: " + e.toString(), e );
             }
         }
-        
+
         mainTimer = System.currentTimeMillis() - mainTimer;
-        
+
         if (mainJobsSubmitted > 0)
         {
             log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - %3$f jobs/s", mainJobsSubmitted, mainTimer, mainJobsSubmitted/ (mainTimer / 1000.0)));
@@ -304,7 +363,7 @@ public class DatadockMain
         else
         {
             log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - ", mainJobsSubmitted, mainTimer));
-                           
+
         }
 
     }
