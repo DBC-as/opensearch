@@ -182,12 +182,15 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         	log.error( msg );
             throw new PluginException( msg, ioe );
         }
+        //Bug 9652 should we allow empty CargoContainers?
         if( cargo.getCargoObjectCount() < 1 )
         {
             log.warn( "No objects added to CargoContanier" );
         }
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
+
         log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
+
         return cargo;
     }
 
