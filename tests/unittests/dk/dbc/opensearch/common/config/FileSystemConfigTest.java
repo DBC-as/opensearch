@@ -80,9 +80,9 @@ public class FileSystemConfigTest
     public void testGetTrunkPath() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ConfigurationException
     {
         String trunk = FileSystemConfig.getTrunkPath();
-    
-        CharSequence cs = "/opensearch";
-        boolean endsWith = trunk.contains( cs );  
+        System.out.println( String.format( "trunk: %s", trunk ) );
+        CharSequence cs = "/";
+        boolean endsWith = trunk.contains( cs );
         assertTrue( endsWith );
     }
     

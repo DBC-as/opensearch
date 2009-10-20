@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
 package dk.dbc.opensearch.common.metadata;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -44,6 +46,9 @@ public class AdministrationStreamTest
     static final String errorAdminStreamXMLmissingId = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"article\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" streamNameType=\"originalData\"></stream></streams></admin-stream>";
     static final String expectedAdminStreamXML2 = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"article\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream><stream index=\"1\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.1\" streamNameType=\"dublincoreData\"></stream></streams></admin-stream>";
     static final String emptySerialization = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"article\"></indexingalias><streams/></admin-stream>";
+    static final String formattedAdminStreamXML = "<?xml version=\"1.0\" ?>\n<admin-stream>\n\t<indexingalias name=\"article\"></indexingalias>\n\t<streams>\n\t\t<stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream>\n\t</streams></admin-stream>";
+
+   
     /**
      * Test of addStream method, of class AdministrationStream.
      */
@@ -78,6 +83,13 @@ public class AdministrationStreamTest
         assertEquals( "adminData", instance.getIdentifier() );
     }
 
+    @Test
+    public void testConstructorWithFormattedString() throws Exception
+    {
+        ByteArrayInputStream bais = new ByteArrayInputStream( formattedAdminStreamXML.getBytes() );
+        AdministrationStream instance = new AdministrationStream( bais, true );
+        assertEquals( "adminData", instance.getIdentifier() );
+    }
 
     /**
      * With the construction of an empty AdministrationStream, the serialization
