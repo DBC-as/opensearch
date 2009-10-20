@@ -174,7 +174,7 @@ public class HarvestFunc
     }
     
     /**
-     * testing the updating of jobs stetting the status to SUCCESS and then to FAILURE
+     * testing the updating of jobs setting the status to SUCCESS and then to FAILURE
      */
     private static void setStatusTest( IIdentifier id ) throws HarvesterIOException
     {
@@ -182,11 +182,12 @@ public class HarvestFunc
         {
             if ( counter % 2 == 0 )
             {
-                esh.setStatus( id, JobStatus.SUCCESS );
+		// Notice: Empty PID
+                esh.setStatusSuccess( id, "" );
             }
             else
             {
-                esh.setStatus( id, JobStatus.FAILURE );
+                esh.setStatusFailure( id, "This is a failure" );
             }
 
             ++counter;

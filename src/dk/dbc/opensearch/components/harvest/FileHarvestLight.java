@@ -200,7 +200,35 @@ public class FileHarvestLight implements IHarvest
         return data;
     }
 
-    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    /**
+     * Wrapper to setStatus.
+     * Notice that the PID is ignored. 
+     */
+    public void setStatusSuccess( IIdentifier Id, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    {
+	// Ignoring the PID!
+	setStatus( Id, JobStatus.SUCCESS );
+    }
+   
+    /**
+     * Wrapper to setStatus.
+     * Notice that the failureDiagnostic is ignored. 
+     */
+    public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    {
+	// Ignoring the failureDiagnostic!
+	setStatus( Id, JobStatus.FAILURE );
+    }
+
+    /**
+     * Wrapper to setStatus.
+     */
+    public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    {
+	setStatus( Id, JobStatus.RETRY );
+    }
+
+    private void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         FileIdentifier ID = (FileIdentifier)jobId;
         //System.out.println( String.format("the file %s was given status %s", ID.getURI().getRawPath() ,status) );

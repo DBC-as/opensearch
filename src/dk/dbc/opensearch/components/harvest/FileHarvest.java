@@ -340,14 +340,41 @@ public class FileHarvest implements IHarvest
         return jobs;
     }
 
+    /**
+     * Wrapper to setStatus.
+     * Notice that the PID is ignored. 
+     */
+    public void setStatusSuccess( IIdentifier Id, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    {
+	// Ignoring the PID!
+	setStatus( Id, JobStatus.SUCCESS );
+    }
+   
+    /**
+     * Wrapper to setStatus.
+     * Notice that the failureDiagnostic is ignored. 
+     */
+    public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    {
+	// Ignoring the failureDiagnostic!
+	setStatus( Id, JobStatus.FAILURE );
+    }
+
+    /**
+     * Wrapper to setStatus.
+     */
+    public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    {
+	setStatus( Id, JobStatus.RETRY );
+    }
+
 
     /**
      * Implements the setStatus method, but does nothing but log the file and
      * the status it is set to. So all status are treated the same and wont have any
      * effect on the further execution.
      */
-    @Override
-    public void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    private void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         FileIdentifier fi = (FileIdentifier)jobId;
         URI uri = fi.getURI();

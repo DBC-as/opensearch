@@ -299,7 +299,8 @@ public class DatadockThread implements Callable< Float >
             //inform the harvester that it was a success
             try
             {
-                harvester.setStatus( datadockJob.getIdentifier(), JobStatus.SUCCESS );
+                // harvester.setStatus( datadockJob.getIdentifier(), JobStatus.SUCCESS );
+		harvester.setStatusSuccess( datadockJob.getIdentifier(), cargo.getIdentifier() );
 
             }
             catch( HarvesterInvalidStatusChangeException hisce )
@@ -312,9 +313,11 @@ public class DatadockThread implements Callable< Float >
         }
         catch ( Exception e )
         {
-            log.error( String.format( "Error in %s plugin handling. Messag: %s", this.getClass().toString(), e.getMessage() ) );
+	    String errorMsg = String.format( "Error in %s plugin handling. Messag: %s", this.getClass().toString(), e.getMessage() );
+            log.error( errorMsg );
             log.error("Trace ", e );
-            harvester.setStatus( datadockJob.getIdentifier(), JobStatus.FAILURE );
+            // harvester.setStatus( datadockJob.getIdentifier(), JobStatus.FAILURE );
+	    harvester.setStatusFailure( datadockJob.getIdentifier(), errorMsg );
             return 0f;
         }
     }

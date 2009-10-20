@@ -340,7 +340,8 @@ public class DatadockThreadTest
         expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
+        // mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
+	mockHarvester.setStatusSuccess( mockIdentifier , "" );
      
 
         /**
@@ -558,7 +559,8 @@ public class DatadockThreadTest
         expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
+        // mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
+	mockHarvester.setStatusSuccess( mockIdentifier , "" );
         expectLastCall().andThrow( new HarvesterInvalidStatusChangeException ( "test invalidstatuschangeexception" ) );
 
         /**

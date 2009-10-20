@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import java.sql.Blob;
 import java.sql.Connection;
@@ -49,6 +50,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+// \todo: Remove HarvesterInvalidStatusChangeException. It is unneccesary after the new setStatusXXX
 
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
@@ -166,14 +169,15 @@ public class ESHarvest implements IHarvest
 	log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
         ArrayList<IJob> theJobList = new ArrayList<IJob>();
 	try 
-	    {
-		Statement stmt = conn.createStatement();
+	{
+	    Statement stmt = conn.createStatement();
 	    stmt.setMaxRows( maxAmount );
-	    ArrayList<Integer> takenList = new ArrayList<Integer>();
+	    //	    List<Integer> takenList = new ArrayList<Integer>();
 		
 	    // \todo: Single query to retrieve all available queued packages _and_
 	    //        their supplementalId3 - must be veriefied
 	    // get queued targetreference, lbnr and referencedata (supplementalId3):
+	    // \todo: SELECT FOR UPDATE i stedet for SELECT?
 	    String queryStr = new String( "SELECT suppliedrecords.targetreference, suppliedrecords.lbnr, suppliedrecords.supplementalId3 " + 
 					  "FROM taskpackagerecordstructure, suppliedrecords " + 
 					  "WHERE suppliedrecords.targetreference " + 
@@ -185,11 +189,9 @@ public class ESHarvest implements IHarvest
 					  "ORDER BY suppliedrecords.targetreference, suppliedrecords.lbnr" );
 	    log.debug( queryStr );
 	    ResultSet rs = stmt.executeQuery( queryStr );
-		// \todo: databasename ('test' in above) should come from config-file-thingy.
 		
 	    while( rs.next() )
             {
-	
 		int targetRef        = rs.getInt( 1 );    // suppliedrecords.targetreference
 		int lbnr             = rs.getInt( 2 );    // suppliedrecords.lbnr
 		String referenceData = rs.getString( 3 ); // suppliedrecords.supplementalId3
@@ -233,7 +235,7 @@ public class ESHarvest implements IHarvest
 		{
 		    try
 		    {
-			setStatus( id, JobStatus.FAILURE );
+			setStatusFailure( id, "The referencedata contains malformed XML" );
 		    } 
 		    catch ( HarvesterUnknownIdentifierException huie )
 		    {
@@ -315,7 +317,36 @@ public class ESHarvest implements IHarvest
     }
 
 
+    public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) 
+	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    {
+	ESIdentifier EsId = (ESIdentifier)Id;
+	setStatus( EsId, JobStatus.FAILURE );
+	try 
+	{
+	    setFailureDiagnostic( EsId, failureDiagnostic );
+	}
+	catch( SQLException sqle ) 
+	{
+	    String errorMsg = String.format( "Could not set failureDiagnostic on Id: %s", EsId );
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+    }
 
+    public void setStatusSuccess( IIdentifier Id, String PID )
+	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    {
+	ESIdentifier EsId = (ESIdentifier)Id;
+	setStatus( EsId, JobStatus.SUCCESS );
+	setPIDInTaskpackageRecordStructure( EsId, PID );
+    }
+
+    public void setStatusRetry( IIdentifier Id )
+	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    {
+	setStatus( (ESIdentifier)Id, JobStatus.RETRY );
+    }
 
 
 
@@ -325,7 +356,7 @@ public class ESHarvest implements IHarvest
      *  If the status is allready set to either Success or Failure, then an exception is thrown, since it
      *  is not allowed to change status on an allready finished record.
      */
-    public void setStatus( IIdentifier jobId, JobStatus status ) 
+    private void setStatus( ESIdentifier jobId, JobStatus status ) 
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         log.info( String.format( "ESHarvester was requested to set status %s on data identified by the identifier %s", status, jobId ) );
@@ -768,6 +799,62 @@ public class ESHarvest implements IHarvest
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
 
+    }
+
+
+    private void setPIDInTaskpackageRecordStructure( ESIdentifier Id, String PID ) 
+    {
+	// When data is successfully stored in Fedora, the PID for the data must be stored
+	// in the ES-base on the original record.
+	// The field in the database is: taskpackagerecordstructure.record_id,
+	// which is a varchar(25). This sets a restriction on the size of the PID.
+
+	try
+	{
+	    Statement stmt = conn.createStatement();
+	    
+	    String select_query = String.format( "SELECT record_id " + 
+						 "FROM taskpackagerecordstructure " + 
+						 "WHERE targetreference = %s " +
+						 "AND lbnr = %s " +
+						 "FOR UPDATE OF record_id",
+						 Id.getTargetRef(), Id.getLbNr());
+	    int res1 = stmt.executeUpdate( select_query );
+
+	    // Testing all went well:
+	    if (res1 != 1) 
+	    {
+		// Something went wrong - we did not lock a single row for update
+		log.error( "Error: Result from select for update was " + res1 + ". Not 1." );
+		conn.rollback();
+		return;
+	    }
+	    
+	    String update_query = String.format( "UPDATE taskpackagerecordstructure " + 
+						 "SET record_id = %s " + 
+						 "WHERE targetreference = %s " +
+						 "AND lbnr = %s ",
+						 PID, Id.getTargetRef(), Id.getLbNr() );
+	    int res2 = stmt.executeUpdate( update_query ); 
+	    
+	    // Testing all went well:
+	    if (res2 != 1) 
+	    {
+		// Something went wrong - we did not lock a single row for update
+		log.error( "Error: Result from select for update was " + res2 + ". Not 1." );
+		conn.rollback();
+		return;
+	    }
+
+	    stmt.close();
+	    conn.commit();
+	    
+	}
+	catch( SQLException sqle )
+	{
+
+	}
+	
     }
 
 

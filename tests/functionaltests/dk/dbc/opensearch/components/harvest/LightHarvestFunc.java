@@ -94,9 +94,10 @@ public class LightHarvestFunc {
     {
         try{
             if ( counter % 2 == 0 ) {
-                harvester.setStatus( id, JobStatus.SUCCESS );
+		// Notice: Empty PID
+                harvester.setStatusSuccess( id, "" );
             } else {
-                harvester.setStatus( id, JobStatus.FAILURE );
+                harvester.setStatusFailure( id, "This is a failure" );
             }
             ++counter;
         }catch( HarvesterUnknownIdentifierException huie )

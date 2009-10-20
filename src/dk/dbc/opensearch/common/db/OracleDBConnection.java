@@ -47,7 +47,7 @@ import dk.dbc.opensearch.common.db.IDBConnection;
  */
 public class OracleDBConnection implements IDBConnection
 {    
-	private static Logger log = Logger.getLogger( OracleDBConnection.class );
+    private static Logger log = Logger.getLogger( OracleDBConnection.class );
 	
 	
     /**
@@ -78,6 +78,7 @@ public class OracleDBConnection implements IDBConnection
 
         Class.forName( driver );        
         log.debug( String.format( "driver: %s, url: %s, userID: %s", driver, url, userID ) );
+        System.out.println( String.format( "driver: %s, url: %s, userID: %s", driver, url, userID ) );
 }
 
     
