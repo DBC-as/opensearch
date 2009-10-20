@@ -67,7 +67,8 @@ import org.xml.sax.SAXException;
 
 
 /**
- * FedoraObjectRepository
+ * FedoraObjectRepository is an implementation of the
+ * IObjectRepository against a fedora digital object repository.
  */
 public class FedoraObjectRepository implements IObjectRepository
 {

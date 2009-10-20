@@ -111,9 +111,10 @@ public class AdministrationStream implements MetaData
         {
             String ADM_NS = "http://www.w3.org/2001/XMLSchema";
             Source schemaurl = new StreamSource( new ByteArrayInputStream( schemaString.getBytes() ) );
-            SchemaFactory schemaf = javax.xml.validation.SchemaFactory.newInstance( ADM_NS );
+            SchemaFactory schemaf = SchemaFactory.newInstance( ADM_NS );
             Schema schema = schemaf.newSchema( schemaurl );
             Validator validator = schema.newValidator();
+
             Source inXML = new StreamSource( in );
             validator.validate( inXML );
             in.reset();
