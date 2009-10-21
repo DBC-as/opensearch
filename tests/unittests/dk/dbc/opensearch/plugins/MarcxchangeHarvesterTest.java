@@ -1,6 +1,6 @@
-/*   
+/*
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
   opensearch is free software: you can redistribute it and/or modify
@@ -36,6 +36,11 @@ import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+
+import javax.xml.rpc.ServiceException;
+import java.net.MalformedURLException;
+import org.apache.commons.configuration.ConfigurationException;
+import java.io.IOException;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -77,17 +82,92 @@ public class MarcxchangeHarvesterTest
         @Mock
         public String[] getNextPID( int zahl, String prefix )
         {
-        return new String[]{ testPid1 };
+            return new String[]{ testPid1 };
         }
     }
+
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandleServiceException 
+    {
+        @Mock
+        public void $init()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int zahl, String prefix ) throws ServiceException
+        {
+            throw new ServiceException( "test" );
+        }
+    }
+
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandleConfigurationException
+    {
+        @Mock
+        public void $init()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int zahl, String prefix ) throws ConfigurationException
+        {
+            throw new ConfigurationException( "test" );
+        }
+    }
+
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandleMalformedURLException
+    {
+        @Mock
+        public void $init()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int zahl, String prefix ) throws MalformedURLException
+        {
+            throw new MalformedURLException( "test" );
+        }
+    }
+
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandleIOException
+    {
+        @Mock
+        public void $init()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int zahl, String prefix ) throws IOException
+        {
+            throw new IOException( "test" );
+        }
+    }
+
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandleIllegalStateException
+    {
+        @Mock
+        public void $init()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int zahl, String prefix ) throws IllegalStateException
+        {
+            throw new IllegalStateException( "test" );
+        }
+    }
+
 
     @Before
     public void setUp() throws Exception
     {
-        setUpMocks( MockFedoraHandle.class );
-        
+
         Document xmldata = XMLUtils.documentFromString( referenceData );
-        
+
         ddjob = new DatadockJob( mockIdentifier, xmldata );
     }
 
@@ -101,6 +181,7 @@ public class MarcxchangeHarvesterTest
     @Test
     public void getCargoContainerTest() throws Exception
     {
+        setUpMocks( MockFedoraHandle.class );
         harvestPlugin = new MarcxchangeHarvester();
         cc = harvestPlugin.getCargoContainer( ddjob, databytes );
         //There is data in the returned CargoContainer
@@ -125,6 +206,7 @@ public class MarcxchangeHarvesterTest
      */
     public void getCargoContainerWithInvalidData() throws Exception
     {
+        setUpMocks( MockFedoraHandle.class );
         harvestPlugin = new MarcxchangeHarvester();
         cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes );
         //the data was added...
@@ -136,9 +218,88 @@ public class MarcxchangeHarvesterTest
     @Test
     public void testPluginType() throws Exception
     {
+        setUpMocks( MockFedoraHandle.class );
         harvestPlugin = new MarcxchangeHarvester();
         assertEquals( PluginType.HARVEST, harvestPlugin.getPluginType() );
 
     }
 
+    /**
+     * tests the catching of the ServiceException and rethrowing as a PluginException
+     */
+
+    @Test( expected = ServiceException.class )
+    public void createCargoContainerFromFileServiceException() throws Exception
+    {
+        setUpMocks( MockFedoraHandleServiceException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    } 
+
+    @Test( expected = ConfigurationException.class )
+    public void createCargoContainerFromFileConfigurationException() throws Exception
+    {
+        setUpMocks( MockFedoraHandleConfigurationException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    } 
+    
+    @Test( expected = MalformedURLException.class )
+    public void createCargoContainerFromFileMalformedURLException() throws Exception
+    {
+        setUpMocks( MockFedoraHandleMalformedURLException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    } 
+    
+    @Test( expected = IOException.class )
+    public void createCargoContainerFromFileIOException() throws Exception
+    {
+        setUpMocks( MockFedoraHandleIOException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    } 
+    
+    @Test( expected = IllegalStateException.class )
+    public void createCargoContainerFromFileIllegalStateException() throws Exception
+    {
+        setUpMocks( MockFedoraHandleIllegalStateException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    }
 }
