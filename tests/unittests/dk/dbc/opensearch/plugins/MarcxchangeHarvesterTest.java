@@ -87,7 +87,7 @@ public class MarcxchangeHarvesterTest
     }
 
     @MockClass( realClass = FedoraHandle.class )
-    public static class MockFedoraHandleServiceException 
+    public static class MockFedoraHandleServiceException
     {
         @Mock
         public void $init()
@@ -161,6 +161,31 @@ public class MarcxchangeHarvesterTest
         }
     }
 
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandlePidIsNull
+    {
+        @Mock
+        public void $init()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int zahl, String prefix ) throws IllegalStateException
+        {
+            return null;
+        }
+    }
+
+    @MockClass( realClass = CargoContainer.class )
+    public static class MockCargoContainerNullCargoObject
+    {
+        @Mock
+        public CargoObject getCargoObject( DataStreamType type )
+        {
+            return null;
+        }
+    }
+
 
     @Before
     public void setUp() throws Exception
@@ -225,81 +250,141 @@ public class MarcxchangeHarvesterTest
     }
 
     /**
-     * tests the catching of the ServiceException and rethrowing as a PluginException
+     * Tests the handling the fedoraHandle.geetNextPID returning a pid which is null
+     */
+    @Test( expected = IllegalStateException.class )
+    public void createCargoContainerFromFilePidIsNullTest() throws Exception
+    {
+        setUpMocks( MockFedoraHandlePidIsNull.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try{
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe ){
+            throw pe.getException();
+        }
+    }
+
+    /**
+     * tests that a IllegalStateException is thrown when no OriginalData 
+     * in the CargoContainer
+     */
+    @Test( expected = IllegalStateException.class )
+    public void noOriginalDataTest() throws Exception
+    {
+        setUpMocks( MockFedoraHandle.class );
+        setUpMocks( MockCargoContainerNullCargoObject.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }  
+    }
+
+
+
+    /**
+     * The rest is test of the exceptionhandling
      */
 
+    /**
+     * tests the catching of the ServiceException from the fedoraHandle when asking
+     * for a new pid and rethrowing as a PluginException
+     */
     @Test( expected = ServiceException.class )
-    public void createCargoContainerFromFileServiceException() throws Exception
+    public void createCargoContainerFromFileServiceExceptionTest() throws Exception
     {
         setUpMocks( MockFedoraHandleServiceException.class );
         harvestPlugin = new MarcxchangeHarvester();
         try
         {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }
-    } 
-
-    @Test( expected = ConfigurationException.class )
-    public void createCargoContainerFromFileConfigurationException() throws Exception
-    {
-        setUpMocks( MockFedoraHandleConfigurationException.class );
-        harvestPlugin = new MarcxchangeHarvester();
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }
-    } 
-    
-    @Test( expected = MalformedURLException.class )
-    public void createCargoContainerFromFileMalformedURLException() throws Exception
-    {
-        setUpMocks( MockFedoraHandleMalformedURLException.class );
-        harvestPlugin = new MarcxchangeHarvester();
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }
-    } 
-    
-    @Test( expected = IOException.class )
-    public void createCargoContainerFromFileIOException() throws Exception
-    {
-        setUpMocks( MockFedoraHandleIOException.class );
-        harvestPlugin = new MarcxchangeHarvester();
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }
-    } 
-    
-    @Test( expected = IllegalStateException.class )
-    public void createCargoContainerFromFileIllegalStateException() throws Exception
-    {
-        setUpMocks( MockFedoraHandleIllegalStateException.class );
-        harvestPlugin = new MarcxchangeHarvester();
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes ); 
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
         }
         catch( PluginException pe )
         {
             throw pe.getException();
         }
     }
+
+    /**
+     * tests the catching of the ServiceException from the fedoraHandle when asking
+     * for a new pid and rethrowing as a PluginException
+     */
+    @Test( expected = ConfigurationException.class )
+    public void createCargoContainerFromFileConfigurationExceptionTest() throws Exception
+    {
+        setUpMocks( MockFedoraHandleConfigurationException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    }
+
+    /**
+     * tests the catching of the ServiceException from the fedoraHandle when asking
+     * for a new pid and rethrowing as a PluginException
+     */
+    @Test( expected = MalformedURLException.class )
+    public void createCargoContainerFromFileMalformedURLExceptionTest() throws Exception
+    {
+        setUpMocks( MockFedoraHandleMalformedURLException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    }
+
+    /**
+     * tests the catching of the ServiceException from the fedoraHandle when asking
+     * for a new pid and rethrowing as a PluginException
+     */
+    @Test( expected = IOException.class )
+    public void createCargoContainerFromFileIOExceptionTest() throws Exception
+    {
+        setUpMocks( MockFedoraHandleIOException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    }
+
+    /**
+     * tests the catching of the ServiceException from the fedoraHandle when asking
+     * for a new pid and rethrowing as a PluginException
+     */
+    @Test( expected = IllegalStateException.class )
+    public void createCargoContainerFromFileIllegalStateExceptionTest() throws Exception
+    {
+        setUpMocks( MockFedoraHandleIllegalStateException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    }
+
+  
 }

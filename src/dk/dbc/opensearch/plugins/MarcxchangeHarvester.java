@@ -149,7 +149,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
             log.error( error );
             throw new PluginException( error, ex );
         }
-        if( null == pid && 1 != pid.length )
+        if( null == pid )
         {
             String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", this.submitter );
             log.error( error );
@@ -182,11 +182,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         	log.error( msg );
             throw new PluginException( msg, ioe );
         }
-        //Bug 9652 should we allow empty CargoContainers?
-        if( cargo.getCargoObjectCount() < 1 )
-        {
-            log.warn( "No objects added to CargoContanier" );
-        }
+    
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
 
         log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
@@ -239,7 +235,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         {
             String error = "Original data CargoObject is null";
             log.error( error );
-            throw new IllegalStateException( error );
+            throw new PluginException( new IllegalStateException( error ) );
         }
 
         byte[] b = co.getBytes();
