@@ -27,6 +27,7 @@ package dk.dbc.opensearch.components.harvest ;
 
 import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.OracleDBConnection;
+import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -60,17 +61,26 @@ import org.xml.sax.SAXException;
  */
 public class ESHarvest implements IHarvest
 {
-    private Connection    conn;           // The ES-base connection - given through constructor
+    //    private Connection    conn;           // The ES-base connection - given through constructor
     private String        databasename;   // The ES-base databasename - given through constructor
 
+    private OracleDBPooledConnection connectionPool = null;
+
     Logger log = Logger.getLogger( ESHarvest.class );
+
+    public ESHarvest( OracleDBPooledConnection connectionPool , String databasename ) throws HarvesterIOException
+    {
+	this.connectionPool = connectionPool;
+	this.databasename = databasename;
+    }
 
     /**
      *   Creates a new ES-Harvester 
      */
+	/*
     public ESHarvest( Connection conn , String databasename ) throws HarvesterIOException
     {
-	this.conn = conn;
+       	this.conn = conn;
 	this.databasename = databasename;
 
         // Check that the connection is properly instantiated:
@@ -108,8 +118,8 @@ public class ESHarvest implements IHarvest
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
 
-
     }
+	*/
 
 
     /**
@@ -146,6 +156,17 @@ public class ESHarvest implements IHarvest
 
 	log.info( "ESHarvest shutdown" );
 
+	try 
+	{
+	    connectionPool.shutdown();
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String(  "Error when closing the Oracle pooled connection" );
+	    log.fatal( errorMsg , sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+	/*
         //close the DBconnection
         try
 	{
@@ -157,6 +178,7 @@ public class ESHarvest implements IHarvest
 	    log.fatal( errorMsg , sqle );
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
+	*/
     }
 
 
@@ -165,8 +187,22 @@ public class ESHarvest implements IHarvest
      */
     public ArrayList<IJob> getJobs( int maxAmount ) throws HarvesterIOException
     {
-
 	log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
+
+	// get a connection from the connectionpool:
+	Connection conn;
+
+	try
+	{
+	    conn = connectionPool.getConnection();
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String("Could not get a db-connection from the connection pool");
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
         ArrayList<IJob> theJobList = new ArrayList<IJob>();
 	try 
 	{
@@ -199,7 +235,7 @@ public class ESHarvest implements IHarvest
 		ESIdentifier id = new ESIdentifier( targetRef, lbnr );
 
 		// Update Recordstatus
-		setRecordStatusToInProgress( id );
+		setRecordStatusToInProgress( id, conn );
 
 		Document doc = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -269,6 +305,21 @@ public class ESHarvest implements IHarvest
     {
         log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
 
+	// get a connection from the connectionpool:
+	Connection conn;
+
+	try
+	{
+	    conn = connectionPool.getConnection();
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String("Could not get a db-connection from the connection pool");
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
+
         //get the data associated with the identifier from the record field
         byte[] returnData = null;
         ESIdentifier ESJobId = (ESIdentifier)jobId;
@@ -320,11 +371,25 @@ public class ESHarvest implements IHarvest
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) 
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
+	Connection conn;
+
+	try
+	{
+	    conn = connectionPool.getConnection();
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String("Could not get a db-connection from the connection pool");
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
+
 	ESIdentifier EsId = (ESIdentifier)Id;
-	setStatus( EsId, JobStatus.FAILURE );
+	setStatus( EsId, JobStatus.FAILURE, conn );
 	try 
 	{
-	    setFailureDiagnostic( EsId, failureDiagnostic );
+	    setFailureDiagnostic( EsId, failureDiagnostic, conn );
 	}
 	catch( SQLException sqle ) 
 	{
@@ -337,15 +402,41 @@ public class ESHarvest implements IHarvest
     public void setStatusSuccess( IIdentifier Id, String PID )
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
+	Connection conn;
+
+	try
+	{
+	    conn = connectionPool.getConnection();
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String("Could not get a db-connection from the connection pool");
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
 	ESIdentifier EsId = (ESIdentifier)Id;
-	setStatus( EsId, JobStatus.SUCCESS );
-	setPIDInTaskpackageRecordStructure( EsId, PID );
+	setStatus( EsId, JobStatus.SUCCESS, conn );
+	setPIDInTaskpackageRecordStructure( EsId, PID, conn );
     }
 
     public void setStatusRetry( IIdentifier Id )
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
-	setStatus( (ESIdentifier)Id, JobStatus.RETRY );
+	Connection conn;
+
+	try
+	{
+	    conn = connectionPool.getConnection();
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String("Could not get a db-connection from the connection pool");
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
+	setStatus( (ESIdentifier)Id, JobStatus.RETRY, conn );
     }
 
 
@@ -356,7 +447,7 @@ public class ESHarvest implements IHarvest
      *  If the status is allready set to either Success or Failure, then an exception is thrown, since it
      *  is not allowed to change status on an allready finished record.
      */
-    private void setStatus( ESIdentifier jobId, JobStatus status ) 
+    private void setStatus( ESIdentifier jobId, JobStatus status, Connection conn ) 
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
         log.info( String.format( "ESHarvester was requested to set status %s on data identified by the identifier %s", status, jobId ) );
@@ -441,7 +532,7 @@ public class ESHarvest implements IHarvest
 		}
 
 		// Check the taskpackage for update of TP-status:			
-		setTaskPackageStatus( ESJobId.getTargetRef() );
+		setTaskPackageStatus( ESJobId.getTargetRef(), conn );
 	    }
 	} 
 	catch( SQLException sqle ) 
@@ -461,6 +552,19 @@ public class ESHarvest implements IHarvest
     {
         log.info( "Cleaning up ES-base" );
 
+	Connection conn;
+
+	try
+	{
+	    conn = connectionPool.getConnection();
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String("Could not get a db-connection from the connection pool");
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+	
         try
 	{
 	    Statement stmt = conn.createStatement();
@@ -505,7 +609,7 @@ public class ESHarvest implements IHarvest
      * Updates the field taskpackagerecordstructure.recordstatus in ES to be 
      * inProgress (value: 3) for the taskpackagerecordstructure with targetRef and lbnr.
      */
-    private void setRecordStatusToInProgress( ESIdentifier ESJobId ) throws SQLException
+    private void setRecordStatusToInProgress( ESIdentifier ESJobId, Connection conn ) throws SQLException
     {
 
 	log.debug( String.format( "Updating recordstatus for ID: %s", ESJobId ) );
@@ -551,7 +655,7 @@ public class ESHarvest implements IHarvest
     /**
      *  Changes the status on a taskpackage if all assoicated records are finished.
      */
-    private void setTaskPackageStatus( int targetref ) throws HarvesterInvalidStatusChangeException, SQLException
+    private void setTaskPackageStatus( int targetref, Connection conn ) throws HarvesterInvalidStatusChangeException, SQLException
     {
 
 	log.debug( String.format( "setTaskPackageStatus with targetRef %s", targetref ) );
@@ -690,7 +794,7 @@ public class ESHarvest implements IHarvest
     }
 
 
-    private void setFailureDiagnostic( ESIdentifier Id, String failureDiagnostic ) throws HarvesterIOException, SQLException
+    private void setFailureDiagnostic( ESIdentifier Id, String failureDiagnostic, Connection conn ) throws HarvesterIOException, SQLException
     {
 	// \Note: It is only possible to add one diagnostic to a record, since you can only make one
 	//        call to either setSuccess or setFailure.
@@ -802,7 +906,7 @@ public class ESHarvest implements IHarvest
     }
 
 
-    private void setPIDInTaskpackageRecordStructure( ESIdentifier Id, String PID ) 
+    private void setPIDInTaskpackageRecordStructure( ESIdentifier Id, String PID, Connection conn ) 
     {
 	// When data is successfully stored in Fedora, the PID for the data must be stored
 	// in the ES-base on the original record.

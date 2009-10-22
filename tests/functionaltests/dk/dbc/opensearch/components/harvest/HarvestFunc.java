@@ -31,6 +31,7 @@ import java.util.Iterator;
 
 import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.OracleDBConnection;
+import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -106,10 +107,15 @@ public class HarvestFunc
             System.out.println( "An internal Harvester error occured" );
             hioe.printStackTrace();
         }
+	catch ( SQLException sqle )
+	{
+	    System.out.println( "An SQLException was thrown" );
+	    sqle.printStackTrace();
+	}
     }
 
 
-    private static void startESHarvestTest() throws HarvesterIOException
+    private static void startESHarvestTest() throws HarvesterIOException, SQLException
     {
 	String databasename = "test";
 	IDBConnection oracleInstance;
@@ -140,7 +146,19 @@ public class HarvestFunc
 	    }
 
 	//        esh = new ESHarvest( oracleInstance, databasename );
-	esh = new ESHarvest( conn, databasename );
+	//	esh = new ESHarvest( conn, databasename );
+	OracleDBPooledConnection connectionPool;
+	try
+	{
+	    connectionPool = new OracleDBPooledConnection( "ESHARVESTER_CACHE" );
+	}
+	catch( SQLException sqle ) 
+	{
+	    String errorMsg = new String( "Could not create OracleDBPooledConnection" );
+	    log.fatal( errorMsg, sqle );
+	    throw sqle;
+	}
+	esh = new ESHarvest( connectionPool, databasename );
         esh.start();
     }
 
