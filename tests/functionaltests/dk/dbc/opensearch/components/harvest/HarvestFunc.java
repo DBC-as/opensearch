@@ -43,6 +43,10 @@ import org.apache.log4j.SimpleLayout;
 
 import dk.dbc.opensearch.components.harvest.ESIdentifier;
 
+
+import oracle.jdbc.pool.OracleDataSource;
+import java.util.Properties;
+
 /**
  *
  */
@@ -147,10 +151,49 @@ public class HarvestFunc
 
 	//        esh = new ESHarvest( oracleInstance, databasename );
 	//	esh = new ESHarvest( conn, databasename );
-	OracleDBPooledConnection connectionPool;
+	//	OracleDBPooledConnection<OracleDataSource> connectionPool;
+
+	OracleDataSource ods = null;
+	String cache_name = new String( "ESHARVESTER_CACHE" );
+
 	try
 	{
-	    connectionPool = new OracleDBPooledConnection( "ESHARVESTER_CACHE" );
+
+	    ods = new OracleDataSource();
+
+	    // set db-params:
+	    ods.setURL( "jdbc:oracle:thin:@tora1.dbc.dk:1521" );
+	    ods.setUser( "damkjaer" );
+	    ods.setPassword( "damkjaer" );
+
+	    // set db-cache-params:
+	    ods.setConnectionCachingEnabled( true ); // connection pool
+	    ods.setConnectionCacheName( cache_name );
+
+	    // set cache properties:
+	    Properties cacheProperties = new Properties();
+	    cacheProperties.setProperty( "MinLimit", "1" );
+	    cacheProperties.setProperty( "MaxLimit", "3" );
+	    cacheProperties.setProperty( "InitialLimit", "1" );
+	    cacheProperties.setProperty( "ConnectionWaitTimeout", "5" );
+	    cacheProperties.setProperty( "ValidateConnection", "true" );
+
+	    ods.setConnectionCacheProperties( cacheProperties );
+
+	}
+	catch( SQLException sqle )
+	{
+	    String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
+	    log.fatal( errorMsg, sqle );
+	    throw sqle;
+	}
+
+	OracleDBPooledConnection connectionPool;
+	// try
+	//	{
+	//connectionPool = new OracleDBPooledConnection<OracleDataSource>( "ESHARVESTER_CACHE" );
+	connectionPool = new OracleDBPooledConnection( cache_name, ods );
+	    /*
 	}
 	catch( SQLException sqle ) 
 	{
@@ -158,6 +201,7 @@ public class HarvestFunc
 	    log.fatal( errorMsg, sqle );
 	    throw sqle;
 	}
+	    */
 	esh = new ESHarvest( connectionPool, databasename );
         esh.start();
     }

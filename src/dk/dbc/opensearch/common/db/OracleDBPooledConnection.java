@@ -12,45 +12,12 @@ public class OracleDBPooledConnection
     private String CACHE_NAME;
     private OracleDataSource ods = null;
 
-
-    public OracleDBPooledConnection( String cache_name ) throws SQLException
+    public OracleDBPooledConnection( String cache_name, OracleDataSource ods ) 
     {
 	CACHE_NAME = cache_name;
-
-	try
-	{
-	
-	    ods = new OracleDataSource();
-
-	    // set db-params:
-	    ods.setURL( "jdbc:oracle:thin:@tora1.dbc.dk:1521" );
-	    ods.setUser( "damkjaer" );
-	    ods.setPassword( "damkjaer" );
-	
-	    // set db-cache-params:
-	    ods.setConnectionCachingEnabled( true ); // connection pool
-	    ods.setConnectionCacheName( CACHE_NAME );
-
-	    // set cache properties:
-	    Properties cacheProperties = new Properties();
-	    cacheProperties.setProperty( "MinLimit", "1" );
-	    cacheProperties.setProperty( "MaxLimit", "3" );
-	    cacheProperties.setProperty( "InitialLimit", "1" );
-	    cacheProperties.setProperty( "ConnectionWaitTimeout", "5" );
-	    cacheProperties.setProperty( "ValidateConnection", "true" );
-	
-	    ods.setConnectionCacheProperties( cacheProperties );
-
-	}
-	catch( SQLException sqle )
-	{
-	    String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
-	    log.fatal( errorMsg, sqle );
-	    throw sqle;
-	}
-
+	this.ods = ods;
     }
-    
+
 
     public synchronized Connection getConnection() throws SQLException
     {
