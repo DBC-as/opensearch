@@ -236,6 +236,7 @@ public class MarcxchangeHarvesterTest
      * CargoContainer will contain a CargoObject with the incorrect data and an
      * empty metadata-element.
      */
+    @Test
     public void getCargoContainerWithInvalidData() throws Exception
     {
         setUpMocks( MockFedoraHandle.class );

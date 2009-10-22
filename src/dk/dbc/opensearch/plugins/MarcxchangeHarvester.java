@@ -166,14 +166,18 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
             log.trace( "Constructing DC datastream" );
 
             DublinCore dcStream = createDublinCore( cargo );
-            if( dcStream.elementCount() == 0 )
-            {
-                log.warn( String.format( "No information was added to dublin core data for data with pid '%s'", cargo.getIdentifier() ) );
-            }
-            else
-            {
+          
+
+            //will never happen since the elements are always set to the 
+            //empty string if no value is given to them
+            // if( dcStream.elementCount() == 0 )
+//             {
+//                 log.warn( String.format( "No information was added to dublin core data for data with pid '%s''", cargo.getIdentifier() ) );
+//             }
+//             else
+//             {
                 log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-            }
+                // }
             cargo.addMetaData( dcStream );
         }
         catch ( IOException ioe )
@@ -188,8 +192,6 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
             log.error( msg );
             throw new PluginException( msg, iae );
         }
-
-
 
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
 
