@@ -1,6 +1,6 @@
-/*   
+/*
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
   opensearch is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 
 /**
  * \file MarcxchangeHarvester.java
- * \brief 
+ * \brief
  */
 
 
@@ -71,7 +71,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
 {
     private static Logger log = Logger.getLogger( MarcxchangeHarvester.class );
 
-    
+
     private String submitter;
     private String format;
     private byte[] data;
@@ -92,8 +92,8 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
             throw new PluginException( error, ex );
         }
     }
-    
-    
+
+
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
         this.submitter = job.getSubmitter();
@@ -107,9 +107,9 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     /**
      *
      * @return the CargoContainer from
-     * @throws TransformerException 
-     * @throws ParserConfigurationException 
-     * @throws XPathExpressionException 
+     * @throws TransformerException
+     * @throws ParserConfigurationException
+     * @throws XPathExpressionException
      * @throws IOException if the data cannot be read
      */
     private CargoContainer createCargoContainerFromFile() throws PluginException
@@ -157,7 +157,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         }
 
         CargoContainer cargo = new CargoContainer( pid[0] );
- 
+
         try
         {
             /** \todo: hardcoded values for mimetype, language*/
@@ -178,11 +178,19 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         }
         catch ( IOException ioe )
         {
-        	String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
-        	log.error( msg );
+            String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
+            log.error( msg );
             throw new PluginException( msg, ioe );
         }
-    
+        catch( IllegalArgumentException iae )
+        {
+            String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
+            log.error( msg );
+            throw new PluginException( msg, iae );
+        }
+
+
+
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
 
         log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
@@ -190,36 +198,36 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         return cargo;
     }
 
-    
+
     private String getDCVariable( byte[] bytes, String xPathStr ) throws PluginException
     {
-    	NamespaceContext nsc = new OpensearchNamespaceContext();
-    	XPath xpath = XPathFactory.newInstance().newXPath();
+        NamespaceContext nsc = new OpensearchNamespaceContext();
+        XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression = null;        
-        
-        InputSource workRelationSource = new InputSource( new ByteArrayInputStream( bytes ) );        
+        XPathExpression xPathExpression = null;
+
+        InputSource workRelationSource = new InputSource( new ByteArrayInputStream( bytes ) );
         String dcVariable = null;
-        
+
         log.debug( String.format( "xpathStr = '%s'", xPathStr ) );
-        try 
+        try
         {
-			xPathExpression = xpath.compile( xPathStr );
-			dcVariable = xPathExpression.evaluate( workRelationSource );            
-        } 
-        catch ( XPathExpressionException xpee ) 
+            xPathExpression = xpath.compile( xPathStr );
+            dcVariable = xPathExpression.evaluate( workRelationSource );
+        }
+        catch ( XPathExpressionException xpee )
         {
-        	String msg = String.format( "Could not evaluate with xpath expression '%s'", xPathExpression );
-        	log.error( msg );
-			throw new PluginException( msg, xpee );
-		}
-        
+            String msg = String.format( "Could not evaluate with xpath expression '%s'", xPathExpression );
+            log.error( msg );
+            throw new PluginException( msg, xpee );
+        }
+
         log.debug( String.format( "Found dcVariable: '%s'", dcVariable ) );
-        
+
         return dcVariable;
     }
-    
-    
+
+
     public PluginType getPluginType()
     {
         return pluginType;
@@ -229,48 +237,48 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     {
         String identifier = cargo.getIdentifier();
         DublinCore dc = new DublinCore( identifier );
-    	CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
-        if ( co == null )
-        {
-            String error = "Original data CargoObject is null";
-            log.error( error );
-            throw new PluginException( new IllegalStateException( error ) );
-        }
+//         if ( co == null )
+//         {
+//             String error = "Original data CargoObject is null";
+//             log.error( error );
+//             throw new PluginException( new IllegalStateException( error ) );
+//         }
 
         byte[] b = co.getBytes();
 
-	    String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
-	    log.trace( String.format( "finding dcTitle using xpath: '%s'", titleXpathStr ) );
-		String dcTitle = getDCVariable( b, titleXpathStr );
-	    log.trace( String.format( "cargo setting dcTitle with value '%s'", dcTitle ) );
+        String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
+        log.trace( String.format( "finding dcTitle using xpath: '%s'", titleXpathStr ) );
+        String dcTitle = getDCVariable( b, titleXpathStr );
+        log.trace( String.format( "cargo setting dcTitle with value '%s'", dcTitle ) );
         dc.setTitle( dcTitle );
 
         String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1]";
-	    log.trace( String.format( "finding dcCreator using xpath: '%s'", creatorXpathStr ) );
+        log.trace( String.format( "finding dcCreator using xpath: '%s'", creatorXpathStr ) );
         String dcCreator = getDCVariable( b, creatorXpathStr );
-	    log.trace( String.format( "cargo setting dcCreator with value '%s'", dcCreator ) );
+        log.trace( String.format( "cargo setting dcCreator with value '%s'", dcCreator ) );
         dc.setCreator( dcCreator );
 
         String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
-	    log.trace( String.format( "finding dcType using xpath: '%s'", typeXpathStr ) );
+        log.trace( String.format( "finding dcType using xpath: '%s'", typeXpathStr ) );
         String dcType = getDCVariable( b, typeXpathStr );
-	    log.trace( String.format( "cargo setting dcType with value '%s'", dcType ) );
+        log.trace( String.format( "cargo setting dcType with value '%s'", dcType ) );
         dc.setType( dcType );
 
         String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
-	    log.trace( String.format( "finding dcSource using xpath: '%s'", sourceXpathStr ) );
+        log.trace( String.format( "finding dcSource using xpath: '%s'", sourceXpathStr ) );
         String dcSource = getDCVariable( b, sourceXpathStr );
-	    log.trace( String.format( "cargo setting dcSource with value '%s'", dcSource ) );
+        log.trace( String.format( "cargo setting dcSource with value '%s'", dcSource ) );
         dc.setSource( dcSource );
 
         String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a']";
-	    log.trace( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
+        log.trace( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
         String dcRelation = getDCVariable( b, relationXpathStr );
-	    log.trace( String.format( "cargo setting dcRelation with value '%s'", dcRelation ) );
+        log.trace( String.format( "cargo setting dcRelation with value '%s'", dcRelation ) );
         dc.setRelation( dcRelation );
 
-	    log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
+        log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
 
         return dc;
     }

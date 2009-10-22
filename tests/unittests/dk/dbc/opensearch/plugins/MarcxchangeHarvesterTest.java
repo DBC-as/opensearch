@@ -36,6 +36,7 @@ import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -68,6 +69,8 @@ public class MarcxchangeHarvesterTest
     static final String invalidData = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><ting:hest xmlns:ting=\"http://www.dbc.dk/ting\"></ting:hest>";
     static final byte[] databytes = data.getBytes();;
     static final byte[] invaliddatabytes = invalidData.getBytes();
+    static final String noData = "";
+    static final byte[] noDataBytes = noData.getBytes();
 
     @Mocked IIdentifier mockIdentifier;
 
@@ -83,6 +86,35 @@ public class MarcxchangeHarvesterTest
         public String[] getNextPID( int zahl, String prefix )
         {
             return new String[]{ testPid1 };
+        }
+    }
+
+    //used by the pidIsNull test method
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandlePidIsNull
+    {
+        @Mock
+        public void $init()
+        {
+        }
+
+        @Mock
+        public String[] getNextPID( int zahl, String prefix ) throws IllegalStateException
+        {
+            return null;
+        }
+    }
+
+    /**
+     * the following mockclasses or used for Exception handling tests
+     */
+    @MockClass( realClass = FedoraHandle.class )
+    public static class MockFedoraHandleObjectRepositoryException
+    {
+        @Mock
+        public void $init() throws ObjectRepositoryException
+        {
+            throw new ObjectRepositoryException( "test" );
         }
     }
 
@@ -161,31 +193,6 @@ public class MarcxchangeHarvesterTest
         }
     }
 
-    @MockClass( realClass = FedoraHandle.class )
-    public static class MockFedoraHandlePidIsNull
-    {
-        @Mock
-        public void $init()
-        {
-        }
-
-        @Mock
-        public String[] getNextPID( int zahl, String prefix ) throws IllegalStateException
-        {
-            return null;
-        }
-    }
-
-    @MockClass( realClass = CargoContainer.class )
-    public static class MockCargoContainerNullCargoObject
-    {
-        @Mock
-        public CargoObject getCargoObject( DataStreamType type )
-        {
-            return null;
-        }
-    }
-
 
     @Before
     public void setUp() throws Exception
@@ -253,7 +260,7 @@ public class MarcxchangeHarvesterTest
      * Tests the handling the fedoraHandle.geetNextPID returning a pid which is null
      */
     @Test( expected = IllegalStateException.class )
-    public void createCargoContainerFromFilePidIsNullTest() throws Exception
+    public void pidIsNullTest() throws Exception
     {
         setUpMocks( MockFedoraHandlePidIsNull.class );
         harvestPlugin = new MarcxchangeHarvester();
@@ -265,31 +272,49 @@ public class MarcxchangeHarvesterTest
         }
     }
 
+
     /**
-     * tests that a IllegalStateException is thrown when no OriginalData 
-     * in the CargoContainer
+     * tests the behaviour when no bytes are given to the plugin
+     * An IllegalArgumentException should be thrown by the CargoContainer.add
+     * method and be caught and wrapped in a PluginException
      */
-    @Test( expected = IllegalStateException.class )
-    public void noOriginalDataTest() throws Exception
+    @Test( expected = IllegalArgumentException.class )
+    public void noDataGivenTest() throws Exception
     {
         setUpMocks( MockFedoraHandle.class );
-        setUpMocks( MockCargoContainerNullCargoObject.class );
         harvestPlugin = new MarcxchangeHarvester();
         try
         {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+            cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes );
         }
         catch( PluginException pe )
         {
             throw pe.getException();
-        }  
+        }
+
     }
-
-
 
     /**
      * The rest is test of the exceptionhandling
      */
+
+    /**
+     * Tests the catching of the ObjectRepositoryException thrown by the FedoraHandle
+     * if problems are encountered during construction
+     */
+    @Test( expected = ObjectRepositoryException.class )
+    public void constructorObjectRepositoryExceptionTest() throws Exception
+    {
+        setUpMocks( MockFedoraHandleObjectRepositoryException.class );
+        try
+        {
+            harvestPlugin = new MarcxchangeHarvester();
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    }
 
     /**
      * tests the catching of the ServiceException from the fedoraHandle when asking
@@ -386,5 +411,5 @@ public class MarcxchangeHarvesterTest
         }
     }
 
-  
+
 }
