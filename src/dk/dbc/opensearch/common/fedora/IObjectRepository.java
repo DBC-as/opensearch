@@ -247,7 +247,7 @@ public interface IObjectRepository
      * @return 
      * @throws ObjectRepositoryException
      */
-    public List<String> getObjectRelations( String objectIdentifier ) throws ObjectRepositoryException;
+    public List<String> getObjectRelations( PID objectIdentifier ) throws ObjectRepositoryException;
 
     /**
      *  Adds 
@@ -266,6 +266,6 @@ public interface IObjectRepository
       * @param subjectIdentifer
       * @throws ObjectRepositoryException
       */
-     public void removeObjectRelation( PID objectIdentifier, IPredicateEnum relation, String subject ) throws ObjectRepositoryException;
+     public void removeObjectRelation( PID objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
 
 }

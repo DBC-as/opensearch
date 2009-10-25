@@ -225,6 +225,18 @@ public class FedoraObjectRepositoryTest {
             return true;
         }
 
+        @Mock
+        public boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) 
+        {
+            if( ! pid.startsWith("object:")) {
+                return false;
+            }
+            if( ! pid.startsWith("subject:")) {
+                return false;
+            }                       
+            return true;
+        }
+
 
     }
 
@@ -487,6 +499,11 @@ public class FedoraObjectRepositoryTest {
     @Test
     public void testaddObjectRelation( ) throws Exception {        
         instance.addObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");        
+    }
+
+    @Test
+    public void testpurgeObjectRelation( ) throws Exception {        
+        instance.removeObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");        
     }
 
     

@@ -1285,7 +1285,7 @@ public class FedoraObjectRepository implements IObjectRepository
     
 
     @Override
-    public List<String> getObjectRelations(String objectIdentifier)
+    public List<String> getObjectRelations(PID objectIdentifier)
             throws ObjectRepositoryException
     {
         // TODO Auto-generated method stub
@@ -1295,10 +1295,39 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public void removeObjectRelation(PID objectIdentifier, IPredicateEnum relation, String subject)
-            throws ObjectRepositoryException
+    public void removeObjectRelation(PID objectIdentifier, IPredicate relation, String subject)  
+    throws ObjectRepositoryException
     {
-        // TODO Auto-generated method stub
-        
-    }
+        try 
+        {
+            String relationString = relation.getPredicateString();
+            String pid = objectIdentifier.getIdentifier();
+            
+            log.debug( String.format("trying to removed %s - %s -> %s", pid, relationString, subject));
+            boolean purgeRelationship = this.fedoraHandle.purgeRelationship(pid, relationString, subject, true, null);
+            if( purgeRelationship ) 
+            {
+                log.info( String.format("Ignored error from purgeRelationeship : on %s-%s->%s", pid, relationString, subject));
+            }
+        }   
+        catch (IOException ex) 
+        {       
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, ex);
+            throw new ObjectRepositoryException( error , ex);
+        }
+        catch (ConfigurationException e)
+        {
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, e);
+            throw new ObjectRepositoryException( error , e);            
+            
+        }
+        catch (ServiceException e)
+        {
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, e);
+            throw new ObjectRepositoryException( error , e);            
+        } 
+     }
 }
