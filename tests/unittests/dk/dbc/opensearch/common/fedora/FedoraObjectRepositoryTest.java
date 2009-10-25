@@ -23,6 +23,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.common.fedora;
 
+import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.rpc.ServiceException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -210,6 +212,19 @@ public class FedoraObjectRepositoryTest {
             }
             return new String[]{};
         }
+        
+        @Mock
+        public boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) 
+        {
+            if( ! pid.startsWith("object:")) {
+                return false;
+            }
+            if( ! pid.startsWith("subject:")) {
+                return false;
+            }                       
+            return true;
+        }
+
 
     }
 
@@ -469,7 +484,12 @@ public class FedoraObjectRepositoryTest {
         instance.replaceDataInObject( objectIdentifier, dataIdentifier, cargoobject );
     }
 
+    @Test
+    public void testaddObjectRelation( ) throws Exception {        
+        instance.addObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");        
+    }
 
+    
     /*@Test
     public void testSearchRepository() throws Exception
     {

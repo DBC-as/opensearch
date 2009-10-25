@@ -270,7 +270,7 @@ if __name__ == '__main__':
     else:
         sys.exit( "\nUnknown target " + args[0] )
 
-    fldrs = [ 'admin', 'bin', 'config', 'dist', 'lib', 'plugins', 'tools' ]
+    fldrs = [ 'admin', 'bin', 'config', 'scripts', 'dist', 'lib', 'plugins', 'tools' ]
 
     print fldrs
 

@@ -75,6 +75,14 @@ public class FileSystemConfig extends Config
         return ret + "config/"; 
     }
 	
+    
+    public static String getScriptPath() throws ConfigurationException 
+    {
+        FileSystemConfig f = new FileSystemConfig();
+        String ret = f.getFileSystemTrunkPath();
+    
+        return ret + "scripts/";                
+    }
 	
     /* PLUGINS */
     private String getFileSystemPluginsPath()

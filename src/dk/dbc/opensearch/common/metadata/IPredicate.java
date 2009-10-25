@@ -28,5 +28,6 @@ import javax.xml.namespace.QName;
  */
 public interface IPredicate
 {
-    public QName getPredicate();
+    public QName getPredicate();   
+    public String getPredicateString();
 }

@@ -29,6 +29,7 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
+import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -1246,5 +1247,58 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
         return location;
+    }
+   
+    @Override
+    public void addObjectRelation(PID objectIdentifier, IPredicate relation, String subject)
+            throws ObjectRepositoryException
+    {
+        // TODO Auto-generated method stub
+        try
+        {
+            String relationString = relation.getPredicateString();
+            log.debug( String.format("trying to add %s - %s -> %s", objectIdentifier.getIdentifier(), relationString, subject));
+            this.fedoraHandle.addRelationship( objectIdentifier.getIdentifier(), relationString, subject, true, null);
+        } 
+        catch (IOException ex) 
+        {       
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, ex);
+            throw new ObjectRepositoryException( error , ex);
+        }
+        catch (ConfigurationException e)
+        {
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, e);
+            throw new ObjectRepositoryException( error , e);            
+            
+        }
+        catch (ServiceException e)
+        {
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, e);
+            throw new ObjectRepositoryException( error , e);            
+        }
+    }
+
+
+    
+
+    @Override
+    public List<String> getObjectRelations(String objectIdentifier)
+            throws ObjectRepositoryException
+    {
+        // TODO Auto-generated method stub
+        //throw new ObjectRepositoryException("Missing Implementaion of getObjectRelations");
+        return null;
+    }
+
+
+    @Override
+    public void removeObjectRelation(PID objectIdentifier, IPredicateEnum relation, String subject)
+            throws ObjectRepositoryException
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

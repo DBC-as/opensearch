@@ -29,6 +29,7 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.metadata.IPredicate;
 
 import dk.dbc.opensearch.common.types.InputPair;
 import java.util.List;
@@ -238,4 +239,33 @@ public interface IObjectRepository
      * @throws ObjectRepositoryException if the data could not be replaced in the object
      */
     public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException;
+    
+
+    /** 
+     * 
+     * @param objectIdentifier identifying the object to retrieve Relation Data from
+     * @return 
+     * @throws ObjectRepositoryException
+     */
+    public List<String> getObjectRelations( String objectIdentifier ) throws ObjectRepositoryException;
+
+    /**
+     *  Adds 
+     *  
+     * 
+     * @param objectIdentifier 
+     * @param relation
+     * @param subjectIdentifer
+     * @throws ObjectRepositoryException
+     */     
+     public void addObjectRelation( PID objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
+     /**
+      * 
+      * @param objectIdentifier i
+      * @param relation
+      * @param subjectIdentifer
+      * @throws ObjectRepositoryException
+      */
+     public void removeObjectRelation( PID objectIdentifier, IPredicateEnum relation, String subject ) throws ObjectRepositoryException;
+
 }
