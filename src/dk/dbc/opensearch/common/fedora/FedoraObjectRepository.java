@@ -1253,7 +1253,6 @@ public class FedoraObjectRepository implements IObjectRepository
     public void addObjectRelation(PID objectIdentifier, IPredicate relation, String subject)
             throws ObjectRepositoryException
     {
-        // TODO Auto-generated method stub
         try
         {
             String relationString = relation.getPredicateString();

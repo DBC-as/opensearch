@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
@@ -47,6 +48,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -66,7 +70,8 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     private FedoraObjectRelations fedor;
     private final FedoraHandle fedoraHandle;
     private IObjectRepository objectRepository;
-
+    
+    private final ScriptEngineManager manager = new ScriptEngineManager();
 
     /**
      * Constructor for the MarcxchangeWorlkRelation plugin.
@@ -82,6 +87,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         types.add( "Avisartikel" );
         types.add( "Tidsskrift" );
         types.add( "Tidsskriftsartikel" );
+        
        try
         {
             this.fedoraHandle = new FedoraHandle();
@@ -172,6 +178,23 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         return cargo;
     }
 
+
+    public static String normalizeString(String s)
+    {
+        s = s.toLowerCase();
+        String killchars = "~'-";
+        
+        StringBuffer res = new StringBuffer();
+        for (int i = 0; i < s.length(); ++i)
+        {
+            if (-1 == killchars.indexOf(s.charAt(i)))
+            {
+                res.append(s.charAt(i));
+            }
+        }
+        return res.toString();
+      
+    }
 
     private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
     {
@@ -264,7 +287,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         {
             nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
             log.debug( String.format( "nextWorkPid found: %s", nextWorkPid[0] ) );
-            CreateWorkObject( nextWorkPid[0] );
+            CreateWorkObject( nextWorkPid[0], dc );
         }
         else // fedoraPids.size() > 0
         {
@@ -291,7 +314,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             else
             {
                 nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
-                CreateWorkObject( nextWorkPid[0] );
+                CreateWorkObject( nextWorkPid[0], dc );
                 
             }
         }
@@ -306,24 +329,59 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     }
 
 
-    private void CreateWorkObject( String nextWorkPid ) throws IOException
+    private void CreateWorkObject( String nextWorkPid, DublinCore oldDc) 
     {      
-        // todo: Clean up work object xml and language. 
-        CargoContainer cargo = new CargoContainer( nextWorkPid );  
-        String fakexml="<fisk></fisk>";
-        cargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", IndexingAlias.None , fakexml.getBytes());
-
-        try 
-        { 
-            this.objectRepository.storeObject( cargo, "internal" );
-            log.debug(String.format("ja7: added work object %s", nextWorkPid));
-        } 
-        catch(Exception e) 
+        try
         {
-            log.error("ja7:error in fs.storeCargocontiner for new work item", e);
-        }   
+            // todo: Clean up work object xml and language.
+            CargoContainer cargo = new CargoContainer(nextWorkPid);
+            DublinCore workDC = new DublinCore( nextWorkPid );
+       
+            ScriptEngine engine = manager.getEngineByName("JavaScript");
+            
+            engine.put("log", log);
+            
+            engine.put("objectRepository", objectRepository);
+            
+            String path = FileSystemConfig.getScriptPath();
+            String jsFileName = path + "marcxchange_workrelation.js";
+            
+            log.debug(String.format("ja7w: url = %s", jsFileName));
+            engine.eval(new java.io.FileReader(jsFileName));
+            
+            Invocable inv = (Invocable) engine;
+            
+            engine.put("plugin", this);
+            Object res = inv.invokeFunction("generate_new_work", cargo, oldDc, workDC);
+            
+            log.debug(String.format("ja7w: res of type %s", res.toString()));
+            String fakexml = (String) res;
+            if (fakexml == null)
+            {
+                throw new PluginException(
+                        "Internal error generate_new_work did not return a String");
+                
+            }
+            cargo.add(DataStreamType.OriginalData, "format", "internal", "da", "text/xml",
+                    IndexingAlias.None, fakexml.getBytes());
+            
+            cargo.addMetaData( workDC );            
+            
+            try
+            {
+                this.objectRepository.storeObject(cargo, "internal");
+                log.debug(String.format("ja7: added work object %s", nextWorkPid));
+            }
+            catch (Exception e)
+            {
+                log.error("ja7w:error in fs.storeCargocontiner for new work item", e);
+            }
+        }
+        catch ( Exception e) {
+            log.error("ja7w:error in fs.storeCargocontiner for new work item", e);
+        }
     }
-
+    
 
     @Override
     public PluginType getPluginType()
