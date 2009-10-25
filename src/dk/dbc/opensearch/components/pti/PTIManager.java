@@ -92,7 +92,7 @@ public class PTIManager
      * submitted jobs, and if they have returned with a value (job
      * comenced succesfully), the corresponding element in the
      * processqueue are commited.
-     
+     * @return number of new jobs registered
      * @throws ClassNotFoundException
      * @throws ConfigurationException
      * @throws InterruptedException
@@ -101,12 +101,30 @@ public class PTIManager
      * @throws ServiceException
      * @throws SQLException
      */
-    public void update() throws SQLException, ConfigurationException, ClassNotFoundException, InterruptedException, ServiceException, MalformedURLException, IOException
+    public int update() throws SQLException, ConfigurationException, ClassNotFoundException, InterruptedException, ServiceException, MalformedURLException, IOException
     {
         log.trace( "update() called" );
+        int newJobs = startNewJobs( resultsetMaxSize );
+        checkJobs();
+        return newJobs;
+    }
 
+    /**
+     * checks the processqueue for new jobs, and submits them to the pool
+     *
+     * @param maxNumberOfJobs maximun number of jobs to fetch
+     * @return number of new jobs registered
+     * @throws ClassNotFoundException
+     * @throws ConfigurationException
+     * @throws IOException
+     * @throws MalformedURLException
+     * @throws ServiceException
+     * @throws SQLException
+     */
+    private int startNewJobs( int maxNumberOfJobs )throws SQLException, ConfigurationException, ClassNotFoundException, ServiceException, MalformedURLException, IOException
+    {
         // checking for new jobs
-        Vector< InputPair< String, Integer > > newJobs = processqueue.pop( resultsetMaxSize );
+        Vector< InputPair< String, Integer > > newJobs = processqueue.pop( maxNumberOfJobs );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
@@ -115,6 +133,18 @@ public class PTIManager
             pool.submit( job.getFirst(), job.getSecond() );
             log.debug( String.format( "submitted job: fedorahandle='%s' and queueID='%s'",job.getFirst(), job.getSecond() ) );
         }
+        return newJobs.size();
+    }
+    /**
+     * checks jobs submitted to the queue, and commits to processqueue
+     * if succesfull, otherwise the job is committed to the notindexed
+     * table
+     * @throws ClassNotFoundException
+     * @throws InterruptedException
+     * @throws SQLException
+     */
+    private void checkJobs()throws ClassNotFoundException, InterruptedException, SQLException
+    {
 
         // Checking jobs and commiting jobs
         Vector< CompletedTask<InputPair< Long, Integer > > > finishedJobs = pool.checkJobs();
@@ -133,11 +163,11 @@ public class PTIManager
             {
                 log.debug( String.format( "job with queueID: '%s', result: '%s' Not successfull... rolling back", queueID, result ) );
                 processqueue.notIndexed( queueID );
-            }    
+            }
         }
     }
 
-    
+
     /**
      * Shuts down the ptiManager. Shuts down the pool and waits until
      * all jobs are finished.
@@ -148,9 +178,11 @@ public class PTIManager
         log.trace( "Shutting down the pool" );
         // waiting for threads to finish before returning
         pool.shutdown();
+        log.trace( "The pool is down" );
+
         try
         {
-            update();
+            checkJobs();
         }
         catch( Exception e)
         {
@@ -161,7 +193,5 @@ public class PTIManager
             	log.fatal( trace[i].toString() );
             }
         }
-        
-        log.trace( "The pool is down" );
     }
 }

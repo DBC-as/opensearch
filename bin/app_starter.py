@@ -160,6 +160,8 @@ def start_daemon( q_name, pid_filename, monitor, args=None ):
         monitor_args = "-agentlib:tijmp"
     if monitor == 'jconsole':
         monitor_args = "-Dcom.sun.management.jmxremote.port=8155 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+    if monitor == 'debug':
+        monitor_args = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1044"
 
     cmd = [ 'java %s'%( monitor_args ),
             '-Ddaemon.pidfile=%s'%( pid_filename ),
@@ -219,7 +221,7 @@ def generate_config():
 if __name__ == '__main__':    
     from optparse import OptionParser
 
-    available_monitors = ["tijmp", "jconsole"]
+    available_monitors = ["tijmp", "jconsole", "debug"]
     app_list = [ 'datadock', 'pti', 'both' ]
     fedora_arg = {'host': 'localhost',
                   'port': '8080'

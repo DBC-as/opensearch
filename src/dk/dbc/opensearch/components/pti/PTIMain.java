@@ -70,8 +70,8 @@ public class PTIMain
     static int maxPoolSize;
     static long keepAliveTime;
     static int pollTime;
-    
-    
+
+
     @SuppressWarnings("unchecked")
     public static void init() throws ConfigurationException
     {
@@ -85,12 +85,12 @@ public class PTIMain
 
     // Helper method to avoid static problems in init
     @SuppressWarnings( "unchecked" )
-	public Class getClassType()
+    public Class getClassType()
     {
-    	return this.getClass();
+        return this.getClass();
     }
 
-    
+
     /**
      * The shutdown hook. This method is called when the program catch
      * the kill signal.
@@ -142,7 +142,7 @@ public class PTIMain
         Runtime.getRuntime().addShutdownHook( new Thread() { public void run() { shutdown(); }});
     }
 
-    
+
     /**
      * The PTIs main method.
      * Starts the PTI and starts the PTIManager.
@@ -151,13 +151,23 @@ public class PTIMain
     {
         Log4jConfiguration.configure( "log4j_pti.xml" );
         log.debug( "PTIMain main called" );
-        
+
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
+
+        boolean terminateOnZeroNewJobs = false;
+        for( String a : args )
+        {
+            if( a.equals("--shutDownOnJobsDone") )
+            {
+                terminateOnZeroNewJobs = true;
+            }
+        }
+
 
         try
         {
             init();
-            
+
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender(startupAppender);
 
@@ -183,8 +193,7 @@ public class PTIMain
 
             /** --------------- setup and startup of the PTImanager done ---------------- **/
             log.debug( "Daemonizing" );
-
-            daemonize();
+            daemonize();            
             addDaemonShutdownHook();
 
         }
@@ -200,12 +209,20 @@ public class PTIMain
         }
 
         while(!isShutdownRequested()) // Mainloop
-        {   
+        {
             try
             {
-                ptiManager.update();
-                Thread.currentThread();
-                Thread.sleep( pollTime );
+                int numberOfNewJobs = ptiManager.update();
+
+                if( numberOfNewJobs == 0 && terminateOnZeroNewJobs )
+                {
+                    shutdown();
+                }
+                else
+                {
+                    Thread.currentThread();
+                    Thread.sleep( pollTime );
+                }
             }
             catch(InterruptedException ie)
             {
@@ -225,5 +242,6 @@ public class PTIMain
                 log.error("  " + e.getMessage() );
             }
         }
+        System.exit(0);
     }
 }
