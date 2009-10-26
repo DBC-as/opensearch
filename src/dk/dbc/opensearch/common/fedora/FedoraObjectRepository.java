@@ -82,7 +82,7 @@ public class FedoraObjectRepository implements IObjectRepository
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
 
     private final String hasStr = "has";
-    private final String pidStr = "pid";
+    //private final String pidStr = "pid";
     private FedoraHandle fedoraHandle;
 
 
@@ -139,7 +139,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         if( timestamp == null )
         {
-            String error = String.format( "Could not delete object reference by pid %s", identifier );
+            String error = String.format( "Could not delete object reference by pid %s (timestamp == null)", identifier );
             log.error( error );
             throw new ObjectRepositoryException( error );
         }
@@ -561,10 +561,9 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List<String> getIdentifiers( String verbatimSearchString, List< String > searchableFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( String verbatimSearchString, List< String > searchableFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[searchableFields.size()];
-        //HashMap< String, String > propertiesAndValues = new HashMap< String, String >();
         List< InputPair< String, String > > resultSearchFields = new ArrayList< InputPair< String, String > >();
 
         int i = 0;
@@ -572,14 +571,11 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             String property = field;
             resultFields[i] = field;
-            //propertiesAndValues.put( field, verbatimSearchString );
-            InputPair< String, String > pair = new InputPair<String, String>( property, verbatimSearchString );
+            InputPair< String, String > pair = new InputPair< String, String >( property, verbatimSearchString );
             resultSearchFields.add( pair );
             i++;
         }
 
-        //ObjectFields[] objectFields = searchRepository( resultFields, verbatimSearchString, (String[])searchableFields.toArray(), has, maximumResults );
-        //ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
         ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
 
         int ofLength = objectFields.length;
@@ -595,25 +591,18 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    //public List< String > getIdentifiers( List< String > searchStrings, List< String > searchableFields, String cutPid, int maximumResults )
     public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
-        //HashMap propertiesAndValues = new HashMap();
         int i = 0;
         for( InputPair field : resultSearchFields )
         {
-            //resultFields[i] = field;
             String property = (String)field.getFirst();
-            String value = (String)field.getSecond();
             resultFields[i] = property;
-            //propertiesAndValues.put( property, value );
             i++;
         }
 
-        resultFields[i++] = "pid";
-
-        //ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
+        resultFields[i++] = "pid"; // must be present!
         ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
 
         int ofLength = objectFields.length;
@@ -642,26 +631,12 @@ public class FedoraObjectRepository implements IObjectRepository
         ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
         Condition[] cond = new Condition[ propertiesAndVaulues.size() ];
 
-        System.out.println( String.format( "propertiesAndValues length: %s", propertiesAndVaulues.size() ) );
-        /*Set< String > keys = propertiesAndVaulues.keySet();
-        System.out.println( String.format( "keys length: %s", keys.size() ) );
-        Iterator< String > iter = keys.iterator();
-        int i = 0;
-        while ( iter.hasNext() )
-        {
-            String property = iter.next();
-            String value = propertiesAndVaulues.get( property );
-            System.out.println( String.format( "property '%s' and value '%s'", property, value ) );
-            cond[i] = new Condition( property, comp, value );
-        }*/
-
         int size = propertiesAndVaulues.size();
         for ( int i = 0; i < size; i++ )
         {
             InputPair pair = propertiesAndVaulues.get( i );
             String property = (String)pair.getFirst();
             String value = (String)pair.getSecond();
-            System.out.println( String.format( "property '%s' and value '%s'", property, value  ) );
             cond[i] = new Condition( property, comp, value );
         }
         

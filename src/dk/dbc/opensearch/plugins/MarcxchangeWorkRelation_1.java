@@ -314,8 +314,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             else
             {
                 nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
-                CreateWorkObject( nextWorkPid[0], dc );
-                
+                CreateWorkObject( nextWorkPid[0], dc );                
             }
         }
 
@@ -337,48 +336,46 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             CargoContainer cargo = new CargoContainer(nextWorkPid);
             DublinCore workDC = new DublinCore( nextWorkPid );
        
-            ScriptEngine engine = manager.getEngineByName("JavaScript");
+            ScriptEngine engine = manager.getEngineByName( "JavaScript" );
             
-            engine.put("log", log);
+            engine.put( "log", log );
             
-            engine.put("objectRepository", objectRepository);
+            engine.put( "objectRepository", objectRepository );
             
             String path = FileSystemConfig.getScriptPath();
             String jsFileName = path + "marcxchange_workrelation.js";
             
-            log.debug(String.format("ja7w: url = %s", jsFileName));
-            engine.eval(new java.io.FileReader(jsFileName));
+            log.debug( String.format( "ja7w: url = %s", jsFileName ) );
+            engine.eval( new java.io.FileReader( jsFileName ) );
             
-            Invocable inv = (Invocable) engine;
+            Invocable inv = (Invocable)engine;
             
-            engine.put("plugin", this);
-            Object res = inv.invokeFunction("generate_new_work", cargo, oldDc, workDC);
+            engine.put( "plugin", this );
+            Object res = inv.invokeFunction( "generate_new_work", cargo, oldDc, workDC );
             
-            log.debug(String.format("ja7w: res of type %s", res.toString()));
-            String fakexml = (String) res;
+            log.debug( String.format( "ja7w: res of type %s", res.toString() ) );
+            String fakexml = (String)res;
             if (fakexml == null)
             {
-                throw new PluginException(
-                        "Internal error generate_new_work did not return a String");
+                throw new PluginException( "Internal error generate_new_work did not return a String" );
                 
             }
-            cargo.add(DataStreamType.OriginalData, "format", "internal", "da", "text/xml",
-                    IndexingAlias.None, fakexml.getBytes());
-            
-            cargo.addMetaData( workDC );            
+
+            cargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", IndexingAlias.None, fakexml.getBytes() );
+            cargo.addMetaData( workDC );
             
             try
             {
-                this.objectRepository.storeObject(cargo, "internal");
-                log.debug(String.format("ja7: added work object %s", nextWorkPid));
+                this.objectRepository.storeObject( cargo, "internal" );
+                log.debug(String.format( "ja7: added work object %s", nextWorkPid ) );
             }
             catch (Exception e)
             {
-                log.error("ja7w:error in fs.storeCargocontiner for new work item", e);
+                log.error( "ja7w:error in objectRepository.storeCargocontiner for new work item", e );
             }
         }
         catch ( Exception e) {
-            log.error("ja7w:error in fs.storeCargocontiner for new work item", e);
+            log.error( "ja7w:error in fs.storeCargocontiner for new work item", e );
         }
     }
     

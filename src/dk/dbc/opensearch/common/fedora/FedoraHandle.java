@@ -400,6 +400,7 @@ public class FedoraHandle
         {
             timer = System.currentTimeMillis();
         }
+        
         String timestamp = this.getAPIM().purgeObject( identifier, logmessage, force );
 
         if ( log.isDebugEnabled() )

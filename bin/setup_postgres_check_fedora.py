@@ -43,7 +43,7 @@ def main( harvest_folder ):
     config = ET.parse( '../config/config.xml' )
 
     if harvest_folder != "":
-
+        
         harvest = config.findall( '//toharvest' )[0].text
         if os.path.exists( harvest ):
             shutil.rmtree( harvest )

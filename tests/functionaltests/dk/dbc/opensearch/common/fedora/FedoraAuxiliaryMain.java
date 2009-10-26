@@ -108,7 +108,8 @@ public class FedoraAuxiliaryMain
             InputPair< String, String > pair = new InputPair< String, String >( "label", labels[i] );
             resultSearchFields.add( pair );
             List< String > pids = objectRepository.getIdentifiers( resultSearchFields, null, maximumResult );
-
+            System.out.println( "pids.length: " + pids.size() );
+            
             for ( String pid : pids )
             {
                 System.out.println( String.format( "Deleting object pid: %s", pid ) );

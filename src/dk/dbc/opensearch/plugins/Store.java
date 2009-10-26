@@ -57,9 +57,12 @@ public class Store implements IRepositoryStore
             log.debug( String.format("ja7: new pid %s", new_pid));
             
             if( ! new_pid.isEmpty())
-            try { 
+            try
+            {
                 this.objectRepository.deleteObject( new_pid, "delte before store hack");
-            } catch( Exception e) {
+            } 
+            catch( Exception e )
+            {
                 log.trace( String.format("ja7: ignoring error from deleteObject of %s", new_pid));
             }
             
