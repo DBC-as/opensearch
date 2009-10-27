@@ -27,32 +27,24 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import fedora.common.xml.format.FedoraRELSExt1_0Format;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.common.metadata.MetaData;
-import dk.dbc.opensearch.common.types.CargoMimeType;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-import fedora.utilities.XmlTransformUtility;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.OutputKeys;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
@@ -66,12 +58,18 @@ import org.w3c.dom.Element;
 public class FedoraRelsExt implements MetaData
 {
     private String id;
-    private DocumentBuilder builder;
-    private Document doc;
-    private Element relsext;
-    private Element fedoraObject;
     private Set<String> relations;
+
+    // note that the first element (the object) is always `pid` for fedora rels-ext statements
+    private Map<QName, QName> triples;
     public static final DataStreamType type = DataStreamType.RelsExtData;
+
+    private static FedoraNamespace rdf = new FedoraNamespaceContext().getNamespace( "rdf" );
+    private static FedoraNamespace rdfs = new FedoraNamespaceContext().getNamespace( "rdfs" );
+    private static FedoraNamespace oai_dc = new FedoraNamespaceContext().getNamespace( "oai_dc" );
+
+    private static FedoraNamespace dc = new FedoraNamespaceContext().getNamespace( "dc" );
+    private static FedoraNamespace rels = new FedoraNamespaceContext().getNamespace( "rel" );
 
     private static Logger log = Logger.getLogger( FedoraRelsExt.class );
 
@@ -87,8 +85,8 @@ public class FedoraRelsExt implements MetaData
     public FedoraRelsExt( String id ) throws ParserConfigurationException
     {
         this.id = id;
-        createEmptyRelsExt( id );
         relations = new HashSet<String>();
+        triples = new HashMap<QName, QName>();
     }
 
 
@@ -133,12 +131,10 @@ public class FedoraRelsExt implements MetaData
      */
     public boolean addRelationship( QName predicate, QName object )
     {
-        Element triple = doc.createElement( predicate.getPrefix() + ":" + predicate.getLocalPart() );
         boolean added = relations.add( new Integer( predicate.hashCode() ).toString()+new Integer( object.hashCode() ).toString() );
         if( added )
         {
-            triple.setAttribute( "rdf:resource", object.getNamespaceURI() + object.getPrefix() + ":" + object.getLocalPart() );
-            fedoraObject.appendChild( triple );
+            triples.put( predicate, object );
         }
         return added;
     }
@@ -155,73 +151,57 @@ public class FedoraRelsExt implements MetaData
     @Override
     public void serialize( OutputStream out ) throws OpenSearchTransformException
     {
-        Transformer idTransform;
-        TransformerFactory xformFactory = XmlTransformUtility.getTransformerFactory();
-        try
-        {
-            idTransform = xformFactory.newTransformer();
-        }
-        catch( TransformerConfigurationException ex )
-        {
-            String error = String.format( "Could not create transformerfactory to serialize RelsExt" );
-            log.error( error );
-            throw new OpenSearchTransformException( error, ex );
-        }
-        idTransform.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
-        idTransform.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
 
-        Source input = new DOMSource( doc );
-        Result output = new StreamResult( out );
+        // Create an output factory
+        XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
+        XMLStreamWriter xmlw;
+
         try
         {
-            idTransform.transform( input, output );
+            xmlw = xmlof.createXMLStreamWriter( out );
+//            xmlw.writeStartDocument();
+            xmlw.writeStartElement( rdf.getPrefix(), "RDF", rdf.getURI() );
+
+            xmlw.writeNamespace( dc.getPrefix(), dc.getURI() );
+
+            // hack, as fedora rels-ext ns spec does not conform to
+            // their own prefix guidelines:
+            xmlw.writeNamespace( "fedora", rels.getURI() );
+
+            xmlw.writeNamespace( oai_dc.getPrefix(), oai_dc.getURI() );
+
+            xmlw.writeNamespace( rdf.getPrefix(), rdf.getURI() );
+
+            xmlw.writeNamespace( rdfs.getPrefix(), rdfs.getURI() );
+
+            xmlw.writeStartElement( rdf.getURI(), "Description" );
+            xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "about", this.id );
+            for( Entry<QName, QName> set : triples.entrySet() )
+            {
+                QName key = set.getKey();
+                QName val = set.getValue();
+
+                xmlw.writeEmptyElement( key.getPrefix(), key.getLocalPart(), key.getNamespaceURI() );
+
+                String attr_value = val.getPrefix()+":"+val.getLocalPart();
+
+                xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "resource", attr_value );
+
+            }
+
+            xmlw.writeEndElement();//closes "rdf:Description" element
+            xmlw.writeEndElement();//closes "rdf:RDF" element
+//            xmlw.writeEndDocument();//closes document
+            xmlw.flush();
         }
-        catch( TransformerException ex )
+        catch( XMLStreamException ex )
         {
-            String error = String.format( "Could not serialize RelsExt document to Stream" );
-            log.error( error );
+            String error = String.format( "Could not write to stream writer %s", ex.getMessage() );
+            log.error( error, ex );
             throw new OpenSearchTransformException( error, ex );
         }
     }
 
-
-    private void createEmptyRelsExt( String id ) throws ParserConfigurationException
-    {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        dbFactory.setNamespaceAware( true );
-
-        builder = dbFactory.newDocumentBuilder();
-        DOMImplementation impl = builder.getDOMImplementation();
-        String relsextURI = FedoraRELSExt1_0Format.getInstance().uri;
-
-        doc = impl.createDocument( "", "foxml:datastream", null );
-
-        relsext = doc.getDocumentElement();
-        relsext.setAttribute( "ID", "RELS-EXT" );
-        relsext.setAttribute( "CONTROL_GROUP", FoxmlDocument.ControlGroup.X.toString() );
-
-        Element dsv = doc.createElement( "foxml:datastreamVersion" );
-        dsv.setAttribute( "FORMAT_URI", relsextURI );
-        dsv.setAttribute( "ID", "RELS-EXT.0" );
-        dsv.setAttribute( "MIMETYPE", CargoMimeType.APPLICATION_RDF.getMimeType() );
-        dsv.setAttribute( "LABEL", "RDF Statements about this object" );
-        relsext.appendChild( dsv );
-
-        Element xmlContent = doc.createElement( "foxml:xmlContent" );
-        dsv.appendChild( xmlContent );
-
-        Element rdf = doc.createElement( "rdf:RDF" );
-        rdf.setAttribute( "xmlns:rdf", FedoraNamespace.RDF.getURI() );
-        rdf.setAttribute( "xmlns:rdfs", FedoraNamespace.RDFS.getURI() );
-        rdf.setAttribute( "xmlns:dc", FedoraNamespace.DC.getURI() );
-        rdf.setAttribute( "xmlns:oai_dc", FedoraNamespace.OAI_DC.getURI() );
-        rdf.setAttribute( "xmlns:fedora", FedoraNamespace.FEDORARELSEXT.getURI() );
-        xmlContent.appendChild( rdf );
-
-        fedoraObject = doc.createElement( "rdf:Description" );
-        fedoraObject.setAttribute( "rdf:about", id );
-        rdf.appendChild( fedoraObject );
-    }
 
     @Override
     public String getIdentifier()
