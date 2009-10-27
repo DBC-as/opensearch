@@ -21,22 +21,20 @@ public class OracleDBPooledConnection
 
     public synchronized Connection getConnection() throws SQLException
     {
+	log.info( "Requesting a connection" );
 	if ( ods == null )
 	{
 	    throw new SQLException("Could not get connection. The OracleDataSource is null (unintialized?)");
 	}
-	return ods.getConnection();
+	Connection tmp = ods.getConnection();
+	if ( tmp == null ) {
+	    log.info( "THIS IS NOT RIGHT!" ); 
+	}
+	log.info( "Returning connection" );
+	return tmp;
+	//	return ods.getConnection();
     } 
     
-    public synchronized void releaseConnection() throws SQLException
-    {
-	if ( ods == null )
-	{
-	    throw new SQLException("Could not release connection. The OracleDataSource is null (unintialized?)");
-	}
-
-    }
-
 
     public synchronized void shutdown() throws SQLException
     {

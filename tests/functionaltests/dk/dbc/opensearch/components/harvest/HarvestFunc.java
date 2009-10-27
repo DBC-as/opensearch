@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import dk.dbc.opensearch.common.db.IDBConnection;
-import dk.dbc.opensearch.common.db.OracleDBConnection;
+//import dk.dbc.opensearch.common.db.OracleDBConnection;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -79,6 +79,7 @@ public class HarvestFunc
         runTests();
     }
 
+    /*
     private void resetESBase() {
 
 	IDBConnection oracleInstance;
@@ -94,10 +95,8 @@ public class HarvestFunc
 		log.fatal( "An error occured when trying to connect to the ESbase", e );
 		System.exit(1);
 	    }
-
-
     }
-
+    */
 
     static void runTests()
     {
@@ -122,36 +121,6 @@ public class HarvestFunc
     private static void startESHarvestTest() throws HarvesterIOException, SQLException
     {
 	String databasename = "test";
-	IDBConnection oracleInstance;
-	Connection conn;
-
-	try
-	    {
-		oracleInstance = new OracleDBConnection();
-		conn = oracleInstance.getConnection();
-	    }
-	catch (ConfigurationException ce )
-	    {
-		String errorMsg = "ConfigurationException caught when trying to create the database instance"; 
-		log.fatal( errorMsg, ce );
-		throw new HarvesterIOException( errorMsg, ce );
-	    }
-        catch( ClassNotFoundException cnfe )
-	    {
-		String errorMsg = "ClassNotFoundException caught when trying to create the database instance"; 
-		log.fatal( errorMsg , cnfe );
-		throw new HarvesterIOException( errorMsg, cnfe );
-	    }
-        catch( SQLException sqle )
-	    {
-		String errorMsg = "Error while trying to connect to Oracle ES-base: ";
-		log.fatal( errorMsg , sqle );
-		throw new HarvesterIOException( errorMsg, sqle );
-	    }
-
-	//        esh = new ESHarvest( oracleInstance, databasename );
-	//	esh = new ESHarvest( conn, databasename );
-	//	OracleDBPooledConnection<OracleDataSource> connectionPool;
 
 	OracleDataSource ods = null;
 	String cache_name = new String( "ESHARVESTER_CACHE" );
@@ -173,7 +142,7 @@ public class HarvestFunc
 	    // set cache properties:
 	    Properties cacheProperties = new Properties();
 	    cacheProperties.setProperty( "MinLimit", "1" );
-	    cacheProperties.setProperty( "MaxLimit", "3" );
+	    cacheProperties.setProperty( "MaxLimit", "1" );
 	    cacheProperties.setProperty( "InitialLimit", "1" );
 	    cacheProperties.setProperty( "ConnectionWaitTimeout", "5" );
 	    cacheProperties.setProperty( "ValidateConnection", "true" );
@@ -244,12 +213,12 @@ public class HarvestFunc
         {
             if ( counter % 2 == 0 )
             {
-		// Notice: Empty PID
-                esh.setStatusSuccess( id, "" );
+                esh.setStatusFailure( id, "This is a failure" );
             }
             else
             {
-                esh.setStatusFailure( id, "This is a failure" );
+		// Notice: Empty PID
+                esh.setStatusSuccess( id, "" );
             }
 
             ++counter;

@@ -57,7 +57,7 @@ import org.xml.sax.SAXException;
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
  * to a frontend, i.e. the DataDock, delivers data through {@link getData} and maintains the state of 
- * the jobs in the ES-base through {@link setStatus}.
+ * the jobs in the ES-base through {@link setStatusSuccess}, {@link setStatusFailure} and {@link setStatusRetry}.
  */
 public class ESHarvest implements IHarvest
 {
@@ -68,58 +68,16 @@ public class ESHarvest implements IHarvest
 
     Logger log = Logger.getLogger( ESHarvest.class );
 
+    /**
+     *   Creates a new ES-Harvester.
+     *   The Harvester 
+     */
     public ESHarvest( OracleDBPooledConnection connectionPool , String databasename ) throws HarvesterIOException
     {
 	this.connectionPool = connectionPool;
 	this.databasename = databasename;
     }
 
-    /**
-     *   Creates a new ES-Harvester 
-     */
-	/*
-    public ESHarvest( Connection conn , String databasename ) throws HarvesterIOException
-    {
-       	this.conn = conn;
-	this.databasename = databasename;
-
-        // Check that the connection is properly instantiated:
-        try
-	{
-	    // Test if connection is closed:
-	    if ( conn.isClosed() )
-	    {
-		String errorMsg = "Database connection is closed at startup";
-		log.fatal( errorMsg );
-		throw new HarvesterIOException( errorMsg );
-	    }
-		
-	    // \todo: Test if connection is valid?
-		
-	}
-        catch( SQLException sqle )
-	{
-	    log.fatal( "Error while trying to connect to Oracle ES-base: " , sqle );
-	    throw new HarvesterIOException( "Error while trying to connect to Oracle ES-base", sqle );
-	}
-	
-
-	// Set AutoCommit	
-	try 
-	{
-	    boolean autoCommit = false;
-	    log.debug( String.format( "Setting conn.autoCommit to %s", autoCommit ) );
-	    conn.setAutoCommit( autoCommit );
-	}
-	catch ( SQLException sqle ) 
-	{
-	    String errorMsg = "Error when setting auto commit";
-	    log.fatal( errorMsg );
-	    throw new HarvesterIOException( errorMsg, sqle );
-	}
-
-    }
-	*/
 
 
     /**
@@ -166,19 +124,7 @@ public class ESHarvest implements IHarvest
 	    log.fatal( errorMsg , sqle );
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
-	/*
-        //close the DBconnection
-        try
-	{
-	    conn.close();
-	}
-        catch( SQLException sqle )
-	{
-	    String errorMsg = new String(  "Error when closing the Oracle connection" );
-	    log.fatal( errorMsg , sqle );
-	    throw new HarvesterIOException( errorMsg, sqle );
-	}
-	*/
+
     }
 
 
@@ -293,6 +239,8 @@ public class ESHarvest implements IHarvest
 
 	log.info( String.format( "Found %s available Jobs", theJobList.size() ) );
 
+	releaseConnection( conn );
+
         return theJobList;
     }
 
@@ -318,7 +266,6 @@ public class ESHarvest implements IHarvest
 	    log.fatal( errorMsg, sqle );
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
-
 
         //get the data associated with the identifier from the record field
         byte[] returnData = null;
@@ -364,6 +311,9 @@ public class ESHarvest implements IHarvest
 	    log.fatal(  errorMsg, sqle );
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
+
+	releaseConnection( conn );
+
         return returnData;
     }
 
@@ -397,6 +347,8 @@ public class ESHarvest implements IHarvest
 	    log.fatal( errorMsg, sqle );
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
+
+	releaseConnection( conn );
     }
 
     public void setStatusSuccess( IIdentifier Id, String PID )
@@ -418,6 +370,9 @@ public class ESHarvest implements IHarvest
 	ESIdentifier EsId = (ESIdentifier)Id;
 	setStatus( EsId, JobStatus.SUCCESS, conn );
 	setPIDInTaskpackageRecordStructure( EsId, PID, conn );
+
+	releaseConnection( conn );
+
     }
 
     public void setStatusRetry( IIdentifier Id )
@@ -437,6 +392,8 @@ public class ESHarvest implements IHarvest
 	}
 
 	setStatus( (ESIdentifier)Id, JobStatus.RETRY, conn );
+
+	releaseConnection( conn );
     }
 
 
@@ -600,6 +557,8 @@ public class ESHarvest implements IHarvest
 	    log.fatal( errorMsg, sqle );
 	    throw new HarvesterIOException( errorMsg, sqle );
 	}
+
+	releaseConnection( conn );
 
         log.debug( "Done cleaning up ES-base" );
     }
@@ -830,16 +789,16 @@ public class ESHarvest implements IHarvest
 	try 
 	{
 	    int lbnr = 1;
-	    String diagSetId = new String("");
+	    String diagSetId = new String("'10.100.1.1'");
 	    int condition = 100;
 	    String insert_stmt = String.format( "INSERT INTO " +
-						"diagnostics (id, lbnr, diagnosticsSetId, condition, addInfo) " +
+						"diagnostics (id, lbnr, diagnosticSetId, condition, addInfo) " +
 						"VALUES ( " + 
-						diagnosticId + " " +
-						lbnr + " " +
-						diagSetId + " " +
-						condition + " " +
-						failureDiagnostic + " )" );
+						diagnosticId + ", " +
+						lbnr + ", " +
+						diagSetId + ", " +
+						condition + ", '" +
+						failureDiagnostic + "' )" );
 	    log.debug( "Inserting into diagnostics using: [" + insert_stmt + "]" );
 	    stmt.executeQuery( insert_stmt );
 	}
@@ -935,7 +894,7 @@ public class ESHarvest implements IHarvest
 	    }
 	    
 	    String update_query = String.format( "UPDATE taskpackagerecordstructure " + 
-						 "SET record_id = %s " + 
+						 "SET record_id = '%s' " + 
 						 "WHERE targetreference = %s " +
 						 "AND lbnr = %s ",
 						 PID, Id.getTargetRef(), Id.getLbNr() );
@@ -956,10 +915,41 @@ public class ESHarvest implements IHarvest
 	}
 	catch( SQLException sqle )
 	{
-
+	    // If, for some reason, the PID can not be set in the ES-base we must not
+	    // break down. Just set a warning.
+	    // Note: When the record_id is set to >= 64 in the ES-base, this method 
+	    // _should_ not set a warning.
+	    String errorMsg = String.format( "Could not set the PID: [%s] for the identifier: %s.", PID, Id);
+	    log.warn( errorMsg );
 	}
 	
     }
 
+
+    private void releaseConnection( Connection conn ) throws HarvesterIOException
+    {
+	/*
+	if ( ods == null )
+	{
+	    throw new SQLException("Could not release connection. The OracleDataSource is null (unintialized?)");
+	}
+	*/
+
+	// Close the connection:
+	try
+	{
+	    if ( !conn.isClosed() )
+	    {
+		conn.close();
+	    }
+	}
+        catch( SQLException sqle )
+	{
+	    String errorMsg = new String( "Could not close the database connection" );
+	    log.fatal(  errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
+	}
+
+    }
 
 }
