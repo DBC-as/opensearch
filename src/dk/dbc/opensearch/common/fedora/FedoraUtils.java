@@ -186,19 +186,19 @@ public class FedoraUtils
                 }
                 catch( XPathExpressionException ex )
                 {
-                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( SAXException ex )
                 {
-                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( IOException ex )
                 {
-                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
@@ -210,19 +210,19 @@ public class FedoraUtils
                 }
                 catch( XPathExpressionException ex )
                 {
-                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( SAXException ex )
                 {
-                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( IOException ex )
                 {
-                    String error = String.format( "Failed to add metadata to foxml from MetaData %s", meta.getIdentifier() );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }

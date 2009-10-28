@@ -26,10 +26,11 @@
 package dk.dbc.opensearch.common.fedora;
 
 
+import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.metadata.IPredicate;
+import dk.dbc.opensearch.common.types.ObjectIdentifier;
 
 import dk.dbc.opensearch.common.types.InputPair;
 import java.util.List;
@@ -49,6 +50,19 @@ import java.util.regex.Pattern;
  */
 public interface IObjectRepository
 {
+
+    /** 
+     * Queries the object repository for the existence of the object
+     * based on the identifier of the object
+     * 
+     * @param objectIdentifier identifies the object in the scope of
+     * the object repository
+     * 
+     * @return true iff the object exists in the repository, false otherwise
+     */
+    public boolean hasObject( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
+
+
     /** 
      * Stores the object {@code cargo} in the object repository, using
      * {@code logmessage} to describe the nature of the object
@@ -139,7 +153,7 @@ public interface IObjectRepository
      * List} of returned identifiers with {@code maximumResult}
      * 
      * @param verbatimSearchString string that is used as query
-     * @param searchableFields {@link List} of fields to search in
+     * @param searchableFields {@link List} of fields to search with {@code verbatimSearchString} in
      * @param maximumResult integer limiting the returned {@link List} of identifiers
      * 
      * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
@@ -153,14 +167,14 @@ public interface IObjectRepository
      * {@link List} of {@code searchableFields} and limiting {@link
      * List} of returned identifiers with {@code maximumResult}
      * 
-     * @param searchStrings {@link List} of strings to search for in {@code searchableFields}
-     * @param searchableFields {@link List} of fields to search in for {@code searchStrings}
+     * @param resultSearchFields {@link List} of {@link InputPair}s
+     * that contains which Strins to search for in which fields
+     * @param cutIdentifier stops the search and returns result if it encounters this
      * @param maximumResult integer limiting the returned {@link List} of identifiers
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    //public List<String> getIdentifiers( List<String> searchStrings, List<String> searchableFields, String cutIdentifier, int maximumResult );
-    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults );
+    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutIdentifier, int maximumResults );
 
 
     public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
@@ -247,12 +261,12 @@ public interface IObjectRepository
     
 
     /** 
-     * 
-     * @param objectIdentifier identifying the object to retrieve Relation Data from
-     * @return 
+     * Retrieves all relations on object identified with {@code objectIdentifier}
+     * @param objectIdentifier identifying the object to retrieve relation data from
+     * @return a List of 
      * @throws ObjectRepositoryException
      */
-    public List<String> getObjectRelations( PID objectIdentifier ) throws ObjectRepositoryException;
+    public List< InputPair<IPredicate, String> > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
 
     /**
      *  Adds 
@@ -263,7 +277,8 @@ public interface IObjectRepository
      * @param subjectIdentifer
      * @throws ObjectRepositoryException
      */     
-     public void addObjectRelation( PID objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
+
+     public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
      /**
       * 
       * @param objectIdentifier i
@@ -271,6 +286,5 @@ public interface IObjectRepository
       * @param subjectIdentifer
       * @throws ObjectRepositoryException
       */
-     public void removeObjectRelation( PID objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
-
+     public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
 }

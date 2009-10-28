@@ -15,16 +15,12 @@
 
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+*/
 /**
  * \file
  * \brief
  */
-
-
 package dk.dbc.opensearch.common.fedora;
-
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
@@ -36,6 +32,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
 import fedora.common.Constants;
@@ -73,18 +70,15 @@ import org.xml.sax.SAXException;
  */
 public class FedoraObjectRepository implements IObjectRepository
 {
+
     private static Logger log = Logger.getLogger( FedoraObjectRepository.class );
-
-
     /**
      * Dateformat conforming to the fedora requirements.
      */
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
-
     private final String hasStr = "has";
     //private final String pidStr = "pid";
     private FedoraHandle fedoraHandle;
-
 
     /**
      * Initializes the FedoraObjectRepository; tries to connect to the
@@ -331,7 +325,7 @@ public class FedoraObjectRepository implements IObjectRepository
      * Retrieves an object encoded as a {@link CargoContainer} from the fedora
      * object repository. The method also handles the information given in
      * the administration stream of the object
-     * 
+     *
      * @param identifier the fedora pid identifying the object in the repository
      * @return the object encoded as a {@link CargoContainer}
      * @throws ObjectRepositoryException containing an exception explaining why
@@ -504,74 +498,70 @@ public class FedoraObjectRepository implements IObjectRepository
      * @return a {@link List<String>} of matching pids from the repository
      */
     /*@Override
-    public List< String > getIdentifiers( Pattern searchExpression, String cutPid, int maximumResults )
-    {
-        String[] resultFields =
-        {
-            pid
-        };
+      public List< String > getIdentifiers( Pattern searchExpression, String cutPid, int maximumResults )
+      {
+      String[] resultFields =
+      {
+      pid
+      };
 
-        String[] searchFields =
-        {
-            "*"
-        };
+      String[] searchFields =
+      {
+      "*"
+      };
 
-        ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
+      ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
 
-        int ofLength = objectFields.length;
-        List< String > pids = new ArrayList< String >( ofLength );
-        for( int i = 0; i < ofLength; i++ )
-        {
-            String pidToMatch = objectFields[i].getPid();
-            if( searchExpression.matcher( pidToMatch ).matches() )
-            {
-                pids.add( pidToMatch );
-            }
-        }
+      int ofLength = objectFields.length;
+      List< String > pids = new ArrayList< String >( ofLength );
+      for( int i = 0; i < ofLength; i++ )
+      {
+      String pidToMatch = objectFields[i].getPid();
+      if( searchExpression.matcher( pidToMatch ).matches() )
+      {
+      pids.add( pidToMatch );
+      }
+      }
 
-        return pids;
-    }*/
-
-
+      return pids;
+      }*/
     /*@Override
-    public List<String> getIdentifiers( String verbatimSearch, String cutPid, int maximumResults )
-    {
-        String[] resultFields = 
-        {
-            pid
-        };
+      public List<String> getIdentifiers( String verbatimSearch, String cutPid, int maximumResults )
+      {
+      String[] resultFields =
+      {
+      pid
+      };
 
-        String[] searchFields =
-        {
-            verbatimSearch
-        };
+      String[] searchFields =
+      {
+      verbatimSearch
+      };
 
-        //ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
-        ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
+      //ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
+      ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
 
-        int ofLength = objectFields.length;
-        List<String> pids = new ArrayList<String>( ofLength );
-        for( int i = 0; i < ofLength; i++ )
-        {
-            pids.add( objectFields[i].getPid() );
-        }
+      int ofLength = objectFields.length;
+      List<String> pids = new ArrayList<String>( ofLength );
+      for( int i = 0; i < ofLength; i++ )
+      {
+      pids.add( objectFields[i].getPid() );
+      }
 
-        return pids;
-    }*/
-
-
+      return pids;
+      }*/
     @Override
-    public List< String > getIdentifiers( String verbatimSearchString, List< String > searchableFields, String cutPid, int maximumResults )
+    public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[searchableFields.size()];
-        List< InputPair< String, String > > resultSearchFields = new ArrayList< InputPair< String, String > >();
+        List<InputPair<String, String>> resultSearchFields = new ArrayList<InputPair<String, String>>();
 
         int i = 0;
         for( String field : searchableFields )
         {
             String property = field;
             resultFields[i] = field;
-            InputPair< String, String > pair = new InputPair< String, String >( property, verbatimSearchString );
+            InputPair<String, String> pair = new InputPair<String, String>( property, verbatimSearchString );
             resultSearchFields.add( pair );
             i++;
         }
@@ -579,7 +569,7 @@ public class FedoraObjectRepository implements IObjectRepository
         ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
 
         int ofLength = objectFields.length;
-        List< String > pids = new ArrayList< String >( ofLength );
+        List<String> pids = new ArrayList<String>( ofLength );
         log.debug( String.format( "No of objectFields lines %s", objectFields.length ) );
         for( int j = 0; j < ofLength; j++ )
         {
@@ -591,13 +581,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults )
+    public List<String> getIdentifiers( List<InputPair<String, String>> resultSearchFields, String cutPid, int maximumResults )
     {
-        String[] resultFields = new String[ resultSearchFields.size() + 1 ];
+        String[] resultFields = new String[resultSearchFields.size() + 1];
         int i = 0;
-        for( InputPair field : resultSearchFields )
+        for( InputPair<String, String> field : resultSearchFields )
         {
-            String property = (String)field.getFirst();
+            String property = field.getFirst();
             resultFields[i] = property;
             i++;
         }
@@ -606,15 +596,15 @@ public class FedoraObjectRepository implements IObjectRepository
         ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
 
         int ofLength = objectFields.length;
-        List< String > pids = new ArrayList< String >( ofLength );
+        List<String> pids = new ArrayList<String>( ofLength );
         for( int j = 0; j < ofLength; j++ )
         {
             String pidValue = objectFields[j].getPid();
-            if ( cutPid ==  null )
+            if( cutPid == null )
             {
                 pids.add( pidValue );
             }
-            else if ( ! pidValue.equals( cutPid ) )
+            else if( !pidValue.equals( cutPid ) )
             {
                 pids.add( pidValue );
                 return pids;
@@ -623,7 +613,6 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
-    
 
     @Override
     public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults, String namespace )
@@ -694,17 +683,17 @@ public class FedoraObjectRepository implements IObjectRepository
     {
         // \Todo: check needed on the operator
         ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
-        Condition[] cond = new Condition[ propertiesAndVaulues.size() ];
+        Condition[] cond = new Condition[propertiesAndVaulues.size()];
 
         int size = propertiesAndVaulues.size();
-        for ( int i = 0; i < size; i++ )
+        for( int i = 0; i < size; i++ )
         {
-            InputPair pair = propertiesAndVaulues.get( i );
-            String property = (String)pair.getFirst();
-            String value = (String)pair.getSecond();
+            InputPair<String, String> pair = propertiesAndVaulues.get( i );
+            String property = pair.getFirst();
+            String value = pair.getSecond();
             cond[i] = new Condition( property, comp, value );
         }
-        
+
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = null;
         try
@@ -736,7 +725,9 @@ public class FedoraObjectRepository implements IObjectRepository
         if( fsr == null )
         {
             log.warn( "Retrieved no hits from search, returning empty List<String>" );
-            return new ObjectFields[] { };
+            return new ObjectFields[]
+            {
+            };
         }
 
         ObjectFields[] objectFields = fsr.getResultList();
@@ -779,7 +770,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
-        
+
         /** end ugly code hack ;)*/
         String dsLocation = uploadDatastream( baos );
         String logm = String.format( "added %s to the object with pid: %s", dsLocation, identifier );
@@ -787,8 +778,8 @@ public class FedoraObjectRepository implements IObjectRepository
         try
         {
             returnedSID = this.fedoraHandle.addDatastream( identifier, dsId, new String[]
-                    {
-                    }, object.getFormat(), versionable, object.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
+                {
+                }, object.getFormat(), versionable, object.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
         }
         catch( ConfigurationException ex )
         {
@@ -1028,7 +1019,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         int streamtypecounter = 0;
 
-        log.debug( String.format( "Constructing administration stream for %s cargo objects", cargo.getTotalObjectCount()-1 ) );
+        log.debug( String.format( "Constructing administration stream for %s cargo objects", cargo.getTotalObjectCount() - 1 ) );
         for( CargoObject co : cargo.getCargoObjects() )
         {
             streamtypecounter = adminStream.getCount( co.getDataStreamType() );
@@ -1120,8 +1111,8 @@ public class FedoraObjectRepository implements IObjectRepository
         String adminLogm = "admin stream updated with added stream data" + timeNow;
         String location = uploadDatastream( baos );
         String[] alternatedsids = new String[]
-        {
-        };
+            {
+            };
 
         try
         {
@@ -1170,8 +1161,8 @@ public class FedoraObjectRepository implements IObjectRepository
         String admLocation = uploadDatastream( baos );
 
         String[] empty = new String[]
-        {
-        };
+            {
+            };
 
         try
         {
@@ -1288,85 +1279,86 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         return location;
     }
-   
+
+
     @Override
-    public void addObjectRelation(PID objectIdentifier, IPredicate relation, String subject)
-            throws ObjectRepositoryException
+    public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject )
+        throws ObjectRepositoryException
     {
         try
         {
             String relationString = relation.getPredicateString();
-            log.debug( String.format("trying to add %s - %s -> %s", objectIdentifier.getIdentifier(), relationString, subject));
-            this.fedoraHandle.addRelationship( objectIdentifier.getIdentifier(), relationString, subject, true, null);
-        } 
-        catch (IOException ex) 
-        {       
-            String error = "Failed to add Relation to fedora Object";
-            log.error( error, ex);
-            throw new ObjectRepositoryException( error , ex);
+            log.debug( String.format( "trying to add %s - %s -> %s", objectIdentifier.getIdentifier(), relationString, subject ) );
+            this.fedoraHandle.addRelationship( objectIdentifier.getIdentifier(), relationString, subject, true, null );
         }
-        catch (ConfigurationException e)
+        catch( IOException ex )
         {
             String error = "Failed to add Relation to fedora Object";
-            log.error( error, e);
-            throw new ObjectRepositoryException( error , e);            
-            
+            log.error( error, ex );
+            throw new ObjectRepositoryException( error, ex );
         }
-        catch (ServiceException e)
+        catch( ConfigurationException e )
         {
             String error = "Failed to add Relation to fedora Object";
-            log.error( error, e);
-            throw new ObjectRepositoryException( error , e);            
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
+
+        }
+        catch( ServiceException e )
+        {
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
         }
     }
 
 
-    
-
     @Override
-    public List<String> getObjectRelations(PID objectIdentifier)
-            throws ObjectRepositoryException
+    public List<InputPair<IPredicate, String>> getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
     {
-        // TODO Auto-generated method stub
-        //throw new ObjectRepositoryException("Missing Implementaion of getObjectRelations");
         return null;
     }
 
 
     @Override
-    public void removeObjectRelation(PID objectIdentifier, IPredicate relation, String subject)  
-    throws ObjectRepositoryException
+    public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject )
+        throws ObjectRepositoryException
     {
-        try 
+        try
         {
             String relationString = relation.getPredicateString();
             String pid = objectIdentifier.getIdentifier();
-            
-            log.debug( String.format("trying to removed %s - %s -> %s", pid, relationString, subject));
-            boolean purgeRelationship = this.fedoraHandle.purgeRelationship(pid, relationString, subject, true, null);
-            if( purgeRelationship ) 
+
+            log.debug( String.format( "trying to removed %s - %s -> %s", pid, relationString, subject ) );
+            boolean purgeRelationship = this.fedoraHandle.purgeRelationship( pid, relationString, subject, true, null );
+            if( purgeRelationship )
             {
-                log.info( String.format("Ignored error from purgeRelationeship : on %s-%s->%s", pid, relationString, subject));
+                log.info( String.format( "Ignored error from purgeRelationeship : on %s-%s->%s", pid, relationString, subject ) );
             }
-        }   
-        catch (IOException ex) 
-        {       
-            String error = "Failed to add Relation to fedora Object";
-            log.error( error, ex);
-            throw new ObjectRepositoryException( error , ex);
         }
-        catch (ConfigurationException e)
+        catch( IOException ex )
         {
             String error = "Failed to add Relation to fedora Object";
-            log.error( error, e);
-            throw new ObjectRepositoryException( error , e);            
-            
+            log.error( error, ex );
+            throw new ObjectRepositoryException( error, ex );
         }
-        catch (ServiceException e)
+        catch( ConfigurationException e )
         {
             String error = "Failed to add Relation to fedora Object";
-            log.error( error, e);
-            throw new ObjectRepositoryException( error , e);            
-        } 
-     }
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
+
+        }
+        catch( ServiceException e )
+        {
+            String error = "Failed to add Relation to fedora Object";
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
+        }
+    }
+
+    public boolean hasObject( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
+    {
+        throw new UnsupportedOperationException( "Not supported yet." );
+    }
 }

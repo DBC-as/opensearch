@@ -73,8 +73,6 @@ public class FedoraRelsExtTest
         instance.serialize( baos );
 
         String xml = new String( baos.toByteArray() );
-        System.out.println( xml );
-        System.out.println( expected_greenfield );
 
         assertEquals( expected_greenfield, xml );
     }
