@@ -60,20 +60,25 @@ dbcmap["dr_bonanza"] = "free" ;
 dbcmap["louisiana"] = "louisiana" ;
 dbcmap["artikler"] = "artikler" ;
 dbcmap["dsd"] = "free" ;
+dbcmap["pg"] = "pg";
 
 function lookup_dbcmap( format ) {
   if( dbcmap[ format ] == undefined ) {
     log.error("Unknown folkebib submitter :" + submitter);
     throw new PluginException("Unknown folkebib submitter :" + submitter);
   } else {
-    return dbcmap[ format ];
+    return subject_prefix + dbcmap[ format ];
   }
 }
 
 function doit_dbc( pid, submitter, format ) {
   subject = subject_prefix + lookup_dbcmap( format ) ;
-  objectRepository.addObjectRelation( pid, DBCBIB.IS_MEMBER_OF_COlECTION, subject ); 
-  
+  objectRepository.addObjectRelation( pid, DBCBIB.IS_MEMBER_OF_COlECTION, subject );
+  // add ekstra pg data.
+  if( "pg" == format ) {
+	  objectRepository.addObjectRelation( pid, DBCBIB.IS_MEMBER_OF_COlECTION, subject_prefix + "Children" );
+	  objectRepository.addObjectRelation( pid, DBCBIB.IS_MEMBER_OF_COlECTION, subject_prefix + "free" );	  
+  }  
 }
 
 function doit( pid, submitter, format) {
@@ -85,8 +90,6 @@ function doit( pid, submitter, format) {
   } else if( submitter == "dbc" ) {
     doit_dbc( pid, submitter, format );
   } else {
-	log.warn("Unknown submitter - no owner relations set. ")
-    
-    objectRepository.addObjectRelation( pid, DBCBIB.IS_MEMBER_OF_COlECTION, "info:fedora/ja7_test2" ); 
+	log.warn("Unknown submitter - no owner relations set. ")    
   }
 }             
