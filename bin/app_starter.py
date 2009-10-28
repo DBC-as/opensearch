@@ -142,7 +142,7 @@ def main( app, action, monitor, fedora_arg, harvester ):
             args = "--shutDownOnJobsDone"
 
         proc, pid = start_daemon( q_name, pid_filename, monitor, args )
-        print "Waiting for process to stop "
+        print "Waiting for process to stop pid=%s "%(pid)
         os.waitpid( pid -1, 0 );
         
         print "print done waiting"
