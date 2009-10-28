@@ -211,10 +211,10 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             throw new PluginException( error );
         }
 
-        String dcTitle = dc.getDCValue( DublinCoreElement.ELEMENT_TITLE );
-        String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
-        String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
-        String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
+        String dcTitle = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
+        String dcType = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TYPE ) );
+        String dcCreator = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR ) );
+        String dcSource = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE ));
         String pid = cargo.getIdentifier();
         
         List< String > fedoraPids = new ArrayList< String >();
