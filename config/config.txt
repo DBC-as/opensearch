@@ -32,8 +32,17 @@ oracle_password:
 # As with postgresql_driver, but for Oracle databases
 oracle_driver:   oracle.jdbc.driver.OracleDriver
 # As with postgresql_url, but for Oracle databases
-oracle_url:      dbc:oracle:thin:
-
+oracle_url:      dbc:oracle:thin:@tora1.dbc.dk:1521
+# the name identifying the db pools cache
+oracle_cache_name: es_harvest_cache
+# minimum limit of connections for the dbconnectionpools cache
+oracle_min_limit: 1
+# maximum limit of connections for the dbconnectionpools cachs
+oracle_max_limit: 1
+# initial number of connections for the dbconnectionpools cache
+oracle_initial_limit: 1
+# The timeout limit for the connection
+oracle_connection_wait_timeout: 5
 
 # the DATADOCK section relating to the runtime behaviour of the Datadock component
 [datadock]

@@ -91,6 +91,11 @@ def build_config( path ):
     oracle_url    = ET.SubElement( db, "oracle_url" )
     oracle_user   = ET.SubElement( db, "oracle_userID" )
     oracle_passwd = ET.SubElement( db, "oracle_passwd" )
+    oracle_cache_name = ET.SubElement( db, "oracle_cache_name" )
+    oracle_min_limit = ET.SubElement( db, "oracle_min_limit" )
+    oracle_max_limit = ET.SubElement( db, "oracle_max_limit" )
+    oracle_initial_limit = ET.SubElement( db, "oracle_initial_limit" )
+    oracle_connection_wait_timeout = ET.SubElement( db, "oracle_connection_wait_timeout" )
     database_section = "database"
     # this will probably not work for cruisecontrol user
     postgresql_usern = config_txt.get( database_section, "postgresql_user" )
@@ -112,16 +117,19 @@ def build_config( path ):
         oracle_usern = os.environ.get( "USER" )
 
     oracle_driver.text = config_txt.get( database_section, "oracle_driver" )
-    oracle_url.text    = config_txt.get( database_section, "oracle_url" ) + oracle_usern + "/" + \
-                         oracle_usern + "@tora1.dbc.dk:1521"
+    oracle_url.text    = config_txt.get( database_section, "oracle_url" )
     oracle_user.text   = oracle_usern
-
     oracle_password = config_txt.get( database_section, "oracle_password" )
     if len( oracle_password ) == 0:
         oracle_passwd.text = oracle_usern
     else:
         oracle_passwd.text = oracle_password
-
+    
+    oracle_cache_name.text = config_txt.get( database_section, "oracle_cache_name" )
+    oracle_min_limit.text = config_txt.get( database_section, "oracle_min_limit" )
+    oracle_max_limit.text = config_txt.get( database_section, "oracle_max_limit" )
+    oracle_initial_limit.text = config_txt.get( database_section, "oracle_initial_limit" )
+    oracle_connection_wait_timeout.text = config_txt.get( database_section, "oracle_connection_wait_timeout" )
     # datadock settings
     poll      = ET.SubElement( dd, "main-poll-time" )
     reject    = ET.SubElement( dd, "rejected-sleep-time" )

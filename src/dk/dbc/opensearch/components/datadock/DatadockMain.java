@@ -25,7 +25,7 @@
 
 package dk.dbc.opensearch.components.datadock;
 
-
+import dk.dbc.opensearch.common.config.DataBaseConfig;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
@@ -37,16 +37,22 @@ import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
+//import dk.dbc.opensearch.common.types.HarvestType;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvestLight;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
+import java.sql.SQLException;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.Properties;
+
+import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
+import oracle.jdbc.pool.OracleDataSource;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
@@ -193,6 +199,8 @@ public class DatadockMain
             }
             else
             {
+                //new HarvestType = HarvestType.getHarvestTypeFromString( a );
+                //make into a switch on an enumerate
                 if( a.equals( "--runWithFileHarvest" ) )
                 {
                     runWithFileHarvest = true;
@@ -240,6 +248,7 @@ public class DatadockMain
             IEstimate estimate = new Estimate( dbConnection );
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IObjectRepository repository = new FedoraObjectRepository();
+            OracleDataSource ods;
             //IFedoraAdministration fedoraAdministration = new FedoraAdministration( repository );
 
             log.trace( "Starting datadockPool" );
@@ -253,9 +262,51 @@ public class DatadockMain
             // harvester;
             if ( runWithESHarvest )
             {
+                String oracleCacheName = DataBaseConfig.getOracleCacheName();
+                String oracleUrl = DataBaseConfig.getOracleUrl();
+                String oracleUser = DataBaseConfig.getOracleUserID();
+                String oraclePassWd = DataBaseConfig.getOraclePassWd();
+                String minLimit = DataBaseConfig.getOracleMinLimit();
+                String maxLimit = DataBaseConfig.getOracleMaxLimit();
+                String initialLimit = DataBaseConfig.getOracleInitialLimit();
+                String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
                 log.trace( "selecting ES" );
-                //harvester = new ESHarvest(); /Todo: give it dbconnection and name
-                log.fatal("ESHarvester not able to run yet, so the --runWithESHarvest option should not be used");
+                try
+                {
+                    ods = new OracleDataSource();
+
+                    // set db-params:
+                    ods.setURL( oracleUrl ); 
+                    ods.setUser( oracleUser );
+                    ods.setPassword( oraclePassWd );
+                 
+                    // set db-cache-params:
+                    ods.setConnectionCachingEnabled( true ); // connection pool
+                  
+                    // set the cache name
+                    ods.setConnectionCacheName( oracleCacheName );
+
+                    // set cache properties:
+                    Properties cacheProperties = new Properties();
+                
+                    cacheProperties.setProperty( "MinLimit", minLimit );
+                    cacheProperties.setProperty( "MaxLimit", maxLimit );
+                    cacheProperties.setProperty( "InitialLimit", initialLimit );
+                    cacheProperties.setProperty( "ConnectionWaitTimeout", connectionWaitTimeout );
+                    cacheProperties.setProperty( "ValidateConnection", "true" );
+
+                    ods.setConnectionCacheProperties( cacheProperties );
+
+                }
+                catch( SQLException sqle )
+                {
+                    String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
+                    log.fatal( errorMsg, sqle );
+                    throw sqle;
+                }
+                OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
+                
+               	harvester = new ESHarvest( connectionPool, "test" );
             }
             else
             {
