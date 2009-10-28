@@ -82,7 +82,7 @@ public class DatadockMain
     static long keepAliveTime;
     static int pollTime;
     static IHarvest harvester;
-    private static HarvestType harvestType;
+    private static HarvestType harvestType = HarvestType.FileHarvest;
     static java.util.Date startTime = null;
 
 
