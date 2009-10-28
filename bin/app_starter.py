@@ -98,19 +98,19 @@ def main( app, action, monitor, fedora_arg, harvester ):
         
     print "harvester value: '%s'end"%harvester
     if harvester == "file":
-        harvester = "--runWithFileHarvest"
+        harvester = "FileHarvest"
     elif harvester == "light":
-        harvester = "--runWithFileHarvestLight"  
+        harvester = "FileHarvestLight"  
     elif harvester == "es":
-        harvester = "--runWithESHarvest"
+        harvester = "ESHarvest"
     
     if do_start:
         if harvester == "file":
-            harvester = "--runWithFileHarvest"
+            harvester = "FileHarvest"
         elif harvester == "light":
-            harvester = "--runWithFileHarvestLight"  
+            harvester = "FileHarvestLight"  
         elif harvester == "es":
-            harvester = "--runWithESHarvest"
+            harvester = "ESHarvest"
 
         if fedora_arg:
         ### Check if fedora is up and running

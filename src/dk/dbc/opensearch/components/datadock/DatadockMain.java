@@ -37,7 +37,7 @@ import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
-//import dk.dbc.opensearch.common.types.HarvestType;
+import dk.dbc.opensearch.common.types.HarvestType;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvestLight;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
@@ -82,7 +82,7 @@ public class DatadockMain
     static long keepAliveTime;
     static int pollTime;
     static IHarvest harvester;
-
+    private static HarvestType harvestType;
     static java.util.Date startTime = null;
 
 
@@ -185,49 +185,17 @@ public class DatadockMain
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         boolean terminateOnZeroSubmitted = false;
-        boolean runWithFileHarvest = true; //hardcoded default
-        boolean runWithFileHarvestLight = false;
-        boolean runWithESHarvest = false;
-
+       
         for( String a : args )
         {
             log.warn( String.format( "argument: '%s'", a ) );
             if( a.equals( "--shutDownOnJobsDone" ) )
             {
                 terminateOnZeroSubmitted = true;
-                log.warn( "BENCH" );
             }
             else
             {
-                //new HarvestType = HarvestType.getHarvestTypeFromString( a );
-                //make into a switch on an enumerate
-                if( a.equals( "--runWithFileHarvest" ) )
-                {
-                    runWithFileHarvest = true;
-                    runWithESHarvest = false;
-                    runWithFileHarvestLight = false;
-                    log.warn( "FILE" );
-                }
-                else
-                {
-                    if( a.equals( "--runWithESHarvest" ) )
-                    {
-                        runWithESHarvest = true;
-                        runWithFileHarvest = false;
-                        runWithFileHarvestLight = false;
-                        log.warn( "ES" );
-                    }
-                    else
-                    {
-                        if( a.equals( "--runWithFileHarvestLight" ) )
-                        {
-                            runWithFileHarvestLight = true;
-                            runWithFileHarvest = false;
-                            runWithESHarvest = false;
-                            log.warn( "LIGHT" );
-                        }
-                    }
-                }
+                harvestType = HarvestType.getHarvestType( a );
             }
         }
 
@@ -260,8 +228,11 @@ public class DatadockMain
 
             log.trace( "Starting harvester" );
             // harvester;
-            if ( runWithESHarvest )
+            switch( harvestType )
             {
+            case ESHarvest:
+
+                log.trace( "selecting ES" );
                 String oracleCacheName = DataBaseConfig.getOracleCacheName();
                 String oracleUrl = DataBaseConfig.getOracleUrl();
                 String oracleUser = DataBaseConfig.getOracleUserID();
@@ -270,25 +241,25 @@ public class DatadockMain
                 String maxLimit = DataBaseConfig.getOracleMaxLimit();
                 String initialLimit = DataBaseConfig.getOracleInitialLimit();
                 String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
-                log.trace( "selecting ES" );
+
                 try
                 {
                     ods = new OracleDataSource();
 
                     // set db-params:
-                    ods.setURL( oracleUrl ); 
+                    ods.setURL( oracleUrl );
                     ods.setUser( oracleUser );
                     ods.setPassword( oraclePassWd );
-                 
+
                     // set db-cache-params:
                     ods.setConnectionCachingEnabled( true ); // connection pool
-                  
+
                     // set the cache name
                     ods.setConnectionCacheName( oracleCacheName );
 
                     // set cache properties:
                     Properties cacheProperties = new Properties();
-                
+
                     cacheProperties.setProperty( "MinLimit", minLimit );
                     cacheProperties.setProperty( "MaxLimit", maxLimit );
                     cacheProperties.setProperty( "InitialLimit", initialLimit );
@@ -305,21 +276,23 @@ public class DatadockMain
                     throw sqle;
                 }
                 OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
-                
-               	harvester = new ESHarvest( connectionPool, "test" );
-            }
-            else
-            {
-                if ( runWithFileHarvest )
-                {
-                    log.trace( "selecting FileHarvest" );
-                    harvester = new FileHarvest();
-                }
-                else
-                {
-                    log.trace( "selecting FileHarvestLight" );
-                    harvester = new FileHarvestLight();
-                }
+
+                harvester = new ESHarvest( connectionPool, "test" );
+                break;
+
+            case FileHarvest:
+
+                log.trace( "selecting FileHarvest" );
+                harvester = new FileHarvest();
+                break;
+
+            case FileHarvestLight:
+
+                log.trace( "selecting FileHarvestLight" );
+                harvester = new FileHarvestLight();
+                break;
+            default:
+                log.warn( "no harvester explicitly selected, running with FileHarvest" );
             }
 
 
@@ -416,6 +389,5 @@ public class DatadockMain
             log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - ", mainJobsSubmitted, mainTimer));
 
         }
-
     }
 }
