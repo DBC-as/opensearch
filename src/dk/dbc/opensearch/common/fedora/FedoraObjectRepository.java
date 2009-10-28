@@ -645,7 +645,7 @@ public class FedoraObjectRepository implements IObjectRepository
         for( int j = 0; j < ofLength; j++ )
         {
             String pidValue = objectFields[j].getPid();
-            if ( namespace == null || pidValue.contains( namespace ) )
+            if ( pidValue.contains( namespace ) )
             {
                 if ( cutPid ==  null )
                 {
@@ -657,6 +657,33 @@ public class FedoraObjectRepository implements IObjectRepository
                     return pids;
                 }
             }
+        }
+
+        return pids;
+    }
+
+
+    @Override
+    public List< String > getIdentifiersUnqualified( List< InputPair< String, String > > resultSearchFields, int maximumResults )
+    {
+        String[] resultFields = new String[ resultSearchFields.size() + 1 ];
+        int i = 0;
+        for( InputPair field : resultSearchFields )
+        {
+            String property = (String)field.getFirst();
+            resultFields[i] = property;
+            i++;
+        }
+
+        resultFields[i++] = "pid"; // must be present!
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
+
+        int ofLength = objectFields.length;
+        List< String > pids = new ArrayList< String >( ofLength );
+        for( int j = 0; j < ofLength; j++ )
+        {
+            String pidValue = objectFields[j].getPid();
+            pids.add( pidValue );
         }
 
         return pids;

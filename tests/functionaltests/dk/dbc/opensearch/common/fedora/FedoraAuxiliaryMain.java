@@ -27,7 +27,7 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.types.InputPair;
-import fedora.server.search.ObjectFields;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -110,7 +110,7 @@ public class FedoraAuxiliaryMain
         {
             InputPair< String, String > pair = new InputPair< String, String >( "label", labels[i] );
             resultSearchFields.add( pair );
-            List< String > pids = objectRepository.getIdentifiers( resultSearchFields, null, maximumResult, null );
+            List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
             System.out.println( "pids.length: " + pids.size() );
             
             for ( String pid : pids )

@@ -166,6 +166,8 @@ public interface IObjectRepository
     public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
 
 
+    public List< String > getIdentifiersUnqualified( List< InputPair< String, String > > resultSearchFields, int maximumResults );
+
     /** 
      * Stores data supplied in {@code cargo} in the object identified
      * by {@code identifier}, overwriting any existing data for that
