@@ -22,6 +22,7 @@
  */
 package dk.dbc.opensearch.common.fedora;
 
+import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
@@ -42,13 +43,16 @@ import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,6 +92,27 @@ public class FedoraObjectRepository implements IObjectRepository
     public FedoraObjectRepository() throws ObjectRepositoryException
     {
         this.fedoraHandle = new FedoraHandle();
+    }
+
+    @Override
+    public boolean hasObject( ObjectIdentifier identifier ) throws ObjectRepositoryException
+    {       
+        try
+        {
+            return this.fedoraHandle.hasObject( identifier.getIdentifier() );
+        }
+        catch (MalformedURLException e)
+        {
+            String error = String.format( "Internal Error from hasObject: %s", e.getMessage() );
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
+        }
+        catch (IOException e)
+        {
+            String error = String.format( "Error Connecting to fedora: %s", e.getMessage() );
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
+        }
     }
 
 
@@ -1355,10 +1380,5 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error, e );
             throw new ObjectRepositoryException( error, e );
         }
-    }
-
-    public boolean hasObject( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
-    {
-        throw new UnsupportedOperationException( "Not supported yet." );
     }
 }

@@ -31,6 +31,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.metadata.IPredicate;
 
 import dk.dbc.opensearch.common.types.InputPair;
 import java.util.List;
@@ -58,7 +59,7 @@ public interface IObjectRepository
      * @param objectIdentifier identifies the object in the scope of
      * the object repository
      * 
-     * @return true iff the object exists in the repository, false otherwise
+     * @return true if the object exists in the repository, false otherwise
      */
     public boolean hasObject( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
 
@@ -287,4 +288,5 @@ public interface IObjectRepository
       * @throws ObjectRepositoryException
       */
      public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
+
 }
