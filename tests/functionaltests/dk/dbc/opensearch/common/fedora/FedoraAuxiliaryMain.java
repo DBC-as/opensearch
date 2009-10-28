@@ -52,7 +52,7 @@ public class FedoraAuxiliaryMain
 
     Vector< String > types = new Vector< String >();
 
-    private void init()
+    private void init() throws ObjectRepositoryException
     {
         try
         {
@@ -61,6 +61,7 @@ public class FedoraAuxiliaryMain
         catch( ObjectRepositoryException ore )
         {
             System.out.println( "Could not initialize objectRepository" );
+            throw new ObjectRepositoryException( "Could not initialize FedoraObjectRepository (is fedora running?)" );
         }
 
         types.add( "deletepids" );
@@ -87,6 +88,8 @@ public class FedoraAuxiliaryMain
             }
         }
     }
+
+    
     public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         String arg = args[0];
@@ -107,7 +110,7 @@ public class FedoraAuxiliaryMain
         {
             InputPair< String, String > pair = new InputPair< String, String >( "label", labels[i] );
             resultSearchFields.add( pair );
-            List< String > pids = objectRepository.getIdentifiers( resultSearchFields, null, maximumResult );
+            List< String > pids = objectRepository.getIdentifiers( resultSearchFields, null, maximumResult, null );
             System.out.println( "pids.length: " + pids.size() );
             
             for ( String pid : pids )

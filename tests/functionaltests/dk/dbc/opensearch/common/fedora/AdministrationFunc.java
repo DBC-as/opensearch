@@ -133,6 +133,46 @@ public class AdministrationFunc
     }
 
 
+    static void testGetIdentifiers() throws ObjectRepositoryException
+    {
+        String predicate = "title"; // "source";
+        String object = "Harry Potter og Fønixordenen";
+        String predicate_2 = "creator";
+        String object_2 = "J. K. Rowling s";
+        String relation = "isMemberOf";
+
+        fedor = new FedoraObjectRelations( objectRepository );
+        try
+        {
+            String workRelation = fedor.getSubjectRelation( "source", object, relation );
+            System.out.println( String.format( "first workRelation found:  %s", workRelation ) );
+
+            workRelation = fedor.getSubjectRelation( predicate, object, predicate_2, object_2, relation );
+            System.out.println( String.format( "second workRelation found: %s", workRelation ) );
+        }
+        catch ( ConfigurationException ce )
+        {
+            System.out.println( "ce caught" );
+            ce.printStackTrace();
+        }
+        catch ( ServiceException se )
+        {
+            System.out.println( "se caught" );
+            se.printStackTrace();
+        }
+        catch ( MalformedURLException mue )
+        {
+            System.out.println( "mue caught" );
+            mue.printStackTrace();
+        }
+        catch ( IOException ioe )
+        {
+            System.out.println( "ioe caught" );
+            ioe.printStackTrace();
+        }
+    }
+
+
     static void testGetSubjectRelations() throws ObjectRepositoryException
     {
         String predicate = "title"; // "source";
@@ -171,6 +211,7 @@ public class AdministrationFunc
             ioe.printStackTrace();
         }
     }
+
 
     static void testFoxml11Document() throws ObjectRepositoryException
     {

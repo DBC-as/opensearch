@@ -163,6 +163,9 @@ public interface IObjectRepository
     public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults );
 
 
+    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
+
+
     /** 
      * Stores data supplied in {@code cargo} in the object identified
      * by {@code identifier}, overwriting any existing data for that

@@ -625,6 +625,44 @@ public class FedoraObjectRepository implements IObjectRepository
     }
     
 
+    @Override
+    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults, String namespace )
+    {
+        String[] resultFields = new String[ resultSearchFields.size() + 1 ];
+        int i = 0;
+        for( InputPair field : resultSearchFields )
+        {
+            String property = (String)field.getFirst();
+            resultFields[i] = property;
+            i++;
+        }
+
+        resultFields[i++] = "pid"; // must be present!
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
+
+        int ofLength = objectFields.length;
+        List< String > pids = new ArrayList< String >( ofLength );
+        for( int j = 0; j < ofLength; j++ )
+        {
+            String pidValue = objectFields[j].getPid();
+            if ( namespace == null || pidValue.contains( namespace ) )
+            {
+                if ( cutPid ==  null )
+                {
+                    pids.add( pidValue );
+                }
+                else if ( ! pidValue.equals( cutPid ) )
+                {
+                    pids.add( pidValue );
+                    return pids;
+                }
+            }
+        }
+
+        return pids;
+    }
+
+
     ObjectFields[] searchRepository( String[] resultFields, List< InputPair< String, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults )
     {
         // \Todo: check needed on the operator
@@ -644,7 +682,7 @@ public class FedoraObjectRepository implements IObjectRepository
         FieldSearchResult fsr = null;
         try
         {
-            NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );            
+            NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );
             fsr = this.fedoraHandle.findObjects( resultFields, maxResults, fsq );
         }
         catch( ConfigurationException ex )

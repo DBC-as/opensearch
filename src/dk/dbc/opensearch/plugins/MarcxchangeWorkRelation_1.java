@@ -40,6 +40,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
+import dk.dbc.opensearch.common.types.InputPair;
 import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.IOException;
@@ -70,7 +71,8 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     private FedoraObjectRelations fedor;
     private final FedoraHandle fedoraHandle;
     private IObjectRepository objectRepository;
-    
+    private String workNamespace = "work:";
+
     private final ScriptEngineManager manager = new ScriptEngineManager();
 
     /**
@@ -214,7 +216,8 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         String pid = cargo.getIdentifier();
         
         List< String > fedoraPids = new ArrayList< String >();
-        List< String > searchFields = new ArrayList< String >( 1 );
+        //List< String > searchFields = new ArrayList< String >( 1 );
+        List< InputPair< String, String > > resultSearchFields = new ArrayList< InputPair< String, String > >();
         int maximumResults = 10000;
 
         if( ! types.contains( dcType ) )
@@ -223,14 +226,20 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! dcSource.equals( "" ) )
             {
                 log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
-                searchFields.add( "source" );
-                fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, pid, maximumResults );
+                //searchFields.add( "source" );
+                InputPair< String, String > searchPair = new InputPair< String, String >( "source", dcSource );                
+                resultSearchFields.add( searchPair );
+                fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
+                //fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, pid, maximumResults );
 
                 if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
                 {
-                    searchFields.clear();
-                    searchFields.add( "title" );
-                    fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, pid, 10000 );
+                    //searchFields.clear();
+                    resultSearchFields.clear();
+                    //searchFields.add( "title" );
+                    searchPair = new InputPair< String, String >( "title", dcSource );
+                    resultSearchFields.add( searchPair );
+                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
                 }
             }
 
@@ -239,17 +248,21 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 log.debug( String.format( "2 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
                 if ( ! dcSource.equals( "" ) )
                 {
-                    searchFields.clear();
-                    searchFields.add( "title" );
-
-                    fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, pid, 10000 );
+                    //searchFields.clear();
+                    resultSearchFields.clear();
+                    //searchFields.add( "source" );
+                    InputPair< String, String > searchPair = new InputPair< String, String >( "source", dcTitle );
+                    resultSearchFields.add( searchPair );
+                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
                 }
                 else
                 {
-                    searchFields.clear();
-                    searchFields.add( "title" );
-
-                    fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, pid, 10000 );
+                    //searchFields.clear();
+                    resultSearchFields.clear();
+                    //searchFields.add( "title" );
+                    InputPair< String, String > searchPair = new InputPair<String, String>( "title", dcTitle );
+                    resultSearchFields.add( searchPair );
+                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
                 }
             }
 
@@ -263,11 +276,21 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
                 log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle, dcCreator ) );
-                searchFields.clear();
-                searchFields.add( "title" );
-                searchFields.add( "creator" );
+                //searchFields.clear();
+                resultSearchFields.clear();
+                InputPair< String, String > searchTitlePair = new InputPair<String, String>( "title", dcTitle );
+                InputPair< String, String > searchCreatorPair = new InputPair<String, String>( "creator", dcCreator );
+                resultSearchFields.add( searchTitlePair );
+                resultSearchFields.add( searchCreatorPair );
+                //searchFields.add( "title" );
+                //searchFields.add( "creator" );
 
-                fedoraPids = objectRepository.getIdentifiers( dcTitle, searchFields, pid, 10000 );
+                /*List< InputPair< String, String > > searchList = new ArrayList< InputPair< String, String > >();
+                InputPair< String, String > pair = new InputPair< String, String >( dcTitle, dcSource );
+                searchList.add( pair );
+                searchList.add( pair );
+                fedoraPids = objectRepository.getIdentifiers( searchList, searchFields, pid, 10000 );*/
+                fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
             }
             else
             {
@@ -280,26 +303,27 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             log.debug( String.format( "Pid with matching title, source, or creator = %s", fedoraPids.get( 0 ) ) );
         }
 
-        String[] nextWorkPid = null;
-        RelationshipTuple[] rels = null;
+        String nextWorkPid = null;
+        //RelationshipTuple[] rels = null;
 
         if ( fedoraPids == null || fedoraPids.size() == 0 )
         {
-            nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
-            log.debug( String.format( "nextWorkPid found: %s", nextWorkPid[0] ) );
-            CreateWorkObject( nextWorkPid[0], dc );
+            nextWorkPid = fedoraHandle.getNextPID( 1, "work" )[0];
+            log.debug( String.format( "nextWorkPid found: %s", nextWorkPid ) );
+            CreateWorkObject( nextWorkPid, dc );
         }
         else // fedoraPids.size() > 0
         {
-            log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPids.size() ) );
+            /*log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPids.size() ) );
             for( String foundpid : fedoraPids )
             {
                 log.debug( String.format( "checking fedoraPid for equality: %s with pid: %s", foundpid, pid ) );
                 if ( ! foundpid.equals( pid ) )
                 {
                     log.debug( String.format( "New PID found: %s (curr pid is: %s)", foundpid, pid ) );
-                    String predicate = "info:fedora/fedora-system:def/relations-external#isMemberOf";
-                    rels = fedor.getRelationships( foundpid, predicate );
+                    //String predicate = "info:fedora/fedora-system:def/relations-external#isMemberOf";
+                    String predicate = "info:fedora/fedora-system:def/relations-external#";
+                    //rels = fedor.getRelationships( foundpid, predicate );
                     log.debug( String.format( "Relationships as tuple: %s, length %s", rels.toString(), rels.length ) );
                     break;
                 }
@@ -312,34 +336,33 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 log.debug( String.format( "Relationship found: %s (from rel: %s)", nextWorkPid[0], rel ) );
             }
             else
-            {
-                nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
-                CreateWorkObject( nextWorkPid[0], dc );                
-            }
+            {*/
+                //nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
+            nextWorkPid = fedoraPids.get( 0 );
+                CreateWorkObject( nextWorkPid, dc );
+            //}
         }
 
-        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getIdentifier(), nextWorkPid[0] ) );
+        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getIdentifier(), nextWorkPid ) );
 
         // and add this workrelation pid as the workrelationpid of the
-        fedor.addPidToCollection( cargo.getIdentifier(), nextWorkPid[0] );
-        this.fedoraHandle.addRelationship( nextWorkPid[0], "info:fedora/fedora-system:def/relations-external#Contains", cargo.getIdentifier(), true, null );
+        fedor.addPidToCollection( cargo.getIdentifier(), nextWorkPid );
+        this.fedoraHandle.addRelationship( nextWorkPid, "info:fedora/fedora-system:def/relations-external#Contains", cargo.getIdentifier(), true, null );
 
         return true;
     }
 
 
-    private void CreateWorkObject( String nextWorkPid, DublinCore oldDc) 
+    private void CreateWorkObject( String nextWorkPid, DublinCore oldDc )
     {      
         try
         {
             // todo: Clean up work object xml and language.
-            CargoContainer cargo = new CargoContainer(nextWorkPid);
+            CargoContainer cargo = new CargoContainer( nextWorkPid );
             DublinCore workDC = new DublinCore( nextWorkPid );
        
-            ScriptEngine engine = manager.getEngineByName( "JavaScript" );
-            
-            engine.put( "log", log );
-            
+            ScriptEngine engine = manager.getEngineByName( "JavaScript" );            
+            engine.put( "log", log );            
             engine.put( "objectRepository", objectRepository );
             
             String path = FileSystemConfig.getScriptPath();
