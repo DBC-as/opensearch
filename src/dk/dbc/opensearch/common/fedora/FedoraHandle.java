@@ -28,16 +28,22 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
 
+import fedora.client.DataStream;
 import fedora.client.FedoraClient;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
+import fedora.server.types.gen.Datastream;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.MIMETypedStream;
 import fedora.server.types.gen.RelationshipTuple;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -99,7 +105,7 @@ public class FedoraHandle
         try
         {
             fea = fc.getAPIA();
-            fem = fc.getAPIM();
+            fem = fc.getAPIM();            
         }
         catch( ServiceException ex )
         {
@@ -114,7 +120,6 @@ public class FedoraHandle
             throw new ObjectRepositoryException( error, ex );
         }
     }
-
 
     private FedoraAPIA getAPIA() throws ServiceException
     {
@@ -145,6 +150,8 @@ public class FedoraHandle
             timer = System.currentTimeMillis();
         }
 
+        String fem = new String("");         
+        
         String pid = this.getAPIM().ingest( data, datatype, logmessage );
 
         if( log.isDebugEnabled() )
@@ -198,7 +205,6 @@ public class FedoraHandle
         return timestamp;
     }
 
-
     public String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
@@ -240,6 +246,20 @@ public class FedoraHandle
         return ds.getStream();
     }
 
+    
+    public String getDataStreamsXML( String pid ) throws IOException {
+        
+        long timer = 0;
+        if( log.isDebugEnabled() )  {
+            timer = System.currentTimeMillis();
+        }
+        Datastream[] res=getAPIM().getDatastreams( pid, null, null );   
+
+        
+          
+        
+        return "";
+    }
 
     public String[] getNextPID( int numberOfPids, String prefix ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
@@ -410,5 +430,27 @@ public class FedoraHandle
         }
         
         return timestamp;
-    }
+    }    
+    
+    public boolean hasObject( String identifier ) throws MalformedURLException, IOException {
+        String host = "localhost";
+        String port = "8080";
+        
+        // read in data from URL
+        
+        String urlAsString = String.format( "http://%s:%s/fedora/objects/%s/datastreams.xml", host, port, identifier);
+        try
+        {
+            URL url = new URL( urlAsString );
+            InputStreamReader isr = new InputStreamReader( url.openStream() );
+            BufferedReader in = new BufferedReader( isr );
+            // read atleast one byte to verfiey the existance.
+            in.readLine();
+            return true;
+        }
+        catch (FileNotFoundException ex)
+        {
+            return false;
+        }       
+   }
 }

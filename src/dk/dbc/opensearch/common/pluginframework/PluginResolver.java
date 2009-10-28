@@ -28,11 +28,16 @@ import java.io.IOException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
+import javax.script.Invocable;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.plist.XMLPropertyListConfiguration.PListNode;
 import org.apache.log4j.Logger;
 
 
@@ -43,12 +48,12 @@ public class PluginResolver implements IPluginResolver
 {
     static Logger log = Logger.getLogger( PluginResolver.class );
 
-    static String path;
-    static ClassLoader pluginClassLoader;
-    //static PluginFinder PFinder;
-    static PluginLoader PLoader;
+    static ClassLoader pluginClassLoader = new PluginClassLoader();    
+    static PluginLoader PLoader = new PluginLoader( pluginClassLoader );
     static boolean constructed = false;
     
+    static private final Map< String, IPluggable> pluginInstanceCache = Collections.synchronizedMap(new HashMap< String , IPluggable> ());
+
 
     /**
      * @throws IOException 
@@ -70,11 +75,19 @@ public class PluginResolver implements IPluginResolver
         }
     }
 
-    
+
+    public static synchronized IPluggable getStaticPlugin(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException
+    {
+        if (!pluginInstanceCache.containsKey( className ))
+        {
+            IPluggable plugin = PLoader.getPlugin( className );
+            pluginInstanceCache.put( className, plugin );
+        }
+        return pluginInstanceCache.get( className );
+
+    }
     /**
-     * @param submitter, the submitter of the data the plugin works on
-     * @param format, the format of the data the plugin works on
-     * @param name, the name of the plugin (see the .plugin files)
+     * @param name, the name of the plugin 
      * @returns a plugin matching the key made out of the params  
      * @throws InstantitionException if the PluginLoader cant load the desired plugin
      * @throws FileNotFoundException if the desired plugin file cannot be found
@@ -85,49 +98,10 @@ public class PluginResolver implements IPluginResolver
      */
     public IPluggable getPlugin( String className ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException, ParserConfigurationException
     {  
+        
         return PLoader.getPlugin( className );
     }
 
     
-    /**
-     * @param submitter, the submitter to solve tasks for
-     * @param format, the format of the data to perform tasks on
-     * @param taskList, the tasks to be validated that plugins exists to perform
-     * @returns a Vector of tasks there are no plugins to perform og the specified format from the submitter. If it is empty execution can continue in the calling thread
-     * @throws PluginResolverException when there are parser and reader errors from the PluginFinder
-     * @throws ParserConfigurationException 
-     */
-    /*public Vector<String> validateArgs( String submitter, String format, ArrayList< String > classNameList ) throws PluginResolverException, ParserConfigurationException
-    {
-        log.debug( String.format( "Validating submitter %s, format %s, and %s", submitter, format, classNameList.toString() ) );
-        Vector< String > pluginNotFoundVector = new Vector< String >();
 
-        // Loop through list of tasks finding tasks without matching plugin.
-        for( int i = 0; i < classNameList.size(); i++ )
-        {
-            String className = classNameList.get( i ).toString();
-            //int key = className.hashCode();
-            //log.debug( String.format( "hashcode: %s generated for key: %s", key, hashSubject  ) );            
-            try
-            {
-            	//PFinder.getPluginClassName( key );
-                PLoader.getPlugin( className );
-            }
-            catch( ClassNotFoundException cnfe )
-            {
-            	pluginNotFoundVector.add( classNameList.get( i ) );
-            }
-            catch( InstantiationException ie )
-            {
-                pluginNotFoundVector.add( classNameList.get( i ) );
-            }
-            catch( IllegalAccessException ice )
-            {
-                pluginNotFoundVector.add( classNameList.get( i ) );
-            }
-        }
-       
-        log.debug( "pluginNotFoundVector size " + pluginNotFoundVector.size() );
-        return pluginNotFoundVector;
-        }*/
 }

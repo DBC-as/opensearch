@@ -23,14 +23,14 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-
-
+import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-
+import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
 import org.apache.log4j.Logger;
 
 
@@ -54,19 +54,27 @@ public class Store implements IRepositoryStore
         try
         {
             String new_pid = cargo.getIdentifier();
-            log.debug( String.format("ja7: new pid %s", new_pid));
-            
-            if( ! new_pid.isEmpty())
+            log.debug(String.format("ja7: new pid %s", new_pid));
+
             try
             {
-                this.objectRepository.deleteObject( new_pid, "delte before store hack");
-            } 
-            catch( Exception e )
-            {
-                log.trace( String.format("ja7: ignoring error from deleteObject of %s", new_pid));
+                log.debug( String.format( "ja7s: Trying to lookup %s",new_pid )); 
+                if (!new_pid.isEmpty() ) {
+                    boolean hasObject = objectRepository.hasObject( new PID(new_pid) );
+                    log.debug( String.format( "ja7s: has Object returned %b", hasObject ));
+                    if( hasObject ) {
+                      log.debug( String.format( "ja7s: will try to delete pid %s", new_pid ) );
+                      objectRepository.deleteObject(new_pid, "delte before store hack");
+                    }
+                }
+                
             }
-            
-            this.objectRepository.storeObject( cargo, logm );
+            catch (Exception e)
+            {
+                log.trace(String.format("ja7: Internal error checking / removing before/store  %s", new_pid), e);
+            }
+
+            objectRepository.storeObject( cargo, logm );
         }
         catch( ObjectRepositoryException ex )
         {

@@ -31,6 +31,8 @@ import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
@@ -144,7 +146,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         catch( ObjectRepositoryException ex )
         {
             String error = String.format( "Failed to add work relation for %s: %s", cargo.getIdentifier(), ex.getMessage() );
-            log.error( error );
+            log.error( error , ex);
             throw new PluginException( error, ex );
         }
         catch( ConfigurationException ex )
@@ -303,63 +305,39 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             log.debug( String.format( "Pid with matching title, source, or creator = %s", fedoraPids.get( 0 ) ) );
         }
 
-        String nextWorkPid = null;
-        //RelationshipTuple[] rels = null;
+        PID workPid = null;       
 
         if ( fedoraPids == null || fedoraPids.size() == 0 )
         {
-            nextWorkPid = fedoraHandle.getNextPID( 1, "work" )[0];
-            log.debug( String.format( "nextWorkPid found: %s", nextWorkPid ) );
-            CreateWorkObject( nextWorkPid, dc );
+            log.debug( String.format("ja7w: No Work found creating new work ") );
+            
+            workPid = new PID( fedoraHandle.getNextPID( 1, "work" )[0] );
+            log.debug( String.format( "nextWorkPid found: %s", workPid.getIdentifier()) );
+            CreateWorkObject( workPid, dc );
         }
         else // fedoraPids.size() > 0
         {
-            /*log.debug( String.format( "CC pid: %s; fedoraPids.length: %s", pid, fedoraPids.size() ) );
-            for( String foundpid : fedoraPids )
-            {
-                log.debug( String.format( "checking fedoraPid for equality: %s with pid: %s", foundpid, pid ) );
-                if ( ! foundpid.equals( pid ) )
-                {
-                    log.debug( String.format( "New PID found: %s (curr pid is: %s)", foundpid, pid ) );
-                    //String predicate = "info:fedora/fedora-system:def/relations-external#isMemberOf";
-                    String predicate = "info:fedora/fedora-system:def/relations-external#";
-                    //rels = fedor.getRelationships( foundpid, predicate );
-                    log.debug( String.format( "Relationships as tuple: %s, length %s", rels.toString(), rels.length ) );
-                    break;
-                }
-            }
-
-            if ( rels != null )
-            {
-                RelationshipTuple rel = rels[0];
-                nextWorkPid[0] = rel.getObject();
-                log.debug( String.format( "Relationship found: %s (from rel: %s)", nextWorkPid[0], rel ) );
-            }
-            else
-            {*/
-                //nextWorkPid = fedoraHandle.getNextPID( 1, "work" );
-            nextWorkPid = fedoraPids.get( 0 );
-                CreateWorkObject( nextWorkPid, dc );
-            //}
+            workPid = new PID(fedoraPids.get( 0 )); 
         }
+                 
 
-        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getIdentifier(), nextWorkPid ) );
+        log.debug( String.format( "Trying to add %s to the collection %s", cargo.getIdentifier(), workPid ) );
 
-        // and add this workrelation pid as the workrelationpid of the
-        fedor.addPidToCollection( cargo.getIdentifier(), nextWorkPid );
-        this.fedoraHandle.addRelationship( nextWorkPid, "info:fedora/fedora-system:def/relations-external#Contains", cargo.getIdentifier(), true, null );
 
+        this.objectRepository.addObjectRelation( workPid, DBCBIB.HAS_MANIFESTATION , cargo.getIdentifier() );
+        this.objectRepository.addObjectRelation( new PID( cargo.getIdentifier()), DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );
+        
         return true;
     }
 
 
-    private void CreateWorkObject( String nextWorkPid, DublinCore oldDc )
+    private void CreateWorkObject( PID nextWorkPid, DublinCore oldDc )
     {      
         try
         {
             // todo: Clean up work object xml and language.
-            CargoContainer cargo = new CargoContainer( nextWorkPid );
-            DublinCore workDC = new DublinCore( nextWorkPid );
+            CargoContainer cargo = new CargoContainer( nextWorkPid.getIdentifier() );
+            DublinCore workDC = new DublinCore( nextWorkPid.getIdentifier()  );
        
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );            
             engine.put( "log", log );            
