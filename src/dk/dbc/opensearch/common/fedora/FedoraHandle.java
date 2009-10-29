@@ -65,15 +65,16 @@ public class FedoraHandle
     private FedoraAPIA fea;
     private FedoraClient fc;
 
+    private String host;
+    private String port;
+    private String user;
+    private String pass;
+
 
     public FedoraHandle() throws ObjectRepositoryException
     {
         log.debug( "FedoraHandle constructor" );
         String fedora_base_url;
-        String host;
-        String port;
-        String user;
-        String pass;
 
         try
         {
@@ -150,14 +151,12 @@ public class FedoraHandle
             timer = System.currentTimeMillis();
         }
 
-        String fem = new String("");         
-        
         String pid = this.getAPIM().ingest( data, datatype, logmessage );
 
         if( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "Timing: ( %s f) %s", this.getClass(), timer ) );
         }
 
         return pid;
@@ -432,12 +431,16 @@ public class FedoraHandle
         return timestamp;
     }    
     
-    public boolean hasObject( String identifier ) throws MalformedURLException, IOException {
-        String host = "localhost";
-        String port = "8080";
+    public boolean hasObject( String identifier ) throws MalformedURLException, IOException {        
+
         
-        // read in data from URL
-        
+        long timer = 0;
+
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis();
+        }
+
         String urlAsString = String.format( "http://%s:%s/fedora/objects/%s/datastreams.xml", host, port, identifier);
         try
         {
@@ -446,6 +449,13 @@ public class FedoraHandle
             BufferedReader in = new BufferedReader( isr );
             // read atleast one byte to verfiey the existance.
             in.readLine();
+
+            if ( log.isDebugEnabled() )
+            {
+                timer = System.currentTimeMillis() - timer;
+                log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            }
+
             return true;
         }
         catch (FileNotFoundException ex)
