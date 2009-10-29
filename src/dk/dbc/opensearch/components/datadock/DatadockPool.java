@@ -29,6 +29,7 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -69,7 +70,7 @@ public class DatadockPool
     private IProcessqueue processqueue;
     private int shutDownPollTime;
     private int i = 0;
-//    private IFedoraAdministration fedoraAdministration;
+    private PluginResolver pluginResolver;
     private IObjectRepository objectRepository;
     private IHarvest harvester;
 
@@ -107,7 +108,7 @@ public class DatadockPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IObjectRepository fedoraObjectRepository, IHarvest harvester ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IEstimate estimate, IProcessqueue processqueue, IObjectRepository fedoraObjectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
 
@@ -116,6 +117,7 @@ public class DatadockPool
         this.estimate = estimate;
         this.processqueue = processqueue;
         this.objectRepository = fedoraObjectRepository;
+        this.pluginResolver = pluginResolver;
 
         jobs = new Vector<FutureTask>();
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
@@ -155,7 +157,7 @@ public class DatadockPool
     
     public FutureTask getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-    	return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, objectRepository, harvester ) );
+    	return new FutureTask( new DatadockThread( datadockJob, estimate, processqueue, objectRepository, harvester, pluginResolver ) );
     }
 
 

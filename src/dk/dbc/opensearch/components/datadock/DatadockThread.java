@@ -33,7 +33,6 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.pluginframework.PluginLoader;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.statistics.IEstimate;
@@ -93,6 +92,7 @@ public class DatadockThread implements Callable<Float>
     private ArrayList<String>       list;
     private String                  result;
     private final IObjectRepository objectRepository;
+    private PluginResolver pluginResolver;
     
 
     /**
@@ -129,16 +129,14 @@ public class DatadockThread implements Callable<Float>
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue,
-            IObjectRepository objectRepository, IHarvest harvester ) throws ConfigurationException,
-            ClassNotFoundException, FileNotFoundException, IOException, NullPointerException,
-            PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
         
         this.datadockJob = datadockJob;
         this.harvester = harvester;
         this.objectRepository = objectRepository;
+        this.pluginResolver = pluginResolver;
         
         // Each pair identifies a plugin by p1:submitter and p2:format
         submitter = datadockJob.getSubmitter();
@@ -214,7 +212,7 @@ public class DatadockThread implements Callable<Float>
         log.trace( "DatadockThread call method called" );
 
         // Validate plugins
-        PluginResolver pluginResolver = new PluginResolver();
+        //PluginResolver pluginResolver = new PluginResolver();
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
         Float est = 0F;
         byte[] data = null;
@@ -226,8 +224,8 @@ public class DatadockThread implements Callable<Float>
             {
                 log.trace( "DatadockThread getPlugin 'classname' " + classname );
 
-                //IPluggable plugin = pluginResolver.getPlugin( classname );               
-                IPluggable plugin = PluginResolver.getStaticPlugin( classname );               
+                IPluggable plugin = pluginResolver.getPlugin( classname );               
+                //IPluggable plugin = PluginResolver.getStaticPlugin( classname );               
                 
                 log.trace( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
 

@@ -38,6 +38,7 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.HarvestType;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvestLight;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
@@ -76,6 +77,7 @@ public class DatadockMain
     static protected boolean shutdownRequested = false;
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
+    static PluginResolver pluginResolver;
     static int queueSize;
     static int corePoolSize;
     static int maxPoolSize;
@@ -216,6 +218,7 @@ public class DatadockMain
             IEstimate estimate = new Estimate( dbConnection );
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IObjectRepository repository = new FedoraObjectRepository();
+            pluginResolver = new PluginResolver(); 
             OracleDataSource ods;
             //IFedoraAdministration fedoraAdministration = new FedoraAdministration( repository );
 
@@ -293,10 +296,11 @@ public class DatadockMain
                 break;
             default:
                 log.warn( "no harvester explicitly selected, running with FileHarvest" );
+                harvester = new FileHarvest();
             }
 
 
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, repository, harvester);
+            datadockPool = new DatadockPool( threadpool, estimate, processqueue, repository, harvester, pluginResolver );
 
             log.trace( "Starting the manager" );
             // Starting the manager

@@ -96,7 +96,6 @@ def main( app, action, monitor, fedora_arg, harvester ):
     else:
         sys.exit( "Cannot stop nonrunning process" )
         
-    print "harvester value: '%s'end"%harvester
     if harvester == "file":
         harvester = "FileHarvest"
     elif harvester == "light":

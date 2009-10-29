@@ -65,27 +65,27 @@ public class PluginResolver implements IPluginResolver
      */
     public PluginResolver() throws NullPointerException, PluginResolverException, ParserConfigurationException, FileNotFoundException, ConfigurationException
     {      
-        if( ! constructed )
-        {
+       //  if( ! constructed )
+//         {
             pluginClassLoader = new PluginClassLoader();
             PLoader = new PluginLoader( pluginClassLoader );
             
-            constructed = true;
+            //   constructed = true;
             log.info( "PluginResolver constructed" );            
-        }
+            //   }
     }
 
 
-    public static synchronized IPluggable getStaticPlugin(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException
-    {
-        if (!pluginInstanceCache.containsKey( className ))
-        {
-            IPluggable plugin = PLoader.getPlugin( className );
-            pluginInstanceCache.put( className, plugin );
-        }
-        return pluginInstanceCache.get( className );
+ //    public static synchronized IPluggable getstaticPlugin(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException
+//     {
+//         if (!pluginInstanceCache.containsKey( className ))
+//         {
+//             IPluggable plugin = PLoader.getPlugin( className );
+//             pluginInstanceCache.put( className, plugin );
+//         }
+//         return pluginInstanceCache.get( className );
 
-    }
+//     }
     /**
      * @param name, the name of the plugin 
      * @returns a plugin matching the key made out of the params  
@@ -98,8 +98,13 @@ public class PluginResolver implements IPluginResolver
      */
     public IPluggable getPlugin( String className ) throws FileNotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, PluginResolverException, ParserConfigurationException
     {  
-        
-        return PLoader.getPlugin( className );
+        if (!pluginInstanceCache.containsKey( className ))
+        {
+            IPluggable plugin = PLoader.getPlugin( className );
+            pluginInstanceCache.put( className, plugin );
+            log.warn( String.format("Plugin %s created", className ) );
+        }
+        return pluginInstanceCache.get( className );
     }
 
     
