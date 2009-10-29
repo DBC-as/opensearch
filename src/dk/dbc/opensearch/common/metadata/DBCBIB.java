@@ -22,13 +22,17 @@ package dk.dbc.opensearch.common.metadata;
 import javax.xml.namespace.QName;
 
 /**
- * Enum type reflecting object properties in the ontology {http://oss.dbc.dk/rdf/dkbib}dbcbib. The types found herein describes the valid predicates that can be expressed between objects of types Work and Manifestation.
- * And Handling of of Collections. 
+ * Enum type reflecting object properties in the ontology
+ * {http://oss.dbc.dk/rdf/dkbib}dbcbib. The types found herein
+ * describes the valid predicates that can be expressed between
+ * objects of types Work and Manifestation.  And Handling of of
+ * Collections.
  */
 public enum DBCBIB implements IPredicate
 {
     IS_MEMBER_OF_WORK( "isMemberOfWork"),
-    HAS_MANIFESTATION( "hasManifestation" ),        
+    HAS_MANIFESTATION( "hasManifestation" ),
+    IS_OWNED_BY( "isOwnedBy" ),
     IS_MEMBER_OF_COlECTION( "isMemberOfCollection");
     
     private String localName;

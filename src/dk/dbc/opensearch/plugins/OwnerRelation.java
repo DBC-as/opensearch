@@ -25,12 +25,16 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
+import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
+import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,7 +57,7 @@ public class OwnerRelation implements IRelation
 
     private static Logger log = Logger.getLogger( OwnerRelation.class );
     private PluginType pluginType = PluginType.RELATION;
-    private IObjectRepository objectRepository = null;
+    private IObjectRepository objectRepository;
     private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
     private final ScriptEngineManager manager = new ScriptEngineManager();
 
@@ -63,15 +67,18 @@ public class OwnerRelation implements IRelation
      */
     public OwnerRelation() throws PluginException
     {
-        log.debug( "ja7o: plugin created" );
+        log.trace( "OwnerRelation plugin contructed" );
     }
 
 
     /**
-     * lookup a cached Instance of the script engine.  
-
-     * @param submitter 
-     * @return Configured script engine.. 
+     * Tries to do a lookup of a cached instance of the script engine
+     * based on the submitter. If no cached instances are found, a new
+     * one is created from a supplied javascript matching the role of
+     * this plugin.
+     *
+     * @param cargo
+     * @return Configured script engine fitting the submitter value of the CargoContainer
      * @throws ConfigurationException
      * @throws FileNotFoundException
      * @throws ScriptException
@@ -79,39 +86,39 @@ public class OwnerRelation implements IRelation
      */
     Invocable lookupJavaScript( String submitter ) throws ConfigurationException, FileNotFoundException, ScriptException, PluginException
     {
-        if( submitter == null )
+        
+        log.trace( String.format( "Entering lookupJavaScript" ) );
+        if( submitter == null || submitter.isEmpty() )
         {
-            throw new PluginException( "Internal Error OwnerRealation:lookupJavaScript called with empty submitter" );
+            throw new PluginException( new IllegalArgumentException( "submitter in CargoContainer is not set. Aborting." ) );
         }
-        log.debug( String.format( "ja7o: lookup %s", submitter ) );
 
-        if( scriptCache.containsKey( submitter ) )
+        //lookup invocable in cache:
+        if( this.scriptCache.containsKey( submitter ) )
         {
-            log.debug( String.format( "ja7o: lookup %s - hit", submitter ) );
-
-            return scriptCache.get( submitter );
+            log.trace( String.format( "Returning Invokable js for %s", submitter ) );
+            return this.scriptCache.get( submitter );
         }
-        else
+        else // ...or create new invocable + add it to the cache
         {
-            log.debug( String.format( "ja7o: lookup %s - mis", submitter ) );
-
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );
 
-
             engine.put( "log", log );
-
-            engine.put( "objectRepository", objectRepository );
+            engine.put( "IS_MEMBER_OF_COlECTION", DBCBIB.IS_MEMBER_OF_COlECTION );
+            //engine.put( "FEDORA_NS", FedoraNamespace );
+            //            engine.put( "cargo", cargo );
 
             String path = FileSystemConfig.getScriptPath();
             String jsFileName = path + "owner_relation.js";
 
-            log.debug( String.format( "ja7O: url = %s", jsFileName ) );
+            log.debug( String.format( "Using javascript at url '%s'", jsFileName ) );
             engine.eval( new java.io.FileReader( jsFileName ) );
 
             Invocable inv = (Invocable) engine;
 
-            scriptCache.put( submitter, inv );
-            return scriptCache.get( submitter );
+            this.scriptCache.put( submitter, inv );
+            log.trace( String.format( "Returning Invokable js for %s", submitter ) );
+            return inv;//this.scriptCache.get( submitter );
         }
     }
 
@@ -138,18 +145,18 @@ public class OwnerRelation implements IRelation
         }
         catch( ConfigurationException e )
         {
-            log.error( "setOwnerRelation: Eception e", e );
+            log.error( "setOwnerRelation: Exception e", e );
             throw new PluginException( "Error setting OwnerRelation ", e );
         }
         catch( IOException e )
         {
-            log.error( "setOwnerRelation: Eception e", e );
+            log.error( "setOwnerRelation: Exception e", e );
             throw new PluginException( "Error setting OwnerRelation ", e );
 
         }
         catch( Exception e )
         {
-            log.error( "setOwnerRelation: Eception e", e );
+            log.error( "setOwnerRelation: Exception e", e );
             throw new PluginException( "Error setting OwnerRelation ", e );
         }
 
@@ -159,24 +166,41 @@ public class OwnerRelation implements IRelation
 
     public void setOwnerRelations( CargoContainer cargo ) throws ConfigurationException, FileNotFoundException, Exception
     {
-        //! 
-        String submitter = null;
-        String format = null;
-        if( cargo.hasCargo( DataStreamType.OriginalData ) )
+        CargoObject co = null;
+        if( ! cargo.hasCargo( DataStreamType.OriginalData ) )
         {
-            CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-            submitter = co.getSubmitter();
-            format = co.getFormat();
+            String error = String.format( "CargoContainer with id '%s' has no OriginalData to contruct relations from, aborting", cargo.getIdentifier() );
+            log.error( error );
+            throw new PluginException( new IllegalStateException( error ) );
+        }else
+        {
+            co = cargo.getCargoObject( DataStreamType.OriginalData );
         }
-        else
+        
+        String submitter = co.getSubmitter();
+        String format = co.getFormat();
+        
+        if( null == submitter   ||
+            submitter.isEmpty() ||
+            null == format      ||
+            format.isEmpty() )
         {
-            log.error( "CargoContainer has no OriginalData to contruct relations from, aborting" );
-            throw new PluginException( new IllegalStateException( "CargoContainer has no OriginalData to contruct relations from, aborting" ) );
+            String error = String.format( "CargoContainer with id '%s' has no information on submitter or format", cargo.getIdentifier() );
+            log.error( error );
+            throw new PluginException( new IllegalStateException( error ) );
         }
 
-        PID pid = new PID( cargo.getIdentifier() );
         Invocable inv = lookupJavaScript( submitter );
-        inv.invokeFunction( "doit", pid, submitter, format );
+        FedoraRelsExt rels = (FedoraRelsExt) cargo.getMetaData( DataStreamType.RelsExtData );
+        if( null == rels )
+        {
+            rels = new FedoraRelsExt( cargo.getIdentifier() );
+        }
+        rels = ( FedoraRelsExt ) inv.invokeFunction( "addOwnerRelation", 
+                                                     rels, 
+                                                     submitter, 
+                                                     format );
+        cargo.addMetaData( rels );
     }
 
 
@@ -187,8 +211,8 @@ public class OwnerRelation implements IRelation
     }
 
 
-    public void setObjectRepository( IObjectRepository newObjectRepository )
+    public void setObjectRepository( IObjectRepository objectRepository )
     {
-        objectRepository = newObjectRepository;
+        this.objectRepository = objectRepository;
     }
 }

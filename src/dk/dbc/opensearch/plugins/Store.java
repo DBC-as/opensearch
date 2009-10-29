@@ -24,12 +24,14 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.fedora.FedoraUtils;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
 import org.apache.log4j.Logger;
 
@@ -78,7 +80,21 @@ public class Store implements IRepositoryStore
         }
         catch( ObjectRepositoryException ex )
         {
-            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
+            String foxml = "";
+           try
+           {
+               foxml = new String( FedoraUtils.CargoContainerToFoxml( cargo ) );
+           }
+           catch( OpenSearchTransformException e )
+           {
+               log.fatal( String.format( "Cannot construct meaningful error message from error on cargo with id %s", cargo.getIdentifier() ), e );
+           }
+           catch( ObjectRepositoryException e )
+           {
+               log.fatal( String.format( "Cannot construct meaningful error message from error on cargo with id %s", cargo.getIdentifier() ), e );
+           }
+
+            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s. FoXml is:\n%s", cargo.getIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), foxml );
             log.error( error, ex);
             throw new PluginException( error, ex );
         }
