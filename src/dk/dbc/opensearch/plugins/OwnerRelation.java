@@ -191,15 +191,17 @@ public class OwnerRelation implements IRelation
         }
 
         Invocable inv = lookupJavaScript( submitter );
+
         FedoraRelsExt rels = (FedoraRelsExt) cargo.getMetaData( DataStreamType.RelsExtData );
         if( null == rels )
         {
             rels = new FedoraRelsExt( cargo.getIdentifier() );
         }
+        
         rels = ( FedoraRelsExt ) inv.invokeFunction( "addOwnerRelation", 
                                                      rels, 
                                                      submitter, 
-                                                     format );
+                                                     format );        
         cargo.addMetaData( rels );
     }
 

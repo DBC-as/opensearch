@@ -28,7 +28,6 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
@@ -43,8 +42,6 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import dk.dbc.opensearch.common.types.InputPair;
-import fedora.server.types.gen.RelationshipTuple;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -67,15 +64,16 @@ public class MarcxchangeWorkRelation_1 implements IRelation
 {
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation_1.class );
 
-
     private PluginType pluginType = PluginType.RELATION;
-    private Vector<String> types;
-    private FedoraObjectRelations fedor;
-    private final FedoraHandle fedoraHandle;
+
+    private Vector<String> types;    
+    PID p;
     private IObjectRepository objectRepository;
     private String workNamespace = "work:";
 
     private final ScriptEngineManager manager = new ScriptEngineManager();
+    
+    private FedoraHandle fedoraHandle;
 
     /**
      * Constructor for the MarcxchangeWorlkRelation plugin.
@@ -101,18 +99,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             String error = String.format( "Failed to get connection to fedora base" );
             log.error( error );
             throw new PluginException( error, ex );
-        }
-
-        try
-        {
-            fedor = new FedoraObjectRelations( objectRepository );
-        }
-        catch( ObjectRepositoryException ex )
-        {
-            String error = String.format( "Failed to obtain connection to fedora repository" );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
+        }        
     }
 
 
@@ -200,7 +187,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
       
     }
 
-    private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
+    synchronized private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
     {
         DublinCore dc = cargo.getDublinCoreMetaData();
 

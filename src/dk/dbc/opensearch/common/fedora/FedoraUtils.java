@@ -177,12 +177,20 @@ public class FedoraUtils
         {
             ByteArrayOutputStream baos = baos = new ByteArrayOutputStream();
             meta.serialize( baos );
-            if( meta.getClass() == DublinCore.class )
-            {
-                try
-                {
-                    log.trace( "DublinCore output from serialization: "+new String( baos.toByteArray() ) );
-                    foxml.addDublinCoreDatastream( new String( baos.toByteArray() ), System.currentTimeMillis() );
+            log.debug( String.format( "ja7s: metadata = %s", meta.getType().getName()) );
+            try{
+                 switch( meta.getType() ) {
+                    
+                    case  DublinCoreData: 
+                        log.trace( "DublinCore output from serialization: "+new String( baos.toByteArray() ) );
+                        foxml.addDublinCoreDatastream( new String( baos.toByteArray() ), System.currentTimeMillis() );
+                    break;  
+                    case RelsExtData:
+                        foxml.addRelsExtDataStream( new String( baos.toByteArray() ), System.currentTimeMillis() );
+                        break;
+                    default :
+                        foxml.addXmlContent( meta.getType().toString(), new String( baos.toByteArray() ), String.format( "Metadata: %s", meta.getIdentifier() ), System.currentTimeMillis(), true );
+                    }                       
                 }
                 catch( XPathExpressionException ex )
                 {
@@ -201,32 +209,7 @@ public class FedoraUtils
                     String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
-                }
-            }
-            else
-            {
-                try{
-                    foxml.addXmlContent( meta.getIdentifier(), new String( baos.toByteArray() ), String.format( "Metadata: %s", meta.getIdentifier() ), System.currentTimeMillis(), true );
-                }
-                catch( XPathExpressionException ex )
-                {
-                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
-                    log.error( error , ex);
-                    throw new ObjectRepositoryException( error, ex );
-                }
-                catch( SAXException ex )
-                {
-                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
-                    log.error( error , ex);
-                    throw new ObjectRepositoryException( error, ex );
-                }
-                catch( IOException ex )
-                {
-                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
-                    log.error( error , ex);
-                    throw new ObjectRepositoryException( error, ex );
-                }
-            }
+                }            
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

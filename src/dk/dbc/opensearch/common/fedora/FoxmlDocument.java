@@ -335,6 +335,9 @@ public final class FoxmlDocument
                                        int size,
                                        String created ) throws XPathExpressionException
     {
+        if ( false && dsId.contains( ":" )) {
+            throw new IllegalArgumentException( String.format( " addDataStreamVersion called with id containing : ID=\"%s\"", dsId ) );
+        }
         String expr = String.format( "//foxml:datastream[@ID='%s']", dsId );
         NodeList nodes = (NodeList) xpath.evaluate( expr, doc, XPathConstants.NODESET );
         Node node = nodes.item( 0 );
@@ -378,6 +381,53 @@ public final class FoxmlDocument
         this.addXmlContent( id, dcdata, label, timenow, true );
     }
 
+    /**
+     * </foxml:datastream>
+<foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+<foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Relationships" CREATED="2009-10-29T21:46:25.715Z" MIMETYPE="application/rdf+xml" FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="235">
+<foxml:xmlContent>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:about="info:fedora/710100:20071273">
+        <isMemberOfWork xmlns="http://oss.dbc.dk/rdf/dkbib#">work:3</isMemberOfWork>
+</rdf:Description>
+
+</rdf:RDF>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+
+     * @param relsContent
+     * @param timenow
+     * @throws IOException 
+     * @throws XPathExpressionException 
+     * @throws SAXException 
+     */
+    public void addRelsExtDataStream( String relsContent, long timenow) throws XPathExpressionException, IOException, SAXException {
+        String label="Relationships";
+        String id = "RELS-EXT";
+        String format_URI="info:fedora/fedora-system:FedoraRELSExt-1.0";
+        
+        String datastreamId = id;
+        String xmlContent = relsContent;
+        boolean versionable = false;
+        
+
+        String dsId = addDatastream( datastreamId, State.A, ControlGroup.X, versionable );
+        String dsvId = dsId + ".0";
+
+        log.debug( String.format( "addXmlContent: %s, %s, %s, %s", datastreamId, xmlContent, label, dsId ) );
+
+        addDatastreamVersion( dsId, dsvId, "application/rdf+xml", label, xmlContent.length(), getTimestamp( timenow ) );
+        Document contentDoc = builder.parse( new InputSource( new StringReader( xmlContent ) ) );
+        Node importedContent = doc.adoptNode( contentDoc.getDocumentElement() );
+        Node dsv = getDatastreamVersion( dsvId );
+        Element content = doc.createElementNS( FOXML_NS, "foxml:xmlContent" );
+        dsv.appendChild( content );
+        content.appendChild( importedContent );
+
+        
+    }
 
     /**
      * Constructs a datastream and a datastreamversion in the Digital Object.

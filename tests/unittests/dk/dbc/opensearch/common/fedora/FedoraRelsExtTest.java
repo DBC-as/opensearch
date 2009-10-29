@@ -38,9 +38,10 @@ public class FedoraRelsExtTest
     FedoraRelsExt instance;
     static final String pid = "test:1";
     static final String coll_pid = "work:1";
-    static final String expected_greenfield = "<rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"" + pid + "\"></rdf:Description></rdf:RDF>";
-    static final String expected_relsext = "<rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"" + pid + "\"><fedora:isMemberOfCollection rdf:resource=\"" + coll_pid + "\"/></rdf:Description></rdf:RDF>";
+    static final String expected_greenfield = "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"info:fedora/" + pid + "\"></rdf:Description></rdf:RDF>";
+    static final String expected_relsext = "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"info:fedora/" + pid + "\"><fedora:isMemberOfCollection>" + coll_pid + "</fedora:isMemberOfCollection></rdf:Description></rdf:RDF>";
 
+       
     @Before
     public void Setup() throws ParserConfigurationException
     {

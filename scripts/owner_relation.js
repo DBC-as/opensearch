@@ -100,11 +100,11 @@ function addOwnerRelation( rels_ext, submitter, format )
 {
     if( submitter.charAt(0) == "7") 
     {
-        rels_ext = addFolkebibRelation( rels, submitter, format );
+        rels_ext = addFolkebibRelation( rels_ext, submitter, format );
         return rels_ext;
     } else if( submitter == "dbc" ) 
     {
-        rels_ext = addDbcRelation( rels, submitter, format );
+        rels_ext = addDbcRelation( rels_ext, submitter, format );
         return rels_ext;
     } else 
     {
@@ -117,42 +117,23 @@ function addFolkebibRelation( rels_ext, submitter, format )
 {
 	ownerpid = subject_prefix + doit_folkebib_getsubject( get_folkebib_prefix(submitter) , format );
     
-    var predicate = new QName( IS_MEMBER_OF_COlECTION.getNamespaceURI(),
-                               IS_MEMBER_OF_COlECTION.getLocalPart(),
-                               IS_MEMBER_OF_COlECTION.getPrefix() );
-
-    var subject = new QName(  "",
-                              ownerpid,
-                              "" ); 
+	rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, ownerpid );
     
-    rels_ext.addRelationship( predicate, subject );
-    return rels_ext;
-
+	return rels_ext;
 }
+
 function addDbcRelation( rels_ext, submitter, format )
 {
     ownerpid = subject_prefix + lookup_dbcmap( format ) ;
 
-    var predicate = new QName( IS_MEMBER_OF_COlECTION.getNamespaceURI(),
-                               IS_MEMBER_OF_COlECTION.getLocalPart(),
-                               IS_MEMBER_OF_COlECTION.getPrefix() );
 
-    var subject = new QName(  "",
-                              ownerpid,
-                              "" ); 
-
-    rels_ext.addRelationship( predicate, subject );
-
+    rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, ownerpid );
+    
     // add ekstra pg data.
     if( "pg" == format ) 
     {
-
-        rels_ext.addRelationship( predicate, new QName( "",
-                                                        subject_prefix + "Children",
-                                                        "" ) );
-        rels_ext.addRelationship( predicate, new QName( "",
-                                                        subject_prefix + "free",
-                                                        "" ) );
-        return rels_ext;
-    }  
+        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, subject_prefix + "Children" );                                                     
+        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, subject_prefix + "free" );       
+    }
+    return rels_ext;
 }

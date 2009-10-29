@@ -26,27 +26,24 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
+import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.metadata.MetaData;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.OutputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
 
 
 /**
@@ -61,7 +58,7 @@ public class FedoraRelsExt implements MetaData
     private Set<String> relations;
 
     // note that the first element (the object) is always `pid` for fedora rels-ext statements
-    private Map<QName, QName> triples;
+    private Collection< InputPair<QName, QName> > triples;
     public static final DataStreamType type = DataStreamType.RelsExtData;
 
     private static FedoraNamespace rdf = new FedoraNamespaceContext().getNamespace( "rdf" );
@@ -86,7 +83,7 @@ public class FedoraRelsExt implements MetaData
     {
         this.id = id;
         relations = new HashSet<String>();
-        triples = new HashMap<QName, QName>();
+        triples = new ArrayList< InputPair< QName, QName >>();
     }
 
 
@@ -134,11 +131,18 @@ public class FedoraRelsExt implements MetaData
         boolean added = relations.add( new Integer( predicate.hashCode() ).toString()+new Integer( object.hashCode() ).toString() );
         if( added )
         {
-            triples.put( predicate, object );
+            triples.add( new InputPair<QName, QName>(predicate, object) );
         }
         return added;
     }
 
+    
+    public boolean addRelationship( IPredicate pred, String subject ) {
+        QName predicate = pred.getPredicate();
+        QName sub = new QName("", subject, "");
+        
+        return addRelationship( predicate, sub );
+    }
 
     /**
      * Serializes the RELS-EXT Document to a Node representation, ie. without the XML Declaration.
@@ -155,11 +159,11 @@ public class FedoraRelsExt implements MetaData
         // Create an output factory
         XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
         XMLStreamWriter xmlw;
-
+        // Fedora 3.2 depends on Namespace repairs.       
+        xmlof.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         try
         {
             xmlw = xmlof.createXMLStreamWriter( out );
-//            xmlw.writeStartDocument();
             xmlw.writeStartElement( rdf.getPrefix(), "RDF", rdf.getURI() );
 
             xmlw.writeNamespace( dc.getPrefix(), dc.getURI() );
@@ -175,18 +179,23 @@ public class FedoraRelsExt implements MetaData
             xmlw.writeNamespace( rdfs.getPrefix(), rdfs.getURI() );
 
             xmlw.writeStartElement( rdf.getURI(), "Description" );
-            xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "about", this.id );
-            for( Entry<QName, QName> set : triples.entrySet() )
+            xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "about", String.format( "info:fedora/%s", this.id ));
+            for( InputPair<QName, QName> set : triples )
             {
-                QName key = set.getKey();
-                QName val = set.getValue();
+                QName key = set.getFirst();
+                QName val = set.getSecond();
 
-                xmlw.writeEmptyElement( key.getPrefix(), key.getLocalPart(), key.getNamespaceURI() );
-
-                String attr_value = val.getPrefix()+":"+val.getLocalPart();
-
-                xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "resource", attr_value );
-
+                xmlw.writeStartElement( key.getPrefix(), key.getLocalPart(), key.getNamespaceURI() );
+                
+                String subjectId;
+                if( val.getPrefix().isEmpty() ) {
+                    subjectId= val.getLocalPart();
+                } else {
+                    subjectId= val.getPrefix()+":"+val.getLocalPart();
+                }
+                
+                xmlw.writeCharacters( subjectId );
+                xmlw.writeEndElement();
             }
 
             xmlw.writeEndElement();//closes "rdf:Description" element
