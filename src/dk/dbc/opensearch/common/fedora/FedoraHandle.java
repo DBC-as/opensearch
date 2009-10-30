@@ -65,16 +65,17 @@ public class FedoraHandle
     private FedoraAPIA fea;
     private FedoraClient fc;
 
-    private String host;
-    private String port;
-    private String user;
-    private String pass;
+    private String fedora_base_url;
 
 
     public FedoraHandle() throws ObjectRepositoryException
     {
+        String host;
+        String port;
+        String user;
+        String pass;
+
         log.debug( "FedoraHandle constructor" );
-        String fedora_base_url;
 
         try
         {
@@ -90,7 +91,7 @@ public class FedoraHandle
             throw new ObjectRepositoryException( error, ex );
         }
 
-        fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
+        this.fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
         log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
         try
         {
@@ -431,23 +432,22 @@ public class FedoraHandle
         return timestamp;
     }    
     
-    public boolean hasObject( String identifier ) throws MalformedURLException, IOException {        
+    public boolean hasObject( String identifier ) throws MalformedURLException, IOException {
 
-        
         long timer = 0;
 
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
+        String urlAsString = String.format( "%s/objects/%s/datastreams.xml", this.fedora_base_url, identifier);
 
-        String urlAsString = String.format( "http://%s:%s/fedora/objects/%s/datastreams.xml", host, port, identifier);
         try
         {
             URL url = new URL( urlAsString );
             InputStreamReader isr = new InputStreamReader( url.openStream() );
             BufferedReader in = new BufferedReader( isr );
-            // read atleast one byte to verfiey the existance.
+            // read at least one byte to verify the existence of an object in the repository.
             in.readLine();
 
             if ( log.isDebugEnabled() )

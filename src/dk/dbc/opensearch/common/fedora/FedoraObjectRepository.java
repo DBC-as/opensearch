@@ -22,7 +22,6 @@
  */
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.config.FedoraConfig;
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
@@ -43,16 +42,13 @@ import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,7 +77,6 @@ public class FedoraObjectRepository implements IObjectRepository
      */
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
     private final String hasStr = "has";
-    //private final String pidStr = "pid";
     private FedoraHandle fedoraHandle;
 
     /**

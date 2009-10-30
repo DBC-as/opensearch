@@ -107,7 +107,7 @@ public class CargoContainer
         {
             if( meta.getValue().getClass() == metadataelement.getClass() )
             {
-                log.warn( String.format( "CargoContainer already contains the metadata element. Will overwrite with metadata type '%s'", metadataelement.getClass() ) );
+                log.info( String.format( "CargoContainer already contains the metadata element. Will overwrite with metadata type '%s'", metadataelement.getClass() ) );
             }
         }
         metadata.put( metadataelement.getType(), metadataelement );
@@ -537,7 +537,7 @@ public class CargoContainer
 
         if( retval == null )
         {
-            log.warn( String.format( "No metadata with type %s in CargoContainer", mdst.getName() ) );
+            log.info( String.format( "No metadata with type %s in CargoContainer", mdst.getName() ) );
         }
         return retval;
 
