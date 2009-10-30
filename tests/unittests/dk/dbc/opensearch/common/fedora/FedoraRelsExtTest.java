@@ -43,15 +43,15 @@ public class FedoraRelsExtTest
     FedoraRelsExt instance;
     static final String pid = "test:1";
     static final String coll_pid = "work:1";
-    static final String expected_greenfield = "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"info:fedora/" + pid + "\"></rdf:Description></rdf:RDF>";
-    static final String expected_relsext = "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"info:fedora/" + pid + "\"><fedora:isMemberOfCollection>" + coll_pid + "</fedora:isMemberOfCollection></rdf:Description></rdf:RDF>";
+    static final String expected_greenfield = "<?xml version=\"1.0\" ?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"info:fedora/" + pid + "\"></rdf:Description></rdf:RDF>";
+    static final String expected_relsext = "<?xml version=\"1.0\" ?><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:fedora=\"info:fedora/fedora-system:def/relations-external#\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"><rdf:Description rdf:about=\"info:fedora/" + pid + "\"><fedora:isMemberOfCollection>" + coll_pid + "</fedora:isMemberOfCollection></rdf:Description></rdf:RDF>";
 
        
     @Before
     public void Setup() throws ParserConfigurationException
     {
         //we're asserting stuff about a document with the pid "test:1"
-        instance = new FedoraRelsExt( "test:1" );
+        instance = new FedoraRelsExt( "fisk");
 
     }
 
@@ -64,20 +64,18 @@ public class FedoraRelsExtTest
         SimpleNamespaceContext ctx = new SimpleNamespaceContext( m );
         XMLUnit.setIgnoreAttributeOrder( true );
         XMLUnit.setXpathNamespaceContext( ctx );
-
     }
 
 
     /**
      * Conformance test that verifies the minimal expectancies of a RELS-EXT stream
-     */
-    @Ignore
+     */    
     @Test
     public void testRelsExtXML() throws OpenSearchTransformException
     {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos, null );
+        instance.serialize( baos, "test:1" );
 
         String xml = new String( baos.toByteArray() );
 
@@ -88,8 +86,7 @@ public class FedoraRelsExtTest
     /**
      * Verifies the expectancy that we're able to add a relation to the rels-ext
      * stream
-     */
-    @Ignore
+     */    
     @Test
     public void testAddRelation() throws OpenSearchTransformException
     {
@@ -101,7 +98,7 @@ public class FedoraRelsExtTest
                 "1",
                 FedoraNamespace.WORK.getPrefix() ) );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos, null );
+        instance.serialize( baos, "test:1" );
 
         String xml = new String( baos.toByteArray() );
         assertEquals( expected_relsext, xml );
@@ -112,8 +109,7 @@ public class FedoraRelsExtTest
     /**
      * Adding multiple relations is disallowed, and the second addition leaves
      * the object unchanged.
-     */
-    @Ignore
+     */    
     @Test
     public void testIdenticalRelationsDisallowed() throws OpenSearchTransformException
     {
@@ -134,7 +130,7 @@ public class FedoraRelsExtTest
 
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos, null );
+        instance.serialize( baos, "test:1" );
 
         String xml = new String( baos.toByteArray() );
 
