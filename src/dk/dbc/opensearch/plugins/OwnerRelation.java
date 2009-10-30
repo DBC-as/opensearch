@@ -57,7 +57,6 @@ public class OwnerRelation implements IRelation
 
     private static Logger log = Logger.getLogger( OwnerRelation.class );
     private PluginType pluginType = PluginType.RELATION;
-    private IObjectRepository objectRepository;
     private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
     private final ScriptEngineManager manager = new ScriptEngineManager();
 
@@ -107,9 +106,7 @@ public class OwnerRelation implements IRelation
              */
             
             engine.put( "log", log );
-            engine.put( "IS_MEMBER_OF_COlECTION", DBCBIB.IS_MEMBER_OF_COlECTION );
-            //engine.put( "FEDORA_NS", FedoraNamespace );
-            //            engine.put( "cargo", cargo );
+            engine.put( "IS_MEMBER_OF_COLLECTION", DBCBIB.IS_MEMBER_OF_COLLECTION );
 
             String path = FileSystemConfig.getScriptPath();
             String jsFileName = path + "owner_relation.js";
@@ -233,6 +230,5 @@ public class OwnerRelation implements IRelation
 
     public void setObjectRepository( IObjectRepository objectRepository )
     {
-        this.objectRepository = objectRepository;
     }
 }

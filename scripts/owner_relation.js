@@ -38,7 +38,7 @@ function get_folkebib_prefix( submitter )
 // function doit_folkebib(pid, submitter, format ) {
 // 	subject = subject_prefix + doit_folkebib_getsubject( get_folkebib_prefix(submitter) , format );
 	  
-// 	objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COlECTION, subject);
+// 	objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject);
 // }
 
 /*
@@ -75,11 +75,11 @@ function lookup_dbcmap( format ) {
 
 // function doit_dbc( pid, submitter, format ) {
 //   subject = subject_prefix + lookup_dbcmap( format ) ;
-//   objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COlECTION, subject );
+//   objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject );
 //   // add ekstra pg data.
 //   if( "pg" == format ) {
-// 	  objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COlECTION, subject_prefix + "Children" );
-// 	  objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COlECTION, subject_prefix + "free" );	  
+// 	  objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject_prefix + "Children" );
+// 	  objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject_prefix + "free" );	  
 //   }  
 // }
 
@@ -117,7 +117,7 @@ function addFolkebibRelation( rels_ext, submitter, format )
 {
 	ownerpid = doit_folkebib_getsubject( get_folkebib_prefix(submitter) , format );
     
-	rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, ownerpid );
+	rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, ownerpid );
     
 	return rels_ext;
 }
@@ -127,13 +127,13 @@ function addDbcRelation( rels_ext, submitter, format )
     ownerpid = subject_prefix + lookup_dbcmap( format ) ;
 
 
-    rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, ownerpid );
+    rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, ownerpid );
     
     // add ekstra pg data.
     if( "pg" == format ) 
     {
-        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, "Children" );                                                     
-        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, "free" );       
+        rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, "Children" );                                                     
+        rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, "free" );       
     }
     return rels_ext;
 }
