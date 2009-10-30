@@ -51,11 +51,8 @@ public class DCHarvester implements ICreateCargoContainer
 
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-        this.data = data;
-        this.submitter = job.getSubmitter();
-        this.format = job.getFormat();
 
-        return createCargoContainerFromFile();
+        return createCargoContainerFromFile( job, data );
     }
 
 
@@ -64,8 +61,11 @@ public class DCHarvester implements ICreateCargoContainer
      * @return the CargoContainer from
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile() throws PluginException
+    private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data ) throws PluginException
     {
+        String submitter = job.getSubmitter();
+        String format = job.getFormat();
+
         CargoContainer cargo = new CargoContainer();
 
         /** \todo: hardcoded values for mimetype, langugage and data type */

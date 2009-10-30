@@ -46,14 +46,7 @@ public class RUBHarvester implements ICreateCargoContainer
 {
     private static Logger log = Logger.getLogger( RUBHarvester.class );
 
-
     private PluginType pluginType = PluginType.HARVEST;
-
-    private String submitter;
-    private String format;
-    private Document referenceData;
-    private byte[] data;
-    private String lang;
 
     /**
      * The getCargoContainer returns a cargoContainer with the data
@@ -68,15 +61,14 @@ public class RUBHarvester implements ICreateCargoContainer
     {
         log.debug( "getCargoContainer() called" );
 
-        this.data = data;
-        submitter = job.getSubmitter();
-        format = job.getFormat();
+        String submitter = job.getSubmitter();
+        String format = job.getFormat();
         String mimetype = "application/pdf";
         Element root = null;
-        root = referenceData.getDocumentElement();
+        root = job.getReferenceData().getDocumentElement();
 
         Element info = (Element)root.getElementsByTagName( "info" ).item( 0 );
-        lang = info.getAttribute( lang );
+        String lang = info.getAttribute( "lang" );
 
         log.debug( String.format( "values: submitter='%s', format='%s', lang = %s", submitter, format, lang  ) );
 

@@ -99,10 +99,10 @@ public class DatadockJob
      * using JavaScript for business logic, this is to be used instead of the
      * field accessors
      */
-//    public Document getReferenceData()
-//    {
-//        return referenceData;
-//    }
+   public Document getReferenceData()
+   {
+       return referenceData;
+   }
 
     private void initValuesFromReferenceData()
     {
