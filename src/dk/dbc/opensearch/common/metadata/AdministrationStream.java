@@ -324,7 +324,7 @@ public class AdministrationStream implements MetaData
     </admin-stream>
      */
     @Override
-    public void serialize( OutputStream out ) throws OpenSearchTransformException
+    public void serialize( OutputStream out, String identifier ) throws OpenSearchTransformException
     {
         if( this.indexingAlias == null )
         {

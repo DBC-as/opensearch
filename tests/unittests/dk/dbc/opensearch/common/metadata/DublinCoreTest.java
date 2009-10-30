@@ -69,7 +69,7 @@ public class DublinCoreTest {
     public void testConstructorWithId() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         XMLUnit.compareXML( expectedDC, new String( baos.toByteArray() ) );
     }
 
@@ -78,7 +78,7 @@ public class DublinCoreTest {
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         dc.setContributor( "dbc" );
-        dc.serialize( baos );
+        dc.serialize( baos, null );
 
         assertXpathEvaluatesTo( "dbc", "/dc/x:contributor", new String( baos.toByteArray() ) );
     }
@@ -89,7 +89,7 @@ public class DublinCoreTest {
     {
         dc.setCoverage( "cover" );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "cover", "/dc/x:coverage", new String( baos.toByteArray() ) );
     }
 
@@ -99,7 +99,7 @@ public class DublinCoreTest {
     {
         dc.setCreator( "creator" );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
 
         assertXpathEvaluatesTo( "creator", "/dc/x:creator", new String( baos.toByteArray() ) );
     }
@@ -114,7 +114,7 @@ public class DublinCoreTest {
         dc.setDate( d );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( expectedDate, "/dc/x:date", new String( baos.toByteArray() ) );
     }
 
@@ -125,7 +125,7 @@ public class DublinCoreTest {
         dc.setDescription( "description" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "description", "/dc/x:description", new String( baos.toByteArray() ) );
     }
 
@@ -136,7 +136,7 @@ public class DublinCoreTest {
         dc.setFormat( "format" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "format", "/dc/x:format", new String( baos.toByteArray() ) );
     }
 
@@ -147,7 +147,7 @@ public class DublinCoreTest {
         dc.setIdentifier( "test:2" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "test:2", "/dc/x:identifier", new String( baos.toByteArray() ) );
     }
 
@@ -158,7 +158,7 @@ public class DublinCoreTest {
         dc.setLanguage( "da" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "da", "/dc/x:language", new String( baos.toByteArray() ) );
     }
 
@@ -169,7 +169,7 @@ public class DublinCoreTest {
         dc.setPublisher( "publisher" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "publisher", "/dc/x:publisher", new String( baos.toByteArray() ) );
     }
 
@@ -180,7 +180,7 @@ public class DublinCoreTest {
         dc.setRelation( "rel" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "rel", "/dc/x:relation", new String( baos.toByteArray() ) );
     }
 
@@ -191,7 +191,7 @@ public class DublinCoreTest {
         dc.setRights( "Rights" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "Rights", "/dc/x:rights", new String( baos.toByteArray() ) );
     }
 
@@ -202,7 +202,7 @@ public class DublinCoreTest {
         dc.setSource( "source" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "source", "/dc/x:source", new String( baos.toByteArray() ) );
     }
 
@@ -213,7 +213,7 @@ public class DublinCoreTest {
         dc.setSubject( "subj" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "subj", "/dc/x:subject", new String( baos.toByteArray() ) );
     }
 
@@ -224,7 +224,7 @@ public class DublinCoreTest {
         dc.setTitle( "title" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "title", "/dc/x:title", new String( baos.toByteArray() ) );
     }
 
@@ -235,7 +235,7 @@ public class DublinCoreTest {
         dc.setType( "type" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        dc.serialize( baos );
+        dc.serialize( baos, null );
         assertXpathEvaluatesTo( "type", "/dc/x:type", new String( baos.toByteArray() ) );
     }
 

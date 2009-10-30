@@ -71,7 +71,7 @@ public class FedoraRelsExtTest
     {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos );
+        instance.serialize( baos, null );
 
         String xml = new String( baos.toByteArray() );
 
@@ -94,7 +94,7 @@ public class FedoraRelsExtTest
                 "1",
                 FedoraNamespace.WORK.getPrefix() ) );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos );
+        instance.serialize( baos, null );
 
         String xml = new String( baos.toByteArray() );
         assertEquals( expected_relsext, xml );
@@ -126,7 +126,7 @@ public class FedoraRelsExtTest
 
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos );
+        instance.serialize( baos, null );
 
         String xml = new String( baos.toByteArray() );
 

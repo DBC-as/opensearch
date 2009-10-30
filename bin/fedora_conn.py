@@ -40,6 +40,7 @@ def test_fedora_connection( servername, port ):
         return (False, ( "Could not connect to fedora at '%s' : '%s' (urllib error code '%s')"%( theurl, uer.reason[1], uer.reason[0] ) ) )
             
 def main( servername, port ):
+    print "Testing for running fedora at %s:%s..."%( servername, port )
     (success, answer_msg ) = test_fedora_connection( servername, port)
     print answer_msg
     if success:

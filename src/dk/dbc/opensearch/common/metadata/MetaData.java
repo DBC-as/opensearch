@@ -35,16 +35,14 @@ import java.io.OutputStream;
  */
 public interface MetaData {
 
-    /**
-     *
-     * @param out
-     */
-    public void serialize( OutputStream out )throws OpenSearchTransformException;
-
-    /**
+    /** 
      * 
-     * @return
+     * 
+     * @param out 
+     * @param identifier 
      */
+    public void serialize( OutputStream out, String identifier )throws OpenSearchTransformException;
+
     public String getIdentifier();
 
     public DataStreamType getType();

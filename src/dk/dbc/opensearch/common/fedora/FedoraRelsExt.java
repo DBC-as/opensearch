@@ -153,7 +153,7 @@ public class FedoraRelsExt implements MetaData
      * @throws TransformerException
      */
     @Override
-    public void serialize( OutputStream out ) throws OpenSearchTransformException
+    public void serialize( OutputStream out, String identifier ) throws OpenSearchTransformException
     {
 
         // Create an output factory
@@ -164,6 +164,8 @@ public class FedoraRelsExt implements MetaData
         try
         {
             xmlw = xmlof.createXMLStreamWriter( out );
+
+            xmlw.writeStartDocument();
             xmlw.writeStartElement( rdf.getPrefix(), "RDF", rdf.getURI() );
 
             xmlw.writeNamespace( dc.getPrefix(), dc.getURI() );
@@ -179,7 +181,18 @@ public class FedoraRelsExt implements MetaData
             xmlw.writeNamespace( rdfs.getPrefix(), rdfs.getURI() );
 
             xmlw.writeStartElement( rdf.getURI(), "Description" );
-            xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "about", String.format( "info:fedora/%s", this.id ));
+
+            log.trace( String.format( "this.id = %s, identifier = %s", this.id, identifier ) );
+            
+            //...but won't forget to check if we have an identifier at all
+            if( null == identifier || identifier.isEmpty() )
+            {
+                String error = String.format( "Refusing to construct RELS-EXT with no identifier. Won't ever work" );
+                log.error( error );
+                throw new IllegalArgumentException( error );
+            }
+
+            xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "about", String.format( "info:fedora/%s", identifier ) );
             for( InputPair<QName, QName> set : triples )
             {
                 QName key = set.getFirst();
@@ -200,7 +213,7 @@ public class FedoraRelsExt implements MetaData
 
             xmlw.writeEndElement();//closes "rdf:Description" element
             xmlw.writeEndElement();//closes "rdf:RDF" element
-//            xmlw.writeEndDocument();//closes document
+            xmlw.writeEndDocument();//closes document
             xmlw.flush();
         }
         catch( XMLStreamException ex )

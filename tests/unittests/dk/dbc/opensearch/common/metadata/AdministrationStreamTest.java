@@ -103,7 +103,7 @@ public class AdministrationStreamTest
         AdministrationStream instance = new AdministrationStream( indexingAlias );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos );
+        instance.serialize( baos, null );
         XMLUnit.compareXML( emptySerialization, new String( baos.toByteArray() ) );
 
     }
@@ -124,7 +124,7 @@ public class AdministrationStreamTest
         boolean added = instance.addStream( co, id );
         assertTrue( added );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos );
+        instance.serialize( baos, null );
         XMLUnit.compareXML( expectedAdminStreamXML, new String( baos.toByteArray() ) );
     }
 
@@ -138,7 +138,7 @@ public class AdministrationStreamTest
         ByteArrayInputStream bais = new ByteArrayInputStream( expectedAdminStreamXML.getBytes() );
         AdministrationStream instance = new AdministrationStream( bais, true );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.serialize( baos );
+        instance.serialize( baos, null );
         assertXpathEvaluatesTo( "article", "/admin-stream[1]/indexingalias[1]/@name", new String( baos.toByteArray() ) );
     }
 

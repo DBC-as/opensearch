@@ -179,7 +179,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         String identifier = cargo.getIdentifier();
-        if( identifier == null )
+        if( identifier == null || identifier.isEmpty() )
         {
             DublinCore dc = cargo.getDublinCoreMetaData();
             if( null == dc )
@@ -195,6 +195,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.info( "We'll get an identifier from fedora" );
             identifier = "";
         }
+
         cargo.addMetaData( constructAdministrationStream( cargo ) );
 
         byte[] foxml;
@@ -217,25 +218,25 @@ public class FedoraObjectRepository implements IObjectRepository
         catch( ConfigurationException ex )
         {
             String error = String.format( "Failed to ingest object with pid '%s' into repository: %s", identifier, ex.getMessage() );
-            log.error( error );
+            log.error( error, ex );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( MalformedURLException ex )
         {
             String error = String.format( "Failed to ingest object with pid '%s' into repository: %s", identifier, ex.getMessage() );
-            log.error( error );
+            log.error( error, ex );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( ServiceException ex )
         {
-            String error = String.format( "Failed to ingest object with pid '%s' into repository: %s", identifier, ex.getMessage() );
-            log.error( error );
+            String error = String.format( "Failed to ingest object with pid '%s' into repository: %s. Foxml: %s", identifier, ex.getMessage(), new String( foxml ) );
+            log.error( error, ex );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( IOException ex )
         {
-            String error = String.format( "Failed to ingest object with pid '%s' into repository: %s", identifier, ex.getMessage() );
-            log.error( error );
+            String error = String.format( "Failed to ingest object with pid '%s' into repository: %s. Foxml: %s", identifier, ex.getMessage(), new String( foxml ) );
+            log.error( error, ex );
             throw new ObjectRepositoryException( error, ex );
         }
 
@@ -1116,7 +1117,7 @@ public class FedoraObjectRepository implements IObjectRepository
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try
         {
-            adminStream.serialize( baos );
+            adminStream.serialize( baos, null );
         }
         catch( OpenSearchTransformException ex )
         {
@@ -1164,7 +1165,7 @@ public class FedoraObjectRepository implements IObjectRepository
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try
         {
-            adminStream.serialize( baos );
+            adminStream.serialize( baos, null );
         }
         catch( OpenSearchTransformException ex )
         {

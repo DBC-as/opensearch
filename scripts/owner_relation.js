@@ -115,7 +115,7 @@ function addOwnerRelation( rels_ext, submitter, format )
 
 function addFolkebibRelation( rels_ext, submitter, format )
 {
-	ownerpid = subject_prefix + doit_folkebib_getsubject( get_folkebib_prefix(submitter) , format );
+	ownerpid = doit_folkebib_getsubject( get_folkebib_prefix(submitter) , format );
     
 	rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, ownerpid );
     
@@ -132,8 +132,8 @@ function addDbcRelation( rels_ext, submitter, format )
     // add ekstra pg data.
     if( "pg" == format ) 
     {
-        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, subject_prefix + "Children" );                                                     
-        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, subject_prefix + "free" );       
+        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, "Children" );                                                     
+        rels_ext.addRelationship( IS_MEMBER_OF_COlECTION, "free" );       
     }
     return rels_ext;
 }

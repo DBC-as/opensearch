@@ -293,7 +293,7 @@ public class DublinCore implements MetaData
     </oai_dc:dc>
      */
     @Override
-    public void serialize( OutputStream out )throws OpenSearchTransformException
+    public void serialize( OutputStream out, String identifier )throws OpenSearchTransformException
     {
         // Create an output factory
         XMLOutputFactory xmlof = XMLOutputFactory.newInstance();

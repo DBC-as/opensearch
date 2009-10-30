@@ -134,9 +134,9 @@ public class FedoraUtils
         }
         catch( ParserConfigurationException ex )
         {
-                String error  = String.format( "Failed to construct fedora xml with pid %s", pid.get( 0 ) );
-                log.error( error );
-                throw new ObjectRepositoryException( error, ex );
+            String error  = String.format( "Failed to construct fedora xml with pid %s", pid.get( 0 ) );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
         }
 
         /**
@@ -176,7 +176,8 @@ public class FedoraUtils
         for( MetaData meta: cargo.getMetaData() )
         {
             ByteArrayOutputStream baos = baos = new ByteArrayOutputStream();
-            meta.serialize( baos );
+            log.trace( String.format( "Serializing metadata %s with identifier %s", meta.getClass(), cargo.getIdentifier() ) );
+            meta.serialize( baos, cargo.getIdentifier() );
             log.debug( String.format( "ja7s: metadata = %s", meta.getType().getName()) );
             try{
                  switch( meta.getType() ) {
@@ -184,7 +185,7 @@ public class FedoraUtils
                     case  DublinCoreData: 
                         log.trace( "DublinCore output from serialization: "+new String( baos.toByteArray() ) );
                         foxml.addDublinCoreDatastream( new String( baos.toByteArray() ), System.currentTimeMillis() );
-                    break;  
+                        break;  
                     case RelsExtData:
                         foxml.addRelsExtDataStream( new String( baos.toByteArray() ), System.currentTimeMillis() );
                         break;
@@ -295,7 +296,7 @@ public class FedoraUtils
     private static List<? extends Pair<Integer, String>> getOrderedMapping( CargoContainer cargo )
     {
         int cargo_count = cargo.getCargoObjectCount();
-        log.trace( String.format( "Number of CargoObjects in Container", cargo_count ) );
+        log.trace( String.format( "Number of CargoObjects in Container %s", cargo_count ) );
 
         // Constructing list with datastream indexes and id
         List<ComparablePair<String, Integer>> lst = new ArrayList<ComparablePair<String, Integer>>();
