@@ -31,6 +31,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -68,6 +69,7 @@ public class PTIPool
     private IObjectRepository objectRepository;
     private Compass compass;
     private int shutDownPollTime;
+    private PluginResolver pluginResolver;
 
     /**
      * \brief private class that handles RejectedExecutions.
@@ -107,7 +109,7 @@ public class PTIPool
      * @param processqueue the processqueue handler
      * @param fedoraHandler the fedora repository handler
      */
-    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, IObjectRepository objectRepository ) throws ConfigurationException
+    public PTIPool( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, IObjectRepository objectRepository, PluginResolver pluginResolver ) throws ConfigurationException
     {
          log.debug( "Constructor( threadpool, estimate, compass ) called" );
 
@@ -115,6 +117,7 @@ public class PTIPool
          this.threadpool = threadpool;
          this.estimate = estimate;
          this.compass = compass;
+         this.pluginResolver = pluginResolver;
          jobs = new Vector< InputPair< FutureTask< Long >, Integer > >();         
          shutDownPollTime = PtiConfig.getShutdownPollTime();
 
@@ -148,7 +151,7 @@ public class PTIPool
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
 
-        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, objectRepository ) );
+        return new FutureTask<Long>( new PTIThread( fedoraHandle, session, estimate, objectRepository, pluginResolver ) );
     }
 
     

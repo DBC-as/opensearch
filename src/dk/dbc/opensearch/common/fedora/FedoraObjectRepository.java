@@ -1077,7 +1077,7 @@ public class FedoraObjectRepository implements IObjectRepository
         byte[] adminbytes = null;
         try
         {
-            adminbytes = getDataStream( objectIdentifier, "adminData" );
+            adminbytes = getDataStream( objectIdentifier, DataStreamType.AdminData.getName() );
             adminStream = new AdministrationStream( new ByteArrayInputStream( adminbytes ), true );
         }
         catch( XMLStreamException ex )

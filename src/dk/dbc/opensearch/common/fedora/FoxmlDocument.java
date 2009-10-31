@@ -335,6 +335,10 @@ public final class FoxmlDocument
                                        int size,
                                        String created ) throws XPathExpressionException
     {
+
+        /**
+         * \Todo: This if will always be false, whats the purpose? bug: 9767 
+         */
         if ( false && dsId.contains( ":" )) {
             throw new IllegalArgumentException( String.format( " addDataStreamVersion called with id containing : ID=\"%s\"", dsId ) );
         }

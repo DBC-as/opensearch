@@ -68,6 +68,7 @@ public class PTIThread implements Callable< Long >
     private IEstimate estimate;
     private ArrayList< String > list;
     private IObjectRepository objectRepository;
+    private PluginResolver pluginResolver;
 
     /**
      * \brief Constructs the PTI instance with the given parameters
@@ -77,7 +78,7 @@ public class PTIThread implements Callable< Long >
      * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IObjectRepository objectRepository ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IObjectRepository objectRepository, PluginResolver pluginResolver ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
         {
             super();
 
@@ -86,6 +87,7 @@ public class PTIThread implements Callable< Long >
             this.estimate = estimate;
             this.session = session;
             this.fedoraPid = fedoraPid;
+            this.pluginResolver = pluginResolver;
 
             log.trace( "constructor done" );
         }
@@ -145,7 +147,7 @@ public class PTIThread implements Callable< Long >
                     throw new PluginException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
                 }
             else{
-                PluginResolver pluginResolver = new PluginResolver();
+                //PluginResolver pluginResolver = new PluginResolver();
 
                 IPluggable plugin = null;
                 PluginType taskName = null;

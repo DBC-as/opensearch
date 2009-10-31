@@ -34,6 +34,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.statistics.IEstimate;
 
@@ -70,7 +71,7 @@ public class PTIMain
     static int maxPoolSize;
     static long keepAliveTime;
     static int pollTime;
-
+    static PluginResolver pluginResolver;
 
     @SuppressWarnings("unchecked")
     public static void init() throws ConfigurationException
@@ -182,12 +183,13 @@ public class PTIMain
             IObjectRepository repository = new FedoraObjectRepository();
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
+            pluginResolver = new PluginResolver();
 
             log.debug( "Starting PTIPool" );
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
 
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, repository );
+            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, repository, pluginResolver );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 

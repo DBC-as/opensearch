@@ -69,7 +69,7 @@ public class AdministrationStream implements MetaData
     private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"indexingalias\"><xsd:complexType><xsd:attribute ref=\"name\" use=\"required\"/></xsd:complexType></xsd:element><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
 
     private Map<Integer, HashMap<AdministrationStreamElement, String>> admvalues;
-    private static final String identifier = "adminData";
+    private static final String identifier = DataStreamType.AdminData.getName();
 
     /**
      * The DataStreamType identifying the metadata.
