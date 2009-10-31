@@ -19,7 +19,7 @@
         />
     <xml-property
         name="dc.creator"
-        xpath="/ting:container/docbook:article/docbook:info/docbook:author/docbook:personname/* | /ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/docbook:article/docbook:info/docbook:author/docbook:personname/* | /ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         />
     <xml-property
         name="cql.anyIndexes"
@@ -39,7 +39,7 @@
         />
     <xml-property
         name="dc.format"
-        xpath="/ting:container/dkabm:record/dc:format"
+        xpath="/ting:container/dkabm:record/dc:format | /ting:container/dkabm:record/dcterms:extent"
         />
     <xml-property
         name="dc.language"
@@ -73,7 +73,7 @@
         />
     <xml-property
         name="phrase.creator"
-        xpath="/ting:container/docbook:article/docbook:info/docbook:author/docbook:personname/* | /ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/docbook:article/docbook:info/docbook:author/docbook:personname/* | /ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"        
         />
@@ -133,7 +133,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"
         />
@@ -198,8 +198,26 @@
         value-converter="lowercase"
         />
     <xml-property
+        name="sort.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="sort.creator"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort']"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="sort.title"
+        xpath="/ting:container/dkabm:record/dc:title"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
         name="creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         />
     <xml-property
@@ -209,12 +227,12 @@
         />
     <xml-property
         name="description"
-        xpath="/ting:container/dkabm:record/dc:description"
+        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
         index="un_tokenized"
         />
     <xml-property
         name="format"
-        xpath="/ting:container/dkabm:record/dc:format"
+        xpath="/ting:container/dkabm:record/dc:format | /ting:container/dkabm:record/dcterms:extent"
         index="un_tokenized"
         />
     <xml-property
@@ -288,7 +306,7 @@
         />
     <xml-property
         name="dc.creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         />
     <xml-property
         name="cql.anyIndexes"
@@ -296,7 +314,7 @@
         />
     <xml-property
         name="dc.description"
-        xpath="/ting:container/dkabm:record/dc:description"
+        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
         />
     <xml-property
         name="dc.subject"
@@ -308,7 +326,7 @@
         />
     <xml-property
         name="dc.format"
-        xpath="/ting:container/dkabm:record/dc:format"
+        xpath="/ting:container/dkabm:record/dc:format | /ting:container/dkabm:record/dcterms:extent"
         />
     <xml-property
         name="dc.language"
@@ -350,7 +368,7 @@
         />
     <xml-property
         name="phrase.creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"        
         />
@@ -362,7 +380,7 @@
         />
     <xml-property
         name="phrase.description"
-        xpath="/ting:container/dkabm:record/dc:description"
+        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
         index="un_tokenized"
         value-converter="lowercase"        
         />
@@ -410,7 +428,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"
         />
@@ -439,8 +457,26 @@
         value-converter="lowercase"
         />
     <xml-property
+        name="sort.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="sort.creator"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort']"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="sort.title"
+        xpath="/ting:container/dkabm:record/dc:title"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
         name="creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         />
     <xml-property
@@ -450,12 +486,12 @@
         />
     <xml-property
         name="description"
-        xpath="/ting:container/dkabm:record/dc:description"
+        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
         index="un_tokenized"
         />
     <xml-property
         name="format"
-        xpath="/ting:container/dkabm:record/dc:format"
+        xpath="/ting:container/dkabm:record/dc:format | /ting:container/dkabm:record/dcterms:extent"
         index="un_tokenized"
         />
     <xml-property
@@ -852,7 +888,7 @@
         />
     <xml-property
         name="creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         />
     <xml-property
@@ -862,12 +898,12 @@
         />
     <xml-property
         name="description"
-        xpath="/ting:container/dkabm:record/dc:description"
+        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
         index="un_tokenized"
         />
     <xml-property
         name="format"
-        xpath="/ting:container/dkabm:record/dc:format"
+        xpath="/ting:container/dkabm:record/dc:format | /ting:container/dkabm:record/dcterms:extent"
         index="un_tokenized"
         />
     <xml-property
@@ -925,7 +961,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"
         />
@@ -992,6 +1028,24 @@
     <xml-property
         name="facet.geographic" 
         xpath="/*/*/*/*[@tag='666']/*[@code='e' or @code='q' or @code='l'] | /*/*/*/*[@tag='634']/*[@code='a' or @code='b' or @code='c' or @code='d' or @code='u']"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="sort.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="sort.creator"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort]"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="sort.title"
+        xpath="/ting:container/dkabm:record/dc:title"
         index="un_tokenized"
         value-converter="lowercase"
         />
