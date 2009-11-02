@@ -40,10 +40,6 @@ public class DCHarvester implements ICreateCargoContainer
 {
     Logger log = Logger.getLogger( DCHarvester.class );
 
-
-    private String submitter;
-    private String format;
-    private byte[] data;
     private Document referenceData;
 
     private PluginType pluginType = PluginType.HARVEST;
@@ -63,9 +59,6 @@ public class DCHarvester implements ICreateCargoContainer
      */
     private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data ) throws PluginException
     {
-        String submitter = job.getSubmitter();
-        String format = job.getFormat();
-
         CargoContainer cargo = new CargoContainer();
 
         /** \todo: hardcoded values for mimetype, langugage and data type */
@@ -76,7 +69,7 @@ public class DCHarvester implements ICreateCargoContainer
 
         try
         {
-            cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.DC, data );
+            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), lang, mimetype, IndexingAlias.DC, data );
         }
         catch (IOException ioe)
         {
