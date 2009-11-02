@@ -1039,7 +1039,7 @@
         />
     <xml-property
         name="sort.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort]"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort']"
         index="un_tokenized"
         value-converter="lowercase"
         />
