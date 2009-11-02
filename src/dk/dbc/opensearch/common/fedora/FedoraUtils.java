@@ -190,7 +190,7 @@ public class FedoraUtils
                         foxml.addRelsExtDataStream( new String( baos.toByteArray() ), System.currentTimeMillis() );
                         break;
                     default :
-                        foxml.addXmlContent( meta.getType().toString(), new String( baos.toByteArray() ), String.format( "Metadata: %s", meta.getIdentifier() ), System.currentTimeMillis(), true );
+                        foxml.addXmlContent( meta.getType().getName(), new String( baos.toByteArray() ), String.format( "Metadata: %s", meta.getIdentifier() ), System.currentTimeMillis(), true );
                     }                       
                 }
                 catch( XPathExpressionException ex )
