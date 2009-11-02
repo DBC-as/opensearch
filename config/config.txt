@@ -24,7 +24,7 @@ postgresql_password:
 # the java postgresql driver used by the system
 postgresql_driver:   org.postgresql.Driver
 # the url used by the jdbc to connect to the postgresql database through
-postgresql_url:      jdbc:postgresql:
+postgresql_url:      jdbc:postgresql://localhost:5432/
 # As with postgresql_user, but for Oracle databases
 oracle_user:
 # As with postgresql_password, but for Oracle databases
