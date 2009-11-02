@@ -336,11 +336,12 @@ public final class FoxmlDocument
                                        String created ) throws XPathExpressionException
     {
 
-        if ( dsId.contains( ":" )) 
-        {
-            String error = String.format( "Datastream id contains illegal character ':' dsId == '%s'", dsId )
-            throw new IllegalArgumentException( error );
-        }
+        // if ( dsId.contains( ":" )) 
+        // {
+        //     String error = String.format( "Datastream id contains illegal character ':' dsId == '%s'", dsId );
+        //     throw new IllegalArgumentException( error );
+        // }
+
         String expr = String.format( "//foxml:datastream[@ID='%s']", dsId );
         NodeList nodes = (NodeList) xpath.evaluate( expr, doc, XPathConstants.NODESET );
         Node node = nodes.item( 0 );
