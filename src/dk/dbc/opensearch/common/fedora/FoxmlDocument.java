@@ -336,11 +336,10 @@ public final class FoxmlDocument
                                        String created ) throws XPathExpressionException
     {
 
-        /**
-         * \Todo: This if will always be false, whats the purpose? bug: 9772 
-         */
-        if ( false && dsId.contains( ":" )) {
-            throw new IllegalArgumentException( String.format( " addDataStreamVersion called with id containing : ID=\"%s\"", dsId ) );
+        if ( dsId.contains( ":" )) 
+        {
+            String error = String.format( "Datastream id contains illegal character ':' dsId == '%s'", dsId )
+            throw new IllegalArgumentException( error );
         }
         String expr = String.format( "//foxml:datastream[@ID='%s']", dsId );
         NodeList nodes = (NodeList) xpath.evaluate( expr, doc, XPathConstants.NODESET );
