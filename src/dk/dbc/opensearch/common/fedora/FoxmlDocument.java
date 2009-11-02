@@ -337,7 +337,7 @@ public final class FoxmlDocument
     {
 
         /**
-         * \Todo: This if will always be false, whats the purpose? bug: 9767 
+         * \Todo: This if will always be false, whats the purpose? bug: 9772 
          */
         if ( false && dsId.contains( ":" )) {
             throw new IllegalArgumentException( String.format( " addDataStreamVersion called with id containing : ID=\"%s\"", dsId ) );
