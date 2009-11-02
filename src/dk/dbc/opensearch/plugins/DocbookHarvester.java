@@ -50,11 +50,6 @@ public class DocbookHarvester implements ICreateCargoContainer
 {
     Logger log = Logger.getLogger( DocbookHarvester.class );
 
-    
-    private String submitter;
-    private String format;
-    private byte[] data;
-
     private PluginType pluginType = PluginType.HARVEST;
     private final FedoraHandle fedoraHandle;
 
@@ -75,10 +70,7 @@ public class DocbookHarvester implements ICreateCargoContainer
 
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
     {
-    	this.submitter = job.getSubmitter();
-    	this.format = job.getFormat();
-        this.data = data;
-    	return createCargoContainerFromFile();
+        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), data);
     }
 
 
@@ -87,46 +79,46 @@ public class DocbookHarvester implements ICreateCargoContainer
      * @return the CargoContainer from
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile() throws PluginException
+    private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data ) throws PluginException
     {
         String[] pid = null;
         try
         {
-            pid = fedoraHandle.getNextPID( 1,  this.submitter );
+            pid = fedoraHandle.getNextPID( 1, submitter );
         }
         catch( ServiceException ex )
         {
-            String error = String.format( "Could not get pid for %s", this.submitter );
+            String error = String.format( "Could not get pid for %s", submitter );
             log.error( error );
             throw new PluginException( error, ex );
         }
         catch( ConfigurationException ex )
         {
-            String error = String.format( "Could not get pid for %s", this.submitter );
+            String error = String.format( "Could not get pid for %s", submitter );
             log.error( error );
             throw new PluginException( error, ex );
         }
         catch( MalformedURLException ex )
         {
-            String error = String.format( "Could not get pid for %s", this.submitter );
+            String error = String.format( "Could not get pid for %s", submitter );
             log.error( error );
             throw new PluginException( error, ex );
         }
         catch( IOException ex )
         {
-            String error = String.format( "Could not get pid for %s", this.submitter );
+            String error = String.format( "Could not get pid for %s", submitter );
             log.error( error );
             throw new PluginException( error, ex );
         }
         catch( IllegalStateException ex )
         {
-            String error = String.format( "Could not get pid for %s", this.submitter );
+            String error = String.format( "Could not get pid for %s", submitter );
             log.error( error );
             throw new PluginException( error, ex );
         }
         if( null == pid && 1 != pid.length )
         {
-            String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", this.submitter );
+            String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", submitter );
             log.error( error );
             throw new PluginException( new IllegalStateException( error ) );
         }
@@ -142,7 +134,7 @@ public class DocbookHarvester implements ICreateCargoContainer
 
         try
         {
-            id = cargo.add( dataStreamName, this.format, this.submitter, lang, mimetype, IndexingAlias.Article, data );
+            id = cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Article, data );
 
             log.trace( "Constructing DC datastream" );
 
