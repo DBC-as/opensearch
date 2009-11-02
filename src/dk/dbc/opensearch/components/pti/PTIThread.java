@@ -30,7 +30,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -56,16 +55,15 @@ import org.xml.sax.SAXException;
  * \ingroup pti
  * \brief the PTIThread class is responsible for getting a dataobject from the
  * fedora repository, and index it with compass afterwards. If this
- * was succesfull the estimate values in the statistics db will be updated
+ * was succesfull a long vlaue is returned
  */
-public class PTIThread implements Callable< Long >
+public class PTIThread implements Callable< Boolean >
 {
     Logger log = Logger.getLogger( PTIThread.class );
 
 
     private CompassSession session;
     private String fedoraPid;
-    private IEstimate estimate;
     private ArrayList< String > list;
     private IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
@@ -75,16 +73,14 @@ public class PTIThread implements Callable< Long >
      *
      * @param fedoraPid the handle identifying the data object
      * @param session the compass session this pti should communicate with
-     * @param estimate used to update the estimate table in the database
      * @param jobMap information about the tasks that should be solved by the pluginframework
      */
-    public PTIThread( String fedoraPid, CompassSession session, IEstimate estimate, IObjectRepository objectRepository, PluginResolver pluginResolver ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
+    public PTIThread( String fedoraPid, CompassSession session, IObjectRepository objectRepository, PluginResolver pluginResolver ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
         {
             super();
 
             log.trace( String.format( "constructor(session, fedoraPid=%s )", fedoraPid ) );
             this.objectRepository = objectRepository;
-            this.estimate = estimate;
             this.session = session;
             this.fedoraPid = fedoraPid;
             this.pluginResolver = pluginResolver;
@@ -111,7 +107,7 @@ public class PTIThread implements Callable< Long >
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Long call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException
+    public Boolean call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException
         {
             log.trace( String.format( "Entering with handle: '%s'", fedoraPid ) );
             CargoContainer cc = null;
@@ -137,7 +133,7 @@ public class PTIThread implements Callable< Long >
             submitter =  co.getSubmitter();
             format = co.getFormat();
 
-            long result = 0l;
+            boolean success = false;
 
             // Get the job from the jobMap
             list = PTIJobsMap.getPtiPluginsList( submitter, format );
@@ -188,16 +184,15 @@ public class PTIThread implements Callable< Long >
                             case INDEX:
                                 log.debug( "calling indexerplugin" );
                                 IIndexer indexPlugin = (IIndexer) plugin;
-                                result = indexPlugin.getProcessTime( cc, session, fedoraPid, estimate );
+                                success = indexPlugin.index( cc, session, fedoraPid );
                                 log.debug( "PTIThread INDEX plugin done" );
-                                //update statistics database
                                 break;
                         }
                 }
             }
-            log.debug( "PTIThread done with result: " + result );
+            log.debug( "PTIThread done" );
 
-            return result;
+            return success;
     }
 }
 

@@ -32,7 +32,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -82,7 +81,6 @@ public class DatadockThreadTest
     DatadockThread ddThread;
     static ArrayList< String > testArrayList = new ArrayList<String>();
     static CargoContainer mockCC = createMock( CargoContainer.class);
-    Estimate mockEstimate;
     DatadockJob mockDatadockJob;
     Processqueue mockProcessqueue;
     IHarvest mockHarvester;
@@ -220,7 +218,6 @@ public class DatadockThreadTest
        mockCargoObject = createMock( CargoObject.class );
         mockHarvester = createMock( IHarvest.class );
         mockDatadockJob = createMock( DatadockJob.class );
-        mockEstimate = createMock( Estimate.class );
         mockProcessqueue = createMock( Processqueue.class );
         mockIdentifier = createMock( IIdentifier.class );
     }
@@ -233,7 +230,6 @@ public class DatadockThreadTest
     {
         Mockit.tearDownMocks();
         reset( mockDatadockJob );
-        reset( mockEstimate );
         reset( mockProcessqueue );
         reset( mockCC );
         testArrayList.clear();
@@ -260,16 +256,14 @@ public class DatadockThreadTest
 
         //replay
         replay( mockDatadockJob );
-        replay( mockEstimate );
         replay( mockProcessqueue );
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
 
         //verify
         verify( mockDatadockJob );
-        verify( mockEstimate );
         verify( mockProcessqueue );
     }
 
@@ -290,16 +284,14 @@ public class DatadockThreadTest
 
         //replay
         replay( mockDatadockJob );
-        replay( mockEstimate );
         replay( mockProcessqueue );
 
         //do stuff
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
 
         //verify
         verify( mockDatadockJob );
-        verify( mockEstimate );
         verify( mockProcessqueue );
     }
 
@@ -344,7 +336,6 @@ public class DatadockThreadTest
 
         expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
 
-        expect( mockEstimate.getEstimate( null, 5 ) ).andReturn( 1F );
         expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
@@ -357,7 +348,6 @@ public class DatadockThreadTest
          */
         replay( mockHarvester );
         replay( mockDatadockJob );
-        replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockCC );
         replay( mockCargoObject );
@@ -367,16 +357,15 @@ public class DatadockThreadTest
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Float result = ddThread.call();
+        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        Boolean result = ddThread.call();
 
-        assertTrue( result == 1f );
+        assertTrue( result == true );
         /**
          *verify
          */
         verify( mockHarvester );
         verify( mockDatadockJob );
-        verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockCC );
         verify( mockCargoObject );
@@ -415,7 +404,6 @@ public class DatadockThreadTest
          */
         replay( mockHarvester );
         replay( mockDatadockJob );
-        replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockCC );
         replay( mockIdentifier );
@@ -424,15 +412,14 @@ public class DatadockThreadTest
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Float result = ddThread.call();
+        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        Boolean result = ddThread.call();
 
         /**
          *verify
          */
         verify( mockHarvester );
         verify( mockDatadockJob );
-        verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockCC );
         verify( mockIdentifier );
@@ -465,7 +452,6 @@ public class DatadockThreadTest
          *replay
          */
         replay( mockDatadockJob );
-        replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockCC );
 
@@ -473,14 +459,13 @@ public class DatadockThreadTest
          * do stuff
          */
 
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Float result = ddThread.call();
+        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        Boolean result = ddThread.call();
 
         /**
          *verify
          */
         verify( mockDatadockJob );
-        verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockCC );
     }
@@ -505,18 +490,16 @@ public class DatadockThreadTest
 
         //replay
         replay( mockDatadockJob );
-        replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockCC );
         replay( mockHarvester );
 
         //do stuff
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Float result = ddThread.call();
+        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        Boolean result = ddThread.call();
 
         //verify
         verify( mockDatadockJob );
-        verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockHarvester );
         verify( mockCC );
@@ -545,7 +528,7 @@ public class DatadockThreadTest
         testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
         String dataString = "testData";
         byte[] data = dataString.getBytes();
-        Float estimateval = 12F;
+        Boolean estimateval = true;
         /**
          *expectations
          */
@@ -563,7 +546,6 @@ public class DatadockThreadTest
 
         expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
 
-        expect( mockEstimate.getEstimate( null, 5 ) ).andReturn( estimateval );
         expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
@@ -576,7 +558,6 @@ public class DatadockThreadTest
          */
         replay( mockHarvester );
         replay( mockDatadockJob );
-        replay( mockEstimate );
         replay( mockProcessqueue );
         replay( mockCC );
         replay( mockCargoObject );
@@ -585,8 +566,8 @@ public class DatadockThreadTest
         /**
          * do stuff
          */
-        ddThread = new DatadockThread( mockDatadockJob, mockEstimate, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Float result = ddThread.call();
+        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        Boolean result = ddThread.call();
 
         assertFalse( result == estimateval );
         
@@ -595,7 +576,6 @@ public class DatadockThreadTest
          */
         verify( mockHarvester );
         verify( mockDatadockJob );
-        verify( mockEstimate );
         verify( mockProcessqueue );
         verify( mockCC );
         verify( mockCargoObject );

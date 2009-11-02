@@ -24,8 +24,6 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -66,7 +64,7 @@ public class PTIManagerTest
     IObjectRepository objectRepository = createMock( IObjectRepository.class );
 
     static FutureTask mockFuture = createMock( FutureTask.class );
-    static CompletedTask dummyTask = new CompletedTask( mockFuture, new InputPair< Long, Integer >( 1l, 1 ) );
+    static CompletedTask dummyTask = new CompletedTask( mockFuture, new InputPair< Boolean, Integer >( true, 1 ) );
     static Vector< CompletedTask > checkJobsVector =  new Vector< CompletedTask >();
 
 
@@ -91,7 +89,6 @@ public class PTIManagerTest
 //    }
 
     ThreadPoolExecutor mockExecutor = createMock( ThreadPoolExecutor.class );
-    Estimate mockEstimate = createMock( Estimate.class );
     Compass mockCompass = createMock( Compass.class );
     InputPair< String, Integer > mockInputPair = createMock( InputPair.class );
 
@@ -99,7 +96,7 @@ public class PTIManagerTest
     @MockClass( realClass =  PTIPool.class )
     public static class MockPTIPool
     {
-        @Mock public void $init( ThreadPoolExecutor threadpool, IEstimate estimate, Compass compass, HashMap< InputPair < String, String >, ArrayList< String > > jobMap ) 
+        @Mock public void $init( ThreadPoolExecutor threadpool, Compass compass, HashMap< InputPair < String, String >, ArrayList< String > > jobMap ) 
         {
         
         }
@@ -141,7 +138,6 @@ public class PTIManagerTest
         reset( mockPTIPool );
         reset( mockCompletedTask );
         reset( mockInputPair );
-        reset( mockEstimate );
         reset( mockCompass );
         reset( mockFuture );
         reset( mockExecutor );
@@ -187,7 +183,7 @@ public class PTIManagerTest
     /**
      * tests the update methods happy path
      */
-
+ 
     @Test public void testUpdateMethodHappyPath() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
     {
         /**
@@ -199,7 +195,7 @@ public class PTIManagerTest
         newJobs.add( new InputPair< String, Integer >( "test2", 2 ) );
        
 
-        Vector< CompletedTask<InputPair<Long, Integer>> > finishedJobs =  new Vector< CompletedTask<InputPair<Long, Integer>> >();
+        Vector< CompletedTask<InputPair<Boolean, Integer>> > finishedJobs =  new Vector< CompletedTask<InputPair<Boolean, Integer>> >();
         finishedJobs.add( mockCompletedTask );
 
         /**
@@ -215,7 +211,7 @@ public class PTIManagerTest
 
         //out of while loop
         expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
-        expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Long, Integer >( 1l, 1 ) );
+        expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Boolean, Integer >( true, 1 ) );
         mockPQ.commit( 1 );
         
         /**

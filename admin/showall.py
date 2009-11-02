@@ -19,17 +19,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
 # 
 
 
 import psycopg2
 import os
-
-
-
 
 def login():
     '''handles the login to the database and, if successful, returns a
@@ -67,21 +61,6 @@ def showall( cursor ):
     print format % ( "queueID", "fedorahandle", "processing" )
     for r in rows :
         print format % ( r[0],r[1],r[2]  )
-
-
-    try:
-        cursor.execute("""SELECT * from statistics""")
-    except:
-        print "I can't SELECT from statistics"
-        
-    rows = cursor.fetchall()
-
-    print "\n\nstatistics"
-    print "----------------------------------------"
-    print format % ( "proccesstime", "dataamount", "mimetype")
-    for r in rows :
-        print format % ( r[0],r[1], r[2]  )
-
 
     try:
         cursor.execute("""SELECT * from notindexed""")

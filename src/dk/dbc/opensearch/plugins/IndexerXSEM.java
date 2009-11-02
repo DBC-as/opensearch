@@ -29,7 +29,6 @@ import dk.dbc.opensearch.common.compass.CPMAlias;
 import dk.dbc.opensearch.common.pluginframework.IIndexer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -76,23 +75,24 @@ public class IndexerXSEM implements IIndexer
      * The main method of the IndexerXSEM plugin
      */
     @Override
-    public long getProcessTime(CargoContainer cargo, CompassSession session, String fedoraHandle, IEstimate estimate ) throws PluginException, ConfigurationException
+    public boolean index(CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException, ConfigurationException
     {
-        long processTime = 0;
+        boolean success = false;
+
         try
         {
-            processTime = getProcessTime( session, cargo, fedoraHandle, estimate );
+            success = index( session, cargo, fedoraHandle );
         }
         catch( CompassException ce )
         {
             throw new PluginException( "Could not commit index on CompassSession", ce );
         }
-        return processTime;
+        return success;
     }
 
-    private long getProcessTime( CompassSession session, CargoContainer cc, String fedoraHandle, IEstimate estimate ) throws PluginException, CompassException, ConfigurationException
+    private boolean index( CompassSession session, CargoContainer cc, String fedoraHandle ) throws PluginException, CompassException, ConfigurationException
     {
-        long processTime = 0;
+        boolean success = false;
         Date finishTime = new Date();
 
         /* \todo: right now we index all stream in a cc with the same alias. each CargoObject should have a IndexingAlias. see bug #8719 */
@@ -263,11 +263,12 @@ public class IndexerXSEM implements IIndexer
                     session.close();
 
                     log.info( String.format( "Document indexed and stored with Compass" ) );
-                    processTime += finishTime.getTime() - co.getTimestamp();
+                    success = true;
+                    //processTime += finishTime.getTime() - co.getTimestamp();
                 }
             }
         }
-        return processTime;
+        return success;
     }
 
 

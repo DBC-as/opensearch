@@ -21,6 +21,5 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 -- Initializes the neccesary tables and functions
 
 \i processqueue_init.sql
-\i statistics_init.sql
 \i not_indexed.sql
 \i not_docked.sql

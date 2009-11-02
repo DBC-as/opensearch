@@ -23,7 +23,6 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.common.statistics.Estimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -67,7 +66,7 @@ public class DatadockPoolTest extends TestCase
     /**
      * The (mock)objects we need for the most of the tests
      */
-    Estimate mockEstimate;
+
     Processqueue mockProcessqueue;
     CargoContainer mockCargoContainer;
     FutureTask mockFutureTask;
@@ -100,7 +99,6 @@ public class DatadockPoolTest extends TestCase
     public void setUp()
     {
         mockThreadPoolExecutor = createMock( ThreadPoolExecutor.class );
-        mockEstimate = createMock( Estimate.class);
         mockProcessqueue = createMock( Processqueue.class );
         mockHarvester = createMock( IHarvest.class );
        // mockFedoraAdministration = createMock( FedoraAdministration.class );
@@ -113,7 +111,6 @@ public class DatadockPoolTest extends TestCase
     {
         Mockit.tearDownMocks();
         reset( mockThreadPoolExecutor );
-        reset( mockEstimate );
         reset( mockProcessqueue );
         //reset( mockFedoraAdministration );
         reset( mockDatadockJob );

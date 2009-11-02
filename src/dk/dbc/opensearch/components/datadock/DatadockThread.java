@@ -35,7 +35,6 @@ import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -78,14 +77,13 @@ import org.xml.sax.SAXException;
  * Furthermore, DataDock starts the process of fedora storing, data processing,
  * indexing and search-capabilities
  */
-public class DatadockThread implements Callable<Float>
+public class DatadockThread implements Callable<Boolean>
 {
     private Logger                  log = Logger.getLogger( DatadockThread.class );
     
     private IHarvest                harvester;
     private CargoContainer          cargo;
     private IProcessqueue           queue;
-    private IEstimate               estimate;
     private DatadockJob             datadockJob;
     private String                  submitter;
     private String                  format;
@@ -110,17 +108,11 @@ public class DatadockThread implements Callable<Float>
      * 
      * @param datadockJob
      *            the information about the data to be docked
-     * @param estimate
-     *            the estimation database handler
      * @param processqueue
      *            the processqueue handler
      * @param jobMap
      *            information about the tasks that should be solved by the
      *            pluginframework
-     * 
-     * @throws ClassNotFoundException
-     *             if the database could not be initialised in the Estimation
-     *             class \see dk.dbc.opensearch.tools.Estimate
      * @throws ConfigurationException
      *             if the FedoraHandler could not be initialized. \see
      *             dk.dbc.opensearch.tools.FedoraHandler
@@ -129,7 +121,7 @@ public class DatadockThread implements Callable<Float>
      * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IEstimate estimate, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( DatadockJob datadockJob, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
         
@@ -158,7 +150,6 @@ public class DatadockThread implements Callable<Float>
         log.trace( "constructor PluginList " + list.toString() );
         
         queue = processqueue;
-        this.estimate = estimate;
         
         log.trace( String.format( "DatadockThread Construction finished" ) );
     }
@@ -173,8 +164,7 @@ public class DatadockThread implements Callable<Float>
      * will take to bzw. index and save in fedora the data given with the
      * CargoContainer. \see dk.dbc.opensearch.tools.Estimation
      * 
-     * @returns an estimate on the completion-time of indexing and fedora
-     *          submission
+     * @returns true if job is performed
      * @throws PluginResolverException
      *             if the PluginResolver encountered problems, see
      *             dk.dbc.opensearch
@@ -205,16 +195,16 @@ public class DatadockThread implements Callable<Float>
      * @throws IOException
      * @throws ParseException
      */
-    public Float call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    public Boolean call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
-        // Must be implemented due to class implementing Callable< Float > interface.
+        // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
         log.trace( "DatadockThread call method called" );
 
         // Validate plugins
         //PluginResolver pluginResolver = new PluginResolver();
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
-        Float est = 0F;
+        Boolean success = null;
         byte[] data = null;
         long timer = 0;
 
@@ -320,7 +310,7 @@ public class DatadockThread implements Callable<Float>
                 }
             }
 
-            //push to processqueue job to processqueue and get estimate
+            //push to processqueue job to processqueue
             queue.push( cargo.getIdentifier() );
 
             //inform the harvester that it was a success
@@ -333,10 +323,10 @@ public class DatadockThread implements Callable<Float>
             catch( HarvesterInvalidStatusChangeException hisce )
             {
                 log.error( hisce.getMessage() , hisce);
-                return 1F;
+                return false;
             }
 
-            return est;
+            return success;
         }
         catch ( Exception e )
         {
@@ -345,7 +335,7 @@ public class DatadockThread implements Callable<Float>
             log.error("Trace ", e );
             // harvester.setStatus( datadockJob.getIdentifier(), JobStatus.FAILURE );
 	    harvester.setStatusFailure( datadockJob.getIdentifier(), errorMsg );
-            return 0f;
+            return success;
         }
     }
 }

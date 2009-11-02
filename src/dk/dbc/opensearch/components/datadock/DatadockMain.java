@@ -35,8 +35,6 @@ import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 import dk.dbc.opensearch.common.types.HarvestType;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
@@ -215,7 +213,6 @@ public class DatadockMain
 
             // DB access
             IDBConnection dbConnection = new PostgresqlDBConnection();
-            IEstimate estimate = new Estimate( dbConnection );
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IObjectRepository repository = new FedoraObjectRepository();
             pluginResolver = new PluginResolver(); 
@@ -304,7 +301,7 @@ public class DatadockMain
             }
 
 
-            datadockPool = new DatadockPool( threadpool, estimate, processqueue, repository, harvester, pluginResolver );
+            datadockPool = new DatadockPool( threadpool, processqueue, repository, harvester, pluginResolver );
 
             log.trace( "Starting the manager" );
             // Starting the manager

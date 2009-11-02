@@ -35,8 +35,6 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.statistics.Estimate;
-import dk.dbc.opensearch.common.statistics.IEstimate;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -178,7 +176,6 @@ public class PTIMain
             log.debug( "initializing resources" );
 
             IDBConnection dbConnection = new PostgresqlDBConnection();
-            IEstimate estimate = new Estimate( dbConnection );
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IObjectRepository repository = new FedoraObjectRepository();
             CompassFactory compassFactory = new CompassFactory();
@@ -189,7 +186,7 @@ public class PTIMain
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
 
-            PTIPool ptiPool = new PTIPool( threadpool, estimate, compass, repository, pluginResolver );
+            PTIPool ptiPool = new PTIPool( threadpool, compass, repository, pluginResolver );
 
             ptiManager = new PTIManager( ptiPool, processqueue );
 

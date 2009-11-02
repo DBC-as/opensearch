@@ -147,12 +147,12 @@ public class PTIManager
     {
 
         // Checking jobs and commiting jobs
-        Vector< CompletedTask<InputPair< Long, Integer > > > finishedJobs = pool.checkJobs();
+        Vector< CompletedTask<InputPair< Boolean, Integer > > > finishedJobs = pool.checkJobs();
         // log.debug( "size of finishedJobs: " + finishedJobs.size() );
-        for ( CompletedTask<InputPair< Long, Integer > > task : finishedJobs)
+        for ( CompletedTask<InputPair< Boolean, Integer > > task : finishedJobs)
         {            
-            InputPair< Long, Integer > pair = task.getResult();
-            Long result = pair.getFirst();
+            InputPair< Boolean, Integer > pair = task.getResult();
+            Boolean result = pair.getFirst();
             int queueID = pair.getSecond();
             if ( result != null ) // success
             {
