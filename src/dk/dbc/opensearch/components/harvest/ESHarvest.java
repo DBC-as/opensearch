@@ -61,10 +61,8 @@ import org.xml.sax.SAXException;
  */
 public class ESHarvest implements IHarvest
 {
-    //    private Connection    conn;           // The ES-base connection - given through constructor
-    private String        databasename;   // The ES-base databasename - given through constructor
-
-    private OracleDBPooledConnection connectionPool = null;
+    private OracleDBPooledConnection connectionPool = null; // The connectionPool, given through the constuctor
+    private String        databasename;   // The ES-base databasename - given through the constructor
 
     Logger log = Logger.getLogger( ESHarvest.class );
 
@@ -322,6 +320,7 @@ public class ESHarvest implements IHarvest
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
 	Connection conn;
+
 
 	try
 	{
@@ -757,6 +756,11 @@ public class ESHarvest implements IHarvest
     {
 	// \Note: It is only possible to add one diagnostic to a record, since you can only make one
 	//        call to either setSuccess or setFailure.
+
+	// It is not possible to use ' in a failure diagnostic - we therefore rip them from the diagnostic here:
+	log.info( String.format( "OLD: setStatusFailure with failure diagnostic: [%s]", failureDiagnostic ) );
+	failureDiagnostic = failureDiagnostic.replace('\'', ' ');
+	log.info( String.format( "NEW: setStatusFailure with failure diagnostic: [%s]", failureDiagnostic ) );
 
 	int diagnosticId = 0;
 	Statement stmt = null;

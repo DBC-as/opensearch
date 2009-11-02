@@ -245,6 +245,10 @@ public class DatadockMain
                 String initialLimit = DataBaseConfig.getOracleInitialLimit();
                 String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
 
+		log.info( String.format( "DB Url : %s ", oracleUrl ) );
+		log.info( String.format( "DB User: %s ", oracleUser ) );
+
+
                 try
                 {
                     ods = new OracleDataSource();
