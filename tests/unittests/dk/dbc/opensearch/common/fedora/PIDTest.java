@@ -48,8 +48,9 @@ public class PIDTest {
 
     @Test( expected = IllegalArgumentException.class )
     public void testLongIdentifierThrows()
-    {
-        String id = "iamastringlongerthantwentyfivecharacters:1";
+                   //         1         2          3         4         5         6 
+    {              //123456789012345678901234456789012345678901234567890123456789012345
+        String id = "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCC:DDDDDDDDDEEEEEEEEEEFFFFFFFFFGGGGGGG";
         new PID( id );
     }
 
