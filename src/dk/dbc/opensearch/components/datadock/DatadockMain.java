@@ -392,7 +392,6 @@ public class DatadockMain
         else
         {
             log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - ", mainJobsSubmitted, mainTimer));
-
         }
     }
 }

@@ -68,7 +68,12 @@ public class DublinCore implements MetaData
     private static FedoraNamespace dc = new FedoraNamespaceContext().getNamespace( "dc" );
     private static FedoraNamespace oai_dc = new FedoraNamespaceContext().getNamespace( "oai_dc" );
 
-
+    /**
+     * Initializes an empty Dublin Core element
+     */   
+    public DublinCore( ) {
+        dcvalues = new HashMap< DublinCoreElement, String >();
+    }
     /**
      * Initializes an empty Dublin Core element, identified by {@code identifier}
      * @param identifier An unambiguous reference to the resource within a given
@@ -188,15 +193,10 @@ public class DublinCore implements MetaData
     {
         dcvalues.put( DublinCoreElement.ELEMENT_FORMAT, format );
     }
-
+    
 
     public void setIdentifier( String identifier )
-    {
-        if( dcvalues.containsKey( DublinCoreElement.ELEMENT_IDENTIFIER ) )
-        {
-            log.warn( String.format( "Overwriting DC identifier %s with %s", dcvalues.get( DublinCoreElement.ELEMENT_IDENTIFIER ), identifier ) );
-        }
-
+    {        
         dcvalues.put( DublinCoreElement.ELEMENT_IDENTIFIER, identifier );
     }
 
@@ -333,8 +333,7 @@ public class DublinCore implements MetaData
         }
     }
 
-
-    @Override
+    
     public String getIdentifier()
     {
         return dcvalues.get( DublinCoreElement.ELEMENT_IDENTIFIER );

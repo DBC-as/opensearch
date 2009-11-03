@@ -28,6 +28,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
@@ -334,9 +335,9 @@ public class DatadockThreadTest
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getContentLength() ).andReturn( 5 );
 
-        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
 
-        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
         // mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
@@ -544,9 +545,9 @@ public class DatadockThreadTest
         expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
         expect( mockCargoObject.getContentLength() ).andReturn( 5 );
 
-        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
 
-        expect( mockCC.getIdentifier() ).andReturn( "DCIdentifier" );
+        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
         mockProcessqueue.push( isA( String.class ) );
         expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
         // mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );

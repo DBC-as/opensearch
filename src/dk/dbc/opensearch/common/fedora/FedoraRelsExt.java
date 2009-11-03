@@ -53,8 +53,7 @@ import org.apache.log4j.Logger;
  * stream.
  */
 public class FedoraRelsExt implements MetaData
-{
-    private String id;
+{    
     private Set<String> relations;
 
     // note that the first element (the object) is always `pid` for fedora rels-ext statements
@@ -79,9 +78,8 @@ public class FedoraRelsExt implements MetaData
      * there are no restrictions on the identifier.
      * @throws ParserConfigurationException 
      */
-    public FedoraRelsExt( String id ) throws ParserConfigurationException
-    {
-        this.id = id;
+    public FedoraRelsExt( ) throws ParserConfigurationException
+    {        
         relations = new HashSet<String>();
         triples = new ArrayList< InputPair< QName, QName >>();
     }
@@ -181,8 +179,7 @@ public class FedoraRelsExt implements MetaData
             xmlw.writeNamespace( rdfs.getPrefix(), rdfs.getURI() );
 
             xmlw.writeStartElement( rdf.getURI(), "Description" );
-
-            log.trace( String.format( "this.id = %s, identifier = %s", this.id, identifier ) );
+            
             
             //...but won't forget to check if we have an identifier at all
             if( null == identifier || identifier.isEmpty() )
@@ -225,12 +222,7 @@ public class FedoraRelsExt implements MetaData
     }
 
 
-    @Override
-    public String getIdentifier()
-    {
-        return this.id;
-    }
-
+    @Override    
     public DataStreamType getType()
     {
         return type;

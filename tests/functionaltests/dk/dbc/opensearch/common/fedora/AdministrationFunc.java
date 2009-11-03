@@ -588,7 +588,7 @@ public class AdministrationFunc
         String pid = "";
         try
         {
-            pid = objectRepository.storeObject( cc, format );
+            pid = objectRepository.storeObject( cc, format, "auto" );
         }
         catch ( Exception e )
         {

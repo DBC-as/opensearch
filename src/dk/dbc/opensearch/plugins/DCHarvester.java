@@ -59,8 +59,8 @@ public class DCHarvester implements ICreateCargoContainer
      */
     private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data ) throws PluginException
     {
-        CargoContainer cargo = new CargoContainer();
-
+        CargoContainer cargo = new CargoContainer();        
+        
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";

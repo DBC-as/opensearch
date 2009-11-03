@@ -33,8 +33,6 @@ import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.IOException;
-import java.io.InputStream;
-
 import java.net.MalformedURLException;
 import javax.xml.rpc.ServiceException;
 import org.apache.commons.configuration.ConfigurationException;
@@ -51,21 +49,9 @@ public class DocbookHarvester implements ICreateCargoContainer
     Logger log = Logger.getLogger( DocbookHarvester.class );
 
     private PluginType pluginType = PluginType.HARVEST;
-    private final FedoraHandle fedoraHandle;
 
     public DocbookHarvester() throws PluginException
     {
-        try
-        {
-            this.fedoraHandle = new FedoraHandle();
-        }
-        catch( ObjectRepositoryException ex )
-        {
-            String error = String.format( "Failed to get connection to fedora base" );
-            log.error( error );
-            throw new PluginException( error, ex );
-
-        }
     }
 
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
@@ -81,64 +67,21 @@ public class DocbookHarvester implements ICreateCargoContainer
      */
     private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data ) throws PluginException
     {
-        String[] pid = null;
-        try
-        {
-            pid = fedoraHandle.getNextPID( 1, submitter );
-        }
-        catch( ServiceException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( ConfigurationException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( MalformedURLException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( IOException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( IllegalStateException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        if( null == pid && 1 != pid.length )
-        {
-            String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", submitter );
-            log.error( error );
-            throw new PluginException( new IllegalStateException( error ) );
-        }
 
-        CargoContainer cargo = new CargoContainer( pid[0] );
+        CargoContainer cargo = new CargoContainer( );                
         
         /** \todo: hardcoded values for mimetype, langugage*/
         String mimetype = "text/xml";
         String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
-
-        long id;
-
+        
         try
         {
-            id = cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Article, data );
+            cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Article, data );
 
             log.trace( "Constructing DC datastream" );
 
-            DublinCore dcStream = new DublinCore( pid[0] );
+            DublinCore dcStream = new DublinCore( );
 
             cargo.addMetaData( dcStream );
         }

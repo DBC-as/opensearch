@@ -18,8 +18,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.fedora.FoxmlDocument.State;
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -27,7 +25,6 @@ import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
-import dk.dbc.opensearch.common.xml.XMLUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -40,17 +37,8 @@ import org.xml.sax.SAXException;
 import org.custommonkey.xmlunit.*;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import java.util.HashMap;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-import mockit.Mock;
-import mockit.MockClass;
-import static mockit.Mockit.setUpMocks;
-import static mockit.Mockit.tearDownMocks;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.apache.commons.codec.binary.Base64;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 
 
@@ -67,17 +55,7 @@ public class FedoraUtilsTest// extends XMLTestCase
     static String timeNow = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" )).format( now );
 
     static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><foxml:digitalObject xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" PID=\"dbc:1\" VERSION=\"1.1\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"I\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"test\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\""+timeNow+"\"/><foxml:property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\""+timeNow+"\"/></foxml:objectProperties><foxml:datastream CONTROL_GROUP=\"M\" ID=\"originalData.0\" STATE=\"A\" VERSIONABLE=\"false\"><foxml:datastreamVersion CREATED=\""+timeNow+"\" ID=\"originalData.0.0\" LABEL=\"test\" MIMETYPE=\"text/xml\" SIZE=\"6\"><foxml:binaryContent>w6bDuMOl</foxml:binaryContent></foxml:datastreamVersion></foxml:datastream></foxml:digitalObject>";
-
-    @MockClass( realClass = FedoraHandle.class )
-    public static class MockFedoraHandle
-    {
-        @Mock
-        public MockFedoraHandle()
-        {
-        }
-
-    }
-
+    
     @BeforeClass
     public static void SetupClass()
     {
@@ -92,9 +70,10 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Before
     public void SetUp() throws UnsupportedEncodingException, IOException, OpenSearchTransformException, ObjectRepositoryException, XMLStreamException, XMLStreamException, SAXException
     {
-        setUpMocks( MockFedoraHandle.class );
         byte[] cargoBytes = utf8Str.getBytes( "UTF-8" );
-        cargo = new CargoContainer( "dbc:1" );
+        cargo = new CargoContainer( );
+        cargo.setIdentifier( new PID("dbc:1") );
+        
         cargo.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "da", "text/xml", IndexingAlias.getIndexingAlias( "article" ), cargoBytes );
         String adminXml = "<admin-stream><indexingalias name=\"article\"/><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
         AdministrationStream adminstream = new AdministrationStream( new ByteArrayInputStream( adminXml.getBytes() ), true );
@@ -106,8 +85,7 @@ public class FedoraUtilsTest// extends XMLTestCase
 
     @After
     public void TearDown()
-    {
-        tearDownMocks();
+    {       
         cargo = null;
     }
 

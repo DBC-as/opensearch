@@ -26,8 +26,6 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
@@ -42,19 +40,14 @@ import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
-import java.net.MalformedURLException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 
@@ -72,20 +65,9 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     private static Logger log = Logger.getLogger( MarcxchangeHarvester.class );
 
     private PluginType pluginType = PluginType.HARVEST;
-    private final FedoraHandle fedoraHandle;
 
     public MarcxchangeHarvester() throws PluginException
     {
-        try
-        {
-            this.fedoraHandle = new FedoraHandle();
-        }
-        catch( ObjectRepositoryException ex )
-        {
-            String error = String.format( "Failed to get connection to fedora base" );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
     }
 
 
@@ -106,70 +88,20 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
      */
     private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data ) throws PluginException
     {
-        String[] pid = null;
-        try
-        {
-            pid = fedoraHandle.getNextPID( 1,  submitter );
-        }
-        catch( ServiceException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( ConfigurationException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( MalformedURLException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( IOException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        catch( IllegalStateException ex )
-        {
-            String error = String.format( "Could not get pid for %s", submitter );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }
-        if( null == pid )
-        {
-            String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", submitter );
-            log.error( error );
-            throw new PluginException( new IllegalStateException( error ) );
-        }
 
-        CargoContainer cargo = new CargoContainer( pid[0] );
-
+        CargoContainer cargo = new CargoContainer( );
+               
         try
         {
             /** \todo: hardcoded values for mimetype, language*/
             cargo.add( DataStreamType.OriginalData, format, submitter, "da", "text/xml", IndexingAlias.Danmarcxchange, data );
 
+            
             log.trace( "Constructing DC datastream" );
 
             DublinCore dcStream = createDublinCore( cargo );
           
-
-            //will never happen since the elements are always set to the 
-            //empty string if no value is given to them
-            // if( dcStream.elementCount() == 0 )
-//             {
-//                 log.warn( String.format( "No information was added to dublin core data for data with pid '%s''", cargo.getIdentifier() ) );
-//             }
-//             else
-//             {
-                log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-                // }
+            log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
             cargo.addMetaData( dcStream );
         }
         catch ( IOException ioe )
@@ -228,9 +160,8 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     }
 
     private DublinCore createDublinCore( CargoContainer cargo ) throws PluginException
-    {
-        String identifier = cargo.getIdentifier();
-        DublinCore dc = new DublinCore( identifier );
+    {        
+        DublinCore dc = new DublinCore( );
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
 //         if ( co == null )

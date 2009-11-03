@@ -193,24 +193,15 @@ public class OwnerRelation implements IRelation
         Invocable inv = lookupJavaScript( submitter );
 
         FedoraRelsExt rels = (FedoraRelsExt) cargo.getMetaData( DataStreamType.RelsExtData );
-        if( null == cargo.getIdentifier() || cargo.getIdentifier().isEmpty() )
+        if( null == cargo.getIdentifier() )
         {
             log.warn( String.format( "CargoContainer has no identifier, this will be a problem in the RELS-EXT generation/validation" ) );
         }
 
         if( null == rels )
         {
-            rels = new FedoraRelsExt( cargo.getIdentifier() );
-        }
-        
-        log.debug( String.format( "Got RelsExt with id '%s'", rels.getIdentifier() ) );
-
-        if( ! rels.getIdentifier().equals( cargo.getIdentifier() ) )//then something has gone terribly wrong
-        {
-            String error = String.format( "CargoContainer data has different identifier ('%s') than its Rels-ext metadata identifier (%s) ", cargo.getIdentifier(), rels.getIdentifier() );
-            log.error( error );
-            throw new PluginException( error );
-        }
+            rels = new FedoraRelsExt( );
+        }                
         
         rels = ( FedoraRelsExt ) inv.invokeFunction( "addOwnerRelation", 
                                                      rels, 

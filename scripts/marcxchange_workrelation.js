@@ -2,20 +2,14 @@ log.debug("ja7w: initial eval");
 
 importClass(Packages.dk.dbc.opensearch.common.metadata.DublinCoreElement);
 
-function generate_new_xml( workid, title, type, creator, source ) {
-  res = "<ting:container><dkabm:record>\n"
-    + "<ac:identifier>"+workid+"|work</ac:identifier>\n"
-    + "<ac:source>internal</ac:source>\n"                                                                  
+function generate_new_xml( title, type, creator, source ) {
+  res = "<ting:container><dkabm:record>\n"    
+    + "<dc:source>internal</dc:source>\n"                                                                  
     + "<dc:title>"+title+"</dc:title>\n"
     + "<dc:source>"+source+"</dc:source>\n"
     + "<dc:type xsi:type=\"dkdcplus:BibDK-Type\">"+type+"</dc:type>\n"
-    + "<dc:creator>"+creator+"</dc:creator>\n";
-    
-   //    <dc:creator>Joanne K. Rowling</dc:creator>   
-    //<dc:subject xsi:type="dkdcplus:DK5">83</dc:subject>
-    //<dc:type xsi:type="dkdcplus:BibDK-Type">Bog</dc:type>
-    //<dc:format>923 sider</dc:format>
-                                               
+    + "<dc:creator>"+creator+"</dc:creator>\n";    
+
     res = res +"</dkabm:record>\n</ting:container>";
   return res;
 }
@@ -38,5 +32,5 @@ function generate_new_work( workcargo, dc, workdc ) {
   workdc.setType( dcType );
   workdc.setSource( dcSource );
   
-  return generate_new_xml( workcargo.getIdentifier(), dcTitle, dcType, dcCreator, dcSource );
+  return generate_new_xml( dcTitle, dcType, dcCreator, dcSource );
 };

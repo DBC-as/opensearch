@@ -20,7 +20,6 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -31,19 +30,15 @@ import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -54,8 +49,7 @@ import org.xml.sax.SAXException;
  */
 public class FedoraUtils
 {
-    static Logger log = Logger.getLogger( FedoraUtils.class );
-    private static FedoraHandle fedoraHandle;
+    static Logger log = Logger.getLogger( FedoraUtils.class );   
 
 
     /**
@@ -70,71 +64,24 @@ public class FedoraUtils
      */
     public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws OpenSearchTransformException, ObjectRepositoryException// ParserConfigurationException, TransformerConfigurationException, TransformerException, ServiceException, ConfigurationException, IOException, MalformedURLException, UnsupportedEncodingException, XPathExpressionException, SAXException, ObjectRepositoryException, OpenSearchTransformException
     {
-        List<String> pid = new ArrayList<String>(1);
-        fedoraHandle = new FedoraHandle();
-        if( null == cargo.getIdentifier() || cargo.getIdentifier().equals( "" ) )
+        if( null == cargo.getIdentifier() )
         {
-            log.warn( "Could not find identifier for CargoContainer" );
-            log.info( "Obtaining new pid for CargoContainer" );
-
-            String prefix = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
-            try
-            {
-
-                pid = Arrays.asList( fedoraHandle.getNextPID( 1,  prefix ) );
-            }
-            catch( ServiceException ex )
-            {
-                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
-                log.error( error );
-                throw new ObjectRepositoryException( error, ex );
-            }
-            catch( ConfigurationException ex )
-            {
-                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
-                log.error( error );
-                throw new ObjectRepositoryException( error, ex );
-            }
-            catch( MalformedURLException ex )
-            {
-                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
-                log.error( error );
-                throw new ObjectRepositoryException( error, ex );
-            }
-            catch( IOException ex )
-            {
-                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
-                log.error( error );
-                throw new ObjectRepositoryException( error, ex );
-            }
-            catch( IllegalStateException ex )
-            {
-                String error  = String.format( "Could not retrieve new pid from namespace %s: %s", prefix, ex.getMessage() );
-                log.error( error );
-                throw new ObjectRepositoryException( error, ex );
-            }
-            if( null == pid && 1 != pid.size() )
-            {
-                log.warn( String.format( "pid is empty for namespace '%s', but no exception was caught.", prefix ) );
-                return null;
-            }
-
-            cargo.setIdentifier( pid.get( 0 ) );
+            throw new OpenSearchTransformException( "CargoContainerToFoxml Called with empty Identifier." );
         }
-        else
-        {
-            pid.add( cargo.getIdentifier() );
-        }
+        
+        String pid = cargo.getIdentifier().getIdentifier();
+        
+        
         
         //\note: we always create inactive objects
         FoxmlDocument foxml;
         try
         {
-            foxml = new FoxmlDocument( FoxmlDocument.State.I, pid.get( 0 ), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
+            foxml = new FoxmlDocument( FoxmlDocument.State.I, pid, cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
         }
         catch( ParserConfigurationException ex )
         {
-            String error  = String.format( "Failed to construct fedora xml with pid %s", pid.get( 0 ) );
+            String error  = String.format( "Failed to construct fedora xml with pid %s", pid );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
@@ -175,10 +122,10 @@ public class FedoraUtils
         //get metadata from cargocontainer
         for( MetaData meta: cargo.getMetaData() )
         {
-            ByteArrayOutputStream baos = baos = new ByteArrayOutputStream();
-            log.trace( String.format( "Serializing metadata %s with identifier %s", meta.getClass(), cargo.getIdentifier() ) );
-            meta.serialize( baos, cargo.getIdentifier() );
-            log.debug( String.format( "ja7s: metadata = %s", meta.getType().getName()) );
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            log.trace( String.format( "Serializing metadata %s with identifier %s", meta.getClass(), cargo.getIdentifierAsString() ) );
+            meta.serialize( baos, pid );
+           
             try{
                  switch( meta.getType() ) {
                     
@@ -190,24 +137,24 @@ public class FedoraUtils
                         foxml.addRelsExtDataStream( new String( baos.toByteArray() ), System.currentTimeMillis() );
                         break;
                     default :
-                        foxml.addXmlContent( meta.getType().getName(), new String( baos.toByteArray() ), String.format( "Metadata: %s", meta.getIdentifier() ), System.currentTimeMillis(), true );
+                        foxml.addXmlContent( meta.getType().getName(), new String( baos.toByteArray() ), String.format( "Metadata: %s", pid ), System.currentTimeMillis(), true );
                     }                       
                 }
                 catch( XPathExpressionException ex )
                 {
-                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", pid, new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( SAXException ex )
                 {
-                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", pid, new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }
                 catch( IOException ex )
                 {
-                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", meta.getIdentifier(), new String( baos.toByteArray() ) );
+                    String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", pid, new String( baos.toByteArray() ) );
                     log.error( error , ex);
                     throw new ObjectRepositoryException( error, ex );
                 }            

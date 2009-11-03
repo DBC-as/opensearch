@@ -121,7 +121,7 @@ public class ReviewRelation implements IRelation
         String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
         String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
         String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
-        String identifier = cargo.getIdentifier();
+        String identifier = cargo.getIdentifierAsString();
 
         log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
         

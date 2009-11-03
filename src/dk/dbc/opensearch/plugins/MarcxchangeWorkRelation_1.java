@@ -27,7 +27,6 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
@@ -40,6 +39,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
+import dk.dbc.opensearch.common.types.ObjectIdentifier;
 
 import dk.dbc.opensearch.common.types.InputPair;
 import java.io.IOException;
@@ -67,14 +67,11 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     private PluginType pluginType = PluginType.RELATION;
 
     private Vector<String> types;    
-    PID p;
     private IObjectRepository objectRepository;
     private String workNamespace = "work:";
 
-    private final ScriptEngineManager manager = new ScriptEngineManager();
+    private final ScriptEngineManager manager = new ScriptEngineManager();    
     
-    private FedoraHandle fedoraHandle;
-
     /**
      * Constructor for the MarcxchangeWorlkRelation plugin.
      */
@@ -90,16 +87,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         types.add( "Tidsskrift" );
         types.add( "Tidsskriftsartikel" );
         
-       try
-        {
-            this.fedoraHandle = new FedoraHandle();
-        }
-        catch( ObjectRepositoryException ex )
-        {
-            String error = String.format( "Failed to get connection to fedora base" );
-            log.error( error );
-            throw new PluginException( error, ex );
-        }        
     }
 
 
@@ -202,7 +189,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         String dcType = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TYPE ) );
         String dcCreator = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR ) );
         String dcSource = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE ));
-        String pid = cargo.getIdentifier();
+        String pidAsString = cargo.getIdentifier().getIdentifier();
         
         List< String > fedoraPids = new ArrayList< String >();
         //List< String > searchFields = new ArrayList< String >( 1 );
@@ -218,7 +205,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 //searchFields.add( "source" );
                 InputPair< String, String > searchPair = new InputPair< String, String >( "source", dcSource );                
                 resultSearchFields.add( searchPair );
-                fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
+                fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 //fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, pid, maximumResults );
 
                 if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
@@ -228,7 +215,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                     //searchFields.add( "title" );
                     searchPair = new InputPair< String, String >( "title", dcSource );
                     resultSearchFields.add( searchPair );
-                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
+                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 }
             }
 
@@ -242,7 +229,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                     //searchFields.add( "source" );
                     InputPair< String, String > searchPair = new InputPair< String, String >( "source", dcTitle );
                     resultSearchFields.add( searchPair );
-                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
+                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 }
                 else
                 {
@@ -251,7 +238,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                     //searchFields.add( "title" );
                     InputPair< String, String > searchPair = new InputPair<String, String>( "title", dcTitle );
                     resultSearchFields.add( searchPair );
-                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
+                    fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 }
             }
 
@@ -279,7 +266,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 searchList.add( pair );
                 searchList.add( pair );
                 fedoraPids = objectRepository.getIdentifiers( searchList, searchFields, pid, 10000 );*/
-                fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pid, maximumResults, workNamespace );
+                fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
             }
             else
             {
@@ -292,15 +279,13 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             log.debug( String.format( "Pid with matching title, source, or creator = %s", fedoraPids.get( 0 ) ) );
         }
 
-        PID workPid = null;       
+        ObjectIdentifier workPid = null;       
 
         if ( fedoraPids == null || fedoraPids.size() == 0 )
         {
             log.debug( String.format("ja7w: No Work found creating new work ") );
-            
-            workPid = new PID( fedoraHandle.getNextPID( 1, "work" )[0] );
-            log.debug( String.format( "nextWorkPid found: %s", workPid.getIdentifier()) );
-            CreateWorkObject( workPid, dc );
+                       
+            workPid = CreateWorkObject( dc );
         }
         else // fedoraPids.size() > 0
         {
@@ -311,21 +296,23 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         log.debug( String.format( "Trying to add %s to the collection %s", cargo.getIdentifier(), workPid ) );
 
 
-        this.objectRepository.addObjectRelation( workPid, DBCBIB.HAS_MANIFESTATION , cargo.getIdentifier() );
-        this.objectRepository.addObjectRelation( new PID( cargo.getIdentifier()), DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );
+        this.objectRepository.addObjectRelation( workPid, DBCBIB.HAS_MANIFESTATION , cargo.getIdentifierAsString() );
+        this.objectRepository.addObjectRelation( cargo.getIdentifier(), DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );
         
         return true;
     }
 
 
-    private void CreateWorkObject( PID nextWorkPid, DublinCore oldDc )
+    private ObjectIdentifier CreateWorkObject(  DublinCore oldDc ) throws PluginException
     {      
         try
         {
             // todo: Clean up work object xml and language.
-            CargoContainer cargo = new CargoContainer( nextWorkPid.getIdentifier() );
-            DublinCore workDC = new DublinCore( nextWorkPid.getIdentifier()  );
-       
+            CargoContainer cargo = new CargoContainer( );                       
+            
+            DublinCore workDC = new DublinCore(  );
+            
+            
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );            
             engine.put( "log", log );            
             engine.put( "objectRepository", objectRepository );
@@ -350,21 +337,26 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             }
 
             cargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", IndexingAlias.None, fakexml.getBytes() );
+           
             cargo.addMetaData( workDC );
-            
+                       
             try
             {
-                this.objectRepository.storeObject( cargo, "internal" );
-                log.debug(String.format( "ja7: added work object %s", nextWorkPid ) );
+                this.objectRepository.storeObject( cargo, "internal", "work");                
             }
             catch (Exception e)
             {
                 log.error( "ja7w:error in objectRepository.storeCargocontiner for new work item", e );
+                throw new PluginException("Unable to store new work object", e);
             }
+            
+            return cargo.getIdentifier();
         }
-        catch ( Exception e) {
+        catch (Exception e)
+        {
             log.error( "ja7w:error in fs.storeCargocontiner for new work item", e );
-        }
+            throw new PluginException("Unable to store new work object", e);
+        }        
     }
     
 

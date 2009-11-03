@@ -53,32 +53,34 @@ public class Store implements IRepositoryStore
         String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
         try
         {
-            String new_pid = cargo.getIdentifier();
-            log.debug(String.format("ja7: new pid %s", new_pid));
-
-            try
-            {
-                log.debug( String.format( "ja7s: Trying to lookup %s",new_pid )); 
-                if (!new_pid.isEmpty() ) {
-                    boolean hasObject = objectRepository.hasObject( new PID(new_pid) );
-                    log.debug( String.format( "ja7s: has Object returned %b", hasObject ));
-                    if( hasObject ) {
-                      log.debug( String.format( "ja7s: will try to delete pid %s", new_pid ) );
-                      objectRepository.deleteObject(new_pid, "delte before store hack");
+            if( cargo.getIdentifier() != null ) {
+                
+                String new_pid = cargo.getIdentifierAsString();
+                                
+                try
+                {
+                    
+                    boolean hasObject = objectRepository.hasObject( cargo.getIdentifier() );
+                    log.debug( String.format( "hasObject(%s) returned %b",new_pid, hasObject ) );
+                    if (hasObject)
+                    {
+                        log.trace( String.format( "will try to delete pid %s", new_pid ) );
+                        objectRepository.deleteObject( new_pid, "delte before store hack" );
                     }
                 }
                 
+                catch (Exception e)
+                {
+                    
+                    log.warn( String.format( "Ignoring Error trying to remove object %s", new_pid ), e );
+                }
             }
-            catch (Exception e)
-            {
-                log.trace(String.format("ja7: Internal error checking / removing before/store  %s", new_pid), e);
-            }
-
-            objectRepository.storeObject( cargo, logm );
+            
+            objectRepository.storeObject( cargo, logm, "auto" );
         }
         catch( ObjectRepositoryException ex )
         {
-            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifier(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
+            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifierAsString(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
             log.error( error, ex);
             throw new PluginException( error, ex );
         }

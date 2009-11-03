@@ -74,12 +74,12 @@ public interface IObjectRepository
      *
      * @param cargo A {@link CargoContainer} containing the data to be stored.
      * @param logmessage Message describing the storage operation
+     * @param default PID namespace 
      * 
      * @return A unique identifer for the object in the object repository
      * @throws ObjectRepositoryException if the object cannot be stored
-     */
-    public String storeObject( CargoContainer cargo, String logmessage ) throws ObjectRepositoryException;
-
+     */    
+    public String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace ) throws ObjectRepositoryException;
 
     /** 
      * Retrieves the object identified by {@code identifier}. The

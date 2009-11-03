@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
@@ -121,7 +122,7 @@ public class ForceFedoraPid implements IAnnotate
 		if( s != null && s.length() > 3 )
         {
 			log.info( String.format("Forcing Store ID to %s", s ) );
-            cargo.setIdentifier( s );
+            cargo.setIdentifier( new PID( s ));
 		} 
 
         return cargo;

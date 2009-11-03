@@ -310,14 +310,15 @@ public class DatadockThread implements Callable<Boolean>
                 }
             }
 
+            String identifierAsString = cargo.getIdentifierAsString();          
             //push to processqueue job to processqueue
-            queue.push( cargo.getIdentifier() );
+            queue.push( identifierAsString );
 
             //inform the harvester that it was a success
             try
             {
                 // harvester.setStatus( datadockJob.getIdentifier(), JobStatus.SUCCESS );
-		harvester.setStatusSuccess( datadockJob.getIdentifier(), cargo.getIdentifier() );
+                harvester.setStatusSuccess( datadockJob.getIdentifier(), identifierAsString );
 
             }
             catch( HarvesterInvalidStatusChangeException hisce )

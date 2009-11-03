@@ -41,9 +41,7 @@ public interface MetaData {
      * @param out 
      * @param identifier 
      */
-    public void serialize( OutputStream out, String identifier )throws OpenSearchTransformException;
-
-    public String getIdentifier();
+    public void serialize( OutputStream out, String identifier )throws OpenSearchTransformException;    
 
     public DataStreamType getType();
 }

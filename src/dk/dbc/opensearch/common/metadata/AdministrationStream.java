@@ -376,8 +376,7 @@ public class AdministrationStream implements MetaData
     /**
      * This implementation returns the identifier as identifier
      * @return
-     */
-    @Override
+     */    
     public String getIdentifier()
     {
         return identifier;

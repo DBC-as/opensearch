@@ -39,7 +39,7 @@ public class PID implements ObjectIdentifier
 
     public PID( String identifier )
     {
-        if( identifier.length() > 25 )
+        if( identifier.length() > 64 )
         {
             throw new IllegalArgumentException( "The identifier for fedora objects cannot be longer than 25 characters" );
         }

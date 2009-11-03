@@ -50,49 +50,52 @@ public class CargoContainer
     private ArrayList<CargoObject> data;
     private Map<DataStreamType, MetaData> metadata;
 
+    /** place holder for PID / Identifier namespace */
+    private ObjectIdentifier identifier = null;
+    
+
     /**
      * Constructor initializes internal representation of data, i.e.,
      * ArrayList of CargoObjects
      */
     public CargoContainer()
     {
-        this( "" );
-    }
-
-
-    /**
-     * Initializes a CargoContainer object with an identifier, which would
-     * typically be an object identifier for a digital object that this
-     * CargoContainer will contain
-     * 
-     * @param identifier identifier for this CargoContainer
-     */
-    public CargoContainer( String identifier )
-    {
         data = new ArrayList<CargoObject>();
         metadata = new HashMap<DataStreamType, MetaData>();
-        this.addMetaData( new DublinCore( identifier ) );
+        this.addMetaData( new DublinCore() );
         log.trace( String.format( "Constructing new CargoContainer" ) );
     }
 
 
-    public String getIdentifier()
+    public ObjectIdentifier getIdentifier()
     {
-        return this.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
+        return this.identifier;
     }
 
 
-    public void setIdentifier( String identifier )
+    /**
+     * 
+     * @return String version of the Identifier or empty string.
+     */    
+    public String getIdentifierAsString()
     {
-        String id = this.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
-        if( null != id || !"".equals( id.trim() ) || identifier.trim().equals( id.trim() ) )
+        if (this.identifier == null)
         {
-            log.warn( String.format( "Overwriting existing identifier '%s' with new one: '%s'", id, identifier ) );
+            return "";
         }
-        this.getDublinCoreMetaData().setIdentifier( identifier );
+        
+        return this.identifier.getIdentifier();
     }
 
+    public void setIdentifier( ObjectIdentifier new_identifier )
+    {
+        this.identifier  = new_identifier; 
+        
+        this.getDublinCoreMetaData().setIdentifier( identifier.getIdentifier() );
+        
+    }
 
+    
     /**
      * Adds a metadata element conforming to the {@link MetaData}
      * interface. If this class already contains a {@link MetaData}
@@ -561,25 +564,6 @@ public class CargoContainer
         return retval;
     }
 
-
-//    public void set_001_a( String _001_a )
-//    {
-//        if( this._001_a == null )
-//        {
-//            this._001_a = _001_a;
-//        }
-//    }
-//
-//
-//    public String get_001_a()
-//    {
-//        if( this._001_a != null )
-//        {
-//            return this._001_a;
-//        }
-//        else
-//        {
-//            return "";
-//        }
-//    }
+ 
 }
+
