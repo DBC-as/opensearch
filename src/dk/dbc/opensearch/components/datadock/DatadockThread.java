@@ -331,10 +331,9 @@ public class DatadockThread implements Callable<Boolean>
         }
         catch ( Exception e )
         {
-	    String errorMsg = String.format( "Error in %s plugin handling. Messag: %s", this.getClass().toString(), e.getMessage() );
-            log.error( errorMsg );
+	    String errorMsg = String.format( "Error in %s plugin handling. Message: %s", this.getClass().toString(), e.getMessage() );
+            log.error( String.format( "setting status to FAILURE with message: %s", errorMsg ) );
             log.error("Trace ", e );
-            // harvester.setStatus( datadockJob.getIdentifier(), JobStatus.FAILURE );
 	    harvester.setStatusFailure( datadockJob.getIdentifier(), errorMsg );
             return success;
         }
