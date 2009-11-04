@@ -99,13 +99,6 @@ public class DatadockThread implements Callable<Boolean>
      * DataDock is initialized with a DatadockJob containing information about
      * the data to be 'docked' into to system
      * 
-     * @throws ConfigurationException
-     *             if the FedoraHandler could not be initialized. \see
-     *             dk.dbc.opensearch.tools.FedoraHandler
-     * @throws ClassNotFoundException
-     *             if the database could not be initialised in the Estimation
-     *             class \see dk.dbc.opensearch.tools.DBConnection
-     * 
      * @param datadockJob
      *            the information about the data to be docked
      * @param processqueue
@@ -113,9 +106,7 @@ public class DatadockThread implements Callable<Boolean>
      * @param jobMap
      *            information about the tasks that should be solved by the
      *            pluginframework
-     * @throws ConfigurationException
-     *             if the FedoraHandler could not be initialized. \see
-     *             dk.dbc.opensearch.tools.FedoraHandler
+     * @throws ConfigurationException if no ObjectRepository could be reached
      * @throws ParserConfigurationException
      * @throws PluginResolverException
      * @throws NullPointerException
@@ -174,8 +165,6 @@ public class DatadockThread implements Callable<Boolean>
      *             if the PluginResolver.getPlugin cant find the file its
      *             searcing for
      * @throws IOException
-     *             if the FedoraHandler could not read data from the
-     *             CargoContainer
      * @throws ParserConfigurationException
      *             if the PluginResolver or CargoContainer has troubles with the
      *             DocumentBuilder and DocumentBuilderFactory
