@@ -66,7 +66,7 @@ def teardown_setup( cursor ):
     '''
     _open_and_execute( cursor, '../admin/teardown.sql' )
 
-    _init_db = [ 'processqueue_init', 'statistics_init', 'not_indexed', 'not_docked' ]
+    _init_db = [ 'processqueue_init', 'not_indexed', 'not_docked' ]
 
     for sql in _init_db:
         _open_and_execute( cursor, '../admin/'+sql+'.sql' )
