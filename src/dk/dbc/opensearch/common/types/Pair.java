@@ -24,11 +24,10 @@ package dk.dbc.opensearch.common.types;
  * Pair defines a type that takes two elements and stores them for later
  * retrieval.
  */
-public interface Pair<E, V>// implements Comparator
+public interface Pair<E, V>
 {
 
     E getFirst();
-
 
     V getSecond();
 

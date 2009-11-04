@@ -1,7 +1,4 @@
-/** \brief UnitTest for ComparablePair **/
-package dk.dbc.opensearch.common.types;
-
-/**
+/*
  *   
  *This file is part of opensearch.
  *Copyright © 2009, Dansk Bibliotekscenter a/s, 
@@ -20,6 +17,10 @@ package dk.dbc.opensearch.common.types;
  *You should have received a copy of the GNU General Public License
  *along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/** \brief UnitTest for ComparablePair **/
+
+package dk.dbc.opensearch.common.types;
 
 
 import dk.dbc.opensearch.common.types.ComparablePair;
@@ -187,6 +188,4 @@ public class ComparablePairTest {
         assertTrue( 0 == one.compareTo( two ) );
         assertTrue( 0 == two.compareTo( one ) );
     }
-
-    
 }
