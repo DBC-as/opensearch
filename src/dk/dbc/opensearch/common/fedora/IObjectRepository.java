@@ -155,6 +155,7 @@ public interface IObjectRepository
      * 
      * @param verbatimSearchString string that is used as query
      * @param searchableFields {@link List} of fields to search with {@code verbatimSearchString} in
+     * @param cutIdentifier stops the search and returns result if it encounters this
      * @param maximumResult integer limiting the returned {@link List} of identifiers
      * 
      * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
@@ -169,9 +170,12 @@ public interface IObjectRepository
      * List} of returned identifiers with {@code maximumResult}
      * 
      * @param resultSearchFields {@link List} of {@link InputPair}s
-     * that contains which Strins to search for in which fields
-     * @param cutIdentifier stops the search and returns result if it encounters this
-     * @param maximumResult integer limiting the returned {@link List} of identifiers
+     * that contains pairwise search Strings and the fields to search
+     * for that String in
+     * @param cutIdentifier stops the search and returns result if it
+     * encounters this identifier
+     * @param maximumResult integer limiting the returned {@link List}
+     * of identifiers
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
@@ -269,6 +273,7 @@ public interface IObjectRepository
      */
     public List< InputPair<IPredicate, String> > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
 
+
     /**
      *  Adds 
      *  
@@ -278,8 +283,9 @@ public interface IObjectRepository
      * @param subjectIdentifer
      * @throws ObjectRepositoryException
      */     
-
      public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
+
+
      /**
       * 
       * @param objectIdentifier i

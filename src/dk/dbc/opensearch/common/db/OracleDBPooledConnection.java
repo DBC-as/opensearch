@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Handles an Oracle Connection Pool. 
+ * Handles an Oracle Connection Pool.
  * The connection pool maintains the Oracle Connections in a safe manner.
  */
 public class OracleDBPooledConnection
@@ -45,14 +45,14 @@ public class OracleDBPooledConnection
 
     /**
      * Initializes the OracleDBPooledConnection.
-     * 
+     *
      * @param cache_name the name of the cache used in the OracleDataSource.
      * @param ods an initialized OracleDataSource.
      */
-    public OracleDBPooledConnection( String cache_name, OracleDataSource ods ) 
+    public OracleDBPooledConnection( String cache_name, OracleDataSource ods )
     {
-	CACHE_NAME = cache_name;
-	this.ods = ods;
+        CACHE_NAME = cache_name;
+        this.ods = ods;
     }
 
     /**
@@ -64,20 +64,20 @@ public class OracleDBPooledConnection
      */
     public synchronized Connection getConnection() throws SQLException
     {
-	log.info( "Requesting a connection" );
-	if ( ods == null )
-	{
-	    throw new SQLException("Could not get connection. The OracleDataSource is null (unintialized?)");
-	}
-	Connection tmp = ods.getConnection();
-	if ( tmp == null ) {
-	    log.info( "THIS IS NOT RIGHT!" ); 
-	}
-	log.info( "Returning connection" );
-	return tmp;
-	//	return ods.getConnection();
-    } 
-    
+        log.info( "Requesting a connection" );
+        if ( ods == null )
+        {
+            throw new SQLException("Could not get connection. The OracleDataSource is null (unintialized?)");
+        }
+        Connection tmp = ods.getConnection();
+        if ( tmp == null ) {
+            log.info( "THIS IS NOT RIGHT!" );
+        }
+        log.info( "Returning connection" );
+        return tmp;
+        //  return ods.getConnection();
+    }
+
 
     /**
      * Closes the connection pool
@@ -86,11 +86,9 @@ public class OracleDBPooledConnection
      */
     public synchronized void shutdown() throws SQLException
     {
-	if (ods != null)
-	{ 
-	    ods.close();
-	}
+        if (ods != null)
+        {
+            ods.close();
+        }
     }
-
-
 }
