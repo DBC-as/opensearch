@@ -331,6 +331,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
         <include name="**/*.class" />
         <exclude name="**/*Test*.class" />
         <exclude name="**/*Main*.class"/>
+        <exclude name="**/*Func*.class"/>
+        <exclude name="**/ReadIndex.class" />
+        <exclude name="**/ItqlTool.class" />
+        <exclude name="**/Scan.class" />
       </fileset>
     </cobertura-instrument>
   </target>
