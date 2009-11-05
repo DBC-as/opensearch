@@ -26,22 +26,15 @@ package dk.dbc.opensearch.common.types;
 
 public enum HarvestType
 {
-    ESHarvest( "ESHarvest", "harvest from the ES-base"),
-    FileHarvest( "FileHarvest", "harvest from an outdated filestruture" ),
-    FileHarvestLight( "FileHarvestLight", "harvester for small tests");
+    ESHarvest( "harvest from the ES-base"),
+    FileHarvest( "harvest from an outdated filestruture" ),
+    FileHarvestLight( "harvester for small tests");
 
-    String name;
     String description;
 
-    HarvestType( String name, String description )
+    HarvestType( String description )
     {
-        this.name = name;
         this.description = description;
-    }
-
-    public String getName()
-    {
-        return this.name;
     }
 
     public static HarvestType getHarvestType( String name )
@@ -50,7 +43,7 @@ public enum HarvestType
         for (HarvestType ht : HarvestType.values() )
         {
             //yes, we are very forgiving
-            if( name.toLowerCase().equals( ht.getName().toLowerCase() ) )
+            if( name.toLowerCase().equals( ht.toString().toLowerCase() ) )
             {
                 HT = ht;
             }
