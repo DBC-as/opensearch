@@ -1,6 +1,6 @@
-/*   
+/*
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
   opensearch is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ public class FedoraHandle
     private String fedora_base_url;
 
 
-    public FedoraHandle() throws ObjectRepositoryException
+    FedoraHandle() throws ObjectRepositoryException
     {
         String host;
         String port;
@@ -107,7 +107,7 @@ public class FedoraHandle
         try
         {
             fea = fc.getAPIA();
-            fem = fc.getAPIM();            
+            fem = fc.getAPIM();
         }
         catch( ServiceException ex )
         {
@@ -125,26 +125,26 @@ public class FedoraHandle
 
     private FedoraAPIA getAPIA() throws ServiceException
     {
-    	log.trace( "FedoraHandle getAPIA" );
-    	return fea;
+        log.trace( "FedoraHandle getAPIA" );
+        return fea;
     }
 
 
     private FedoraAPIM getAPIM()
     {
-    	log.trace( "FedoraHandle getAPIM" );
-    	return fem;
+        log.trace( "FedoraHandle getAPIM" );
+        return fem;
     }
 
 
     private FedoraClient getFC()
     {
-    	log.trace( "FedoraHandle getFC()" );
-    	return fc;
+        log.trace( "FedoraHandle getFC()" );
+        return fc;
     }
 
 
-    public String ingest( byte[] data, String datatype, String logmessage ) throws ConfigurationException, ServiceException, ServiceException, IOException
+    String ingest( byte[] data, String datatype, String logmessage ) throws ConfigurationException, ServiceException, ServiceException, IOException
     {
         long timer = 0;
         if( log.isDebugEnabled() )
@@ -164,7 +164,7 @@ public class FedoraHandle
     }
 
 
-    public String uploadFile( File fileToUpload ) throws IOException
+    String uploadFile( File fileToUpload ) throws IOException
     {
         long timer = 0;
 
@@ -185,7 +185,7 @@ public class FedoraHandle
     }
 
 
-    public String modifyDatastreamByReference( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, String MIMEType, String formatURI, String dsLocation, String checksumType, String checksum, String logMessage, boolean force ) throws RemoteException
+    String modifyDatastreamByReference( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, String MIMEType, String formatURI, String dsLocation, String checksumType, String checksum, String logMessage, boolean force ) throws RemoteException
     {
         long timer = 0;
 
@@ -205,7 +205,7 @@ public class FedoraHandle
         return timestamp;
     }
 
-    public String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -225,7 +225,7 @@ public class FedoraHandle
     }
 
 
-    public byte[] getDatastreamDissemination( String pid, String datastreamId, String asOfDateTime ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
+    byte[] getDatastreamDissemination( String pid, String datastreamId, String asOfDateTime ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
     {
         MIMETypedStream ds = null;
         long timer = 0;
@@ -246,22 +246,22 @@ public class FedoraHandle
         return ds.getStream();
     }
 
-    
-    public String getDataStreamsXML( String pid ) throws IOException {
-        
+
+    String getDataStreamsXML( String pid ) throws IOException {
+
         long timer = 0;
         if( log.isDebugEnabled() )  {
             timer = System.currentTimeMillis();
         }
-        Datastream[] res=getAPIM().getDatastreams( pid, null, null );   
+        Datastream[] res=getAPIM().getDatastreams( pid, null, null );
 
-        
-          
-        
+
+
+
         return "";
     }
 
-    public String[] getNextPID( int numberOfPids, String prefix ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    String[] getNextPID( int numberOfPids, String prefix ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         String[] pidlist = null;
         long timer = 0;
@@ -288,7 +288,7 @@ public class FedoraHandle
     }
 
 
-    public TupleIterator getTuples( Map< String,String > params ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    TupleIterator getTuples( Map< String,String > params ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -304,11 +304,11 @@ public class FedoraHandle
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
-        return tuples;    
+        return tuples;
     }
 
 
-    public boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -328,7 +328,7 @@ public class FedoraHandle
         return ret;
     }
 
-    public boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -370,7 +370,7 @@ public class FedoraHandle
     }
 
 
-    public RelationshipTuple[] getRelationships( String subject, String predicate ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    RelationshipTuple[] getRelationships( String subject, String predicate ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -391,7 +391,7 @@ public class FedoraHandle
     }
 
 
-    public String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -412,7 +412,7 @@ public class FedoraHandle
     }
 
 
-    public String purgeObject( String identifier, String logmessage, boolean force ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, RemoteException
+    String purgeObject( String identifier, String logmessage, boolean force ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, RemoteException
     {
         long timer = 0;
 
@@ -420,7 +420,7 @@ public class FedoraHandle
         {
             timer = System.currentTimeMillis();
         }
-        
+
         String timestamp = this.getAPIM().purgeObject( identifier, logmessage, force );
 
         if ( log.isDebugEnabled() )
@@ -428,11 +428,11 @@ public class FedoraHandle
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
         }
-        
+
         return timestamp;
-    }    
-    
-    public boolean hasObject( String identifier ) throws MalformedURLException, IOException {
+    }
+
+    boolean hasObject( String identifier ) throws MalformedURLException, IOException {
 
         long timer = 0;
 
@@ -461,6 +461,6 @@ public class FedoraHandle
         catch (FileNotFoundException ex)
         {
             return false;
-        }       
-   }
+        }
+    }
 }
