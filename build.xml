@@ -233,7 +233,7 @@
   </target>
 
 
-  <target name="coverage-report-xml" depends="coverage-test">
+  <target name="coverage-report-xml" depends="clean, coverage-test">
     <antcall target="_coverage-report-xml" />
   </target>
 
