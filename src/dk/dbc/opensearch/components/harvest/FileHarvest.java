@@ -291,13 +291,8 @@ public class FileHarvest implements IHarvest
 
 
     /**
-     * getJobs. Locate jobs and returns them.  First off, the
-     * candidates already registered analyzed. if their filesize has
-     * remained the same as last time it is removed from the
-     * applications vector and added to the newJobs vector and
-     * returned when the method exits.
-     *
-     * afterwards it finds new jobs and adds them to the applications
+     * getJobs. Creates an array of IJob from the info gained from getNewJobs method. 
+     * The max amount of files returned from getNewJobs is the maxAmount argument
      * vector, and generate a new snapshot of the harvest directory.
      * @throws ConfigurationException
      *
@@ -443,10 +438,8 @@ public class FileHarvest implements IHarvest
 
     /**
      * Returns a HashSet of InputPairs with file objects. The size of
-     * the HashSet is determined by the getMaxToHarvest configuration
-     * values, which has no default.
-     * \todo: make getMaxToHarvest default to something sane
-     *
+     * the HashSet is determined by the max which is set by the getJobs method
+     * A file object is moved from the toHarvestFolder into the harvestProgessFolder 
      *
      * @return
      */
@@ -511,7 +504,7 @@ public class FileHarvest implements IHarvest
             throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
 
         }
-
+        log.trace( String.format( "File: %s is moved to: %s", src.getAbsolutePath() , dest.getAbsolutePath() ) );
         return dest;
     }
 
