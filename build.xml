@@ -115,7 +115,7 @@
   </target>
 
 
-  <target name="test" depends="compile-tests">
+  <target name="test" depends="clean, compile-tests">
     <antcall target="_test"/>
   </target>
 
@@ -135,7 +135,7 @@
   </target>
 
 
-  <target name="dist" depends="config_py">
+  <target name="dist" depends="clean, config_py">
     <antcall target="compile_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>

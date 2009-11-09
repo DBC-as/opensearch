@@ -85,8 +85,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         types.add( "Avis" );
         types.add( "Avisartikel" );
         types.add( "Tidsskrift" );
-        types.add( "Tidsskriftsartikel" );
-        
+        types.add( "Tidsskriftsartikel" );        
     }
 
 
@@ -170,9 +169,10 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 res.append(s.charAt(i));
             }
         }
-        return res.toString();
-      
+
+        return res.toString();      
     }
+
 
     synchronized private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
     {
@@ -202,17 +202,13 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! dcSource.equals( "" ) )
             {
                 log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
-                //searchFields.add( "source" );
                 InputPair< String, String > searchPair = new InputPair< String, String >( "source", dcSource );                
                 resultSearchFields.add( searchPair );
                 fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
-                //fedoraPids = objectRepository.getIdentifiers( dcSource, searchFields, pid, maximumResults );
-
+             
                 if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
                 {
-                    //searchFields.clear();
                     resultSearchFields.clear();
-                    //searchFields.add( "title" );
                     searchPair = new InputPair< String, String >( "title", dcSource );
                     resultSearchFields.add( searchPair );
                     fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
@@ -224,18 +220,14 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 log.debug( String.format( "2 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
                 if ( ! dcSource.equals( "" ) )
                 {
-                    //searchFields.clear();
                     resultSearchFields.clear();
-                    //searchFields.add( "source" );
                     InputPair< String, String > searchPair = new InputPair< String, String >( "source", dcTitle );
                     resultSearchFields.add( searchPair );
                     fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 }
                 else
                 {
-                    //searchFields.clear();
                     resultSearchFields.clear();
-                    //searchFields.add( "title" );
                     InputPair< String, String > searchPair = new InputPair<String, String>( "title", dcTitle );
                     resultSearchFields.add( searchPair );
                     fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
@@ -252,20 +244,12 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
                 log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle, dcCreator ) );
-                //searchFields.clear();
                 resultSearchFields.clear();
                 InputPair< String, String > searchTitlePair = new InputPair<String, String>( "title", dcTitle );
                 InputPair< String, String > searchCreatorPair = new InputPair<String, String>( "creator", dcCreator );
                 resultSearchFields.add( searchTitlePair );
                 resultSearchFields.add( searchCreatorPair );
-                //searchFields.add( "title" );
-                //searchFields.add( "creator" );
 
-                /*List< InputPair< String, String > > searchList = new ArrayList< InputPair< String, String > >();
-                InputPair< String, String > pair = new InputPair< String, String >( dcTitle, dcSource );
-                searchList.add( pair );
-                searchList.add( pair );
-                fedoraPids = objectRepository.getIdentifiers( searchList, searchFields, pid, 10000 );*/
                 fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
             }
             else

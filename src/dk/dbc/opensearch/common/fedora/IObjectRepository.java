@@ -26,16 +26,15 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.metadata.IPredicate;
-
 import dk.dbc.opensearch.common.types.InputPair;
+
 import java.util.List;
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 
 
 
@@ -185,7 +184,20 @@ public interface IObjectRepository
     public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
 
 
+    /**
+     * \todo: explain what this method does
+     * Searches the object repository using the a {@link List} of
+     * {@code searchStrings} as query, limiting the search to the
+     * {@link List} of {@code searchableFields} and limiting {@link
+     * List} of returned identifiers with {@code maximumResult}
+     *
+     * @param resultSearchableFields {@link List} of fields to search in for {@code searchStrings}
+     * @param maximumResult integer limiting the returned {@link List} of identifiers
+     *
+     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
+     */
     public List< String > getIdentifiersUnqualified( List< InputPair< String, String > > resultSearchFields, int maximumResults );
+
 
     /** 
      * Stores data supplied in {@code cargo} in the object identified
