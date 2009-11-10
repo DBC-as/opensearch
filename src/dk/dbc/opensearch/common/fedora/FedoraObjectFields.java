@@ -23,7 +23,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.fedora;
 
 /**
- *
+ * Enum class for representing the searchable fields in a fedora
+ * object repository.
  */
 public enum FedoraObjectFields
 {
@@ -57,11 +58,8 @@ public enum FedoraObjectFields
         this.fieldname = fieldname;
     }
 
-
     public String fieldname()
     {
         return this.fieldname;
     }
-
-
 }
