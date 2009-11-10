@@ -88,8 +88,8 @@ public class FileHarvest implements IHarvest
     static Logger log = Logger.getLogger( FileHarvest.class );
 
 
-    private Vector< InputPair< File, Long > > submitters;
-    private Vector< InputPair< File, Long > > formats;
+    private ArrayList<File> submitters;
+    private ArrayList<File> formats;
     private Vector< InputPair< String, String > > submittersFormatsVector;
     private String datadockJobsFilePath;
     private String toHarvestFolder;
@@ -115,8 +115,8 @@ public class FileHarvest implements IHarvest
      */
     public FileHarvest() throws IllegalArgumentException, SAXException, IOException, ConfigurationException, FileNotFoundException
     {
-        this.submitters = new Vector<InputPair<File, Long>>();
-        this.formats = new Vector<InputPair<File, Long>>();
+        this.submitters = new ArrayList<File>();
+        this.formats = new ArrayList<File>();
 
         // Getting path for the jobs file for the building of the submitterformatvector
         datadockJobsFilePath = DatadockConfig.getPath();
@@ -248,20 +248,19 @@ public class FileHarvest implements IHarvest
             if( submitter.isDirectory() )
             {
                 log.debug( String.format( "adding submitter: path='%s'", submitter.getAbsolutePath() ) );
-                submitters.add( new InputPair<File, Long>( submitter, submitter.lastModified() ) );
+                submitters.add( submitter );
             }
         }
 
         log.debug( "formats:" );
-        for( InputPair<File, Long> submitter : submitters )
+        for( File submitterFile : submitters )
         {
-            File submitterFile = submitter.getFirst();
             for( File format : submitterFile.listFiles() )
             {
                 if( checkSubmitterFormat( submitterFile, format ) )
                 {
                     log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
-                    formats.add( new InputPair<File, Long>( format, format.lastModified() ) );
+                    formats.add( format );
                 }
             }
         }
@@ -303,7 +302,7 @@ public class FileHarvest implements IHarvest
     {
         max = maxAmount;
         ArrayList<IJob> jobs = new ArrayList<IJob>();
-        HashSet<InputPair< File, Long > > newJobs = new HashSet< InputPair< File, Long > >( 0 );
+        ArrayList<File> newJobs = new ArrayList<File>();
         try
         {
             newJobs = getNewJobs();
@@ -321,11 +320,11 @@ public class FileHarvest implements IHarvest
             log.error( ce.toString() );
         }
 
-        for( InputPair<File, Long> job : newJobs )
+        for( File job : newJobs )
         {
-            URI uri = job.getFirst().toURI();
-            String grandParentFile = job.getFirst().getParentFile().getParentFile().getName();
-            String parentFile = job.getFirst().getParentFile().getName();
+            URI uri = job.toURI();
+            String grandParentFile = job.getParentFile().getParentFile().getName();
+            String parentFile = job.getParentFile().getName();
             FileIdentifier identifier = new FileIdentifier( uri );
             IJob theJob = buildTheJob( identifier, grandParentFile, parentFile );
             log.debug( String.format( "found new job: path=%s, submitter=%s, format=%s ", theJob.getIdentifier(), grandParentFile, parentFile ) );
@@ -443,23 +442,38 @@ public class FileHarvest implements IHarvest
      *
      * @return
      */
-    private HashSet< InputPair< File, Long > > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
+    private ArrayList<File> getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
         log.debug( "Calling FileHarvest.getNewJobs" );
-        HashSet< InputPair< File, Long > > jobs = new HashSet< InputPair< File, Long > >();
+        ArrayList< File> jobs = new ArrayList<File>();
 
         log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
-        for( InputPair< File, Long > format : formats )
+        for( File format : formats )
         {
-            File[] files = format.getFirst().listFiles();
-            int l = files.length;
-            int i = 0;
-            while( i < l && i < max )
+            if( format != null )
             {
-                File job = files[i];
-                File dest = move( job, toHarvestFolder, harvestProgressFolder );
-                jobs.add( new InputPair<File, Long>( dest, dest.length() ) );
-                i++;
+                File[] files = format.listFiles();
+                
+                if( files != null)
+                {
+                    int l = files.length;
+                    int i = 0;
+                    while( i < l && i < max )
+                    {
+                        File job = files[i];
+                        File dest = move( job, toHarvestFolder, harvestProgressFolder );
+                        jobs.add( dest );
+                        i++;
+                    }
+                }
+                else
+                {
+                    log.warn( String.format( "the File[] created from listFiles on format.getFirst() : %s is null", format.toString() ) );
+                }
+            }
+            else
+            {
+                log.warn( "format.getFirst() is null, the formats vector is corrupt" );
             }
         }
 
