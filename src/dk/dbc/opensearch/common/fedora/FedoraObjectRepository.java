@@ -569,17 +569,17 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiers( String verbatimSearchString, List< Property > searchableFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( String verbatimSearchString, List< FedoraObjectFields > searchableFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ searchableFields.size() ];
-        List< InputPair< Property, Value > > resultSearchFields = new ArrayList< InputPair< Property, Value > >();
+        List< InputPair< FedoraObjectFields, Value > > resultSearchFields = new ArrayList< InputPair< FedoraObjectFields, Value > >();
 
         int i = 0;
-        for( Property field : searchableFields )
+        for( FedoraObjectFields field : searchableFields )
         {
-            Property property = field;
-            resultFields[i] = field.getProperty();
-            InputPair< Property, Value > pair = new InputPair< Property, Value >( property, new Value( verbatimSearchString ) );
+            FedoraObjectFields property = field;
+            resultFields[i] = field.fieldname();
+            InputPair< FedoraObjectFields, Value > pair = new InputPair< FedoraObjectFields, Value >( property, new Value( verbatimSearchString ) );
             resultSearchFields.add( pair );
             i++;
         }
@@ -601,15 +601,14 @@ public class FedoraObjectRepository implements IObjectRepository
 
     @Override
     //public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults )
-    public List< String > getIdentifiers( List< InputPair< Property, Value > > resultSearchFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, Value > > resultSearchFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for( InputPair< Property, Value > field : resultSearchFields )
+        for( InputPair< FedoraObjectFields, Value > field : resultSearchFields )
         {
-            //String property = field.getFirst();
-            Property property = field.getFirst();
-            resultFields[i] = property.getProperty();
+            FedoraObjectFields property = field.getFirst();
+            resultFields[i] = property.fieldname();
             i++;
         }
 
@@ -637,14 +636,14 @@ public class FedoraObjectRepository implements IObjectRepository
     
 
     @Override
-    public List< String > getIdentifiers( List< InputPair< Property, Value > > resultSearchFields, String cutPid, int maximumResults, String namespace )
+    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, Value > > resultSearchFields, String cutPid, int maximumResults, String namespace )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for( InputPair< Property, Value > field : resultSearchFields )
+        for( InputPair< FedoraObjectFields, Value > field : resultSearchFields )
         {
-            Property property = field.getFirst();
-            resultFields[i] = property.getProperty();
+            FedoraObjectFields property = field.getFirst();
+            resultFields[i] = property.fieldname();
             i++;
         }
 
@@ -676,14 +675,14 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiersUnqualified( List< InputPair< Property, Value > > resultSearchFields, int maximumResults )
+    public List< String > getIdentifiersUnqualified( List< InputPair< FedoraObjectFields, Value > > resultSearchFields, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for (InputPair< Property, Value > field : resultSearchFields )
+        for (InputPair< FedoraObjectFields, Value > field : resultSearchFields )
         {
-            Property property = field.getFirst();
-            resultFields[i] = property.getProperty();
+            FedoraObjectFields property = field.getFirst();
+            resultFields[i] = property.fieldname();
             i++;
         }
 
@@ -703,7 +702,7 @@ public class FedoraObjectRepository implements IObjectRepository
     
 
 
-    ObjectFields[] searchRepository( String[] resultFields, List< InputPair< Property, Value > > propertiesAndVaulues, String comparisonOperator, int maximumResults )
+    ObjectFields[] searchRepository( String[] resultFields, List< InputPair< FedoraObjectFields, Value > > propertiesAndVaulues, String comparisonOperator, int maximumResults )
     {
         // \Todo: check needed on the operator
         int size = propertiesAndVaulues.size();
@@ -713,13 +712,10 @@ public class FedoraObjectRepository implements IObjectRepository
         
         for( int i = 0; i < size; i++ )
         {
-            //InputPair< String, String > pair = propertiesAndVaulues.get( i );
-            InputPair< Property, Value > pair = propertiesAndVaulues.get( i );
-            //String property = pair.getFirst();
-            Property property = pair.getFirst();
-            //String value = pair.getSecond();
+            InputPair< FedoraObjectFields, Value > pair = propertiesAndVaulues.get( i );
+            FedoraObjectFields property = pair.getFirst();
             Value value = pair.getSecond();
-            cond[i] = new Condition( property.getProperty(), comp, value.getValue() );
+            cond[i] = new Condition( property.fieldname(), comp, value.getValue() );
         }
 
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );

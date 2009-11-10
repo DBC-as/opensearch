@@ -27,7 +27,6 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.fedora.IObjectRepository.Property;
 import dk.dbc.opensearch.common.fedora.IObjectRepository.Value;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -39,7 +38,7 @@ import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.ComparisonOperator;
 import fedora.server.types.gen.Condition;
 import fedora.server.types.gen.FieldSearchResult;
-//import fedora.utilities.Foxml11Document.Property;
+import fedora.utilities.Foxml11Document.Property;
 import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.RelationshipTuple;
 
@@ -280,7 +279,7 @@ public class AdministrationFunc
         Date date = new Date( 1 );
 
         Foxml11Document doc = new Foxml11Document( pid.toString() );
-        doc.addObjectProperty( Foxml11Document.Property.STATE, "A" );
+        doc.addObjectProperty( Property.STATE, "A" );
 
         /*if ( contentLocation != null && contentLocation.length() > 0)
         {
@@ -365,14 +364,14 @@ public class AdministrationFunc
 
     static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
-        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", new Property( "title" ), new Value( "Harry Potter" ), "work" );
+        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", FedoraObjectFields.TITLE, new Value( "Harry Potter" ), "work" );
         System.out.println( "Everything ok: " + ret );
     }
 
 
     static void testFindObjectFieldsDouble() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
-        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", new Property( "title" ), new Value( "Harry Potter og Fønixordenen" ), new Property( "creator" ), new Value( "Joanne K. Rowling" ), "work" );
+        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", FedoraObjectFields.TITLE, new Value( "Harry Potter og Fønixordenen" ), FedoraObjectFields.CREATOR, new Value( "Joanne K. Rowling" ), "work" );
         System.out.println( "Everything ok: " + ret );
     }
 

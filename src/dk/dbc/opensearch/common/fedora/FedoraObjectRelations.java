@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository.Property;
+import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository.Value;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -339,9 +339,9 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, Property property_1, Value value_1, Property property_2, Value value_2, String namespace ) throws ObjectRepositoryException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, FedoraObjectFields property_1, Value value_1, FedoraObjectFields property_2, Value value_2, String namespace ) throws ObjectRepositoryException
     {
-        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1.getProperty(), value_1.getValue() ) );
+        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1.fieldname(), value_1.getValue() ) );
         String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
         log.debug( "targetPid found: " + targetPid );
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
@@ -351,7 +351,7 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, Property property, Value value, String namespace ) throws ObjectRepositoryException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, FedoraObjectFields property, Value value, String namespace ) throws ObjectRepositoryException
     {
         log.trace( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
         String targetPid = findPropertyPid( sourcePid, property, value );
@@ -555,16 +555,15 @@ public class FedoraObjectRelations
     }
 
 
-    private String findPropertiesPid( String sourcePid, Property property_1, Value value_1, Property property_2, Value value_2 )
+    private String findPropertiesPid( String sourcePid, FedoraObjectFields property_1, Value value_1, FedoraObjectFields property_2, Value value_2 )
     {
-        /** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
-        String[] resultFields = { property_1.getProperty(), property_2.getProperty() };
+        String[] resultFields = { property_1.fieldname(), property_2.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        List< InputPair< Property, Value > > propertiesAndValues = new ArrayList< InputPair< Property, Value > >();
+        List< InputPair< FedoraObjectFields, Value > > propertiesAndValues = new ArrayList< InputPair< FedoraObjectFields, Value > >();
 
-        propertiesAndValues.add( new InputPair< Property, Value >( property_1, value_1 ) );
-        propertiesAndValues.add( new InputPair< Property, Value >( property_2, value_2 ) );
+        propertiesAndValues.add( new InputPair< FedoraObjectFields, Value >( property_1, value_1 ) );
+        propertiesAndValues.add( new InputPair< FedoraObjectFields, Value >( property_2, value_2 ) );
 
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000 );        
         String retVal = null;
@@ -577,43 +576,6 @@ public class FedoraObjectRelations
                 return retVal;
             }
         }
-        //ObjectFields[] pids_1 = fedoraObjectRepository.searchRepository( resultFields, property_1, values_1, "has", 100000 );
-        //ObjectFields[] pids_2 = fedoraObjectRepository.searchRepository( resultFields, property_2, values_2, "has", 100000 );
-
-        /*if( pids_1 == null || pids_2 == null )
-        {
-            log.warn( String.format( "no matches found for either '%s', '%s' or both", value_1, value_2 ) );
-            return null;
-        }
-
-        // move pids to ArrayList and sort for quicker search and match
-        int pids_2_len = pids_2.length;
-        ArrayList<String> pidsArrLst_2 = new ArrayList<String>( pids_2_len );
-        for( int i = 0; i < pids_2_len; i++ )
-        {
-            pidsArrLst_2.add( pids_2[i].getPid() );
-        }
-        Collections.sort( pidsArrLst_2 );
-
-        String retval = null;
-        if( pids_1 != null && pids_2 != null )
-        {
-            String nextPid = null;
-            int pids_1_len = pids_1.length;
-            for( int i = 0; i < pids_1_len; i++ )
-            {
-                nextPid = pids_1[i].getPid();
-                if( pidsArrLst_2.contains( nextPid ) )
-                {
-                    int index = pidsArrLst_2.indexOf( nextPid );
-                    String ret = pidsArrLst_2.get( index );
-                    if( ret.equals( nextPid ) && !ret.equals( sourcePid ) )
-                    {
-                        retval = ret;
-                    }
-                }
-            }
-        }*/
 
         if( retVal == null )
         {
@@ -624,14 +586,14 @@ public class FedoraObjectRelations
     }
 
 
-    private String findPropertyPid( String sourcePid, Property property, Value value )
+    private String findPropertyPid( String sourcePid, FedoraObjectFields property, Value value )
     {
-        String[] resultFields = { property.getProperty() };
+        String[] resultFields = { property.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;        
-        List< InputPair< Property, Value > > propertiesAndValues = new ArrayList< InputPair< Property, Value > >();
+        List< InputPair< FedoraObjectFields, Value > > propertiesAndValues = new ArrayList< InputPair< FedoraObjectFields, Value > >();
 
-        propertiesAndValues.add( new InputPair< Property, Value >( property, value ) );
+        propertiesAndValues.add( new InputPair< FedoraObjectFields, Value >( property, value ) );
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000 );
 
         String retval = null;

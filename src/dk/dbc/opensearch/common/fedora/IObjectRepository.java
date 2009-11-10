@@ -50,7 +50,7 @@ import java.util.List;
  */
 public interface IObjectRepository
 {
-    public class Property 
+    /*public class Property
     {
         private String property;
 
@@ -63,7 +63,7 @@ public interface IObjectRepository
         {
             return this.property;
         }
-    }
+    }*/
 
 
     public class Value
@@ -190,7 +190,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
      */
-    public List< String > getIdentifiers( String verbatimSearchString, List< Property > searchableFields, String cutIdentifier, int maximumResult );
+    public List< String > getIdentifiers( String verbatimSearchString, List< FedoraObjectFields > searchableFields, String cutIdentifier, int maximumResult );
 
 
     /** 
@@ -209,10 +209,10 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiers( List< InputPair< Property, Value > > resultSearchFields, String cutIdentifier, int maximumResults );
+    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, Value > > resultSearchFields, String cutIdentifier, int maximumResults );
 
 
-    public List< String > getIdentifiers( List< InputPair< Property, Value > > resultSearchFields, String cutPid, int maximumResults, String namespace );
+    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, Value > > resultSearchFields, String cutPid, int maximumResults, String namespace );
 
 
     /**
@@ -227,7 +227,7 @@ public interface IObjectRepository
      *
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiersUnqualified( List< InputPair< Property, Value > > resultSearchFields, int maximumResults );
+    public List< String > getIdentifiersUnqualified( List< InputPair< FedoraObjectFields, Value > > resultSearchFields, int maximumResults );
 
 
     /** 
