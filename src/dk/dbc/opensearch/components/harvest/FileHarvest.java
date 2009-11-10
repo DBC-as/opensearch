@@ -447,7 +447,7 @@ public class FileHarvest implements IHarvest
         log.debug( "Calling FileHarvest.getNewJobs" );
         ArrayList< File> jobs = new ArrayList<File>();
 
-        log.debug( "FileHarvest.getNewJobs: Vector formats: " + formats.toString() );
+        log.debug( "FileHarvest.getNewJobs: ArrayList formats: " + formats.toString() );
         for( File format : formats )
         {
             if( format != null )
@@ -468,12 +468,12 @@ public class FileHarvest implements IHarvest
                 }
                 else
                 {
-                    log.warn( String.format( "the File[] created from listFiles on format.getFirst() : %s is null", format.toString() ) );
+                    log.error( String.format( "the File[] created from listFiles on format: %s is null", format.toString() ) );
                 }
             }
             else
             {
-                log.warn( "format.getFirst() is null, the formats vector is corrupt" );
+                log.error( "format is null, the formats vector is corrupt" );
             }
         }
 
