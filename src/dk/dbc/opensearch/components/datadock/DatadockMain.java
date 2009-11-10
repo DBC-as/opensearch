@@ -186,13 +186,9 @@ public class DatadockMain
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         boolean terminateOnZeroSubmitted = false;
-
-        //try{
-            harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
-        // }
-        // catch( NullPointerException npe ){ // no harvester specified
-        //         harvestType = defaultHarvestType;
-        //}
+        
+        harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
+    
         if ( harvestType == null )
         {
                 harvestType = defaultHarvestType;
