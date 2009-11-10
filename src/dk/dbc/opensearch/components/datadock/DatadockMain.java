@@ -187,11 +187,16 @@ public class DatadockMain
 
         boolean terminateOnZeroSubmitted = false;
         
-        harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
-    
+        try{
+            harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
+        }
+        catch( NullPointerException npe)
+        {
+            harvestType = defaultHarvestType;
+        }
         if ( harvestType == null )
         {
-                harvestType = defaultHarvestType;
+            harvestType = defaultHarvestType;
         }
         
 
