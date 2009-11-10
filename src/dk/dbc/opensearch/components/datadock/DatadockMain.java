@@ -197,8 +197,8 @@ public class DatadockMain
         if ( harvestType == null )
         {
             harvestType = defaultHarvestType;
-        }
-        
+            log.debug( String.format( "getting harvestertype: %s form property", harvestType  ) );
+        }        
 
         for( String a : args )
         {
@@ -246,6 +246,7 @@ public class DatadockMain
             case ESHarvest:
 
                 log.trace( "selecting ES" );
+                String dataBaseName = DataBaseConfig.getOracleDataBaseName();
                 String oracleCacheName = DataBaseConfig.getOracleCacheName();
                 String oracleUrl = DataBaseConfig.getOracleUrl();
                 String oracleUser = DataBaseConfig.getOracleUserID();
@@ -294,7 +295,7 @@ public class DatadockMain
                 }
                 OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
 
-                harvester = new ESHarvest( connectionPool, "test" );
+                harvester = new ESHarvest( connectionPool, dataBaseName );
                 break;
 
             case FileHarvest:

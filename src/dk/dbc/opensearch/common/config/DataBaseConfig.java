@@ -103,6 +103,19 @@ public class DataBaseConfig extends Config
         DataBaseConfig dbc = new DataBaseConfig();
         return dbc.getDataBaseOracleUrl();
     }
+    
+    /* ORACLE_DATABASE_NAME */
+    private String getDatabaseOracleDataBaseName()
+    {
+        String ret = config.getString( "database.oracle_database_name" );
+        return ret;
+    }
+
+    public static String getOracleDataBaseName() throws ConfigurationException
+    {
+        DataBaseConfig dbc = new DataBaseConfig();
+        return dbc.getDatabaseOracleDataBaseName();
+    }
 
     /* ORACLE_CACHE_NAME */
     private String getDataBaseOracleCacheName()

@@ -91,6 +91,7 @@ def build_config( path ):
     oracle_url    = ET.SubElement( db, "oracle_url" )
     oracle_user   = ET.SubElement( db, "oracle_userID" )
     oracle_passwd = ET.SubElement( db, "oracle_passwd" )
+    oracle_database_name = ET.SubElement( db, "oracle_database_name" )
     oracle_cache_name = ET.SubElement( db, "oracle_cache_name" )
     oracle_min_limit = ET.SubElement( db, "oracle_min_limit" )
     oracle_max_limit = ET.SubElement( db, "oracle_max_limit" )
@@ -124,7 +125,8 @@ def build_config( path ):
         oracle_passwd.text = oracle_usern
     else:
         oracle_passwd.text = oracle_password
-    
+
+    oracle_database_name.text = config_txt.get( database_section, "oracle_database_name" )
     oracle_cache_name.text = config_txt.get( database_section, "oracle_cache_name" )
     oracle_min_limit.text = config_txt.get( database_section, "oracle_min_limit" )
     oracle_max_limit.text = config_txt.get( database_section, "oracle_max_limit" )
