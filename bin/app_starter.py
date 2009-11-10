@@ -27,8 +27,7 @@ import subprocess
 import logging as log
 import fedora_conn
 
-def main( app, action, monitor, fedora_arg, harvester ):
-    
+def main( app, action, monitor, fedora_arg, harvester, mem_allocation ):
     log_filename = 'app_starter.log'
     log_path = os.path.abspath( 'log-files' )
 
@@ -77,6 +76,7 @@ def main( app, action, monitor, fedora_arg, harvester ):
             os.unlink( pid_filename )
             do_start = True
             log.debug( "Setting do_start=%s"%( do_start ) )
+
         elif action == "stop":
             log.debug( "Stopping. Killing process with pid=%s"%( pid ) )
             print "stopping process with pid %s"%( pid )
@@ -84,8 +84,10 @@ def main( app, action, monitor, fedora_arg, harvester ):
             log.debug( "Removing pid_filename=%s"%( pid_filename ) )
             if( os.path.isfile( pid_filename ) ):
                 os.unlink( pid_filename )
+
         elif action == "start":
             print "Only one %s instance is allowed to run at a time"% ( app )
+
     elif action == "start":
         do_start = True
     elif action == "restart":
@@ -95,21 +97,8 @@ def main( app, action, monitor, fedora_arg, harvester ):
         do_bench = True
     else:
         sys.exit( "Cannot stop nonrunning process" )
-        
-    if harvester == "file":
-        harvester = "FileHarvest"
-    elif harvester == "light":
-        harvester = "FileHarvestLight"  
-    elif harvester == "es":
-        harvester = "ESHarvest"
     
     if do_start:
-        if harvester == "file":
-            harvester = "FileHarvest"
-        elif harvester == "light":
-            harvester = "FileHarvestLight"  
-        elif harvester == "es":
-            harvester = "ESHarvest"
 
         if fedora_arg:
         ### Check if fedora is up and running
@@ -128,31 +117,30 @@ def main( app, action, monitor, fedora_arg, harvester ):
         
         print "starting process"
         log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
-        proc, pid = start_daemon( q_name, pid_filename, monitor, args = harvester )
+        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, mem_allocation )
         log.debug( "Started process with pid=%s"%( pid ) )
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
 
     if do_bench :
         print "starting process"
-        if not harvester is None:
-            args = "--shutDownOnJobsDone %s" % harvester
-        else:
-            args = "--shutDownOnJobsDone"
-
-        proc, pid = start_daemon( q_name, pid_filename, monitor, args )
+        args = "--shutDownOnJobsDone"
+        
+        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, mem_allocation, args )
         print "Waiting for process to stop pid=%s "%(pid)
         os.waitpid( pid -1, 0 );
         
         print "print done waiting"
 
-def start_daemon( q_name, pid_filename, monitor, args=None ):
+def start_daemon( q_name, pid_filename, monitor, harvester, mem_allocation, args=None ):
     
     """
     Starts the Application daemon
     """
     runproc = subprocess.Popen( [ './run' ], shell=True, stdout=subprocess.PIPE ) 
     cp = runproc.communicate()[ 0 ].strip( '\n' )
+
+    properties = []
 
     monitor_args = ''
     if monitor == 'tijmp':
@@ -161,19 +149,30 @@ def start_daemon( q_name, pid_filename, monitor, args=None ):
         monitor_args = "-Dcom.sun.management.jmxremote.port=8155 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
     if monitor == 'debug':
         monitor_args = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1044"
+    if monitor_args:
+        properties.append( monitor_args )
 
-    cmd = [ 'java %s'%( monitor_args ),
+    if mem_allocation[0]:
+        properties.append( "-Xms%s" % mem_allocation[0] )
+    if mem_allocation[1]:
+        properties.append( "-Xmx%s" % mem_allocation[1] )
+
+    if harvester:
+        properties.append( "-Dharvester=%s" % harvester )
+
+    cmd = [ 'java %s'%( " ".join( properties ) ),
             '-Ddaemon.pidfile=%s'%( pid_filename ),
             '-jar',
             q_name ]
-    if not args is None :
+
+    if args:
         cmd.append(args)
    
     cmd = ' '.join( cmd )
-        
-    print cmd
     
     log.debug( "Running process from cmd '%s'"%( cmd ) )
+
+    print "CMD %s" % cmd
 
     proc = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE )
     log.debug( "Started java process with proc.pid=%s"%( proc.pid ) )
@@ -226,9 +225,20 @@ if __name__ == '__main__':
                   'port': '8080'
                   }
     actions = ["start", "stop", "restart", "bench"]
-    harvester_list = [ "file", "light", "es" ]
-    
-    
+
+        
+    # if harvester == "file":
+    #     harvester = "FileHarvest"
+    # elif harvester == "light":
+    #     harvester = "FileHarvestLight"  
+    # elif harvester == "es":
+    #     harvester = "ESHarvest"
+
+
+    harvester_list = [ ["file", "FileHarvest"],
+                       ["light", "FileHarvest"],
+                       ["es", "ESHavest"] ]
+        
     parser = OptionParser( usage="%prog [options] " + "|".join( actions ) )
 
     parser.add_option( "-a", type="string", action="store", dest="app",
@@ -242,9 +252,17 @@ if __name__ == '__main__':
     parser.add_option( "--port", type="string", action="store", dest="port",
                        help="The portnumber of the Fedora Repository. ignored without -c (default value: %s)" % fedora_arg['port']  )
     parser.add_option( "--harvester", type="string", action="store", dest="harvester",
-                       help="Selects which harvester type to use. Available options: %s" % ", ".join( harvester_list ) )
+                       help="Selects which harvester type to use. Available options: %s" % ", ".join( map( lambda x: x[0], harvester_list ) ) )
     
+    parser.add_option( "--Xms", type="string", action="store", dest="Xms",
+                       help="The initial heap size (default 2mb)" )
+    
+    parser.add_option( "--Xmx", type="string", action="store", dest="Xmx",
+                       help="The maximum heap size (default 64mb)" )
+
     (options, args) = parser.parse_args()
+    
+    mem_allocation = [options.Xms, options.Xmx]
 
     if len(args) == 0:
         print "\nPlease supply some arguments!\n"
@@ -267,6 +285,16 @@ if __name__ == '__main__':
     if not options.monitor:
         options.monitor = ''
 
+    harvester = None
+    if options.harvester:
+        for known_harvester in harvester_list:
+            if options.harvester == known_harvester[0]:
+                harvester = known_harvester[1]
+        if not harvester:
+            print "unknown harvester '%s'"% options.harvester
+            print "Available harvesters", ", ".join( map( lambda x: x[0], harvester_list ) )
+            sys.exit(2)
+            
     if options.app not in app_list:
         parser.print_help()
         sys.exit( "Can only start one of: %s"%( ', '.join( app_list ) ) )
@@ -278,4 +306,4 @@ if __name__ == '__main__':
         main( 'pti', args[0], options.monitor, fedora_arg, options.harvester )
         main( 'datadock', args[0], options.monitor, fedora_arg, options.harvester )
     else:
-        main( options.app, args[0], options.monitor, fedora_arg, options.harvester )
+        main( options.app, args[0], options.monitor, fedora_arg, harvester, mem_allocation )

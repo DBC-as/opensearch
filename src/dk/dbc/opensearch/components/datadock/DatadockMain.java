@@ -82,7 +82,8 @@ public class DatadockMain
     static long keepAliveTime;
     static int pollTime;
     static IHarvest harvester;
-    private static HarvestType harvestType = HarvestType.FileHarvest;
+    private static HarvestType harvestType;
+    private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
     static java.util.Date startTime = null;
 
 
@@ -185,7 +186,14 @@ public class DatadockMain
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         boolean terminateOnZeroSubmitted = false;
-       
+
+        try{
+            harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
+        }
+        catch( NullPointerException npe ){ // no harvester specified
+            harvestType = defaultHarvestType;
+        }
+        
         for( String a : args )
         {
             log.warn( String.format( "argument: '%s'", a ) );
@@ -193,9 +201,8 @@ public class DatadockMain
             {
                 terminateOnZeroSubmitted = true;
             }
-            else
-            {
-                harvestType = HarvestType.getHarvestType( a );
+            else{
+                log.warn( String.format( "Unknown argument '%s', ignoring it", a ) );
             }
         }
 
