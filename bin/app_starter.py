@@ -237,7 +237,7 @@ if __name__ == '__main__':
 
     harvester_list = [ ["file", "FileHarvest"],
                        ["light", "FileHarvest"],
-                       ["es", "ESHavest"] ]
+                       ["es", "ESHarvest"] ]
         
     parser = OptionParser( usage="%prog [options] " + "|".join( actions ) )
 
