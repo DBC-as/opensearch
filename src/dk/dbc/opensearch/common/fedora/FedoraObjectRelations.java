@@ -26,8 +26,6 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.common.fedora.IObjectRepository.Value;
 import dk.dbc.opensearch.common.types.InputPair;
 
 import fedora.common.Constants;
@@ -339,9 +337,9 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, FedoraObjectFields property_1, Value value_1, FedoraObjectFields property_2, Value value_2, String namespace ) throws ObjectRepositoryException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, FedoraObjectFields property_1, FedoraObjectFieldsValue value_1, FedoraObjectFields property_2, FedoraObjectFieldsValue value_2, String namespace ) throws ObjectRepositoryException
     {
-        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1.fieldname(), value_1.getValue() ) );
+        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1.fieldname(), value_1.valuename() ) );
         String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
         log.debug( "targetPid found: " + targetPid );
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
@@ -351,9 +349,9 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, FedoraObjectFields property, Value value, String namespace ) throws ObjectRepositoryException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, FedoraObjectFields property, FedoraObjectFieldsValue value, String namespace ) throws ObjectRepositoryException
     {
-        log.trace( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
+        log.trace( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property.fieldname(), value.valuename() ) );
         String targetPid = findPropertyPid( sourcePid, property, value );
         log.debug( "targetPid found: " + targetPid );
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
@@ -555,15 +553,15 @@ public class FedoraObjectRelations
     }
 
 
-    private String findPropertiesPid( String sourcePid, FedoraObjectFields property_1, Value value_1, FedoraObjectFields property_2, Value value_2 )
+    private String findPropertiesPid( String sourcePid, FedoraObjectFields property_1, FedoraObjectFieldsValue value_1, FedoraObjectFields property_2, FedoraObjectFieldsValue value_2 )
     {
         String[] resultFields = { property_1.fieldname(), property_2.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        List< InputPair< FedoraObjectFields, Value > > propertiesAndValues = new ArrayList< InputPair< FedoraObjectFields, Value > >();
+        List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > propertiesAndValues = new ArrayList< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > >();
 
-        propertiesAndValues.add( new InputPair< FedoraObjectFields, Value >( property_1, value_1 ) );
-        propertiesAndValues.add( new InputPair< FedoraObjectFields, Value >( property_2, value_2 ) );
+        propertiesAndValues.add( new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( property_1, value_1 ) );
+        propertiesAndValues.add( new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( property_2, value_2 ) );
 
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000 );        
         String retVal = null;
@@ -586,14 +584,14 @@ public class FedoraObjectRelations
     }
 
 
-    private String findPropertyPid( String sourcePid, FedoraObjectFields property, Value value )
+    private String findPropertyPid( String sourcePid, FedoraObjectFields property, FedoraObjectFieldsValue value )
     {
         String[] resultFields = { property.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;        
-        List< InputPair< FedoraObjectFields, Value > > propertiesAndValues = new ArrayList< InputPair< FedoraObjectFields, Value > >();
+        List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > propertiesAndValues = new ArrayList< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > >();
 
-        propertiesAndValues.add( new InputPair< FedoraObjectFields, Value >( property, value ) );
+        propertiesAndValues.add( new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( property, value ) );
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000 );
 
         String retval = null;

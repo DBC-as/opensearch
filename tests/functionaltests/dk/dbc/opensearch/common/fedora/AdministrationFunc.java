@@ -27,7 +27,6 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.fedora.IObjectRepository.Value;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.IndexingAlias;
@@ -364,14 +363,14 @@ public class AdministrationFunc
 
     static void testFindObjectFields() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
-        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", FedoraObjectFields.TITLE, new Value( "Harry Potter" ), "work" );
+        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", FedoraObjectFields.TITLE, new FedoraObjectFieldsValue( "Harry Potter" ), "work" );
         System.out.println( "Everything ok: " + ret );
     }
 
 
     static void testFindObjectFieldsDouble() throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
-        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", FedoraObjectFields.TITLE, new Value( "Harry Potter og Fønixordenen" ), FedoraObjectFields.CREATOR, new Value( "Joanne K. Rowling" ), "work" );
+        boolean ret = fedor.addIsMbrOfCollRelationship( "harry:1", FedoraObjectFields.TITLE, new FedoraObjectFieldsValue( "Harry Potter og Fønixordenen" ), FedoraObjectFields.CREATOR, new FedoraObjectFieldsValue( "Joanne K. Rowling" ), "work" );
         System.out.println( "Everything ok: " + ret );
     }
 
