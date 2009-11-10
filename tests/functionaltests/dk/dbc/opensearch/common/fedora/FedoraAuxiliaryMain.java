@@ -26,6 +26,8 @@
 package dk.dbc.opensearch.common.fedora;
 
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository.Property;
+import dk.dbc.opensearch.common.fedora.IObjectRepository.Value;
 import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.IOException;
@@ -104,11 +106,11 @@ public class FedoraAuxiliaryMain
 
         System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
-        List< InputPair< String, String > > resultSearchFields = new ArrayList< InputPair< String, String > >();
+        List< InputPair< Property, Value > > resultSearchFields = new ArrayList< InputPair< Property, Value > >();
         int maximumResult = 10000;
         for ( int i = 0; i < labels.length; i++ )
         {
-            InputPair< String, String > pair = new InputPair< String, String >( "label", labels[i] );
+            InputPair< Property, Value > pair = new InputPair< Property, Value >( new Property( "label" ), new Value( labels[i] ) );
             resultSearchFields.add( pair );
             List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
             System.out.println( "pids.length: " + pids.size() );

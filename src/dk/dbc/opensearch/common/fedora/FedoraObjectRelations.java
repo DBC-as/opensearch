@@ -1,27 +1,33 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
  * \file 
  * \brief 
  */
+
+
 package dk.dbc.opensearch.common.fedora;
 
+
+import dk.dbc.opensearch.common.fedora.IObjectRepository.Property;
+import dk.dbc.opensearch.common.fedora.IObjectRepository.Value;
 import dk.dbc.opensearch.common.types.InputPair;
 
 import fedora.common.Constants;
@@ -32,7 +38,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,19 +57,20 @@ import org.trippi.TupleIterator;
  */
 public class FedoraObjectRelations
 {
+    private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
 
+
+    private static String p = "p"; // used to extract value from InputPair. Depends on itql statement!!!
     private final IObjectRepository objectRepository;
     private final FedoraHandle fedoraHandle;
+
 
     public FedoraObjectRelations( IObjectRepository objectRepository ) throws ObjectRepositoryException
     {
         this.objectRepository = objectRepository;
         this.fedoraHandle = new FedoraHandle();
     }
-
-
-    private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
-    private static String p = "p"; // used to extract value from InputPair. Depends on itql statement!!!
+    
 
     public String getSubjectRelation( String predicate, String object, String relation ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
@@ -333,9 +339,9 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, String property_1, String value_1, String property_2, String value_2, String namespace ) throws ObjectRepositoryException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, Property property_1, Value value_1, Property property_2, Value value_2, String namespace ) throws ObjectRepositoryException
     {
-        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1, value_1 ) );
+        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1.getProperty(), value_1.getValue() ) );
         String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
         log.debug( "targetPid found: " + targetPid );
         return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
@@ -345,7 +351,7 @@ public class FedoraObjectRelations
     /**
      * Method for adding relationship data
      */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, String property, String value, String namespace ) throws ObjectRepositoryException
+    public boolean addIsMbrOfCollRelationship( String sourcePid, Property property, Value value, String namespace ) throws ObjectRepositoryException
     {
         log.trace( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property, value ) );
         String targetPid = findPropertyPid( sourcePid, property, value );
@@ -548,29 +554,17 @@ public class FedoraObjectRelations
         return this.fedoraHandle.purgeRelationship( pid, predicate, targetDCIdentifier, isLiteral, datatype );
     }
 
-    private String findPropertiesPid( String sourcePid, String property_1, String value_1, String property_2, String value_2 )
+
+    private String findPropertiesPid( String sourcePid, Property property_1, Value value_1, Property property_2, Value value_2 )
     {
         /** \todo: optimize this. .sort, .contains, .indexOf are called. Might be able to do it better */
-        String[] resultFields = { property_1, property_1 };
-        /*{
-            "pid"
-        };
-
-        String[] values_1 =
-        {
-            value_1
-        };
-
-        String[] values_2 =
-        {
-            value_2
-        };*/
+        String[] resultFields = { property_1.getProperty(), property_2.getProperty() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        //HashMap< String, String > propertiesAndValues = new HashMap<String, String>();
-        List< InputPair< String, String > > propertiesAndValues = new ArrayList< InputPair< String, String > >();
-        propertiesAndValues.add( new InputPair< String, String >( property_1, value_1 ) );
-        propertiesAndValues.add( new InputPair< String, String >( property_2, value_2 ) );
+        List< InputPair< Property, Value > > propertiesAndValues = new ArrayList< InputPair< Property, Value > >();
+
+        propertiesAndValues.add( new InputPair< Property, Value >( property_1, value_1 ) );
+        propertiesAndValues.add( new InputPair< Property, Value >( property_2, value_2 ) );
 
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000 );        
         String retVal = null;
@@ -630,22 +624,14 @@ public class FedoraObjectRelations
     }
 
 
-    private String findPropertyPid( String sourcePid, String property, String value )
+    private String findPropertyPid( String sourcePid, Property property, Value value )
     {
-        String[] resultFields = { property };
-        /*{
-            "pid"
-        };
+        String[] resultFields = { property.getProperty() };
 
-        String[] values =
-        {
-            value
-        };*/
+        FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;        
+        List< InputPair< Property, Value > > propertiesAndValues = new ArrayList< InputPair< Property, Value > >();
 
-        FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        //HashMap< String, String > propertiesAndValues = new HashMap< String, String >();
-        List< InputPair< String, String > > propertiesAndValues = new ArrayList< InputPair< String, String > >();
-        propertiesAndValues.add( new InputPair< String, String >( property, value ) );
+        propertiesAndValues.add( new InputPair< Property, Value >( property, value ) );
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000 );
 
         String retval = null;

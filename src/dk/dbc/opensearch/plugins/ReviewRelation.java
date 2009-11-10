@@ -28,6 +28,8 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.IObjectRepository.Property;
+import dk.dbc.opensearch.common.fedora.IObjectRepository.Value;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
@@ -117,80 +119,85 @@ public class ReviewRelation implements IRelation
     {
         boolean ok = false;
         DublinCore dc = cargo.getDublinCoreMetaData();
-        String dcTitle = dc.getDCValue( DublinCoreElement.ELEMENT_TITLE );
-        String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
-        String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
-        String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
+        Value dcTitle = new Value( dc.getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
+        Value dcType = new Value( dc.getDCValue( DublinCoreElement.ELEMENT_TYPE ) );
+        Value dcCreator = new Value( dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR ) );
+        Value dcSource = new Value( dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE ) );
         String identifier = cargo.getIdentifierAsString();
+        Property title = new Property( "title" );
+        Property creator = new Property( "creator" );
+        Property source = new Property( "source" );
 
         log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
         
-        if ( dcType.equals( marterialevurderinger ) )
+        if ( dcType.getValue().equals( marterialevurderinger ) )
         {        	
-        	log.trace( String.format( "entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
+        	log.trace( String.format( "entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType.getValue(), dcTitle.getValue() ) );
         	
         	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
-        	if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
+        	if ( ! ( dcTitle.getValue().equals( "" ) && dcCreator.getValue().equals( "" ) ) )
         	{
                 try
                 {
-                    ok = addRelationship( identifier, "title", dcTitle, "creator", dcCreator );
+                    ok = addRelationship( identifier, title, dcTitle, creator, dcCreator );
                 }
                 catch( ObjectRepositoryException ex )
                 {
-                    String error = String.format( "Failed to add Relationship on %s with %s and %s",identifier, dcTitle, dcCreator );
+                    String error = String.format( "Failed to add Relationship on %s with %s and %s", identifier, dcTitle.getValue(), dcCreator.getValue() );
                     log.error( error );
                     throw new PluginException( error, ex );
                 }
-        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
+
+        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle.getValue(), dcCreator.getValue(), identifier ) );
         	}
         	else
         	{
-        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) ); 
+        		log.warn( String.format( "dcSource '%s' is empty", dcSource.getValue() ) );
         	}
         }
-        else if ( types.contains( dcType ) ) 
+        else if ( types.contains( dcType.getValue() ) )
         {
         	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
-        	if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
+        	if ( ! ( dcTitle.getValue().equals( "" ) && dcCreator.getValue().equals( "" ) ) )
         	{
                 try
                 {
-                    ok = addRelationship( identifier, "title", dcTitle, "creator", dcCreator );
+                    ok = addRelationship( identifier, title, dcTitle, creator, dcCreator );
                 }
                 catch( ObjectRepositoryException ex )
                 {
-                    String error = String.format( "Failed to add Relationship on %s with %s and %s",identifier, dcTitle, dcCreator );
+                    String error = String.format( "Failed to add Relationship on %s with %s and %s", identifier, dcTitle.getValue(), dcCreator.getValue() );
                     log.error( error );
                     throw new PluginException( error, ex );
                 }
-        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
+
+        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle.getValue(), dcCreator.getValue(), identifier ) );
         	}
         	else
         	{
-        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) ); 
+        		log.warn( String.format( "dcSource '%s' is empty", dcSource.getValue() ) );
         	}
         }
-        else if ( dcType.equals( anmeldelse ) )
+        else if ( dcType.getValue().equals( anmeldelse ) )
         {
         	// match SOURCE: dcRelation on TARGET: identifier
-        	if ( ! dcTitle.equals( "" ) )
+        	if ( ! dcTitle.getValue().equals( "" ) )
         	{
                 try
                 {
-                    ok = addRelationship( identifier, "source", dcTitle );
+                    ok = addRelationship( identifier, source, dcTitle );
                 }
                 catch( ObjectRepositoryException ex )
                 {
-                    String error = String.format( "Failed to add Relationship on %s with source -> %s",identifier, dcTitle );
+                    String error = String.format( "Failed to add Relationship on %s with source -> %s", identifier, dcTitle.getValue() );
                     log.error( error );
                     throw new PluginException( error, ex );
                 }
-        		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, identifier ) );
+        		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle.getValue(), identifier ) );
         	}
         	else
         	{
-        		log.warn( String.format( "dcCreator '%s' is empty", dcCreator ) ); 
+        		log.warn( String.format( "dcCreator '%s' is empty", dcCreator.getValue() ) );
         	}
         }
         
@@ -201,7 +208,7 @@ public class ReviewRelation implements IRelation
     }
     
     
-    private boolean addRelationship( String dcIdentifier, String property_1, String dcVariable_1, String property_2, String dcVariable_2 ) throws ObjectRepositoryException
+    private boolean addRelationship( String dcIdentifier, Property property_1, Value dcVariable_1, Property property_2, Value dcVariable_2 ) throws ObjectRepositoryException
     {
     	FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
 
@@ -211,7 +218,7 @@ public class ReviewRelation implements IRelation
     }
     
     
-    private boolean addRelationship( String dcIdentifier, String property, String dcVariable ) throws ObjectRepositoryException
+    private boolean addRelationship( String dcIdentifier, Property property, Value dcVariable ) throws ObjectRepositoryException
     {
     	FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
         

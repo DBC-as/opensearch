@@ -50,6 +50,37 @@ import java.util.List;
  */
 public interface IObjectRepository
 {
+    public class Property 
+    {
+        private String property;
+
+        public Property( String property )
+        {
+            this.property = property;
+        }
+
+        public String getProperty()
+        {
+            return this.property;
+        }
+    }
+
+
+    public class Value
+    {
+        private String value;
+
+        public Value( String value )
+        {
+            this.value = value;
+        }
+
+        public String getValue()
+        {
+            return this.value;
+        }
+    }
+
 
     /** 
      * Queries the object repository for the existence of the object
@@ -159,7 +190,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
      */
-    public List<String> getIdentifiers( String verbatimSearchString, List<String> searchableFields, String cutIdentifier, int maximumResult );
+    public List< String > getIdentifiers( String verbatimSearchString, List< Property > searchableFields, String cutIdentifier, int maximumResult );
 
 
     /** 
@@ -178,10 +209,10 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutIdentifier, int maximumResults );
+    public List< String > getIdentifiers( List< InputPair< Property, Value > > resultSearchFields, String cutIdentifier, int maximumResults );
 
 
-    public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
+    public List< String > getIdentifiers( List< InputPair< Property, Value > > resultSearchFields, String cutPid, int maximumResults, String namespace );
 
 
     /**
@@ -196,7 +227,7 @@ public interface IObjectRepository
      *
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiersUnqualified( List< InputPair< String, String > > resultSearchFields, int maximumResults );
+    public List< String > getIdentifiersUnqualified( List< InputPair< Property, Value > > resultSearchFields, int maximumResults );
 
 
     /** 
