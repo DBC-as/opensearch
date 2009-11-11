@@ -86,7 +86,7 @@ public class DatadockManagerTest
                 Element root = theDocument.createElement( "referencedata" );
                 if( !infoIsNull )
                     {
-                        Element info = theDocument.createElement( "info" );
+                        Element info = theDocument.createElement( "es:info" );
 
                         info.setAttribute( "submitter", submitter );
                         info.setAttribute( "format", format );
@@ -230,53 +230,6 @@ public class DatadockManagerTest
         verify( mockDatadockPool );
         verify( mockIdentifier );
     }
-
-
-    @Test( expected = IllegalArgumentException.class )
-    public void testBuildDatadockJobIllegalArgumentExceptionInfoIsNull() throws Exception
-    {
-        /**
-         * setup
-         */
-        ArrayList<IJob> jobs = new ArrayList<IJob>();
-        jobs.add( mockJob );
-        testDocument = buildTestDocument( "submitter", "format", "language", true, false );
-
-
-        /**
-         * expectations
-         */
-        mockHarvester.start();
-
-        expect( mockHarvester.getJobs( 100 ) ).andReturn( jobs );
-        //buildDadadockjob
-        expect( mockJob.getReferenceData() ).andReturn( testDocument );
-
-
-        /**
-         * replay
-         */
-        replay( mockFinJobs );
-        replay( mockHarvester );
-        replay( mockJob );
-        replay( mockDatadockPool );
-        replay( mockIdentifier );
-
-        /**
-         * do stuff
-         */
-        DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
-        datadockManager.update();
-        /**
-         * verify
-         */
-        verify( mockJob );
-        verify( mockFinJobs );
-        verify( mockHarvester );
-        verify( mockDatadockPool );
-        verify( mockIdentifier );
-    }
-
 
     @Test
     public void testShutdown() throws HarvesterIOException, InterruptedException, ConfigurationException, ParserConfigurationException, SAXException, IOException

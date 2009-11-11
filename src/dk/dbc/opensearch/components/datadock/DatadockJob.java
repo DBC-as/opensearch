@@ -1,25 +1,25 @@
 /*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * \file 
+ * \file
  * \brief
  */
 
@@ -29,7 +29,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
-import dk.dbc.opensearch.components.harvest.IIdentifier; 
+import dk.dbc.opensearch.components.harvest.IIdentifier;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -40,12 +40,12 @@ import org.w3c.dom.NodeList;
  * job for the datadock.
  */
 public class DatadockJob
-{    
+{
     private Logger log = Logger.getLogger( DatadockJob.class );
- 
+
     private String submitter;
     private String format;
-    
+
     private IIdentifier identifier;
     private Document referenceData;
 
@@ -63,8 +63,8 @@ public class DatadockJob
         this.referenceData = referenceData;
 
         initValuesFromReferenceData();
-    }    
-    
+    }
+
     /**
      * Gets the submitter
      * @return The submitter
@@ -73,8 +73,8 @@ public class DatadockJob
     {
         return submitter;
     }
-    
-    
+
+
     /**
      * Gets the format
      * @return The format
@@ -99,10 +99,10 @@ public class DatadockJob
      * using JavaScript for business logic, this is to be used instead of the
      * field accessors
      */
-   public Document getReferenceData()
-   {
-       return referenceData;
-   }
+    public Document getReferenceData()
+    {
+        return referenceData;
+    }
 
     private void initValuesFromReferenceData()
     {
@@ -113,14 +113,20 @@ public class DatadockJob
             throw new IllegalStateException( error );
         }
 
-        NodeList elementSet = this.referenceData.getElementsByTagName( "info" );
-        
+        NodeList elementSet = this.referenceData.getElementsByTagName( "es:info" );
+
         if( elementSet.getLength() == 0 )
         {
-            String error = "Failed to get Document Element named 'info' from referencedata";
-            log.error( error );
-            throw new IllegalArgumentException( error );
+            elementSet = this.referenceData.getElementsByTagName( "info" );
+            if( elementSet.getLength() == 0 )
+            {
+
+                String error = "Failed to get either Document Element named 'info' or 'es:info' from referencedata";
+                log.error( error );
+                throw new IllegalArgumentException( error );
+            }
         }
+        
         Node info = elementSet.item( 0 );
         NamedNodeMap attributes = info.getAttributes();
         this.format = attributes.getNamedItem( "format" ).getNodeValue();

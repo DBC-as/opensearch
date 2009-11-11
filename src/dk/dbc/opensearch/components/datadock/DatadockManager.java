@@ -182,16 +182,16 @@ public class DatadockManager
             throw new IllegalArgumentException( "Could not retrieve data from referencedata" );
         }
 
-        info = (Element)root.getElementsByTagName( "info").item( 0 );
+      //   info = (Element)root.getElementsByTagName( "info").item( 0 );
 
-        if( info == null )
-        {
-            log.error( String.format( "Could not retrieve info element from referencedata" ) );
-            throw new IllegalArgumentException( "Could not retrieve info element from referencedata" );
-        }
+//         if( info == null )
+//         {
+//             log.error( String.format( "Could not retrieve info element from referencedata" ) );
+//             throw new IllegalArgumentException( "Could not retrieve info element from referencedata" );
+//         }
 
-        String submitter = info.getAttribute( "submitter" );
-        String format = info.getAttribute( "format" );
+//         String submitter = info.getAttribute( "submitter" );
+//         String format = info.getAttribute( "format" );
 
         DatadockJob ddjob = new DatadockJob( theJob.getIdentifier(), referenceData );
         return ddjob;
