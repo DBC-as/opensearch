@@ -49,12 +49,12 @@ public class FedoraUtilsTest// extends XMLTestCase
 {
 
     CargoContainer cargo;
-    String origStr;
+    String generatedFoxml;
     static String utf8Str = "æøå";
     static Date now = new Date( System.currentTimeMillis() );
     static String timeNow = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" )).format( now );
 
-    static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><foxml:digitalObject xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" PID=\"dbc:1\" VERSION=\"1.1\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"I\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"test\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\""+timeNow+"\"/><foxml:property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\""+timeNow+"\"/></foxml:objectProperties><foxml:datastream CONTROL_GROUP=\"M\" ID=\"originalData.0\" STATE=\"A\" VERSIONABLE=\"false\"><foxml:datastreamVersion CREATED=\""+timeNow+"\" ID=\"originalData.0.0\" LABEL=\"test\" MIMETYPE=\"text/xml\" SIZE=\"6\"><foxml:binaryContent>w6bDuMOl</foxml:binaryContent></foxml:datastreamVersion></foxml:datastream></foxml:digitalObject>";
+    static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><foxml:digitalObject xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" PID=\"dbc:1\" VERSION=\"1.1\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"I\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"test\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\""+timeNow+"\"/><foxml:property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\""+timeNow+"\"/></foxml:objectProperties><foxml:datastream CONTROL_GROUP=\"M\" ID=\"originalData.0\" STATE=\"A\" VERSIONABLE=\"false\"><foxml:datastreamVersion CREATED=\""+timeNow+"\" ID=\"originalData.0\" LABEL=\"test\" MIMETYPE=\"text/xml\" SIZE=\"6\"><foxml:binaryContent>w6bDuMOl</foxml:binaryContent></foxml:datastreamVersion></foxml:datastream></foxml:digitalObject>";
     
     @BeforeClass
     public static void SetupClass()
@@ -79,7 +79,7 @@ public class FedoraUtilsTest// extends XMLTestCase
         AdministrationStream adminstream = new AdministrationStream( new ByteArrayInputStream( adminXml.getBytes() ), true );
         cargo.addMetaData( adminstream );
         byte[] b = FedoraUtils.CargoContainerToFoxml( cargo );
-        origStr = new String( b );
+        generatedFoxml = new String( b );
     }
 
 
@@ -105,10 +105,10 @@ public class FedoraUtilsTest// extends XMLTestCase
     public void testDigitalObjectSerialization() throws SAXException, IOException
     {
         DifferenceListener diffListener = new IgnoreTextAndAttributeValuesDifferenceListener();
-        Diff compareXML = XMLUnit.compareXML( expected, origStr );
+        Diff compareXML = XMLUnit.compareXML( expected, generatedFoxml );
         compareXML.overrideDifferenceListener( diffListener );
-//        org.junit.Assert.fail( "lookup difference customization in XMLUnit documentation" );
-
+        /** \todo: uncomment line below and fix*/
+        //org.junit.Assert.fail( "lookup difference customization in XMLUnit documentation" );
     }
 
 
@@ -118,7 +118,7 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Test
     public void testCorrectPIDInsertion() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( "dbc:1", "/x:digitalObject[1]/@PID", origStr );
+        XMLAssert.assertXpathEvaluatesTo( "dbc:1", "/x:digitalObject[1]/@PID", generatedFoxml );
     }
 
 
@@ -128,7 +128,7 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Test
     public void testState() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( "I", "/x:digitalObject[1]/x:objectProperties[1]/x:property[1]/@VALUE", origStr );
+        XMLAssert.assertXpathEvaluatesTo( "I", "/x:digitalObject[1]/x:objectProperties[1]/x:property[1]/@VALUE", generatedFoxml );
     }
 
 
@@ -138,7 +138,7 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Test
     public void testLabel() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( "test", "/x:digitalObject[1]/x:objectProperties[1]/x:property[2]/@VALUE", origStr );
+        XMLAssert.assertXpathEvaluatesTo( "test", "/x:digitalObject[1]/x:objectProperties[1]/x:property[2]/@VALUE", generatedFoxml );
     }
 
 
@@ -148,7 +148,7 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Test
     public void testOwner() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( "dbc", "/x:digitalObject[1]/x:objectProperties[1]/x:property[3]/@VALUE", origStr );
+        XMLAssert.assertXpathEvaluatesTo( "dbc", "/x:digitalObject[1]/x:objectProperties[1]/x:property[3]/@VALUE", generatedFoxml );
     }
 
 
@@ -162,7 +162,7 @@ public class FedoraUtilsTest// extends XMLTestCase
         //we have no control of the timestamping from the outside, so instead of
         //going through extensive mocking of the FoxmlDocument class, we'll be
         //happy if it just created the data field:
-        XMLAssert.assertXpathExists( "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", origStr);
+        XMLAssert.assertXpathExists( "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", generatedFoxml);
     }
 
 
@@ -172,9 +172,16 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Test
     public void testDatastreamID() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( "originalData.0", "/x:digitalObject[1]/x:datastream[1]/@ID", origStr );
+        XMLAssert.assertXpathEvaluatesTo( "originalData.0", "/x:digitalObject[1]/x:datastream[1]/@ID", generatedFoxml );
     }
 
+    @Test
+    public void adminStreamIDEqualsDatastreamID() throws Exception
+    {
+        /**
+         * Get xpath value from adminstream@id and compare to originaldata's datastream@ID
+         */
+    }
 
     /** 
      * A test that really serves two purposes, but in one test because
@@ -186,23 +193,23 @@ public class FedoraUtilsTest// extends XMLTestCase
     @Test
     public void testBinaryContent() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathExists( "/x:digitalObject[1]/x:datastream[1]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );
+        XMLAssert.assertXpathExists( "/x:digitalObject[1]/x:datastream[1]/x:datastreamVersion[1]/x:binaryContent[1]", generatedFoxml );
 
         byte[] encodedBytes = Base64.encodeBase64( utf8Str.getBytes() );
-        XMLAssert.assertXpathEvaluatesTo( new String( encodedBytes ), "/x:digitalObject[1]/x:datastream[1]/x:datastreamVersion[1]/x:binaryContent[1]", origStr );
+        XMLAssert.assertXpathEvaluatesTo( new String( encodedBytes ), "/x:digitalObject[1]/x:datastream[1]/x:datastreamVersion[1]/x:binaryContent[1]", generatedFoxml );
     }
 
 
     @Test
     public void testControlGroup() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( FoxmlDocument.ControlGroup.M.toString(), "/x:digitalObject[1]/x:datastream[1]/@CONTROL_GROUP", origStr );
+        XMLAssert.assertXpathEvaluatesTo( FoxmlDocument.ControlGroup.M.toString(), "/x:digitalObject[1]/x:datastream[1]/@CONTROL_GROUP", generatedFoxml );
     }
 
 
     @Test @Ignore( "the test contains nondeterministic assertations" )
     public void testHasAdminStreamInDigitalObjectAfterSerialization() throws SAXException, IOException, XpathException
     {
-        XMLAssert.assertXpathEvaluatesTo( "adminData", "/x:digitalObject[1]/x:datastream[3]/@ID", origStr );
+        XMLAssert.assertXpathEvaluatesTo( "adminData", "/x:digitalObject[1]/x:datastream[3]/@ID", generatedFoxml );
     }
 }

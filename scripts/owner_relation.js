@@ -1,46 +1,4 @@
-
-log.debug("ja7o: test parsing ");
-
-// import meta packages.. to get IS_MEMBER_OF_*
-
-//importPackage(Packages.dk.dbc.opensearch.common.metadata);
-
 subject_prefix="info:fedora/";
-
-/*
- * 
- * Folkebib handling. 
- * 
- */
-function doit_folkebib_getsubject( prefix,  format ) {
-	if( format == "katalog") {
-		return prefix + "catalog";
-	} else {				
-		return prefix + format;
-	}
-};
-
-var folkebibmap= new Object; 
-
-folkebibmap["775100"] = "aakb_";
-folkebibmap["710100"] = "kkb_";
-
-function get_folkebib_prefix( submitter ) 
-{
-	if( folkebibmap[ submitter ] == undefined ) 
-    {
-        log.error("Unknown folkebib submitter :" );
-		throw new PluginException("Unknown folkebib submitter :" + submitter);
-	}
-	return folkebibmap[ submitter ];
-};
-
-// function doit_folkebib(pid, submitter, format ) {
-// 	subject = subject_prefix + doit_folkebib_getsubject( get_folkebib_prefix(submitter) , format );
-	  
-// 	objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject);
-// }
-
 /*
  *
  * handling of subjects 
@@ -73,29 +31,70 @@ function lookup_dbcmap( format ) {
   }
 }
 
-// function doit_dbc( pid, submitter, format ) {
-//   subject = subject_prefix + lookup_dbcmap( format ) ;
-//   objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject );
-//   // add ekstra pg data.
-//   if( "pg" == format ) {
-// 	  objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject_prefix + "Children" );
-// 	  objectRepository.addObjectRelation( pid, IS_MEMBER_OF_COLLECTION, subject_prefix + "free" );	  
-//   }  
-// }
+/*
+ * 
+ * Folkebib actions
+ * 
+ */
+var folkebibmap= new Object; 
 
-// function doit( pid, submitter, format) {
-// // Add the relation.  
-//   log.debug("ja7o: entering doit");
-//   if( submitter.charAt(0) == "7") {
-// 	  doit_folkebib( pid, submitter, format );
-// 	  return ;
-//   } else if( submitter == "dbc" ) {
-//     doit_dbc( pid, submitter, format );
-//   } else {
-// 	log.warn("Unknown submitter - no owner relations set. ")    
-//   }
-// }
+folkebibmap["775100"] = "aakb_";
+folkebibmap["710100"] = "kkb_";
 
+function lookup_folkebib( submitter ) 
+{
+	if( folkebibmap[ submitter ] == undefined ) 
+    {
+        log.error("Unknown folkebib submitter :" );
+		throw new PluginException("Unknown folkebib submitter :" + submitter);
+	}
+	return folkebibmap[ submitter ];
+};
+
+
+function doit_folkebib_getsubject( prefix,  format ) {
+	if( format == "katalog") {
+		return prefix + "catalog";
+	} else {				
+		return prefix + format;
+	}
+};
+
+
+function addFolkebibRelation( rels_ext, submitter, format )
+{
+	ownerpid = doit_folkebib_getsubject( lookup_folkebib( submitter ) , format );
+    
+    rels_ext.addRelationship( IS_OWNED_BY, ownerpid );
+    
+	return rels_ext;
+}
+
+function addDbcRelation( rels_ext, submitter, format )
+{
+    ownerpid = lookup_dbcmap( format ) ;
+
+
+    rels_ext.addRelationship( IS_OWNED_BY, ownerpid );
+    
+    // add ekstra pg data.
+    if( "pg" == format ) 
+    {
+        rels_ext.addRelationship( IS_AFFILIATED_WITH, "Children" );                                                     
+        rels_ext.addRelationship( IS_AFFILIATED_WITH, "free" );       
+    }
+    return rels_ext;
+}
+
+/* 
+ * Main function
+ * 
+ * @param rels_ext A datastructure representing the digital object rels-ext stream
+ * @param submitter A string representing the submitter
+ * @param format A string representing the format
+ * 
+ * @return a modified rels_ext datastructure
+ */
 function addOwnerRelation( rels_ext, submitter, format )
 {
     if( submitter.charAt(0) == "7") 
@@ -113,27 +112,3 @@ function addOwnerRelation( rels_ext, submitter, format )
     }
 }
 
-function addFolkebibRelation( rels_ext, submitter, format )
-{
-	ownerpid = doit_folkebib_getsubject( get_folkebib_prefix(submitter) , format );
-    
-	rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, ownerpid );
-    
-	return rels_ext;
-}
-
-function addDbcRelation( rels_ext, submitter, format )
-{
-    ownerpid = subject_prefix + lookup_dbcmap( format ) ;
-
-
-    rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, ownerpid );
-    
-    // add ekstra pg data.
-    if( "pg" == format ) 
-    {
-        rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, "Children" );                                                     
-        rels_ext.addRelationship( IS_MEMBER_OF_COLLECTION, "free" );       
-    }
-    return rels_ext;
-}

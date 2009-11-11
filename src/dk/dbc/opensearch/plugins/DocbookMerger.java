@@ -145,39 +145,30 @@ public class DocbookMerger implements IProcesser
             log.warn( String.format( "Could not remove data with id %s", orig.getId() ) );
         }
 
-        long new_id = 0;
-
         try
         {
-            new_id = cargo.add( orig.getDataStreamType(),
-                                orig.getFormat(),
-                                orig.getSubmitter(),
-                                orig.getLang(),
-                                orig.getMimeType(),
-                                orig.getIndexingAlias(),
-                                new_original_data.getBytes() );
+            cargo.add( orig.getDataStreamType(),
+                    orig.getFormat(),
+                    orig.getSubmitter(),
+                    orig.getLang(),
+                    orig.getMimeType(),
+                    orig.getIndexingAlias(),
+                    new_original_data.getBytes() );
         }
         catch( IOException ioe )
         {
-            log.error( String.format( "Could not add to CargoContainer",ioe.getMessage() ) );
-            throw new PluginException( String.format( "Could not add to CargoContainer",ioe.getMessage() ) );
+            String error = String.format( "Could not add to CargoContainer", ioe.getMessage() );
+            log.error( error, ioe );
+            throw new PluginException( error, ioe );
         }
-        // } catch (IOException ioe) {
-        //     log.fatal( "Could not add Annotation data to CargoContainer" );
-        //     throw new PluginException( "Could not add Annotation data to CargoContainer", ioe );
-        // }
 
-        // changeme
-        log.debug( String.format( "New xml data: %s", new String( cargo.getCargoObject( new_id ).getBytes() ) ) );
+        log.debug( String.format( "New xml data: %s", new String( cargo.getCargoObject( orig.getDataStreamType() ).getBytes() ) ) );
         return cargo;
 
     }
     
     public PluginType getPluginType()
     {
-        return pluginType;
+        return this.pluginType;
     }
-
-
-    
 }

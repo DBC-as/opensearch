@@ -101,12 +101,10 @@ public class OwnerRelation implements IRelation
         else // ...or create new invocable + add it to the cache
         {
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );
-            /**
-             * \Todo: Bug 9756: why is the spelleing of the relation as it is?
-             */
             
             engine.put( "log", log );
-            engine.put( "IS_MEMBER_OF_COLLECTION", DBCBIB.IS_MEMBER_OF_COLLECTION );
+            engine.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
+            engine.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
 
             String path = FileSystemConfig.getScriptPath();
             String jsFileName = path + "owner_relation.js";
@@ -117,8 +115,9 @@ public class OwnerRelation implements IRelation
             Invocable inv = (Invocable) engine;
 
             this.scriptCache.put( submitter, inv );
+
             log.trace( String.format( "Returning Invokable js for %s", submitter ) );
-            return inv;//this.scriptCache.get( submitter );
+            return inv;
         }
     }
 

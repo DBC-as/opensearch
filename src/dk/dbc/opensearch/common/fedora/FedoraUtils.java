@@ -273,8 +273,9 @@ public class FedoraUtils
             }
 
             dsn = DataStreamType.getDataStreamTypeFrom( p.getFirst() );
-
-            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
+            
+            log.debug( String.format( "Adding %s to the document list", p.getFirst() +"."+ j ) );
+            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() +"."+ j ) );
         }
 
         lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );

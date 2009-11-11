@@ -32,9 +32,13 @@ public enum DBCBIB implements IPredicate
 {
     IS_MEMBER_OF_WORK( "isMemberOfWork"),
     HAS_MANIFESTATION( "hasManifestation" ),
+
     IS_OWNED_BY( "isOwnedBy" ),
-    IS_MEMBER_OF_COLLECTION( "isMemberOfCollection");
-    
+    HAS_THEME( "hasTheme" ),
+    IS_PART_OF_THEME( "isPartOfTheme" ),
+
+    IS_AFFILIATED_WITH( "isAffiliatedWith" );
+
     private String localName;
     private final String NS = "http://oss.dbc.dk/rdf/dkbib#";
     private final String prefix = "dbcbib";

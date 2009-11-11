@@ -41,6 +41,13 @@ import org.apache.log4j.Logger;
  *  updates made on these objects must be made by the client as
  *  deletes and adds.  All verification and work with the data 
  *  are done through the CargoObject objects.
+ *
+ * Although the CargoContainer can hold an unlimited amount of data of
+ * the same type - defined by the add method with the type defined by
+ * DataStreamType - a CargoContainer instance can only hold on
+ * MetaData element of a given type at a time. Any subsequent calls to
+ * the addMetaData method with MetaData with identical types will
+ * overwrite existing metadata of this type in the CargoContainer.
  */
 public class CargoContainer
 {
@@ -92,7 +99,6 @@ public class CargoContainer
         this.identifier  = new_identifier; 
         
         this.getDublinCoreMetaData().setIdentifier( identifier.getIdentifier() );
-        
     }
 
     
@@ -237,6 +243,27 @@ public class CargoContainer
 
     }
 
+
+    /**
+     * Removes metadata with type {@code metadatatype} from this CargoContainer.
+     * If the CargoContainer does not contains the metadata referenced, this
+     * method will return false. If the method successfully removed the
+     * metadata, it returns true
+     *
+     * @param metadatatype the type of the MetaData element to be removed
+     * @return true if the MetaData element could be removed, false otherwise
+     */
+    public boolean removeMetaData( DataStreamType metadatatype )
+    {
+        if ( this.hasMetadata( metadatatype ) )
+        {
+            this.metadata.remove( metadatatype );
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
 
     /**
      * Given an id, this method returns true if a CargoObject with the
@@ -385,6 +412,13 @@ public class CargoContainer
         return data.size();
     }
 
+    /**
+     * Get the total number of Objects in the CargoContainer, with the
+     * return value representing the CargoObjects together with the
+     * MetaData objects
+     *
+     * @return the count of CargoObjects in the CargoContainer
+     */
     public int getTotalObjectCount()
     {
         return data.size() + metadata.size();
@@ -430,44 +464,6 @@ public class CargoContainer
     public List<CargoObject> getCargoObjects()
     {
         return data;
-    }
-
-
-    /**
-     * Given an id of a CargoObject, this method returns the DataStreamType
-     * which the CargoObject was registered with
-     *
-     * @param id the id to match the CargoObject with
-     * @return the DataStreamType of the CargoObject with the specified id
-     */
-    //    public DataStreamType getDataStreamType( long id )
-    //    {
-    //        return null;
-    //    }
-    /**
-     * Given an id of a CargoObject, this method returns the IndexingAlias
-     * for the data in the CargoObject
-     *
-     * @param id the id to match the CargoObject with
-     * @return the alias that is used to index the data in the CargoObject with
-     */
-    public IndexingAlias getIndexingAlias( long id )
-    {
-        IndexingAlias ret_ia = null;
-        for( CargoObject co : data )
-        {
-            if( id == co.getId() )
-            {
-                ret_ia = co.getIndexingAlias();
-            }
-        }
-        if( null == ret_ia )
-        {
-            log.warn( String.format( "Could not retrieve IndexingAlias with id %s", id ) );
-            //we'll let the client deal with null.
-        }
-
-        return ret_ia;
     }
 
 

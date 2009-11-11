@@ -88,10 +88,10 @@ public class CargoObjectInfoTest
         /* \todo: re bug #8719 uncomment when finished refatoring*/
         long id = cc.add( DataStreamType.OriginalData, test_format, test_submitter, test_lang, cmt.getMimeType(), ia, data );
 
-        log.debug( String.format( "cc.getIndexingAlias( id )==%s",cc.getIndexingAlias( id ) ) );
+        log.debug( String.format( "cc.getIndexingAlias( id )==%s",cc.getIndexingAlias( DataStreamType.OriginalData ) ) );
         log.debug( String.format( "ia==%s", ia ) );
 
-        assertTrue( ia == cc.getIndexingAlias( id ) );
+        assertTrue( ia == cc.getIndexingAlias( DataStreamType.OriginalData ) );
     }
 
     @Test
