@@ -32,6 +32,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.List;
 //import java.util.regex.Pattern;
@@ -174,7 +175,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
      */
-    public List< String > getIdentifiers( String verbatimSearchString, List< FedoraObjectFields > searchableFields, String cutIdentifier, int maximumResult );
+    public List< String > getIdentifiers( String verbatimSearchString, List< TargetFields > searchableFields, String cutIdentifier, int maximumResult );
 
 
     /** 
@@ -193,10 +194,10 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields, String cutIdentifier, int maximumResults );
+    public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutIdentifier, int maximumResults );
 
 
-    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields, String cutPid, int maximumResults, String namespace );
+    public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
 
 
     /**
@@ -211,7 +212,7 @@ public interface IObjectRepository
      *
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiersUnqualified( List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields, int maximumResults );
+    public List< String > getIdentifiersUnqualified( List< InputPair< TargetFields, String > > resultSearchFields, int maximumResults );
 
 
     /** 

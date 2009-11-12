@@ -27,8 +27,8 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.types.TargetFields;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.common.fedora.FedoraObjectFieldsValue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
@@ -187,49 +187,53 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             throw new PluginException( error );
         }
 
-        FedoraObjectFieldsValue dcTitle = new FedoraObjectFieldsValue( normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-        FedoraObjectFieldsValue dcType = new FedoraObjectFieldsValue( normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TYPE ) ) );
-        FedoraObjectFieldsValue dcCreator = new FedoraObjectFieldsValue( normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR ) ) );
-        FedoraObjectFieldsValue dcSource = new FedoraObjectFieldsValue( normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE ) ) );
+        String dcTitle = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
+        String dcType = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TYPE ) );
+        String dcCreator = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR ) );
+        String dcSource = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE ) );
         String pidAsString = cargo.getIdentifier().getIdentifier();
         
         List< String > fedoraPids = new ArrayList< String >();        
-        List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields = new ArrayList< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > >();
+        List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
         int maximumResults = 10000;
 
-        if( ! types.contains( dcType.valuename() ) )
+        if( ! types.contains( dcType ) )
         {
-            log.debug( String.format( "finding work relations for dcType %s", dcType.valuename() ) );
-            if ( ! dcSource.valuename().equals( "" ) )
+            log.debug( String.format( "finding work relations for dcType %s", dcType ) );
+            if ( ! dcSource.equals( "" ) )
             {
-                log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource.valuename(), dcTitle.valuename() ) );
-                InputPair< FedoraObjectFields, FedoraObjectFieldsValue > searchPair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( FedoraObjectFields.SOURCE, dcSource );
+                log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
+                TargetFields targetSource = FedoraObjectFields.SOURCE;
+                InputPair< TargetFields, String > searchPair = new InputPair< TargetFields, String >( targetSource, dcSource );
                 resultSearchFields.add( searchPair );
                 fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
              
-                if ( fedoraPids.size() == 0 && ! dcTitle.valuename().equals( "" ) )
+                if ( fedoraPids.size() == 0 && ! dcTitle.equals( "" ) )
                 {
                     resultSearchFields.clear();
-                    searchPair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( FedoraObjectFields.TITLE, dcSource );
+                    TargetFields targetTitle = FedoraObjectFields.TITLE;
+                    searchPair = new InputPair< TargetFields, String >( targetTitle, dcSource );
                     resultSearchFields.add( searchPair );
                     fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 }
             }
 
-            if ( ( fedoraPids == null || fedoraPids.size() == 0 ) && ! dcTitle.valuename().equals( "" ) )
+            if ( ( fedoraPids == null || fedoraPids.size() == 0 ) && ! dcTitle.equals( "" ) )
             {
-                log.debug( String.format( "2 WR with dcSource '%s' and dcTitle '%s'", dcSource.valuename(), dcTitle.valuename() ) );
-                if ( ! dcSource.valuename().equals( "" ) )
+                log.debug( String.format( "2 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
+                if ( ! dcSource.equals( "" ) )
                 {
                     resultSearchFields.clear();
-                    InputPair< FedoraObjectFields, FedoraObjectFieldsValue > searchPair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( FedoraObjectFields.SOURCE, dcTitle );
+                    TargetFields targetSource = FedoraObjectFields.SOURCE;
+                    InputPair< TargetFields, String > searchPair = new InputPair< TargetFields, String >( targetSource, dcTitle );
                     resultSearchFields.add( searchPair );
                     fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 }
                 else
                 {
                     resultSearchFields.clear();
-                    InputPair< FedoraObjectFields, FedoraObjectFieldsValue > searchPair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( FedoraObjectFields.TITLE, dcTitle );
+                    TargetFields targetTitle = FedoraObjectFields.TITLE;
+                    InputPair< TargetFields, String > searchPair = new InputPair< TargetFields, String >( targetTitle, dcTitle );
                     resultSearchFields.add( searchPair );
                     fedoraPids = objectRepository.getIdentifiers( resultSearchFields, pidAsString, maximumResults, workNamespace );
                 }
@@ -237,17 +241,19 @@ public class MarcxchangeWorkRelation_1 implements IRelation
 
             if ( fedoraPids == null || fedoraPids.size() == 0 )
             {
-                log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle.valuename(), dcSource.valuename() ) );
+                log.debug( String.format( "No matching posts found for '%s' or '%s'", dcTitle, dcSource ) );
             }
         }
         else
         {
-            if ( ! ( dcTitle.valuename().equals( "" ) || dcCreator.valuename().equals( "" ) ) )
+            if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
-                log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle.valuename(), dcCreator.valuename() ) );
+                log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle, dcCreator ) );
                 resultSearchFields.clear();
-                InputPair< FedoraObjectFields, FedoraObjectFieldsValue > searchTitlePair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( FedoraObjectFields.TITLE, dcTitle );
-                InputPair< FedoraObjectFields, FedoraObjectFieldsValue > searchCreatorPair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( FedoraObjectFields.CREATOR, dcCreator );
+                TargetFields targetTitle = FedoraObjectFields.TITLE;
+                TargetFields targetCreator = FedoraObjectFields.CREATOR;
+                InputPair< TargetFields, String > searchTitlePair = new InputPair< TargetFields, String >( targetTitle, dcTitle );
+                InputPair< TargetFields, String > searchCreatorPair = new InputPair< TargetFields, String >( targetCreator, dcCreator );
                 resultSearchFields.add( searchTitlePair );
                 resultSearchFields.add( searchCreatorPair );
 

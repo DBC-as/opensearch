@@ -35,6 +35,7 @@ import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
+import dk.dbc.opensearch.common.types.TargetFields;
 import fedora.common.Constants;
 import fedora.server.types.gen.Condition;
 import fedora.server.types.gen.ComparisonOperator;
@@ -569,17 +570,17 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiers( String verbatimSearchString, List< FedoraObjectFields > searchableFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( String verbatimSearchString, List< TargetFields > searchableFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ searchableFields.size() ];
-        List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields = new ArrayList< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > >();
+        List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
 
         int i = 0;
-        for( FedoraObjectFields field : searchableFields )
+        for( TargetFields field : searchableFields )
         {
-            FedoraObjectFields property = field;
+            TargetFields property = field;
             resultFields[i] = field.fieldname();
-            InputPair< FedoraObjectFields, FedoraObjectFieldsValue > pair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( property, new FedoraObjectFieldsValue( verbatimSearchString ) );
+            InputPair< TargetFields, String > pair = new InputPair< TargetFields, String >( property,  verbatimSearchString );
             resultSearchFields.add( pair );
             i++;
         }
@@ -601,13 +602,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
     @Override
     //public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults )
-    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for( InputPair< FedoraObjectFields, FedoraObjectFieldsValue > field : resultSearchFields )
+        for( InputPair< TargetFields, String > field : resultSearchFields )
         {
-            FedoraObjectFields property = field.getFirst();
+            TargetFields property = field.getFirst();
             resultFields[i] = property.fieldname();
             i++;
         }
@@ -636,13 +637,13 @@ public class FedoraObjectRepository implements IObjectRepository
     
 
     @Override
-    public List< String > getIdentifiers( List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields, String cutPid, int maximumResults, String namespace )
+    public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for( InputPair< FedoraObjectFields, FedoraObjectFieldsValue > field : resultSearchFields )
+        for( InputPair< TargetFields, String > field : resultSearchFields )
         {
-            FedoraObjectFields property = field.getFirst();
+            TargetFields property = field.getFirst();
             resultFields[i] = property.fieldname();
             i++;
         }
@@ -675,13 +676,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiersUnqualified( List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields, int maximumResults )
+    public List< String > getIdentifiersUnqualified( List< InputPair< TargetFields, String > > resultSearchFields, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for (InputPair< FedoraObjectFields, FedoraObjectFieldsValue > field : resultSearchFields )
+        for (InputPair< TargetFields, String > field : resultSearchFields )
         {
-            FedoraObjectFields property = field.getFirst();
+            TargetFields property = field.getFirst();
             resultFields[i] = property.fieldname();
             i++;
         }
@@ -702,7 +703,7 @@ public class FedoraObjectRepository implements IObjectRepository
     
 
 
-    ObjectFields[] searchRepository( String[] resultFields, List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > propertiesAndVaulues, String comparisonOperator, int maximumResults )
+    ObjectFields[] searchRepository( String[] resultFields, List< InputPair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults )
     {
         // \Todo: check needed on the operator
         int size = propertiesAndVaulues.size();
@@ -712,10 +713,10 @@ public class FedoraObjectRepository implements IObjectRepository
         
         for( int i = 0; i < size; i++ )
         {
-            InputPair< FedoraObjectFields, FedoraObjectFieldsValue > pair = propertiesAndVaulues.get( i );
-            FedoraObjectFields property = pair.getFirst();
-            FedoraObjectFieldsValue value = pair.getSecond();
-            cond[i] = new Condition( property.fieldname(), comp, value.valuename() );
+            InputPair< TargetFields, String > pair = propertiesAndVaulues.get( i );
+            TargetFields property = pair.getFirst();
+            String value = pair.getSecond();
+            cond[i] = new Condition( property.fieldname(), comp, value );
         }
 
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
@@ -1450,5 +1451,4 @@ public class FedoraObjectRepository implements IObjectRepository
         return new PID( newPid );
         
     }
-    
 }

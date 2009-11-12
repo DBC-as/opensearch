@@ -27,6 +27,7 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -104,11 +105,12 @@ public class FedoraAuxiliaryMain
 
         System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
-        List< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > > resultSearchFields = new ArrayList< InputPair< FedoraObjectFields, FedoraObjectFieldsValue > >();
+        List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
         int maximumResult = 10000;
         for ( int i = 0; i < labels.length; i++ )
         {
-            InputPair< FedoraObjectFields, FedoraObjectFieldsValue > pair = new InputPair< FedoraObjectFields, FedoraObjectFieldsValue >( FedoraObjectFields.LABEL , new FedoraObjectFieldsValue( labels[i] ) );
+            TargetFields targetLabel = FedoraObjectFields.LABEL;
+            InputPair< TargetFields, String > pair = new InputPair< TargetFields, String >( targetLabel, labels[i] );
             resultSearchFields.add( pair );
             List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
             System.out.println( "pids.length: " + pids.size() );
