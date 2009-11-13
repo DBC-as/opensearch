@@ -28,22 +28,18 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
 
-import fedora.client.DataStream;
 import fedora.client.FedoraClient;
 import fedora.server.access.FedoraAPIA;
 import fedora.server.management.FedoraAPIM;
 import fedora.server.types.gen.Datastream;
+import fedora.server.types.gen.DatastreamDef;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.MIMETypedStream;
 import fedora.server.types.gen.RelationshipTuple;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -328,6 +324,7 @@ public class FedoraHandle
         return ret;
     }
 
+    
     boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
@@ -432,14 +429,33 @@ public class FedoraHandle
         return timestamp;
     }
 
-    boolean hasObject( String identifier ) throws MalformedURLException, IOException {
+    
+    boolean hasObject( String identifier ) throws RemoteException
+    {
+        try
+        {
+            DatastreamDef[] d = this.fea.listDatastreams( identifier, null );
+            log.debug( String.format( "length of DatastreamDef: '%s'", d.length ) );
+        }
+        catch ( IOException ioe )
+        {
+            log.warn( String.format( "Could not list datastreams for object %s. Error message: %s ", identifier, ioe.getMessage() ) );
+            return false;
+        }
 
+        return true;
+    }
+
+    
+    /*boolean hasObject( String identifier ) throws MalformedURLException, IOException
+    {
         long timer = 0;
 
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
+
         String urlAsString = String.format( "%s/objects/%s/datastreams.xml", this.fedora_base_url, identifier);
 
         try
@@ -458,9 +474,9 @@ public class FedoraHandle
 
             return true;
         }
-        catch (FileNotFoundException ex)
+        catch ( FileNotFoundException ex )
         {
             return false;
         }
-    }
+    }*/
 }

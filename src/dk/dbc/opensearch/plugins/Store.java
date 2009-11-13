@@ -23,13 +23,13 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
+import java.io.IOException;
 import org.apache.log4j.Logger;
 
 
@@ -53,26 +53,16 @@ public class Store implements IRepositoryStore
         String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
         try
         {
-            if( cargo.getIdentifier() != null ) {
-                
+            if ( cargo.getIdentifier() != null )
+            {
                 String new_pid = cargo.getIdentifierAsString();
                                 
-                try
+                boolean hasObject = objectRepository.hasObject( cargo.getIdentifier() );
+                log.debug( String.format( "hasObject( %s ) returned %b",new_pid, hasObject ) );
+                if ( hasObject )
                 {
-                    
-                    boolean hasObject = objectRepository.hasObject( cargo.getIdentifier() );
-                    log.debug( String.format( "hasObject(%s) returned %b",new_pid, hasObject ) );
-                    if (hasObject)
-                    {
-                        log.trace( String.format( "will try to delete pid %s", new_pid ) );
-                        objectRepository.deleteObject( new_pid, "delte before store hack" );
-                    }
-                }
-                
-                catch (Exception e)
-                {
-                    
-                    log.warn( String.format( "Ignoring Error trying to remove object %s", new_pid ), e );
+                    log.trace( String.format( "will try to delete pid %s", new_pid ) );
+                    objectRepository.deleteObject( new_pid, "delte before store hack" );
                 }
             }
             

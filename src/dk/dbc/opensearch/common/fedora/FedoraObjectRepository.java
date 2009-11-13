@@ -16,11 +16,15 @@
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
  * \file
  * \brief
  */
+
+
 package dk.dbc.opensearch.common.fedora;
+
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.metadata.DublinCore;
@@ -100,15 +104,15 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             return this.fedoraHandle.hasObject( identifier.getIdentifier() );
         }
-        catch (MalformedURLException e)
+        /*catch ( MalformedURLException e )
         {
-            String error = String.format( "Internal Error from hasObject: %s", e.getMessage() );
+            String error = String.format( "MalformedURLException Internal Error from hasObject: %s", e.getMessage() );
             log.error( error, e );
             throw new ObjectRepositoryException( error, e );
-        }
-        catch (IOException e)
+        }*/
+        catch ( RemoteException e )
         {
-            String error = String.format( "Error Connecting to fedora: %s", e.getMessage() );
+            String error = String.format( "RemoteException Error Connecting to fedora: %s", e.getMessage() );
             log.error( error, e );
             throw new ObjectRepositoryException( error, e );
         }
@@ -126,31 +130,31 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         catch( ConfigurationException ex )
         {
-            String error = String.format( "Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            String error = String.format( "ConfigurationException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( ServiceException ex )
         {
-            String error = String.format( "Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            String error = String.format( "ServiceException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( MalformedURLException ex )
         {
-            String error = String.format( "Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            String error = String.format( "MalformedURLException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( RemoteException ex )
         {
-            String error = String.format( "Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            String error = String.format( "RemoteException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
         catch( IOException ex )
         {
-            String error = String.format( "Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            String error = String.format( "IOException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
@@ -193,9 +197,9 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             foxml = FedoraUtils.CargoContainerToFoxml( cargo );
         }
-        catch (OpenSearchTransformException ex)
+        catch ( OpenSearchTransformException ex )
         {
-            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s",identifierAsString, ex.getMessage() );
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
@@ -322,7 +326,7 @@ public class FedoraObjectRepository implements IObjectRepository
         
         String storedObjectPid = storeObject( cargo, logm, "auto" );
         
-        if (!storedObjectPid.equals( identifier ))
+        if ( ! storedObjectPid.equals( identifier ) )
         {
             String error = String.format( "Could not store replacement object with pid '%s': stored with pid '%s' instead", identifier, storedObjectPid );
             log.error( error );
@@ -380,7 +384,7 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
 
-        List<InputPair<Integer, InputPair<String, CargoObject>>> adminstreamlist;
+        List< InputPair< Integer, InputPair< String, CargoObject > > > adminstreamlist;
         try
         {
             adminstreamlist = adminStream.getStreams();
@@ -395,7 +399,7 @@ public class FedoraObjectRepository implements IObjectRepository
         CargoContainer cargo = new CargoContainer();
         cargo.setIdentifier( new PID( identifier ) );
         
-        for (InputPair<Integer, InputPair<String, CargoObject>> cargoobjects : adminstreamlist)
+        for ( InputPair< Integer, InputPair< String, CargoObject > > cargoobjects : adminstreamlist)
         {
             String streamId = cargoobjects.getSecond().getFirst();
 
@@ -439,7 +443,7 @@ public class FedoraObjectRepository implements IObjectRepository
             
             try
             {
-                if( co.getDataStreamType() == DataStreamType.DublinCoreData )
+                if ( co.getDataStreamType() == DataStreamType.DublinCoreData )
                 {
                     DublinCore dc;
                     log.trace( String.format( "Trying to contruct DublinCore element from string: %s", new String( datastream ) ) );
@@ -1321,10 +1325,8 @@ public class FedoraObjectRepository implements IObjectRepository
     }
     
 
-
     @Override
-    public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject )
-        throws ObjectRepositoryException
+    public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
         try
         {
@@ -1355,16 +1357,14 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List<InputPair<IPredicate, String>> getObjectRelations( ObjectIdentifier objectIdentifier )
-            throws ObjectRepositoryException
+    public List< InputPair< IPredicate, String > > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
     {
         return null;
     }
     
 
     @Override
-    public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject )
-        throws ObjectRepositoryException
+    public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
         try
         {
@@ -1407,8 +1407,7 @@ public class FedoraObjectRepository implements IObjectRepository
      * @return
      * @throws ObjectRepositoryException
      */
-    private ObjectIdentifier getOrGenerateIdentifier( CargoContainer cargo,
-            String defaultPidNameSpace ) throws ObjectRepositoryException
+    private ObjectIdentifier getOrGenerateIdentifier( CargoContainer cargo, String defaultPidNameSpace ) throws ObjectRepositoryException
     {
         ObjectIdentifier identifier = cargo.getIdentifier();
         
@@ -1429,26 +1428,21 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         catch (ConfigurationException e)
         {
-            throw new ObjectRepositoryException( String
-                    .format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
+            throw new ObjectRepositoryException( String.format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
         }
         catch (MalformedURLException e)
         {
-            throw new ObjectRepositoryException( String
-                    .format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
+            throw new ObjectRepositoryException( String.format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
         }
         catch (ServiceException e)
         {
-            throw new ObjectRepositoryException( String
-                    .format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
+            throw new ObjectRepositoryException( String.format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
         }
         catch (IOException e)
         {
-            throw new ObjectRepositoryException( String
-                    .format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
+            throw new ObjectRepositoryException( String.format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
         }
         
-        return new PID( newPid );
-        
-    }
+        return new PID( newPid );        
+    }    
 }
