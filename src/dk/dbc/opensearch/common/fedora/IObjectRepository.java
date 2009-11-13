@@ -51,22 +51,6 @@ import java.util.List;
  */
 public interface IObjectRepository
 {
-    /*public class Value
-    {
-        private String value;
-
-        public Value( String value )
-        {
-            this.value = value;
-        }
-
-        public String getValue()
-        {
-            return this.value;
-        }
-    }*/
-
-
     /** 
      * Queries the object repository for the existence of the object
      * based on the identifier of the object
@@ -95,6 +79,7 @@ public interface IObjectRepository
      * @throws ObjectRepositoryException if the object cannot be stored
      */    
     public String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace ) throws ObjectRepositoryException;
+
 
     /** 
      * Retrieves the object identified by {@code identifier}. The

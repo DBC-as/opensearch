@@ -108,91 +108,90 @@ public class PTIThread implements Callable< Boolean >
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
     public Boolean call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException
+    {
+        log.trace( String.format( "Entering with handle: '%s'", fedoraPid ) );
+        CargoContainer cc = null;
+        CargoObject co = null;
+        String submitter =  null;
+        String format = null;
+
+        try
         {
-            log.trace( String.format( "Entering with handle: '%s'", fedoraPid ) );
-            CargoContainer cc = null;
-            CargoObject co = null;
-            String submitter =  null;
-            String format = null;
+            log.trace( String.format( "PTIThread -> objectId: ", fedoraPid ) );
+            cc = objectRepository.getObject( fedoraPid );
+        }
+        catch( Exception e )
+        {
+            log.fatal( String.format( "Caught exception with cause: %s, message: %s", e.getCause(), e.getMessage() ) );
+            throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
+        }
 
-            try
+        log.trace( String.format( "Value of CargoContainer %s", cc.getCargoObjectCount() ) );
+
+        co = cc.getCargoObject( DataStreamType.OriginalData );
+        submitter =  co.getSubmitter();
+        format = co.getFormat();
+
+        boolean success = false;
+
+        // Get the job from the jobMap
+        list = PTIJobsMap.getPtiPluginsList( submitter, format );
+        if ( list == null )
+        {
+            log.error( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
+            throw new PluginException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
+        }
+        else
+        {
+            IPluggable plugin = null;
+            PluginType taskName = null;
+
+            log.debug( "PluginsList: " + Arrays.deepToString( list.toArray() ) );
+            for ( String classname : list )
+            {
+                log.trace( "PTIThread running through plugins list" );
+                plugin = pluginResolver.getPlugin( classname );
+                log.trace( "PTIThread plugin resolved" );
+
+                if( plugin == null )
                 {
-                    log.trace( String.format( "PTIThread -> objectId: ", fedoraPid ) );
-                    cc = objectRepository.getObject( fedoraPid );
+                    String error = String.format( "Could not plugin name for '%s'", classname );
+                    log.error( error );
+                    throw new IllegalStateException( error );
                 }
-            catch( Exception e )
+
+                taskName = plugin.getPluginType();
+                log.debug( "PTIThread taskName: " + taskName );
+
+                log.trace( "Entering switch" );
+                switch( taskName )
                 {
-                    log.fatal( String.format( "Caught exception with cause: %s, message: %s", e.getCause(), e.getMessage() ) );
-                    throw new PluginException( "Could not retrieve adminstream elements, aborting", e );
-                }
-
-            log.trace( String.format( "Value of CargoContainer %s", cc.getCargoObjectCount() ) );
-            
-
-            co = cc.getCargoObject( DataStreamType.OriginalData );
-            submitter =  co.getSubmitter();
-            format = co.getFormat();
-
-            boolean success = false;
-
-            // Get the job from the jobMap
-            list = PTIJobsMap.getPtiPluginsList( submitter, format );
-            if ( list == null )
-                {
-                    log.error( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
-                    throw new PluginException( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
-                }
-            else{
-                //PluginResolver pluginResolver = new PluginResolver();
-
-                IPluggable plugin = null;
-                PluginType taskName = null;
-
-                log.debug( "PluginsList: " + Arrays.deepToString( list.toArray() ) );
-                for ( String classname : list )
-                    {
-                        log.trace( "PTIThread running through plugins list" );
-                        plugin = pluginResolver.getPlugin( classname );
-                        log.trace( "PTIThread plugin resolved" );
-
-                        if( plugin == null )
-                        {
-                            String error = String.format( "Could not plugin name for '%s'", classname );
-                            log.error( error );
-                            throw new IllegalStateException( error );
-                        }
-
-                        taskName = plugin.getPluginType();
-                        log.debug( "PTIThread taskName: " + taskName );
-
-                        log.trace( "Entering switch" );
-                        switch( taskName )
-                        {
-                        case PROCESS:
-                                log.debug( "calling processerplugin" );
-                                IProcesser processPlugin = (IProcesser) plugin;
-                                cc = processPlugin.getCargoContainer( cc );
-                                log.debug( "PTIThread PROCESS plugin done" );
-                                break;
-                            case RELATION:
-                                log.trace( "calling relation plugin" );
-                                IRelation relationPlugin = (IRelation) plugin;
-                                relationPlugin.setObjectRepository( objectRepository );
-                                cc = relationPlugin.getCargoContainer( cc );
-                                log.trace( "PTIThread RELATION plugin done" );
-                                break;
-                            case INDEX:
-                                log.debug( "calling indexerplugin" );
-                                IIndexer indexPlugin = (IIndexer) plugin;
-                                success = indexPlugin.index( cc, session, fedoraPid );
-                                log.debug( "PTIThread INDEX plugin done" );
-                                break;
-                        }
+                    case PROCESS:
+                        log.debug( "calling processerplugin" );
+                        IProcesser processPlugin = (IProcesser) plugin;
+                        cc = processPlugin.getCargoContainer( cc );
+                        log.debug( "PTIThread PROCESS plugin done" );
+                        break;
+                    case RELATION:
+                        log.trace( "calling relation plugin" );
+                        IRelation relationPlugin = (IRelation) plugin;
+                        relationPlugin.setObjectRepository( objectRepository );
+                        cc = relationPlugin.getCargoContainer( cc );
+                        log.trace( "PTIThread RELATION plugin done" );
+                        break;
+                    case INDEX:
+                        log.debug( "calling indexerplugin" );
+                        IIndexer indexPlugin = (IIndexer) plugin;
+                        success = indexPlugin.index( cc, session, fedoraPid );
+                        log.debug( "PTIThread INDEX plugin done" );
+                        break;
                 }
             }
-            log.debug( "PTIThread done" );
+        }
 
-            return success;
+        log.debug( "PTIThread done" );
+
+        return success;
     }
 }
 

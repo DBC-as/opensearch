@@ -32,11 +32,13 @@ package dk.dbc.opensearch.common.fedora;
 public class FedoraObjectFieldsValue
 {
     private String valuename;
-    
+
+
     public FedoraObjectFieldsValue( String valuename )
     {
         this.valuename = valuename;
     }
+    
 
     public String valuename()
     {

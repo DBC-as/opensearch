@@ -282,10 +282,8 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         {
             workPid = new PID(fedoraPids.get( 0 )); 
         }
-                 
 
         log.debug( String.format( "Trying to add %s to the collection %s", cargo.getIdentifier(), workPid ) );
-
 
         this.objectRepository.addObjectRelation( workPid, DBCBIB.HAS_MANIFESTATION , cargo.getIdentifierAsString() );
         this.objectRepository.addObjectRelation( cargo.getIdentifier(), DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );

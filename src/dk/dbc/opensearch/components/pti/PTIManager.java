@@ -27,14 +27,11 @@ package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
-import java.lang.ClassNotFoundException;
-import java.lang.Integer;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.Vector;

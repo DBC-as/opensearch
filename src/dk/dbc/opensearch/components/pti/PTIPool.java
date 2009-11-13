@@ -132,7 +132,7 @@ public class PTIPool
     {
     	log.debug( String.format( "submit( fedoraHandle='%s', queueID='%s' )", fedoraHandle, queueID ) );
     
-        FutureTask<Boolean> future = getTask( fedoraHandle );
+        FutureTask< Boolean > future = getTask( fedoraHandle );
 
         threadpool.submit( future );
         InputPair< FutureTask< Boolean >, Integer > pair = new InputPair< FutureTask< Boolean >, Integer >( future, queueID );
@@ -147,7 +147,7 @@ public class PTIPool
         log.debug( "Getting CompassSession" );
         session = compass.openSession();
 
-        return new FutureTask<Boolean>( new PTIThread( fedoraHandle, session, objectRepository, pluginResolver ) );
+        return new FutureTask< Boolean >( new PTIThread( fedoraHandle, session, objectRepository, pluginResolver ) );
     }
 
     
@@ -160,14 +160,14 @@ public class PTIPool
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Vector<CompletedTask<InputPair<Boolean, Integer> >> checkJobs() throws InterruptedException 
+    public Vector< CompletedTask< InputPair<Boolean, Integer> > > checkJobs() throws InterruptedException
     {
         log.debug( "checkJobs() called" );
     
-        Vector<CompletedTask<InputPair<Boolean, Integer>>> finishedJobs = new Vector<CompletedTask<InputPair<Boolean, Integer>>>();
-        for( InputPair<FutureTask<Boolean>, Integer> jobpair : jobs )        
+        Vector< CompletedTask< InputPair< Boolean, Integer > > > finishedJobs = new Vector< CompletedTask< InputPair< Boolean, Integer > > >();
+        for( InputPair< FutureTask< Boolean >, Integer > jobpair : jobs )
         {
-            FutureTask<Boolean> job = jobpair.getFirst();
+            FutureTask< Boolean > job = jobpair.getFirst();
             Integer queueID = jobpair.getSecond();
             if( job.isDone() )
             {
@@ -205,11 +205,11 @@ public class PTIPool
              InputPair<Boolean, Integer> finishedpair =  finishedJob.getResult();
              log.debug( String.format( "Removing Job queueID='%s'", finishedpair.getSecond() ) );
              
-             Vector<InputPair<FutureTask<Boolean>, Integer>> removeableJobs = new Vector<InputPair<FutureTask<Boolean>, Integer>>();
-             for( InputPair<FutureTask<Boolean>, Integer> job : jobs )
+             Vector<InputPair< FutureTask< Boolean >, Integer>> removeableJobs = new Vector< InputPair< FutureTask< Boolean >, Integer>>();
+             for ( InputPair< FutureTask< Boolean >, Integer> job : jobs )
              {
                 Integer queueID = job.getSecond();
-                if( queueID.equals( finishedpair.getSecond() ) )
+                if ( queueID.equals( finishedpair.getSecond() ) )
                 {
                     removeableJobs.add( job );
                 }

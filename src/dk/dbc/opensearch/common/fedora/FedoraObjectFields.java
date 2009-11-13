@@ -59,11 +59,13 @@ public enum FedoraObjectFields implements TargetFields
 
     private String fieldname;
 
+
     FedoraObjectFields( String fieldname )
     {
         this.fieldname = fieldname;
     }
 
+    
     public String fieldname()
     {
         return this.fieldname;
