@@ -362,7 +362,7 @@
         />
     <xml-property
         name="phrase.title"
-        xpath="/ting:container/dkabm:record/dc:title"
+        xpath="/ting:container/dkabm:record/dc:title | /ting:container/dkabm:record/dcterms:alternative"
         index="un_tokenized"
         value-converter="lowercase"        
         />
@@ -729,162 +729,71 @@
         name="cql.anyIndexes" 
         xpath="/ting:container/dkabm:record/*"
         />
-       <xml-property
-        name="phrase.title" 
-        xpath="/*/*/*/*[@tag='210']/*[@code='a' or @code='b' or @code ='c']
-        | /*/*/*/*[@tag='222']/*[@code='a' or @code='b']
-        | /*/*/*/*[@tag='239']/*[@code='t' or @code='u' or @code ='v']
-        | /*/*/*/*[@tag='240']/*[@code='a' or @code='d' or @code ='e' or @code='f' or @code='g' or @code='h' or @code='j' or @code='k' or @code='l' or @code='n' or @code='o' or @code='s' or @code='ø']
-        | /*/*/*/*[@tag='241']/*[@code='a' or @code='n' or @code='o']
-        | /*/*/*/*[@tag='242']/*[@code='a' or @code='c' or @code='n' or @code='o']
-        | /*/*/*/*[@tag='245']/*[@code='a' or @code='b' or @code ='c' or @code='g' or @code='n' or @code='o' or @code='p' or @code='q' or @code='r' or @code='s' or @code='u' or @code='x' or @code='y' or @code='A' or @code='P' or @code='X' or @code='U']
-        | /*/*/*/*[@tag='247']/*[@code='a' or @code='c' or @code ='g' or @code='n' or @code='o' or @code='p' or @code='s' or @code='v' or @code='x' or @code='A' or @code='S' or @code='P' or @code='X']
-        | /*/*/*/*[@tag='248']/*[@code='a' or @code='c' or @code ='g' or @code='n' or @code='o' or @code='p' or @code='s' or @code='v' or @code='x' or @code='A' or @code='S' or @code='P' or @code='X']
-        | /*/*/*/*[@tag='440']/*[@code='a' or @code='c' or @code='n' or @code='o' or @code='p' or @code='q' or @code='r' or @code='s' or @code='v' or @code='æ' or @code='ø' or @code='A' or @code='P']
-        | /*/*/*/*[@tag='512' or @tag='520' or @tag='526' or @tag='530' or @tag='534']/*[@code='t' or @code='x']
-        | /*/*/*/*[@tag='700' or @tag='710']/*[@code='t']
-        | /*/*/*/*[@tag='739']/*[@code='t' or @code='u' or @code='v']
-        | /*/*/*/*[@tag='740']/*[@code='a' or @code='d' or @code='e' or @code='f' or @code='g' or @code='h' or @code='j' or @code='k' or @code='n' or @code='o' or @code='s' or @code='ø']
-        | /*/*/*/*[@tag='745']/*[@code='a' or @code='b' or @code='n' or @code='o' or @code='ø' or @code='A']
-        | /*/*/*/*[@tag='795']/*[@code='a' or @code='b' or @code='c' or @code='p' or @code='q' or @code='r' or @code='s' or @code='u' or @code='v' or @code='A']
-        | /*/*/*/*[@tag='840']/*[@code='a' or @code='n' or @code='o' or @code='v' or @code='æ' or @code='ø']
-        | /*/*/*/*[@tag='945']/*[@code='a' or @code='d' or @code='e' or @code='f' or @code='g' or @code='h' or @code='j' or @code='k' or @code='n' or @code='o' or @code='s']
-        | /ting:container/dkabm:record/dc:title"
-        index="un_tokenized"
-        value-converter="lowercase"
-        /> 
     <xml-property
-        name="phrase.creator" 
-        xpath="/*/*/*/*[@tag='100']/*[@code='a' or @code='h']
-        | /*/*/*/*[@tag='100' or @tag='700' or @tag='770']/*[@code='a' or @code='c' or @code='e' or @code='f' or @code='h' or @code='k' or @code='A' or @code='E' or @code='H' or @code='4']
-        | /*/*/*/*[@tag='110' or @tag='710' or @tag='780']/*[@code='a' or @code='c' or @code='e' or @code='i' or @code='j' or @code='k' or @code='s' or @code='A' or @code='C' or @code='S' or @code='4']
-        | /*/*/*/*[@tag='239' or @tag='739']/*[@code='a' or @code='c' or @code='e' or @code='f' or @code='h' or @code='A' or @code='E' or @code='H' or @code='4']
-        | /*/*/*/*[@tag='242']/*[@code='e']
-        | /*/*/*/*[@tag='245']/*[@code='e' or @code='f' or @code='i' or @code='j' or @code='k' or @code='t' or @code='æ']
-        | /*/*/*/*[@tag='247' or @tag='248']/*[@code='e' or @code='f' or @code='t']
-        | /*/*/*/*[@tag='250']/*[@code='c' or @code='d' or @code='t']
-        | /*/*/*/*[@tag='440']/*[@code='e' or @code='t' or @code='æ']
-        | /*/*/*/*[@tag='512' or @tag='520' or @tag='526' or @tag='530' or @tag='534']/*[@code='d' or @code='e']
-        | /*/*/*/*[@tag='513']/*[@code='a' or @code='e' or @code='f' or @code='i' or @code='j']
-        | /*/*/*/*[@tag='540']/*[@code='a']
-        | /*/*/*/*[@tag='558']/*[@code='e']
-        | /*/*/*/*[@tag='720']/*[@code='a' or @code='h' or @code='k' or @code='o' or @code='4']
-        | /*/*/*/*[@tag='745']/*[@code='æ']
-        | /*/*/*/*[@tag='795']/*[@code='e' or @code='f' or @code='i' or @code='j' or @code='t' or @code='k' or @code='æ']
-        | /*/*/*/*[@tag='840']/*[@code='æ']
-        | /*/*/*/*[@tag='900']/*[@code='a' or @code='c' or @code='e' or @code='f' or @code='h' or @code='k' or @code='A' or @code='E' or @code='H']
-        | /*/*/*/*[@tag='910']/*[@code='a' or @code='c' or @code='e' or @code='g' or @code='h' or @code='i' or @code='j' or @code='k' or @code='s' or @code='A' or @code='C' or @code='S']
-        | /*/*/*/*[@tag='945']/*[@code='æ']"
+        name="phrase.title"
+        xpath="/ting:container/dkabm:record/dc:title | /ting:container/dkabm:record/dcterms:alternative"
         index="un_tokenized"
         value-converter="lowercase"
+    />
+    <xml-property
+        name="phrase.creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
+        index="un_tokenized"
+        value-converter="lowercase"        
         />
     <xml-property
-        name="phrase.subject" 
-        xpath="/*/*/*/*[@tag='080']/*[@code='a']
-        | /*/*/*/*[@tag='082' or @tag='086']/*[@code='a']
-        | /*/*/*/*[@tag='600']/*[@code='a' or @code='h' or @code='k' or @code='e' or @code='f' or @code='t' or @code='v' or @code='x' or @code='y' or @code='z' or @code='A' or @code='E' or @code='H']
-        | /*/*/*/*[@tag='610']/*[@code='a' or @code='e' or @code='c' or @code='s' or @code='i' or @code='k' or @code='j' or @code='t' or @code='v' or @code='x' or @code='y' or @code='z' or @code='u' or @code='A' or @code='S' or @code='C']
-        | /*/*/*/*[@tag='620']/*[@code='a']
-        | /*/*/*/*[@tag='621']/*[@code='a' or @code='b' or @code='e' or @code='f' or @code='j']
-        | /*/*/*/*[@tag='630']/*[@code='a' or @code='b' or @code='f' or @code='g' or @code='s' or @code='t' or @code='u']
-        | /*/*/*/*[@tag='631']/*[@code='a' or @code='b' or @code='f' or @code='g' or @code='s' or @code='t']
-        | /*/*/*/*[@tag='633']/*[@code='a' or @code='u' or @code='A']
-        | /*/*/*/*[@tag='634' or @tag='650']/*[@code='a' or @code='b' or @code='c' or @code='d' or @code='u' or @code='v' or @code='x' or @code='y' or @code='z']
-        | /*/*/*/*[@tag='645']/*[@code='a' or @code='b' or @code='c' or @code='u' or @code='v' or @code='x' or @code='y' or @code='z']
-        | /*/*/*/*[@tag='651']/*[@code='a' or @code='v' or @code='x' or @code='y' or @code='z']
-        | /*/*/*/*[@tag='652' or @tag='654' or @tag='655']/*[@code='m' or @code='n' or @code='a' or @code='b' or @code='c' or @code='e' or @code='f' or @code='h' or @code='k' or @code='t' or @code='A' or @code='E' or @code='H']
-        | /*/*/*/*[@tag='660']/*[@code='a' or @code='b' or @code='c' or @code='d' or @code='e' or @code='v' or @code='x' or @code='y' or @code='z']
-        | /*/*/*/*[@tag='661']/*[@code='a' or @code='b' or @code='c' or @code='d']
-        | /*/*/*/*[@tag='662']/*[@code='a' or @code='b' or @code='c']
-        | /*/*/*/*[@tag='666' or @tag='667']/*[@code='f' or @code='t' or @code='e' or @code='s' or @code='r' or @code='q' or @code='m' or @code='n' or @code='p' or @code='l' or @code='i' or @code='o' or @code='u']
-        | /*/*/*/*[@tag='668']/*[@code='a' or @code='b' or @code='c']
-        | /*/*/*/*[@tag='670']/*[@code='a' or @code='b' or @code='c' or @code='d' or @code='e' or @code='v' or @code='x' or @code='y' or @code='z']
-        | /*/*/*/*[@tag='690']/*[@code='a' or @code='b' or @code='d']
-        | /*/*/*/*[@tag='930']/*[@code='a' or @code='f' or @code='s' or @code='u']
-        | /*/*/*/*[@tag='933']/*[@code='a' or @code='u']
-        | /*/*/*/*[@tag='934']/*[@code='a' or @code='b' or @code='c' or @code='d' or @code='u']
-        | /*/*/*/*[@tag='952']/*[@code='a']
-        | /*/*/*/*[@tag='966']/*[@code='f' or @code='t' or @code='e' or @code='s' or @code='r' or @code='q' or @code='m' or @code='n' or @code='p' or @code='l' or @code='i' or @code='o' or @code='u']
-        | /*/*/*/*[@tag='968']/*[@code='a' or @code='c']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.description" 
-        xpath="/*/*/*/*[@tag='247' or @tag='248']/*[@code='l']
-        | /*/*/*/*[@tag='501']/*[@code='a' or @code='u' or @code='b' or @code='y']
-        | /*/*/*/*[@tag='502']/*[@code='a']
-        | /*/*/*/*[@tag='504']/*[@code='a' or @code='u' or @code='y']
-        | /*/*/*/*[@tag='505']/*[@code='a']
-        | /*/*/*/*[@tag='506']/*[@code='a']
-        | /*/*/*/*[@tag='507']/*[@code='a']
-        | /*/*/*/*[@tag='508']/*[@code='a']
-        | /*/*/*/*[@tag='509']/*[@code='a']
-        | /*/*/*/*[@tag='512']/*[@code='a' or @code='b' or @code='d' or @code='e' or @code='i' or @code='t' or @code='x' or @code='u' or @code='y']
-        | /*/*/*/*[@tag='517']/*
-        | /*/*/*/*[@tag='520' or @tag='526']/*[@code='a' or @code='b' or @code='d' or @code='e' or @code='i' or @code='t' or @code='x' or @code='u' or @code='y']
-        | /*/*/*/*[@tag='530']/*[@code='a' or @code='b' or @code='d' or @code='e' or @code='i' or @code='m' or @code='t' or @code='x' or @code='u' or @code='y']
-        | /*/*/*/*[@tag='534']/*[@code='a' or @code='b' or @code='d' or @code='e' or @code='i' or @code='m' or @code='x' or @code='u' or @code='y']
-        | /*/*/*/*[@tag='555']/*[@code='a']
-        | /*/*/*/*[@tag='559']/*[@code='a' or @code='u' or @code='y']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.publisher" 
-        xpath="/*/*/*/*[@tag='247']/*[@code='i']
-        | /*/*/*/*[@tag='248']/*[@code='i']
-        | /*/*/*/*[@tag='260']/*[@code='b' or @code='g' or @code='p']
-        | /*/*/*/*[@tag='440']/*[@code='e' or @code='æ' or @code='ø']
-        | /*/*/*/*[@tag='538']/*[@code='f']
-        | /*/*/*/*[@tag='840']/*[@code='æ' or @code='ø']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.date" 
-        xpath="/*/*/*/*[@tag='008']/*[@code='a' or @code='z']
-        | /*/*/*/*[@tag='260']/*[@code='c']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.type" 
-        xpath="/ting:container/dkabm:record/dc:type
-        | /*/*/*/*[@tag='009']/*[@code='a' or @code='g']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.identifier" 
-        xpath="/*/*/*/*[@tag='021']/*[@code='a' or @code='e']
-        | /*/*/*/*[@tag='022' or @tag='023' or @tag='024' or @tag='027' or @tag='028']/*[@code='a']
-        | /*/*/*/*[@tag='248']/*[@code='z' or @code='r' or @code='u']
-        | /*/*/*/*[@tag='440']/*[@code='z']
-        | /*/*/*/*[@tag='538']/*[@code='b' or @code='f' or @code='g']
-        | /*/*/*/*[@tag='856']/*[@code='u']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.source" 
-        xpath="/*/*/*/*[@tag='241']/*[@code='a']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.language" 
-        xpath="/ting:container/dkabm:record/dc:language
-        | /*/*/*/*[@tag='008']/*[@code='l']
-        | /*/*/*/*[@tag='041']/*[@code='a' or @code='p']"
-        index="un_tokenized"
-        value-converter="lowercase"
-        />
-    <xml-property
-        name="phrase.anyIndexes" 
+        name="phrase.anyIndexes"
         xpath="/ting:container/dkabm:record/*"
         index="un_tokenized"
-        value-converter="lowercase"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.description"
+        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
+        index="un_tokenized"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.subject"
+        xpath="/ting:container/dkabm:record/dc:subject"
+        index="un_tokenized"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.type"
+        xpath="/ting:container/dkabm:record/dc:type"
+        index="un_tokenized"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.language"
+        xpath="/ting:container/dkabm:record/dc:language"
+        index="un_tokenized"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        index="un_tokenized"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.source"
+        xpath="/ting:container/dkabm:record/dc:source"
+        index="un_tokenized"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.identifier"
+        xpath="/ting:container/dkabm:record/dc:identifier"
+        index="un_tokenized"
+        value-converter="lowercase"        
+        />
+    <xml-property
+        name="phrase.publisher"
+        xpath="/ting:container/dkabm:record/dc:publisher"
+        index="un_tokenized"
+        value-converter="lowercase"        
         />
     <xml-property
         name="creator"
