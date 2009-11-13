@@ -154,6 +154,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         }
         catch ( XPathExpressionException xpee )
         {
+            log.trace( String.format( "Threw XPath evaluation exception for data: %s", new String( bytes ) ) );
             String msg = String.format( "Could not evaluate with xpath expression '%s'", xPathStr );
             log.error( msg, xpee );
             throw new PluginException( msg, xpee );
