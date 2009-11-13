@@ -25,18 +25,19 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.fedora.FedoraHandle;
+//import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.components.harvest.IIdentifier;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+//import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -74,6 +75,21 @@ public class MarcxchangeHarvesterTest
 
     @Mocked IIdentifier mockIdentifier;
     
+    @MockClass( realClass = CargoContainer.class )
+    public static class MockCargoContainer
+    {
+        @Mock public static long add( DataStreamType dataStreamName,
+                     String format,
+                     String submitter,
+                     String language,
+                     String mimetype,
+                     IndexingAlias alias,
+                     byte[] data ) throws IOException
+        {
+            throw new IOException( "test" );
+        }
+    }
+
     @Before
     public void setUp() throws Exception
     {
@@ -152,6 +168,24 @@ public class MarcxchangeHarvesterTest
             throw pe.getException();
         }
 
+    }
+
+    /**
+     * tests the behavoiour when the cargoContainers add method fails with a IOException
+     */
+    @Test( expected = IOException.class )
+    public void cargoContainerCantAddData() throws Exception
+    {
+        setUpMocks( MockCargoContainer.class );
+      harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }  
     }
    
 }
