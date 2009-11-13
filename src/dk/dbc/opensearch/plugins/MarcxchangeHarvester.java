@@ -139,6 +139,17 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         try
         {
             xPathExpression = xpath.compile( xPathStr );
+        }
+        catch ( XPathExpressionException xpee )
+        {
+            String msg = String.format( "Could not compile xpath expression '%s'", xPathStr );
+            log.error( msg, xpee );
+            throw new PluginException( msg, xpee );
+        }
+
+
+        try
+        {
             dcVariable = xPathExpression.evaluate( workRelationSource );
         }
         catch ( XPathExpressionException xpee )
