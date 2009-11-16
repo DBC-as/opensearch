@@ -319,8 +319,9 @@ public class ESHarvest implements IHarvest
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) 
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
-	Connection conn;
+        log.info( String.format( "ESHarvest.setStatusFailure( identifier %s ) ", Id ) );
 
+	Connection conn;
 
 	try
 	{
@@ -353,6 +354,8 @@ public class ESHarvest implements IHarvest
     public void setStatusSuccess( IIdentifier Id, String PID )
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
+        log.info( String.format( "ESHarvest.setStatusSuccess( identifier %s ) ", Id ) );
+
 	Connection conn;
 
 	try
@@ -377,6 +380,8 @@ public class ESHarvest implements IHarvest
     public void setStatusRetry( IIdentifier Id )
 	throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
+        log.info( String.format( "ESHarvest.setStatusRetry( identifier %s ) ", Id ) );
+
 	Connection conn;
 
 	try
