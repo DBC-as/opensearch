@@ -256,8 +256,8 @@ public class DatadockMain
                 String initialLimit = DataBaseConfig.getOracleInitialLimit();
                 String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
 
-		log.info( String.format( "DB Url : %s ", oracleUrl ) );
-		log.info( String.format( "DB User: %s ", oracleUser ) );
+                log.info( String.format( "DB Url : %s ", oracleUrl ) );
+                log.info( String.format( "DB User: %s ", oracleUser ) );
 
 
                 try
@@ -364,7 +364,7 @@ public class DatadockMain
                     log.info(String.format("%1$d Jobs submittet in %2$d ms - ",jobsSubmited, timer));
                     if( terminateOnZeroSubmitted )
                     {
-                        shutdown();
+                        DatadockMain.shutdown();
                     }
                     else
                     {
@@ -374,6 +374,12 @@ public class DatadockMain
                 }
 
             }
+            catch( HarvesterIOException hioe )
+            {
+                String fatal =  String.format( "A fatal error occured in the communication with the database, exiting." );
+                log.fatal( fatal, hioe );
+                DatadockMain.shutdown();
+            }           
             catch( InterruptedException ie )
             {
                 /**
