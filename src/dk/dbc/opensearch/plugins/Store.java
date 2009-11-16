@@ -29,7 +29,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import java.io.IOException;
 import org.apache.log4j.Logger;
 
 
@@ -83,6 +82,7 @@ public class Store implements IRepositoryStore
     {
         return pluginType;
     }
+
 
     public void setObjectRepository( IObjectRepository objectRepository )
     {

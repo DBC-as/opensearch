@@ -104,12 +104,6 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             return this.fedoraHandle.hasObject( identifier.getIdentifier() );
         }
-        /*catch ( MalformedURLException e )
-        {
-            String error = String.format( "MalformedURLException Internal Error from hasObject: %s", e.getMessage() );
-            log.error( error, e );
-            throw new ObjectRepositoryException( error, e );
-        }*/
         catch ( RemoteException e )
         {
             String error = String.format( "RemoteException Error Connecting to fedora: %s", e.getMessage() );
@@ -159,7 +153,7 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
 
-        if( timestamp == null )
+        if ( timestamp == null )
         {
             String error = String.format( "Could not delete object reference by pid %s (timestamp == null)", identifier );
             log.error( error );
@@ -259,7 +253,7 @@ public class FedoraObjectRepository implements IObjectRepository
     @Override
     public void replaceObject( String identifier, CargoContainer cargo ) throws ObjectRepositoryException
     {
-        if( cargo.getCargoObjectCount() == 0 )
+        if ( cargo.getCargoObjectCount() == 0 )
         {
             String error = String.format( "Identifier '%s' delivered with an empty CargoContainer", identifier );
             log.error( error );
@@ -268,7 +262,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         String cargoIdentifier = cargo.getIdentifierAsString();
 
-        if( cargoIdentifier.isEmpty() )
+        if ( cargoIdentifier.isEmpty() )
         {
             String[] newPid = null;
             String prefix = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
@@ -352,7 +346,7 @@ public class FedoraObjectRepository implements IObjectRepository
     {
         byte[] adminbytes = getDataStream( identifier, DataStreamType.AdminData.getName() );
 
-        if( adminbytes == null || adminbytes.length < 1 )
+        if ( adminbytes == null || adminbytes.length < 1 )
         {
             String error = String.format( "Failed to obtain data for administration stream, cannot retrieve data from '%s'", identifier );
             log.error( error );
@@ -403,7 +397,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             String streamId = cargoobjects.getSecond().getFirst();
 
-            if( streamId.equals( DataStreamType.DublinCoreData.getName() + ".0" ) )
+            if ( streamId.equals( DataStreamType.DublinCoreData.getName() + ".0" ) )
             {
                 streamId = "DC";
             }

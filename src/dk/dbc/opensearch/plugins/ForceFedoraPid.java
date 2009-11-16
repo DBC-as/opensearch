@@ -28,8 +28,6 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IAnnotate;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -67,7 +65,7 @@ public class ForceFedoraPid implements IAnnotate
 
         NamespaceContext nsc = new OpensearchNamespaceContext();
 
-        if( co == null )
+        if ( co == null )
         {
             String error = "Could not retrieve CargoObject with original data from CargoContainer";
             log.error( error );
@@ -100,15 +98,30 @@ public class ForceFedoraPid implements IAnnotate
         {
             throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
         }
-
         
-        log.trace( String.format("title found [%s]", title) );
-       
-        String newID = co.getSubmitter() + ":" + title.substring( 0, title.indexOf( '|' ) );
-        if( newID.length() > 64 )
+        log.trace( String.format( "title found [%s]", title ) );
+
+        String newID = null;
+        if ( title == null || title.equals( "" ) )
         {
-        	log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0,64 ) ) );
-        	newID = newID.substring( 0,64 );
+            return null;
+        }
+        else
+        {
+            try
+            {
+                newID = co.getSubmitter() + ":" + title.substring( 0, title.indexOf( '|' ) );
+                if ( newID.length() > 64 )
+                {
+                    log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0, 64 ) ) );
+                    newID = newID.substring( 0, 64 );
+                }
+            }
+            catch ( StringIndexOutOfBoundsException sioobe )
+            {
+                log.debug( String.format( "Wrapping index out of bounds exceptio and throwing plugin exception", sioobe.getMessage() ) );
+                throw new PluginException( "Could not get new id for cargo", sioobe );
+            }
         }
         
         return newID;
@@ -116,14 +129,18 @@ public class ForceFedoraPid implements IAnnotate
 
 
 	@Override
-	public CargoContainer getCargoContainer(CargoContainer cargo) throws PluginException
+	public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
 		String s = getDCIdentifierFromOriginal( cargo );
-		if( s != null && s.length() > 3 )
+		if ( s != null && s.length() > 3 )
         {
-			log.info( String.format("Forcing Store ID to %s", s ) );
+			log.info( String.format( "Forcing Store ID to %s", s ) );
             cargo.setIdentifier( new PID( s ));
-		} 
+		}
+        else if ( s == null )
+        {
+            throw new PluginException( "Could not obtain identifier from xml using xpath" );
+        }
 
         return cargo;
 	}

@@ -445,38 +445,4 @@ public class FedoraHandle
 
         return true;
     }
-
-    
-    /*boolean hasObject( String identifier ) throws MalformedURLException, IOException
-    {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
-
-        String urlAsString = String.format( "%s/objects/%s/datastreams.xml", this.fedora_base_url, identifier);
-
-        try
-        {
-            URL url = new URL( urlAsString );
-            InputStreamReader isr = new InputStreamReader( url.openStream() );
-            BufferedReader in = new BufferedReader( isr );
-            // read at least one byte to verify the existence of an object in the repository.
-            in.readLine();
-
-            if ( log.isDebugEnabled() )
-            {
-                timer = System.currentTimeMillis() - timer;
-                log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
-            }
-
-            return true;
-        }
-        catch ( FileNotFoundException ex )
-        {
-            return false;
-        }
-    }*/
 }

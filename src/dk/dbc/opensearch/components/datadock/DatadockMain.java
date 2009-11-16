@@ -128,9 +128,11 @@ public class DatadockMain
         {
             log.error( "Interrupted while waiting on main daemon thread to complete." );
         }
-        catch( HarvesterIOException hioe ) {
+        catch( HarvesterIOException hioe )
+        {
             log.fatal( "Some error occured while shutting down the harvester", hioe );
         }
+        
         log.info( "Exiting." );
     }
 
@@ -178,7 +180,6 @@ public class DatadockMain
      */
     static public void main(String[] args) throws Throwable
     {
-
         /** \todo: the value of the configuration file is hardcoded */
         Log4jConfiguration.configure( "log4j_datadock.xml" );
         log.trace( "DatadockMain main called" );
@@ -187,13 +188,15 @@ public class DatadockMain
 
         boolean terminateOnZeroSubmitted = false;
         
-        try{
+        try
+        {
             harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
         }
         catch( NullPointerException npe)
         {
             harvestType = defaultHarvestType;
         }
+        
         if ( harvestType == null )
         {
             harvestType = defaultHarvestType;
@@ -203,11 +206,12 @@ public class DatadockMain
         for( String a : args )
         {
             log.warn( String.format( "argument: '%s'", a ) );
-            if( a.equals( "--shutDownOnJobsDone" ) )
+            if ( a.equals( "--shutDownOnJobsDone" ) )
             {
                 terminateOnZeroSubmitted = true;
             }
-            else{
+            else
+            {
                 log.warn( String.format( "Unknown argument '%s', ignoring it", a ) );
             }
         }
@@ -243,77 +247,74 @@ public class DatadockMain
             // harvester;
             switch( harvestType )
             {
-            case ESHarvest:
+                case ESHarvest:
+                    log.trace( "selecting ES" );
+                    String dataBaseName = DataBaseConfig.getOracleDataBaseName();
+                    String oracleCacheName = DataBaseConfig.getOracleCacheName();
+                    String oracleUrl = DataBaseConfig.getOracleUrl();
+                    String oracleUser = DataBaseConfig.getOracleUserID();
+                    String oraclePassWd = DataBaseConfig.getOraclePassWd();
+                    String minLimit = DataBaseConfig.getOracleMinLimit();
+                    String maxLimit = DataBaseConfig.getOracleMaxLimit();
+                    String initialLimit = DataBaseConfig.getOracleInitialLimit();
+                    String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
+                    
+                    log.info( String.format( "DB Url : %s ", oracleUrl ) );
+                    log.info( String.format( "DB User: %s ", oracleUser ) );
 
-                log.trace( "selecting ES" );
-                String dataBaseName = DataBaseConfig.getOracleDataBaseName();
-                String oracleCacheName = DataBaseConfig.getOracleCacheName();
-                String oracleUrl = DataBaseConfig.getOracleUrl();
-                String oracleUser = DataBaseConfig.getOracleUserID();
-                String oraclePassWd = DataBaseConfig.getOraclePassWd();
-                String minLimit = DataBaseConfig.getOracleMinLimit();
-                String maxLimit = DataBaseConfig.getOracleMaxLimit();
-                String initialLimit = DataBaseConfig.getOracleInitialLimit();
-                String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
+                    try
+                    {
+                        ods = new OracleDataSource();
 
-                log.info( String.format( "DB Url : %s ", oracleUrl ) );
-                log.info( String.format( "DB User: %s ", oracleUser ) );
+                        log.info( String.format( "DB Url : %s ", oracleUrl ) );
+                        log.info( String.format( "DB User: %s ", oracleUser ) );
 
+                        // set db-cache-params:
+                        ods.setConnectionCachingEnabled( true ); // connection pool
 
-                try
-                {
-                    ods = new OracleDataSource();
+                        // set the cache name
+                        ods.setConnectionCacheName( oracleCacheName );
 
-                    // set db-params:
-                    ods.setURL( oracleUrl );
-                    ods.setUser( oracleUser );
-                    ods.setPassword( oraclePassWd );
+                        // set cache properties:
+                        Properties cacheProperties = new Properties();
 
-                    // set db-cache-params:
-                    ods.setConnectionCachingEnabled( true ); // connection pool
+                        cacheProperties.setProperty( "MinLimit", minLimit );
+                        cacheProperties.setProperty( "MaxLimit", maxLimit );
+                        cacheProperties.setProperty( "InitialLimit", initialLimit );
+                        cacheProperties.setProperty( "ConnectionWaitTimeout", connectionWaitTimeout );
+                        cacheProperties.setProperty( "ValidateConnection", "true" );
 
-                    // set the cache name
-                    ods.setConnectionCacheName( oracleCacheName );
+                        ods.setConnectionCacheProperties( cacheProperties );
 
-                    // set cache properties:
-                    Properties cacheProperties = new Properties();
+                    }
+                    catch( SQLException sqle )
+                    {
+                        String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
+                        log.fatal( errorMsg, sqle );
+                        throw sqle;
+                    }
+                    
+                    OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
 
-                    cacheProperties.setProperty( "MinLimit", minLimit );
-                    cacheProperties.setProperty( "MaxLimit", maxLimit );
-                    cacheProperties.setProperty( "InitialLimit", initialLimit );
-                    cacheProperties.setProperty( "ConnectionWaitTimeout", connectionWaitTimeout );
-                    cacheProperties.setProperty( "ValidateConnection", "true" );
+                    harvester = new ESHarvest( connectionPool, dataBaseName );                    
+                    break;
 
-                    ods.setConnectionCacheProperties( cacheProperties );
+                case FileHarvest:
 
-                }
-                catch( SQLException sqle )
-                {
-                    String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
-                    log.fatal( errorMsg, sqle );
-                    throw sqle;
-                }
-                OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
+                    log.trace( "selecting FileHarvest" );
+                    harvester = new FileHarvest();
+                    break;
 
-                harvester = new ESHarvest( connectionPool, dataBaseName );
-                break;
+                case FileHarvestLight:
 
-            case FileHarvest:
-
-                log.trace( "selecting FileHarvest" );
-                harvester = new FileHarvest();
-                break;
-
-            case FileHarvestLight:
-
-                log.trace( "selecting FileHarvestLight" );
-                harvester = new FileHarvestLight();
-                break;
-            default:
-                log.warn( "no harvester explicitly selected, running with FileHarvest" );
-                harvester = new FileHarvest();
+                    log.trace( "selecting FileHarvestLight" );
+                    harvester = new FileHarvestLight();
+                    break;
+                    
+                default:
+                    log.warn( "no harvester explicitly selected, running with FileHarvest" );
+                    harvester = new FileHarvest();
             }
-
 
             datadockPool = new DatadockPool( threadpool, processqueue, repository, harvester, pluginResolver );
 
@@ -341,8 +342,6 @@ public class DatadockMain
         long mainTimer = System.currentTimeMillis();
         int mainJobsSubmitted = 0;
 
-
-
         while( ! isShutdownRequested() )
         {
             try
@@ -355,14 +354,14 @@ public class DatadockMain
 
                 mainJobsSubmitted += jobsSubmited;
 
-                if (jobsSubmited > 0)
+                if ( jobsSubmited > 0 )
                 {
-                    log.info(String.format("%1$d Jobs submittet in %2$d ms - %3$f jobs/s", jobsSubmited, timer, jobsSubmited/ (timer / 1000.0)));
+                    log.info(String.format( "%1$d Jobs submittet in %2$d ms - %3$f jobs/s", jobsSubmited, timer, jobsSubmited/ (timer / 1000.0 ) ) );
                 }
                 else
                 {
-                    log.info(String.format("%1$d Jobs submittet in %2$d ms - ",jobsSubmited, timer));
-                    if( terminateOnZeroSubmitted )
+                    log.info( String.format( "%1$d Jobs submittet in %2$d ms - ", jobsSubmited, timer ) );
+                    if ( terminateOnZeroSubmitted )
                     {
                         DatadockMain.shutdown();
                     }
@@ -405,7 +404,7 @@ public class DatadockMain
 
         mainTimer = System.currentTimeMillis() - mainTimer;
 
-        if (mainJobsSubmitted > 0)
+        if ( mainJobsSubmitted > 0 )
         {
             log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - %3$f jobs/s", mainJobsSubmitted, mainTimer, mainJobsSubmitted/ (mainTimer / 1000.0)));
         }

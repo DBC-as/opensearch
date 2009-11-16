@@ -156,7 +156,7 @@ public class DatadockManager
         log.debug( "The pool is down" );
 
         log.debug( "Stopping harvester" );
-	harvester.shutdown();
+        harvester.shutdown();
         log.debug( "The harvester is stopped" );
     }
 

@@ -81,21 +81,26 @@ public class DatadockPool
      * waits until it can put the element on queue, and only throws an
      * exception if the queue is shutdown
      */
-    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler {
-
+    private class BlockingRejectedExecutionHandler implements RejectedExecutionHandler
+    {
 		@Override
-		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)  {
-			if( executor.isShutdown())  {
-					throw new RejectedExecutionException();
+		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
+        {
+			if( executor.isShutdown())
+            {
+				throw new RejectedExecutionException();
 			}
-			try {
+			
+            try
+            {
 				executor.getQueue().put(r);
-			} catch (InterruptedException e) {		
+			}
+            catch (InterruptedException e)
+            {
 				e.printStackTrace();
 				throw new RejectedExecutionException();
 			};
-		}
-    	
+		}    	
     }
 
     /**
@@ -115,7 +120,7 @@ public class DatadockPool
         this.objectRepository = fedoraObjectRepository;
         this.pluginResolver = pluginResolver;
 
-        jobs = new Vector<FutureTask>();
+        jobs = new Vector< FutureTask >();
         shutDownPollTime = DatadockConfig.getShutdownPollTime();
         
         threadpool.setRejectedExecutionHandler( new BlockingRejectedExecutionHandler() );
