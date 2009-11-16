@@ -40,6 +40,12 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 //import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 
 import javax.xml.rpc.ServiceException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.xml.sax.InputSource;
+
 import java.net.MalformedURLException;
 import org.apache.commons.configuration.ConfigurationException;
 import java.io.IOException;
@@ -89,6 +95,27 @@ public class MarcxchangeHarvesterTest
             throw new IOException( "test" );
         }
     }
+
+    @MockClass( realClass = XPath.class )
+    public static class MockXPathCompileXPathException
+    {
+        @Mock public static XPathExpression compile( String expression ) throws XPathExpressionException
+        {
+            System.out.println( "hat0");
+            throw new XPathExpressionException( "test" );
+        }
+    }
+     
+    @MockClass( realClass = XPathExpression.class )
+    public static class MockXPathExpressionEvaluateXPathException
+    {
+        @Mock public static XPathExpression compile( InputSource source ) throws XPathExpressionException
+        {
+            System.out.println( "hat1");
+            throw new XPathExpressionException( "test" );
+        }
+    }
+
 
     @Before
     public void setUp() throws Exception
@@ -174,7 +201,7 @@ public class MarcxchangeHarvesterTest
      * tests the behavoiour when the cargoContainers add method fails with a IOException
      */
     @Test( expected = IOException.class )
-    public void cargoContainerCantAddData() throws Exception
+    public void cargoContainerCantAddDataTest() throws Exception
     {
         setUpMocks( MockCargoContainer.class );
       harvestPlugin = new MarcxchangeHarvester();
@@ -187,5 +214,43 @@ public class MarcxchangeHarvesterTest
             throw pe.getException();
         }  
     }
-   
+
+    /**
+     * tests the behaviour when the XPath.compile method throws an XPathexpression
+     */
+@Ignore
+    @Test( expected = XPathExpressionException.class )
+    public void xPathCompileMethodThowsXPathExceptionTest() throws Exception
+    {
+        setUpMocks( MockXPathCompileXPathException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            System.out.println( String.format( "class of exception caught in  xPathCompile%s", pe.getException().getClass() ) );
+            throw pe.getException();
+        }  
+    }
+    
+    /**
+     * tests the behaviour when the XPathExpression.evaluate method throws an XPathexpression
+     */
+@Ignore
+    @Test( expected = XPathExpressionException.class )
+    public void xPathExpressionEvaluateMethodThowsXPathExceptionTest() throws Exception
+    {
+        setUpMocks( MockXPathExpressionEvaluateXPathException.class );
+        harvestPlugin = new MarcxchangeHarvester();
+        try
+        {
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }  
+    }
 }
