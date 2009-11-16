@@ -572,7 +572,7 @@ public class ESHarvest implements IHarvest
      * Updates the field taskpackagerecordstructure.recordstatus in ES to be 
      * inProgress (value: 3) for the taskpackagerecordstructure with targetRef and lbnr.
      */
-    private void setRecordStatusToInProgress( ESIdentifier ESJobId, Connection conn ) throws SQLException
+    private void setRecordStatusToInProgress( ESIdentifier ESJobId, Connection conn ) throws HarvesterIOException, SQLException
     {
 
 	log.debug( String.format( "Updating recordstatus for ID: %s", ESJobId ) );
@@ -589,9 +589,11 @@ public class ESHarvest implements IHarvest
 	if (res1 != 1) 
 	{
 	    // Something went wrong - we did not lock a single row for update
-	    log.error( "Error: Result from select for update was " + res1 + ". Not 1." );
+	    log.fatal( "Error: Result from select for update was " + res1 + ". Not 1." );
+	    String errorMsg = String.format( "RecordStatus was allready set in ES-base for %s", ESJobId );
+	    log.fatal( errorMsg );
 	    conn.rollback();
-	    return;
+	    throw new HarvesterIOException( errorMsg );
 	}
 
 	// Updating recordstatus in row:
