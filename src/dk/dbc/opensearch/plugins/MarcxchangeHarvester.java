@@ -154,6 +154,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         }
         catch ( XPathExpressionException xpee )
         {
+            // \todo: Warning: the following line is very verbose and should be removed as soon as bug 9575 is closed
             log.trace( String.format( "Threw XPath evaluation exception for data: %s", new String( bytes ) ) );
             String msg = String.format( "Could not evaluate with xpath expression '%s'", xPathStr );
             log.error( msg, xpee );
