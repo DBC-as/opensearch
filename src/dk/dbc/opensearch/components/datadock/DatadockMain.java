@@ -266,8 +266,10 @@ public class DatadockMain
                     {
                         ods = new OracleDataSource();
 
-                        log.info( String.format( "DB Url : %s ", oracleUrl ) );
-                        log.info( String.format( "DB User: %s ", oracleUser ) );
+			// set db-params:
+			ods.setURL( oracleUrl );
+			ods.setUser( oracleUser );
+			ods.setPassword( oraclePassWd );
 
                         // set db-cache-params:
                         ods.setConnectionCachingEnabled( true ); // connection pool
