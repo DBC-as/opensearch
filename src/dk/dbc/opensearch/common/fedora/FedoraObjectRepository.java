@@ -190,6 +190,7 @@ public class FedoraObjectRepository implements IObjectRepository
         try
         {
             foxml = FedoraUtils.CargoContainerToFoxml( cargo );
+        
         }
         catch ( OpenSearchTransformException ex )
         {

@@ -273,9 +273,9 @@ public final class FoxmlDocument
         addObjectProperty( Property.STATE, state.toString() );
         addObjectProperty( Property.LABEL, label );
         addObjectProperty( Property.OWNERID, owner );
-        addObjectProperty( Property.CREATE_DATE, timestamp );
+        //addObjectProperty( Property.CREATE_DATE, timestamp );
         // Upon creation, the last modified date == created date
-        addObjectProperty( Property.MOD_DATE, timestamp );
+        //addObjectProperty( Property.MOD_DATE, timestamp );
     }
 
 
@@ -363,7 +363,7 @@ public final class FoxmlDocument
         {
             dsv.setAttribute( "SIZE", Integer.toString( size ) );
         }
-        dsv.setAttribute( "CREATED", created );
+        //dsv.setAttribute( "CREATED", created );
         node.appendChild( dsv );
     }
 

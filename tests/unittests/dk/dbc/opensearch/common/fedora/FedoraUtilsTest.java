@@ -54,7 +54,10 @@ public class FedoraUtilsTest// extends XMLTestCase
     static Date now = new Date( System.currentTimeMillis() );
     static String timeNow = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" )).format( now );
 
-    static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><foxml:digitalObject xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" PID=\"dbc:1\" VERSION=\"1.1\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"I\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"test\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\""+timeNow+"\"/><foxml:property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\""+timeNow+"\"/></foxml:objectProperties><foxml:datastream CONTROL_GROUP=\"M\" ID=\"originalData.0\" STATE=\"A\" VERSIONABLE=\"false\"><foxml:datastreamVersion CREATED=\""+timeNow+"\" ID=\"originalData.0\" LABEL=\"test\" MIMETYPE=\"text/xml\" SIZE=\"6\"><foxml:binaryContent>w6bDuMOl</foxml:binaryContent></foxml:datastreamVersion></foxml:datastream></foxml:digitalObject>";
+    static String expectedOld = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><foxml:digitalObject xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" PID=\"dbc:1\" VERSION=\"1.1\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"I\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"test\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#createdDate\" VALUE=\""+timeNow+"\"/><foxml:property NAME=\"info:fedora/fedora-system:def/view#lastModifiedDate\" VALUE=\""+timeNow+"\"/></foxml:objectProperties><foxml:datastream CONTROL_GROUP=\"M\" ID=\"originalData.0\" STATE=\"A\" VERSIONABLE=\"false\"><foxml:datastreamVersion CREATED=\""+timeNow+"\" ID=\"originalData.0\" LABEL=\"test\" MIMETYPE=\"text/xml\" SIZE=\"6\"><foxml:binaryContent>w6bDuMOl</foxml:binaryContent></foxml:datastreamVersion></foxml:datastream></foxml:digitalObject>";
+
+
+    static String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><foxml:digitalObject xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" PID=\"dbc:1\" VERSION=\"1.1\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"I\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"test\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"dbc\"/></foxml:objectProperties><foxml:datastream CONTROL_GROUP=\"M\" ID=\"originalData.0\" STATE=\"A\" VERSIONABLE=\"false\"><foxml:datastreamVersion ID=\"originalData.0\" LABEL=\"test\" MIMETYPE=\"text/xml\" SIZE=\"6\"><foxml:binaryContent>w6bDuMOl</foxml:binaryContent></foxml:datastreamVersion></foxml:datastream></foxml:digitalObject>";
     
     @BeforeClass
     public static void SetupClass()
@@ -152,18 +155,18 @@ public class FedoraUtilsTest// extends XMLTestCase
     }
 
 
-    /** 
-     * Tests that a timestamp was inserted in the digital
-     * object properties.
-     */
-    @Test
-    public void testTimestamp() throws SAXException, IOException, XpathException
-    {
-        //we have no control of the timestamping from the outside, so instead of
-        //going through extensive mocking of the FoxmlDocument class, we'll be
-        //happy if it just created the data field:
-        XMLAssert.assertXpathExists( "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", generatedFoxml);
-    }
+ //    /** 
+//      * Tests that a timestamp was inserted in the digital
+//      * object properties.
+//      */
+//     @Test
+//     public void testTimestamp() throws SAXException, IOException, XpathException
+//     {
+//         //we have no control of the timestamping from the outside, so instead of
+//         //going through extensive mocking of the FoxmlDocument class, we'll be
+//         //happy if it just created the data field:
+//         XMLAssert.assertXpathExists( "/x:digitalObject[1]/x:objectProperties[1]/x:property[4]/@VALUE", generatedFoxml);
+//     }
 
 
     /** 
