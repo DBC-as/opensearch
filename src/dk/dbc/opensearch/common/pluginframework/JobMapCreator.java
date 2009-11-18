@@ -33,9 +33,8 @@ import dk.dbc.opensearch.common.types.InputPair;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
@@ -106,14 +105,14 @@ public class JobMapCreator
                 plugin = pluginElement.getAttribute( "classname" );
                 sortedPluginList.add( plugin );             
             }           
-            
+
+            if( sortedPluginList.isEmpty() )
+            {
+                throw new IllegalStateException( String.format( "no jobs found for: %s ", path ) );
+            }
+
             // Put it into the map with  <submitter, format> as key and List as value
             jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
-        }
-
-        if( jobMap.isEmpty() )
-        {
-            throw new IllegalStateException( String.format( "no jobs found for: %s ", path ) );
         }
     }
     

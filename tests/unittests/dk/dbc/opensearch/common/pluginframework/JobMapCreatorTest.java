@@ -26,65 +26,66 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.PtiConfig;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 
-import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
+import java.io.InputStream;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import mockit.Mock;
 import mockit.Mockit;
 import mockit.MockClass;
+import mockit.Mocked;
 
-import static org.easymock.classextension.EasyMock.*;
-import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
-import org.w3c.dom.Element;
+import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
 /**
- * Class for testing tha JobMapCreator class
+ * Class for testing the JobMapCreator class
  */
 public class JobMapCreatorTest 
 {
     JobMapCreator jmc;
-    /**
-     * \todo: The mockURL should be created in another way...
-     */
-    static File mockFile = createMock( File.class );
-    static NodeList mockNodeList = createMock( NodeList.class );
 
-    Element mockElement;   
+    @Mocked static File mockFile;
+
+    private static String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><job_list xmlns=\"info:opensearch.dbc.dk#\"><job submitter=\"dbc\" format=\"faktalink\"><plugin name=\"docbookmerger\" classname=\"dk.dbc.opensearch.plugins.DocbookMerger\" /><plugin name=\"indexerxsem\" classname=\"dk.dbc.opensearch.plugins.IndexerXSEM\" /> </job></job_list>";
+    private static String empty_xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><job_list xmlns=\"info:opensearch.dbc.dk#\"></job_list>";
 
 
     @MockClass( realClass = XMLUtils.class )
     public static class MockXMLUtils
     {
-    	@Mock public static NodeList getNodeList( File xmlFile, String tagName )
+    	@Mock public static NodeList getNodeList( File xmlFile, String tagName ) throws Exception
     	{
-            //	System.out.println( "mockNodeList returned" );
-            return mockNodeList;
-    	}
-    }
+            String jobsxml = null;
+            System.out.println( xmlFile.getAbsolutePath() );
+            if( xmlFile.getAbsolutePath().equals( "/path/to/file/that/exists" ) )
+            {
+                jobsxml = xml;
+            }
+            else if( xmlFile.getAbsolutePath().equals( "/path/to/empty/file") )
+            {
+                jobsxml = empty_xml;
+            }
 
-    
-    @MockClass( realClass = JobMapCreator.class )
-    public static class MockJobMapCreator
-    {
-    	@Mock public static File setJobFile( Class classType )
-    	{
-                //  System.out.println( "mockFile returned" );
-                return mockFile;
-        }
+            DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+            InputStream bais = new ByteArrayInputStream( jobsxml.getBytes() );
+            Document jobDocument = docBuilder.parse( bais );
+            NodeList returnvalue = jobDocument.getChildNodes();
+
+            return returnvalue;
+    	}
     }
 
     
@@ -93,47 +94,8 @@ public class JobMapCreatorTest
     {
     	@Mock public static File getFile( String path )
     	{
-    		return mockFile;
-        }
-    }
-    
-    
-    @MockClass( realClass = DatadockConfig.class )
-    public static class MockDDConfig1
-    {
-    	@Mock public static String getPath()
-    	{
-    		return "not null";
-        }
-    }
-    
-    
-    @MockClass( realClass = PtiConfig.class )
-    public static class MockPtiConfig1
-    { 
-    	@Mock public static String getPath()
-    	{
-    		return "not null";
-        }
-    }
-
-    
-    @MockClass( realClass = DatadockConfig.class )
-    public static class MockDDConfig2
-    {
-    	@Mock public static String getPath()
-    	{
-    		return null;
-    	} 
-    }
-    
-    
-    @MockClass( realClass = PtiConfig.class )
-    public static class MockPtiConfig2
-    {
-    	@Mock public static String getPath()
-    	{
-    		return null;
+            System.out.println( path );
+            return new File( path );
         }
     }
 
@@ -144,10 +106,8 @@ public class JobMapCreatorTest
     @Before 
     public void SetUp() 
     {
-        //Mockit.setUpMocks( MockXMLUtils.class );
-
-        mockElement = createMock( Element.class );
-        //mockNodeList = createMock( NodeList.class );
+        Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
     }
 
     
@@ -158,10 +118,6 @@ public class JobMapCreatorTest
     public void TearDown() 
     {
         Mockit.tearDownMocks();
-
-        reset( mockFile );
-        reset( mockElement );
-        reset( mockNodeList );
     }
     
 
@@ -169,343 +125,25 @@ public class JobMapCreatorTest
      * Testing the happy path of init
      */
     @Test 
-    public void testInit() throws ParserConfigurationException, SAXException, IOException
+    public void testInitWithGoodPath() throws ParserConfigurationException, SAXException, IOException
     {
-        /**
-         * setup
-         */
-        Mockit.setUpMocks( MockFH.class );
-        Mockit.setUpMocks( MockXMLUtils.class );
-        String path = "test path";
-
-        /**
-         * Expectations
-         */
-        expect( mockNodeList.getLength() ).andReturn( 2 );
-        //outer loop
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement  );
-        expect( mockElement.getAttribute( "submitter" ) ).andReturn( "sub1" );
-        expect( mockElement.getAttribute( "format" ) ).andReturn( "format1" );
-        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 2 );
-        //inner loop
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
-        
-        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
-        //outer loop
-        expect( mockNodeList.item( 1 ) ).andReturn( mockElement  );
-        expect( mockElement.getAttribute( "submitter" ) ).andReturn( "sub1" );
-        expect( mockElement.getAttribute( "format" ) ).andReturn( "format2" );
-        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 2 );
-        //inner loop
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
-        
-        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
-        /**
-         * replay
-         */
-        replay( mockNodeList );
-        replay( mockFile );
-        replay( mockElement );
-        /**
-         * Do stuff
-         */
+        String path = "/path/to/file/that/exists";
         JobMapCreator.init( path );
-        /**
-         * verify
-         */
-        verify( mockNodeList );
-        verify( mockFile );
-        verify( mockElement );
     }
 
 
     @Test( expected = IllegalStateException.class )
-    @Ignore ( "init() does not throw IllegatStateException anymore!" )
-    public void testInitEqualPositions() throws ParserConfigurationException, SAXException, IOException, IllegalStateException
+    public void testEmptyFileThrowsIllegalStateException() throws IOException, ParserConfigurationException, SAXException, IllegalStateException
     {
-        /**
-         * setup
-         */
-        Mockit.setUpMocks( MockFH.class );
-        Mockit.setUpMocks( MockXMLUtils.class );
-        String path = "test path";
-
-        /**
-         * Expectations
-         */
-        expect( mockNodeList.getLength() ).andReturn( 1 );
-        //outer loop
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement  );
-        expect( mockElement.getAttribute( "submitter" ) ).andReturn( "sub1" );
-        expect( mockElement.getAttribute( "format" ) ).andReturn( "format1" );
-        expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
-        expect( mockNodeList.getLength() ).andReturn( 2 );
-        //inner loop
-        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( "abc" );
-        
-        expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
-        expect( mockElement.getAttribute( "classname" ) ).andReturn( "kbc" );
-        
-        /**
-         * replay
-         */
-        replay( mockNodeList );
-        replay( mockFile );
-        replay( mockElement );
-        /**
-         * Do stuff
-         */
+        String path = "/path/to/empty/file";
         JobMapCreator.init( path );
-        /**
-         * verify
-         */
-        verify( mockNodeList );
-        verify( mockFile );
-        verify( mockElement );
     }
 
-
-    /**
-     * provokes an IllegalStateException by giving a NodeList with Length 0
-     * so that the jobMap will be empty
-     */
-    @Test( expected = IllegalStateException.class )
-    public void testEmptyMapInInitMethod() throws ParserConfigurationException, SAXException, IOException
+    @Test( expected = NullPointerException.class )
+    public void testNonexistantFileThrows() throws IOException, ParserConfigurationException, SAXException, IllegalStateException
     {
-        /**
-         * setup
-         */
-        Mockit.setUpMocks( MockFH.class );
-        Mockit.setUpMocks( MockXMLUtils.class );
-        String path = "test path";
-
-        /**
-         * Expectations
-         */
-        expect( mockNodeList.getLength() ).andReturn( 0 );
-        
-        /**
-         * replay
-         */
-        replay( mockNodeList );
-        replay( mockFile );
-
-        /**
-         * Do stuff
-         */
+        String path = "idontexist";
         JobMapCreator.init( path );
-        /**
-         * verify
-         */
-        verify( mockNodeList );
-        verify( mockFile );
-    }
-    
-    
-    /**
-     * Provokes the IllegalStateException by returning a NodeList with length 0
-     * so that no the jobMap will be empty
-     */
-
-    @Test( expected = IllegalStateException.class ) 
-    @Ignore
-    public void testISexceptionFromGetMap() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
-    {
-        /**
-         * Setup
-         */
-//        Mockit.setUpMocks( MockJobMapCreator.class );
-//       
-//        /**
-//         * Exepctations
-//         */
-//        expect( mockFile.getPath() ).andReturn( "unittestPath" ); //logging
-//        expect( mockNodeList.getLength() ).andReturn( 0 );
-//        
-//        /**
-//         * replay
-//         */
-//        replay( mockFile );
-//
-//        replay( mockNodeList );
-//
-//        /**
-//         * Do stuff
-//         */
-//        jmc = new JobMapCreator();
-//        jmc.getMap( DatadockMain.class );
-//  
-//        /**
-//         * Verify
-//         */
-//        verify( mockFile );
-//
-//        verify( mockNodeList );
-    } 
-
-    
-    /**
-     * Tests the happy paths of the getFile method
-     * using both DatadockMain and PTIMain classes as argument. 
-     * I terminate computation by provoking an IllegalStateException in 
-     * the second call to getMap after setJobFile method has been called
-     */
-
-    @Test( expected = IllegalStateException.class ) 
-    @Ignore 
-    public void testSetJobFile() throws ParserConfigurationException, IOException, SAXException, ConfigurationException
-    {
-         /**
-         * Setup
-         */
-//        Mockit.setUpMocks( MockFH.class );
-//        Mockit.setUpMocks( MockDDConfig1.class );
-//        Mockit.setUpMocks( MockPtiConfig1.class );
-//
-//        HashMap< InputPair< String, String >, ArrayList<String> > jobMap;
-//
-//        String test1 = "test1";
-//        String position = "0";
-//
-//        /**
-//         * Exepctations
-//         */    
-//        expect( mockFile.getPath() ).andReturn( "getFile method test" ); //logging
-//        expect( mockNodeList.getLength() ).andReturn( 1 ); //outer loop
-//        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-//        
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );        
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );        
-//        expect( mockElement.getElementsByTagName( isA( String.class ) ) ).andReturn( mockNodeList );
-//        expect( mockNodeList.getLength() ).andReturn( 1 );
-//        expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( test1 );
-//        expect( mockElement.getAttribute( isA( String.class ) ) ).andReturn( position );
-//        
-//        //calling getMap again
-//
-//        expect( mockFile.getPath() ).andReturn( "getFile method test" ); //logging
-//        expect( mockNodeList.getLength() ).andReturn( 0 );
-//
-//        /**
-//         * replay
-//         */ 
-//        replay( mockFile );
-//        replay( mockElement );
-//        replay( mockNodeList );
-//        
-//        /**
-//         * Do stuff
-//         */
-//        JobMapCreator.getMap( DatadockMain.class);
-//        JobMapCreator.getMap( PTIMain.class );
-//        /**
-//         * Verify
-//         */
-//        verify( mockFile );
-//        verify( mockElement );
-//        verify( mockNodeList );
-    }
-
-
-    /**
-     * Setting the datadockJobPath to null through the MockFSC2 class
-     */
-    @Test( expected= IllegalArgumentException.class )
-    @Ignore
-    public void testSetJobFileException1() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
-    {
-    	/**
-         * Setup
-         */
-//        Mockit.setUpMocks( MockFH.class );
-//        Mockit.setUpMocks( MockDDConfig2.class );
-//
-//        /**
-//         * Exepctations
-//         */    
-//      
-//        /**
-//         * replay
-//         */ 
-//              
-//        /**
-//         * Do stuff
-//         */
-//        JobMapCreator.getMap( DatadockMain.class);
-//      
-//        /**
-//         * Verify
-//         */
-    }
-
-    
-    /**
-     * Setting the ptiJobPath to null through the MockFSC2 class
-     */
-     @Test( expected= IllegalArgumentException.class )
-     @Ignore
-     public void testSetJobFileException2() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
-     {
-    	 /**
-         * Setup
-         */
-//        Mockit.setUpMocks( MockFH.class );
-//        Mockit.setUpMocks( MockPtiConfig2.class );
-//
-//        /**
-//         * Exepctations
-//         */    
-//      
-//        /**
-//         * replay
-//         */ 
-//              
-//        /**
-//         * Do stuff
-//         */
-//        JobMapCreator.getMap( PTIMain.class);
-//      
-//        /**
-//         * Verify
-//         */      
-    }
-     
-
-    /**
-     * Giving the setJobFile a class other than DatadockMain and PTIMain
-     */
-    @Test( expected = IllegalArgumentException.class )
-    @Ignore
-    public void testSetJobFileException3() throws ParserConfigurationException, SAXException, IOException, ConfigurationException
-    {
-        /**
-         * Setup
-         */
-        
-        /**
-         * Exepctations
-         */    
-      
-        /**
-         * replay
-         */ 
-              
-        /**
-         * Do stuff
-         */
-        //JobMapCreator.getMap( FileHandler.class);
-      
-        /**
-         * Verify
-         */      
     }
 
 }
