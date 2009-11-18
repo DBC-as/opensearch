@@ -73,7 +73,7 @@ public class MarcxchangeHarvesterTest
     static final String testPid1 = "test:1";
     static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\"/></referencedata>";
     static final String data = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><ting:container xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:ISO639-2=\"http://lcweb.loc.gov/standards/iso639-2/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dkabm:record><ac:identifier>84813133|870971</ac:identifier><ac:source>Artikelbasen</ac:source><dc:title>Testtitel</dc:title><dc:creator>Bente Bundg@ård</dc:creator><dc:subject>Orange Order</dc:subject><dc:subject xsi:type='dkdcplus:DK5'>93.8</dc:subject><dc:subject xsi:type='dkdcplus:DK5-Text'>Irlands historie</dc:subject><dc:subject xsi:type='dkdcplus:DBCF'>marcher</dc:subject><dc:subject xsi:type='dkdcplus:DBCF'>historie</dc:subject><dc:date>1999</dc:date><dc:type xsi:type='dkdcplus:BibDK-Type'>Avisartikel</dc:type><dc:format>S. 11</dc:format><dc:language xsi:type='dcterms:ISO639-2'>dan</dc:language><dc:language>Dansk</dc:language><dcterms:isPartOf>Information 1999-02-26</dcterms:isPartOf><dcterms:spatial xsi:type='dkdcplus:DBCF'>Nordirland</dcterms:spatial><dcterms:spatial xsi:type='dkdcplus:DBCF'>Portadown</dcterms:spatial></dkabm:record><collection><record format=\"danMARC2\" type=\"Bibliographic\"><leader>00687naai022002770004500</leader><datafield tag=\"001\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">8 481 313 3</subfield><subfield code=\"b\">870971</subfield><subfield code=\"c\">20051128145709</subfield><subfield code=\"d\">19990226</subfield><subfield code=\"f\">a</subfield></datafield><datafield tag=\"004\" ind1=\"0\" ind2=\"0\"><subfield code=\"r\">n</subfield><subfield code=\"a\">i</subfield></datafield><datafield tag=\"008\" ind1=\"0\" ind2=\"0\"><subfield code=\"t\">a</subfield><subfield code=\"u\">f</subfield><subfield code=\"a\">1999</subfield><subfield code=\"b\">dk</subfield><subfield code=\"l\">dan</subfield><subfield code=\"v\">0</subfield><subfield code=\"r\">an</subfield></datafield><datafield tag=\"009\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">a</subfield><subfield code=\"g\">xx</subfield></datafield><datafield tag=\"016\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">0 324 309 5</subfield></datafield><datafield tag=\"032\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">ABU200549</subfield><subfield code=\"a\">DAR199908</subfield></datafield><datafield tag=\"086\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">Irlands historie</subfield></datafield><datafield tag=\"245\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">Orangemændene viger ikke</subfield></datafield><datafield tag=\"300\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">S. 11</subfield></datafield><datafield tag=\"557\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">Information</subfield><subfield code=\"j\">1999</subfield><subfield code=\"V\">1999-02-26</subfield><subfield code=\"v\">1999-02-26</subfield></datafield><datafield tag=\"610\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">Orange Order</subfield></datafield><datafield tag=\"652\" ind1=\"0\" ind2=\"0\"><subfield code=\"m\">93.8</subfield></datafield><datafield tag=\"666\" ind1=\"0\" ind2=\"0\"><subfield code=\"0\"></subfield><subfield code=\"f\">marcher</subfield></datafield><datafield tag=\"666\" ind1=\"0\" ind2=\"0\"><subfield code=\"0\"></subfield><subfield code=\"f\">historie</subfield></datafield><datafield tag=\"666\" ind1=\"0\" ind2=\"0\"><subfield code=\"0\"></subfield><subfield code=\"e\">Nordirland</subfield></datafield><datafield tag=\"666\" ind1=\"0\" ind2=\"0\"><subfield code=\"0\"></subfield><subfield code=\"e\">Portadown</subfield></datafield><datafield tag=\"700\" ind1=\"0\" ind2=\"0\"><subfield code=\"a\">Bundg@ård</subfield><subfield code=\"h\">Bente</subfield></datafield></record></collection></ting:container>";
-    static final String invalidData = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><ting:hest xmlns:ting=\"http://www.dbc.dk/ting\"></ting:hest>";
+    static final String invalidData = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><ting:hest xmlns:ting=\"http://www.dbc.dk/ting\">&</ting:hest>";
     static final byte[] databytes = data.getBytes();;
     static final byte[] invaliddatabytes = invalidData.getBytes();
     static final String noData = "";
@@ -99,7 +99,7 @@ public class MarcxchangeHarvesterTest
     @MockClass( realClass = XPath.class )
     public static class MockXPathCompileXPathException
     {
-        @Mock public static XPathExpression compile( String expression ) throws XPathExpressionException
+        @Mock public XPathExpression compile( String expression ) throws XPathExpressionException
         {
             System.out.println( "hat0");
             throw new XPathExpressionException( "test" );
@@ -107,9 +107,9 @@ public class MarcxchangeHarvesterTest
     }
      
     @MockClass( realClass = XPathExpression.class )
-    public static class MockXPathExpressionEvaluateXPathException
+    public static class MockXPathExpression
     {
-        @Mock public static XPathExpression compile( InputSource source ) throws XPathExpressionException
+        @Mock public XPathExpression compile( InputSource source ) throws XPathExpressionException
         {
             System.out.println( "hat1");
             throw new XPathExpressionException( "test" );
@@ -154,19 +154,20 @@ public class MarcxchangeHarvesterTest
 
     /**
      * The MarcxchangeHarvester plugin will recieve invalid data and
-     * try to contruct metadata elements from it. Although it can't, the returned
-     * CargoContainer will contain a CargoObject with the incorrect data and an
-     * empty metadata-element.
+     * try to evaluate an xpath expression. This should throw a PluginException
+     * with a nested XPathExpressionException
      */
     @Test
     public void getCargoContainerWithInvalidData() throws Exception
     {       
         harvestPlugin = new MarcxchangeHarvester();
-        cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes );
-        //the data was added...
-        assertEquals( 1, cc.getCargoObjectCount() );
-        // but as it's invalid, no title can be extracted from it:
-        assertEquals( "", cc.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
+        try{
+            cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes );
+        }
+        catch( PluginException pe )
+        {
+            assertEquals( "Expecting the nested exception to be XPathExpressionException", XPathExpressionException.class, pe.getException().getClass() );
+        }
     }
 
     @Test
@@ -205,45 +206,6 @@ public class MarcxchangeHarvesterTest
     {
         setUpMocks( MockCargoContainer.class );
       harvestPlugin = new MarcxchangeHarvester();
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }  
-    }
-
-    /**
-     * tests the behaviour when the XPath.compile method throws an XPathexpression
-     */
-@Ignore
-    @Test( expected = XPathExpressionException.class )
-    public void xPathCompileMethodThowsXPathExceptionTest() throws Exception
-    {
-        setUpMocks( MockXPathCompileXPathException.class );
-        harvestPlugin = new MarcxchangeHarvester();
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
-        }
-        catch( PluginException pe )
-        {
-            System.out.println( String.format( "class of exception caught in  xPathCompile%s", pe.getException().getClass() ) );
-            throw pe.getException();
-        }  
-    }
-    
-    /**
-     * tests the behaviour when the XPathExpression.evaluate method throws an XPathexpression
-     */
-@Ignore
-    @Test( expected = XPathExpressionException.class )
-    public void xPathExpressionEvaluateMethodThowsXPathExceptionTest() throws Exception
-    {
-        setUpMocks( MockXPathExpressionEvaluateXPathException.class );
-        harvestPlugin = new MarcxchangeHarvester();
         try
         {
             cc = harvestPlugin.getCargoContainer( ddjob, databytes );
