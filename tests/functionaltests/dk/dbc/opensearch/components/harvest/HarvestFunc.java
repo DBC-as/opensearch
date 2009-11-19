@@ -107,8 +107,13 @@ public class HarvestFunc
         }
         catch ( HarvesterIOException hioe )
         {
-            System.out.println( "An internal Harvester error occured" );
+            System.out.println( "An internal Harvester IO error occured" );
             hioe.printStackTrace();
+        }
+        catch ( HarvesterInvalidStatusChangeException hisce )
+        {
+            System.out.println( "An internal Harvester status change exception error occured" );
+            hisce.printStackTrace();
         }
 	catch ( SQLException sqle )
 	{
@@ -176,7 +181,7 @@ public class HarvestFunc
     }
 
 
-    private static void getJobsNDataTest() throws HarvesterIOException
+    private static void getJobsNDataTest() throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
         byte[] data = null;
 
