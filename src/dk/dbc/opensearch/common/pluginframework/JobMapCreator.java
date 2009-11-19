@@ -33,7 +33,6 @@ import dk.dbc.opensearch.common.types.InputPair;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -80,6 +79,14 @@ public class JobMapCreator
         log.debug( String.format( "init calling getNodeList with jobFile %s ", jobFile ) );
         NodeList jobNodeList = XMLUtils.getNodeList( jobFile, "job" );
         int listLength = jobNodeList.getLength();
+
+        if( listLength < 1 )
+        {
+            String error = String.format( "No job element found in file '%s', cannot construct plugin list. Please review the relevant jobs.xml file", path );
+            log.warn( error );
+            throw new IllegalStateException( error );
+        }
+
         // For each node read the task name         
         Element jobElement;
         String submitter = "";
@@ -91,6 +98,13 @@ public class JobMapCreator
 
             submitter = jobElement.getAttribute( "submitter" );
             format = jobElement.getAttribute( "format" );
+
+            if( submitter.isEmpty() || format.isEmpty() )
+            {
+                String error = String.format( "Submitter or format was empty for job element, cannot construct plugin list. Please review the relevant jobs.xml file (at '%s')", path );
+                log.warn( error );
+                throw new IllegalStateException( error );
+            }
 
             NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
             int pluginListLength = pluginList.getLength();
@@ -108,7 +122,8 @@ public class JobMapCreator
 
             if( sortedPluginList.isEmpty() )
             {
-                throw new IllegalStateException( String.format( "no jobs found for: %s ", path ) );
+                log.warn( String.format( "No jobs (plugins that handle jobs) found for submitter %s, format %s", submitter, format ) );
+                continue;
             }
 
             // Put it into the map with  <submitter, format> as key and List as value
@@ -135,9 +150,9 @@ public class JobMapCreator
         }
         catch ( SAXException ex ) 
         {
-            log.debug( path + " is not valid because ");
-            log.debug( ex.getMessage() );
+            String error = String.format( "Could not validate job xml file: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw ex;
         }
     }
-
-    }
+}

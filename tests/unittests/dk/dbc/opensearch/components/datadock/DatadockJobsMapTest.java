@@ -27,15 +27,17 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
+import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import mockit.Mock;
@@ -43,10 +45,8 @@ import mockit.MockClass;
 import mockit.Mockit;
 
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Element;
 import org.apache.commons.configuration.ConfigurationException;
 import org.xml.sax.SAXException;
-import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
 import org.junit.*;
 
@@ -57,11 +57,7 @@ import org.junit.*;
 public class DatadockJobsMapTest 
 {
     DatadockJobsMap DDJobsMap;
-    static File mockFile = createMock( File.class );
-    static NodeList mockNodeList = createMock( NodeList.class );
-    Element mockElement = createMock( Element.class );
-
-
+ 
     @MockClass( realClass = DatadockConfig.class )
     public static class MockDDConfig
     {
@@ -72,25 +68,26 @@ public class DatadockJobsMapTest
     }
 
 
-    @MockClass( realClass = FileHandler.class )
+    @MockClass( realClass = FileHandler.class)
     public static class MockFH
     {
-        public File getFile( String path )
-        {
-            return mockFile;
+    	@Mock public static File getFile( String path )
+    	{
+            return new File( path );
         }
-
     }
 
 
     @MockClass( realClass = XMLUtils.class )
     public static class MockXMLUtils
     {
-        @Mock public NodeList getNodeList( File xmlFile, String tagName )
-        {
-            return mockNodeList;
-        }
+    	@Mock public static NodeList getNodeList( File xmlFile, String tagName ) throws Exception
+    	{
+            String jobs_xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><job_list xmlns=\"info:opensearch.dbc.dk#\"><job submitter=\"dbc\" format=\"faktalink\"><plugin name=\"docbookmerger\" classname=\"dk.dbc.opensearch.plugins.DocbookMerger\" /><plugin name=\"indexerxsem\" classname=\"dk.dbc.opensearch.plugins.IndexerXSEM\" /> </job></job_list>";
+            NodeList nodelist =  DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream( jobs_xml.getBytes() ) ).getElementsByTagName( "job" );
 
+            return nodelist;
+    	}
     }
 
 
@@ -99,7 +96,7 @@ public class DatadockJobsMapTest
     {
         @Mock public void validateXsdJobXmlFile( String path )
         {
-        
+            System.out.println( "Validates just fine, thank you." );
         }
     }
 
@@ -110,7 +107,10 @@ public class DatadockJobsMapTest
     @Before 
     public void SetUp() 
     {
-
+        Mockit.setUpMocks( MockFH.class );
+        Mockit.setUpMocks( MockXMLUtils.class );
+        Mockit.setUpMocks( MockDDConfig.class );
+        Mockit.setUpMocks( MockJobMapCreator.class );
     }
 
 
@@ -121,10 +121,6 @@ public class DatadockJobsMapTest
     public void TearDown() 
     {
         Mockit.tearDownMocks();
-        reset( mockElement );
-        reset( mockFile );
-        reset( mockNodeList );
-
     }
 
 
@@ -132,156 +128,39 @@ public class DatadockJobsMapTest
      *  The order of the tests are important. The map tested on is private and static 
      *  and cannot be touched through this test
      */
-    @Ignore( "somehow the JobMapCreatorTest had an influence on this test. This indicates very brittle tests...")
-    @Test( expected = IllegalStateException.class ) 
-    public void testGetDatadockPluginsListIllegalStateException() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    @Test
+    public void testGetDatadockPluginsListHappyPath() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     { 
-        /**
-         * setup
-         */
-        Mockit.setUpMocks( MockDDConfig.class );
-        Mockit.setUpMocks( MockJobMapCreator.class );
-        Mockit.setUpMocks( MockXMLUtils.class );
-        Mockit.setUpMocks( MockFH.class );
+        String submitter = "dbc";
+        String format = "faktalink";
 
-        String sub1 = "dbc";
-        String form1 = "test";
-        
-        /**
-         * Expectations
-         */
-        expect( mockNodeList.getLength() ).andReturn( 0 ).times( 2 );
+        List< String > aList = DatadockJobsMap.getDatadockPluginsList( submitter, format );
 
-        /**
-         * replay
-         */
-        replay( mockNodeList );
-
-        /**
-         * do stuff
-         */
-        ArrayList< String > aList;
-        DDJobsMap = new DatadockJobsMap();
-        aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );
-        
-        /**
-         * verify
-         */
-        verify( mockNodeList );
-
+        assertEquals( "There should be two plugins in the list", 2, aList.size() );
     }
 
-    
-    @Test 
-    public void testGetDatadockPluginsList() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    @Test( expected = IllegalStateException.class )
+    public void testGetDatadockPluginsListUnknownSubmitter() throws ConfigurationException, IOException, SAXException, ParserConfigurationException
     {
-        /**
-         * setup
-         */
-        if( "bug 9698".isEmpty() ) {
-            Mockit.setUpMocks( MockDDConfig.class );
-            Mockit.setUpMocks( MockJobMapCreator.class );
-            Mockit.setUpMocks( MockXMLUtils.class );
-            Mockit.setUpMocks( MockFH.class );
-    
-            String sub1 = "dbc";
-            String form1 = "test";
-            String pluginString0 = "testclass";
-            String pluginString1 = "testClass2";
-            String positionString0 = "0";
-            String positionString1 = "1";
-            
-            /**
-             * Expectations
-             */
-            //validatePosition
-            expect( mockNodeList.getLength() ).andReturn( 1 );
-            expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-            expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
-            expect( mockNodeList.getLength() ).andReturn( 0 );
-               
-            expect( mockNodeList.getLength() ).andReturn( 1 );
-            //outer loop in JobMapCreator
-            expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-            expect( mockElement.getAttribute( "submitter" ) ).andReturn( sub1 );
-            expect( mockElement.getAttribute( "format" ) ).andReturn( form1 );
-            expect( mockElement.getElementsByTagName( "plugin" ) ).andReturn( mockNodeList );
-            expect( mockNodeList.getLength() ).andReturn( 2 );
-            //inner loop
-            expect( mockNodeList.item( 0 ) ).andReturn( mockElement );
-            expect( mockElement.getAttribute( "classname" ) ).andReturn( pluginString0 );        
-            expect( mockNodeList.item( 1 ) ).andReturn( mockElement );
-            expect( mockElement.getAttribute( "classname" ) ).andReturn( pluginString1 );
-            /**
-             * replay
-             */
-            replay( mockFile );
-            replay( mockNodeList );
-            replay( mockElement );
-    
-    
-            /**
-             * do stuff
-             */
-            ArrayList< String > aList;
-            DDJobsMap = new DatadockJobsMap();
-            aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );
-            
-            assertTrue ( aList.size() == 2 );        
-            assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
-            assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
-            
-            aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );      
-    
-            assertTrue ( aList.size() == 2 );        
-            assertTrue ( aList.get( 0 ).equals( pluginString0 ) );
-            assertTrue ( aList.get( 1 ).equals( pluginString1 ) );  
-    
-            /**
-             * verify
-             */
-            verify( mockFile );
-            verify( mockNodeList );
-            verify( mockElement );
-        }
+        String submitter = "unknown";
+        String format = "faktalink";
+
+        DatadockJobsMap.getDatadockPluginsList( submitter, format );
+
     }
-          
+    @Test( expected = IllegalStateException.class )
+    public void testGetDatadockPluginsListUnknownFormat() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    {
+        String submitter = "dbc";
+        String format = "unknown";
 
-    //@Ignore
-    //@Test( expected = IllegalStateException.class ) 
-    //public void DELETEtestGetDatadockPluginsListIllegalStateException() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
-    //{ 
-        /**
-         * setup
-         */
-        //Mockit.setUpMocks( MockDDConfig.class );
-        //Mockit.setUpMocks( MockJobMapCreator.class );
-        //Mockit.setUpMocks( MockXMLUtils.class );
-        //Mockit.setUpMocks( MockFH.class );
+        DatadockJobsMap.getDatadockPluginsList( submitter, format );
 
-        //String sub1 = "dbc";
-        //String form1 = "test";
-        
-        /**
-         * Expectations
-         */
-        //expect( mockNodeList.getLength() ).andReturn( 0 );
-
-        /**
-         * replay
-         */
-        //replay( mockNodeList );
-        
-        /**
-         * do stuff
-         */
-        //ArrayList< String > aList;
-        //DDJobsMap = new DatadockJobsMap();
-        //aList = DDJobsMap.getDatadockPluginsList( sub1, form1 );
-        
-        /**
-         * verify
-         */
-        //verify( mockNodeList );
-    //}    
+    }
+    
+    @Test( expected = IllegalStateException.class )
+    public void testGetDatadockPluginsListNullValues() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
+    {
+        DatadockJobsMap.getDatadockPluginsList( null, null );
+    }
 }

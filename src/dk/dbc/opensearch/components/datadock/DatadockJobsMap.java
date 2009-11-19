@@ -46,26 +46,40 @@ public class DatadockJobsMap extends JobMapCreator
     static Logger log = Logger.getLogger( DatadockJobsMap.class );
 
     private static boolean initiated = false;
-    private static ArrayList< String > datadockPluginsList = new ArrayList< String >();
+    private static ArrayList< String > datadockPluginList = new ArrayList< String >();
     private static HashMap< InputPair< String, String >, ArrayList< String > > datadockJobMap;
 
     public DatadockJobsMap() {}
 
 
-    public static ArrayList< String > getDatadockPluginsList( String submitter, String format ) throws ConfigurationException, IllegalArgumentException, IllegalStateException, IOException, SAXException, ParserConfigurationException
+    public static ArrayList< String > getDatadockPluginsList( String submitter, String format ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException//, IllegalArgumentException, IllegalStateException
     {
+        if( null == submitter ||
+             null == format ||
+             submitter.isEmpty() ||
+             format.isEmpty() )
+        {
+            String error = "Submitter or format was given as null values, cannot continue";
+            log.error( error );
+            throw new IllegalStateException( error );
+        }
         if( !initiated )
         {
             String path = DatadockConfig.getPath();
             JobMapCreator.validateXsdJobXmlFile( path );            
             JobMapCreator.init( path );
 
-            datadockJobMap = jobMap;
+            datadockJobMap = JobMapCreator.jobMap;
             initiated = true;
         }
+        datadockPluginList = datadockJobMap.get( new InputPair< String, String >( submitter, format ) );
 
-        datadockPluginsList = datadockJobMap.get( new InputPair< String, String >( submitter, format ) );
-        return datadockPluginsList;
-
+        if( null == datadockPluginList )
+        {
+            String error = String.format( "Could not construct plugin list for submitter %s, format %s", submitter, format );
+            log.error( error );
+            throw new IllegalStateException( error );
+        }
+        return datadockPluginList;
     }
 }

@@ -68,7 +68,6 @@ public class JobMapCreatorTest
     	@Mock public static NodeList getNodeList( File xmlFile, String tagName ) throws Exception
     	{
             String jobsxml = null;
-            System.out.println( xmlFile.getAbsolutePath() );
             if( xmlFile.getAbsolutePath().equals( "/path/to/file/that/exists" ) )
             {
                 jobsxml = xml;
@@ -82,22 +81,20 @@ public class JobMapCreatorTest
             DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
             InputStream bais = new ByteArrayInputStream( jobsxml.getBytes() );
             Document jobDocument = docBuilder.parse( bais );
-            NodeList returnvalue = jobDocument.getChildNodes();
 
-            return returnvalue;
+            return jobDocument.getElementsByTagName( tagName );
     	}
     }
 
-    
-    @MockClass( realClass = FileHandler.class)
-    public static class MockFH
-    {
-    	@Mock public static File getFile( String path )
-    	{
-            System.out.println( path );
-            return new File( path );
-        }
-    }
+//
+//    @MockClass( realClass = FileHandler.class)
+//    public static class MockFH
+//    {
+//    	@Mock public static File getFile( String path )
+//    	{
+//            return new File( path );
+//        }
+//    }
 
     
     /**
@@ -106,7 +103,7 @@ public class JobMapCreatorTest
     @Before 
     public void SetUp() 
     {
-        Mockit.setUpMocks( MockFH.class );
+        //Mockit.setUpMocks( MockFH.class );
         Mockit.setUpMocks( MockXMLUtils.class );
     }
 
