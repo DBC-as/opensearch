@@ -26,13 +26,14 @@ package dk.dbc.opensearch.plugins;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.plugins.Store;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 
 
@@ -51,115 +52,197 @@ import static mockit.Mockit.tearDownMocks;
 public class StoreTest
 {
 
- //    Store storePlugin;
-//     PluginType PT = PluignType.STORE;
-//     CargoContainer cargo = new CargoContainer();
-//     String testString = "testStringUsedToGenerateBytes";
-//     byte[] dataBytes = testString.getBytes();
-//     ObjectIdentifier objIdentifier = (ObjectIdentifier)new PID( "dbc:111" );
-
-//     cargo.setIdentifier( objIdentifier );
-
-//     cargo.add( DataStreamType.OriginalData,
-//                "testFormat",
-//                "dbc",
-//                "da",
-//                "text/xml",
-//                IndexingAlias.Danmarcxchange,
-//                dataBytes );
+    Store storePlugin;
+    PluginType PT = PluginType.STORE;
+    CargoContainer cargo = new CargoContainer();
+    String testString = "testStringUsedToGenerateBytes";
+    byte[] dataBytes = testString.getBytes();
+    ObjectIdentifier objectIdentifier;
 
 
-//     @MockClass( realClass = FedoraObjectRepository.class )
-//     public static class MockFedoraObjectRepository
-//     {
-//         @Mock public void $init()
-//         {
-//         }
+    @MockClass( realClass = FedoraObjectRepository.class )
+    public static class MockFedoraObjectRepository
+    {
+        @Mock public void $init()
+        {
+        }
 
-//         @Mock
-//         public static boolean hasObject( ObjectIdentifier objectIdentifier )
-//         {
-//             return true;
-//         }
+        @Mock
+        public static boolean hasObject( ObjectIdentifier objectIdentifier )
+        {
+            return false;
+        }
 
-//         @Mock
-//         public static void deleteObject( String identifier, String logmessage);
-//         {
+        @Mock( invocations = 1 )
+        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
+        {
+            return "stored";
+        }
 
-//         }
+    } 
+    
+    @MockClass( realClass = FedoraObjectRepository.class )
+    public static class MockFedoraObjectRepositoryHasObject
+    {
+        @Mock public void $init()
+        {
+        }
 
-//         @Mock( invocations = 1 )
-//         public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
-//         {
-//             return "stored";
-//         }
+        @Mock
+        public static boolean hasObject( ObjectIdentifier objectIdentifier )
+        {
+            return true;
+        }
 
-//     }
+        @Mock
+        public static void deleteObject( String identifier, String logmessage)
+        {
+        }
 
-//     //    @MockClass( realClass = CargoContainer.class )
-//     //     public static class MockCargoContainer
-//     //     {
-//     //         @Mock
-//     //         public static CargoObject getCargoObject( DataStreamType  )
-//     //         {
-//     //             return mockCargoobject;
-//     //         }
+        @Mock( invocations = 1 )
+        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
+        {
+            return "stored";
+        }
 
-//     //         @Mock
-//     //         public static String getIdentifierAsString()
-//     //         {
-//     //             return "dbc:test";
-//     //         }
-//     //     }
+    } 
 
-//     @Before
-//     public void setUp() throws Exception
-//     {
-//         objIdentifier = new PID( "dbc:111" );
+    @MockClass( realClass = FedoraObjectRepository.class )
+    public static class MockFedoraObjectRepositoryException
+    {
+        @Mock public void $init()
+        {
+        }
 
-//         cargo.setIdentifier( objIdentifier );
+        @Mock( invocations = 1 )
+        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace ) throws ObjectRepositoryException
+        {
+            throw new ObjectRepositoryException( "test" );
+        }
 
-//         cargo.add( DataStreamType.OriginalData,
-//                    "testFormat",
-//                    "dbc",
-//                    "da",
-//                    "text/xml",
-//                    IndexingAlias.Danmarcxchange,
-//                    dataBytes );
+    }
 
-//     }
+    @Before
+    public void setUp() throws Exception
+    {
+        objectIdentifier = new PID( "dbc:111" );
 
-//     @After
-//     public void tearDown() throws Exception
-//     {
-//         tearDownMocks();
-//     }
+        cargo.add( DataStreamType.OriginalData,
+                   "testFormat",
+                   "dbc",
+                   "da",
+                   "text/xml",
+                   IndexingAlias.Danmarcxchange,
+                   dataBytes );
 
-//     /**
-//      *
-//      */
-//     @Test
-//     public void getPluginTypeTest() throws Exception
-//     {
-//         storePlugin = new StorePlugin();
-//         assertTrue( PT == storePlugin.getPluignType() );
+    }
 
-//     }
+    @After
+    public void tearDown() throws Exception
+    {
+        tearDownMocks();
+    }
 
-//     @Test
-//     public void storeCargoContainerHappyPathTest() throws Exception
-//     {
-//         setUpMocks( MockFedoraOjectRepository.class );
-//         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
-//         CargoContainer returnCargo;
-
-//         storePlugin.setObjectRepository( fedObjRep );
-//         returnCargo = storePlugin.getCargoContainer( cargo );
-//         AssertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
-
-//     }
+    /**
+     *
+     */
     @Test
-    public void testTest()
-    {}
+    public void getPluginTypeTest() throws Exception
+    {
+        storePlugin = new Store();
+        assertTrue( PT == storePlugin.getPluginType() );
+    }
+ 
+    /**
+     * testing the path through the plugin where there is no object in the
+     * repository with the same identifier
+     */
+
+    @Test
+    public void storeCargoContainerHappyPathTest() throws Exception
+    {
+        setUpMocks( MockFedoraObjectRepository.class );
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        cargo.setIdentifier( objectIdentifier );        
+        CargoContainer returnCargo;
+        storePlugin = new Store();
+
+        storePlugin.setObjectRepository( fedObjRep );
+        returnCargo = storePlugin.storeCargoContainer( cargo );
+        assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
+
+    }
+
+    /**
+     * tests the happy path where there is an object in the repository
+     * that has the same identifier
+     */
+    @Test
+    public void storeCargoContainerHappyPathDeleteTest() throws Exception
+    {
+        setUpMocks( MockFedoraObjectRepositoryHasObject.class );
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        cargo.setIdentifier( objectIdentifier );        
+        CargoContainer returnCargo;
+        storePlugin = new Store();
+
+        storePlugin.setObjectRepository( fedObjRep );
+        returnCargo = storePlugin.storeCargoContainer( cargo );
+        assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
+
+    }
+    /**
+     * tests that no object is being tried purged from the repository when 
+     * the cargoContainer have no indentifier 
+     */
+    @Test 
+    public void storeCargoContainerHappyPathNoIdentifierTest() throws Exception
+    {
+         setUpMocks( MockFedoraObjectRepository.class );
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        //cargo.setIdentifier( null );        
+        CargoContainer returnCargo;
+        storePlugin = new Store();
+
+        storePlugin.setObjectRepository( fedObjRep );
+        returnCargo = storePlugin.storeCargoContainer( cargo );
+       
+        assertEquals( returnCargo.getIdentifierAsString(), "" );
+        
+    }
+
+    /**
+     * tests the handling of the ObjectRepositoryException
+     */
+    @Test( expected = ObjectRepositoryException.class )
+    public void testObjectRepositoryException() throws Exception
+    {
+        setUpMocks( MockFedoraObjectRepositoryException.class );
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        CargoContainer returnCargo;
+        storePlugin = new Store();
+        storePlugin.setObjectRepository( fedObjRep );
+
+        try
+        {
+            returnCargo = storePlugin.storeCargoContainer( cargo );
+        }
+        catch( PluginException pe )
+        {
+            throw pe.getException();
+        }
+    }
+
+    /**
+     * tests the behaviour when no repository has been set
+     */
+    @Test( expected = NullPointerException.class )
+    public void noObjectRepositorySetTest() throws Exception
+    {
+        CargoContainer returnCargo;
+        storePlugin = new Store();
+
+        returnCargo = storePlugin.storeCargoContainer( cargo );
+    }
 
 }
