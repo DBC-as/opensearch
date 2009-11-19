@@ -129,7 +129,7 @@ public class ESHarvest implements IHarvest
     /**
      *  Retrieve a list of jobs from the ESHarvester.
      */
-    public ArrayList<IJob> getJobs( int maxAmount ) throws HarvesterIOException
+    public ArrayList<IJob> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
 	log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
 
@@ -180,6 +180,7 @@ public class ESHarvest implements IHarvest
 
 		// Update Recordstatus
 		setRecordStatusToInProgress( id, conn );
+		testAndSetTaskpackageTaskstatusToActive( targetRef, conn );
 
 		Document doc = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -492,8 +493,9 @@ public class ESHarvest implements IHarvest
 		    log.warn( String.format( "unknown status update attempt on identifier: %s - updateResult=%s", ESJobId, updateResult ) );
 		}
 
-		// Check the taskpackage for update of TP-status:			
+		// Check the taskspecificUpdate for update of TP-status:			
 		setTaskPackageStatus( ESJobId.getTargetRef(), conn );
+
 	    }
 	} 
 	catch( SQLException sqle ) 
@@ -616,6 +618,108 @@ public class ESHarvest implements IHarvest
 	conn.commit();
     }
 
+    private enum TaskStatus
+    {
+	PENDING,
+	ACTIVE,
+	COMPLETE,
+	ABORTED;
+    }
+
+    private void testAndSetTaskpackageTaskstatusToActive( int targetref, Connection conn ) throws HarvesterInvalidStatusChangeException, SQLException
+    {
+	
+	log.info( "Testing wether Taskpackage.Taskstatus should be updated.");
+
+	Statement stmt = conn.createStatement();
+
+	String searchString = String.format( "SELECT taskstatus " +
+					     "FROM taskpackage " + 
+					     "WHERE targetreference = %s",
+					     targetref );
+	ResultSet rs = stmt.executeQuery( searchString );
+	if ( rs.next() )
+	{
+	    int currentStatus = rs.getInt( 1 );
+	    if ( currentStatus != 1 ) // Not Active
+	    {
+		// Set the status to active:
+		log.info( String.format( "Setting taskpackage.taskstatus from %s to %s for targetref %s",
+					 currentStatus, 1, targetref) );	
+		setTaskpackageTaskstatus( targetref, TaskStatus.ACTIVE, conn );
+	    }
+	}
+	else
+	{
+	    log.warn( String.format( "Could not find the taskpackage for targetref %s", targetref ) );
+	}
+
+	stmt.close();
+
+    }
+
+    private void setTaskpackageTaskstatus( int targetref, TaskStatus status, Connection conn ) throws SQLException, HarvesterInvalidStatusChangeException
+    {
+	log.info( String.format( "Setting Taskpackage.taskstatus with targetref [%s] to %s.", targetref, status ) );
+	
+	int taskstatus = 0;
+	switch (status)
+	{
+	case PENDING:
+	    taskstatus = 0;
+	    break;
+	case ACTIVE:
+	    taskstatus = 1;
+	    break;
+	case COMPLETE:
+	    taskstatus = 2;
+	    break;
+	case ABORTED:
+	    taskstatus = 3;
+	    break;
+	default:
+	    // This should not happen!
+	    conn.rollback();
+	    throw new HarvesterInvalidStatusChangeException( String.format( "Unknown status for Taskpackage.taskstatus: %s", status ) );
+	}
+
+	// lock row for update:
+	Statement stmt = conn.createStatement();
+	String lockString = String.format( "SELECT taskstatus " + 
+					   "FROM taskpackage " + 
+					   "WHERE targetreference = %s " +
+					   "FOR UPDATE OF taskstatus", 
+					   targetref );
+	log.info( "LockString: " + lockString );
+ 	int res1 = stmt.executeUpdate( lockString );
+	if ( res1 == 0 )
+	{
+	    // No rows for update - give a warning:
+	    log.warn( String.format( "Could not find a row for update for targetref: %s", targetref ) );
+	    conn.rollback();
+	    stmt.close();
+	} 
+	else 
+	{
+	    // Perform the real update:
+	    int res2 = stmt.executeUpdate( "UPDATE taskpackage " +
+					   "SET taskstatus = " + taskstatus + " " +
+					   "WHERE targetreference = " + targetref );
+	    if ( res2 == 0 ) 
+	    {
+		log.warn( String.format( "Could not update taskstatus for taskpackage with targetref: %s", targetref ) );
+	    }
+	    else
+	    {
+		log.info( String.format( "Successfully set Taskpackage.taskstatus with targetref [%s] to %s.", targetref, status ) );
+	    }
+	    stmt.close();
+	    conn.commit();
+	}
+
+    }
+
+
 
     /**
      *  Changes the status on a taskpackage if all assoicated records are finished.
@@ -703,6 +807,11 @@ public class ESHarvest implements IHarvest
 		    update_status = 2;
 		}
 			
+// 		String update_taskpackage_status_query = String.format( "SELECT updatestatus " + 
+// 									"FROM taskspecificupdate " + 
+// 									"WHERE targetreference = %s " + 
+// 									"FOR UPDATE OF updatestatus", 
+// 									targetref );
 		String update_taskpackage_status_query = String.format( "SELECT updatestatus " + 
 									"FROM taskspecificupdate " + 
 									"WHERE targetreference = %s " + 
@@ -742,6 +851,10 @@ public class ESHarvest implements IHarvest
 			int res = stmt.executeUpdate( update_taskpackage_status );
 			log.debug( String.format( "%s rows updated" , res ) );
 			conn.commit();
+
+			// set the taskpackage.taskstatus to complete:
+			setTaskpackageTaskstatus( targetref, TaskStatus.COMPLETE, conn );
+
 		    } 
 		    catch( SQLException sqle )
 		    {
