@@ -199,19 +199,19 @@
         />
     <xml-property
         name="sort.date"
-        xpath="/ting:container/dkabm:record/dc:date"
+        xpath="/ting:container/dkabm:record/dc:date[1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
     <xml-property
         name="sort.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort']"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort'][1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
     <xml-property
         name="sort.title"
-        xpath="/ting:container/dkabm:record/dc:title"
+        xpath="/ting:container/dkabm:record/dc:title[1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
@@ -458,19 +458,19 @@
         />
     <xml-property
         name="sort.date"
-        xpath="/ting:container/dkabm:record/dc:date"
+        xpath="/ting:container/dkabm:record/dc:date[1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
     <xml-property
         name="sort.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort']"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort'][1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
     <xml-property
         name="sort.title"
-        xpath="/ting:container/dkabm:record/dc:title"
+        xpath="/ting:container/dkabm:record/dc:title[1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
@@ -942,19 +942,19 @@
         />
     <xml-property
         name="sort.date"
-        xpath="/ting:container/dkabm:record/dc:date"
+        xpath="/ting:container/dkabm:record/dc:date[1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
     <xml-property
         name="sort.creator"
-        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort']"
+        xpath="/ting:container/dkabm:record/dc:creator[@xsi:type='oss:sort'][1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
     <xml-property
         name="sort.title"
-        xpath="/ting:container/dkabm:record/dc:title"
+        xpath="/ting:container/dkabm:record/dc:title[1]"
         index="un_tokenized"
         value-converter="lowercase"
         />
