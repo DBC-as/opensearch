@@ -211,12 +211,13 @@ public class IndexerXSEM implements IIndexer
                     // }catch(TransformerException te){ System.err.println( String.format( "Caught Exception: %s", te.getMessage() ) );}
 
                     AliasedXmlObject xmlObject = null;
-                    try {
+                    try 
+                    {
                         xmlObject = new RawAliasedXmlObject( indexingAlias,  XMLUtils.xmlToString( doc )  );
                     }
                     catch(TransformerException te)
                     {
-                        System.err.println( String.format( "Could not transform xml data %s", te.getMessage() ) );                        
+                        log.error( String.format( "Could not transform xml data message: %s stacktrace: %s", te.getMessage(), te ) );                        
                         throw new PluginException( String.format( "Could not transform xml data %s", te.getMessage() ), te );                        
                     }
 
