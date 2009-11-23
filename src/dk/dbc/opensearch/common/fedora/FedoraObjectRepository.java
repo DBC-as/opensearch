@@ -495,77 +495,6 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return cargo;
     }
-    
-
-
-    /**
-     * Beware that this method implements a costly search. The search can be
-     * narrowed a bit in retrieval time by setting {@code maximumResults} to a
-     * low-ish value (depending on the number of objects in the repository), but
-     * the search time itself will be unaffected by this. It is preferrable and
-     * advisable to use the {@link #getIdentifiers(java.lang.String)}.
-     *
-     * @param searchExpression the expression to match the returned results against
-     * @param maximumResults the maximum number of hits to retrieve from the
-     * repository (not neccesarily equal to the maximum hits to return from this
-     * method)
-     * @return a {@link List<String>} of matching pids from the repository
-     */
-    /*@Override
-      public List< String > getIdentifiers( Pattern searchExpression, String cutPid, int maximumResults )
-      {
-      String[] resultFields =
-      {
-      pid
-      };
-
-      String[] searchFields =
-      {
-      "*"
-      };
-
-      ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
-
-      int ofLength = objectFields.length;
-      List< String > pids = new ArrayList< String >( ofLength );
-      for( int i = 0; i < ofLength; i++ )
-      {
-      String pidToMatch = objectFields[i].getPid();
-      if( searchExpression.matcher( pidToMatch ).matches() )
-      {
-      pids.add( pidToMatch );
-      }
-      }
-
-      return pids;
-    }*/
-
-
-    /*@Override
-      public List<String> getIdentifiers( String verbatimSearch, String cutPid, int maximumResults )
-      {
-      String[] resultFields =
-      {
-      pid
-      };
-
-      String[] searchFields =
-      {
-      verbatimSearch
-      };
-
-      //ObjectFields[] objectFields = searchRepository( resultFields, pid, searchFields, has, maximumResults );
-      ObjectFields[] objectFields = searchRepository( resultFields, propertiesAndValues, has, maximumResults );
-
-      int ofLength = objectFields.length;
-      List<String> pids = new ArrayList<String>( ofLength );
-      for( int i = 0; i < ofLength; i++ )
-      {
-      pids.add( objectFields[i].getPid() );
-      }
-
-      return pids;
-      }*/
 
 
     @Override
@@ -600,7 +529,6 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    //public List< String > getIdentifiers( List< InputPair< String, String > > resultSearchFields, String cutPid, int maximumResults )
     public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
