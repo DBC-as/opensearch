@@ -36,8 +36,6 @@ import dk.dbc.opensearch.common.xml.XMLUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,7 +51,6 @@ import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
 import org.compass.core.xml.AliasedXmlObject;
 import org.compass.core.xml.RawAliasedXmlObject;
-import org.compass.core.xml.javax.NodeAliasedXmlObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -85,7 +82,9 @@ public class IndexerXSEM implements IIndexer
         }
         catch( CompassException ce )
         {
-            throw new PluginException( "Could not commit index on CompassSession", ce );
+            String error = String.format( "Could not commit index on CompassSession: %s", ce.getMessage() );
+            log.error( error );
+            throw new PluginException( error, ce );
         }
         return success;
     }
@@ -93,7 +92,6 @@ public class IndexerXSEM implements IIndexer
     private boolean index( CompassSession session, CargoContainer cc, String fedoraHandle ) throws PluginException, CompassException, ConfigurationException
     {
         boolean success = false;
-        Date finishTime = new Date();
 
         /* \todo: right now we index all stream in a cc with the same alias. each CargoObject should have a IndexingAlias. see bug #8719 */
         //String indexingAlias = cc.getIndexingAlias().getName();
@@ -109,18 +107,21 @@ public class IndexerXSEM implements IIndexer
         }
         catch( ParserConfigurationException pce )
         {
-            log.fatal( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" + pce ) );
-            throw new PluginException( String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases" ), pce );
+            String error = String.format(String.format( "Could not construct CPMAlias object for reading/parsing xml.cpm file -- values used for checking cpm aliases: %s", pce.getMessage() ) );
+            log.error(  error, pce );
+            throw new PluginException( error, pce );
         }
         catch (SAXException se)
         {
-            log.fatal( String.format( "Could not parse XSEM mappings file" + se ) );
-            throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
+            String error = String.format( "Could not parse XSEM mappings file: %s", se.getMessage() );
+            log.error( error, se );
+            throw new PluginException( error, se );
         }
         catch ( IOException ioe )
         {
-            log.fatal( String.format( "Could not open or read XSEM mappings file: " + ioe ) );
-            throw new PluginException( String.format( "exception Could not open or read XSEM mappings file" ), ioe );
+            String error = String.format( "Could open or read XSEM mappings file: %s", ioe.getMessage() );
+            log.error( error, ioe );
+            throw new PluginException( error, ioe );
         }
 
         log.info( "cpmAlias constructed" );
@@ -141,23 +142,27 @@ public class IndexerXSEM implements IIndexer
                 }
                 catch ( ParserConfigurationException pce ) 
                 {
-                    log.fatal( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
-                    throw new PluginException( String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings" ), pce );
+                    String error = String.format( "Could not contruct the objects for reading/parsing the configuration file for the XSEM mappings: %s" , pce.getMessage() );
+                    log.error( error, pce );
+                    throw new PluginException( error, pce );
                 }
                 catch ( SAXException se ) 
                 {
-                    log.fatal( String.format( "Could not parse XSEM mappings file" ), se );
-                    throw new PluginException( String.format( "Could not parse XSEM mappings file" ), se );
+                    String error = String.format( "Could not parse XSEM mappings file: %s", se.getMessage() );
+                    log.error( error, se );
+                    throw new PluginException( error, se );
                 }
                 catch (IOException ioe) 
                 {
-                    log.fatal( String.format( "Second: Could not open or read XSEM mappings file" ), ioe );
-                    throw new PluginException( String.format( "Second Exception Could not open or read XSEM mappings file" ), ioe );
+                    String error = String.format( "Could open or read XSEM mappings file: %s", ioe.getMessage() );
+                    log.error( error, ioe );
+                    throw new PluginException( error, ioe );
                 }
 
                 if( ! isValidAlias )
                 {
-                    log.fatal( String.format( "The format %s (from pid %s) has no alias in the XSEM mapping file", indexingAlias, cc.getIdentifier() ) );
+                    String error = String.format( "The format %s (from pid %s) has no alias in the XSEM mapping file", indexingAlias, cc.getIdentifier() );
+                    log.error( error );
                     throw new PluginException( String.format( "The format %s has no alias in the XSEM mapping file", indexingAlias ) );
                 }
                 else
@@ -174,16 +179,21 @@ public class IndexerXSEM implements IIndexer
                     } 
                     catch (SAXException de) 
                     {
-                        log.fatal( String.format( "Error reading xml stream: %s", de.getMessage() ), de );
-                        throw new PluginException( String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s, pid=%s", indexingAlias, co.getMimeType(), cc.getIdentifier() ), de );
+                        String error = String.format( "Could not parse InputStream as an XML Instance from alias=%s, mimetype=%s, pid=%s. Error: %s", indexingAlias, co.getMimeType(), cc.getIdentifier(), de.getMessage() );
+                        log.error( error, de );
+                        throw new PluginException( error, de );
                     } 
                     catch( IOException ioe)
                     {
-                        log.fatal( String.format( "Error reading xml stream: %s", ioe.getMessage() ), ioe );
+                        String error = String.format( "Error reading xml stream: %s", ioe.getMessage() );
+                        log.error( error, ioe );
+                        throw new PluginException( error, ioe );
                     } 
                     catch( ParserConfigurationException pce )
                     {
-                        log.fatal( String.format( "Error reading xml stream: %s", pce.getMessage() ), pce );                    
+                        String error = String.format( "Error reading xml stream: %s", pce.getMessage() );
+                        log.error( error, pce );
+                        throw new PluginException( error, pce );
                     }
 
                     /** \todo: when doing this the right way, remember to modify the initial value of the HashMap*/
@@ -217,8 +227,9 @@ public class IndexerXSEM implements IIndexer
                     }
                     catch(TransformerException te)
                     {
-                        log.error( String.format( "Could not transform xml data message: %s stacktrace: %s", te.getMessage(), te ) );                        
-                        throw new PluginException( String.format( "Could not transform xml data %s", te.getMessage() ), te );                        
+                        String error = String.format( "Could not transform xml data %s", te.getMessage() );
+                        log.error( error, te );
+                        throw new PluginException( error, te );
                     }
 
                     log.info( String.format( "Constructed AliasedXmlObject with alias %s", xmlObject.getAlias() ) );
@@ -234,8 +245,9 @@ public class IndexerXSEM implements IIndexer
                         trans = session.beginTransaction();
                     }catch( CompassException ce )
                     {
-                        log.fatal( "Could not initiate transaction on the CompassSession", ce );
-                        throw new PluginException( "Could not initiate transaction on the CompassSession", ce );
+                        String error = String.format( "Could not initiate transaction on the CompassSession: %s", ce.getMessage() );
+                        log.error( error, ce );
+                        throw new PluginException( error, ce );
                     }
                     
                     try
@@ -246,13 +258,15 @@ public class IndexerXSEM implements IIndexer
                     catch( CompassException ce ){
                         try
                         {
-                            log.fatal( String.format( "Could not save index object (alias=%s, pid=%s) to index. Cause: %s, message: %s, xml='''%s''' ", xmlObject.getAlias(), fedoraHandle, ce.getCause(), ce.getMessage(), XMLUtils.xmlToString( doc ) ), ce );
-                            
-                            throw new PluginException( String.format( "Could not save index object to index. Cause: %s, message: %s ", ce.getCause(), ce.getMessage() ), ce );
+                            String error = String.format( "Could not save index object (alias=%s, pid=%s) to index. Cause: %s, message: %s, xml='''%s''' ", xmlObject.getAlias(), fedoraHandle, ce.getCause(), ce.getMessage(), XMLUtils.xmlToString( doc ) );
+                            log.error( error, ce );
+                            throw new PluginException( error, ce );
                         }
                         catch( TransformerException ex )
                         {
-                            throw new PluginException( String.format( "Could not log exception %s: %s",ce.getMessage(), ex.getMessage() ), ce );
+                            String error = String.format( "Could not log exception %s: %s",ce.getMessage(), ex.getMessage() );
+                            log.error( error, ce );
+                            throw new PluginException( error, ce );
                         }
                     }
 
@@ -265,7 +279,6 @@ public class IndexerXSEM implements IIndexer
 
                     log.info( String.format( "Document indexed and stored with Compass" ) );
                     success = true;
-                    //processTime += finishTime.getTime() - co.getTimestamp();
                 }
             }
         }
