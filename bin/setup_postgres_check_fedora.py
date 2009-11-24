@@ -72,8 +72,8 @@ def main( harvest_folder ):
     
     fedora_conn.main( host, port )
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     from optparse import OptionParser
     
     parser = OptionParser( usage="%prog [options]" )
