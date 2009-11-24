@@ -439,7 +439,7 @@ public class FedoraHandle
         }
         catch ( IOException ioe )
         {
-            log.warn( String.format( "Could not list datastreams for object %s. Error message: %s ", identifier, ioe.getMessage() ) );
+            log.info( String.format( "Could not list datastreams for object %s. We take this as an indication that the object doesn't exist", identifier ) );
             return false;
         }
 
