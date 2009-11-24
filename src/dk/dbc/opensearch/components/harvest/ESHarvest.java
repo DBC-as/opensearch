@@ -411,7 +411,7 @@ public class ESHarvest implements IHarvest
         // If not, set it to what the parameter says.
 	    // Otherwise it is an error - you cannot update a job which is not in progress.
 
-        ESIdentifier ESJobId = (ESIdentifier)jobId;
+        ESIdentifier ESJobId = jobId;
         try
         {
             // Lock row for update

@@ -34,15 +34,17 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
 
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IndexingAlias;
+import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.opensearch.components.harvest.ESHarvest;
+import dk.dbc.opensearch.components.harvest.IJob;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
 import dk.dbc.opensearch.plugins.Store;
 import dk.dbc.opensearch.plugins.OwnerRelation;
 import dk.dbc.opensearch.plugins.DocbookHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.components.harvest.JobStatus;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
@@ -54,20 +56,22 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.xml.sax.SAXException;
 
 import mockit.Mock;
 import mockit.MockClass;
+import mockit.Mocked;
 import mockit.Mockit;
+import org.w3c.dom.Document;
 
 /**
  * methods are being ignored, bug 9385
@@ -81,86 +85,109 @@ public class DatadockThreadTest
 {
     DatadockThread ddThread;
     static ArrayList< String > testArrayList = new ArrayList<String>();
-    static CargoContainer mockCC = createMock( CargoContainer.class);
+    static CargoContainer mockCC;
     DatadockJob mockDatadockJob;
-    Processqueue mockProcessqueue;
-    IHarvest mockHarvester;
-    IIdentifier mockIdentifier;
-    CargoObject mockCargoObject;
-    IObjectRepository mockObjectRepository = createMock( IObjectRepository.class );
+    @Mocked Processqueue mockProcessqueue;
+    @Mocked ESHarvest mockHarvester;
+    @Mocked IIdentifier mockIdentifier;
+    @Mocked IObjectRepository mockObjectRepository;
     PluginResolver mockPluginResolver;
+    static final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" lang=\"dk\"/></referencedata>";
+    static Document referenceData;
+    static boolean isset;
 
-    
+    @BeforeClass
+    public static void classSetup() throws Exception
+    {
+        referenceData = XMLUtils.documentFromString( refdata );
+        mockCC = new CargoContainer();
+        mockCC.setIdentifier( new PID( "710100:1" ) );
+        mockCC.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", IndexingAlias.Article, "<orig><child></orig>".getBytes() );
+    }
+
+    private class MockIdentifier implements IIdentifier{}
+    private class UnknownIdentifier implements IIdentifier{}
+
+    @MockClass( realClass = Processqueue.class )
+    public static class MockProcessqueue
+    {
+        @Mock public void push( String id ){}
+    }
+
     @MockClass( realClass = DatadockJobsMap.class )
     public static class MockDDJobsMap
     {
     	@Mock public static ArrayList< String > getDatadockPluginsList( String submitter, String format )
         {
-            //System.out.println( testArrayList.toString() );
             return testArrayList;
         }
     }
 
-
-    @MockClass( realClass = DatadockJobsMap.class )
-    public static class MockDDJobsMapNP
+    @MockClass( realClass = ESHarvest.class )
+    public static class MockHarvester
     {
-        @Mock public static ArrayList< String > getDatadockPluginsList( String submitter, String format )
+        
+        @Mock
+        public byte[] getData( IIdentifier id ) throws HarvesterUnknownIdentifierException
         {
-            //System.out.println( "returning null" );
-            return null;
+            return "".getBytes();
         }
+
+        @Mock
+        public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{
+            System.out.println( String.format( "ISSET = %s", isset ) );
+            if( isset )
+            {
+                throw new HarvesterInvalidStatusChangeException( "already set" );
+            }
+            isset = true;
+        }
+    }
+
+    private class ExceptionHarvester implements IHarvest
+    {
+        public byte[] getData( IIdentifier id ) throws HarvesterUnknownIdentifierException
+        {
+            if( id.getClass() == UnknownIdentifier.class )
+            {
+                throw new HarvesterUnknownIdentifierException( "" );
+            }
+            return "".getBytes();
+        }
+        public void start() throws HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
+        public void shutdown() throws HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
+        public List<IJob> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException{throw new UnsupportedOperationException( "Mock method" );}
+        public void setStatusFailure( IIdentifier jobId, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{ throw new UnsupportedOperationException( "Mock method" );}
+        public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
+        public void setStatusRetry( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
     }
 
     @MockClass( realClass = DocbookHarvester.class )
     public static class MockDBHarvest
     {
-        PluginType pt = PluginType.HARVEST;
-
-        @Mock( invocations = 3 )
+        @Mock
         public PluginType getPluginType()
         {
-            return pt;
+            return PluginType.HARVEST;
         }
 
-        @Mock( invocations = 1 )
+        @Mock
         public CargoContainer getCargoContainer( DatadockJob job, byte[] referenceData )
         {
             return mockCC;
         }
     }
 
-
-    @MockClass( realClass = DocbookAnnotate.class )
-    public static class MockAnnotate
-    {
-        PluginType pt = PluginType.ANNOTATE;
-
-        @Mock( invocations = 3 )
-        public PluginType getPluginType()
-        {
-            return pt;
-        }
-
-        @Mock( invocations = 1 )
-        public CargoContainer getCargoContainer( CargoContainer cargo )
-        {
-            return mockCC;
-        }
-    } 
-    
     @MockClass( realClass = Store.class )
     public static class MockStore
     {
-        PluginType pt = PluginType.STORE;
-
-        @Mock( invocations = 3 )
+        @Mock
         public PluginType getPluginType()
         {
-            return pt;
+            return PluginType.STORE;
         }
 
-        @Mock( invocations = 1 )
+        @Mock
         public CargoContainer storeCargoContainer( CargoContainer cargo )
         {
             return mockCC;
@@ -170,15 +197,13 @@ public class DatadockThreadTest
     @MockClass( realClass = OwnerRelation.class )
     public static class MockRelation
     {
-        PluginType pt = PluginType.RELATION;
-
-        @Mock( invocations = 3 )
+        @Mock
         public PluginType getPluginType()
         {
-            return pt;
+            return PluginType.RELATION;
         }
 
-        @Mock( invocations = 1 )
+        @Mock
         public CargoContainer getCargoContainer( CargoContainer cargo )
         {
             return mockCC;
@@ -186,20 +211,18 @@ public class DatadockThreadTest
     }    
         
     @MockClass( realClass = DocbookAnnotate.class )
-    public static class MockAnnotate2
+    public static class NullReturningPlugin
     {
-        PluginType pt = PluginType.ANNOTATE;
-
-        @Mock( invocations = 3 )
+        @Mock
         public PluginType getPluginType()
         {
-            return pt;
+            return PluginType.ANNOTATE;
         }
 
-        @Mock( invocations = 0 )//safety...
+        @Mock
         public CargoContainer getCargoContainer( CargoContainer cargo )
         {
-            return mockCC;
+            return null;
         }
     }
 
@@ -207,20 +230,17 @@ public class DatadockThreadTest
     /**
      *
      */
-    @Before public void SetUp() 
+    @Before public void SetUp() throws Exception
     {
-        try
-        {
-            mockPluginResolver = new PluginResolver();
-        }
-        catch( Exception e )
-        {
-        } 
-       mockCargoObject = createMock( CargoObject.class );
-        mockHarvester = createMock( IHarvest.class );
-        mockDatadockJob = createMock( DatadockJob.class );
-        mockProcessqueue = createMock( Processqueue.class );
-        mockIdentifier = createMock( IIdentifier.class );
+        mockPluginResolver = new PluginResolver();
+        Mockit.setUpMocks(  MockProcessqueue.class );
+        Mockit.setUpMocks( MockHarvester.class );
+        Mockit.setUpMocks( MockDBHarvest.class );
+        Mockit.setUpMocks( MockRelation.class );
+        Mockit.setUpMocks( MockStore.class );
+        Mockit.setUpMocks( MockDDJobsMap.class );
+        Mockit.setUpMocks( NullReturningPlugin.class );
+
     }
 
 
@@ -230,13 +250,7 @@ public class DatadockThreadTest
     @After public void TearDown() 
     {
         Mockit.tearDownMocks();
-        reset( mockDatadockJob );
-        reset( mockProcessqueue );
-        reset( mockCC );
         testArrayList.clear();
-        reset( mockHarvester );
-        reset( mockIdentifier );
-        reset( mockCargoObject );
     }
 
 
@@ -246,26 +260,11 @@ public class DatadockThreadTest
 
     @Test public void testConstructor() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        //Setup
-        Mockit.setUpMocks( MockDDJobsMap.class );
         testArrayList.add( "testplugin1" );
         testArrayList.add( "testplugin2" );
-        //System.out.println( testArrayList.toString() );
-        //expectations
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
-        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
 
-        //replay
-        replay( mockDatadockJob );
-        replay( mockProcessqueue );
-
-        //do stuff
-
-        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-
-        //verify
-        verify( mockDatadockJob );
-        verify( mockProcessqueue );
+        DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
+        ddThread = new DatadockThread( job, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
     }
 
 
@@ -275,25 +274,7 @@ public class DatadockThreadTest
     @Test( expected = NullPointerException.class )
     public void testConstructorNPException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, /*NullPointerException,*/ PluginResolverException, ParserConfigurationException, SAXException, ServiceException
     {
-        //System.out.println( "2");
-        //Setup
-        Mockit.setUpMocks( MockDDJobsMapNP.class );
-      
-        //expectations
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
-        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-
-        //replay
-        replay( mockDatadockJob );
-        replay( mockProcessqueue );
-
-        //do stuff
-
         ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-
-        //verify
-        verify( mockDatadockJob );
-        verify( mockProcessqueue );
     }
 
 
@@ -301,285 +282,71 @@ public class DatadockThreadTest
      * Testing happy path of the call method going through the
      * options in the switch
      */
-
-    @Test @Ignore
+    @Test
 	public void testCall() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException,  IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
-        //System.out.println( "3");
-        /**
-         *setup
-         */
-        Mockit.setUpMocks( MockDDJobsMap.class );
-        Mockit.setUpMocks( MockDBHarvest.class );
-        Mockit.setUpMocks( MockAnnotate.class );
-        Mockit.setUpMocks( MockRelation.class );
-        Mockit.setUpMocks( MockStore.class );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" ); 
         testArrayList.add( "dk.dbc.opensearch.plugins.OwnerRelation" );
         testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
-        String dataString = "testData";
-        byte[] data = dataString.getBytes();
-        /**
-         *expectations
-         */
-        //constructor
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
-        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-        //call
-        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        expect( mockHarvester.getData ( mockIdentifier ) ).andReturn( data );
 
-        expect( mockCC.getCargoObjectCount() ).andReturn( 1 );
-     
-        expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
-        expect( mockCargoObject.getContentLength() ).andReturn( 5 );
 
-        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
-
-        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
-        mockProcessqueue.push( isA( String.class ) );
-        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        // mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
-	mockHarvester.setStatusSuccess( mockIdentifier , "" );
-     
-
-        /**
-         *replay
-         */
-        replay( mockHarvester );
-        replay( mockDatadockJob );
-        replay( mockProcessqueue );
-        replay( mockCC );
-        replay( mockCargoObject );
-        replay( mockIdentifier );
-
-        /**
-         * do stuff
-         */
-
-        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        DatadockJob job = new DatadockJob( new MockIdentifier(), referenceData );
+        ddThread = new DatadockThread( job, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
         Boolean result = ddThread.call();
 
-        assertTrue( result == true );
-        /**
-         *verify
-         */
-        verify( mockHarvester );
-        verify( mockDatadockJob );
-        verify( mockProcessqueue );
-        verify( mockCC );
-        verify( mockCargoObject );
-        verify( mockIdentifier );
+        assertTrue( result.booleanValue() == true );
     } 
   
 
-    @Test( expected = IllegalStateException.class ) @Ignore
-	public void testCallIllegalState() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    /**
+     * An IllegalStateException is thrown if one of the plugins returns an empty
+     * CargoContainer or a null reference
+     */
+    @Test( expected = IllegalStateException.class )
+	public void testCallIllegalState() throws Exception
     {
-        //System.out.println( "4");
-        /**
-         *setup
-         */
-        Mockit.setUpMocks( MockDDJobsMap.class );
-        Mockit.setUpMocks( MockDBHarvest.class );
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" );
-        String dataString = "testData";
-        byte[] data = dataString.getBytes();
 
-        /**
-         *expectations
-         */
-        //constructor
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
-        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        expect( mockHarvester.getData ( mockIdentifier ) ).andReturn( data );
-        //call
-        expect( mockCC.getCargoObjectCount() ).andReturn( 0 );
+        DatadockJob job = new DatadockJob( new MockIdentifier(), referenceData );
+        ddThread = new DatadockThread( job, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        ddThread.call();
 
-
-        /**
-         *replay
-         */
-        replay( mockHarvester );
-        replay( mockDatadockJob );
-        replay( mockProcessqueue );
-        replay( mockCC );
-        replay( mockIdentifier );
-
-        /**
-         * do stuff
-         */
-
-        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Boolean result = ddThread.call();
-
-        /**
-         *verify
-         */
-        verify( mockHarvester );
-        verify( mockDatadockJob );
-        verify( mockProcessqueue );
-        verify( mockCC );
-        verify( mockIdentifier );
     }   
 
-
-    @Test( expected = NullPointerException.class ) @Ignore
-	public void testCallNullCargoContainer() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    /**
+     * A HarvesterUnknownIdentifierException will be thrown if the identifier
+     * given to the thread is not recognized by the harvester
+     */
+    @Test( expected = HarvesterUnknownIdentifierException.class )
+	public void testUnknownIdentifier() throws Exception
     {
-        //System.out.println( "5");
-        /**
-         *setup
-         */
-        Mockit.setUpMocks( MockDDJobsMap.class );
-        Mockit.setUpMocks( MockAnnotate2.class );
-
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" );
-
-        /**
-         *expectations
-         */
-        //constructor
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
-        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-
-        //call
-
-
-        /**
-         *replay
-         */
-        replay( mockDatadockJob );
-        replay( mockProcessqueue );
-        replay( mockCC );
-
-        /**
-         * do stuff
-         */
-
-        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Boolean result = ddThread.call();
-
-        /**
-         *verify
-         */
-        verify( mockDatadockJob );
-        verify( mockProcessqueue );
-        verify( mockCC );
-    }
-
-    @Test( expected = HarvesterUnknownIdentifierException.class ) @Ignore
-	public void testUnknownIdentifier() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException, HarvesterIOException
-    {
-        //System.out.println( "unknownidentifiertest" );
-        //setup
-        Mockit.setUpMocks( MockDDJobsMap.class );
-        Mockit.setUpMocks( MockDBHarvest.class );
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" ); 
-        
 
-        //expectations  
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
-        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-
-        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        expect( mockHarvester.getData ( mockIdentifier ) ).andThrow( new HarvesterUnknownIdentifierException( "testexception" ) );
-
-        //replay
-        replay( mockDatadockJob );
-        replay( mockProcessqueue );
-        replay( mockCC );
-        replay( mockHarvester );
-
-        //do stuff
-        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Boolean result = ddThread.call();
-
-        //verify
-        verify( mockDatadockJob );
-        verify( mockProcessqueue );
-        verify( mockHarvester );
-        verify( mockCC );
+        DatadockJob job = new DatadockJob( new UnknownIdentifier(), referenceData );
+        ddThread = new DatadockThread( job, mockProcessqueue, mockObjectRepository, new ExceptionHarvester(), mockPluginResolver );
+        ddThread.call();
     }
 
     /**
      * tests the situation where the datadockthread is trying to set the status 
-     * of the job in the harvester to something invalid. A HarvesterInvalidStatusChangeException
-     * is thrown by the harvester and a log.error is created and 0F is returned.
+     * of the job in the harvester to something invalid, ie. a status has
+     * already been set on the Harvester for the job and the thread tries to set
+     * it a second time. A HarvesterInvalidStatusChangeException
+     * is thrown by the harvester
      */
-
-    @Test @Ignore
-	public void testHarvesterInvalidStatusChangeException() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException, IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterInvalidStatusChangeException, HarvesterUnknownIdentifierException, HarvesterIOException
+    @Test( expected=HarvesterInvalidStatusChangeException.class )
+	public void testHarvesterInvalidStatusChangeException() throws Exception
     {
-        /**
-         *setup
-         */
-        Mockit.setUpMocks( MockDDJobsMap.class );
-        Mockit.setUpMocks( MockDBHarvest.class );
-        Mockit.setUpMocks( MockAnnotate.class );
-        Mockit.setUpMocks( MockRelation.class );
-        Mockit.setUpMocks( MockStore.class );
+
         testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookAnnotate" ); 
         testArrayList.add( "dk.dbc.opensearch.plugins.OwnerRelation" );
         testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
-        String dataString = "testData";
-        byte[] data = dataString.getBytes();
-        Boolean estimateval = true;
-        /**
-         *expectations
-         */
-        //constructor
-        expect( mockDatadockJob.getSubmitter() ).andReturn( "testSubmitter" );
-        expect( mockDatadockJob.getFormat() ).andReturn( "testFormat" );
-        //call
-        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        expect( mockHarvester.getData ( mockIdentifier ) ).andReturn( data );
 
-        expect( mockCC.getCargoObjectCount() ).andReturn( 1 );
-     
-        expect( mockCC.getCargoObject( DataStreamType.OriginalData ) ).andReturn( mockCargoObject );
-        expect( mockCargoObject.getContentLength() ).andReturn( 5 );
+        DatadockJob job = new DatadockJob( new MockIdentifier(), referenceData );
 
-        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
+        mockHarvester.setStatusSuccess( job.getIdentifier(), "" );
 
-        expect( mockCC.getIdentifier() ).andReturn( new PID("DCIdentifier") );
-        mockProcessqueue.push( isA( String.class ) );
-        expect( mockDatadockJob.getIdentifier() ).andReturn( mockIdentifier );
-        // mockHarvester.setStatus( mockIdentifier , JobStatus.SUCCESS );
-	mockHarvester.setStatusSuccess( mockIdentifier , "" );
-        expectLastCall().andThrow( new HarvesterInvalidStatusChangeException ( "test invalidstatuschangeexception" ) );
-
-        /**
-         *replay
-         */
-        replay( mockHarvester );
-        replay( mockDatadockJob );
-        replay( mockProcessqueue );
-        replay( mockCC );
-        replay( mockCargoObject );
-        replay( mockIdentifier );
-
-        /**
-         * do stuff
-         */
-        ddThread = new DatadockThread( mockDatadockJob, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
-        Boolean result = ddThread.call();
-
-        assertFalse( result == estimateval );
-        
-        /**
-         * verify
-         */
-        verify( mockHarvester );
-        verify( mockDatadockJob );
-        verify( mockProcessqueue );
-        verify( mockCC );
-        verify( mockCargoObject );
-        verify( mockIdentifier );
+        ddThread = new DatadockThread( job, mockProcessqueue, mockObjectRepository, mockHarvester, mockPluginResolver );
+        ddThread.call();
     }
 }

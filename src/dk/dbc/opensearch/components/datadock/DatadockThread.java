@@ -41,6 +41,7 @@ import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeExceptio
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
+import dk.dbc.opensearch.components.harvest.IIdentifier;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -90,7 +91,6 @@ public class DatadockThread implements Callable<Boolean>
     private String                  submitter;
     private String                  format;
     private ArrayList<String>       list;
-    private String                  result;
     private final IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
     
@@ -131,9 +131,11 @@ public class DatadockThread implements Callable<Boolean>
         log.trace( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
         
         list = DatadockJobsMap.getDatadockPluginsList( submitter, format );
-        if (list == null)
+        
+        if ( null == list )
         {
-            throw new NullPointerException(String.format("The returned list from the DatadockJobsMap.getDatadockJobsMap( %s, %s ) is null", submitter, format ) );
+            String error = String.format("The returned list from the DatadockJobsMap.getDatadockJobsMap( %s, %s ) is null", submitter, format );
+            throw new IllegalStateException( error );
         }
 
         log.trace( "constructor PluginList " + list.toString() );
@@ -190,12 +192,12 @@ public class DatadockThread implements Callable<Boolean>
 
         // Validate plugins
         log.debug( String.format( "pluginList classname %s", list.toString() ) );
-        Boolean success = null;
+        Boolean success = Boolean.FALSE;
         byte[] data = null;
         long timer = 0;
 
-        try
-        {
+//        try
+//        {
             for ( String classname : list )
             {
                 log.trace( "DatadockThread getPlugin 'classname' " + classname );
@@ -210,17 +212,19 @@ public class DatadockThread implements Callable<Boolean>
                         //get data from harvester
                         try
                         {
-                            data = harvester.getData( datadockJob.getIdentifier() );
+                            IIdentifier tmpid = datadockJob.getIdentifier();
+                            data = harvester.getData( tmpid );
                         }
                         catch( HarvesterUnknownIdentifierException huie )
                         {
-                            log.error( String.format( "could not get data from harvester, exception message: %s, terminating thread", huie.getMessage() ) );
-                            throw new HarvesterUnknownIdentifierException( huie.getMessage() );
+                            String error = String.format( "could not get data from harvester, exception message: %s, terminating thread", huie.getMessage() );
+                            log.error( error, huie );
+                            throw new HarvesterUnknownIdentifierException( error, huie );
                         }
 
                         log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
 
-                        ICreateCargoContainer harvestPlugin = (ICreateCargoContainer)plugin;
+                        ICreateCargoContainer harvestPlugin = ( ICreateCargoContainer )plugin;
                         timer = System.currentTimeMillis();
 
                         cargo = harvestPlugin.getCargoContainer( datadockJob, data );
@@ -228,9 +232,9 @@ public class DatadockThread implements Callable<Boolean>
                         timer = System.currentTimeMillis() - timer;
                         log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
 
-                        if( cargo.getCargoObjectCount() < 1 )
+                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
                         {
-                            String error = String.format( "Plugin returned a null CargoContainer" );
+                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getPluginType().toString() );
                             log.error( error );
                             throw new IllegalStateException( error );
                         }
@@ -241,23 +245,15 @@ public class DatadockThread implements Callable<Boolean>
 
                         IAnnotate annotatePlugin = (IAnnotate)plugin;
 
-                        if ( cargo == null)
-                        {
-                            String error = String.format( "Previous plugin returned a null CargoContainer" );
-                            log.error( error );
-                            throw new IllegalStateException( error );
-                        }
-
                         timer = System.currentTimeMillis();
 
-                        try
+                        cargo = annotatePlugin.getCargoContainer( cargo );
+
+                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
                         {
-                            cargo = annotatePlugin.getCargoContainer( cargo );
-                        }
-                        catch ( PluginException pe )
-                        {
-                            log.debug( String.format( "Annotate plugin exception caught: %s", pe.getMessage() ) );
-                            throw pe;
+                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getClass() );
+                            log.error( error );
+                            throw new IllegalStateException( error );
                         }
 
                         timer = System.currentTimeMillis() - timer;
@@ -267,18 +263,18 @@ public class DatadockThread implements Callable<Boolean>
                     case RELATION:
                         log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
 
-                        if( cargo == null)
-                        {
-                            String error = String.format( "Previous plugin returned a null CargoContainer" );
-                            log.error( error );
-                            throw new IllegalStateException( error );
-                        }
-
                         IRelation relationPlugin = (IRelation)plugin;
                         relationPlugin.setObjectRepository( this.objectRepository );
                         timer = System.currentTimeMillis();
 
                         cargo = relationPlugin.getCargoContainer( cargo );
+
+                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
+                        {
+                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getPluginType().toString() );
+                            log.error( error );
+                            throw new IllegalStateException( error );
+                        }
 
                         timer = System.currentTimeMillis() - timer;
                         log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
@@ -291,6 +287,14 @@ public class DatadockThread implements Callable<Boolean>
                         repositoryStore.setObjectRepository( this.objectRepository );
                         timer = System.currentTimeMillis();
                         cargo = repositoryStore.storeCargoContainer( cargo );
+
+                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
+                        {
+                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getPluginType().toString() );
+                            log.error( error );
+                            throw new IllegalStateException( error );
+                        }
+
                         timer = System.currentTimeMillis() - timer;
                         log.trace( String.format( "Timing: ( STORE ) %s", timer ) );
 
@@ -299,7 +303,7 @@ public class DatadockThread implements Callable<Boolean>
 
                         break;
                     default:
-                        log.warn( String.format( "plugin.getPluginType ('%s') did not match HARVEST or ANNOTATE", plugin.getPluginType() ) );
+                        log.warn( String.format( "plugin type '%s' was not recognized", plugin.getPluginType() ) );
                 }
             }
 
@@ -312,22 +316,21 @@ public class DatadockThread implements Callable<Boolean>
             try
             {
                 harvester.setStatusSuccess( datadockJob.getIdentifier(), identifierAsString );
-
+                success = Boolean.TRUE;
             }
             catch ( HarvesterInvalidStatusChangeException hisce )
             {
                 log.error( hisce.getMessage() , hisce);
                 return false;
             }
-
             return success;
-        }
-        catch ( Exception e )
-        {
-            String errorMsg = String.format( "Error in %s plugin handling. Message: %s", this.getClass().toString(), e.getMessage() );
-            log.error( String.format( "setting status to FAILURE for identifier: %s with message: '%s'", datadockJob.getIdentifier(), errorMsg ), e);
-            harvester.setStatusFailure( datadockJob.getIdentifier(), errorMsg );
-            return success;
-        }
+//        }
+//        catch ( Exception e )
+//        {
+//            String errorMsg = String.format( "Error in %s plugin handling. Message: %s", this.getClass().toString(), e.getMessage() );
+//            log.error( String.format( "setting status to FAILURE for identifier: %s with message: '%s'", datadockJob.getIdentifier(), errorMsg ), e);
+//            harvester.setStatusFailure( datadockJob.getIdentifier(), errorMsg );
+//            return success;
+//        }
     }
 }
