@@ -228,7 +228,7 @@
   </target>
 
 
-  <target name="coverage-report-html" depends="coverage-test">
+  <target name="coverage-report-html" depends="clean, coverage-test">
     <antcall target="_coverage-report-html" />
   </target>
 
