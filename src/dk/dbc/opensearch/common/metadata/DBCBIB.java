@@ -34,7 +34,7 @@ public enum DBCBIB implements IPredicate
     HAS_MANIFESTATION( "hasManifestation" ),
 
     IS_OWNED_BY( "isOwnedBy" ),
-    HAS_THEME( "hasTheme" ),
+
     IS_PART_OF_THEME( "isPartOfTheme" ),
 
     IS_AFFILIATED_WITH( "isAffiliatedWith" );
