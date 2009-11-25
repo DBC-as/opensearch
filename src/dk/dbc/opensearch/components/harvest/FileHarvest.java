@@ -40,10 +40,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashSet;
 import java.util.Vector;
 import java.util.ArrayList;
 
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -300,11 +300,11 @@ public class FileHarvest implements IHarvest
      * @return A vector of Datadockjobs containing the necessary information to process the jobs.
      */
     @Override
-    public ArrayList<IJob> getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
+    public List<IJob> getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
     {
         max = maxAmount;
-        ArrayList<IJob> jobs = new ArrayList<IJob>();
-        ArrayList<File> newJobs = new ArrayList<File>();
+        List<IJob> jobs = new ArrayList<IJob>();
+        List<File> newJobs = new ArrayList<File>();
         try
         {
             newJobs = getNewJobs();

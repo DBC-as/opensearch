@@ -26,16 +26,15 @@
 package dk.dbc.opensearch.components.harvest;
 
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
-//import dk.dbc.opensearch.common.db.OracleDBConnection;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import java.sql.SQLException;
 
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
+import java.util.List;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
@@ -182,7 +181,7 @@ public class HarvestFunc
     {
         byte[] data = null;
 
-        ArrayList<IJob> jobL = esh.getJobs( 2 );
+        List<IJob> jobL = esh.getJobs( 2 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
         Iterator iter = jobL.iterator();
         System.out.println( "got jobs:" );

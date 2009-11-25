@@ -41,6 +41,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -128,7 +129,7 @@ public class ESHarvest implements IHarvest
     /**
      *  Retrieve a list of jobs from the ESHarvester.
      */
-    public ArrayList< IJob > getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
+    public List< IJob > getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
         log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
 
@@ -146,7 +147,7 @@ public class ESHarvest implements IHarvest
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
-        ArrayList< IJob > theJobList = new ArrayList< IJob >();
+        List< IJob > theJobList = new ArrayList< IJob >();
         try
         {
             Statement stmt = conn.createStatement();

@@ -36,8 +36,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 
+import java.util.List;
 import javax.xml.stream.*;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -297,11 +297,11 @@ public class FileHarvestTest
 
         //System.out.println( String.format( "size of file1: %s", file1.length() )  );
 
-        ArrayList<IJob> result1 = fileHarvest.getJobs( 1 );
+        List<IJob> result1 = fileHarvest.getJobs( 1 );
         //System.out.println( String.format( "size of result1: %s ", result1.size() ) );
         assertTrue( result1.size() == 1 );
 
-        ArrayList<IJob> result2 = fileHarvest.getJobs( 1 );
+        List<IJob> result2 = fileHarvest.getJobs( 1 );
         //System.out.println( String.format( "size of result2: %s ", result2.size() ) );
         assertTrue( result2.size() == 0 );
 
@@ -316,9 +316,9 @@ public class FileHarvestTest
         writer.writeEndDocument();
         //System.out.println( String.format( "size of file2: %s", file2.length() )  );
 
-        ArrayList<IJob> result3 = fileHarvest.getJobs( 2 );
+        List<IJob> result3 = fileHarvest.getJobs( 2 );
         assertTrue( result3.size() == 1 );
-        ArrayList<IJob> result4 = fileHarvest.getJobs( 2 );
+        List<IJob> result4 = fileHarvest.getJobs( 2 );
         //System.out.println( result4.size() );
         assertTrue( result4.size() == 0 );
 
@@ -537,7 +537,7 @@ public class FileHarvestTest
         fileHarvest = new FileHarvest();
         fileHarvest.start();
         //System.out.println( "calling getjobs 1" );
-        ArrayList<IJob> result1 = fileHarvest.getJobs( 2 );
+        List<IJob> result1 = fileHarvest.getJobs( 2 );
         assertTrue( result1.size() == 2 );
         //System.out.println( "calling getjobs 2" );
         result1 = fileHarvest.getJobs( 30 );
@@ -613,7 +613,7 @@ public class FileHarvestTest
         fileHarvest = new FileHarvest();
         fileHarvest.start();
 
-        ArrayList<IJob> result1 = fileHarvest.getJobs( 30 );
+        List<IJob> result1 = fileHarvest.getJobs( 30 );
         assertTrue( result1.size() == 0 );
         assertTrue( format1.listFiles().length == 1 );
 
@@ -709,7 +709,7 @@ public class FileHarvestTest
         fileHarvest = new FileHarvest();
         fileHarvest.start();
 
-        ArrayList<IJob> result1 = fileHarvest.getJobs( 100 );
+        List<IJob> result1 = fileHarvest.getJobs( 100 );
 
         fileHarvest.shutdown();
 
@@ -807,7 +807,7 @@ public class FileHarvestTest
         fileHarvest = new FileHarvest();
         fileHarvest.start();
 
-        ArrayList<IJob> result1 = fileHarvest.getJobs( 30 );
+        List<IJob> result1 = fileHarvest.getJobs( 30 );
 
         fileHarvest.shutdown();
 
