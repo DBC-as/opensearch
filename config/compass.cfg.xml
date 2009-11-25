@@ -24,6 +24,18 @@
                   type="dk.dbc.opensearch.common.compass.LowercaseXmlConverter">
        </converter>
      </converters>
+
+     <searchEngine>  
+         <analyzer name="deault" type="Standard">
+         <stopWords>
+           <stopWord value="no" />
+         </stopWords>
+       </analyzer>
+            
+         <!-- <optimizer schedule="false" />      -->
+     
+     </searchEngine>
+     
      
      <settings> 
        <!-- status på forskellige bygge ting. 
@@ -53,6 +65,7 @@
        <setting name="compass.xsem.namespace.dkdcplus.uri" value="http://biblstandard.dk/abm/namespace/dkdcplus/" />
        <setting name="compass.xsem.namespace.xsi.uri" value="http://www.w3.org/2001/XMLSchema-instance" />
      </settings>
+
 
           
    </compass>
