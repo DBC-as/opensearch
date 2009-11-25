@@ -135,7 +135,6 @@ public class DatadockThreadTest
 
         @Mock
         public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{
-            System.out.println( String.format( "ISSET = %s", isset ) );
             if( isset )
             {
                 throw new HarvesterInvalidStatusChangeException( "already set" );
