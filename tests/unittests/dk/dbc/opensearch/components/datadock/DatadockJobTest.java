@@ -22,7 +22,7 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.xml.XMLUtils;
-import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.common.types.IIdentifier;
 
 /** \brief UnitTest for DatadockJob **/
 

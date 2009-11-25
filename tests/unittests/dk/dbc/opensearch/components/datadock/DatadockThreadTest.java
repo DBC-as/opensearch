@@ -39,7 +39,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
-import dk.dbc.opensearch.components.harvest.IJob;
+import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
 import dk.dbc.opensearch.plugins.Store;
 import dk.dbc.opensearch.plugins.OwnerRelation;
@@ -48,7 +48,7 @@ import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
-import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.common.types.IIdentifier;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

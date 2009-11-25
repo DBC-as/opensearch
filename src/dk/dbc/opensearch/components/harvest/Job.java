@@ -25,6 +25,8 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.IIdentifier;
 import org.w3c.dom.Document;
 
 

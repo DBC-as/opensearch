@@ -41,7 +41,8 @@ import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeExceptio
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
-import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -109,23 +110,24 @@ public class DatadockThread implements Callable<Boolean>
      *            information about the tasks that should be solved by the
      *            pluginframework
      * @throws ConfigurationException if no ObjectRepository could be reached
+     * @throws 
+     *
      * @throws ParserConfigurationException
      * @throws PluginResolverException
-     * @throws NullPointerException
      * @throws SAXException
      */
-    public DatadockThread( DatadockJob datadockJob, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    public DatadockThread( IJob datadockJob, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
         
-        this.datadockJob = datadockJob;
+        this.datadockJob = (DatadockJob)datadockJob;
         this.harvester = harvester;
         this.objectRepository = objectRepository;
         this.pluginResolver = pluginResolver;
         
         // Each pair identifies a plugin by p1:submitter and p2:format
-        submitter = datadockJob.getSubmitter();
-        format = datadockJob.getFormat();
+        submitter = this.datadockJob.getSubmitter();
+        format = this.datadockJob.getFormat();
         
         log.trace( String.format( "submitter: %s, format: %s", submitter, format ) );
         log.trace( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
@@ -156,35 +158,19 @@ public class DatadockThread implements Callable<Boolean>
      * CargoContainer. \see dk.dbc.opensearch.tools.Estimation
      * 
      * @returns true if job is performed
-     * @throws PluginResolverException
-     *             if the PluginResolver encountered problems, see
-     *             dk.dbc.opensearch
-     *             .common.pluginframework.PluginResolverException and
-     *             dk.dbc.opensearch.common.pluginframework.PluginResolver
-     * @throws FileNotFoundException
-     *             if the PluginResolver.getPlugin cant find the file its
-     *             searcing for
-     * @throws IOException
-     * @throws ParserConfigurationException
-     *             if the PluginResolver or CargoContainer has troubles with the
-     *             DocumentBuilder and DocumentBuilderFactory
      * @throws InstantationException
      *             if the PluginResolver cant instantiate a plugin
      * @throws IllegalAccessException
      *             if the PluginResolver cant access the desired plugin
      * @throws ClassNotFoundException
      *             if the PluginResolver cant find the desired plugin class
-     * @throws SAXException
-     *             when the a harvest or an annotate plugin have problems with
-     *             the data
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IllegalStateException
-     * @throws ServiceException
-     * @throws IOException
-     * @throws ParseException
+     * @throws HarvesterIOException
+     * @throws HarvesterUnknownIdentifierException
+     * @throws PluginException
+     * @throws SQLException
      */
-    public Boolean call() throws PluginResolverException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, SAXException, IllegalStateException, ServiceException, IOException, ParseException, XPathExpressionException, PluginException, SQLException, TransformerException, TransformerConfigurationException, ConfigurationException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    public Boolean call() throws InstantiationException, IllegalAccessException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, PluginException, SQLException
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'

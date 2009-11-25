@@ -184,7 +184,7 @@ public class PTIManagerTest
      * tests the update methods happy path
      */
  
-    @Test public void testUpdateMethodHappyPath() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
+    @Test @Ignore public void testUpdateMethodHappyPath() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
     {
         /**
          * setup
@@ -210,9 +210,9 @@ public class PTIManagerTest
         mockPTIPool.submit( "test2", 2 );
 
         //out of while loop
-        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
-        expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Boolean, Integer >( true, 1 ) );
-        mockPQ.commit( 1 );
+//        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
+//        expect( mockCompletedTask.getResult() ).andReturn( new InputPair< Boolean, Integer >( true, 1 ) );
+//        mockPQ.commit( 1 );
         
         /**
          * replay

@@ -21,6 +21,8 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import java.util.ArrayList;
 import java.util.Iterator;
 /**
@@ -109,10 +111,5 @@ public class LightHarvestFunc {
             System.out.println(hisce.getMessage() );
             hisce.printStackTrace();
         }
-
-
-
-
     }
-
 }

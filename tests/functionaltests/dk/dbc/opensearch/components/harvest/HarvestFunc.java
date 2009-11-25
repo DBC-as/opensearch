@@ -29,19 +29,18 @@ package dk.dbc.opensearch.components.harvest;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import dk.dbc.opensearch.common.db.IDBConnection;
 //import dk.dbc.opensearch.common.db.OracleDBConnection;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
-import dk.dbc.opensearch.components.harvest.ESIdentifier;
 
 
 import oracle.jdbc.pool.OracleDataSource;
@@ -52,9 +51,7 @@ import java.util.Properties;
  */
 public class HarvestFunc
 {
-
-
-    static Logger log = Logger.getLogger( HarvestFunc.class );
+    private static Logger log = Logger.getLogger( HarvestFunc.class );
 
     static ESHarvest esh;
 

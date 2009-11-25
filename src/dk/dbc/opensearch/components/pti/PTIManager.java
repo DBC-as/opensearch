@@ -27,13 +27,14 @@ package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
@@ -144,13 +145,13 @@ public class PTIManager
     {
 
         // Checking jobs and commiting jobs
-        Vector< CompletedTask<InputPair< Boolean, Integer > > > finishedJobs = pool.checkJobs();
+        //Vector< CompletedTask<InputPair< Boolean, Integer > > > finishedJobs =
+        Map< Integer, Boolean > finishedJobs = pool.checkJobs();
         // log.debug( "size of finishedJobs: " + finishedJobs.size() );
-        for ( CompletedTask<InputPair< Boolean, Integer > > task : finishedJobs)
+        for ( Entry< Integer, Boolean> task : finishedJobs.entrySet() )
         {            
-            InputPair< Boolean, Integer > pair = task.getResult();
-            Boolean result = pair.getFirst();
-            int queueID = pair.getSecond();
+            Boolean result = task.getValue();
+            int queueID = task.getKey().intValue();
             if ( result != null ) // success
             {
                 log.debug( String.format( "Commiting queueID: '%s', result: '%s' to processqueue", queueID, result ) );

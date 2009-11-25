@@ -21,7 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.harvest;
 
 
-import dk.dbc.opensearch.components.datadock.DatadockJob;
+import dk.dbc.opensearch.common.types.IJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -66,5 +66,5 @@ public interface IHarvester
      * @throws FileNotFoundException 
      * @throws ConfigurationException 
      */
-    Vector< DatadockJob > getJobs() throws FileNotFoundException, IOException, ConfigurationException;
+    Vector< IJob > getJobs() throws FileNotFoundException, IOException, ConfigurationException;
 }

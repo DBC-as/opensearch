@@ -26,16 +26,17 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.types.CompletedTask;
+import dk.dbc.opensearch.components.harvest.HarvesterIOException;
+import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
+import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
@@ -50,6 +51,12 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -60,14 +67,11 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
  */
 public class DatadockPool
 {
-    static Logger log = Logger.getLogger( DatadockPool.class );
+    private static Logger log = Logger.getLogger( DatadockPool.class );
     
-    
-    private Vector< FutureTask > jobs;
+    private Map< IIdentifier, FutureTask< Boolean > > jobs;
     private final ThreadPoolExecutor threadpool;
     private IProcessqueue processqueue;
-    private int shutDownPollTime;
-    private int i = 0;
     private PluginResolver pluginResolver;
     private IObjectRepository objectRepository;
     private IHarvest harvester;
@@ -77,7 +81,7 @@ public class DatadockPool
      *
      * This class Handles RejectedExecutions by implementing
      * RejectedExecutionHandler, which is thrown if the
-     * threadpoolqueue is full.  . When one is encountered The Handler
+     * threadpoolqueue is full. When one is encountered The Handler
      * waits until it can put the element on queue, and only throws an
      * exception if the queue is shutdown
      */
@@ -97,9 +101,10 @@ public class DatadockPool
 			}
             catch (InterruptedException e)
             {
-				e.printStackTrace();
-				throw new RejectedExecutionException();
-			};
+                String error = String.format( "Caught interruption from the executor: %s", e.getMessage() );
+                log.error( error, e );
+                throw new RejectedExecutionException(error, e );
+			}
 		}    	
     }
 
@@ -120,8 +125,7 @@ public class DatadockPool
         this.objectRepository = fedoraObjectRepository;
         this.pluginResolver = pluginResolver;
 
-        jobs = new Vector< FutureTask >();
-        shutDownPollTime = DatadockConfig.getShutdownPollTime();
+        jobs = new HashMap< IIdentifier, FutureTask< Boolean > >();
         
         threadpool.setRejectedExecutionHandler( new BlockingRejectedExecutionHandler() );
     }
@@ -135,49 +139,42 @@ public class DatadockPool
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      * @throws ParserConfigurationException 
      * @throws PluginResolverException 
-     * @throws NullPointerException 
      * @throws SAXException 
      */
-    public void submit( DatadockJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException
+    public void submit( IJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
     {
-        log.debug( String.format( "submitter='%s', format='%s' )", datadockJob.getSubmitter(), datadockJob.getFormat() ) );
-        log.debug( String.format( "counter = %s", ++i  ) );
+        log.debug( String.format( "Submitting job '%s'", datadockJob.getIdentifier() ) );
 
-        FutureTask future = getTask( datadockJob );
+        FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( datadockJob, processqueue, objectRepository, harvester, pluginResolver ) );
         
         if ( future == null )
         {
         	log.error( "DatadockPool submit 'future' is null" );
-        	throw new NullPointerException( "DatadockPool submit 'future' is null" );
+        	throw new IllegalStateException( "DatadockPool submit 'future' is null" );
         }
         
         threadpool.submit( future );
-        jobs.add( future );
-    }
-
-    
-    public FutureTask getTask( DatadockJob datadockJob ) throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
-    {
-    	return new FutureTask( new DatadockThread( datadockJob, processqueue, objectRepository, harvester, pluginResolver ) );
+        jobs.put( datadockJob.getIdentifier(), future );
     }
 
 
     /**
-     * Checks the jobs submitted for execution, and returns a vector containing 
-     * the jobs that are not running anymore
+     * Checks the jobs submitted for execution, and returns a map containing
+     * identifiers for the jobs that are not running anymore
      *
      * if a Job throws an exception it is written to the log and the
      * datadock continues.
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Vector< CompletedTask > checkJobs() throws InterruptedException
+    public Set< IIdentifier > checkJobs() throws InterruptedException
     {
         log.debug( "DatadockPool method checkJobs called" );
     
-        Vector< CompletedTask > finishedJobs = new Vector< CompletedTask >();
-        for( FutureTask job : jobs )
+        Set< IIdentifier > finishedJobs = new HashSet< IIdentifier >();
+        for( IIdentifier id : jobs.keySet() )
         {
+            FutureTask<Boolean> job = jobs.get( id );
             if( job.isDone() )
             {
                 Boolean success = null;
@@ -185,30 +182,51 @@ public class DatadockPool
                 try
                 {
                     log.debug( "DatadockPool checking job" );                    
-                    success = (Boolean)job.get();
+                    success = job.get();
                 }
                 catch( ExecutionException ee )
                 {                    
                     // getting exception from thread
                     Throwable cause = ee.getCause();
-                    log.error( String.format( "DatadockPool checkJobs %s", ee.getMessage() ) );
-                    log.error( String.format( "Exception Caught: '%s' Message: '%s'", cause.getClass() , cause.getMessage() ) );
-                    StackTraceElement[] trace = cause.getStackTrace();
-                    for( int j = 0; j < trace.length; j++ )
+                    log.error( String.format( "Exception Caught from thread: '%s' Message: '%s'", cause.getClass() , cause.getMessage() ), cause );
+
+                    log.info( String.format( "Setting status to FAILURE for identifier: %s with message: '%s'", id, cause.getMessage() ) );
+                    try
                     {
-                    	log.error( "DatadockPool StackTrace element " + j + " " + trace[j].toString() );
+                        harvester.setStatusFailure( id, cause.getMessage() );
                     }
+                    catch( HarvesterUnknownIdentifierException ex )
+                    {
+                        String error = String.format( "Failed to set failure status for identifier: %s . Message: %s", id, ex.getMessage() );
+                        log.error( error, ex );
+                    }
+                    catch( HarvesterInvalidStatusChangeException ex )
+                    {
+                        String error = String.format( "Failed to set failure status for identifier: %s . Message: %s", id, ex.getMessage() );
+                        log.error( error, ex );
+                    }
+                    catch( HarvesterIOException ex )
+                    {
+                        String error = String.format( "Failed to set failure status for identifier: %s . Message: %s", id, ex.getMessage() );
+                        log.error( error, ex );
+                    }
+
+//                    StackTraceElement[] trace = cause.getStackTrace();
+//                    for( int j = 0; j < trace.length; j++ )
+//                    {
+//                    	log.error( "DatadockPool StackTrace element " + j + " " + trace[j].toString() );
+//                    }
                 }
                 
                 log.debug( "DatadockPool adding to finished jobs" );
-                finishedJobs.add( new CompletedTask( job, success ) );
+                finishedJobs.add( id );
             }
         }
         
-        for( CompletedTask finishedJob : finishedJobs )
+        for( IIdentifier finishedJobId : finishedJobs )
         {
-            log.debug( String.format( "Removing Job Vector< FutureTask > jobs size: %s", jobs.size() ) );
-            jobs.remove( finishedJob.getFuture() );
+            log.debug( String.format( "Removing Job with id: %s. Remaining jobs: %s", finishedJobId, jobs.size() ) );
+            jobs.remove( finishedJobId );
         }
         
         return finishedJobs;

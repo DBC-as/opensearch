@@ -27,6 +27,8 @@
 package dk.dbc.opensearch.components.harvest ;
 
 
+import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 
 import java.io.ByteArrayInputStream;
@@ -206,7 +208,7 @@ public class ESHarvest implements IHarvest
 
                 if ( DocOK )
                 {
-                    Job theJob = new Job( id, doc );
+                    IJob theJob = new Job( id, doc );
                     theJobList.add( theJob );
                 }
                 else
@@ -1075,6 +1077,35 @@ public class ESHarvest implements IHarvest
             String errorMsg = new String( "Could not close the database connection" );
             log.fatal(  errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
+        }
+    }
+
+    private final class ESIdentifier implements IIdentifier
+    {
+
+        private int targetReference;
+        private int lbNr;
+
+        ESIdentifier( int targetRef, int lbNr )
+        {
+            targetReference = targetRef;
+            this.lbNr = lbNr;
+        }
+
+        int getTargetRef()
+        {
+            return targetReference;
+        }
+
+        int getLbNr()
+        {
+            return lbNr;
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.format( "[TargetRef=%s Lbnr=%s]", targetReference, lbNr );
         }
     }
 }

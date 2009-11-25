@@ -29,7 +29,8 @@ package dk.dbc.opensearch.components.datadock;
 
 import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
-import dk.dbc.opensearch.components.harvest.IIdentifier;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -39,7 +40,7 @@ import org.w3c.dom.NodeList;
  * The purpose of the datadockJob is to hold the information about a
  * job for the datadock.
  */
-public class DatadockJob
+public class DatadockJob implements IJob
 {
     private Logger log = Logger.getLogger( DatadockJob.class );
 
@@ -56,7 +57,6 @@ public class DatadockJob
      * @param identifier, the identifier of the data of the job
      * @param referenceData, the data concerning the job
      */
-
     public DatadockJob( IIdentifier identifier, Document referenceData )
     {
         this.identifier = identifier;
@@ -71,7 +71,7 @@ public class DatadockJob
      */
     public String getSubmitter()
     {
-        return submitter;
+        return this.submitter;
     }
 
 
@@ -81,7 +81,7 @@ public class DatadockJob
      */
     public String getFormat()
     {
-        return format;
+        return this.format;
     }
 
 
@@ -89,6 +89,7 @@ public class DatadockJob
      * Gets the identifier from the job
      * @returns the identifier of the job
      */
+    @Override
     public IIdentifier getIdentifier()
     {
         return identifier;
@@ -99,6 +100,7 @@ public class DatadockJob
      * using JavaScript for business logic, this is to be used instead of the
      * field accessors
      */
+    @Override
     public Document getReferenceData()
     {
         return referenceData;

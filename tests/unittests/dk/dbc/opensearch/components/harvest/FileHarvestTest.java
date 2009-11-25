@@ -27,6 +27,7 @@
 package dk.dbc.opensearch.components.harvest;
 
 
+import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.xml.XMLUtils;

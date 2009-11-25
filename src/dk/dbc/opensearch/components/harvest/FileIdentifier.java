@@ -26,13 +26,14 @@
 package dk.dbc.opensearch.components.harvest;
 
 
+import dk.dbc.opensearch.common.types.IIdentifier;
 import java.net.URI;
 
 
 /**
  * Impementation of the IIdentifer interface for identification of Files
  */
-public class FileIdentifier implements IIdentifier
+final class FileIdentifier implements IIdentifier
 {
     private URI uri;
 

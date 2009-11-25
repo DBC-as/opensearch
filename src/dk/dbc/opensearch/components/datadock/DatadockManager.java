@@ -26,14 +26,12 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-
-import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.components.harvest.IJob;
+import dk.dbc.opensearch.common.types.IJob;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,7 +46,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 
@@ -118,6 +115,13 @@ public class DatadockManager
             registeredJobs = (ArrayList<IJob>)harvester.getJobs( 100 );
         }
 
+        if( null == registeredJobs )
+        {
+            String error = "Internal job list was null, much to my surprise. Cannot continue";
+            log.error( error );
+            throw new IllegalStateException( error );
+        }
+        
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
         int jobs_submitted = 0;
 
@@ -139,7 +143,7 @@ public class DatadockManager
         }
 
         //checking jobs
-        Vector<CompletedTask> finishedJobs = pool.checkJobs();
+        pool.checkJobs();
 
         return jobs_submitted;
     }
@@ -171,31 +175,13 @@ public class DatadockManager
     private DatadockJob buildDatadockJob( IJob theJob )
     {
         Document referenceData = theJob.getReferenceData();
-        //get submitter and format
 
-        Element root = null;
-        Element info = null;
-
-        root = referenceData.getDocumentElement();
-
-        if( root == null )
+        if( null == referenceData.getDocumentElement() )
         {
             log.error( String.format( "Could not retrieve data from referencedata" ) );
             throw new IllegalArgumentException( "Could not retrieve data from referencedata" );
         }
 
-      //   info = (Element)root.getElementsByTagName( "info").item( 0 );
-
-//         if( info == null )
-//         {
-//             log.error( String.format( "Could not retrieve info element from referencedata" ) );
-//             throw new IllegalArgumentException( "Could not retrieve info element from referencedata" );
-//         }
-
-//         String submitter = info.getAttribute( "submitter" );
-//         String format = info.getAttribute( "format" );
-
-        DatadockJob ddjob = new DatadockJob( theJob.getIdentifier(), referenceData );
-        return ddjob;
+        return new DatadockJob( theJob.getIdentifier(), referenceData );
     }
 }

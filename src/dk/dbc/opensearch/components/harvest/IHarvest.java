@@ -20,6 +20,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.IIdentifier;
 import java.util.List;
 
 /**

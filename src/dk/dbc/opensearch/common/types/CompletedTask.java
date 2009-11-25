@@ -1,11 +1,4 @@
-/**
- * \file CompletedTask.java
- * \brief The CompletedTask class
- * \package types;
- */
-
 /*
-   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -25,6 +18,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 package dk.dbc.opensearch.common.types;
 
+/**
+ * \file
+ * \brief The CompletedTask class
+ * \package types;
+ */
+
 
 import java.util.concurrent.FutureTask;
 
@@ -36,7 +35,7 @@ import java.util.concurrent.FutureTask;
  */
 public class CompletedTask<V> 
 { 
-    private FutureTask future;
+    private FutureTask<V> future;
     private V result;
 
     
@@ -46,7 +45,7 @@ public class CompletedTask<V>
      * @param future the FutureTask of the completed task
      * @param result the result of the completed task
      */
-    public CompletedTask( FutureTask future, V result) 
+    public CompletedTask( FutureTask<V> future, V result)
     {
         this.future = future;
         this.result = result;
@@ -58,7 +57,7 @@ public class CompletedTask<V>
      * 
      * @return The future
      */
-    public FutureTask getFuture()
+    public FutureTask<V> getFuture()
     {
         return future;
     }
@@ -80,7 +79,7 @@ public class CompletedTask<V>
      * 
      * @param The future
      */    
-    public void setFuture( FutureTask future )
+    public void setFuture( FutureTask<V> future )
     {
             this.future = future;
     }

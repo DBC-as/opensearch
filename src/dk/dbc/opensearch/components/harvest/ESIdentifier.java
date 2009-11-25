@@ -23,34 +23,4 @@ package dk.dbc.opensearch.components.harvest;
 /**
  *
  */
-public class ESIdentifier implements IIdentifier
-{
-
-    private int targetReference;
-    private int lbNr;
-    /**
-     *
-     */
-    ESIdentifier( int targetRef, int lbNr )
-    {
-        targetReference = targetRef;
-        this.lbNr = lbNr;
-    }
-
-    int getTargetRef()
-    {
-        return targetReference;
-    }
-
-    int getLbNr()
-    {
-        return lbNr;
-    }
-    
-    @Override
-	public String toString()
-    {
-    	return String.format("[TargetRef=%s Lbnr=%s]", targetReference, lbNr);
-    }
-
-}
+//moved to ESHarvest as a private class
