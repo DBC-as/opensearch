@@ -29,7 +29,6 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
@@ -167,7 +166,7 @@ public class DatadockPool
      *
      * @throws InterruptedException if the job.get() call is interrupted (by kill or otherwise).
      */
-    public Set< IIdentifier > checkJobs() throws InterruptedException
+    public void checkJobs() throws InterruptedException
     {
         log.debug( "DatadockPool method checkJobs called" );
     
@@ -228,8 +227,6 @@ public class DatadockPool
             log.debug( String.format( "Removing Job with id: %s. Remaining jobs: %s", finishedJobId, jobs.size() ) );
             jobs.remove( finishedJobId );
         }
-        
-        return finishedJobs;
     }
 
     

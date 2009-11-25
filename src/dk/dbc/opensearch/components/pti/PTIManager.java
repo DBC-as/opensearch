@@ -133,6 +133,8 @@ public class PTIManager
         }
         return newJobs.size();
     }
+
+    
     /**
      * checks jobs submitted to the queue, and commits to processqueue
      * if succesfull, otherwise the job is committed to the notindexed

@@ -43,18 +43,12 @@ import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -170,6 +164,7 @@ public class DatadockThread implements Callable<Boolean>
      * @throws PluginException
      * @throws SQLException
      */
+    @Override
     public Boolean call() throws InstantiationException, IllegalAccessException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, PluginException, SQLException
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.

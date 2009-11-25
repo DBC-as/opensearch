@@ -42,10 +42,8 @@ import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 
 /**

@@ -27,7 +27,6 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -36,8 +35,8 @@ import dk.dbc.opensearch.common.types.IJob;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Vector;
 
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
@@ -60,7 +59,7 @@ public class DatadockManager
     private DatadockPool pool= null;
     private IHarvest harvester = null;
     XMLConfiguration config = null;
-    ArrayList<IJob> registeredJobs = null;
+    List<IJob> registeredJobs = null;
 
 
     /**
@@ -109,10 +108,10 @@ public class DatadockManager
 
         // Check if there are any registered jobs ready for docking
         // if not... new jobs are requested from the harvester
-        if( registeredJobs.isEmpty() )
+        if( null != registeredJobs && registeredJobs.isEmpty() )
         {
             log.trace( "no more jobs. requesting new jobs from the harvester" );
-            registeredJobs = (ArrayList<IJob>)harvester.getJobs( 100 );
+            registeredJobs = this.harvester.getJobs( 100 );
         }
 
         if( null == registeredJobs )
@@ -127,7 +126,6 @@ public class DatadockManager
 
         while ( registeredJobs.size() > 0 )
         {
-            // System.out.println( String.format( "registeredJobs size: %s", registeredJobs.size() ) );
             log.trace( String.format( "processing job: %s", registeredJobs.get( 0 ).toString() ) );
 
             //build the DatadockJob
@@ -141,8 +139,7 @@ public class DatadockManager
             
             log.debug( String.format( "submitted job: '%s'", job ) );
         }
-
-        //checking jobs
+        //checking for finished jobs in the pool
         pool.checkJobs();
 
         return jobs_submitted;
