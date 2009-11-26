@@ -142,16 +142,21 @@ public class DatadockPool
      */
     public void submit( IJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
     {
+        if( null == datadockJob )
+        {
+            String error = "The submitted job was null, aborting task";
+            log.error( error );
+            throw new IllegalArgumentException( error );
+        }
         log.debug( String.format( "Submitting job '%s'", datadockJob.getIdentifier() ) );
 
         FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( datadockJob, processqueue, objectRepository, harvester, pluginResolver ) );
         
-        if ( future == null )
+        if ( future == null )/** \todo: I don't see this happening; even if DatadockThread returns null, FutureTask will still be non-null */
         {
         	log.error( "DatadockPool submit 'future' is null" );
         	throw new IllegalStateException( "DatadockPool submit 'future' is null" );
         }
-        
         threadpool.submit( future );
         jobs.put( datadockJob.getIdentifier(), future );
     }
@@ -170,10 +175,13 @@ public class DatadockPool
     {
         log.debug( "DatadockPool method checkJobs called" );
     
+        System.out.println( String.format( "job size = %s", jobs.size() ) );
+
         Set< IIdentifier > finishedJobs = new HashSet< IIdentifier >();
         for( IIdentifier id : jobs.keySet() )
         {
             FutureTask<Boolean> job = jobs.get( id );
+            System.out.println( String.format( "job is done: %s", job.isDone() ) );
             if( job.isDone() )
             {
                 Boolean success = null;
