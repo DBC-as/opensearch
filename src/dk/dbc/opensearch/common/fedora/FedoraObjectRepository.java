@@ -582,22 +582,222 @@ public class FedoraObjectRepository implements IObjectRepository
         List< String > pids = new ArrayList< String >( ofLength );
         for( int j = 0; j < ofLength; j++ )
         {
-            String pidValue = objectFields[j].getPid();
-            if ( pidValue.contains( namespace ) )
+            if ( addPidValue( resultSearchFields, objectFields, namespace ) )
             {
-                if ( cutPid ==  null )
+                String pidValue = objectFields[j].getPid();
+                if ( pidValue.contains( namespace ) )
                 {
-                    pids.add( pidValue );
-                }
-                else if ( ! pidValue.equals( cutPid ) )
-                {
-                    pids.add( pidValue );
-                    return pids;
+                    if ( cutPid == null )
+                    {
+                        pids.add( pidValue );
+                    }
+                    else if ( ! pidValue.equals( cutPid ) )
+                    {
+                        pids.add( pidValue );
+                        return pids;
+                    }
                 }
             }
         }
 
         return pids;
+    }
+
+
+    private boolean addPidValue( List< InputPair< TargetFields, String > > resultFields, ObjectFields[] objectFields, String namespace )
+    {
+        boolean ret = false;
+        log.debug( String.format( "Matching size: '%s'", resultFields.size() ) );
+        for ( InputPair< TargetFields, String > pair : resultFields )
+        {
+            FedoraObjectFields target = (FedoraObjectFields)pair.getFirst();
+            log.debug( String.format( "Matching resultField: '%s'", target ) );
+            String value = (String)pair.getSecond();
+            for ( ObjectFields of : objectFields )
+            {
+                String pid = of.getPid().toLowerCase();
+                log.debug( String.format( "Matching pid: '%s'", pid ) );
+                if ( pid.contains( namespace ) )
+                {
+                switch ( target )
+                {
+                    case PID:
+                        //String pid = of.getPid().toLowerCase();
+                        log.debug( String.format( "PID Matching '%s' and '%s'", pid, value ) );
+                        if ( pid.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case STATE:
+                        String state = of.getState().toLowerCase();
+                        log.debug( String.format( "STATE Matching '%s' and '%s'", state, value ) );
+                        if ( state.equals( value) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case OWNERID:
+                        String ownerId = of.getOwnerId().toLowerCase();
+                        log.debug( String.format( "OWNERID Matching '%s' and '%s'", ownerId, value ) );
+                        if ( ownerId.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case CDATE:
+                        String cDate = of.getCDate().toLowerCase();
+                        log.debug( String.format( "CDATE Matching '%s' and '%s'", cDate, value ) );
+                        if ( cDate.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case MDATE:
+                        String mDate = of.getMDate().toLowerCase();
+                        log.debug( String.format( "MDATE Matching '%s' and '%s'", mDate, value ) );
+                        if ( mDate.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case TITLE:
+                        String title = of.getTitle()[0].toLowerCase();
+                        log.debug( String.format( "TITLE Matching '%s' and '%s'", title, value ) );
+                        if ( title.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case CREATOR:
+                        String creator = of.getCreator()[0].toLowerCase();
+                        log.debug( String.format( "Matching '%s' and '%s'", creator, value ) );
+                        if ( creator.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case SUBJECT:
+                        String subject = of.getSubject()[0].toLowerCase();
+                        log.debug( String.format( "SUBJECT Matching '%s' and '%s'", subject, value ) );
+                        if ( subject.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case DESCRIPTION:
+                        String description = of.getDescription()[0].toLowerCase();
+                        log.debug( String.format( "DESCRIPTION Matching '%s' and '%s'", description, value ) );
+                        if ( description.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case PUBLISHER:
+                        String publisher = of.getPublisher()[0].toLowerCase();
+                        log.debug( String.format( "PUBLISHER Matching '%s' and '%s'", publisher, value ) );
+                        if ( publisher.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case CONTRIBUTOR:
+                        String contributor = of.getContributor()[0].toLowerCase();
+                        log.debug( String.format( "CONTRIBUTOR Matching '%s' and '%s'", contributor, value ) );
+                        if ( contributor.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case DATE:
+                        String date = of.getDate()[0].toLowerCase();
+                        log.debug( String.format( "DATE Matching '%s' and '%s'", date, value ) );
+                        if ( date.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case TYPE:
+                        String type = of.getType()[0].toLowerCase();
+                        log.debug( String.format( "TYPE Matching '%s' and '%s'", type, value ) );
+                        if ( type.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case FORMAT:
+                        String format = of.getFormat()[0].toLowerCase();
+                        log.debug( String.format( "FORMAT Matching '%s' and '%s'", format, value ) );
+                        if ( format.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case IDENTIFIER:
+                        String identifier = of.getIdentifier()[0].toLowerCase();
+                        log.debug( String.format( "IDENTIFIER Matching '%s' and '%s'", identifier, value ) );
+                        if ( identifier.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case SOURCE:
+                        String source = of.getSource()[0].toLowerCase();
+                        log.debug( String.format( "SOURCE Matching '%s' and '%s'", source, value ) );
+                        if ( source.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case LANGUAGE:
+                        String language = of.getLanguage()[0].toLowerCase();
+                        log.debug( String.format( "LANGUAGE Matching '%s' and '%s'", language, value ) );
+                        if ( language.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case RELATION:
+                        String relation = of.getRelation()[0].toLowerCase();
+                        log.debug( String.format( "RELATION Matching '%s' and '%s'", relation, value ) );
+                        if ( relation.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case COVERAGE:
+                        String coverage = of.getCoverage()[0].toLowerCase();
+                        log.debug( String.format( "COVERAGE Matching '%s' and '%s'", coverage, value ) );
+                        if ( coverage.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case RIGHTS:
+                        String rights = of.getRights()[0].toLowerCase();
+                        log.debug( String.format( "RIGHTS Matching '%s' and '%s'", rights, value ) );
+                        if ( rights.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    case DCMDATE:
+                        String dcmDate = of.getDcmDate().toLowerCase();
+                        log.debug( String.format( "DCMDATE Matching '%s' and '%s'", dcmDate, value ) );
+                        if ( dcmDate.equals( value ) )
+                        {
+                            ret = true;
+                        }
+                        break;
+                    default:
+                        //throw new ObjectRepositoryException( "No match!" );
+                }
+                }
+            }
+        }
+
+        log.debug( String.format( "RET Matching returning: '%s'", ret ) );
+        return ret;
     }
     
 
