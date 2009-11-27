@@ -565,7 +565,7 @@ public class FedoraObjectRelations
         propertiesAndValues.add( new InputPair< TargetFields, String >( property_1, value_1 ) );
         propertiesAndValues.add( new InputPair< TargetFields, String >( property_2, value_2 ) );
 
-        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000 );        
+        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000, null );
         String retVal = null;
         
         for ( ObjectFields field : pids )
@@ -594,7 +594,7 @@ public class FedoraObjectRelations
         List< InputPair< TargetFields, String > > propertiesAndValues = new ArrayList< InputPair< TargetFields, String > >();
 
         propertiesAndValues.add( new InputPair< TargetFields, String >( property, value ) );
-        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000 );
+        ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000, null );
 
         String retval = null;
         if( pids != null )

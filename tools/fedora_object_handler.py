@@ -61,6 +61,7 @@ class FedoraObjectHandler( object ):
         opener = urllib2.build_opener( handler )
         urllib2.install_opener( opener )
 
+
     def retrieve( self ):
         """ Retrieves all pids in self.pidlist 
 
@@ -70,6 +71,7 @@ class FedoraObjectHandler( object ):
         datadict = dict()
         for pid in self.pidlist:
             datadict[ pid ] = self._get_xml( pid )
+
         return datadict
 
 
@@ -116,7 +118,7 @@ class FedoraObjectHandler( object ):
         """retrieves the foxml of an object designated by `pid`
         """
         del_url = "%s/objects/%s/objectXML?format=xml"%( self.fedora_url, pid )
-
+        print del_url
         req = urllib2.Request( del_url )
         
         try:

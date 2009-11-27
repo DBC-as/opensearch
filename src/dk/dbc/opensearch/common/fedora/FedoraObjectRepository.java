@@ -513,7 +513,7 @@ public class FedoraObjectRepository implements IObjectRepository
             i++;
         }
 
-        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, null );
 
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
@@ -541,7 +541,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         resultFields[ i++ ] = new String( "pid" ); // must be present!
-        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, null );
 
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
@@ -576,7 +576,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         resultFields[i++] = "pid"; // must be present!
-        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, null );
         
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
@@ -815,7 +815,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         resultFields[i++] = "pid"; // must be present!
-        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, null );
 
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
@@ -830,21 +830,36 @@ public class FedoraObjectRepository implements IObjectRepository
     
 
 
-    ObjectFields[] searchRepository( String[] resultFields, List< InputPair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults )
+    ObjectFields[] searchRepository( String[] resultFields, List< InputPair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults, String namespace )
     {
         // \Todo: check needed on the operator
         int size = propertiesAndVaulues.size();
         ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
-        Condition[] cond = new Condition[ size ];
 
-        
-        for( int i = 0; i < size; i++ )
+        Condition[] cond;
+        if ( namespace != null )
+        {
+            cond = new Condition[ size ];
+        }
+        else
+        {
+            cond = new Condition[ size ];
+        }
+
+        int i = 0;
+        for( ; i < size; i++ )
         {
             InputPair< TargetFields, String > pair = propertiesAndVaulues.get( i );
             TargetFields property = pair.getFirst();
             String value = pair.getSecond();
             cond[i] = new Condition( property.fieldname(), comp, value );
         }
+
+        /*if ( namespace != null )
+        {
+            ComparisonOperator eq = ComparisonOperator.fromString( "eq" );
+            cond[i++] = new Condition( "pid", comp, namespace + ":*" );
+        }*/
 
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = null;
