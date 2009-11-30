@@ -33,7 +33,7 @@ oracle_password:     damkjaer
 oracle_driver:   oracle.jdbc.driver.OracleDriver
 # As with postgresql_url, but for Oracle databases
 oracle_url:      dbc:oracle:thin:@tora1.dbc.dk:1521
-# The name of the databse to use
+# The name of the database to use
 oracle_database_name: ting
 # the name identifying the db pools cache
 oracle_cache_name: es_harvest_cache
