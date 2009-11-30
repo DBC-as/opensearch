@@ -134,7 +134,7 @@ public class PTIManager
         return newJobs.size();
     }
 
-    
+
     /**
      * checks jobs submitted to the queue, and commits to processqueue
      * if succesfull, otherwise the job is committed to the notindexed
@@ -154,7 +154,7 @@ public class PTIManager
         {            
             Boolean result = task.getValue();
             int queueID = task.getKey().intValue();
-            if ( result != null ) // success
+            if ( result != null && result ) // success --
             {
                 log.debug( String.format( "Commiting queueID: '%s', result: '%s' to processqueue", queueID, result ) );
                 processqueue.commit( queueID );
@@ -186,12 +186,15 @@ public class PTIManager
         }
         catch( Exception e)
         {
-            log.fatal( String.format( "Caught exception in PTIManager:\n %s \n'%s'",e.getClass(),  e.getMessage() ) );
-            StackTraceElement[] trace = e.getStackTrace();
-            for( int i = 0; i < trace.length; i++ )
-            {
-            	log.fatal( trace[i].toString() );
-            }
+            Throwable cause = e.getCause();
+            log.fatal( String.format( "Caught exception in PTIManager:\n %s \n'%s'",e.getClass(),  e.getMessage() ), e );
+            
+            
+            // StackTraceElement[] trace = e.getStackTrace();
+            // for( int i = 0; i < trace.length; i++ )
+            // {
+            // 	log.fatal( trace[i].toString() );
+            //}
         }
     }
 }

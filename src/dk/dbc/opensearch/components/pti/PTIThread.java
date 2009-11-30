@@ -188,6 +188,8 @@ public class PTIThread implements Callable< Boolean >
                 }
             }
         }
+        
+        //Boolean success = true;
 
         log.debug( "PTIThread done" );
 

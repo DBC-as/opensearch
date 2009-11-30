@@ -238,7 +238,7 @@ public class PTIMain
             catch(Exception e)
             {
                 log.error("Exception caught in mainloop: " + e);
-                log.error("  " + e.getMessage() );
+                log.error("  " + e.getMessage(), e );
             }
         }
         System.exit(0);

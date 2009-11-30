@@ -253,7 +253,9 @@ public class IndexerXSEM implements IIndexer
                     try
                     {
                         log.debug( String.format( "Saving Compass Resource '%s' with new fields to index", xmlObject.getAlias() ) );
+
                         session.save( xmlObject );
+                        
                     }
                     catch( CompassException ce ){
                         try
@@ -269,14 +271,14 @@ public class IndexerXSEM implements IIndexer
                             throw new PluginException( error, ce );
                         }
                     }
-
+                    
                     log.trace( "Committing index on transaction" );
                     trans.commit();
-
+                    log.debug( "Transaction was committed successfully" );
                     /** todo: does trans.wasCommitted have any side-effects? Such as waiting for the transaction to finish before returning?*/
                     log.debug( String.format( "Transaction wasCommitted() == %s", trans.wasCommitted() ) );
                     session.close();
-
+                    
                     log.info( String.format( "Document indexed and stored with Compass" ) );
                     success = true;
                 }
