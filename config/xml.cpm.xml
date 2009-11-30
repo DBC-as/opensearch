@@ -133,7 +133,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
+        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"
         />
@@ -428,7 +428,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
+        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"
         />
@@ -870,7 +870,7 @@
         />
     <xml-property
         name="facet.creator"
-        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
+        xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
         value-converter="lowercase"
         />
