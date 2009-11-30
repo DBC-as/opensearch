@@ -576,15 +576,17 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         resultFields[i++] = "pid"; // must be present!
-        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, null );
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, namespace );
         
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
         for( int j = 0; j < ofLength; j++ )
         {
+            String pidValue = objectFields[j].getPid();
+            log.debug( String.format( "Matching pid: %s", pidValue ) );
             if ( addPidValue( resultSearchFields, objectFields, namespace ) )
             {
-                String pidValue = objectFields[j].getPid();
+                log.debug( String.format( "Matching do addPidValue", "" ) );
                 if ( pidValue.contains( namespace ) )
                 {
                     if ( cutPid == null )
@@ -830,6 +832,18 @@ public class FedoraObjectRepository implements IObjectRepository
     
 
 
+    /***
+     * Searches repository with conditions specified by propertiesAndValues using comparisonOperator, e.g. 'has', 'eq'.
+     * The parameter 'namespace' if not null is used to limit the result set on pid containing namespace. Beware that
+     * the comparison operator in this case cannot be 'eq'.
+     *
+     * @param resultFields
+     * @param propertiesAndVaulues
+     * @param comparisonOperator In most case this should be 'has'. 'eq' cannot be used with namespace not null!!!
+     * @param maximumResults
+     * @param namespace Used to limit on pid containing namespace.
+     * @return
+     */
     ObjectFields[] searchRepository( String[] resultFields, List< InputPair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults, String namespace )
     {
         // \Todo: check needed on the operator
@@ -837,9 +851,10 @@ public class FedoraObjectRepository implements IObjectRepository
         ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
 
         Condition[] cond;
+        log.debug( String.format( "Matching namespace: %s", namespace ) );
         if ( namespace != null )
         {
-            cond = new Condition[ size ];
+            cond = new Condition[ size + 1 ];
         }
         else
         {
@@ -855,11 +870,20 @@ public class FedoraObjectRepository implements IObjectRepository
             cond[i] = new Condition( property.fieldname(), comp, value );
         }
 
-        /*if ( namespace != null )
+        if ( namespace != null )
         {
-            ComparisonOperator eq = ComparisonOperator.fromString( "eq" );
-            cond[i++] = new Condition( "pid", comp, namespace + ":*" );
-        }*/
+            if ( ! namespace.endsWith( ":" ) )
+            {
+                namespace = namespace + ":*";
+            }
+            else if ( namespace.endsWith( ":" ) )
+            {
+                namespace = namespace + "*";
+            }
+
+            //ComparisonOperator eq = ComparisonOperator.fromString( "eq" );
+            cond[i++] = new Condition( FedoraObjectFields.PID.fieldname(), comp, namespace );
+        }
 
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = null;
@@ -867,6 +891,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );
             fsr = this.fedoraHandle.findObjects( resultFields, maxResults, fsq );
+            log.debug( String.format( "Result length of resultlist: %s", fsr.getResultList().length ) );
         }
         catch( ConfigurationException ex )
         {
