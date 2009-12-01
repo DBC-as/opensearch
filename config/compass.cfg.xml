@@ -26,14 +26,9 @@
      </converters>
 
      <searchEngine>  
-         <analyzer name="default" type="Standard">
-         <stopWords>
-           <stopWord value="no" />
-         </stopWords>
-       </analyzer>
-            
-         <!-- <optimizer schedule="false" />      -->
-     
+         <analyzer name="default" type="Simple">
+         </analyzer>
+         <!-- <optimizer schedule="false" />      -->     
      </searchEngine>
      
      
