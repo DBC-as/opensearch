@@ -76,14 +76,15 @@ public class ForceFedoraPid implements IAnnotate
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext( nsc );
         XPathExpression xPathExpression;
-        
+
+        String xpathStr = "/ting:container/dkabm:record/ac:identifier";
         try
         {
-            xPathExpression = xpath.compile( "/ting:container/dkabm:record/ac:identifier" );
+            xPathExpression = xpath.compile( xpathStr );
         }
         catch( XPathExpressionException e )
         {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'", "/docbook:article/docbook:title" ), e );
+            throw new PluginException( String.format( "Could not compile xpath expression '%s'", xpathStr ), e );
         }
 
         InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
