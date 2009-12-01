@@ -40,7 +40,7 @@
   <job submitter="dbc" format="dsd">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="dbc" format="pg">
+  <job submitter="150013" format="dbc">
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="775100" format="katalog">

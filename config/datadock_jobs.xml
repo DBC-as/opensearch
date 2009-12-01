@@ -86,7 +86,7 @@
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
-  <job submitter="dbc" format="pg">
+  <job submitter="150013" format="dbc">
     <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" />
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
