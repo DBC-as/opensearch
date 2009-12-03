@@ -212,7 +212,6 @@ public class IndexerXSEMTest {
      * the indexingAlias is not valid.
      * The index method throws a PluginException when unable to index original data
      */   
-
     @Test( expected = PluginException.class ) 
     public void testIndexWithOutValidIndexingAlias() throws Exception
     {
@@ -228,4 +227,18 @@ public class IndexerXSEMTest {
                    databytes );
         indexPlugin.index( cargo, compassSession, fedoraHandle );
     }
+
+    /**
+     * Tests that the plugin has the right PluginType
+     */
+    @Test public void testPluginType() throws Exception
+    {
+        assertTrue( indexPlugin.getPluginType() == PluginType.INDEX );
+    }
+
+    /**
+     * The following tests are exception handling
+     */
+
+
 }

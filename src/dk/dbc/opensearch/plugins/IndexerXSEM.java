@@ -93,9 +93,6 @@ public class IndexerXSEM implements IIndexer
     {
         boolean success = false;
 
-        /* \todo: right now we index all stream in a cc with the same alias. each CargoObject should have a IndexingAlias. see bug #8719 */
-        //String indexingAlias = cc.getIndexingAlias().getName();
-
         log.debug( String.format( "Trying to read CargoContainer (pid= %s ) data from .getData into a dom4j.Document type", fedoraHandle ) );
 
         CPMAlias cpmAlias = null;
