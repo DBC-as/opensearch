@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 /**
  * \file
@@ -52,14 +52,14 @@ public class ForceFedoraPid implements IAnnotate
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
 
 
-	@Override
-	public PluginType getPluginType()
+    @Override
+    public PluginType getPluginType()
     {
-		return PluginType.ANNOTATE;
-	}
+        return PluginType.ANNOTATE;
+    }
 
 
-	private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException
+    private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException
     {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -67,7 +67,7 @@ public class ForceFedoraPid implements IAnnotate
 
         if ( co == null )
         {
-            String error = "Could not retrieve CargoObject with original data from CargoContainer";
+            String error = "ForceFedoraPid-plugin Could not retrieve CargoObject with original data from CargoContainer";
             log.error( error );
             throw new PluginException( String.format( error ) );
         }
@@ -89,6 +89,10 @@ public class ForceFedoraPid implements IAnnotate
 
         InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
 
+        /**
+         * \todo: Is the title some expression for the identifier of the title?
+         * bug 9902
+         */
         // Find title of the docbook document
         String title;
         try
@@ -99,7 +103,7 @@ public class ForceFedoraPid implements IAnnotate
         {
             throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
         }
-        
+
         log.trace( String.format( "title found [%s]", title ) );
 
         String newID = null;
@@ -124,25 +128,25 @@ public class ForceFedoraPid implements IAnnotate
                 throw new PluginException( "Could not get new id for cargo", sioobe );
             }
         }
-        
+
         return newID;
-	}
+    }
 
 
-	@Override
-	public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    @Override
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-		String s = getDCIdentifierFromOriginal( cargo );
-		if ( s != null && s.length() > 3 )
+        String s = getDCIdentifierFromOriginal( cargo );
+        if ( s != null && s.length() > 3 )
         {
-			log.info( String.format( "Forcing Store ID to %s", s ) );
+            log.info( String.format( "Forcing Store ID to %s", s ) );
             cargo.setIdentifier( new PID( s ));
-		}
+        }
         else if ( s == null )
         {
             throw new PluginException( "Could not obtain identifier from xml using xpath" );
         }
 
         return cargo;
-	}
+    }
 }
