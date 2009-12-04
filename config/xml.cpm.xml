@@ -861,14 +861,6 @@
         index="un_tokenized"
         />
     <xml-property
-        xpath="/ting:container/ting:fedoraPid"
-        index="un_tokenized"
-        />
-    <xml-property
-        xpath="/ting:container/ting:original_format"
-        index="un_tokenized"
-        />
-    <xml-property
         name="facet.creator"
         xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
@@ -958,12 +950,114 @@
         index="un_tokenized"
         value-converter="lowercase"
         />
-<xml-property
+    <xml-property
+        xpath="/ting:container/ting:fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/ting:original_format"
+        index="un_tokenized"
+        />
+    <xml-property
         xpath="/ting:container/ting:submitter"
         index="un_tokenized"
         />
 
   </xml-object>
+
+<xml-object alias="review" sub-index="opensearch-index"> 
+
+    <xml-property
+        name="rec.id"
+        xpath="/ting:container/dkabm:record/ac:identifier | /ting:container/ting:fedoraPid"
+        />
+    <xml-property
+        name="addi.title"
+        xpath="/ting:container/dkabm:record/dc:title"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.creator"
+        xpath="/ting:container/dkabm:record/dc:creator"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.type"
+        xpath="/ting:container/dkabm:record/dc:type"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.description"
+        xpath="/ting:container/dkabm:record/dc:description"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.format"
+        xpath="/ting:container/dkabm:record/dcterms:extent"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.language"
+        xpath="/ting:container/dkabm:record/dc:language"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.relation"
+        xpath="/ting:container/dkabm:record/dcterms:isPartOf"
+        index="un_tokenized"
+        value-converter="lowercase"
+        />
+    <xml-property
+        name="addi.anyIndexes"
+        xpath="/ting:container/dkabm:record/*"
+        />
+    <xml-property
+        xpath="/ting:container/ting:fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/ting:original_format"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/ting:submitter"
+        index="un_tokenized"
+        />
+
+</xml-object>
+
+<xml-object alias="oso" sub-index="opensearch-index"> 
+
+    <xml-property
+        name="rec.id"
+        xpath="/ting:container/oso:object/oso:identifier | /ting:container/ting:fedoraPid"
+        />
+    <xml-property
+        xpath="/ting:container/ting:fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/ting:original_format"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/ting:submitter"
+        index="un_tokenized"
+        />
+
+</xml-object>
 
 </compass-core-mapping>
 
