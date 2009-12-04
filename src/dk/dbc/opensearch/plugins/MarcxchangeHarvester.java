@@ -150,12 +150,11 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
 
         try
         {
+            //This line writes a fatal error when given an '&' as the only content in the xml
             dcVariable = xPathExpression.evaluate( workRelationSource );
         }
         catch ( XPathExpressionException xpee )
         {
-            // \todo: Warning: the following line is very verbose and should be removed as soon as bug 9575 is closed
-            log.trace( String.format( "Threw XPath evaluation exception for data: %s", new String( bytes ) ) );
             String msg = String.format( "Could not evaluate with xpath expression '%s'", xPathStr );
             log.error( msg, xpee );
             throw new PluginException( msg, xpee );

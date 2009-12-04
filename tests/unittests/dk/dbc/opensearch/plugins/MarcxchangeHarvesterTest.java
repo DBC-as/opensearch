@@ -101,7 +101,6 @@ public class MarcxchangeHarvesterTest
     {
         @Mock public XPathExpression compile( String expression ) throws XPathExpressionException
         {
-            System.out.println( "hat0");
             throw new XPathExpressionException( "test" );
         }
     }
@@ -111,7 +110,6 @@ public class MarcxchangeHarvesterTest
     {
         @Mock public XPathExpression compile( InputSource source ) throws XPathExpressionException
         {
-            System.out.println( "hat1");
             throw new XPathExpressionException( "test" );
         }
     }
@@ -157,7 +155,7 @@ public class MarcxchangeHarvesterTest
      * try to evaluate an xpath expression. This should throw a PluginException
      * with a nested XPathExpressionException
      */
-    @Test
+    @Test( expected = XPathExpressionException.class )
     public void getCargoContainerWithInvalidData() throws Exception
     {       
         harvestPlugin = new MarcxchangeHarvester();
@@ -166,10 +164,13 @@ public class MarcxchangeHarvesterTest
         }
         catch( PluginException pe )
         {
-            assertEquals( "Expecting the nested exception to be XPathExpressionException", XPathExpressionException.class, pe.getException().getClass() );
+            throw pe.getException();
+            //            assertEquals( "Expecting the nested exception to be XPathExpressionException", XPathExpressionException.class, pe.getException().getClass() );
         }
     }
-
+    /**
+     * test that the plugin has the right type
+     */
     @Test
     public void testPluginType() throws Exception
     {        
