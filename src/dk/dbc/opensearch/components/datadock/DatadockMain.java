@@ -187,6 +187,7 @@ public class DatadockMain
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         boolean terminateOnZeroSubmitted = false;
+	boolean ESHarvesterCleanup = false;
         
         try
         {
@@ -215,6 +216,23 @@ public class DatadockMain
                 log.warn( String.format( "Unknown argument '%s', ignoring it", a ) );
             }
         }
+
+        try
+        {
+	    if ( System.getProperty( "esharvester_cleanup" ) != null ) 
+	    {
+		ESHarvesterCleanup = true;
+	    }
+        }
+        catch( NullPointerException npe)
+        {
+	    log.info( "Test 1: catch" );
+	    ESHarvesterCleanup = false;
+        }
+
+	if ( ESHarvesterCleanup ) 
+	    log.info( " ESHARVESTER CLEANUP! " );
+
 
         try
         {
@@ -299,6 +317,23 @@ public class DatadockMain
                     OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
 
                     harvester = new ESHarvest( connectionPool, dataBaseName );                    
+
+		    if ( ESHarvesterCleanup )
+		    {
+			// casting to ESHarvest in order to use non-interface method:
+			ESHarvest esharvester = (ESHarvest)harvester;
+			try
+			{
+			    esharvester.changeRecordstatusFromInProgressToQueued();
+			}
+			catch( HarvesterIOException hioe )
+			{
+			    String errorMsg = new String( "An exception occured while performing 'changeRecordstatusFromInProgressToQueued'." );
+			    log.fatal( errorMsg, hioe );
+			    throw hioe;
+			}
+		    }
+
                     break;
 
                 case FileHarvest:

@@ -531,28 +531,52 @@ public class ESHarvest implements IHarvest
         {
             Statement stmt = conn.createStatement();
             // Locking the rows:
-            int res1 = stmt.executeUpdate( "SELECT recordstatus " +
-                                           "FROM taskpackagerecordstructure " +
-                                           "WHERE     recordstatus = 3 " +
-                                           "      AND databasename = '" + databasename + "' " +
-                                           "FOR UPDATE OF recordstatus" );
-            
-            // Updating the rows:
-            log.debug("Select for update: " + res1);
-            if (res1 == 0)
-            {
+	    String selectStatement = ( "SELECT targetreference, lbnr, recordstatus " + 
+				       "FROM taskpackagerecordstructure " + 
+				       "WHERE recordstatus = 3 " + 
+				       "AND targetreference IN " + 
+				       "(SELECT targetreference FROM taskspecificupdate WHERE databasename = '" + databasename + "') " + 
+				       "FOR UPDATE OF recordstatus");
+
+	    log.debug( "selectStatement: " + selectStatement );
+
+	    // int res1 = stmt.executeUpdate( selectStatement );
+            // log.debug("Select for update: " + res1);
+	    ResultSet rs = stmt.executeQuery( selectStatement );
+	    int counter = 0;
+	    while ( rs.next() ) 
+	    {
+		++counter;
+		int targetRef = rs.getInt(1);
+		int lbnr      = rs.getInt(2);
+		log.info( String.format( "Locking for update: targetRef: %s  Lbnr: %s", targetRef, lbnr ) );
+	    }
+	    log.info( String.format( "Locked %d rows for update.", counter ) );
+	    if ( counter == 0 )
+	    {
                 // no rows for update - just close down the statement:
                 conn.rollback();
                 stmt.close();
-            }
+	    }
             else
             {
-                int res2 = stmt.executeUpdate( "UPDATE taskpackagerecordstructure " +
-                                               "SET recordstatus = 2 " +
-                                               "WHERE recordstatus = 3 " +
-                                               "AND databasename = '" + databasename + "'");
+		// update taskpackagerecordstructure set recordstatus = 2 where recordstatus = 3 and targetreference in (select targetreference from taskspecificupdate where databasename = 'pg');
+		String updateStatement = ( "UPDATE taskpackagerecordstructure " +
+					   "SET recordstatus = 2 " + 
+					   "WHERE recordstatus = 3 " + 
+					   "AND targetreference " + 
+					   "IN (SELECT targetreference " + 
+					   "FROM taskspecificupdate " + 
+					   "WHERE databasename = '" + databasename + "')");
+		log.debug( "updateStatement: " + updateStatement );
+		int res2 = stmt.executeUpdate( updateStatement );
 
-                log.debug("Update: " + res2);
+//                 int res2 = stmt.executeUpdate( "UPDATE taskpackagerecordstructure " +
+//                                                "SET recordstatus = 2 " +
+//                                                "WHERE recordstatus = 3 " +
+//                                                "AND databasename = '" + databasename + "'");
+
+                log.info("Updating " + res2 + " rows");
                 stmt.close();
                 conn.commit();
             }
@@ -577,7 +601,7 @@ public class ESHarvest implements IHarvest
      */
     private void setRecordStatusToInProgress( ESIdentifier ESJobId, Connection conn ) throws HarvesterIOException, SQLException
     {
-        log.debug( String.format( "Updating recordstatus for ID: %s", ESJobId ) );
+        log.info( String.format( "Updating recordstatus for ID: %s", ESJobId ) );
 
         // Locking the row for update:
         Statement stmt = conn.createStatement();

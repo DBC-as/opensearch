@@ -27,7 +27,7 @@ import subprocess
 import logging as log
 import fedora_conn
 
-def main( app, action, monitor, fedora_arg, harvester, mem_allocation ):
+def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_allocation ):
     log_filename = 'app_starter.log'
     log_path = os.path.abspath( 'log-files' )
 
@@ -117,7 +117,7 @@ def main( app, action, monitor, fedora_arg, harvester, mem_allocation ):
         
         print "starting process"
         log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
-        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, mem_allocation )
+        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation )
         log.debug( "Started process with pid=%s"%( pid ) )
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
@@ -126,13 +126,13 @@ def main( app, action, monitor, fedora_arg, harvester, mem_allocation ):
         print "starting process"
         args = "--shutDownOnJobsDone"
         
-        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, mem_allocation, args )
+        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, args )
         print "Waiting for process to stop pid=%s "%(pid)
         os.waitpid( pid -1, 0 );
         
         print "print done waiting"
 
-def start_daemon( q_name, pid_filename, monitor, harvester, mem_allocation, args=None ):
+def start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, args=None ):
     
     """
     Starts the Application daemon
@@ -159,6 +159,9 @@ def start_daemon( q_name, pid_filename, monitor, harvester, mem_allocation, args
 
     if harvester:
         properties.append( "-Dharvester=%s" % harvester )
+
+    if esharvester_cleanup:
+        properties.append( "-Desharvester_cleanup" )
 
     cmd = [ 'java %s'%( " ".join( properties ) ),
             '-Ddaemon.pidfile=%s'%( pid_filename ),
@@ -226,6 +229,7 @@ if __name__ == '__main__':
                   }
     actions = ["start", "stop", "restart", "bench"]
 
+
         
     # if harvester == "file":
     #     harvester = "FileHarvest"
@@ -260,9 +264,13 @@ if __name__ == '__main__':
     parser.add_option( "--Xmx", type="string", action="store", dest="Xmx",
                        help="The maximum heap size (default 64mb)" )
 
+    parser.add_option( "--esharvester_clean_inprogress", action="store_true", dest="esharvester_cleanup",
+                       help="resets records in database which are set to recordstatus=inProgress. The recordsstatus are reset to 'queued'." )
+
     (options, args) = parser.parse_args()
-    
+
     mem_allocation = [options.Xms, options.Xmx]
+
 
     if len(args) == 0:
         print "\nPlease supply some arguments!\n"
@@ -299,11 +307,13 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit( "Can only start one of: %s"%( ', '.join( app_list ) ) )
 
+
     if len( args ) != 1:
         sys.exit( parser.print_help() )
 
+
     if options.app == 'both':
-        main( 'pti', args[0], options.monitor, fedora_arg, options.harvester )
-        main( 'datadock', args[0], options.monitor, fedora_arg, options.harvester )
+        main( 'pti', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup )
+        main( 'datadock', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup )
     else:
-        main( options.app, args[0], options.monitor, fedora_arg, harvester, mem_allocation )
+        main( options.app, args[0], options.monitor, fedora_arg, harvester, options.esharvester_cleanup, mem_allocation )
