@@ -199,6 +199,7 @@ public class IndexerXSEM implements IIndexer
                     HashMap< String, String> fieldMap = new HashMap< String, String >( 3 );
                     log.debug( String.format( "Initializing new fields for the index" ) );
                     fieldMap.put( "ting:fedoraPid", fedoraHandle );
+                    fieldMap.put( "ting:fedoraNormPid", fedoraHandle.replaceAll( ":", "_" ) );
                     fieldMap.put( "ting:original_format", co.getFormat() );
                     fieldMap.put( "ting:submitter", co.getSubmitter() );
 

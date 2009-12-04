@@ -285,6 +285,10 @@
         index="un_tokenized"
         />
     <xml-property
+        xpath="/ting:container/ting:fedoraNormPid"
+        index="un_tokenized"
+        />
+    <xml-property
         xpath="/ting:container/ting:original_format"
         index="un_tokenized"
         />
@@ -541,6 +545,10 @@
         />
     <xml-property
         xpath="/ting:container/ting:fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/ting:fedoraNormPid"
         index="un_tokenized"
         />
     <xml-property
@@ -955,6 +963,10 @@
         index="un_tokenized"
         />
     <xml-property
+        xpath="/ting:container/ting:fedoraNormPid"
+        index="un_tokenized"
+        />
+    <xml-property
         xpath="/ting:container/ting:original_format"
         index="un_tokenized"
         />
@@ -1028,6 +1040,10 @@
         index="un_tokenized"
         />
     <xml-property
+        xpath="/ting:container/ting:fedoraNormPid"
+        index="un_tokenized"
+        />
+    <xml-property
         xpath="/ting:container/ting:original_format"
         index="un_tokenized"
         />
@@ -1046,6 +1062,10 @@
         />
     <xml-property
         xpath="/ting:container/ting:fedoraPid"
+        index="un_tokenized"
+        />
+    <xml-property
+        xpath="/ting:container/ting:fedoraNormPid"
         index="un_tokenized"
         />
     <xml-property

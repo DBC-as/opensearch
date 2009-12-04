@@ -77,7 +77,6 @@ import org.xml.sax.SAXException;
 public class DatadockThread implements Callable<Boolean>
 {
     private Logger                  log = Logger.getLogger( DatadockThread.class );
-
     
     private IHarvest                harvester;
     private CargoContainer          cargo;

@@ -72,17 +72,17 @@
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>  
   <job submitter="dbc" format="dr_bonanza">
-    <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
   <job submitter="dbc" format="louisiana">
-    <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
   <job submitter="dbc" format="dsd">
-    <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
@@ -94,18 +94,18 @@
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>
   <job submitter="dbc" format="nmalbum">
-    <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>
   <job submitter="dbc" format="nmtrack">
-    <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
   <job submitter="dbc" format="nmcover">
-    <plugin name="dcharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
