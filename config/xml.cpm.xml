@@ -5,7 +5,7 @@
 
 <compass-core-mapping>
 
-  <xml-object alias="article" sub-index="opensearch-index">
+  <xml-object alias="docbook" sub-index="opensearch-index">
     <xml-id
         name="id"
         xpath="/ting:container/ting:fedoraPid"/>
@@ -296,7 +296,7 @@
   </xml-object>
 
 
-  <xml-object alias="dc" sub-index="opensearch-index">
+  <xml-object alias="dkabm" sub-index="opensearch-index">
     <xml-id
         name="id"
        xpath="/ting:container/ting:fedoraPid"/>

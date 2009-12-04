@@ -102,7 +102,7 @@ public class DatadockThreadTest
         referenceData = XMLUtils.documentFromString( refdata );
         mockCC = new CargoContainer();
         mockCC.setIdentifier( new PID( "710100:1" ) );
-        mockCC.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", IndexingAlias.Article, "<orig><child></orig>".getBytes() );
+        mockCC.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", IndexingAlias.Docbook, "<orig><child></orig>".getBytes() );
     }
 
     private class MockIdentifier implements IIdentifier{}

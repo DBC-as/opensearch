@@ -76,7 +76,7 @@ public class DocbookHarvester implements ICreateCargoContainer
         
         try
         {
-            cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Article, data );
+            cargo.add( dataStreamName, format, submitter, lang, mimetype, IndexingAlias.Docbook, data );
 
             log.trace( "Constructing DC datastream" );
 

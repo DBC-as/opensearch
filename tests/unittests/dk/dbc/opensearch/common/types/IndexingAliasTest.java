@@ -38,7 +38,7 @@ public class IndexingAliasTest {
      */
 
     IndexingAlias testIA;
-    String articleDescString = "the docbook/ting xml alias";
+    String docbookDescString = "the docbook/ting xml alias";
  
     @Before public void SetUp() {
 
@@ -56,13 +56,13 @@ public class IndexingAliasTest {
      */
     @Test public void testGetDescription() 
     {
-        testIA = IndexingAlias.getIndexingAlias( "article" );
-        assertEquals( testIA.getDescription(), articleDescString );
+        testIA = IndexingAlias.getIndexingAlias( "docbook" );
+        assertEquals( testIA.getDescription(), docbookDescString );
     }
 
     @Test public void testValidIA() 
     {  
-        assertTrue( IndexingAlias.validIndexingAlias( "article" ) );
+        assertTrue( IndexingAlias.validIndexingAlias( "docbook" ) );
     }  
     
     @Test public void testValidIAinvalidArg() 

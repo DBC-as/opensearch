@@ -92,7 +92,7 @@ public class FoxmlDocumentTest
         cargo = new CargoContainer( );
         cargo.setIdentifier( new PID( pid ));
         
-        cargo.add( DataStreamType.OriginalData, "test", "dbc", "da", "text/xml", IndexingAlias.Article , cargoBytes);
+        cargo.add( DataStreamType.OriginalData, "test", "dbc", "da", "text/xml", IndexingAlias.Docbook , cargoBytes);
     }
 
     /**

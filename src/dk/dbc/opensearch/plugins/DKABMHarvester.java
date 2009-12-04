@@ -36,9 +36,9 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 
-public class DCHarvester implements ICreateCargoContainer
+public class DKABMHarvester implements ICreateCargoContainer
 {
-    Logger log = Logger.getLogger( DCHarvester.class );
+    Logger log = Logger.getLogger( DKABMHarvester.class );
 
     private Document referenceData;
 
@@ -69,7 +69,7 @@ public class DCHarvester implements ICreateCargoContainer
 
         try
         {
-            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), lang, mimetype, IndexingAlias.DC, data );
+            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), lang, mimetype, IndexingAlias.DKABM, data );
         }
         catch (IOException ioe)
         {
@@ -88,7 +88,7 @@ public class DCHarvester implements ICreateCargoContainer
         return pluginType;
     }
 
-    private byte[] getDCData( byte[] referenceData )
+    private byte[] getDKABMData( byte[] referenceData )
     {
         return null;
     }

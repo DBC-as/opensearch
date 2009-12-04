@@ -29,9 +29,11 @@ import org.apache.log4j.Logger;
  */
 public enum IndexingAlias 
 {
-    Article ( "article", "the docbook/ting xml alias" ),
+    //Article ( "article", "the docbook/ting xml alias" ),
+    Docbook ( "docbook", "the docbook/ting xml alias" ),
     Danmarcxchange ( "danmarcxchange", "alias for marc posts" ),
-    DC ( "dc", "data in Dublin Core format" ),
+        //DC ( "dc", "data in Dublin Core format" ),
+    DKABM ( "dkabm", "data in dkabm format" ),    
     Materialevurderinger( "materialevurderinger", "alias for marterialevurderinger posts"),
     None( "none", "Non-indexable content" );
 

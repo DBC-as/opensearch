@@ -76,7 +76,7 @@ public class RUBHarvester implements ICreateCargoContainer
 
         try
         {
-            cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, IndexingAlias.Article, data );
+            cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, IndexingAlias.Docbook, data );
         }
         catch (IOException ioe)
         {

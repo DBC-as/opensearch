@@ -41,12 +41,12 @@ import org.xml.sax.SAXException;
 public class AdministrationStreamTest
 {
 
-    static final String expectedAdminStreamXML = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"article\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream></streams></admin-stream>";
+    static final String expectedAdminStreamXML = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"docbook\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream></streams></admin-stream>";
     static final String errorAdminStreamXML = "<?xml version=\"1.0\" ?><admin-stream><indexingalias></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream></streams></admin-stream>";
-    static final String errorAdminStreamXMLmissingId = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"article\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" streamNameType=\"originalData\"></stream></streams></admin-stream>";
-    static final String expectedAdminStreamXML2 = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"article\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream><stream index=\"1\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.1\" streamNameType=\"dublincoreData\"></stream></streams></admin-stream>";
-    static final String emptySerialization = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"article\"></indexingalias><streams/></admin-stream>";
-    static final String formattedAdminStreamXML = "<?xml version=\"1.0\" ?>\n<admin-stream>\n\t<indexingalias name=\"article\"></indexingalias>\n\t<streams>\n\t\t<stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream>\n\t</streams></admin-stream>";
+    static final String errorAdminStreamXMLmissingId = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"docbook\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" streamNameType=\"originalData\"></stream></streams></admin-stream>";
+    static final String expectedAdminStreamXML2 = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"docbook\"></indexingalias><streams><stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream><stream index=\"1\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.1\" streamNameType=\"dublincoreData\"></stream></streams></admin-stream>";
+    static final String emptySerialization = "<?xml version=\"1.0\" ?><admin-stream><indexingalias name=\"docbook\"></indexingalias><streams/></admin-stream>";
+    static final String formattedAdminStreamXML = "<?xml version=\"1.0\" ?>\n<admin-stream>\n\t<indexingalias name=\"docbook\"></indexingalias>\n\t<streams>\n\t\t<stream index=\"0\" mimetype=\"text/xml\" lang=\"da\" submitter=\"dbc\" format=\"artikel\" id=\"testData.0\" streamNameType=\"originalData\"></stream>\n\t</streams></admin-stream>";
 
    
     /**
@@ -56,11 +56,11 @@ public class AdministrationStreamTest
     public void testAddStream() throws IOException, SAXException
     {
         //MockCargoObject mockCargoObject = new MockCargoObject();
-        String indexingAlias = "article";
+        String indexingAlias = "docbook";
         AdministrationStream instance = new AdministrationStream( indexingAlias );
 
         CargoContainer cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", IndexingAlias.Article, "test".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", IndexingAlias.Docbook, "test".getBytes() );
 
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         boolean added = instance.addStream( co, co.getDataStreamType().getName()+".0" );
@@ -99,7 +99,7 @@ public class AdministrationStreamTest
     @Test
     public void emptySerializationFromEmptyStream() throws XMLStreamException, SAXException, IOException, OpenSearchTransformException
     {
-        String indexingAlias = IndexingAlias.Article.getName();
+        String indexingAlias = IndexingAlias.Docbook.getName();
         AdministrationStream instance = new AdministrationStream( indexingAlias );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -114,11 +114,11 @@ public class AdministrationStreamTest
     @Test
     public void testSerializeFromConstructorWithString() throws Exception
     {
-        String id = "article";
+        String id = "docbook";
         AdministrationStream instance = new AdministrationStream( id );
 
         CargoContainer cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", IndexingAlias.Article, "test".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", IndexingAlias.Docbook, "test".getBytes() );
 
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         boolean added = instance.addStream( co, id );
@@ -139,7 +139,7 @@ public class AdministrationStreamTest
         AdministrationStream instance = new AdministrationStream( bais, true );
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         instance.serialize( baos, null );
-        assertXpathEvaluatesTo( "article", "/admin-stream[1]/indexingalias[1]/@name", new String( baos.toByteArray() ) );
+        assertXpathEvaluatesTo( "docbook", "/admin-stream[1]/indexingalias[1]/@name", new String( baos.toByteArray() ) );
     }
 
 
