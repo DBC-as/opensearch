@@ -302,7 +302,7 @@
 
   <xml-object alias="dkabm" sub-index="opensearch-index">
     <xml-id
-        name="id"
+       name="id"
        xpath="/ting:container/ting:fedoraPid"/>
     <xml-property
         name="dc.title"
@@ -979,6 +979,9 @@
 
 <xml-object alias="review" sub-index="opensearch-index"> 
 
+    <xml-id
+       name="id"
+       xpath="/ting:container/ting:fedoraPid"/>
     <xml-property
         name="rec.id"
         xpath="/ting:container/dkabm:record/ac:identifier | /ting:container/ting:fedoraPid"
@@ -1056,6 +1059,9 @@
 
 <xml-object alias="oso" sub-index="opensearch-index"> 
 
+    <xml-id
+       name="id"
+       xpath="/ting:container/ting:fedoraPid"/>
     <xml-property
         name="rec.id"
         xpath="/ting:container/oso:object/oso:identifier | /ting:container/ting:fedoraPid"
