@@ -674,7 +674,7 @@ public class ESHarvest implements IHarvest
                 // Set the status to active:
                 log.info( String.format( "Setting taskpackage.taskstatus from %s to %s for targetref %s",
                              currentStatus, 1, targetref) );
-                setTaskpackageTaskstatus( targetref, TaskStatus.ACTIVE, conn );
+                setTaskpackageTaskstatusAndSubstatus( targetref, TaskStatus.ACTIVE, conn );
             }
         }
         else
@@ -686,7 +686,7 @@ public class ESHarvest implements IHarvest
     }
 
 
-    private void setTaskpackageTaskstatus( int targetref, TaskStatus status, Connection conn ) throws SQLException, HarvesterInvalidStatusChangeException
+    private void setTaskpackageTaskstatusAndSubstatus( int targetref, TaskStatus status, Connection conn ) throws SQLException, HarvesterInvalidStatusChangeException
     {
         log.info( String.format( "Setting Taskpackage.taskstatus with targetref [%s] to %s.", targetref, status ) );
 
@@ -713,28 +713,33 @@ public class ESHarvest implements IHarvest
 
         // lock row for update:
         Statement stmt = conn.createStatement();
-        String lockString = String.format( "SELECT taskstatus " +
+        String lockString = String.format( "SELECT taskstatus, substatus " +
                                            "FROM taskpackage " +
                                            "WHERE targetreference = %s " +
-                                           "FOR UPDATE OF taskstatus",
+                                           "FOR UPDATE OF taskstatus, substatus",
                                            targetref );
         
         log.info( "LockString: " + lockString );
-        int res1 = stmt.executeUpdate( lockString );
-        if ( res1 == 0 )
-        {
-            // No rows for update - give a warning:
+        // int res1 = stmt.executeUpdate( lockString );
+	ResultSet rs = stmt.executeQuery( lockString );
+	if ( !rs.next() )
+	{
+	    // No rows for update - give a warning:
             log.warn( String.format( "Could not find a row for update for targetref: %s", targetref ) );
             conn.rollback();
             stmt.close();
-        }
+	}
         else
         {
-            // Perform the real update:
-            int res2 = stmt.executeUpdate( "UPDATE taskpackage " +
-                                           "SET taskstatus = " + taskstatus + " " +
-                                           "WHERE targetreference = " + targetref );
+	    int substatus = rs.getInt(2);
+	    substatus++; // increment to next value for update of substatus
 
+            // Perform the update:
+            String updateString = String.format( "UPDATE taskpackage " +
+						 "SET taskstatus = %s, substatus = %s " + 
+						 "WHERE targetreference = %s ",
+						 taskstatus, substatus, targetref );
+	    int res2 = stmt.executeUpdate( updateString );
             if ( res2 == 0 )
             {
                 log.warn( String.format( "Could not update taskstatus for taskpackage with targetref: %s", targetref ) );
@@ -879,7 +884,7 @@ public class ESHarvest implements IHarvest
                         log.debug( String.format( "%s rows updated" , res ) );
                         conn.commit();
                         // set the taskpackage.taskstatus to complete:
-                        setTaskpackageTaskstatus( targetref, TaskStatus.COMPLETE, conn );
+                        setTaskpackageTaskstatusAndSubstatus( targetref, TaskStatus.COMPLETE, conn );
                     }
                     catch( SQLException sqle )
                     {
