@@ -21,7 +21,6 @@ package dk.dbc.opensearch.common.metadata;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
@@ -234,7 +233,7 @@ public class AdministrationStream implements MetaData
                     set.getValue().get( AdministrationStreamElement.SUBMITTER ),
                     set.getValue().get( AdministrationStreamElement.LANG ),
                     set.getValue().get( AdministrationStreamElement.MIMETYPE ),
-                    IndexingAlias.getIndexingAlias( this.indexingAlias ),
+                    indexingAlias,
                     "ihatefakedata".getBytes() );
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
             InputPair<String, CargoObject> indexvalue = new InputPair<String, CargoObject>( 

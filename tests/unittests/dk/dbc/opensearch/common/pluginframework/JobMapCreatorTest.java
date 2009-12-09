@@ -27,7 +27,6 @@ package dk.dbc.opensearch.common.pluginframework;
 
 
 import dk.dbc.opensearch.common.xml.XMLUtils;
-import dk.dbc.opensearch.common.os.FileHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -43,6 +42,7 @@ import mockit.Mockit;
 import mockit.MockClass;
 import mockit.Mocked;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -122,7 +122,7 @@ public class JobMapCreatorTest
      * Testing the happy path of init
      */
     @Test 
-    public void testInitWithGoodPath() throws ParserConfigurationException, SAXException, IOException
+    public void testInitWithGoodPath() throws ConfigurationException, ParserConfigurationException, SAXException, IOException
     {
         String path = "/path/to/file/that/exists";
         JobMapCreator.init( path );
@@ -130,14 +130,14 @@ public class JobMapCreatorTest
 
 
     @Test( expected = IllegalStateException.class )
-    public void testEmptyFileThrowsIllegalStateException() throws IOException, ParserConfigurationException, SAXException, IllegalStateException
+    public void testEmptyFileThrowsIllegalStateException() throws ConfigurationException, IOException, ParserConfigurationException, SAXException, IllegalStateException
     {
         String path = "/path/to/empty/file";
         JobMapCreator.init( path );
     }
 
     @Test( expected = NullPointerException.class )
-    public void testNonexistantFileThrows() throws IOException, ParserConfigurationException, SAXException, IllegalStateException
+    public void testNonexistantFileThrows() throws ConfigurationException, IOException, ParserConfigurationException, SAXException, IllegalStateException
     {
         String path = "idontexist";
         JobMapCreator.init( path );

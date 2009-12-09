@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
+import dk.dbc.opensearch.common.compass.CPMAlias;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -58,7 +59,7 @@ public class JobMapCreator
 
 
     protected static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-    
+    protected static HashMap<InputPair<String, String>, String> aliasMap = new HashMap<InputPair<String, String>, String>();
     
     /**
      * Retrives the map of lists of tasks for all registrated pairs of submitter, format.
@@ -67,10 +68,12 @@ public class JobMapCreator
      * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
      * @throws ConfigurationException 
      */
-    public static void init( String path ) throws ParserConfigurationException, SAXException, IOException, IllegalStateException
+    public static void init( String path ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, IllegalStateException
     {
     	log.debug( "JobMapCreator constructor called" );
-    	
+
+        CPMAlias cpmAlias = new CPMAlias();
+
     	jobMap = new HashMap<InputPair<String, String>, ArrayList<String>>();
 
         File jobFile = FileHandler.getFile( path );
@@ -91,6 +94,7 @@ public class JobMapCreator
         Element jobElement;
         String submitter = "";
         String format = "";
+        String alias = "";
 
         for( int x = 0; x < listLength ; x++ )
         {
@@ -98,6 +102,7 @@ public class JobMapCreator
 
             submitter = jobElement.getAttribute( "submitter" );
             format = jobElement.getAttribute( "format" );
+            alias = jobElement.getAttribute( "alias" );
 
             if( submitter.isEmpty() || format.isEmpty() )
             {
@@ -105,6 +110,12 @@ public class JobMapCreator
                 log.warn( error );
                 throw new IllegalStateException( error );
             }
+
+            if ( ! alias.equals("") && ! cpmAlias.isValidAlias( alias ) )
+            {
+                log.warn( String.format( "alias '%s' in job submitter='%s', format='%s' is not Valid, ie. not found in the xml.cpm.xml file. If this job is used, expect incexing failures", alias, submitter, format ) );
+            }
+            aliasMap.put(new InputPair<String, String>(submitter, format), alias);
 
             NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
             int pluginListLength = pluginList.getLength();
@@ -130,19 +141,17 @@ public class JobMapCreator
             jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
         }
     }
-    
-    
-    public static void validateXsdJobXmlFile( String path ) throws IOException, ConfigurationException, SAXException
+   
+    public static void validateXsdJobXmlFile( String XMLPath, String XSDPath ) throws IOException, ConfigurationException, SAXException
     {
     	SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
         
-        String xsdPath = FileSystemConfig.getJobsXsdPath();
-        File schemaLocation = FileHandler.getFile( xsdPath );
+        File schemaLocation = FileHandler.getFile( XSDPath );
         Schema schema = factory.newSchema( schemaLocation );
     
         Validator validator = schema.newValidator();
         
-        Source source = new StreamSource( path );
+        Source source = new StreamSource( XMLPath );
         
         try 
         {

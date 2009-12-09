@@ -9,7 +9,6 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -92,7 +91,7 @@ public class FoxmlDocumentTest
         cargo = new CargoContainer( );
         cargo.setIdentifier( new PID( pid ));
         
-        cargo.add( DataStreamType.OriginalData, "test", "dbc", "da", "text/xml", IndexingAlias.Docbook , cargoBytes);
+        cargo.add( DataStreamType.OriginalData, "test", "dbc", "da", "text/xml", "dockbook" , cargoBytes);
     }
 
     /**

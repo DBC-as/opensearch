@@ -17,6 +17,10 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * \file XMLHarvester.java
+ * \brief creates cargoContainer from XML data
+ */
 
 package dk.dbc.opensearch.plugins;
 
@@ -27,53 +31,48 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 
-public class OSOHarvester implements ICreateCargoContainer
+/**
+ * XMLHarvester provides method for constructing CargoCcontainer from
+ * XML data
+ */
+public class XMLHarvester implements ICreateCargoContainer
 {
-    Logger log = Logger.getLogger( OSOHarvester.class );
+    Logger log = Logger.getLogger( XMLHarvester.class );
 
     private Document referenceData;
-
     private PluginType pluginType = PluginType.HARVEST;
 
-
-    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
-    {
-
-        return createCargoContainerFromFile( job, data );
-    }
-
-
     /**
-     *
-     * @return the CargoContainer from
-     * @throws IOException if the data cannot be read
+     * Constructs CargoContainer from XMl data
+     * @param job description of the job
+     * @param data the xml data to put into the container
+     * @param alias The indexing alias to use
+     * @returns a CargoContainer representing the data
+     * @throws PluginException
      */
-    private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data ) throws PluginException
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
     {
         CargoContainer cargo = new CargoContainer();        
         
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         String lang = "da";
-        // String dataMimetype = "application/pdf";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
 
         try
         {
-            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), lang, mimetype, IndexingAlias.OSO, data );
+            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), lang, mimetype, alias, data );
         }
         catch (IOException ioe)
         {
-            String error = String.format( "Failed to add DublinCore metadata to CargoContainer", ioe.getMessage() );
+            String error = String.format( "Failed to add data to CargoContainer", ioe.getMessage() );
             log.error( error );
             throw new PluginException( error, ioe );
         }
@@ -82,15 +81,14 @@ public class OSOHarvester implements ICreateCargoContainer
         return cargo;
     }
 
-
+    /**
+     * Returns PluginType
+     * @returns pluginType
+     */
     public PluginType getPluginType()
     {
         return pluginType;
     }
 
-    private byte[] getOSOData( byte[] referenceData )
-    {
-        return null;
-    }
 
 }

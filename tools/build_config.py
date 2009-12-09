@@ -165,12 +165,14 @@ def build_config( path ):
     passwd.text = config_txt.get( fedora_section, "passphrase" )
 
     #filesystem settings
-    trunk   = ET.SubElement( filest, "trunk" )
-    plugins = ET.SubElement( filest, "plugins" )
-    xsd     = ET.SubElement( filest, "jobsxsd" )
+    trunk        = ET.SubElement( filest, "trunk" )
+    plugins      = ET.SubElement( filest, "plugins" )
+    datadock_xsd = ET.SubElement( filest, "datadock-jobs-xsd" )
+    pti_xsd = ET.SubElement( filest, "pti-jobs-xsd" )
     trunk.text   = path
     plugins.text = pluginpath
-    xsd.text     = os.path.join( path, "config/jobs.xsd" )
+    datadock_xsd.text     = os.path.join( path, "config/datadock_jobs.xsd" )
+    pti_xsd.text     = os.path.join( path, "config/pti_jobs.xsd" )
 
     #harvester settings
     toharvestfolder       = ET.SubElement( harvest, "toharvest" )

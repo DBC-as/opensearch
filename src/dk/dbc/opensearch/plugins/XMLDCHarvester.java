@@ -18,8 +18,8 @@
 */
 
 /**
- * \file MarcxchangeHarvester.java
- * \brief
+ * \file XMLDCHarvester.java
+ * \brief creates cargoContainer from XML data, and add dc metadata
  */
 
 
@@ -36,7 +36,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -60,21 +59,21 @@ import org.xml.sax.InputSource;
  * this fails, an empty metadata element will be added to the CargoContainer,
  * which will also contain the (incorrect) data given to the plugin.
  */
-public class MarcxchangeHarvester implements ICreateCargoContainer
+public class XMLDCHarvester implements ICreateCargoContainer
 {
-    private static Logger log = Logger.getLogger( MarcxchangeHarvester.class );
+    private static Logger log = Logger.getLogger( XMLDCHarvester.class );
 
     private PluginType pluginType = PluginType.HARVEST;
 
-    public MarcxchangeHarvester() throws PluginException
+    public XMLDCHarvester() throws PluginException
     {
     }
 
 
-    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
     {
       
-        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), data );
+        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), data, alias );
     }
 
 
@@ -86,7 +85,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
      * @throws XPathExpressionException
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data ) throws PluginException
+    private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data, String alias ) throws PluginException
     {
 
         CargoContainer cargo = new CargoContainer( );
@@ -94,7 +93,7 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
         try
         {
             /** \todo: hardcoded values for mimetype, language*/
-            cargo.add( DataStreamType.OriginalData, format, submitter, "da", "text/xml", IndexingAlias.Danmarcxchange, data );
+            cargo.add( DataStreamType.OriginalData, format, submitter, "da", "text/xml", alias, data );
 
             
             log.trace( "Constructing DC datastream" );
@@ -175,13 +174,6 @@ public class MarcxchangeHarvester implements ICreateCargoContainer
     {        
         DublinCore dc = new DublinCore( );
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-
-//         if ( co == null )
-//         {
-//             String error = "Original data CargoObject is null";
-//             log.error( error );
-//             throw new PluginException( new IllegalStateException( error ) );
-//         }
 
         byte[] b = co.getBytes();
 

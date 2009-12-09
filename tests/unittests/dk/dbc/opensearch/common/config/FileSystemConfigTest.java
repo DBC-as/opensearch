@@ -21,9 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.AbstractConfiguration;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -101,9 +99,9 @@ public class FileSystemConfigTest
     @Test
     public void testJobsXsdPath() throws ConfigurationException
     {
-    	String xsd = FileSystemConfig.getJobsXsdPath();
+    	String xsd = FileSystemConfig.getDataDockJobsXsdPath();
     	
-    	CharSequence cs = "config/jobs.xsd";
+    	CharSequence cs = "config/datadock_jobs.xsd";
     	boolean endsWith = xsd.contains( cs );
     	assertTrue( endsWith );
     }

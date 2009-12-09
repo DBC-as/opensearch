@@ -2,110 +2,110 @@
 
 <job_list xmlns="info:opensearch.dbc.dk#">
 
-  <job submitter="dbc" format="faktalink">
-    <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester"/>
+  <job submitter="dbc" format="faktalink" alias="docbook">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/>   
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"/>
 
   </job>
-  <job submitter="dbc" format="forfatterw">
-    <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester"/>
+  <job submitter="dbc" format="forfatterw" alias="docbook">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin name="docbookannotate" classname="dk.dbc.opensearch.plugins.DocbookAnnotate"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"/>
   </job>
-  <job submitter="775100" format="katalog">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester"/>
+  <job submitter="775100" format="katalog" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/>    
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"/>
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"/>
   </job>
-  <job submitter="775100" format="ebsco">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester"/>
+  <job submitter="775100" format="ebsco" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/>   
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"/>
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"/>
   </job>
-  <job submitter="775100" format="ebrary">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester"/>
+  <job submitter="775100" format="ebrary" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  /> 
   </job>
-  <job submitter="710100" format="katalog">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" />
+  <job submitter="710100" format="katalog" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"  />
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  /> 
   </job>
-  <job submitter="dbc" format="matvurd">
-    <plugin name="docbookharvester" classname="dk.dbc.opensearch.plugins.DocbookHarvester" />
+  <job submitter="dbc" format="matvurd" alias="docbook">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
-  <job submitter="dbc" format="dr_atlas">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" />
+  <job submitter="dbc" format="dr_atlas" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation" />
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />  
   </job>  
-  <job submitter="dbc" format="anmeld">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" />
+  <job submitter="dbc" format="anmeld" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>  
-  <job submitter="dbc" format="artikler">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" />
+  <job submitter="dbc" format="artikler" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>  
-  <job submitter="dbc" format="dr_bonanza">
-    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+  <job submitter="dbc" format="dr_bonanza" alias="dkabm">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
-  <job submitter="dbc" format="louisiana">
-    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+  <job submitter="dbc" format="louisiana" alias="dkabm">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
-  <job submitter="dbc" format="dsd">
-    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+  <job submitter="dbc" format="dsd" alias="dkabm">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
-  <job submitter="150013" format="dbc">
-    <plugin name="marcxchangeharvester" classname="dk.dbc.opensearch.plugins.MarcxchangeHarvester" />
+  <job submitter="150013" format="dbc" alias="danmarcxchange">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>
-  <job submitter="dbc" format="nmalbum">
-    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+  <job submitter="dbc" format="nmalbum" alias="dkabm">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>
-  <job submitter="dbc" format="nmtrack">
-    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+  <job submitter="dbc" format="nmtrack" alias="dkabm">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>
-  <job submitter="dbc" format="nmcover">
-    <plugin name="dkabmharvester" classname="dk.dbc.opensearch.plugins.DKABMHarvester" />
+  <job submitter="dbc" format="nmcover" alias="dkabm">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
   </job>

@@ -23,7 +23,6 @@ package dk.dbc.opensearch.common.metadata;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.ByteArrayInputStream;
@@ -60,7 +59,7 @@ public class AdministrationStreamTest
         AdministrationStream instance = new AdministrationStream( indexingAlias );
 
         CargoContainer cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", IndexingAlias.Docbook, "test".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", "dockbook", "test".getBytes() );
 
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         boolean added = instance.addStream( co, co.getDataStreamType().getName()+".0" );
@@ -99,7 +98,7 @@ public class AdministrationStreamTest
     @Test
     public void emptySerializationFromEmptyStream() throws XMLStreamException, SAXException, IOException, OpenSearchTransformException
     {
-        String indexingAlias = IndexingAlias.Docbook.getName();
+        String indexingAlias = "dockbook";
         AdministrationStream instance = new AdministrationStream( indexingAlias );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -118,7 +117,7 @@ public class AdministrationStreamTest
         AdministrationStream instance = new AdministrationStream( id );
 
         CargoContainer cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", IndexingAlias.Docbook, "test".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", "dockbook", "test".getBytes() );
 
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         boolean added = instance.addStream( co, id );

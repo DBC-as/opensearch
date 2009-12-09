@@ -31,7 +31,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import static org.junit.Assert.*;
 import org.junit.*;
@@ -59,8 +58,8 @@ public class ForceFedoraPidTest {
 
     DataStreamType streamTypeOriginal = DataStreamType.OriginalData;
     DataStreamType streamTypeNotOriginal = DataStreamType.AdminData;
-    IndexingAlias indexAlias = IndexingAlias.Danmarcxchange;
-    IndexingAlias indexAliasNotValid = IndexingAlias.None;
+    String indexAlias = "danmarcxchange";
+    String indexAliasNotValid = "None";
    
     @Before public void SetUp() 
     {

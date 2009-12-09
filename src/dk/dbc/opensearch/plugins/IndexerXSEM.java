@@ -131,7 +131,7 @@ public class IndexerXSEM implements IIndexer
             }
             else {
 
-                String indexingAlias = co.getIndexingAlias().getName();
+                String indexingAlias = co.getIndexingAlias();
                 boolean isValidAlias = false;
                 try 
                 {

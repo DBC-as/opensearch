@@ -36,14 +36,13 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
 import dk.dbc.opensearch.plugins.Store;
 import dk.dbc.opensearch.plugins.OwnerRelation;
-import dk.dbc.opensearch.plugins.DocbookHarvester;
+import dk.dbc.opensearch.plugins.XMLHarvester;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
@@ -102,7 +101,7 @@ public class DatadockThreadTest
         referenceData = XMLUtils.documentFromString( refdata );
         mockCC = new CargoContainer();
         mockCC.setIdentifier( new PID( "710100:1" ) );
-        mockCC.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", IndexingAlias.Docbook, "<orig><child></orig>".getBytes() );
+        mockCC.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", "dockbook", "<orig><child></orig>".getBytes() );
     }
 
     private class MockIdentifier implements IIdentifier{}
@@ -161,7 +160,7 @@ public class DatadockThreadTest
         public void setStatusRetry( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
     }
 
-    @MockClass( realClass = DocbookHarvester.class )
+    @MockClass( realClass = XMLHarvester.class )
     public static class MockDBHarvest
     {
         @Mock
@@ -171,7 +170,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer getCargoContainer( DatadockJob job, byte[] referenceData )
+        public CargoContainer getCargoContainer( DatadockJob job, byte[] referenceData, String alias )
         {
             return mockCC;
         }
@@ -284,7 +283,7 @@ public class DatadockThreadTest
     @Test
 	public void testCall() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException, PluginException, InstantiationException,  IllegalAccessException, ParseException, XPathExpressionException, SQLException, TransformerException, HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.XMLHarvester" );
         testArrayList.add( "dk.dbc.opensearch.plugins.OwnerRelation" );
         testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
 
@@ -319,7 +318,7 @@ public class DatadockThreadTest
     @Test( expected = HarvesterUnknownIdentifierException.class )
 	public void testUnknownIdentifier() throws Exception
     {
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.XMLHarvester" );
 
         DatadockJob job = new DatadockJob( new UnknownIdentifier(), referenceData );
         ddThread = new DatadockThread( job, mockProcessqueue, mockObjectRepository, new ExceptionHarvester(), mockPluginResolver );
@@ -337,7 +336,7 @@ public class DatadockThreadTest
 	public void testHarvesterInvalidStatusChangeException() throws Exception
     {
 
-        testArrayList.add( "dk.dbc.opensearch.plugins.DocbookHarvester" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.XMLHarvester" );
         testArrayList.add( "dk.dbc.opensearch.plugins.OwnerRelation" );
         testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
 

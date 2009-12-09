@@ -34,7 +34,6 @@ import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
@@ -1203,13 +1202,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
     {
-        IndexingAlias indexingAlias = cargo.getIndexingAlias( DataStreamType.OriginalData );
+        String indexingAlias = cargo.getIndexingAlias( DataStreamType.OriginalData );
         if( indexingAlias == null )
         {
             log.warn( String.format( "Supplied CargoContainer (format %s) has no Original Data, I find it hard to construct an indexing alias given the circumstances. Instead, it'll be IndexingAlias.None", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() ) );
-            indexingAlias = IndexingAlias.None;
+            indexingAlias = "NULL - no alias found";
         }
-        AdministrationStream adminStream = new AdministrationStream( indexingAlias.getName() );
+        AdministrationStream adminStream = new AdministrationStream( indexingAlias );
 
         if( 0 == cargo.getCargoObjectCount() )
         {

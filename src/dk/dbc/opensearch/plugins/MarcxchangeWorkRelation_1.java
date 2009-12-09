@@ -40,7 +40,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 
 import dk.dbc.opensearch.common.types.InputPair;
@@ -325,7 +324,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
                 
             }
 
-            cargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", IndexingAlias.None, fakexml.getBytes() );
+            cargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", "fakeAlias", fakexml.getBytes() );
            
             cargo.addMetaData( workDC );
                        

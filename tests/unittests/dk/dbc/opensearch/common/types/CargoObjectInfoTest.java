@@ -24,7 +24,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoObjectInfo;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
@@ -67,7 +66,7 @@ public class CargoObjectInfoTest
         teststring = "æøå";
         data = teststring.getBytes( "UTF-8" );
     	DataStreamType dataStreamName = DataStreamType.OriginalData;
-        id = cc.add( dataStreamName, test_format, test_submitter, test_lang, cmt.getMimeType(), IndexingAlias.Docbook, data );    	
+        id = cc.add( dataStreamName, test_format, test_submitter, test_lang, cmt.getMimeType(), "dockbook", data );
     }
     
     
@@ -84,7 +83,7 @@ public class CargoObjectInfoTest
     public void testIndexingAliasGetFromId() throws IOException
     {
         CargoContainer cc = new CargoContainer();
-        IndexingAlias ia = IndexingAlias.getIndexingAlias( "docbook" );
+        String ia = "docbook";
         /* \todo: re bug #8719 uncomment when finished refatoring*/
         long id = cc.add( DataStreamType.OriginalData, test_format, test_submitter, test_lang, cmt.getMimeType(), ia, data );
 

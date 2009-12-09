@@ -1,6 +1,7 @@
 package dk.dbc.opensearch.components.pti;
 
 
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.types.InputPair;
@@ -26,14 +27,15 @@ public class PTIJobsMap extends JobMapCreator
 
     public PTIJobsMap() {}
 
-
     public static ArrayList< String > getPtiPluginsList( String submitter, String format ) throws ConfigurationException, IllegalArgumentException, IllegalStateException, IOException, SAXException, ParserConfigurationException
     {
         if( !initiated || ptiJobMap.isEmpty() )
         {
-            String path = PtiConfig.getPath();
-            JobMapCreator.validateXsdJobXmlFile( path );
-            JobMapCreator.init( path );
+            String XMLPath = PtiConfig.getPath();
+            String XSDPath = FileSystemConfig.getPTIJobsXsdPath();
+
+            JobMapCreator.validateXsdJobXmlFile( XMLPath, XSDPath );
+            JobMapCreator.init( XMLPath );
 
             ptiJobMap = jobMap;
             initiated = true;

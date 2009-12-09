@@ -73,7 +73,7 @@ public class CargoObject
                  String language, 
                  String submitter,
                  String format,
-                 IndexingAlias alias,
+                 String alias,
                  byte[] data ) throws IOException
     {
         CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
@@ -166,10 +166,9 @@ public class CargoObject
      * 
      * @return the IndexingAlias for the CargoObject
      */
-    public IndexingAlias getIndexingAlias()
+    public String getIndexingAlias()
     {
-        IndexingAlias ret_ia = coi.getIndexingAlias();
-        return ret_ia;
+        return coi.getIndexingAlias();
     }
 
 

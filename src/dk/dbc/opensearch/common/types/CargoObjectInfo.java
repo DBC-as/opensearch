@@ -67,7 +67,7 @@ public class CargoObjectInfo
     /** unique identifier of the CargoObject*/
     private long id;
     
-    private IndexingAlias alias;
+    private String alias;
 
 
     /**
@@ -81,7 +81,7 @@ public class CargoObjectInfo
                      String lang,
                      String submitter, 
                      String format,
-                     IndexingAlias alias,
+                     String alias,
                      long id )
     {
         log.debug( String.format( "Entering CargoObjectInfo" ) );
@@ -149,13 +149,13 @@ public class CargoObjectInfo
     }
 
 
-    void setIndexingAlias( IndexingAlias indexingAlias )
+    void setIndexingAlias( String indexingAlias )
     {
         alias = indexingAlias;
     }
 
 
-    IndexingAlias getIndexingAlias()
+    String getIndexingAlias()
     {
         return alias;
     }

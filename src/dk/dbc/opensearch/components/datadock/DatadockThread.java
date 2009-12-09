@@ -164,7 +164,7 @@ public class DatadockThread implements Callable<Boolean>
      * @throws SQLException
      */
     @Override
-    public Boolean call() throws InstantiationException, IllegalAccessException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, PluginException, SQLException
+    public Boolean call() throws ConfigurationException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
@@ -204,10 +204,13 @@ public class DatadockThread implements Callable<Boolean>
 
                         log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
 
+                        String indexingAlias = DatadockJobsMap.getIndexingAlias(datadockJob.getSubmitter(), datadockJob.getFormat());
+                        log.trace(String.format("retrieved indexingAlias %s", indexingAlias));
+
                         ICreateCargoContainer harvestPlugin = ( ICreateCargoContainer )plugin;
                         timer = System.currentTimeMillis();
 
-                        cargo = harvestPlugin.getCargoContainer( datadockJob, data );
+                        cargo = harvestPlugin.getCargoContainer( datadockJob, data, indexingAlias );
 
                         timer = System.currentTimeMillis() - timer;
                         log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );

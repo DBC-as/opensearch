@@ -34,8 +34,6 @@ import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -132,7 +130,7 @@ public class StoreTest
                    "dbc",
                    "da",
                    "text/xml",
-                   IndexingAlias.Danmarcxchange,
+                   "danmarcxchange",
                    dataBytes );
 
     }

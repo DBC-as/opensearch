@@ -165,7 +165,7 @@ public class CargoContainer
                      String submitter,
                      String language,
                      String mimetype,
-                     IndexingAlias alias,
+                     String alias,
                      byte[] data ) throws IOException
     {
         if( dataStreamName == null )
@@ -474,9 +474,9 @@ public class CargoContainer
      * @param dataStreamType the DataStreamType to match the CargoObject with
      * @return the alias that is used to index the data in the CargoObject with
      */
-    public IndexingAlias getIndexingAlias( DataStreamType dataStreamType )
+    public String getIndexingAlias( DataStreamType dataStreamType )
     {
-        IndexingAlias ret_ia = null;
+        String ret_ia = null;
         for( CargoObject co : data )
         {
             if( dataStreamType == co.getDataStreamType() )

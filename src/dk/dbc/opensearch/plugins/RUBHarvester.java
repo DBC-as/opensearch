@@ -23,7 +23,6 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -57,7 +56,7 @@ public class RUBHarvester implements ICreateCargoContainer
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
     {
         log.debug( "getCargoContainer() called" );
 
@@ -76,7 +75,7 @@ public class RUBHarvester implements ICreateCargoContainer
 
         try
         {
-            cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, IndexingAlias.Docbook, data );
+            cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, alias, data );
         }
         catch (IOException ioe)
         {

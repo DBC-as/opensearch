@@ -29,7 +29,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 import dk.dbc.opensearch.common.compass.CompassFactory;
 
 import org.compass.core.Compass;
@@ -68,8 +67,8 @@ public class IndexerXSEMTest {
 
     DataStreamType streamTypeOriginal = DataStreamType.OriginalData;
     DataStreamType streamTypeNotOriginal = DataStreamType.AdminData;
-    IndexingAlias indexAlias = IndexingAlias.Danmarcxchange;
-    IndexingAlias indexAliasNotValid = IndexingAlias.None;
+    String indexAlias = "danmarcxchange";
+    String indexAliasNotValid = "None";
 
     CargoContainer cargo = new CargoContainer();
     IndexerXSEM indexPlugin = new IndexerXSEM();

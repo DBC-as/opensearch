@@ -24,7 +24,6 @@ package dk.dbc.opensearch.common.types;
 
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -64,7 +63,7 @@ public class CargoObjectTest {
                               language, 
                               submitter,
                               format,
-                              IndexingAlias.Docbook,
+                              "docbook",
                               data );
     }
 
@@ -93,7 +92,7 @@ public class CargoObjectTest {
      */
     @Test public void testGetByteArrayLength() throws IOException
     {
-        co = new CargoObject( dst, mimetype, language, submitter, format, IndexingAlias.Docbook, data );
+        co = new CargoObject( dst, mimetype, language, submitter, format, "docbook", data );
         assertTrue( data.length == co.getContentLength() );
     }
 }

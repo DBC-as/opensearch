@@ -94,7 +94,7 @@ public class DatadockJobsMapTest
     @MockClass( realClass = JobMapCreator.class )
     public static class MockJobMapCreator
     {
-        @Mock public void validateXsdJobXmlFile( String path )
+        @Mock public void validateXsdJobXmlFile( String XMLPath, String XSDPath )
         {
             System.out.println( "Validates just fine, thank you." );
         }

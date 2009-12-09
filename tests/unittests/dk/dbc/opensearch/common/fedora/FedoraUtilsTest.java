@@ -21,7 +21,6 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IndexingAlias;
 
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
@@ -77,7 +76,7 @@ public class FedoraUtilsTest// extends XMLTestCase
         cargo = new CargoContainer( );
         cargo.setIdentifier( new PID("dbc:1") );
         
-        cargo.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "da", "text/xml", IndexingAlias.getIndexingAlias( "docbook" ), cargoBytes );
+        cargo.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "da", "text/xml", "docbook", cargoBytes );
         String adminXml = "<admin-stream><indexingalias name=\"docbook\"/><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
         AdministrationStream adminstream = new AdministrationStream( new ByteArrayInputStream( adminXml.getBytes() ), true );
         cargo.addMetaData( adminstream );

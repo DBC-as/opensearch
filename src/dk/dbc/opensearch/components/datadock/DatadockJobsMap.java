@@ -27,6 +27,7 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -51,10 +52,9 @@ public class DatadockJobsMap extends JobMapCreator
 
     public DatadockJobsMap() {}
 
-
-    public static ArrayList< String > getDatadockPluginsList( String submitter, String format ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException//, IllegalArgumentException, IllegalStateException
+    private static void init( String submitter, String format) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
     {
-        if( null == submitter ||
+        if (null == submitter ||
              null == format ||
              submitter.isEmpty() ||
              format.isEmpty() )
@@ -65,13 +65,21 @@ public class DatadockJobsMap extends JobMapCreator
         }
         if( !initiated )
         {
-            String path = DatadockConfig.getPath();
-            JobMapCreator.validateXsdJobXmlFile( path );            
-            JobMapCreator.init( path );
+            String XMLPath = DatadockConfig.getPath();
+            String XSDPath = FileSystemConfig.getDataDockJobsXsdPath();
+
+            JobMapCreator.validateXsdJobXmlFile( XMLPath, XSDPath );
+            JobMapCreator.init( XMLPath );
 
             datadockJobMap = JobMapCreator.jobMap;
             initiated = true;
         }
+    }
+
+    public static ArrayList< String > getDatadockPluginsList( String submitter, String format ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException//, IllegalArgumentException, IllegalStateException
+    {
+        init( submitter, format );
+
         datadockPluginList = datadockJobMap.get( new InputPair< String, String >( submitter, format ) );
 
         if( null == datadockPluginList )
@@ -81,5 +89,14 @@ public class DatadockJobsMap extends JobMapCreator
             throw new IllegalStateException( error );
         }
         return datadockPluginList;
+    }
+
+    /**
+     * @returns indexalias if one is found, null otherwise
+     */
+    public static String getIndexingAlias(String submitter, String format) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
+    {
+     init(submitter, format);
+     return aliasMap.get(new InputPair<String, String>(submitter, format));
     }
 }

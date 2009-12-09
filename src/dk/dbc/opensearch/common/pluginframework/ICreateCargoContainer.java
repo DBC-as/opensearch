@@ -36,12 +36,14 @@ public interface ICreateCargoContainer extends IPluggable
 	/**
      * \todo: describe
      *
-     * @param job 
-	 * @return the CargoContainer that results from the plugin activity 
+     * @param job
+     * @param data
+     * @param alias the indexingAlias for this container
+     * @return the CargoContainer that results from the plugin activity
      * @throws IOException if the URI provided by the DatadockJob from the init call could not be read
-	 * @throws ParserConfigurationException 
-	 * @throws SAXException 
-	 */
-    public CargoContainer getCargoContainer( DatadockJob job, byte[] data ) throws PluginException;
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException;
 
 }

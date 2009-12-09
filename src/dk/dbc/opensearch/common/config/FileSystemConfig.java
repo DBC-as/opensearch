@@ -91,25 +91,35 @@ public class FileSystemConfig extends Config
         return sanitize( ret );
     }
 	
-	
     public static String getPluginsPath() throws ConfigurationException
     {		
         FileSystemConfig fc = new FileSystemConfig();		
         return fc.getFileSystemPluginsPath();
     }
 	
-	
-	/* JOBS XSD FILE */
-    private String getFileSystemJobsXsdPath()
+	/* JOBS DATADOCK XSD FILE */
+    private String getFileSystemDatadockJobsXsdPath()
     {
-        String ret = config.getString( "filesystem.jobsxsd" );
+        String ret = config.getString( "filesystem.datadock-jobs-xsd" );
         return sanitize( ret );
     }
     
-	
-    public static String getJobsXsdPath() throws ConfigurationException
+    public static String getDataDockJobsXsdPath() throws ConfigurationException
     {		
         FileSystemConfig fc = new FileSystemConfig();		
-        return fc.getFileSystemJobsXsdPath();
+        return fc.getFileSystemDatadockJobsXsdPath();
+    }
+
+	/* JOBS PTI XSD FILE */
+    private String getFileSystemPTIJobsXsdPath()
+    {
+        String ret = config.getString( "filesystem.pti-jobs-xsd" );
+        return sanitize( ret );
+    }
+
+    public static String getPTIJobsXsdPath() throws ConfigurationException
+    {
+        FileSystemConfig fc = new FileSystemConfig();
+        return fc.getFileSystemPTIJobsXsdPath();
     }
 }

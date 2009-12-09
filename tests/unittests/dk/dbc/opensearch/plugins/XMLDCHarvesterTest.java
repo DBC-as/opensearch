@@ -18,36 +18,28 @@
 */
 
 /**
- * \file MarcxchangeHarvesterTest.java
- * \brief Unittest for MarcxchangeHarvester class
+ * \file XMLDCHarvesterTest.java
+ * \brief Unittest for XMLDCHarvester class
  */
 
 
 package dk.dbc.opensearch.plugins;
 
-//import dk.dbc.opensearch.common.fedora.FedoraHandle;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
-import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.IndexingAlias;
-import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-//import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 
-import javax.xml.rpc.ServiceException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.xml.sax.InputSource;
 
-import java.net.MalformedURLException;
-import org.apache.commons.configuration.ConfigurationException;
 import java.io.IOException;
 
 import org.junit.*;
@@ -60,9 +52,9 @@ import static mockit.Mockit.setUpMocks;
 import static mockit.Mockit.tearDownMocks;
 
 
-public class MarcxchangeHarvesterTest
+public class XMLDCHarvesterTest
 {
-    private MarcxchangeHarvester harvestPlugin;
+    private XMLDCHarvester harvestPlugin;
     private CargoContainer cc;
     String submitter = "dbc";
     String format = "marcxchange";
@@ -89,7 +81,7 @@ public class MarcxchangeHarvesterTest
                      String submitter,
                      String language,
                      String mimetype,
-                     IndexingAlias alias,
+                     String alias,
                      byte[] data ) throws IOException
         {
             throw new IOException( "test" );
@@ -134,8 +126,8 @@ public class MarcxchangeHarvesterTest
     @Test
     public void getCargoContainerTest() throws Exception
     {
-        harvestPlugin = new MarcxchangeHarvester();
-        cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+        harvestPlugin = new XMLDCHarvester();
+        cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias");
         //There is data in the returned CargoContainer
         assertEquals( 1, cc.getCargoObjectCount() );
         //The added data has been given the correct DataStreamType
@@ -158,9 +150,9 @@ public class MarcxchangeHarvesterTest
     @Test( expected = XPathExpressionException.class )
     public void getCargoContainerWithInvalidData() throws Exception
     {       
-        harvestPlugin = new MarcxchangeHarvester();
+        harvestPlugin = new XMLDCHarvester();
         try{
-            cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes );
+            cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes, "fakeAlias" );
         }
         catch( PluginException pe )
         {
@@ -174,7 +166,7 @@ public class MarcxchangeHarvesterTest
     @Test
     public void testPluginType() throws Exception
     {        
-        harvestPlugin = new MarcxchangeHarvester();
+        harvestPlugin = new XMLDCHarvester();
         assertEquals( PluginType.HARVEST, harvestPlugin.getPluginType() );
 
     }
@@ -187,10 +179,10 @@ public class MarcxchangeHarvesterTest
     @Test( expected = IllegalArgumentException.class )
     public void noDataGivenTest() throws Exception
     {      
-        harvestPlugin = new MarcxchangeHarvester();
+        harvestPlugin = new XMLDCHarvester();
         try
         {
-            cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes );
+            cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes, "fakealias" );
         }
         catch( PluginException pe )
         {
@@ -206,10 +198,10 @@ public class MarcxchangeHarvesterTest
     public void cargoContainerCantAddDataTest() throws Exception
     {
         setUpMocks( MockCargoContainer.class );
-      harvestPlugin = new MarcxchangeHarvester();
+      harvestPlugin = new XMLDCHarvester();
         try
         {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes );
+            cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias" );
         }
         catch( PluginException pe )
         {
