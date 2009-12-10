@@ -14,23 +14,19 @@
          lockPollInterval="100"
      />
 
-     <converters>
-       
+     <converters>       
        <converter name="xmlContentMapping"
                   type="org.compass.core.converter.mapping.xsem.XmlContentMappingConverter">
        </converter>
-
        <converter name="lowercase"
                   type="dk.dbc.opensearch.common.compass.LowercaseXmlConverter">
        </converter>
      </converters>
 
-     <searchEngine>  
-         <analyzer name="default" type="Simple">
+     <searchEngine>
+       <analyzer name="default" type="CustomAnalyzer" analyzerClass="dk.dbc.opensearch.common.lucene.DBCAnalyzer">
          </analyzer>
-         <!-- <optimizer schedule="false" />      -->     
      </searchEngine>
-     
      
      <settings> 
        <!-- status på forskellige bygge ting. 
@@ -59,9 +55,6 @@
        <setting name="compass.xsem.namespace.ac.uri" value="http://biblstandard.dk/ac/namespace/" />
        <setting name="compass.xsem.namespace.dkdcplus.uri" value="http://biblstandard.dk/abm/namespace/dkdcplus/" />
        <setting name="compass.xsem.namespace.xsi.uri" value="http://www.w3.org/2001/XMLSchema-instance" />
-     </settings>
-
-
-          
+     </settings>     
    </compass>
 </compass-core-config>
