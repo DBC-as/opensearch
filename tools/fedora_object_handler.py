@@ -51,9 +51,10 @@ class FedoraObjectHandler( object ):
         returns a dictionary with the pids as keys and the foxml for
         the pid as value.
         """
-        pidlist = self._construct_pidlist( pidlist )
+        self._construct_pid_list( pidlist )
+
         datadict = dict()
-        for pid in pidlist:
+        for pid in self.pidlist:
             datadict[ pid ] = self._get_xml( pid )
 
         return datadict
@@ -66,9 +67,10 @@ class FedoraObjectHandler( object ):
         boolean indicating the result of the delete operation on that
         pid at second position.
         """
-        pidlist = self._construct_pidlist( pidlist )
+        self._construct_pidlist( pidlist )
         return_values = list()
-        for pid in pidlist:
+
+        for pid in self.pidlist:
             return_values = [ pid, self._delete_object( pid ) ]
         return return_values
     
@@ -81,8 +83,9 @@ class FedoraObjectHandler( object ):
         """ Tries to recognize the format of the pidlist (can be one,
         several separated by commas or a range within a namespace)
         """
-        self.pidlist = list()
         pidlist = pidlist[0]
+        self.pidlist = list()
+        #pidlist = pidlist[0]
         if "-" in pidlist:
             firstpid =  int( pidlist[ pidlist.index( ":" )+1:pidlist.index( "-" ) ] )
             lastpid = int( pidlist[ pidlist.rindex( ":" )+1:len( pidlist ) ] )
@@ -95,7 +98,8 @@ class FedoraObjectHandler( object ):
         else:
             self.pidlist.append( pidlist )
 
-            
+        print self.pidlist
+
     def _delete_object( self, pid ):
         """Deletes a single object from the fedora repository.  It is
         unfortunately not (yet) possible to specify a list or a range
@@ -154,7 +158,9 @@ class FedoraObjectHandler( object ):
         required) and will return the result in `return_format`, where
         `return_format` is one of `xml` or `html`
         """
-        search_url = "%s/objects?terms=%s%s&resultFormat=%s"%(self.fedora_url, search_terms, "".join( [ "&%s=true"%(field) for field in fields ] ), return_format )
+        search_url = "%s/objects?query=%s%s&resultFormat=%s"%(self.fedora_url, search_terms, "".join( [ "&%s=true"%(field) for field in fields ] ), return_format )
+
+        print search_url
 
         req = urllib2.Request( search_url )
         resp = self._do_http_request( req )
