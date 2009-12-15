@@ -1,8 +1,8 @@
-/*   
+/*
   This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
- 
+
   opensearch is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Plugin for annotating docbook carcoContainers
+ * Plugin for creating relations between reviews and there target
  */
 public class ReviewRelation implements IRelation
 {
@@ -61,13 +61,13 @@ public class ReviewRelation implements IRelation
 
 
     /**
-     * Constructor for the DocbookAnnotate plugin.
+     * Constructor for the ReviewRelation plugin.
      */
     public ReviewRelation()
     {
-        log.trace( "ReviewRelation constructor called" );
+        log.trace( "Constructor called" );
         //nsc = new OpensearchNamespaceContext();
-        
+
         types = new Vector< String >();
         types.add( "Bog" );
         types.add( "DVD" );
@@ -85,17 +85,17 @@ public class ReviewRelation implements IRelation
 
 
     /**
-     * The "main" method of this plugin. 
+     * The "main" method of this plugin.
      *
      * @param CargoContainer The CargoContainer to add relations to
      *
      * @returns A CargoContainer containing relations
-     * 
+     *
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
     {
-    	log.trace( "getCargoContainer() called" );
+        log.trace( "getCargoContainer() called" );
 
         if ( cargo == null )
         {
@@ -124,41 +124,18 @@ public class ReviewRelation implements IRelation
         String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
         String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
         String identifier = cargo.getIdentifierAsString();
-        
+
         log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
-        
-        if ( dcType.equals( marterialevurderinger ) )
-        {        	
-        	log.trace( String.format( "entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
-        	
-        	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
-        	if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
-        	{
-                try
-                {
-                    TargetFields targetTitle = FedoraObjectFields.TITLE;
-                    TargetFields targetCreator = FedoraObjectFields.CREATOR;
-                    ok = addRelationship( identifier, targetTitle, dcTitle, targetCreator, dcCreator );
-                }
-                catch( ObjectRepositoryException ex )
-                {
-                    String error = String.format( "Failed to add Relationship on %s with %s and %s", identifier, dcTitle, dcCreator );
-                    log.error( error );
-                    throw new PluginException( error, ex );
-                }
 
-        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
-        	}
-        	else
-        	{
-        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) );
-        	}
-        }
-        else if ( types.contains( dcType ) )
+        if ( dcType.equals( marterialevurderinger )|| types.contains( dcType ) )
         {
-        	// match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
-        	if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
-        	{
+            //log.trace( String.format( "entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
+
+            //findtarget
+
+            // match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
+            if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
+            {
                 try
                 {
                     TargetFields targetTitle = FedoraObjectFields.TITLE;
@@ -172,18 +149,44 @@ public class ReviewRelation implements IRelation
                     throw new PluginException( error, ex );
                 }
 
-        		log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
-        	}
-        	else
-        	{
-        		log.warn( String.format( "dcSource '%s' is empty", dcSource ) );
-        	}
+                log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
+            }
+            else
+            {
+                log.warn( String.format( "dcSource '%s' is empty", dcSource ) );
+            }
         }
+        //  else if ( types.contains( dcType ) )
+        //         {
+        //              // match SOURCE: dcTitle and dcCreator on TARGET dcTitle and dcCreator
+        //              if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
+        //              {
+        //                 try
+        //                 {
+        //                     TargetFields targetTitle = FedoraObjectFields.TITLE;
+        //                     TargetFields targetCreator = FedoraObjectFields.CREATOR;
+        //                     ok = addRelationship( identifier, targetTitle, dcTitle, targetCreator, dcCreator );
+        //                 }
+        //                 catch( ObjectRepositoryException ex )
+        //                 {
+        //                     String error = String.format( "Failed to add Relationship on %s with %s and %s", identifier, dcTitle, dcCreator );
+        //                     log.error( error );
+        //                     throw new PluginException( error, ex );
+        //                 }
+
+        //                      log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
+        //              }
+        //              else
+        //              {
+        //                      log.warn( String.format( "dcSource '%s' is empty", dcSource ) );
+        //              }
+        //         }
         else if ( dcType.equals( anmeldelse ) )
         {
-        	// match SOURCE: dcRelation on TARGET: identifier
-        	if ( ! dcTitle.equals( "" ) )
-        	{
+            // match SOURCE: dcRelation on TARGET: identifier
+            if ( ! dcTitle.equals( "" ) )
+            {
+                //find target
                 try
                 {
                     TargetFields targetSource = FedoraObjectFields.SOURCE;
@@ -195,41 +198,41 @@ public class ReviewRelation implements IRelation
                     log.error( error );
                     throw new PluginException( error, ex );
                 }
-        		log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, identifier ) );
-        	}
-        	else
-        	{
-        		log.warn( String.format( "dcCreator '%s' is empty", dcCreator ) );
-        	}
+                log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, identifier ) );
+            }
+            else
+            {
+                log.warn( String.format( "dcCreator '%s' is empty", dcCreator ) );
+            }
         }
-        
+
         log.debug( String.format( "MWR (pid: '%s') found dcVariables: '%s', '%s', '%s', and '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
         log.trace( "Adding relationship succeeded: " + ok );
-        
+
         return ok;
     }
-    
-    
+
+
     private boolean addRelationship( String dcIdentifier, TargetFields property_1, String dcVariable_1, TargetFields property_2, String dcVariable_2 ) throws ObjectRepositoryException
     {
-    	FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
+        FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
 
-		boolean	ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
-		
-		return ok;
+        boolean ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
+
+        return ok;
     }
-    
-    
+
+
     private boolean addRelationship( String dcIdentifier, TargetFields property, String dcVariable ) throws ObjectRepositoryException
     {
-    	FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
-        
+        FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
+
         boolean  ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property, dcVariable, namespace );
-		
-		return ok;
+
+        return ok;
     }
 
-    
+
     public PluginType getPluginType()
     {
         return pluginType;
