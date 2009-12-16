@@ -26,28 +26,27 @@
 
 package dk.dbc.opensearch.components.harvest ;
 
+
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
-//import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.log4j.Logger;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -91,12 +90,12 @@ public class ESHarvest implements IHarvest
      *  Please notice, that as a consequence of the above, only one ES-Harvester is allowed to
      *  run on an ES-base.
      */
-    public void start( ) throws HarvesterIOException
+    public void start() throws HarvesterIOException
     {
-	// \todo: Why do we want to call start on a Harvester? Shouldn't it not just start when it is created? (i.e. the constructor is called)
+        // \todo: Why do we want to call start on a Harvester? Shouldn't it not just start when it is created? (i.e. the constructor is called)
 
-	// \Note: Currently this function is "empty". At some point it should be removed completely.
-	log.info( "Starting the ES-Harvester" );
+        // \Note: Currently this function is "empty". At some point it should be removed completely.
+        log.info( "Starting the ES-Harvester" );
         log.debug( "ESHarvest started" );
 
     }
@@ -134,108 +133,111 @@ public class ESHarvest implements IHarvest
     
     private int retrieveCandidatesToQueue( Connection conn ) throws HarvesterIOException
     {
+        int retrievedAmount = 0;
 
-	int retrievedAmount = 0;
-
-	try
+        try
         {
-	    int targetRef = -1;
-            Statement stmt = conn.createStatement();
-	    
-	    //
-	    // Find the next targetreference:
-	    //
-	    String selectQuery = new String( "SELECT targetreference " +
-					     "FROM updatepackages " +
-					     "WHERE taskstatus = 0 " +
-					     "ORDER BY update_priority , creationdate , targetreference");
-	    ResultSet rs1 = stmt.executeQuery ( selectQuery );
-	    if ( rs1.next() ) 
-	    {
-		targetRef = rs1.getInt(1);
-	    } 
-	    else 
-	    {
-		// No candidates found. Queue empty.
-		return 0; 
-	    }
+            int targetRef = -1;
+                Statement stmt = conn.createStatement();
 
-	    // 
-	    // Set the taskpackage with the found targetreference to active:
-	    // 
-	    String updateTargetRefQuery = String.format( "UPDATE taskpackage " +
-							 "SET taskstatus=1, accessdate=sysdate, substatus=substatus+1 " +
-							 "WHERE targetreference = %s", targetRef );
-	    int res = stmt.executeUpdate( updateTargetRefQuery );
-	    if ( res != 1 )
-	    {
-		conn.rollback();
-		stmt.close();
-		String errorMsg = String.format( "Error: updated %s row(s). 1 row was expected", res );
-		log.fatal( errorMsg );
-		throw new HarvesterIOException( errorMsg );
-	    }
+            //
+            // Find the next targetreference:
+            //
+            String selectQuery = new String( "SELECT targetreference " +
+                                             "FROM updatepackages " +
+                                             "WHERE taskstatus = 0 " +
+                                             "ORDER BY update_priority , creationdate , targetreference");
+            ResultSet rs1 = stmt.executeQuery ( selectQuery );
+            if ( rs1.next() )
+            {
+                targetRef = rs1.getInt(1);
+            }
+            else
+            {
+                // No candidates found. Queue empty.
+                return 0;
+            }
 
-	    // 
-	    // Retrieve all the lbnr's associated with the targetreference:
-	    //
-	    String selectLbnrQuery = String.format( "SELECT lbnr " +
-						    "FROM taskpackagerecordstructure " +
-						    "WHERE targetreference = %s " +
-						    "AND recordstatus = 2 " +
-						    "ORDER BY lbnr",
-						    targetRef );
-	    ResultSet rs2 = stmt.executeQuery( selectLbnrQuery );
-	    while ( rs2.next() )
-	    {
-		// ComparablePair pair = new ComparablePair( targetRef, rs2.getInt(1) );
-		ESIdentifier id = new ESIdentifier( targetRef, rs2.getInt(1) );
-		// Add pair to backend of queue
-		jobCandidatesQueue.add( id );
-		retrievedAmount++;
-	    }
+            //
+            // Set the taskpackage with the found targetreference to active:
+            //
+            String updateTargetRefQuery = String.format( "UPDATE taskpackage " +
+                                                         "SET taskstatus=1, accessdate=sysdate, substatus=substatus+1 " +
+                                                         "WHERE targetreference = %s", targetRef );
+            int res = stmt.executeUpdate( updateTargetRefQuery );
+            if ( res != 1 )
+            {
+                conn.rollback();
+                stmt.close();
+                String errorMsg = String.format( "Error: updated %s row(s). 1 row was expected", res );
+                log.fatal( errorMsg );
+                throw new HarvesterIOException( errorMsg );
+            }
 
-	}
-	catch ( SQLException sqle )
-	{
-	    String errorMsg = new String( "An SQL error occured while trying to retrieve job candidates" );
-	    log.fatal( errorMsg, sqle );
-	    throw new HarvesterIOException( errorMsg, sqle );
-	}
+            //
+            // Retrieve all the lbnr's associated with the targetreference:
+            //
+            String selectLbnrQuery = String.format( "SELECT lbnr " +
+                                                    "FROM taskpackagerecordstructure " +
+                                                    "WHERE     targetreference = %s " +
+                                                    "      AND recordstatus = 2 " +
+                                                    "ORDER BY lbnr",
+                                                    targetRef );
 
-	return retrievedAmount;
+            ResultSet rs2 = stmt.executeQuery( selectLbnrQuery );
+            while ( rs2.next() )
+            {
+                // ComparablePair pair = new ComparablePair( targetRef, rs2.getInt(1) );
+                ESIdentifier id = new ESIdentifier( targetRef, rs2.getInt(1) );
+                // Add pair to backend of queue
+                jobCandidatesQueue.add( id );
+                retrievedAmount++;
+            }
 
+        }
+        catch ( SQLException sqle )
+        {
+            String errorMsg = new String( "An SQL error occured while trying to retrieve job candidates" );
+            log.fatal( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, sqle );
+        }
+
+        return retrievedAmount;
     }
+
 
     public String retrieveReferenceData( ESIdentifier id, Connection conn) throws HarvesterIOException
     {
+        String referenceData = null;
 
-	String referenceData = null;
+        try
+        {
+            Statement stmt = conn.createStatement();
+            String selectQuery = String.format( "SELECT supplementalid3 " +
+                                                "FROM suppliedrecords " +
+                                                "WHERE     targetreference = %s " +
+                                                "      AND lbnr = %s",
+                                                id.getTargetRef(),
+                                                id.getLbNr() );
 
-	try
-	{
-	    Statement stmt = conn.createStatement();
-	    String selectQuery = String.format( "SELECT supplementalid3 " +
-						"FROM suppliedrecords " +
-						"WHERE targetreference = %s " +
-						"AND lbnr = %s", 
-						id.getTargetRef(), id.getLbNr() );
-	    ResultSet rs = stmt.executeQuery( selectQuery );
-	    if ( rs.next() )
-	    {
-		referenceData = rs.getString(1);
-	    }
-	    else
-	    {
-		
-	    }
-	}
-	catch( SQLException sqle )
-	{
-	}
-	
-	return referenceData;
+            ResultSet rs = stmt.executeQuery( selectQuery );
+            if ( rs.next() )
+            {
+                referenceData = rs.getString(1);
+            }
+            else
+            {
+
+            }
+        }
+        catch( SQLException sqle )
+        {
+
+        }
+
+        return referenceData;
     }
+
 
     public List< IJob > getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
@@ -257,108 +259,105 @@ public class ESHarvest implements IHarvest
 
         List< IJob > theJobList = new ArrayList< IJob >();
 
-	log.info( String.format( "Queue size is %s", jobCandidatesQueue.size() ) );
-	//	int retrievedAmount = 0;
-	int retrievedAmount = jobCandidatesQueue.size();
-	while ( jobCandidatesQueue.size() < maxAmount ) 
-	{
-	    log.info( "Adding more candidates to Queue" );
+        log.info( String.format( "Queue size is %s", jobCandidatesQueue.size() ) );
+        int retrievedAmount = jobCandidatesQueue.size();
+        while ( jobCandidatesQueue.size() < maxAmount )
+        {
+            log.info( "Adding more candidates to Queue" );
 
-	    // retrive more candidates and add them to jobCandidatesQueue:
-	    int retrieved = retrieveCandidatesToQueue( conn );
-	    retrievedAmount += retrieved;
-	    log.info( String.format( "Queue size is now: %s", jobCandidatesQueue.size() ) );
-	    if ( retrieved == 0 )
-	    {
-		// No new candidates were added.
-		log.info("Break out");
-		break;
-	    }
-	}
-		
-	int addAmount = retrievedAmount < maxAmount ? retrievedAmount : maxAmount;
-	log.info( "addAmount = " + addAmount );
+            // retrive more candidates and add them to jobCandidatesQueue:
+            int retrieved = retrieveCandidatesToQueue( conn );
+            retrievedAmount += retrieved;
+            log.info( String.format( "Queue size is now: %s", jobCandidatesQueue.size() ) );
+            if ( retrieved == 0 )
+            {
+                // No new candidates were added.
+                log.info("Break out");
+                break;
+            }
+        }
 
-	for (int i = 0; i < addAmount; ++i) 
-	{
-	    // Update Recordstatus
-	    ESIdentifier id = jobCandidatesQueue.removeFirst();
-	    try
-	    {
-		setRecordStatusToInProgress( id, conn );
-	    }
-	    catch( SQLException sqle )
-	    {
-		String errorMsg = new String( "An SQL error occured while trying to change recordstatus" );
-		log.fatal( errorMsg, sqle );
-		throw new HarvesterIOException( errorMsg, sqle );
-	    }
-	    String referenceData = retrieveReferenceData( id, conn );
-	    
+        int addAmount = retrievedAmount < maxAmount ? retrievedAmount : maxAmount;
+        log.info( "addAmount = " + addAmount );
 
-	    Document doc = null;
-	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        for ( int i = 0; i < addAmount; ++i )
+        {
+            // Update Recordstatus
+            ESIdentifier id = jobCandidatesQueue.removeFirst();
+            try
+            {
+                setRecordStatusToInProgress( id, conn );
+            }
+            catch( SQLException sqle )
+            {
+                String errorMsg = new String( "An SQL error occured while trying to change recordstatus" );
+                log.fatal( errorMsg, sqle );
+                throw new HarvesterIOException( errorMsg, sqle );
+            }
 
-	    boolean DocOK = true; // The Doc structure has no problems
-	    try
-            {
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
-	    }
-	    catch( ParserConfigurationException pce )
-            {
-		log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce ) );
-		DocOK = false;
-	    }
-	    catch( SAXException se )
-            {
-		log.error( String.format( "Could not parse data: '%s'", se ) );
-		DocOK = false;
-	    }
-	    catch( IOException ioe )
-            {
-		log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
-		DocOK = false;
-	    }
+            String referenceData = retrieveReferenceData( id, conn );
 
-	    if ( DocOK )
-            {
-		IJob theJob = new Job( id, doc );
-		theJobList.add( theJob );
-	    }
-	    else
-            {
-		try
-		{
-		    setStatusFailure( id, "The referencedata contains malformed XML" );
-		}
-		catch ( HarvesterUnknownIdentifierException huie )
-		{
-		    log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
-		}
-		catch ( HarvesterInvalidStatusChangeException hisce )
-		{
-		    log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
-		}
-	    }
+            Document doc = null;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-	}
+            boolean DocOK = true; // The Doc structure has no problems
+            try
+            {
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
+            }
+            catch( ParserConfigurationException pce )
+            {
+                log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce ) );
+                DocOK = false;
+            }
+            catch( SAXException se )
+            {
+                log.error( String.format( "Could not parse data: '%s'", se ) );
+                DocOK = false;
+            }
+            catch( IOException ioe )
+            {
+                log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
+                DocOK = false;
+            }
+
+            if ( DocOK )
+            {
+                IJob theJob = new Job( id, doc );
+                theJobList.add( theJob );
+            }
+            else
+            {
+                try
+                {
+                    setStatusFailure( id, "The referencedata contains malformed XML" );
+                }
+                catch ( HarvesterUnknownIdentifierException huie )
+                {
+                    log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
+                }
+                catch ( HarvesterInvalidStatusChangeException hisce )
+                {
+                    log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
+                }
+            }
+        }
 
         log.info( String.format( "Found %s available Jobs", theJobList.size() ) );
 
         releaseConnection( conn );
 
-// 	// DEBUG while devoloping
-// 	int c = 0;
-// 	for( ESIdentifier id : jobCandidatesQueue )
-// 	{
-// 	    log.info( String.format( "Candidate[%d] { %d , %d }", c, id.getTargetRef(), id.getLbNr() ) );
-// 	    c++;
-// 	}
-// 	throw new HarvesterIOException( "Controlled exit" );
+        // 	// DEBUG while devoloping
+        // 	int c = 0;
+        // 	for( ESIdentifier id : jobCandidatesQueue )
+        // 	{
+        // 	    log.info( String.format( "Candidate[%d] { %d , %d }", c, id.getTargetRef(), id.getLbNr() ) );
+        // 	    c++;
+        // 	}
+        // 	throw new HarvesterIOException( "Controlled exit" );
 
-	return theJobList;
-
+    	return theJobList;
     }
 
 

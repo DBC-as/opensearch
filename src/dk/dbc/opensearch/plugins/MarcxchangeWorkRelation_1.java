@@ -196,7 +196,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
         int maximumResults = 10000;
 
-        if( ! types.contains( dcType ) )
+        if ( ! types.contains( dcType ) )
         {
             log.debug( String.format( "finding work relations for dcType %s", dcType ) );
             if ( ! dcSource.equals( "" ) )
@@ -273,8 +273,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
 
         if ( fedoraPids == null || fedoraPids.size() == 0 )
         {
-            log.debug( String.format("ja7w: No Work found creating new work ") );
-                       
+            log.debug( String.format("ja7w: No Work found creating new work ") );                       
             workPid = CreateWorkObject( dc );
         }
         else // fedoraPids.size() > 0

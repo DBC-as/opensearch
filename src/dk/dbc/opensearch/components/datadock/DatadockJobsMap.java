@@ -46,24 +46,25 @@ public class DatadockJobsMap extends JobMapCreator
 {
     static Logger log = Logger.getLogger( DatadockJobsMap.class );
 
+
     private static boolean initiated = false;
     private static ArrayList< String > datadockPluginList = new ArrayList< String >();
     private static HashMap< InputPair< String, String >, ArrayList< String > > datadockJobMap;
 
     public DatadockJobsMap() {}
 
+
     private static void init( String submitter, String format) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
     {
-        if (null == submitter ||
-             null == format ||
-             submitter.isEmpty() ||
-             format.isEmpty() )
+        if ( submitter == null || submitter.isEmpty() ||
+             format == null || format.isEmpty() )
         {
             String error = "Submitter or format was given as null values, cannot continue";
             log.error( error );
             throw new IllegalStateException( error );
         }
-        if( !initiated )
+
+        if ( ! initiated )
         {
             String XMLPath = DatadockConfig.getPath();
             String XSDPath = FileSystemConfig.getDataDockJobsXsdPath();
@@ -76,27 +77,31 @@ public class DatadockJobsMap extends JobMapCreator
         }
     }
 
+
     public static ArrayList< String > getDatadockPluginsList( String submitter, String format ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException//, IllegalArgumentException, IllegalStateException
     {
         init( submitter, format );
 
         datadockPluginList = datadockJobMap.get( new InputPair< String, String >( submitter, format ) );
 
-        if( null == datadockPluginList )
+        if ( datadockPluginList == null )
         {
             String error = String.format( "Could not construct plugin list for submitter %s, format %s", submitter, format );
             log.error( error );
             throw new IllegalStateException( error );
         }
+
         return datadockPluginList;
     }
+
 
     /**
      * @returns indexalias if one is found, null otherwise
      */
-    public static String getIndexingAlias(String submitter, String format) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
+    public static String getIndexingAlias( String submitter, String format ) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
     {
-     init(submitter, format);
-     return aliasMap.get(new InputPair<String, String>(submitter, format));
+        init( submitter, format );
+
+        return aliasMap.get(new InputPair< String, String >( submitter, format ) );
     }
 }

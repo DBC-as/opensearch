@@ -25,11 +25,13 @@
 
 package dk.dbc.opensearch.components.datadock;
 
+
 import dk.dbc.opensearch.common.config.DataBaseConfig;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.IDBConnection;
-import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
+import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
@@ -37,20 +39,18 @@ import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.HarvestType;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvestLight;
-import dk.dbc.opensearch.components.harvest.ESHarvest;
-import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
+import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.sql.SQLException;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.Properties;
 
-import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import oracle.jdbc.pool.OracleDataSource;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -187,13 +187,13 @@ public class DatadockMain
         ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
 
         boolean terminateOnZeroSubmitted = false;
-	boolean ESHarvesterCleanup = false;
+        boolean ESHarvesterCleanup = false;
         
         try
         {
             harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
         }
-        catch( NullPointerException npe)
+        catch( NullPointerException npe )
         {
             harvestType = defaultHarvestType;
         }
@@ -219,20 +219,21 @@ public class DatadockMain
 
         try
         {
-	    if ( System.getProperty( "esharvester_cleanup" ) != null ) 
-	    {
-		ESHarvesterCleanup = true;
-	    }
+            if ( System.getProperty( "esharvester_cleanup" ) != null )
+            {
+                ESHarvesterCleanup = true;
+            }
         }
         catch( NullPointerException npe)
         {
-	    log.info( "Test 1: catch" );
-	    ESHarvesterCleanup = false;
+            log.info( "Test 1: catch" );
+            ESHarvesterCleanup = false;
         }
 
-	if ( ESHarvesterCleanup ) 
-	    log.info( " ESHARVESTER CLEANUP! " );
-
+        if ( ESHarvesterCleanup )
+        {
+            log.info( " ESHARVESTER CLEANUP! " );
+        }
 
         try
         {
@@ -284,10 +285,10 @@ public class DatadockMain
                     {
                         ods = new OracleDataSource();
 
-			// set db-params:
-			ods.setURL( oracleUrl );
-			ods.setUser( oracleUser );
-			ods.setPassword( oraclePassWd );
+                        // set db-params:
+                        ods.setURL( oracleUrl );
+                        ods.setUser( oracleUser );
+                        ods.setPassword( oraclePassWd );
 
                         // set db-cache-params:
                         ods.setConnectionCachingEnabled( true ); // connection pool
@@ -318,32 +319,30 @@ public class DatadockMain
 
                     harvester = new ESHarvest( connectionPool, dataBaseName );                    
 
-		    if ( ESHarvesterCleanup )
-		    {
-			// casting to ESHarvest in order to use non-interface method:
-			ESHarvest esharvester = (ESHarvest)harvester;
-			try
-			{
-			    esharvester.changeRecordstatusFromInProgressToQueued();
-			}
-			catch( HarvesterIOException hioe )
-			{
-			    String errorMsg = new String( "An exception occured while performing 'changeRecordstatusFromInProgressToQueued'." );
-			    log.fatal( errorMsg, hioe );
-			    throw hioe;
-			}
-		    }
+                    if ( ESHarvesterCleanup )
+                    {
+                        // casting to ESHarvest in order to use non-interface method:
+                        ESHarvest esharvester = (ESHarvest)harvester;
+                        try
+                        {
+                            esharvester.changeRecordstatusFromInProgressToQueued();
+                        }
+                        catch( HarvesterIOException hioe )
+                        {
+                            String errorMsg = new String( "An exception occured while performing 'changeRecordstatusFromInProgressToQueued'." );
+                            log.fatal( errorMsg, hioe );
+                            throw hioe;
+                        }
+                    }
 
                     break;
 
                 case FileHarvest:
-
                     log.trace( "selecting FileHarvest" );
                     harvester = new FileHarvest();
                     break;
 
                 case FileHarvestLight:
-
                     log.trace( "selecting FileHarvestLight" );
                     harvester = new FileHarvestLight();
                     break;
@@ -405,7 +404,7 @@ public class DatadockMain
                     else
                     {
                         Thread.currentThread();
-                        Thread.sleep(pollTime);
+                        Thread.sleep( pollTime );
                     }
                 }
 

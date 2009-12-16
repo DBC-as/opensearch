@@ -42,8 +42,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Vector;
 import java.util.ArrayList;
-
 import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -247,7 +247,7 @@ public class FileHarvest implements IHarvest
 
         for( File submitter : toHarvestFile.listFiles() )
         {
-            if( submitter.isDirectory() )
+            if ( submitter.isDirectory() )
             {
                 log.debug( String.format( "adding submitter: path='%s'", submitter.getAbsolutePath() ) );
                 submitters.add( submitter );
@@ -255,11 +255,11 @@ public class FileHarvest implements IHarvest
         }
 
         log.debug( "formats:" );
-        for( File submitterFile : submitters )
+        for ( File submitterFile : submitters )
         {
-            for( File format : submitterFile.listFiles() )
+            for ( File format : submitterFile.listFiles() )
             {
-                if( checkSubmitterFormat( submitterFile, format ) )
+                if ( checkSubmitterFormat( submitterFile, format ) )
                 {
                     log.debug( String.format( "format: path='%s'", format.getAbsolutePath() ) );
                     formats.add( format );
@@ -300,11 +300,11 @@ public class FileHarvest implements IHarvest
      * @return A vector of Datadockjobs containing the necessary information to process the jobs.
      */
     @Override
-    public List<IJob> getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
+    public List< IJob > getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
     {
         max = maxAmount;
-        List<IJob> jobs = new ArrayList<IJob>();
-        List<File> newJobs = new ArrayList<File>();
+        List< IJob > jobs = new ArrayList< IJob >();
+        List< File > newJobs = new ArrayList< File >();
         try
         {
             newJobs = getNewJobs();
@@ -325,11 +325,11 @@ public class FileHarvest implements IHarvest
         for( File job : newJobs )
         {
             URI uri = job.toURI();
-            String grandParentFile = job.getParentFile().getParentFile().getName();
-            String parentFile = job.getParentFile().getName();
+            String submitter = job.getParentFile().getParentFile().getName();
+            String format = job.getParentFile().getName();
             FileIdentifier identifier = new FileIdentifier( uri );
-            IJob theJob = buildTheJob( identifier, grandParentFile, parentFile );
-            log.debug( String.format( "found new job: path=%s, submitter=%s, format=%s ", theJob.getIdentifier(), grandParentFile, parentFile ) );
+            IJob theJob = buildTheJob( identifier, submitter, format );
+            log.debug( String.format( "found new job: path=%s, submitter=%s, format=%s ", theJob.getIdentifier(), submitter, format ) );
             jobs.add( theJob );
         }
 

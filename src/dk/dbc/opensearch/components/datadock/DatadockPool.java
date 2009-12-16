@@ -27,15 +27,22 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.components.harvest.HarvesterIOException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
+import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
@@ -49,13 +56,6 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -67,13 +67,15 @@ import java.util.Set;
 public class DatadockPool
 {
     private static Logger log = Logger.getLogger( DatadockPool.class );
-    
+
+
     private Map< IIdentifier, FutureTask< Boolean > > jobs;
     private final ThreadPoolExecutor threadpool;
     private IProcessqueue processqueue;
     private PluginResolver pluginResolver;
     private IObjectRepository objectRepository;
     private IHarvest harvester;
+
 
     /**
      * \brief private class that handles RejectedExecutions.
@@ -89,7 +91,7 @@ public class DatadockPool
 		@Override
 		public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
         {
-			if( executor.isShutdown())
+			if ( executor.isShutdown() )
             {
 				throw new RejectedExecutionException();
 			}
@@ -107,6 +109,7 @@ public class DatadockPool
 		}    	
     }
 
+    
     /**
      * Constructs the the datadockPool instance
      *
@@ -142,7 +145,7 @@ public class DatadockPool
      */
     public void submit( IJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
     {
-        if( null == datadockJob )
+        if ( null == datadockJob )
         {
             String error = "The submitted job was null, aborting task";
             log.error( error );

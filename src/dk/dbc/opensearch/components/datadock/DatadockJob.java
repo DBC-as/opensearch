@@ -1,5 +1,4 @@
 /*
-
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -44,6 +43,7 @@ public class DatadockJob implements IJob
 {
     private Logger log = Logger.getLogger( DatadockJob.class );
 
+    
     private String submitter;
     private String format;
 
@@ -95,6 +95,7 @@ public class DatadockJob implements IJob
         return identifier;
     }
 
+
     /**
      * gets the reference data (typically metadata) from the job. When we start
      * using JavaScript for business logic, this is to be used instead of the
@@ -106,6 +107,7 @@ public class DatadockJob implements IJob
         return referenceData;
     }
 
+    
     private void initValuesFromReferenceData()
     {
         if( this.referenceData == null )
