@@ -93,6 +93,13 @@
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>
+  <job submitter="150013" format="pg" alias="dkabm">
+    <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
+    <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
+    <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
+    <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
+  </job>
   <job submitter="dbc" format="nmalbum" alias="dkabm">
     <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
