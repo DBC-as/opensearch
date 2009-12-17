@@ -97,11 +97,11 @@ public class ReviewRelation implements IRelation
     {
         log.trace( "getCargoContainer() called" );
 
-        if ( cargo == null )
-        {
-            log.error( "ReviewRelation getCargoContainer cargo is null" );
-            throw new PluginException( "CargoContainer contains no data, aborting" );
-        }
+   //      if ( cargo == null )
+//         {
+//             log.error( "ReviewRelation getCargoContainer cargo is null" );
+//             throw new PluginException( "CargoContainer contains no data, aborting" );
+//         }
 
         boolean ok = false;
         ok = addReviewRelation( cargo );
@@ -117,6 +117,17 @@ public class ReviewRelation implements IRelation
 
     private boolean addReviewRelation( CargoContainer cargo ) throws PluginException
     {
+        //This method should call a script, with the cargocontainer as parameter, 
+        //that returns the cargocontainer with dc.relation set to the identifier of the 
+        //target of the reviewOf relation and the hasFullText relation as part of the 
+        //relsExt stream if there is fulltext at Infomedia
+        //the value of dc.relation must then be used to find the digital object(DO)
+        //containing the object of the review. when the DO is found, the PId is to be used 
+        //to set the hasReview relation on it with this cargocontainers identifier as 
+        //subject 
+        //this data must then get the same work relation as the DO.
+        //And the reviewOf relation should be set on this data.
+
         boolean ok = false;
         DublinCore dc = cargo.getDublinCoreMetaData();
         String dcTitle = dc.getDCValue( DublinCoreElement.ELEMENT_TITLE );
