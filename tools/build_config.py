@@ -71,16 +71,18 @@ def build_config( path ):
     pti    = ET.SubElement( root, "pti" )
 
     # compass settings
-    configpath = ET.SubElement( compass, "configpath" )
-    xsempath   = ET.SubElement( compass, "xsempath" )
-    dtdpath    = ET.SubElement( compass, "dtdpath" )
-    httpurl    = ET.SubElement( compass, "httpurl" )
+    configpath         = ET.SubElement( compass, "configpath" )
+    xsempath           = ET.SubElement( compass, "xsempath" )
+    modified_xsempath  = ET.SubElement( compass, "modified_xsempath" )
+    dtdpath            = ET.SubElement( compass, "dtdpath" )
+    httpurl            = ET.SubElement( compass, "httpurl" )
     compass_section = "compass"
     config = "/config/"
-    configpath.text = path + config + config_txt.get( compass_section, "configpath" )
-    xsempath.text   = path + config + config_txt.get( compass_section, "xsempath" )
-    dtdpath.text    = path + config + config_txt.get( compass_section, "dtdpath" )
-    httpurl.text   = config_txt.get( compass_section, "httpurl" )
+    configpath.text        = path + config + config_txt.get( compass_section, "configpath" )
+    xsempath.text          = path + config + config_txt.get( compass_section, "xsempath" )
+    modified_xsempath.text = path + config + config_txt.get( compass_section, "modified_xsempath" )
+    dtdpath.text           = path + config + config_txt.get( compass_section, "dtdpath" )
+    httpurl.text           = config_txt.get( compass_section, "httpurl" )
 
     # database settings
     postgresql_driver = ET.SubElement( db, "postgresql_driver" )

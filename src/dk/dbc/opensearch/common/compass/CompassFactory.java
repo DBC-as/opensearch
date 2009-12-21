@@ -79,7 +79,7 @@ public class CompassFactory
         CompassConfiguration conf = new CompassConfiguration();
 
         String cfg  = CompassConfig.getConfigPath();
-        String xsem = CompassConfig.getXSEMPath();
+        String xsem = CompassConfig.getModifiedXSEMPath();
         log.debug( String.format( "Compass configuration = %s", cfg ) );
         log.debug( String.format( "XSEM mappings file    = %s", xsem ) );
        

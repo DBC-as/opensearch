@@ -18,19 +18,18 @@
 */
 
 /**
- * \file LowercaseXmlConverter.java
- * \brief Lowercases the string marshalled from the xml
+ * \file SortConverter.java
+ * \brief Converts sort fields
  */
 
+package dk.dbc.opensearch.common.compass.converters;
 
-package dk.dbc.opensearch.common.compass;
+import dk.dbc.opensearch.common.string.StringUtils;
+import java.util.HashMap;
 
-
-import org.apache.log4j.Logger;
 import org.compass.core.Property;
 import org.compass.core.Resource;
 import org.compass.core.converter.ConversionException;
-import org.compass.core.converter.Converter;
 import org.compass.core.converter.xsem.SimpleXmlValueConverter;
 import org.compass.core.engine.naming.PropertyPath;
 import org.compass.core.mapping.Mapping;
@@ -39,41 +38,39 @@ import org.compass.core.marshall.MarshallingContext;
 import org.compass.core.xml.XmlObject;
 
 /**
- * Converter used to lowercase Strings. extends the Compass
- * SimpleXmlValueConverter
+ * Normalizes sort fields. it replaces "\uA732" with "Å" and "\uA733" with "å", and lowercases the string
  */
-public class LowercaseXmlConverter extends SimpleXmlValueConverter {
-    
-    Logger log = Logger.getLogger( LowercaseXmlConverter.class );
-
+public class SortConverter extends SimpleXmlValueConverter
+{
     /**
-     * Marshalls ROOT to RESOURCE. overrides method in
-     * SimpleXmlValueConverter and lowercases string, before storing
-     * it.
-     *
+     * Marshalls root to resource. replaces characters and lowercases the string
      * @param resource The resource to marhsall the object to
-     * @param root     The Object to marshall to the resource
-     * @param mapping  The mapping definition of how to marshall the Object to the resoruce
-     * @param context  The context for the current marhslling process
-     * @return true if data was saved in the the index that can be read.
+     * @param root The Object to marshall to the resource
+     * @param mapping The mapping definition of how to marshall the Object to the resoruce
+     * @param context The context for the current marhslling process
+     * @return true if data was saved
      * @throws ConversionException
      */
     @Override
-    public boolean marshall(Resource resource, Object root, Mapping mapping, MarshallingContext context) throws ConversionException 
+    public boolean marshall(Resource resource, Object root, Mapping mapping, MarshallingContext context) throws ConversionException
     {
-        
         XmlPropertyMapping xmlPropertyMapping = (XmlPropertyMapping) mapping;
         // don't save a null value if the context does not states so
         if (root == null && !handleNulls(xmlPropertyMapping, context)) {
             return false;
         }
         XmlObject xmlObject = (XmlObject) root;
-        String sValue = getNullValue(xmlPropertyMapping, context);
-        if (root != null) {
-            sValue = toString(xmlObject, xmlPropertyMapping);
-            sValue = sValue.toLowerCase(); // lowercsing string
-            
+        String sValue = getNullValue( xmlPropertyMapping, context );
+        if (root != null)
+        {   // normalize string
+            sValue = toString( xmlObject, xmlPropertyMapping );
+            HashMap<String, String> replaceMap = new HashMap<String, String>();
+            replaceMap.put("\uA732", "Å");
+            replaceMap.put("\uA733", "å");
+            sValue = StringUtils.replace(sValue, replaceMap);
+            sValue = sValue.toLowerCase();
         }
+
         PropertyPath path = xmlPropertyMapping.getPath();
         String propertyName = path == null ? null : path.getPath();
         if (propertyName == null) {

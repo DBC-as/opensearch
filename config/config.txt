@@ -9,6 +9,8 @@
 configpath: compass.cfg.xml
 # name of the index specification file
 xsempath:   xml.cpm.xml
+# name of the modified index specification file
+modified_xsempath: modified.xml.cpm.xml
 # name of the Document Type Definition file for the compass configuration file
 dtdpath:    compass-core-mapping-2.2.dtd
 # url pointing to the network accessible version of the above
@@ -71,7 +73,7 @@ path:                config/datadock_jobs.xml
 # FEDORA: Configuration values relating to the fedora repository
 [fedora]
 # hostname of the server running the fedora repository
-host:       localhost
+host:       hakone.dbc.dk
 # port on which the fedora repository is running (the tomcat http port)
 port:       8080
 # username for the fedora repository

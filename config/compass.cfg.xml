@@ -11,16 +11,28 @@
 
      <transaction
          lockTimeout="30"
-         lockPollInterval="100"
-     />
+         lockPollInterval="100"/>
 
      <converters>       
        <converter name="xmlContentMapping"
                   type="org.compass.core.converter.mapping.xsem.XmlContentMappingConverter">
        </converter>
        <converter name="lowercase"
-                  type="dk.dbc.opensearch.common.compass.LowercaseXmlConverter">
+                  type="dk.dbc.opensearch.common.compass.converters.LowercaseXmlConverter">
        </converter>
+       <converter name="default"
+                  type="dk.dbc.opensearch.common.compass.converters.DefaultConverter">
+       </converter>
+       <converter name="facet"
+                  type="dk.dbc.opensearch.common.compass.converters.FacetConverter">
+       </converter>
+       <converter name="phrase"
+                  type="dk.dbc.opensearch.common.compass.converters.PhraseConverter">
+       </converter>
+       <converter name="sort"
+                  type="dk.dbc.opensearch.common.compass.converters.SortConverter">
+       </converter>
+       
      </converters>
 
      <searchEngine>

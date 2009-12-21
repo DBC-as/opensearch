@@ -57,21 +57,35 @@ public class CompassConfig extends Config
         return cc.getCompassConfigPath();
     }
     
-    
+
     /* XSEM PATH */
     private String getCompassXSEMPath()
     {
         String ret = config.getString( "compass.xsempath" );
         return ret;
     }
-    
-    
+
+
     public static String getXSEMPath() throws ConfigurationException
     {
         CompassConfig cc = new CompassConfig();
         return cc.getCompassXSEMPath();
     }
+
+
+    /* MODIFIED XSEM PATH */
+    private String getCompassModifiedXSEMPath()
+    {
+        String ret = config.getString( "compass.modified_xsempath" );
+        return ret;
+    }
     
+    public static String getModifiedXSEMPath() throws ConfigurationException
+    {
+        CompassConfig cc = new CompassConfig();
+        return cc.getCompassModifiedXSEMPath();
+    }
+
 
     /* DTD PATH */
     private static String getCompassDTDPath()
