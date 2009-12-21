@@ -193,6 +193,11 @@
   </target>
 
 
+  <target name="dist_fedora" depends="compile">
+    <antcall target="_dist_fedora"/>
+  </target>
+
+
   <target name="dist_testindexer" depends="compile">
     <antcall target="_dist_testindexer"/>
   </target>

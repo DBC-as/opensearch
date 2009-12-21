@@ -276,6 +276,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <opensearch_dist dist.name="ADMIN_FUNC" Main-Class="dk.dbc.opensearch.common.fedora.AdministrationFunc"/>
   </target>
 
+  <target name="_dist_fedora">
+    <opensearch_dist dist.name="FEDORA" Main-Class="dk.dbc.opensearch.common.fedora.FedoraMain"/>
+  </target>
+
   <target name="_dist_testindexer">
     <opensearch_dist dist.name="TESTINDEXER" Main-Class="dk.dbc.opensearch.tools.testindexer.IndexerMain"/>
   </target>

@@ -161,6 +161,18 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
+    public boolean purgeRelationship( String pid, String predicate, String object, String dataType ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    {
+        boolean literal = true;
+        System.out.println( pid);
+        System.out.println( predicate );
+        System.out.println( object );
+        System.out.println( dataType );
+        //return fedoraHandle.purgeRelationship( pid, predicate, object, literal, dataType );
+        return literal;
+    }
+    
+
     /**
      * Stores data in {@code cargo} in the fedora repository
      *
@@ -1005,11 +1017,9 @@ public class FedoraObjectRepository implements IObjectRepository
     }
     
 
-
     @Override
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
     {
-
         String logm = String.format( "removed stream %s from object %s", dataIdentifier, objectIdentifier );
         String startDate = null;
         String endDate = null;
@@ -1066,17 +1076,16 @@ public class FedoraObjectRepository implements IObjectRepository
     }
     
 
-
     @Override
     public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException
     {
-
-        if( null == streamtype )
+        if ( null == streamtype )
         {
             String error = String.format( "DataStreamType was null, cannot perform search in repository" );
             log.error( error );
             throw new ObjectRepositoryException( new IllegalArgumentException( error ) );
         }
+        
         AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
         
         CargoContainer cargo = new CargoContainer();
@@ -1127,8 +1136,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         log.warn( String.format( "Returning empty CargoContainer for request of %s on %s", streamtype.getName(), objectIdentifier ) );
         return cargo;
-    }
-    
+    }    
 
 
     @Override
@@ -1198,7 +1206,6 @@ public class FedoraObjectRepository implements IObjectRepository
         storeDataInObject( objectIdentifier, cargo, true, true );
     }
     
-
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
     {
@@ -1278,8 +1285,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         return adminStream;
-    }
-    
+    }    
 
 
     private boolean addDataUpdateAdminstream( String objectIdentifier, String dataIdentifier, CargoObject obj ) throws ObjectRepositoryException
@@ -1326,18 +1332,16 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         return added;
-    }
-    
+    }    
 
 
     private boolean removeDataUpdateAdminstream( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
-    {
-        
+    {        
         AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
         
         boolean removed = adminStream.removeStream( dataIdentifier );
 
-        if( !removed )
+        if ( !removed )
         {
             log.warn( "Could not remove stream from adminstrationstream" );
         }
@@ -1380,10 +1384,9 @@ public class FedoraObjectRepository implements IObjectRepository
     }
     
 
-
     private byte[] getDataStream( String objectIdentifier, String dataStreamTypeName ) throws ObjectRepositoryException
     {
-        if( null == objectIdentifier || null == dataStreamTypeName || objectIdentifier.isEmpty() || dataStreamTypeName.isEmpty() )
+        if ( null == objectIdentifier || null == dataStreamTypeName || objectIdentifier.isEmpty() || dataStreamTypeName.isEmpty() )
         {
             String error = String.format( "Necessary parameters for retrieving datastream was null" );
             log.error( error );
@@ -1428,9 +1431,9 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error );
         }
+
         return ds;
-    }
-    
+    }    
 
 
     private String uploadDatastream( ByteArrayOutputStream datastream ) throws ObjectRepositoryException

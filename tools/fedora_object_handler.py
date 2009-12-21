@@ -100,6 +100,7 @@ class FedoraObjectHandler( object ):
 
         print self.pidlist
 
+
     def _delete_object( self, pid ):
         """Deletes a single object from the fedora repository.  It is
         unfortunately not (yet) possible to specify a list or a range
