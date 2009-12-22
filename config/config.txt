@@ -73,7 +73,7 @@ path:                config/datadock_jobs.xml
 # FEDORA: Configuration values relating to the fedora repository
 [fedora]
 # hostname of the server running the fedora repository
-host:       pacaya.dbc.dk 
+host:      localhost  
 # port on which the fedora repository is running (the tomcat http port)
 port:       8080
 # username for the fedora repository
