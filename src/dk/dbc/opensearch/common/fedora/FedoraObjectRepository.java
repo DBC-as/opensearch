@@ -164,12 +164,9 @@ public class FedoraObjectRepository implements IObjectRepository
     public boolean purgeRelationship( String pid, String predicate, String object, String dataType ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         boolean literal = true;
-        System.out.println( pid);
-        System.out.println( predicate );
-        System.out.println( object );
-        System.out.println( dataType );
-        //return fedoraHandle.purgeRelationship( pid, predicate, object, literal, dataType );
-        return literal;
+        System.out.println( pid);        System.out.println( predicate );        System.out.println( object );        System.out.println( dataType );
+
+        return fedoraHandle.purgeRelationship( pid, predicate, object, literal, dataType );
     }
     
 
