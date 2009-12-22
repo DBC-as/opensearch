@@ -193,7 +193,7 @@
   </target>
 
 
-  <target name="dist_fedora" depends="compile">
+  <target name="dist_fedora" depends="compile, config_py">
     <antcall target="_dist_fedora"/>
   </target>
 

@@ -161,12 +161,44 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
-    public boolean purgeRelationship( String pid, String predicate, String object, String dataType ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    public boolean purgeRelationship( String identifier, String predicate, String object, String dataType ) throws ObjectRepositoryException
     {
         boolean literal = true;
-        System.out.println( pid);        System.out.println( predicate );        System.out.println( object );        System.out.println( dataType );
-
-        return fedoraHandle.purgeRelationship( pid, predicate, object, literal, dataType );
+        //System.out.println( String.format( "pid: '%s'; predicate: '%s'; object: '%s'; dataType: '%s'", pid, predicate, object, dataType ) );
+        try
+        {
+            return fedoraHandle.purgeRelationship( identifier, predicate, object, literal, dataType );
+        }
+        catch( ConfigurationException ex )
+        {
+            String error = String.format( "ConfigurationException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( ServiceException ex )
+        {
+            String error = String.format( "ServiceException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( MalformedURLException ex )
+        {
+            String error = String.format( "MalformedURLException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( RemoteException ex )
+        {
+            String error = String.format( "RemoteException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "IOException Could not delete object referenced by pid '%s': %s", identifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
     }
     
 
