@@ -204,6 +204,7 @@ public class ReviewRelation implements IRelation
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );
             
             engine.put( "log", log );
+            engine.put( "scriptClass", scriptClass );
 
             String path = FileSystemConfig.getScriptPath();
             String jsFileName = path + "review_relation.js";
