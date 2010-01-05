@@ -128,7 +128,7 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
         
         proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, args )
         print "Waiting for process to stop pid=%s "%(pid)
-        os.waitpid( pid -1, 0 );
+        os.waitpid( pid, 0 );
         
         print "print done waiting"
 
@@ -163,26 +163,27 @@ def start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup,
     if esharvester_cleanup:
         properties.append( "-Desharvester_cleanup" )
 
-    cmd = [ 'java %s'%( " ".join( properties ) ),
-            '-Ddaemon.pidfile=%s'%( pid_filename ),
-            '-jar',
-            q_name ]
+    cmd = [ 'java' ]
+    for p in properties:
+        cmd.append(p)
+    cmd.append('-Ddaemon.pidfile=%s'%( pid_filename ) )
+    cmd.append('-jar' )
+    cmd.append( q_name )
 
     if args:
         cmd.append(args)
    
-    cmd = ' '.join( cmd )
+    printcmd = ' '.join( cmd )
     
-    log.debug( "Running process from cmd '%s'"%( cmd ) )
+    log.debug( "Running process from cmd '%s'"%( printcmd ) )
 
     print "CMD %s" % cmd
 
-    proc = subprocess.Popen( cmd, shell=True, stdout=subprocess.PIPE )
+    proc = subprocess.Popen( cmd, shell=False, stdout=subprocess.PIPE )
     log.debug( "Started java process with proc.pid=%s"%( proc.pid ) )
 
-    pid = int(proc.pid)+1
-
-    #hackety-hack
+    pid = int(proc.pid)
+    
     return ( proc, pid )
 
 
