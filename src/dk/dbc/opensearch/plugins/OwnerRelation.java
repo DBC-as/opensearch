@@ -1,21 +1,21 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /**
  * \file
  * \brief Adding owner relation information to fedora repository objects
@@ -62,7 +62,7 @@ public class OwnerRelation implements IRelation
 
     /**
      * Constructor for the OwnerRelation plugin.
-     * @throws PluginException 
+     * @throws PluginException
      */
     public OwnerRelation() throws PluginException
     {
@@ -85,7 +85,7 @@ public class OwnerRelation implements IRelation
      */
     Invocable lookupJavaScript( String submitter ) throws ConfigurationException, FileNotFoundException, ScriptException, PluginException
     {
-        
+
         log.trace( String.format( "Entering lookupJavaScript" ) );
         if( submitter == null || submitter.isEmpty() )
         {
@@ -101,7 +101,7 @@ public class OwnerRelation implements IRelation
         else // ...or create new invocable + add it to the cache
         {
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );
-            
+
             engine.put( "log", log );
             engine.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
             engine.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
@@ -140,7 +140,7 @@ public class OwnerRelation implements IRelation
         {
             setOwnerRelations( cargo );
 
-            //this.fedoraHandle.addRelationship( pid, "info:fedora/fedora-system:def/relations-external#isMemberOfCollection", owner, false, null );            
+            //this.fedoraHandle.addRelationship( pid, "info:fedora/fedora-system:def/relations-external#isMemberOfCollection", owner, false, null );
         }
         catch( ConfigurationException e )
         {
@@ -171,14 +171,15 @@ public class OwnerRelation implements IRelation
             String error = String.format( "CargoContainer with id '%s' has no OriginalData to contruct relations from, aborting", cargo.getIdentifier() );
             log.error( error );
             throw new PluginException( new IllegalStateException( error ) );
-        }else
+        }
+        else
         {
             co = cargo.getCargoObject( DataStreamType.OriginalData );
         }
-        
+
         String submitter = co.getSubmitter();
         String format = co.getFormat();
-        
+
         if( null == submitter   ||
             submitter.isEmpty() ||
             null == format      ||
@@ -200,11 +201,11 @@ public class OwnerRelation implements IRelation
         if( null == rels )
         {
             rels = new FedoraRelsExt( );
-        }                
-        
-        rels = ( FedoraRelsExt ) inv.invokeFunction( "addOwnerRelation", 
-                                                     rels, 
-                                                     submitter, 
+        }
+
+        rels = ( FedoraRelsExt ) inv.invokeFunction( "addOwnerRelation",
+                                                     rels,
+                                                     submitter,
                                                      format );
 
         cargo.addMetaData( rels );

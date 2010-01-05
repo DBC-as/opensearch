@@ -25,19 +25,34 @@
 
 package dk.dbc.opensearch.plugins;
 
-
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
-
 import dk.dbc.opensearch.common.types.TargetFields;
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.tools.ScriptMethodsForReviewRelation;
+
+import org.apache.commons.configuration.ConfigurationException;
+import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -50,7 +65,8 @@ public class ReviewRelation implements IRelation
 {
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
-
+    private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
+    private final ScriptEngineManager manager = new ScriptEngineManager();
     private PluginType pluginType = PluginType.RELATION;
 
     private Vector< String > types;
@@ -58,6 +74,7 @@ public class ReviewRelation implements IRelation
     private final String anmeldelse = "Anmeldelse";
     private final String namespace = "review";
     private IObjectRepository objectRepository;
+    private ScriptMethodsForReviewRelation scriptClass;
 
 
     /**
@@ -68,41 +85,36 @@ public class ReviewRelation implements IRelation
         log.trace( "Constructor called" );
         //nsc = new OpensearchNamespaceContext();
 
-        types = new Vector< String >();
-        types.add( "Bog" );
-        types.add( "DVD" );
-        types.add( "CD" );
-        types.add( "Wii-spil" );
-        types.add( "Playstation-spil" );
-        types.add( "Playstation2-spil" );
-        types.add( "Playstation3-spil" );
-        types.add( "DVD-Rom" );
-        types.add( "Gameboy" );
-        types.add( "XBOX-spil" );
-        types.add( "Tegneserie" );
-        types.add( "Billedbog" );
+//         types = new Vector< String >();
+//         types.add( "Bog" );
+//         types.add( "DVD" );
+//         types.add( "CD" );
+//         types.add( "Wii-spil" );
+//         types.add( "Playstation-spil" );
+//         types.add( "Playstation2-spil" );
+//         types.add( "Playstation3-spil" );
+//         types.add( "DVD-Rom" );
+//         types.add( "Gameboy" );
+//         types.add( "XBOX-spil" );
+//         types.add( "Tegneserie" );
+//         types.add( "Billedbog" );
     }
 
 
     /**
      * The "main" method of this plugin.
      *
-     * @param CargoContainer The CargoContainer to add relations to
+     * @param CargoContainer The CargoContainer to add the reviewOf relation to
+     * and be the target of a hasReview relation on another object in the objectRepository 
      *
      * @returns A CargoContainer containing relations
      *
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException//, ConfigurationException, MalformedURLException, ServiceException, IOException
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
-
-   //      if ( cargo == null )
-//         {
-//             log.error( "ReviewRelation getCargoContainer cargo is null" );
-//             throw new PluginException( "CargoContainer contains no data, aborting" );
-//         }
-
+        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
         boolean ok = false;
         ok = addReviewRelation( cargo );
 
@@ -117,130 +129,35 @@ public class ReviewRelation implements IRelation
 
     private boolean addReviewRelation( CargoContainer cargo ) throws PluginException
     {
-        //This method should call a script, with the cargocontainer as parameter, 
-        //that returns the cargocontainer with dc.relation set to the identifier of the 
-        //target of the reviewOf relation and the hasFullText relation as part of the 
-        //relsExt stream if there is fulltext at Infomedia
-        //the value of dc.relation must then be used to find the digital object(DO)
-        //containing the object of the review. when the DO is found, the PId is to be used 
-        //to set the hasReview relation on it with this cargocontainers identifier as 
-        //subject 
-        //this data must then get the same work relation as the DO.
-        //And the reviewOf relation should be set on this data.
-
-        boolean ok = false;
-        DublinCore dc = cargo.getDublinCoreMetaData();
-        String dcTitle = dc.getDCValue( DublinCoreElement.ELEMENT_TITLE );
-        String dcType = dc.getDCValue( DublinCoreElement.ELEMENT_TYPE );
-        String dcCreator = dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR );
-        String dcSource = dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE );
-        String identifier = cargo.getIdentifierAsString();
-
-        log.debug( String.format( "relation with values: dcIdentifier (pid): '%s'; dcTitle: '%s'; dcType: '%s'; dcCreator: '%s'; dcSource: '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
-
-        if ( dcType.equals( marterialevurderinger )|| types.contains( dcType ) )
+        //This mehtod should call a script with the cargocontainer as parameter
+        //and expose a getPID and a makeRelation method that enables the script to 
+        //find the PID of the target of the review and create the hasReview 
+        //and reviewOf relations 
+        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+        try
         {
-            //log.trace( String.format( "entering findObjects, dcType: '%s' AND dcTitle: '%s'", dcType, dcTitle ) );
-
-            //findtarget
-
-            // match SOURCE: dcTile and dcCreator on TARGET dcTitle and dcCreator
-            if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
-            {
-                try
-                {
-                    TargetFields targetTitle = FedoraObjectFields.TITLE;
-                    TargetFields targetCreator = FedoraObjectFields.CREATOR;
-                    ok = addRelationship( identifier, targetTitle, dcTitle, targetCreator, dcCreator );
-                }
-                catch( ObjectRepositoryException ex )
-                {
-                    String error = String.format( "Failed to add Relationship on %s with %s and %s", identifier, dcTitle, dcCreator );
-                    log.error( error );
-                    throw new PluginException( error, ex );
-                }
-
-                log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
-            }
-            else
-            {
-                log.warn( String.format( "dcSource '%s' is empty", dcSource ) );
-            }
+        Invocable inv = lookupJavaScript( co.getSubmitter() );
         }
-        //  else if ( types.contains( dcType ) )
-        //         {
-        //              // match SOURCE: dcTitle and dcCreator on TARGET dcTitle and dcCreator
-        //              if ( ! ( dcTitle.equals( "" ) && dcCreator.equals( "" ) ) )
-        //              {
-        //                 try
-        //                 {
-        //                     TargetFields targetTitle = FedoraObjectFields.TITLE;
-        //                     TargetFields targetCreator = FedoraObjectFields.CREATOR;
-        //                     ok = addRelationship( identifier, targetTitle, dcTitle, targetCreator, dcCreator );
-        //                 }
-        //                 catch( ObjectRepositoryException ex )
-        //                 {
-        //                     String error = String.format( "Failed to add Relationship on %s with %s and %s", identifier, dcTitle, dcCreator );
-        //                     log.error( error );
-        //                     throw new PluginException( error, ex );
-        //                 }
-
-        //                      log.debug( String.format( "relationship added on title and creator with dcTitle '%s' and dcCreator '%s' and pid: '%s'", dcTitle, dcCreator, identifier ) );
-        //              }
-        //              else
-        //              {
-        //                      log.warn( String.format( "dcSource '%s' is empty", dcSource ) );
-        //              }
-        //         }
-        else if ( dcType.equals( anmeldelse ) )
+        catch( ConfigurationException ce )
         {
-            // match SOURCE: dcRelation on TARGET: identifier
-            if ( ! dcTitle.equals( "" ) )
-            {
-                //find target
-                try
-                {
-                    TargetFields targetSource = FedoraObjectFields.SOURCE;
-                    ok = addRelationship( identifier, targetSource, dcTitle );
-                }
-                catch ( ObjectRepositoryException ex )
-                {
-                    String error = String.format( "Failed to add Relationship on %s with source -> %s", identifier, dcTitle );
-                    log.error( error );
-                    throw new PluginException( error, ex );
-                }
-                log.debug( String.format( "relationship added on source with dcTitle '%s' and pid: '%s'", dcTitle, identifier ) );
-            }
-            else
-            {
-                log.warn( String.format( "dcCreator '%s' is empty", dcCreator ) );
-            }
+            String error = String.format( "error message: %s", ce.getMessage() );
+            log.error( error );
+            throw new PluginException( error, ce );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+         String error = String.format( "error message: %s", fnfe.getMessage() );
+            log.error( error );
+            throw new PluginException( error, fnfe );
+        }
+ catch( ScriptException se )
+        {
+         String error = String.format( "error message: %s", se.getMessage() );
+            log.error( error );
+            throw new PluginException( error, se );
         }
 
-        log.debug( String.format( "MWR (pid: '%s') found dcVariables: '%s', '%s', '%s', and '%s'", identifier, dcTitle, dcType, dcCreator, dcSource ) );
-        log.trace( "Adding relationship succeeded: " + ok );
-
-        return ok;
-    }
-
-
-    private boolean addRelationship( String dcIdentifier, TargetFields property_1, String dcVariable_1, TargetFields property_2, String dcVariable_2 ) throws ObjectRepositoryException
-    {
-        FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
-
-        boolean ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property_1, dcVariable_1, property_2, dcVariable_2, namespace );
-
-        return ok;
-    }
-
-
-    private boolean addRelationship( String dcIdentifier, TargetFields property, String dcVariable ) throws ObjectRepositoryException
-    {
-        FedoraObjectRelations fedor = new FedoraObjectRelations( objectRepository );
-
-        boolean  ok = fedor.addIsMbrOfCollRelationship( dcIdentifier, property, dcVariable, namespace );
-
-        return ok;
+        return true;
     }
 
 
@@ -252,6 +169,54 @@ public class ReviewRelation implements IRelation
     public void setObjectRepository( IObjectRepository objectRepository )
     {
         this.objectRepository = objectRepository;
-    }
+    } 
 
+    /**
+     * Tries to do a lookup of a cached instance of the script engine
+     * based on the submitter. If no cached instances are found, a new
+     * one is created from a supplied javascript matching the role of
+     * this plugin.
+     *
+     * @param submitter
+     * @return Configured script engine fitting the submitter value of the CargoContainer
+     * @throws ConfigurationException
+     * @throws FileNotFoundException
+     * @throws ScriptException
+     * @throws PluginException
+     */
+    private Invocable lookupJavaScript( String submitter ) throws ConfigurationException, FileNotFoundException, ScriptException, PluginException
+    {
+        
+        log.trace( String.format( "Entering lookupJavaScript" ) );
+        if( submitter == null || submitter.isEmpty() )
+        {
+            throw new PluginException( new IllegalArgumentException( "submitter in CargoContainer is not set. Aborting." ) );
+        }
+
+        //lookup invocable in cache:
+        if( this.scriptCache.containsKey( submitter ) )
+        {
+            log.trace( String.format( "Returning Invocable js for %s", submitter ) );
+            return this.scriptCache.get( submitter );
+        }
+        else // ...or create new invocable + add it to the cache
+        {
+            ScriptEngine engine = manager.getEngineByName( "JavaScript" );
+            
+            engine.put( "log", log );
+
+            String path = FileSystemConfig.getScriptPath();
+            String jsFileName = path + "review_relation.js";
+
+            log.debug( String.format( "Using javascript at url '%s'", jsFileName ) );
+            engine.eval( new java.io.FileReader( jsFileName ) );
+
+            Invocable inv = (Invocable) engine;
+
+            this.scriptCache.put( submitter, inv );
+
+            log.trace( String.format( "Returning Invokable js for %s", submitter ) );
+            return inv;
+        }
+    }
 }
