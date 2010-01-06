@@ -411,30 +411,21 @@ public class DatadockMain
             }
             catch( HarvesterIOException hioe )
             {
-                String fatal =  String.format( "A fatal error occured in the communication with the database, exiting." );
+                String fatal =  String.format( "A fatal error occured in the communication with the database: %s", hioe.getMessage() );
                 log.fatal( fatal, hioe );
                 DatadockMain.shutdown();
             }           
             catch( InterruptedException ie )
             {
-                /**
-                 * \todo: dont we want to get the trace?
-                 */
-                log.error( "InterruptedException caught in mainloop: "  + ie, ie);
-                log.error( "  " + ie.getMessage(), ie );
+                log.error( String.format( "InterruptedException caught in mainloop: %s", ie.getMessage(), ie ) );
             }
             catch( RuntimeException re )
             {
-                log.error( "RuntimeException caught in mainloop: " + re, re);
-                log.error( "  " + re.getCause().getMessage(), re);
-                throw re;
+                log.error( String.format( "RuntimeException caught in mainloop: %s", re.getMessage(), re ) );
             }
             catch( Exception e )
             {
-                /**
-                 * \todo: dont we want to get the trace?
-                 */
-                log.error( "Exception caught in mainloop: " + e.toString(), e );
+                log.error( "Exception caught in mainloop: " + e.getMessage(), e );
             }
         }
 
