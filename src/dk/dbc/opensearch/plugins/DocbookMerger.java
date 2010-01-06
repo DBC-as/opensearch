@@ -1,25 +1,22 @@
 /*
-  This file is part of opensearch.
-  Copyright © 2009, Dansk Bibliotekscenter a/s,
-  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+This file is part of opensearch.
+Copyright © 2009, Dansk Bibliotekscenter a/s,
+Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-  opensearch is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+opensearch is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  opensearch is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+opensearch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
+You should have received a copy of the GNU General Public License
+along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package dk.dbc.opensearch.plugins;
-
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
@@ -29,21 +26,23 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.OpenSearchTransformException;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentFactory;
-import org.dom4j.Element;
-import org.dom4j.Namespace;
-import org.dom4j.dom.DOMElement;
-import org.dom4j.io.SAXReader;
-import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -51,12 +50,10 @@ import java.util.List;
  */
 public class DocbookMerger implements IProcesser
 {
+
     private static Logger log = Logger.getLogger( DocbookMerger.class );
-
-
     private PluginType pluginType = PluginType.PROCESS;
-    private  NamespaceContext nsc;
-
+    private NamespaceContext nsc;
 
     public DocbookMerger()
     {
@@ -65,83 +62,117 @@ public class DocbookMerger implements IProcesser
     }
 
 
+    /**
+     * 'main' plugin method.
+     *
+     * The purpose of this plugin is to merge Originaldata contained in the
+     * CargoContainer with DublinCore data, also contained in the CargoContainer.
+     * 
+     * @param cargo the input CargoContainer to be processed by the plugin
+     * @return the modified CargoContainer
+     * @throws PluginException with a nested exception explaining the error
+     */
+    @Override
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
+        log.trace( String.format( "Entered getCargoContainer, streams in container: %s", cargo.getCargoObjectCount() ) );
 
-        log.debug( String.format( "Entered getCargoContainer, streams in container: %s", cargo.getCargoObjectCount() ) );
         DublinCore dc = null;
-        Element annotation = null;
+
         if( cargo.hasMetadata( DataStreamType.DublinCoreData ) )
         {
             dc = cargo.getDublinCoreMetaData();
-//            byte[] dc_data_bytes = dc.getBytes();
-//            ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_data_bytes );
-//
-//            Document dc_doc = null;
-//            try{
-//                SAXReader reader = new SAXReader();
-//                dc_doc = reader.read( dc_is );
-//            }catch( DocumentException docex){
-//                log.fatal( String.format( "Could not read the dublin core inputstream into a Document: '%s'", docex ) );
-//                throw new PluginException( "Could not read the dublin core inputstream into a Document", docex );
-//            }
-//            annotation = dc_doc.getRootElement();
         }
-
 
         CargoObject orig = cargo.getCargoObject( DataStreamType.OriginalData );
 
         byte[] orig_bytes = orig.getBytes();
         ByteArrayInputStream is = new ByteArrayInputStream( orig_bytes );
         Document doc = null;
-
-        try{
-            SAXReader reader = new SAXReader();
-            doc = reader.read( is );
-        }catch( DocumentException docex){
-            log.fatal( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", docex ) );
-            throw new PluginException( "Could not cast the bytearrayinputstream to a inputsource", docex );
+        try
+        {
+            doc = XMLUtils.documentFromInputStream( is );
+        }
+        catch( ParserConfigurationException ex )
+        {
+            String error = String.format( "Could not create XML Document from OriginalData in CargoContainer: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw new PluginException( error, ex );
+        }
+        catch( SAXException ex )
+        {
+            String error = String.format( "Could not create XML Document from OriginalData in CargoContainer: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw new PluginException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "Could not create XML Document from OriginalData in CargoContainer: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw new PluginException( error, ex );
         }
 
-        Element root = doc.getRootElement();
 
-        List<Namespace> ns_list = annotation.additionalNamespaces();
-        ns_list.add( annotation.getNamespace() );
+        Element root = doc.getDocumentElement();
 
-        ns_list.add( root.getNamespace() );
+        ByteArrayOutputStream dc_out = new ByteArrayOutputStream();
+        try
+        {
+            dc.serialize( dc_out, null );
+        }
+        catch( OpenSearchTransformException ex )
+        {
+            String error = String.format( "Failed to retrieve Dublin Core metadata from id '%s'", cargo.getIdentifierAsString() );
+            log.warn( error, ex );
+            log.info( "This plugin will now not merge the OriginalData with the DublinCore metadata" );
+        }
+        ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_out.toByteArray() );
 
-        Namespace ns = new Namespace( "ting", "http://www.dbc.dk/ting/");
+        String new_original_data = null;
 
-        Element tingElement = new DOMElement( "container", ns );
+        try
+        {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document tingDoc = builder.newDocument();
+            Element tingElement = tingDoc.createElementNS( "http://www.dbc.dk/ting/", "ting:container" );
 
-        for( Namespace ns_from_list : ns_list ){
-            //adds namespaces from the Dublin Core Document and the old original data
-            log.debug( String.format( "Appending namespace %s", ns_from_list ) );
-            tingElement.add( ns_from_list );
+            tingElement.appendChild( XMLUtils.documentFromInputStream( dc_is ) );
+            tingElement.appendChild( XMLUtils.documentFromInputStream( is ) );
+
+            new_original_data = XMLUtils.xmlToString( tingDoc );
+        }
+        catch( ParserConfigurationException ex )
+        {
+            String error = String.format( "Failed to merge original data and metadata in new xml document: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw new PluginException( error, ex );
+        }
+        catch( SAXException ex )
+        {
+            String error = String.format( "Failed to merge original data and metadata in new xml document: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw new PluginException( error, ex );
+        }
+        catch( TransformerException ex )
+        {
+            String error = String.format( "Failed to merge original data and metadata in new xml document: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw new PluginException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "Failed to merge original data and metadata in new xml document: %s", ex.getMessage() );
+            log.error( error, ex );
+            throw new PluginException( error, ex );
         }
 
-        DocumentFactory factory = new DocumentFactory();
-
-        Document new_document = factory.createDocument();
-
-        new_document.setRootElement( tingElement );
-
-        Element new_root = new_document.getRootElement();
-
-        if( dc != null) {
-            log.debug( String.format( "Adding  annotation data to new xml" ) );
-            new_root.add( annotation );
-        }
-
-        new_root.add( root );
-
-        String new_original_data = new_document.asXML();
-        log.debug( String.format( "Original xml: %s", new String( orig.getBytes() ) ) );
-        log.debug( String.format( "New xml: %s", new_original_data ) );
+        log.trace( String.format( "Original xml: %s", new String( orig.getBytes() ) ) );
+        log.trace( String.format( "New xml: %s", new_original_data ) );
         log.debug( String.format( "Adding annotated data to CargoContainer with alias '%s', overwriting original data", orig.getIndexingAlias() ) );
-        // orig.updateByteArray( new_original_data.getBytes() );
+
         log.debug( String.format( "Removing data with id %s", orig.getId() ) );
-        if( ! cargo.remove( orig.getId() ) ) {
+        if( !cargo.remove( orig.getId() ) )
+        {
             log.warn( String.format( "Could not remove data with id %s", orig.getId() ) );
         }
 
@@ -157,18 +188,21 @@ public class DocbookMerger implements IProcesser
         }
         catch( IOException ioe )
         {
-            String error = String.format( "Could not add to CargoContainer", ioe.getMessage() );
+            String error = String.format( "Could not replace original data in CargoContainer", ioe.getMessage() );
             log.error( error, ioe );
             throw new PluginException( error, ioe );
         }
 
-        log.debug( String.format( "New xml data: %s", new String( cargo.getCargoObject( orig.getDataStreamType() ).getBytes() ) ) );
+        log.trace( String.format( "New xml data: %s", new String( cargo.getCargoObject( orig.getDataStreamType() ).getBytes() ) ) );
         return cargo;
-
     }
-    
+
+
+    @Override
     public PluginType getPluginType()
     {
         return this.pluginType;
     }
+
+
 }
