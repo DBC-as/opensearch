@@ -126,15 +126,7 @@ public class DatadockThread implements Callable<Boolean>
         log.trace( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
         
         list = DatadockJobsMap.getDatadockPluginsList( submitter, format );
-        
-        if ( null == list )
-        {
-            String error = String.format("The returned list from the DatadockJobsMap.getDatadockJobsMap( %s, %s ) is null", submitter, format );
-            throw new IllegalStateException( error );
-        }
-
-        log.trace( "constructor PluginList " + list.toString() );
-        
+                
         queue = processqueue;
         
         log.trace( String.format( "DatadockThread Construction finished" ) );
