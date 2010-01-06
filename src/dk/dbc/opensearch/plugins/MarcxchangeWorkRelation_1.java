@@ -297,8 +297,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             // todo: Clean up work object xml and language.
             CargoContainer cargo = new CargoContainer( );                       
             
-            DublinCore workDC = new DublinCore(  );
-            
+            DublinCore workDC = new DublinCore(  );            
             
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );            
             engine.put( "log", log );            

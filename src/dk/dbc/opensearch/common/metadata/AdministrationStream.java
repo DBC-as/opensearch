@@ -1,29 +1,31 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package dk.dbc.opensearch.common.metadata;
+
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.InputPair;
-
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -49,6 +52,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -67,7 +71,7 @@ public class AdministrationStream implements MetaData
 {
     private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"indexingalias\"><xsd:complexType><xsd:attribute ref=\"name\" use=\"required\"/></xsd:complexType></xsd:element><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
 
-    private Map<Integer, HashMap<AdministrationStreamElement, String>> admvalues;
+    private Map< Integer, HashMap< AdministrationStreamElement, String > > admvalues;
     private static final String identifier = DataStreamType.AdminData.getName();
 
     /**
@@ -77,6 +81,7 @@ public class AdministrationStream implements MetaData
 
     private static Logger log = Logger.getLogger( AdministrationStream.class );
     private String indexingAlias;
+
 
     /**
      * Constructs an empty AdministrationStream object. The client can use the
@@ -99,14 +104,14 @@ public class AdministrationStream implements MetaData
      */
     public AdministrationStream( InputStream in, boolean validating ) throws XMLStreamException, SAXException, IOException
     {
-        if( in == null )
+        if ( in == null )
         {
             String error = String.format( "InputStream is null, cannot construct adminstration stream" );
             log.error( error );
             throw new IllegalStateException( error );
         }
         
-        if( validating )
+        if ( validating )
         {
             String ADM_NS = "http://www.w3.org/2001/XMLSchema";
             Source schemaurl = new StreamSource( new ByteArrayInputStream( schemaString.getBytes() ) );
@@ -154,10 +159,12 @@ public class AdministrationStream implements MetaData
                 }
             }
         }
-        assert (admvalues.size() == counter);
-        assert (this.indexingAlias != null );
+
+        assert ( admvalues.size() == counter );
+        assert ( this.indexingAlias != null );
     }
 
+    
     /**
      * Adds information about a data object as a stream in the
      * administrationstream. {@code id} by convention is the
@@ -182,6 +189,7 @@ public class AdministrationStream implements MetaData
         }
         return added;
     }
+
 
     public boolean addStream( MetaData obj, String id )
     {
@@ -221,11 +229,11 @@ public class AdministrationStream implements MetaData
      * {@link CargoObject} and its identifier (which by convention is
      * the DataStreamId).
      */
-    public List<InputPair<Integer, InputPair<String, CargoObject>>> getStreams() throws IOException
+    public List< InputPair< Integer, InputPair< String, CargoObject > > > getStreams() throws IOException
     {
-        List<InputPair<Integer, InputPair<String, CargoObject>>> retlist = new ArrayList<InputPair<Integer, InputPair<String,CargoObject>>>( admvalues.size() );
+        List< InputPair< Integer, InputPair< String, CargoObject > > > retlist = new ArrayList< InputPair< Integer, InputPair< String,CargoObject > > >( admvalues.size() );
         CargoContainer cargo = new CargoContainer();
-        for( Entry<Integer, HashMap<AdministrationStreamElement, String>> set : admvalues.entrySet() )
+        for( Entry< Integer, HashMap< AdministrationStreamElement, String> > set : admvalues.entrySet() )
         {
             cargo.add( DataStreamType.getDataStreamTypeFrom(
                     set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ),
@@ -236,11 +244,12 @@ public class AdministrationStream implements MetaData
                     indexingAlias,
                     "ihatefakedata".getBytes() );
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
-            InputPair<String, CargoObject> indexvalue = new InputPair<String, CargoObject>( 
+            InputPair< String, CargoObject > indexvalue = new InputPair< String, CargoObject >(
                     set.getValue().get( AdministrationStreamElement.ID ),
                     cargo.getCargoObject( DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ) ) );
             retlist.add( new InputPair<Integer, InputPair<String,CargoObject>>( set.getKey(), indexvalue ) );
         }
+
         return retlist;
     }
 
@@ -252,20 +261,21 @@ public class AdministrationStream implements MetaData
     {
         boolean success = false;
         Integer index = null;
-        for( Entry<Integer, HashMap<AdministrationStreamElement, String>> set : admvalues.entrySet() )
+        for ( Entry< Integer, HashMap<AdministrationStreamElement, String> > set : admvalues.entrySet() )
         {
-            for( Entry<AdministrationStreamElement, String> streamelem : set.getValue().entrySet() )
+            for ( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
             {
-                if( streamelem.getKey() == AdministrationStreamElement.ID )
+                if ( streamelem.getKey() == AdministrationStreamElement.ID )
                 {
-                    if( streamelem.getValue().toLowerCase().equals( id.toLowerCase() ) )
+                    if ( streamelem.getValue().toLowerCase().equals( id.toLowerCase() ) )
                     {
                         index = set.getKey();
                     }
                 }
             }
         }
-        if( index == null )
+
+        if ( index == null )
         {
             log.warn( String.format( "Could not remove stream with id %s", id ) );
         }
@@ -274,8 +284,10 @@ public class AdministrationStream implements MetaData
             admvalues.remove( index );
             success = true;
         }
+
         return success;
     }
+
 
     /**
      * Gets the number of streams contained in the administrationstream.
@@ -294,9 +306,9 @@ public class AdministrationStream implements MetaData
     public int getCount( DataStreamType dst )
     {
         int counter = 0;
-        for( Entry<Integer, HashMap<AdministrationStreamElement, String>> set : admvalues.entrySet() )
+        for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )
         {
-            for( Entry<AdministrationStreamElement, String> streamelem : set.getValue().entrySet() )
+            for( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
             {
                 if( streamelem.getKey() == AdministrationStreamElement.STREAMNAMETYPE )
                 {
@@ -307,6 +319,7 @@ public class AdministrationStream implements MetaData
                 }
             }
         }
+
         return counter;
     }
 
@@ -325,7 +338,7 @@ public class AdministrationStream implements MetaData
     @Override
     public void serialize( OutputStream out, String identifier ) throws OpenSearchTransformException
     {
-        if( this.indexingAlias == null )
+        if ( this.indexingAlias == null )
         {
             String error = "Refusing to serialize AdministrationStream with no content";
             log.error( error );
@@ -347,16 +360,17 @@ public class AdministrationStream implements MetaData
             xmlw.writeEndElement();//closes "indexingalias" element
 
             xmlw.writeStartElement( "streams" );
-            for( Entry<Integer, HashMap<AdministrationStreamElement, String>> set : admvalues.entrySet() )
+            for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )
             {
                 xmlw.writeStartElement( "stream" );
-                for( Entry<AdministrationStreamElement, String> streamelem : set.getValue().entrySet() )
+                for( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
                 {
                     xmlw.writeAttribute( streamelem.getKey().localName(), streamelem.getValue() );
                 }
-                xmlw.writeEndElement();//closes "stream" element
 
+                xmlw.writeEndElement();//closes "stream" element
             }
+
             xmlw.writeEndElement();//closes "streams" element
             xmlw.writeEndElement();//closes "admin-stream" element
             xmlw.writeEndDocument();//closes document
@@ -367,10 +381,9 @@ public class AdministrationStream implements MetaData
             String error = "Could not write to stream writer";
             log.error( error );
             throw new OpenSearchTransformException( error, ex );
-
         }
-
     }
+
 
     /**
      * This implementation returns the identifier as identifier
@@ -381,6 +394,7 @@ public class AdministrationStream implements MetaData
         return identifier;
     }
 
+    
     /**
      *
      * @return the type of this metadata element

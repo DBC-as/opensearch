@@ -243,19 +243,45 @@ public class FedoraHandle
     }
 
 
-    String getDataStreamsXML( String pid ) throws IOException {
-
+    Datastream getDatastream( String pid, String dsID ) throws RemoteException
+    {
         long timer = 0;
-        if( log.isDebugEnabled() )  {
+        if ( log.isDebugEnabled() )
+        {
             timer = System.currentTimeMillis();
         }
-        Datastream[] res=getAPIM().getDatastreams( pid, null, null );
 
+        Datastream res = getAPIM().getDatastream( pid, dsID, null );
 
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+        }
 
-
-        return "";
+        return res;
     }
+
+
+    Datastream[] getDataStreamsXML( String pid ) throws IOException
+    {
+        long timer = 0;
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis();
+        }
+
+        Datastream[] res = getAPIM().getDatastreams( pid, null, null );
+        
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+        }
+        
+        return res;
+    }
+
 
     String[] getNextPID( int numberOfPids, String prefix ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {

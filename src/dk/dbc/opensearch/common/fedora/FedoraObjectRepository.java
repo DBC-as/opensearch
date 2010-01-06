@@ -37,11 +37,12 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-
 import dk.dbc.opensearch.common.types.TargetFields;
+
 import fedora.common.Constants;
 import fedora.server.types.gen.Condition;
 import fedora.server.types.gen.ComparisonOperator;
+import fedora.server.types.gen.Datastream;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
@@ -385,7 +386,7 @@ public class FedoraObjectRepository implements IObjectRepository
     @Override
     public CargoContainer getObject( String identifier ) throws ObjectRepositoryException
     {
-        byte[] adminbytes = getDataStream( identifier, DataStreamType.AdminData.getName() );
+        byte[] adminbytes = getDataStreamDissemination( identifier, DataStreamType.AdminData.getName() );
 
         if ( adminbytes == null || adminbytes.length < 1 )
         {
@@ -434,7 +435,7 @@ public class FedoraObjectRepository implements IObjectRepository
         CargoContainer cargo = new CargoContainer();
         cargo.setIdentifier( new PID( identifier ) );
         
-        for ( InputPair< Integer, InputPair< String, CargoObject > > cargoobjects : adminstreamlist)
+        for ( InputPair< Integer, InputPair< String, CargoObject > > cargoobjects : adminstreamlist )
         {
             String streamId = cargoobjects.getSecond().getFirst();
 
@@ -492,6 +493,7 @@ public class FedoraObjectRepository implements IObjectRepository
                         log.error( error );
                         throw new ObjectRepositoryException( error, ex );
                     }
+                    
                     String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
                     log.trace( String.format( "Got dc:identifier '%s' from datastream", dcid ) );
                     if( null == dcid )
@@ -519,13 +521,12 @@ public class FedoraObjectRepository implements IObjectRepository
             }
         }
 
-        if( cargo.getCargoObjectCount() < 1 && adminStream.getCount() > 0 )
+        if ( cargo.getCargoObjectCount() < 1 && adminStream.getCount() > 0 )
         {
             throw new ObjectRepositoryException( "CargoContainer is empty, even though adminstream says it gave data" );
-
         }
 
-        if( cargo.getDublinCoreMetaData() == null )
+        if ( cargo.getDublinCoreMetaData() == null )
         {
             DublinCore dc = new DublinCore( identifier );
             dc.setCreator( cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter() );
@@ -1291,7 +1292,7 @@ public class FedoraObjectRepository implements IObjectRepository
         byte[] adminbytes = null;
         try
         {
-            adminbytes = getDataStream( objectIdentifier, DataStreamType.AdminData.getName() );
+            adminbytes = getDataStreamDissemination( objectIdentifier, DataStreamType.AdminData.getName() );
             adminStream = new AdministrationStream( new ByteArrayInputStream( adminbytes ), true );
         }
         catch( XMLStreamException ex )
@@ -1394,9 +1395,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         String admLocation = uploadDatastream( baos );
 
-        String[] empty = new String[]
-            {
-            };
+        String[] empty = new String[]{};
 
         try
         {
@@ -1411,9 +1410,35 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return removed;
     }
+
+
+    public Datastream getDatastream( String objectIdentifier, String dataStreamID ) throws ObjectRepositoryException
+    {
+        Datastream ds = null;
+
+        try
+        {
+            ds = this.fedoraHandle.getDatastream( objectIdentifier, dataStreamID );
+        }
+        catch( RemoteException re )
+        {
+            String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': %s", dataStreamID, objectIdentifier, re.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, re );
+        }
+
+        if ( ds == null )
+        {
+            String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': Got nothing back from the object repository", dataStreamID, objectIdentifier );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
+        }
+
+        return ds;
+    }
     
 
-    private byte[] getDataStream( String objectIdentifier, String dataStreamTypeName ) throws ObjectRepositoryException
+    private byte[] getDataStreamDissemination( String objectIdentifier, String dataStreamTypeName ) throws ObjectRepositoryException
     {
         if ( null == objectIdentifier || null == dataStreamTypeName || objectIdentifier.isEmpty() || dataStreamTypeName.isEmpty() )
         {
@@ -1435,10 +1460,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         catch( MalformedURLException ex )
         {
-            String error = String
-                    .format(
-                             "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': %s",
-                             dataStreamTypeName, objectIdentifier, ex.getMessage() );
+            String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': %s", dataStreamTypeName, objectIdentifier, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
@@ -1454,7 +1476,8 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
-        if (null == ds)
+
+        if ( null == ds )
         {
             String error = String.format( "Failed to retrieve datastream with name '%s' from object with objectIdentifier '%s': Got nothing back from the object repository", dataStreamTypeName, objectIdentifier );
             log.error( error );
