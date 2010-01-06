@@ -65,7 +65,9 @@ public class FedoraMain
 
     private static final String purge = "-purge";
     private static final String retrieve = "-retrieve";
-
+    private static final String usage = "\n\tUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" +
+                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" +
+                                        "\tFile format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n";
 
     /**
      * The datadocks main method.
@@ -119,18 +121,17 @@ public class FedoraMain
             try
             {
                 String path = FileSystemConfig.getTrunkPath();
-                //System.out.println( "path: " + path );
                 BufferedReader input =  new BufferedReader( new FileReader( textFile ) );
                 try
                 {
                     String line = null;
+                    int j = 1;
                     while ( ( line = input.readLine()) != null )
                     {
-                        int j = 0;
                         String[] work_mani = line.split( " " );
                         
                         for ( int i = 1; i < work_mani.length; i++ )
-                        {
+                        {                            
                             String pid = work_mani[i];
                             String submitter = pid.split( ":" )[0];
                             Datastream ds = fo.getDatastream( pid, "originalData.0" );
@@ -139,29 +140,15 @@ public class FedoraMain
                             String harvestPath = path + harvestCatalog + "/" + submitter + "/" + format;
                             File harvestDir = new File( harvestPath );
                             harvestDir.mkdirs();
-                            System.out.println( harvestPath );
-                            String xmlFile = harvestDir + "/" + i + ".xml";
-                            System.out.println( xmlFile );
+                            String xmlFile = harvestDir + "/" + j + ".xml";
                             File file = new File( xmlFile );
                             FileOutputStream fos = new FileOutputStream( file );
-                            //dos=new DataOutputStream(fos);
-
-                            //FileWriter fstream = new FileWriter( xmlFile );
-                            //BufferedWriter out = new BufferedWriter(fstream);
-
-                            /*System.out.println( "Pid:   " + pid );
-                            System.out.println( "Subm: " + submitter );
-                            System.out.println( "Label: " + ds.getLabel() );
-                            System.out.println( "ID:    " + ds.getID() );*/
                             
                             CargoContainer cc = fo.getObject( pid );
                             CargoObject co = cc.getCargoObject( DataStreamType.OriginalData );
                             byte[] bytes = co.getBytes();
-                            //String bytesStr = new String( bytes );
                             fos.write( bytes );
 
-                            //System.out.println( "bytesStr: " + bytesStr );
-                            System.out.println();
                             j++;
                         }
                     }
@@ -189,9 +176,7 @@ public class FedoraMain
             }
             catch ( IndexOutOfBoundsException iob )
             {
-                System.out.println( "\nUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" );
-                System.out.println( "Ex:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" );
-                System.out.println( "File format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n" );
+                System.out.println( usage );
                 System.exit( 0 );
             }
         }
@@ -204,9 +189,7 @@ public class FedoraMain
             }
             catch ( IndexOutOfBoundsException iob )
             {
-                System.out.println( "\nUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" );
-                System.out.println( "Ex:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" );
-                System.out.println( "File format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n" );
+                System.out.println( usage );
                 System.exit( 0 );
             }
         }
@@ -220,9 +203,7 @@ public class FedoraMain
             }
             catch ( IndexOutOfBoundsException iob )
             {
-                System.out.println( "\nUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" );
-                System.out.println( "Ex:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" );
-                System.out.println( "File format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n" );
+                System.out.println( usage );
                 System.exit( 0 );
             }
         }
