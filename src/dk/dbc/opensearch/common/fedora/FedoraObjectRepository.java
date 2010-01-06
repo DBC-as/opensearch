@@ -655,7 +655,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             FedoraObjectFields target = (FedoraObjectFields)pair.getFirst();
             log.debug( String.format( "Matching resultField: '%s'", target ) );
-            String value = (String)pair.getSecond();
+            String value = pair.getSecond();
             for ( ObjectFields of : objectFields )
             {
                 String pid = of.getPid().toLowerCase();
