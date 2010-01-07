@@ -33,6 +33,11 @@ import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.TargetFields;
+import dk.dbc.opensearch.common.metadata.IPredicate;
+import dk.dbc.opensearch.common.metadata.DBCBIB;
+import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.types.ObjectIdentifier;
+
 
 public class ScriptMethodsForReviewRelation {
     /**
@@ -51,15 +56,32 @@ public class ScriptMethodsForReviewRelation {
      * @param relation, the name of the relation to make
      * @param subject, the pid of the target of the relation
      */
-    public boolean setRelation( String object, String relation, String subject)
+    public boolean setRelation( String subject, String relation, String object)
     {
+        //convert the relation String to an IPredicate/DBCBIB
         //check that the relation param is valid, should be either reviewOf, hasReview
         // or hasFullText
+        IPredicate predicate;
+        if( relation.equals( "reviewOf" ) )
+        {
+            predicate = (IPredicate)DBCBIB.REVIEW_OF;
+        }
+        else
+        {
+            predicate = (IPredicate)DBCBIB.HAS_REVIEW;
+        }
         //convert the object String to an ObjectIdentifier
-        //convert the relation String to an IPredicate
-        //the 3 relations to add: hasFullText, hasReview, reviewOf
+        ObjectIdentifier subjectPID = new PID( subject );
+        
         //call the addObjectRelation method
-
+        try
+        {
+            repository.addObjectRelation( subjectPID, predicate, object );
+        }
+        catch( ObjectRepositoryException ore )
+        {
+            return false;
+        }
         return true;
     }
 
@@ -76,7 +98,8 @@ public class ScriptMethodsForReviewRelation {
         //create a List<InputPair<TargetFields, String>> with the converted field and
         //the value
         //call the IObjectRepository.getIdentifiers method with the above values,
-        //no cutIdentifier and 2 in maximumResults (return error if more than is found)
+        //no cutIdentifier and 2 in maximumResults (return error if more than 1 is 
+        //found I guess)
         //return the pid if 1 is found else return an empty String
 
         return "";

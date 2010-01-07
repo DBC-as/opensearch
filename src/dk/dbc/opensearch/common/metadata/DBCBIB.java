@@ -36,8 +36,13 @@ public enum DBCBIB implements IPredicate
     IS_OWNED_BY( "isOwnedBy" ),
 
     IS_PART_OF_THEME( "isPartOfTheme" ),
+        
+    IS_AFFILIATED_WITH( "isAffiliatedWith" ),
 
-    IS_AFFILIATED_WITH( "isAffiliatedWith" );
+
+    HAS_REVIEW( "hasReview" ),
+    REVIEW_OF( "reviewOf" ),
+    HAS_FULLTEXT( "hasFullText" );
 
     private String localName;
     private final String NS = "http://oss.dbc.dk/rdf/dkbib#";
