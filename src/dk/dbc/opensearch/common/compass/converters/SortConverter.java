@@ -83,7 +83,6 @@ public class SortConverter extends SimpleXmlValueConverter
         Property p = context.getResourceFactory().createProperty(propertyName, sValue, xmlPropertyMapping);
         doSetBoost(p, root, xmlPropertyMapping, context);
         resource.addProperty(p);
-
         return xmlPropertyMapping.getStore() != Property.Store.NO;
     }
 }

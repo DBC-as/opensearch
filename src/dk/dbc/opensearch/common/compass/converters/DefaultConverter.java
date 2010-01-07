@@ -68,12 +68,13 @@ public class DefaultConverter extends SimpleXmlValueConverter
         {   // normalize string
             sValue = toString( xmlObject, xmlPropertyMapping );
             HashMap<String, String> replaceMap1 = new HashMap<String, String>();
-            replaceMap1.put("\uA732", "Aa");
+            replaceMap1.put("\uA732", "AA");
             replaceMap1.put("\uA733", "aa");
             HashMap<String, String> replaceMap2 = new HashMap<String, String>();
             replaceMap2.put("\uA732", "Å");
             replaceMap2.put("\uA733", "å");
             sValue = String.format("%s %s", StringUtils.replace(sValue, replaceMap1), StringUtils.wordMatches(sValue, replaceMap2));
+            sValue = sValue.trim();
         }
 
         PropertyPath path = xmlPropertyMapping.getPath();
