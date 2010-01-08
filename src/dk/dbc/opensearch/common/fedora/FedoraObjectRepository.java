@@ -625,6 +625,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             String pidValue = objectFields[j].getPid();
             log.debug( String.format( "Matching pid: %s", pidValue ) );
+            // Check to weed out in exact matches
             if ( addPidValue( resultSearchFields, objectFields, namespace ) )
             {
                 log.debug( String.format( "Matching do addPidValue", "" ) );
@@ -665,7 +666,6 @@ public class FedoraObjectRepository implements IObjectRepository
                     switch ( target )
                     {
                         case PID:
-                            //String pid = of.getPid().toLowerCase();
                             log.debug( String.format( "PID Matching '%s' and '%s'", pid, value ) );
                             if ( pid.equals( value ) )
                             {
@@ -922,7 +922,6 @@ public class FedoraObjectRepository implements IObjectRepository
                 namespace = namespace + "*";
             }
 
-            //ComparisonOperator eq = ComparisonOperator.fromString( "eq" );
             cond[i++] = new Condition( FedoraObjectFields.PID.fieldname(), comp, namespace );
         }
 
