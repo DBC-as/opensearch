@@ -459,61 +459,61 @@ public class AdministrationFunc
     }
 
 
-    static void testModifyDataStream( String pid ) throws ObjectRepositoryException
-    {
-        objectRepository = new FedoraObjectRepository();
+//    static void testModifyDataStream( String pid ) throws ObjectRepositoryException
+//    {
+//        objectRepository = new FedoraObjectRepository();
+//
+//        CargoObject cargo = null;
+//        try
+//        {
+//            cargo = createCargoObject( 2 );
+//        }
+//        catch ( Exception e )
+//        {
+//            e.printStackTrace();
+//        }
+//        String sID = DataStreamType.OriginalData.getName() + ".0";
+//
+//        boolean checksum = false;
+//        try
+//        {
+//            objectRepository.replaceDataInObject( pid, sID, cargo);
+//        }
+//        catch ( Exception e )
+//        {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println( String.format( "object replaced" ) );
+//
+//    }
 
-        CargoObject cargo = null;
-        try
-        {
-            cargo = createCargoObject( 2 );
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
-        String sID = DataStreamType.OriginalData.getName() + ".0";
 
-        boolean checksum = false;
-        try
-        {
-            objectRepository.replaceDataInObject( pid, sID, cargo);
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
-
-        System.out.println( String.format( "object replaced" ) );
-
-    }
-
-
-    static void testAddDataStreamToObject( String pid ) throws ObjectRepositoryException
-    {
-        objectRepository = new FedoraObjectRepository();
-
-        CargoObject cargo = null;
-        try
-        {
-            cargo = createCargoObject( 1 );
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
-        try
-        {
-            objectRepository.storeDataInObject( pid, cargo, false, true);
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
-
-        System.out.println( String.format( "object stored in object '%s'", pid ) );
-
-    }
+//    static void testAddDataStreamToObject( String pid ) throws ObjectRepositoryException
+//    {
+//        objectRepository = new FedoraObjectRepository();
+//
+//        CargoObject cargo = null;
+//        try
+//        {
+//            cargo = createCargoObject( 1 );
+//        }
+//        catch ( Exception e )
+//        {
+//            e.printStackTrace();
+//        }
+//        try
+//        {
+//            objectRepository.storeDataInObject( pid, cargo, false, true);
+//        }
+//        catch ( Exception e )
+//        {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println( String.format( "object stored in object '%s'", pid ) );
+//
+//    }
 
 
     static void testGetDataStream( String pid ) throws ObjectRepositoryException

@@ -422,19 +422,19 @@ public class FedoraObjectRepositoryTest {
     }*/
 
 
-    @Test
-    public void testStoreDataInObject() throws Exception
-    {
-        String identifier = "test:1";
-        CargoContainer cargo = new CargoContainer( );
-        cargo.setIdentifier( new PID(identifier ));
-        cargo.add( DataStreamType.OriginalData, "artikel", "testSubmitter", "da", "text/xml", "docbook", "<root><child/></root>".getBytes() );
-        CargoObject object = cargo.getCargoObject( DataStreamType.OriginalData );
-        boolean versionable = false;
-        boolean overwrite = false;
-
-        instance.storeDataInObject( identifier, object, versionable, overwrite );
-    }
+//    @Test
+//    public void testStoreDataInObject() throws Exception
+//    {
+//        String identifier = "test:1";
+//        CargoContainer cargo = new CargoContainer( );
+//        cargo.setIdentifier( new PID(identifier ));
+//        cargo.add( DataStreamType.OriginalData, "artikel", "testSubmitter", "da", "text/xml", "docbook", "<root><child/></root>".getBytes() );
+//        CargoObject object = cargo.getCargoObject( DataStreamType.OriginalData );
+//        boolean versionable = false;
+//        boolean overwrite = false;
+//
+//        instance.storeDataInObject( identifier, object, versionable, overwrite );
+//    }
 
 
     @Test
@@ -486,19 +486,19 @@ public class FedoraObjectRepositoryTest {
         assertTrue("test XML matches control skeleton XML " + diff, diff.similar());
     }
 
-    @Test
-    public void testReplaceDataInObject() throws Exception
-    {
-        String objectIdentifier = "test:1";
-        String dataIdentifier = "originalData.0";
-        CargoContainer cargo = new CargoContainer( );
-        cargo.setIdentifier( new PID( objectIdentifier ));
-        
-        cargo.add( DataStreamType.OriginalData, "artikel", "testSubmitter", "da", "text/xml", "dockbook", "<root><child/></root>".getBytes() );
-        CargoObject cargoobject = cargo.getCargoObject( DataStreamType.OriginalData );
-        
-        instance.replaceDataInObject( objectIdentifier, dataIdentifier, cargoobject );
-    }
+//    @Test
+//    public void testReplaceDataInObject() throws Exception
+//    {
+//        String objectIdentifier = "test:1";
+//        String dataIdentifier = "originalData.0";
+//        CargoContainer cargo = new CargoContainer( );
+//        cargo.setIdentifier( new PID( objectIdentifier ));
+//
+//        cargo.add( DataStreamType.OriginalData, "artikel", "testSubmitter", "da", "text/xml", "dockbook", "<root><child/></root>".getBytes() );
+//        CargoObject cargoobject = cargo.getCargoObject( DataStreamType.OriginalData );
+//
+//        instance.replaceDataInObject( objectIdentifier, dataIdentifier, cargoobject );
+//    }
 
     @Test
     public void testaddObjectRelation( ) throws Exception {        
