@@ -84,22 +84,6 @@ public class ReviewRelation implements IRelation
     public ReviewRelation()
     {
         log.trace( "Constructor called" );
-
-        //nsc = new OpensearchNamespaceContext();
-
-        //         types = new Vector< String >();
-        //         types.add( "Bog" );
-        //         types.add( "DVD" );
-        //         types.add( "CD" );
-        //         types.add( "Wii-spil" );
-        //         types.add( "Playstation-spil" );
-        //         types.add( "Playstation2-spil" );
-        //         types.add( "Playstation3-spil" );
-        //         types.add( "DVD-Rom" );
-        //         types.add( "Gameboy" );
-        //         types.add( "XBOX-spil" );
-        //         types.add( "Tegneserie" );
-        //         types.add( "Billedbog" );
     }
 
 
@@ -116,13 +100,13 @@ public class ReviewRelation implements IRelation
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
-        // if( objectRepository == null )
-//         {
-//             String msg = "no repository set";
-//             log.error( msg );
-//             throw new PluginException( msg );
-//         }
-//         scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+        if( objectRepository == null )
+        {
+            String msg = "no repository set";
+            log.error( msg );
+            throw new PluginException( msg );
+        }
+        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
         boolean ok = false;
         ok = addReviewRelation( cargo );
 

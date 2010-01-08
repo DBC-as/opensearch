@@ -23,7 +23,8 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
@@ -31,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 
@@ -182,6 +184,17 @@ public class ReviewRelationFunc
 	}
 
 	ReviewRelation reviewRelation = new ReviewRelation();
+        IObjectRepository repository = null;
+        try
+        {
+            repository = new FedoraObjectRepository();
+        }
+        catch( ObjectRepositoryException oe )
+        {
+            System.out.println( "exception caught when initialising the ObjectRepository" + oe.getMessage() );     
+            System.exit(1);
+        }
+        reviewRelation.setObjectRepository( repository );
 
 	try
 	{
