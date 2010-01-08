@@ -77,26 +77,6 @@ public class XMLUtils
 
 
     /**
-     * creates a Document from data, and returns the root element of
-     * the created document.
-     *
-     * @param data is the byte array to build the Document from
-     *
-     * @return the root element of the created document
-     *
-     * @throws ParserConfigurationException Could not parse xmlFile
-     * @throws SAXException Could not parse xmlFile
-     * @throws IOException could not read xmlFile
-     */
-    public static Document getDocumentElement( byte[] data ) throws ParserConfigurationException, SAXException, IOException
-    {
-        ByteArrayInputStream bis = new ByteArrayInputStream( data );
-
-        return getDocument( new InputSource( bis ) );
-    }
-
-
-    /**
      * creates and returns a Document from is.
      *
      * @param is the inputsource to build the Document from
@@ -114,6 +94,14 @@ public class XMLUtils
         return docBuilder.parse( is );
     }
 
+    public static Document getDocument( byte[] data ) throws ParserConfigurationException, SAXException, IOException
+    {
+        DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFact.newDocumentBuilder();
+        Document parse = docBuilder.parse( new ByteArrayInputStream( data ) );
+
+        return parse;
+    }
     
     /**
      * creates and returns a Document from is.
@@ -135,10 +123,10 @@ public class XMLUtils
 
     /**
      * creates a Nodelist consisting of all the Nodes in xmlFile
-     * matching tagName.
+     * matching elementName.
      *
      * @param xmlFile the file to retrive nodes from
-     * @param tagName name of the nodes to retrieve
+     * @param elementName name of the nodes to retrieve
      *
      * @return a Nodelist consisting of all matching Nodes
      *
@@ -146,23 +134,23 @@ public class XMLUtils
      * @throws SAXException Could not parse xmlFile
      * @throws IOException could not read xmlFile
      */
-    public static NodeList getNodeList( File xmlFile, String tagName ) throws ParserConfigurationException, SAXException, IOException
+    public static NodeList getNodeList( File xmlFile, String elementName ) throws ParserConfigurationException, SAXException, IOException
     {
         DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
         Document jobDocument = docBuilder.parse( xmlFile );
         Element xmlRoot = jobDocument.getDocumentElement();
 
-        return xmlRoot.getElementsByTagName( tagName );
+        return xmlRoot.getElementsByTagName( elementName );
     }
 
 
     /**
      * creates a Nodelist consisting of all the Nodes in a documemt,
-     * build with the provided entityresolver, that matches tagName
+     * build with the provided entityresolver, that matches elementName
      *
      * @param xmlFile the file to retrive nodes from
-     * @param tagName name of the nodes to retrieve
+     * @param elementName name of the nodes to retrieve
      * @param er The entityResolver to use when build document
      *
      * @return a Nodelist consisting of all matching Nodes
@@ -171,9 +159,9 @@ public class XMLUtils
      * @throws SAXException Could not parse xmlFile
      * @throws IOException could not read xmlFile
      */
-    public static NodeList getNodeList( String xmlFile, String tagName, EntityResolver er ) throws ParserConfigurationException, SAXException, IOException
+    public static NodeList getNodeList( String xmlFile, String elementName, EntityResolver er ) throws ParserConfigurationException, SAXException, IOException
     {
-        log.trace( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, tagName ) );
+        log.trace( String.format( "Getting nodelist using xml file '%s' and tag name '%s'", xmlFile, elementName ) );
 
         DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
@@ -182,7 +170,27 @@ public class XMLUtils
         Element xmlRoot = jobDocument.getDocumentElement();
 
         log.trace( "getNodeList done" );
-        return xmlRoot.getElementsByTagName( tagName );
+        return xmlRoot.getElementsByTagName( elementName );
+    }
+
+
+    /**
+     * Returns a NodeList of Elements matching {@code elementName}
+     *
+     * @param data is the byte array to retrieve the Element(s) from
+     *
+     * @return a NodeList of matching Elements
+     *
+     * @throws ParserConfigurationException Could not parse data
+     * @throws SAXException Could not parse data
+     * @throws IOException could not read data
+     */
+    public static NodeList getNodeList( byte[] data, String elementName ) throws ParserConfigurationException, SAXException, IOException
+    {
+        ByteArrayInputStream bis = new ByteArrayInputStream( data );
+        Document document = getDocument( new InputSource( bis ) );
+
+        return document.getElementsByTagName( elementName );
     }
 
 
