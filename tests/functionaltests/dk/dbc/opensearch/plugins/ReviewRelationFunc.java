@@ -151,7 +151,6 @@ public class ReviewRelationFunc
 	// Setting up the logging or bail out.
 	try 
 	    {
-		// Log4jConfiguration.configure( "/home/damkjaer/dbc/svn.dbc.dk/opensearch/config/log4j_datadock.xml" );
 		Log4jConfiguration.configure( "log4j_datadock.xml" );
 	    } 
 	catch (ConfigurationException ce )

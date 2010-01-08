@@ -31,23 +31,16 @@ import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
-import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.TargetFields;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 
 import org.apache.commons.configuration.ConfigurationException;
 import java.io.FileNotFoundException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -64,13 +57,74 @@ import org.apache.log4j.Logger;
  */
 public class ReviewRelation implements IRelation
 {
+    
+    public class JavaScriptWrapper 
+    {
+	private Invocable inv = null;
+	private ScriptEngine engine = null;
+	private String jsFileName = null;
+	
+	JavaScriptWrapper( String scriptName )
+	{
+	    try
+	    {
+		jsFileName = FileSystemConfig.getScriptPath() + scriptName;
+	    }
+	    catch( ConfigurationException ce )
+	    {
+		String errorMsg = String.format( "A ConfigurationExcpetion was cought", ce.getMessage() );
+		log.fatal( errorMsg, ce );
+		// \todo: throw new
+	    }
+
+            engine = manager.getEngineByName( "JavaScript" );
+	}
+
+	void put( String key, Object value )
+	{
+	    engine.put( key, value );
+	}
+
+	void run( String entryPointFunc )
+	{
+	    if ( inv == null )
+	    {
+		try
+		{
+		    engine.eval( new java.io.FileReader( jsFileName ) );
+		}
+		catch( FileNotFoundException fnfe )
+		{
+		    String errorMsg = String.format( "File was not found: %s  Error: ", jsFileName, fnfe.getMessage() );
+		    log.fatal( errorMsg, fnfe );
+		    // \todo: throw new
+		}
+		catch( ScriptException se )
+		{
+		    String errorMsg = String.format( "A ScriptException was cought: %s", se.getMessage() );
+		    log.fatal( errorMsg, se );
+		    // \todo: throw new
+		}
+
+		inv = (Invocable)engine;
+	    }
+	}
+	
+	/**
+	 *  There should also be a run-function which takes arguments
+	 */
+
+
+
+
+    }
+
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
-    private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
+    private Invocable scriptCache = null;
     private final ScriptEngineManager manager = new ScriptEngineManager();
     private PluginType pluginType = PluginType.RELATION;
 
-    private Vector< String > types;
     private final String marterialevurderinger = "Materialevurdering:?";
     private final String anmeldelse = "Anmeldelse";
     private final String namespace = "review";
@@ -206,10 +260,10 @@ public class ReviewRelation implements IRelation
         }
 
         //lookup invocable in cache:
-        if( this.scriptCache.containsKey( submitter ) )
+	if ( this.scriptCache != null )
         {
             log.trace( String.format( "Returning Invocable js for %s", submitter ) );
-            return this.scriptCache.get( submitter );
+	    return this.scriptCache;
         }
         else // ...or create new invocable + add it to the cache
         {
@@ -226,7 +280,7 @@ public class ReviewRelation implements IRelation
 
             Invocable inv = (Invocable) engine;
 
-            this.scriptCache.put( submitter, inv );
+	    this.scriptCache = inv;
 
             log.trace( String.format( "Returning Invokable js for %s", submitter ) );
             return inv;
