@@ -308,17 +308,17 @@ public class ESHarvest implements IHarvest
             }
             catch( ParserConfigurationException pce )
             {
-                log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce ) );
+                log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
                 DocOK = false;
             }
             catch( SAXException se )
             {
-                log.error( String.format( "Could not parse data: '%s'", se ) );
+                log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
                 DocOK = false;
             }
             catch( IOException ioe )
             {
-                log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
+                log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
                 DocOK = false;
             }
 
