@@ -967,84 +967,89 @@ public class FedoraObjectRepository implements IObjectRepository
     }
     
 
+    /**
+     * This code has been commented out since it is not used anywhere
+     * and there seems to be no intentions of ever using it. Should
+     * anyone encounter this commented-out method later than July 1st
+     * 2010, it should be removed altogether.
+     */
+    // @Override
+    // public void storeDataInObject( String identifier, CargoObject object, boolean versionable, boolean overwrite ) throws ObjectRepositoryException
+    // {
 
-    @Override
-    public void storeDataInObject( String identifier, CargoObject object, boolean versionable, boolean overwrite ) throws ObjectRepositoryException
-    {
+    //     AdministrationStream admStream = getAdministrationStream( identifier );
+    //     int count = admStream.getCount( object.getDataStreamType() );
+    //     String dsId = object.getDataStreamType().getName() + Integer.toString( count + 1 );
+    //     boolean addedData = addDataUpdateAdminstream( identifier, dsId, object );
 
-        AdministrationStream admStream = getAdministrationStream( identifier );
-        int count = admStream.getCount( object.getDataStreamType() );
-        String dsId = object.getDataStreamType().getName() + Integer.toString( count + 1 );
-        boolean addedData = addDataUpdateAdminstream( identifier, dsId, object );
+    //     if( !addedData )
+    //     {
+    //         log.warn( String.format( "Could not add data or update administration stream for pid %s, dsId %s", identifier, dsId ) );
+    //     }
 
-        if( !addedData )
-        {
-            log.warn( String.format( "Could not add data or update administration stream for pid %s, dsId %s", identifier, dsId ) );
-        }
+    //     //upload the content
 
-        //upload the content
+    //     /** \todo: the java.nio.channels should relieve the worl of this ugly hack. Please redeem this code*/
+    //     ByteArrayInputStream bais = new ByteArrayInputStream( object.getBytes() );
+    //     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    //     byte[] buf = new byte[1024];
+    //     int len;
+    //     try
+    //     {
+    //         while( (len = bais.read( buf )) > 0 )
+    //         {
+    //             baos.write( buf, 0, len );
+    //         }
+    //     }
+    //     catch( IOException ex )
+    //     {
+    //         String error = String.format( "Could not hack my way through outdated java api for copying inputstreams to outputstreams, sorry" );
+    //         log.error( error );
+    //         throw new ObjectRepositoryException( error, ex );
+    //     }
 
-        /** \todo: the java.nio.channels should relieve the worl of this ugly hack. Please redeem this code*/
-        ByteArrayInputStream bais = new ByteArrayInputStream( object.getBytes() );
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int len;
-        try
-        {
-            while( (len = bais.read( buf )) > 0 )
-            {
-                baos.write( buf, 0, len );
-            }
-        }
-        catch( IOException ex )
-        {
-            String error = String.format( "Could not hack my way through outdated java api for copying inputstreams to outputstreams, sorry" );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
+    //     /** end ugly code hack ;)*/
+    //     String dsLocation = uploadDatastream( baos );
+    //     String logm = String.format( "added %s to the object with pid: %s", dsLocation, identifier );
+    //     String returnedSID = null;
+    //     try
+    //     {
+    //         returnedSID = this.fedoraHandle.addDatastream( identifier, dsId, new String[]
+    //             {
+    //             }, object.getFormat(), versionable, object.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
+    //     }
+    //     catch( ConfigurationException ex )
+    //     {
+    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
+    //         log.error( error );
+    //         throw new ObjectRepositoryException( error, ex );
+    //     }
+    //     catch( ServiceException ex )
+    //     {
+    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
+    //         log.error( error );
+    //         throw new ObjectRepositoryException( error, ex );
+    //     }
+    //     catch( MalformedURLException ex )
+    //     {
+    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
+    //         log.error( error );
+    //         throw new ObjectRepositoryException( error, ex );
+    //     }
+    //     catch( IOException ex )
+    //     {
+    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
+    //         log.error( error );
+    //         throw new ObjectRepositoryException( error, ex );
+    //     }
 
-        /** end ugly code hack ;)*/
-        String dsLocation = uploadDatastream( baos );
-        String logm = String.format( "added %s to the object with pid: %s", dsLocation, identifier );
-        String returnedSID = null;
-        try
-        {
-            returnedSID = this.fedoraHandle.addDatastream( identifier, dsId, new String[]
-                {
-                }, object.getFormat(), versionable, object.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
-        }
-        catch( ConfigurationException ex )
-        {
-            String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( ServiceException ex )
-        {
-            String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( MalformedURLException ex )
-        {
-            String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( IOException ex )
-        {
-            String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-
-        if( returnedSID == null )
-        {
-            String error = String.format( "Failed to add datastream to object with pid '%s'", identifier );
-            log.error( error );
-            throw new ObjectRepositoryException( error );
-        }
-    }
+    //     if( returnedSID == null )
+    //     {
+    //         String error = String.format( "Failed to add datastream to object with pid '%s'", identifier );
+    //         log.error( error );
+    //         throw new ObjectRepositoryException( error );
+    //     }
+    // }
     
 
     @Override
@@ -1222,19 +1227,24 @@ public class FedoraObjectRepository implements IObjectRepository
         return cargo;
     }
     
+    /**
+     * This code has been commented out since it is not used anywhere
+     * and there seems to be no intentions of ever using it. Should
+     * anyone encounter this commented-out method later than July 1st
+     * 2010, it should be removed altogether.
+     */
+    // @Override
+    // public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException
+    // {
 
-    @Override
-    public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException
-    {
-
-        /** \todo: this is just a wrapper for the two-phase operation
-         * of deleting and storing data. It inherits the weaknesses
-         * from both methods, as an exception thrown somewhere in the
-         * operations renders the object repository in an inconsistent
-         * state*/
-        deleteDataFromObject( objectIdentifier, dataIdentifier );
-        storeDataInObject( objectIdentifier, cargo, true, true );
-    }
+    //     /** \todo: this is just a wrapper for the two-phase operation
+    //      * of deleting and storing data. It inherits the weaknesses
+    //      * from both methods, as an exception thrown somewhere in the
+    //      * operations renders the object repository in an inconsistent
+    //      * state*/
+    //     deleteDataFromObject( objectIdentifier, dataIdentifier );
+    //     storeDataInObject( objectIdentifier, cargo, true, true );
+    // }
     
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException

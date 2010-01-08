@@ -200,6 +200,12 @@ public interface IObjectRepository
     public List< String > getIdentifiersUnqualified( List< InputPair< TargetFields, String > > resultSearchFields, int maximumResults );
 
 
+    /**
+     * This code has been commented out since it is not used anywhere
+     * and there seems to be no intentions of ever using it. Should
+     * anyone encounter this commented-out method later than July 1st
+     * 2010, it should be removed altogether.
+     */
     /** 
      * Stores data supplied in {@code cargo} in the object identified
      * by {@code identifier}, overwriting any existing data for that
@@ -216,7 +222,7 @@ public interface IObjectRepository
      * 
      * @throws ObjectRepositoryException if the data could not be stored on the object 
      */
-    public void storeDataInObject( String identifier, CargoObject cargo, boolean versionable, boolean overwrite ) throws ObjectRepositoryException;
+    // public void storeDataInObject( String identifier, CargoObject cargo, boolean versionable, boolean overwrite ) throws ObjectRepositoryException;
 
 
     /** 
@@ -264,6 +270,12 @@ public interface IObjectRepository
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
 
     
+    /**
+     * This code has been commented out since it is not used anywhere
+     * and there seems to be no intentions of ever using it. Should
+     * anyone encounter this commented-out method later than July 1st
+     * 2010, it should be removed altogether.
+     */
     /** 
      * Replaces data in the object identified by {@code
      * objectIdentifier}, identified by {@code dataIdentifier} with
@@ -275,7 +287,7 @@ public interface IObjectRepository
      * 
      * @throws ObjectRepositoryException if the data could not be replaced in the object
      */
-    public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException;
+    // public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException;
     
 
     /** 
