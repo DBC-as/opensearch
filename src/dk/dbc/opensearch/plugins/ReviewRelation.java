@@ -28,6 +28,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
@@ -40,7 +41,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.TargetFields;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.tools.ScriptMethodsForReviewRelation;
+import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 
 import org.apache.commons.configuration.ConfigurationException;
 import java.io.FileNotFoundException;
@@ -83,21 +84,22 @@ public class ReviewRelation implements IRelation
     public ReviewRelation()
     {
         log.trace( "Constructor called" );
+
         //nsc = new OpensearchNamespaceContext();
 
-//         types = new Vector< String >();
-//         types.add( "Bog" );
-//         types.add( "DVD" );
-//         types.add( "CD" );
-//         types.add( "Wii-spil" );
-//         types.add( "Playstation-spil" );
-//         types.add( "Playstation2-spil" );
-//         types.add( "Playstation3-spil" );
-//         types.add( "DVD-Rom" );
-//         types.add( "Gameboy" );
-//         types.add( "XBOX-spil" );
-//         types.add( "Tegneserie" );
-//         types.add( "Billedbog" );
+        //         types = new Vector< String >();
+        //         types.add( "Bog" );
+        //         types.add( "DVD" );
+        //         types.add( "CD" );
+        //         types.add( "Wii-spil" );
+        //         types.add( "Playstation-spil" );
+        //         types.add( "Playstation2-spil" );
+        //         types.add( "Playstation3-spil" );
+        //         types.add( "DVD-Rom" );
+        //         types.add( "Gameboy" );
+        //         types.add( "XBOX-spil" );
+        //         types.add( "Tegneserie" );
+        //         types.add( "Billedbog" );
     }
 
 
@@ -105,7 +107,7 @@ public class ReviewRelation implements IRelation
      * The "main" method of this plugin.
      *
      * @param CargoContainer The CargoContainer to add the reviewOf relation to
-     * and be the target of a hasReview relation on another object in the objectRepository 
+     * and be the target of a hasReview relation on another object in the objectRepository
      *
      * @returns A CargoContainer containing relations
      *
@@ -114,7 +116,13 @@ public class ReviewRelation implements IRelation
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
-        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+        // if( objectRepository == null )
+//         {
+//             String msg = "no repository set";
+//             log.error( msg );
+//             throw new PluginException( msg );
+//         }
+//         scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
         boolean ok = false;
         ok = addReviewRelation( cargo );
 
@@ -130,13 +138,13 @@ public class ReviewRelation implements IRelation
     private boolean addReviewRelation( CargoContainer cargo ) throws PluginException
     {
         //This mehtod should call a script with the cargocontainer as parameter
-        //and expose a getPID and a makeRelation method that enables the script to 
-        //find the PID of the target of the review and create the hasReview 
-        //and reviewOf relations 
+        //and expose a getPID and a makeRelation method that enables the script to
+        //find the PID of the target of the review and create the hasReview
+        //and reviewOf relations
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         try
         {
-        Invocable inv = lookupJavaScript( co.getSubmitter() );
+            Invocable inv = lookupJavaScript( co.getSubmitter() );
         }
         catch( ConfigurationException ce )
         {
@@ -146,13 +154,13 @@ public class ReviewRelation implements IRelation
         }
         catch( FileNotFoundException fnfe )
         {
-         String error = String.format( "error message: %s", fnfe.getMessage() );
+            String error = String.format( "error message: %s", fnfe.getMessage() );
             log.error( error );
             throw new PluginException( error, fnfe );
         }
- catch( ScriptException se )
+        catch( ScriptException se )
         {
-         String error = String.format( "error message: %s", se.getMessage() );
+            String error = String.format( "error message: %s", se.getMessage() );
             log.error( error );
             throw new PluginException( error, se );
         }
@@ -169,7 +177,7 @@ public class ReviewRelation implements IRelation
     public void setObjectRepository( IObjectRepository objectRepository )
     {
         this.objectRepository = objectRepository;
-    } 
+    }
 
     /**
      * Tries to do a lookup of a cached instance of the script engine
@@ -186,7 +194,7 @@ public class ReviewRelation implements IRelation
      */
     private Invocable lookupJavaScript( String submitter ) throws ConfigurationException, FileNotFoundException, ScriptException, PluginException
     {
-        
+
         log.trace( String.format( "Entering lookupJavaScript" ) );
         if( submitter == null || submitter.isEmpty() )
         {
@@ -202,7 +210,7 @@ public class ReviewRelation implements IRelation
         else // ...or create new invocable + add it to the cache
         {
             ScriptEngine engine = manager.getEngineByName( "JavaScript" );
-            
+
             engine.put( "log", log );
             engine.put( "scriptClass", scriptClass );
 

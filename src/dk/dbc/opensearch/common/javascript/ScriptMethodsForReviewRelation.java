@@ -22,7 +22,7 @@
  * \brief class that contains the methods needed by the javascript invoked in
  * the ReviewRelation plugin
  */
-package dk.dbc.opensearch.tools;
+package dk.dbc.opensearch.common.javascript;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
