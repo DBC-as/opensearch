@@ -102,11 +102,6 @@ public class FaktalinkHarvesterTest
 //         // assertTrue( langChecked );
 //     }
 
-    @Test 
-    public void hatTest()
-    {
-        //do nothing
-    }
 }
 
 
