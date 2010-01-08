@@ -114,6 +114,24 @@ public class XMLUtils
         return docBuilder.parse( is );
     }
 
+    
+    /**
+     * creates and returns a Document from is.
+     *
+     * @param is the inputsource to build the Document from
+     * @param er The entity resolver to use
+     * @return The document
+     * @throws ParserConfigurationException Could not parse xmlFile
+     * @throws SAXException Could not parse xmlFile
+     * @throws IOException could not read xmlFile
+     */
+    public static Document getDocument( InputSource is, EntityResolver er ) throws ParserConfigurationException, SAXException, IOException
+    {
+        DocumentBuilderFactory docFact = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docFact.newDocumentBuilder();
+        docBuilder.setEntityResolver( er );
+        return docBuilder.parse( is );
+    }
 
     /**
      * creates a Nodelist consisting of all the Nodes in xmlFile
