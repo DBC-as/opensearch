@@ -29,14 +29,19 @@ import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -119,9 +124,20 @@ public class DublinCore implements MetaData
 
         DublinCoreElement elementName = null;
         String elementText = null;
-        while (eventReader.hasNext())
+        XMLEvent event = null;
+        while ( eventReader.hasNext())
         {
-            XMLEvent event = (XMLEvent)eventReader.next();
+            try
+            {
+                event = (XMLEvent) eventReader.next();
+            }
+            catch( NoSuchElementException ex )
+            {
+                String error = String.format( "Could not parse incoming data, previously correctly parsed content from stream was: %s", event.toString() );
+                log.error( error, ex );
+                throw new IllegalStateException( error, ex );
+            }
+            
             switch ( event.getEventType() )
             {
                 case XMLStreamConstants.START_ELEMENT:

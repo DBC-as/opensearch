@@ -41,6 +41,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -113,7 +114,7 @@ public class DocbookMerger implements IProcesser
         }
 
 
-        Element root = doc.getDocumentElement();
+        Element origRoot = doc.getDocumentElement();
 
         ByteArrayOutputStream dc_out = new ByteArrayOutputStream();
         try
@@ -134,10 +135,20 @@ public class DocbookMerger implements IProcesser
         {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document tingDoc = builder.newDocument();
+
+            log.debug( "Creating top level element for new xml" );
             Element tingElement = tingDoc.createElementNS( "http://www.dbc.dk/ting/", "ting:container" );
 
-            tingElement.appendChild( XMLUtils.documentFromInputStream( dc_is ) );
-            tingElement.appendChild( XMLUtils.documentFromInputStream( is ) );
+            tingDoc.appendChild( tingElement );
+
+            Document dCDoc = XMLUtils.documentFromInputStream( dc_is );
+            Element dcRoot = dCDoc.getDocumentElement();
+
+            log.debug( "Adding DublinCore metadata to new xml" );
+            tingDoc.adoptNode( dcRoot );
+
+            log.debug( "Adding OriginalData to new xml" );
+            tingDoc.adoptNode( origRoot );
 
             new_original_data = XMLUtils.xmlToString( tingDoc );
         }

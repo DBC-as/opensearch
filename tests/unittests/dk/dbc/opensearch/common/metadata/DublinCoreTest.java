@@ -21,26 +21,18 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.metadata;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Date;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.List;
-import javax.xml.stream.XMLStreamException;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -48,6 +40,9 @@ import org.xml.sax.SAXException;
 public class DublinCoreTest {
 
     private static final String expectedDC = "<?xml version=\"1.0\" ?><dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:identifier>test:1</dc:identifier></dc>";
+    private static final String subminimalDC = "<?xml version=\"1.0\" ?><dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"/>";
+    private static final String failingDC    = "<?xml version=\"1.0\" ?><dc:title></dc:title>";
+
     private DublinCore dc;
 
     @BeforeClass
@@ -83,6 +78,22 @@ public class DublinCoreTest {
         assertXpathEvaluatesTo( "dbc", "/dc/x:contributor", new String( baos.toByteArray() ) );
     }
 
+    @Test( expected=IllegalStateException.class )
+    public void testMissingNSInXMLCausesDCInitFails() throws Exception
+    {
+        new DublinCore( new ByteArrayInputStream( failingDC.getBytes() ) );
+        
+    }
+
+    public void testEmptyDCXmlCreatesEmptyDCObject() throws Exception
+    {
+        DublinCore emptyDC = new DublinCore( new ByteArrayInputStream( subminimalDC.getBytes() ) );
+        DublinCore emptyDC2 = new DublinCore();
+
+        assertEquals( emptyDC2.getIdentifier(), emptyDC.getIdentifier() );
+        assertEquals( emptyDC2.elementCount(), emptyDC2.elementCount() );
+        assertEquals( emptyDC2.getType(), emptyDC.getType() );
+    }
 
     @Test
     public void testSetCoverage() throws Exception
