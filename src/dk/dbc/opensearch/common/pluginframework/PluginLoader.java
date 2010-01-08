@@ -75,7 +75,9 @@ public class PluginLoader
         }
         catch( ClassNotFoundException cnfe )
         {
-            throw new ClassNotFoundException( String.format( "No value for className: %s ", pluginClassName ) );
+            String error = String.format( "No value for className: %s ", pluginClassName );
+            log.error( error, cnfe );
+            throw new ClassNotFoundException( error, cnfe );
         }
     }
 }
