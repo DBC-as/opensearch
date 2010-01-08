@@ -24,6 +24,7 @@
 
 package dk.dbc.opensearch.common.compass;
 
+import dk.dbc.opensearch.common.config.CompassConfig;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import java.io.File;
@@ -46,11 +47,13 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -78,7 +81,7 @@ public class PhraseMap
      * @throws TransformerException
      * @throws XPathExpressionException
      */
-    protected PhraseMap( String originalCPMPath, String targetCPMFile )throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException
+    protected PhraseMap( String originalCPMPath, String targetCPMFile )throws ConfigurationException, FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException
     {
         phraseMap = buildPhraseMap(originalCPMPath, targetCPMFile );
     }
@@ -96,7 +99,7 @@ public class PhraseMap
      * @throws TransformerException
      * @throws XPathExpressionException
      */
-    static public PhraseMap instance(String originalCPMPath, String targetCPMFile) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException
+    static public PhraseMap instance(String originalCPMPath, String targetCPMFile) throws ConfigurationException, FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException
     {
         if (null == _instance) {
             _instance = new PhraseMap(originalCPMPath, targetCPMFile);
@@ -131,11 +134,16 @@ public class PhraseMap
      * @throws TransformerException
      * @throws XPathExpressionException
      */
-    static private HashMap<String, HashMap<XPathExpression, String>> buildPhraseMap(String originalCPMPath, String targetCPMFile) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException
+    static private HashMap<String, HashMap<XPathExpression, String>> buildPhraseMap(String originalCPMPath, String targetCPMFile) throws  ConfigurationException, FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException
     {
         log.trace( String.format( "read original file %s", originalCPMPath ) );
         InputSource is = new InputSource( new FileInputStream( originalCPMPath ) );
-        Document cpmDoc = XMLUtils.getDocument( is );
+
+        // Build entityResolver
+        String publicUrl = CompassConfig.getHttpUrl();
+        String dtdPath = CompassConfig.getDTDPath();
+        String systemUrl = "file://" + dtdPath;
+        Document cpmDoc = XMLUtils.getDocument(is, new CompassEntityResolver( publicUrl, systemUrl));
 
         DocumentType docType = cpmDoc.getDoctype();
         String publicID = docType.getPublicId();
