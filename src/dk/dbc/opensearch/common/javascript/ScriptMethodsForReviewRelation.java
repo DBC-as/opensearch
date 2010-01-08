@@ -37,7 +37,11 @@ import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.InputPair;
 
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScriptMethodsForReviewRelation {
     /**
@@ -62,17 +66,26 @@ public class ScriptMethodsForReviewRelation {
         //check that the relation param is valid, should be either reviewOf, hasReview
         // or hasFullText
         IPredicate predicate;
+
+        //Find another way to make the enums
         if( relation.equals( "reviewOf" ) )
         {
             predicate = (IPredicate)DBCBIB.REVIEW_OF;
         }
         else
         {
-            predicate = (IPredicate)DBCBIB.HAS_REVIEW;
+            if( relation.equals( "hasReview" ) )
+            {
+                predicate = (IPredicate)DBCBIB.HAS_REVIEW;
+            }
+            else
+            {
+                return false;
+            }
         }
         //convert the object String to an ObjectIdentifier
         ObjectIdentifier subjectPID = new PID( subject );
-        
+
         //call the addObjectRelation method
         try
         {
@@ -92,16 +105,25 @@ public class ScriptMethodsForReviewRelation {
      * @param value, the value to match
      * @return the pid of the object containing the value in the specified term
      */
-    public String getPID( String streamType, String field, String value )
+    public String getPID( String value )
     {
         //convert field to the TargetFields type
         //create a List<InputPair<TargetFields, String>> with the converted field and
         //the value
+        TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
         //call the IObjectRepository.getIdentifiers method with the above values,
-        //no cutIdentifier and 2 in maximumResults (return error if more than 1 is 
+        //no cutIdentifier and 2 in maximumResults (return error if more than 1 is
         //found I guess)
-        //return the pid if 1 is found else return an empty String
+        List<InputPair<TargetFields, String>> searchFields = new ArrayList<InputPair<TargetFields, String>>();
+        searchFields.add( new InputPair<TargetFields, String>( targetField, value ) );
 
-        return "";
+        List<String> resultList = repository.getIdentifiers( searchFields, value, 2 );
+
+        //return the pid if 1 is found else return an empty String
+        if( resultList.isEmpty() )
+        {
+            return "";
+        }
+        return resultList.get( 0 );
     }
 }
