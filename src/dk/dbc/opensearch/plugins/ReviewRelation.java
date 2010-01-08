@@ -142,9 +142,11 @@ public class ReviewRelation implements IRelation
         //find the PID of the target of the review and create the hasReview
         //and reviewOf relations
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+
+	Invocable inv = null;
         try
         {
-            Invocable inv = lookupJavaScript( co.getSubmitter() );
+            inv = lookupJavaScript( co.getSubmitter() );
         }
         catch( ConfigurationException ce )
         {
@@ -164,6 +166,24 @@ public class ReviewRelation implements IRelation
             log.error( error );
             throw new PluginException( error, se );
         }
+
+	try 
+	{
+	    inv.invokeFunction( "test" );
+	}
+	catch( ScriptException se )
+	{
+	    String errorMsg = new String( "Could not run script" );
+	    log.fatal( errorMsg , se );
+	    throw new PluginException( errorMsg, se );
+	}
+	catch( NoSuchMethodException nsme )
+	{
+	    String errorMsg = new String( "The method, \"test\" could not be found in the script." );
+	    log.fatal( errorMsg , nsme );
+	    throw new PluginException( errorMsg, nsme );
+	}
+
 
         return true;
     }
