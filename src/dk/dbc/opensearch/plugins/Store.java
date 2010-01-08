@@ -49,6 +49,11 @@ public class Store implements IRepositoryStore
     {
     	log.trace( "Entering storeCargoContainer( CargoContainer )" );
 
+        if( null == this.objectRepository )
+        {
+            throw new IllegalStateException( "IObjectRepository has not been set" );
+        }
+
         String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
         try
         {

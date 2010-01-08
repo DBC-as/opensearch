@@ -234,7 +234,7 @@ public class StoreTest
     /**
      * tests the behaviour when no repository has been set
      */
-    @Test( expected = NullPointerException.class )
+    @Test( expected = IllegalStateException.class )
     public void noObjectRepositorySetTest() throws Exception
     {
         CargoContainer returnCargo;
