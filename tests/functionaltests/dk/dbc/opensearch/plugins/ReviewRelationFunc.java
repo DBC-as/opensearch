@@ -197,7 +197,12 @@ public class ReviewRelationFunc
 
 	try
 	{
+	    // Run test to ensure that javascript is used uninitialized:
 	    CargoContainer c2 = reviewRelation.getCargoContainer( c );
+
+	    // Test again to ensure that the jsavascript is used initialized:
+	    CargoContainer c3 = reviewRelation.getCargoContainer( c2 );
+
 	}
 	catch( PluginException pe )
 	{

@@ -25,30 +25,19 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
-import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+// import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
+// import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
+// import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
+import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
-
-import org.apache.commons.configuration.ConfigurationException;
-import java.io.FileNotFoundException;
-
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
-import java.util.Vector;
-
 import org.apache.log4j.Logger;
 
 
@@ -57,72 +46,9 @@ import org.apache.log4j.Logger;
  */
 public class ReviewRelation implements IRelation
 {
-    
-    public class JavaScriptWrapper 
-    {
-	private Invocable inv = null;
-	private ScriptEngine engine = null;
-	private String jsFileName = null;
-	
-	JavaScriptWrapper( String scriptName )
-	{
-	    try
-	    {
-		jsFileName = FileSystemConfig.getScriptPath() + scriptName;
-	    }
-	    catch( ConfigurationException ce )
-	    {
-		String errorMsg = String.format( "A ConfigurationExcpetion was cought", ce.getMessage() );
-		log.fatal( errorMsg, ce );
-		// \todo: throw new
-	    }
-
-            engine = manager.getEngineByName( "JavaScript" );
-	}
-
-	void put( String key, Object value )
-	{
-	    engine.put( key, value );
-	}
-
-	void run( String entryPointFunc )
-	{
-	    if ( inv == null )
-	    {
-		try
-		{
-		    engine.eval( new java.io.FileReader( jsFileName ) );
-		}
-		catch( FileNotFoundException fnfe )
-		{
-		    String errorMsg = String.format( "File was not found: %s  Error: ", jsFileName, fnfe.getMessage() );
-		    log.fatal( errorMsg, fnfe );
-		    // \todo: throw new
-		}
-		catch( ScriptException se )
-		{
-		    String errorMsg = String.format( "A ScriptException was cought: %s", se.getMessage() );
-		    log.fatal( errorMsg, se );
-		    // \todo: throw new
-		}
-
-		inv = (Invocable)engine;
-	    }
-	}
-	
-	/**
-	 *  There should also be a run-function which takes arguments
-	 */
-
-
-
-
-    }
-
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
-    private Invocable scriptCache = null;
-    private final ScriptEngineManager manager = new ScriptEngineManager();
+    private NaiveJavaScriptWrapper jsWrapper = null;
     private PluginType pluginType = PluginType.RELATION;
 
     private final String marterialevurderinger = "Materialevurdering:?";
@@ -138,6 +64,11 @@ public class ReviewRelation implements IRelation
     public ReviewRelation()
     {
         log.trace( "Constructor called" );
+	// Creating the javascript:
+	jsWrapper = new NaiveJavaScriptWrapper( "review_relation.js" );
+	// Adding functions (objects) to the javascript:
+	jsWrapper.put( "log", log );
+	jsWrapper.put( "scriptClass", scriptClass );
     }
 
 
@@ -181,47 +112,9 @@ public class ReviewRelation implements IRelation
         //and reviewOf relations
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
-	Invocable inv = null;
-        try
-        {
-            inv = lookupJavaScript( co.getSubmitter() );
-        }
-        catch( ConfigurationException ce )
-        {
-            String error = String.format( "error message: %s", ce.getMessage() );
-            log.error( error );
-            throw new PluginException( error, ce );
-        }
-        catch( FileNotFoundException fnfe )
-        {
-            String error = String.format( "error message: %s", fnfe.getMessage() );
-            log.error( error );
-            throw new PluginException( error, fnfe );
-        }
-        catch( ScriptException se )
-        {
-            String error = String.format( "error message: %s", se.getMessage() );
-            log.error( error );
-            throw new PluginException( error, se );
-        }
-
-	try 
-	{
-	    inv.invokeFunction( "test" );
-	}
-	catch( ScriptException se )
-	{
-	    String errorMsg = new String( "Could not run script" );
-	    log.fatal( errorMsg , se );
-	    throw new PluginException( errorMsg, se );
-	}
-	catch( NoSuchMethodException nsme )
-	{
-	    String errorMsg = new String( "The method, \"test\" could not be found in the script." );
-	    log.fatal( errorMsg , nsme );
-	    throw new PluginException( errorMsg, nsme );
-	}
-
+	// Running the javascript (trying two different entrypoints):
+	jsWrapper.run( "test" );
+	jsWrapper.run( "test2", "merskumspiben", "badehatten" );
 
         return true;
     }
@@ -237,53 +130,4 @@ public class ReviewRelation implements IRelation
         this.objectRepository = objectRepository;
     }
 
-    /**
-     * Tries to do a lookup of a cached instance of the script engine
-     * based on the submitter. If no cached instances are found, a new
-     * one is created from a supplied javascript matching the role of
-     * this plugin.
-     *
-     * @param submitter
-     * @return Configured script engine fitting the submitter value of the CargoContainer
-     * @throws ConfigurationException
-     * @throws FileNotFoundException
-     * @throws ScriptException
-     * @throws PluginException
-     */
-    private Invocable lookupJavaScript( String submitter ) throws ConfigurationException, FileNotFoundException, ScriptException, PluginException
-    {
-
-        log.trace( String.format( "Entering lookupJavaScript" ) );
-        if( submitter == null || submitter.isEmpty() )
-        {
-            throw new PluginException( new IllegalArgumentException( "submitter in CargoContainer is not set. Aborting." ) );
-        }
-
-        //lookup invocable in cache:
-	if ( this.scriptCache != null )
-        {
-            log.trace( String.format( "Returning Invocable js for %s", submitter ) );
-	    return this.scriptCache;
-        }
-        else // ...or create new invocable + add it to the cache
-        {
-            ScriptEngine engine = manager.getEngineByName( "JavaScript" );
-
-            engine.put( "log", log );
-            engine.put( "scriptClass", scriptClass );
-
-            String path = FileSystemConfig.getScriptPath();
-            String jsFileName = path + "review_relation.js";
-
-            log.debug( String.format( "Using javascript at url '%s'", jsFileName ) );
-            engine.eval( new java.io.FileReader( jsFileName ) );
-
-            Invocable inv = (Invocable) engine;
-
-	    this.scriptCache = inv;
-
-            log.trace( String.format( "Returning Invokable js for %s", submitter ) );
-            return inv;
-        }
-    }
 }
