@@ -26,6 +26,7 @@ import sys
 import subprocess
 import logging as log
 import fedora_conn
+import glob
 
 def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_allocation ):
     log_filename = 'app_starter.log'
@@ -194,6 +195,16 @@ def stop_daemon( pid ):
     except OSError:
         print "could not kill process. removing the pid file"
 
+    #Compass has some problems finishing the optimizer thread, so
+    #we'll check if there remains a lock file in the index dir:
+    index_dir = os.path.join( "indexes", "index", "opensearch-index", "*lock*" )
+    for fil in glob.glob( index_dir ):
+        if fil.find( 'lock' ) > 0:
+            print "The program still retains a lock on the indexes."
+            print "This indicates that the program has not yet"
+            print "finished running an optimizer on the indices."
+            print "This operation can take more than 10 minutes"
+            print "depending on the size of the indices."
 
 def get_pid( pid_file ):
     """ Tries to locate the pid_file and returns the pid if the file can be read
