@@ -22,14 +22,19 @@
  * \brief
  */
 
+
 package dk.dbc.opensearch.common.javascript;
 
+
 import dk.dbc.opensearch.common.config.FileSystemConfig;
+
 import java.io.FileNotFoundException;
+
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -38,28 +43,29 @@ import org.apache.log4j.Logger;
  * \todo: This class still lacks documentation!
  * \todo: This class still lacks unittesting!
  */
-
 public class NaiveJavaScriptWrapper 
 {
     private static Logger log = Logger.getLogger( NaiveJavaScriptWrapper.class );
+
 
     private final ScriptEngineManager manager = new ScriptEngineManager();
     private Invocable inv = null;
     private ScriptEngine engine = null;
     private String jsFileName = null;
     
+
     public NaiveJavaScriptWrapper( String scriptName ) throws JavaScriptWrapperException
     {
-	try
-	{
-	    jsFileName = FileSystemConfig.getScriptPath() + scriptName;
-	}
-	catch( ConfigurationException ce )
-	{
-	    String errorMsg = String.format( "A ConfigurationExcpetion was cought", ce.getMessage() );
-	    log.fatal( errorMsg, ce );
-	    throw new JavaScriptWrapperException( errorMsg, ce );
-	}
+        try
+        {
+            jsFileName = FileSystemConfig.getScriptPath() + scriptName;
+        }
+        catch( ConfigurationException ce )
+        {
+            String errorMsg = String.format( "A ConfigurationExcpetion was cought", ce.getMessage() );
+            log.fatal( errorMsg, ce );
+            // \todo: throw new
+        }
 
 	// Notice: If an unknown string is given to getEngineByName, a nullPointerException is thrown
 	//         at some point (probably when 'engine' is used).
@@ -70,34 +76,36 @@ public class NaiveJavaScriptWrapper
 
     }
 
+
     public void put( String key, Object value )
     {
-	engine.put( key, value );
+        engine.put( key, value );
     }
-    
+
+
     public void run( String entryPointFunc, Object... args )  throws JavaScriptWrapperException
     {
-	if ( inv == null )
-	{
-	    try
-	    {
-		engine.eval( new java.io.FileReader( jsFileName ) );
-	    }
-	    catch( FileNotFoundException fnfe )
-	    {
-		String errorMsg = String.format( "File was not found: %s  Error: ", jsFileName, fnfe.getMessage() );
-		log.fatal( errorMsg, fnfe );
+        if ( inv == null )
+        {
+            try
+            {
+                engine.eval( new java.io.FileReader( jsFileName ) );
+            }
+            catch( FileNotFoundException fnfe )
+            {
+                String errorMsg = String.format( "File was not found: %s  Error: ", jsFileName, fnfe.getMessage() );
+                log.fatal( errorMsg, fnfe );
 		throw new JavaScriptWrapperException( errorMsg, fnfe );
-	    }
-	    catch( ScriptException se )
-	    {
-		String errorMsg = String.format( "A ScriptException was cought: %s", se.getMessage() );
-		log.fatal( errorMsg, se );
+            }
+            catch( ScriptException se )
+            {
+                String errorMsg = String.format( "A ScriptException was cought: %s", se.getMessage() );
+                log.fatal( errorMsg, se );
 		throw new JavaScriptWrapperException( errorMsg, se );
-	    }
+            }
 	    
-	    inv = (Invocable)engine;
-	}
+            inv = (Invocable)engine;
+        }
 
 	try 
 	{

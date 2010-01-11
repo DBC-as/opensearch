@@ -198,6 +198,10 @@
   </target>
 
 
+  <target name="dist_rhino" depends="compile, config_py">
+    <antcall target="_dist_rhino"/>
+  </target>
+
   <target name="dist_testindexer" depends="compile">
     <antcall target="_dist_testindexer"/>
   </target>

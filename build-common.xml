@@ -280,6 +280,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     <opensearch_dist dist.name="FEDORA" Main-Class="dk.dbc.opensearch.common.fedora.FedoraMain"/>
   </target>
 
+  <target name="_dist_rhino">
+    <opensearch_dist dist.name="RHINO" Main-Class="dk.dbc.opensearch.plugins.RunScript"/>
+  </target>
+
   <target name="_dist_testindexer">
     <opensearch_dist dist.name="TESTINDEXER" Main-Class="dk.dbc.opensearch.tools.testindexer.IndexerMain"/>
   </target>
