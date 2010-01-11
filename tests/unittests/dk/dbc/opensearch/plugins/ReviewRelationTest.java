@@ -91,7 +91,17 @@ public class ReviewRelationTest
     @Test
     public void getPluginTypeTest()
     {
-        RRPlugin = new ReviewRelation();
-        assertEquals( RRPlugin.getPluginType(), PluginType.RELATION );
+	PluginType pt = null;
+	try
+	{
+	    RRPlugin = new ReviewRelation();
+	    pt = RRPlugin.getPluginType();
+	}
+	catch( PluginException pe )
+        {
+	    
+	}
+        // assertEquals( RRPlugin.getPluginType(), PluginType.RELATION );
+	assertEquals( pt , PluginType.RELATION );
     }
 }

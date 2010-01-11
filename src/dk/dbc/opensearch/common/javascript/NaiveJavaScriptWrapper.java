@@ -33,10 +33,10 @@ import javax.script.ScriptException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
+
 /**
- * \todo: This class still lacks exception-throwing!
  * \todo: This class still lacks documentation!
- * \todo: This class still lacks testing!
+ * \todo: This class still lacks unittesting!
  */
 
 public class NaiveJavaScriptWrapper 
@@ -48,7 +48,7 @@ public class NaiveJavaScriptWrapper
     private ScriptEngine engine = null;
     private String jsFileName = null;
     
-    public NaiveJavaScriptWrapper( String scriptName )
+    public NaiveJavaScriptWrapper( String scriptName ) throws JavaScriptWrapperException
     {
 	try
 	{
@@ -58,10 +58,16 @@ public class NaiveJavaScriptWrapper
 	{
 	    String errorMsg = String.format( "A ConfigurationExcpetion was cought", ce.getMessage() );
 	    log.fatal( errorMsg, ce );
-	    // \todo: throw new
+	    throw new JavaScriptWrapperException( errorMsg, ce );
 	}
+
+	// Notice: If an unknown string is given to getEngineByName, a nullPointerException is thrown
+	//         at some point (probably when 'engine' is used).
+	//         It should therefore be a checked, certified name that is given to getEngineByName.
 	
 	engine = manager.getEngineByName( "JavaScript" );
+	//  engine = manager.getEngineByName( "rhino" );
+
     }
 
     public void put( String key, Object value )
@@ -69,7 +75,7 @@ public class NaiveJavaScriptWrapper
 	engine.put( key, value );
     }
     
-    public void run( String entryPointFunc, Object... args )
+    public void run( String entryPointFunc, Object... args )  throws JavaScriptWrapperException
     {
 	if ( inv == null )
 	{
@@ -81,13 +87,13 @@ public class NaiveJavaScriptWrapper
 	    {
 		String errorMsg = String.format( "File was not found: %s  Error: ", jsFileName, fnfe.getMessage() );
 		log.fatal( errorMsg, fnfe );
-		// \todo: throw new
+		throw new JavaScriptWrapperException( errorMsg, fnfe );
 	    }
 	    catch( ScriptException se )
 	    {
 		String errorMsg = String.format( "A ScriptException was cought: %s", se.getMessage() );
 		log.fatal( errorMsg, se );
-		// \todo: throw new
+		throw new JavaScriptWrapperException( errorMsg, se );
 	    }
 	    
 	    inv = (Invocable)engine;
@@ -101,14 +107,19 @@ public class NaiveJavaScriptWrapper
 	{
 	    String errorMsg = new String( "Could not run script" );
 	    log.fatal( errorMsg , se );
-	    //		throw new PluginException( errorMsg, se );
+	    throw new JavaScriptWrapperException( errorMsg, se );
 	}
 	catch( NoSuchMethodException nsme )
 	{
 	    String errorMsg = new String( "The method, \"test\" could not be found in the script." );
 	    log.fatal( errorMsg , nsme );
-	    //		throw new PluginException( errorMsg, nsme );
+	    throw new JavaScriptWrapperException( errorMsg, nsme );
 	}
-	
     }
+
+    public String getJavascriptName() 
+    {
+	return jsFileName != null ? jsFileName : "";
+    }
+
 }

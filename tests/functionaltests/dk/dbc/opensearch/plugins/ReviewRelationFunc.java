@@ -182,7 +182,15 @@ public class ReviewRelationFunc
 	    System.err.println( ioe );
 	}
 
-	ReviewRelation reviewRelation = new ReviewRelation();
+	ReviewRelation reviewRelation = null;
+	try 
+	{
+	    reviewRelation = new ReviewRelation();
+	}
+	catch( PluginException pe )
+	{
+	    log.fatal( "An exception occured when trying to instantiate the ReviewRelation", pe );
+	}
         IObjectRepository repository = null;
         try
         {

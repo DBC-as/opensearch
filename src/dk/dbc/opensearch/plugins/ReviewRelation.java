@@ -30,8 +30,9 @@ package dk.dbc.opensearch.plugins;
 // import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
+import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
 import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
+import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -61,11 +62,20 @@ public class ReviewRelation implements IRelation
     /**
      * Constructor for the ReviewRelation plugin.
      */
-    public ReviewRelation()
+    public ReviewRelation() throws PluginException
     {
         log.trace( "Constructor called" );
 	// Creating the javascript:
-	jsWrapper = new NaiveJavaScriptWrapper( "review_relation.js" );
+	try 
+	{
+	    jsWrapper = new NaiveJavaScriptWrapper( "review_relation.js" );
+	}
+	catch( JavaScriptWrapperException jswe )
+	{
+	    String errorMsg = new String("An exception occured when trying to instantiate the NaiveJavaScriptWrapper");
+	    log.fatal( errorMsg, jswe );
+	    throw new PluginException( errorMsg, jswe );
+	}
 	// Adding functions (objects) to the javascript:
 	jsWrapper.put( "log", log );
 	jsWrapper.put( "scriptClass", scriptClass );
@@ -111,10 +121,26 @@ public class ReviewRelation implements IRelation
         //find the PID of the target of the review and create the hasReview
         //and reviewOf relations
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+	String submitter = co.getSubmitter();
+	String format    = co.getFormat();
+       	String language  = co.getLang();
+	String XML       = new String( co.getBytes() );
 
-	// Running the javascript (trying two different entrypoints):
-	jsWrapper.run( "test" );
-	jsWrapper.run( "test2", "merskumspiben", "badehatten" );
+	//       	log.debug( String.format( "TESTING: [%s]", XML ) );
+
+	String entryPointFunc = "main";
+	try 
+	{
+	    // Running the javascript (trying two different entrypoints):
+	    jsWrapper.run( entryPointFunc, submitter, format, language, XML );
+	    // jsWrapper.run( "test2", "merskumspiben", "badehatten" );
+	} 
+	catch( JavaScriptWrapperException se ) 
+	{
+	    String errorMsg = String.format( "An excpetion occured when trying to run the javascript: %s with entrypoint function: %s", jsWrapper.getJavascriptName(), entryPointFunc );
+	    log.fatal( errorMsg, se );
+	    throw new PluginException( errorMsg, se );
+	}
 
         return true;
     }
