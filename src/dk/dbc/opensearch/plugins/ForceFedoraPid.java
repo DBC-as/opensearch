@@ -89,10 +89,6 @@ public class ForceFedoraPid implements IAnnotate
 
         InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
 
-        /**
-         * \todo: Is the title some expression for the identifier of the title?
-         * bug 9902
-         */
         // Find title of the docbook document
         String title;
         try
