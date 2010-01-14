@@ -1,37 +1,37 @@
 
-
-print( "Sikke dog en nydelig svelle de har pyntet dem med, hr.\n" );
-
-
-function test()
-{
-    print( "Pas på... Den kødnål er ved at gå bersærk!\n" );
-}
-
-function test2( text1, text2 )
-{
-    print( "Åh nej.... Nu har " + text1 + " iført sig " + text2 + " igen\n" );
-}
-
+// I have decided to call he main function, well... main :)
 function main( submitter, format, language, xml_review )
 {
+    // This is lame but necessary :(
+    xml_review = xml_review.replace(/<\?xml[^>]*\?>/, "");
+
 
     print( "Entering javascript\n===================\n" );
 
+    // Writing out the parameters:
     print( "submitter: " + submitter + "\n" );
     print( "format:    " + format + "\n" );
     print( "language:  " + language + "\n" );
-    //    print( "XML: " + XML + "\n" );
+    // Omitting xml since it just takes up to much space:
+    //    print( "XML: " + xml_review + "\n" );
 
-    var xpath = "/*/*/*/*[@tag='014']/*[@code='a']";
-    print( xpath +"\n" );
-    // var XML_review2 = new XML( xml_review );
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var XML_review2 = new XML( xml_review );
 
-    //    print( XML."ting:container".collection.record.leader );
-    //    print( XML_review2.name().uri );
+    // A note about xpath and e4x:
+    //
+    // This is a normal Xpath-expression:
+    // var xpath = "/*/*/*/*[@tag='014']/*[@code='a']";
+    //
+    // e4x does it a little different:
+    // value = XML_review2.*.*.*.(@tag=='014').*.(@code=='a');
+    //
 
-    //var e4x = new XML("<order/>");
-    var result = scriptClass.getPID("Balle");
+    var identifier = XML_review2.*.*.*.(@tag=='014').*.(@code=='a');
+    
+    print( "Identifier: " + identifier + "\n" );    
+
+    // var result = scriptClass.getPID("Balle");
 
     print( "===================\nLeaving javascript\n\n\n" );
 

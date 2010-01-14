@@ -41,8 +41,9 @@ public class ReviewRelationFunc
 
     private static Logger log = Logger.getLogger( ReviewRelationFunc.class );
 
-    private static String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-	"<ting:container xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:marcx=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:oss=\"http://oss.dbc.dk/ns/osstypes\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
+    // We have to omit the xml-literal or the XMLObject in e4x throws up :(
+    //"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+    private static String data = "<ting:container xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:marcx=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:oss=\"http://oss.dbc.dk/ns/osstypes\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
 	"<dkabm:record>\n" +
 	"<ac:identifier>89655900|870971</ac:identifier>\n" +
 	"<ac:source>870971</ac:source>\n" +
@@ -129,6 +130,22 @@ public class ReviewRelationFunc
 	"</collection>\n" +
 	"</ting:container>\n";
 
+
+    private final static String data2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+	"<order>plop</order>";
+
+    //    private final static String data3 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<person>" +
+    private final static String data3 = "<person>\n" +
+	"<name>Bob Smith</name>\n" +
+	"<likes>\n" +
+	"<os>Linux</os>\n" +
+	"<browser>Firefox</browser>\n" +
+	"<language>JavaScript</language>\n" +
+	"<language>Python</language>\n" +
+	"</likes>\n" +
+	"</person>";
+
+
     /*
       REFERENCEDATA:
       <?xml version="1.0" encoding="UTF-8"?>
@@ -172,6 +189,8 @@ public class ReviewRelationFunc
 	try 
 	{
 	    c.add( dataStreamName, format, submitter, language, mimetype, alias, data.getBytes( "UTF-8" ) );
+	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data2.getBytes( "UTF-8" ) );
+	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data3.getBytes( "UTF-8" ) );
 	}
 	catch( UnsupportedEncodingException uee )
 	{

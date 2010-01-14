@@ -30,6 +30,7 @@ import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
 import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -46,7 +47,8 @@ public class ReviewRelation implements IRelation
 {
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
-    private NaiveJavaScriptWrapper jsWrapper = null;
+    // private NaiveJavaScriptWrapper jsWrapper = null;
+    private SimpleRhinoWrapper jsWrapper = null;
     private PluginType pluginType = PluginType.RELATION;
 
     private final String marterialevurderinger = "Materialevurdering:?";
@@ -65,7 +67,8 @@ public class ReviewRelation implements IRelation
 	// Creating the javascript:
 	try 
 	{
-	    jsWrapper = new NaiveJavaScriptWrapper( "review_relation.js" );
+	    // jsWrapper = new NaiveJavaScriptWrapper( "review_relation.js" );
+	    jsWrapper = new SimpleRhinoWrapper( "review_relation.js" );
 	}
 	catch( JavaScriptWrapperException jswe )
 	{
