@@ -25,9 +25,6 @@
 
 package dk.dbc.opensearch.plugins;
 
-// import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
-// import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
-// import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
@@ -76,9 +73,6 @@ public class ReviewRelation implements IRelation
 	    log.fatal( errorMsg, jswe );
 	    throw new PluginException( errorMsg, jswe );
 	}
-	// Adding functions (objects) to the javascript:
-	jsWrapper.put( "log", log );
-	jsWrapper.put( "scriptClass", scriptClass );
     }
 
 
@@ -101,7 +95,6 @@ public class ReviewRelation implements IRelation
             log.error( msg );
             throw new PluginException( msg );
         }
-        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
         boolean ok = false;
         ok = addReviewRelation( cargo );
 
@@ -142,6 +135,9 @@ public class ReviewRelation implements IRelation
 	    throw new PluginException( errorMsg, se );
 	}
 
+        //setting the dc.relation
+        String relation = scriptClass.getDCRelation();
+        cargo.getDublinCoreMetaData().setRelation( relation );
         return true;
     }
 
@@ -151,9 +147,20 @@ public class ReviewRelation implements IRelation
         return pluginType;
     }
 
+    /**
+     * Method to give the plugin an objectRepository
+     * There is more that happens there than the name suggests. The scriptClass 
+     * is constructed here and "put" onto the jsWrapper. This cannot be done in this 
+     * plugin's constructor since it needs the objectRepository.
+     * log is put onto here as well so that the putting is kept together
+     */
     public void setObjectRepository( IObjectRepository objectRepository )
     {
         this.objectRepository = objectRepository;
+        
+        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+        jsWrapper.put( "scriptClass", scriptClass );
+        jsWrapper.put( "log", log );
     }
 
 }

@@ -39,19 +39,22 @@ import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.InputPair;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 public class ScriptMethodsForReviewRelation {
-    /**
-     *
-     */
+
+    private Logger log = Logger.getLogger( ScriptMethodsForReviewRelation.class );
 
     private IObjectRepository repository;
+    private CargoContainer cc;
+    private String DCRelation;
 
     public ScriptMethodsForReviewRelation( IObjectRepository repository ) {
         this.repository = repository;
+        DCRelation = "";
     }
 
     /**
@@ -111,9 +114,9 @@ public class ScriptMethodsForReviewRelation {
         //create a List<InputPair<TargetFields, String>> with the converted field and
         //the value
         TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
+
         //call the IObjectRepository.getIdentifiers method with the above values,
-        //no cutIdentifier and 2 in maximumResults (return error if more than 1 is
-        //found I guess)
+        //no cutIdentifier and the number of submitters in the maximumResults 
         List<InputPair<TargetFields, String>> searchFields = new ArrayList<InputPair<TargetFields, String>>();
         searchFields.add( new InputPair<TargetFields, String>( targetField, value ) );
 
@@ -125,5 +128,25 @@ public class ScriptMethodsForReviewRelation {
             return "";
         }
         return resultList.get( 0 );
+//         System.out.println( "bring deres klæder i orden hr " +value+ "!" );
+//         return "";
+    }
+
+    /**
+     * Method to set the cd.relation on the dc-stream of the cargocontainer 
+     * @param value, the value to set in dc.relation
+     */
+    public void setDCRelation( String value )
+    {
+        DCRelation = value;
+    }
+
+    /**
+     * Method for getting the value the javascript has set as relation
+     * @return the value of the DCRelation
+     */
+    public String getDCRelation()
+    {
+        return DCRelation;
     }
 }
