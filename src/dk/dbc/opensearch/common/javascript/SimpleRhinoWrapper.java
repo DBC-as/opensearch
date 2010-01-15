@@ -33,8 +33,6 @@ import org.apache.log4j.Logger;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import org.apache.commons.configuration.ConfigurationException;
 
-import java.lang.reflect.InvocationTargetException;
-
 public class SimpleRhinoWrapper
 {
 
@@ -101,57 +99,22 @@ public class SimpleRhinoWrapper
 
     public void put( String key, Object value )
     {
-	log.warn("Not yet implemented");
-	/*	
-	// ScriptableObject.defineClass( scope, value );
-	try
-	{
-	    ScriptableObject.defineClass( (Scriptable)scope, ScriptMethodsForReviewRelation.class );
-	    Scriptable tmp = cx.newObject( scope, key );
-	} 
-	catch( IllegalAccessException iae ) 
-	{
-	    String errorMsg = String.format( "An exception was cought while trying to add the class %s to the javascript", key );
-	    log.fatal( errorMsg, iae );
-	    // throw new JavaScriptWrapperException( errorMsg, iae );
-	}
-	catch( InstantiationException ie ) 
-	{
-	    String errorMsg = String.format( "An exception was cought while trying to add the class %s to the javascript", key );
-	    log.fatal( errorMsg, ie );
-	    // throw new JavaScriptWrapperException( errorMsg, ie );
-	}
-	catch( InvocationTargetException ite ) 
-	{
-	    String errorMsg = String.format( "An exception was cought while trying to add the class %s to the javascript", key );
-	    log.fatal( errorMsg, ite );
-	    // throw new JavaScriptWrapperException( errorMsg, ite );
-	}
-	*/
+
+	scope.defineProperty( key, value, ScriptableObject.DONTENUM );
+
     }
     
     public void run( String functionEntryPoint, Object... args ) throws JavaScriptWrapperException
     {
-	log.warn("Not yet implemented");
 
-	// script.exec( cx, scope );
-	
-	// scope.callMethod( cx, scope, "test", null );
-
-	// String func = "test2";
-	String func = functionEntryPoint;
-
-	Object fObj = scope.get(func, scope);
-	// Object fObj = scope.get(func, script);
+	Object fObj = scope.get(functionEntryPoint, scope);
 	if (!(fObj instanceof Function)) {
-	    System.out.println(func + " is undefined or not a function.");
+	    String errorMsg = String.format( "% is undefined or not a function", functionEntryPoint );
+	    log.fatal( errorMsg );
+	    throw new JavaScriptWrapperException( errorMsg );
 	} else {
-	    // Object functionArgs[] = { "jukeboxen", "en foliehat"  };
 	    Function f = (Function)fObj;
-	    // Object result = f.call(cx, scope, scope, functionArgs);
 	    Object result = f.call(cx, scope, scope, args);
-	    //	    String report = "f('my args') = " + Context.toString(result);
-	    //	    System.out.println(report);
 	}
 
 	

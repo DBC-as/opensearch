@@ -33,6 +33,8 @@ function main( submitter, format, language, xml_review )
 
     // var result = scriptClass.getPID("Balle");
 
+    scriptClass.writeSomething();
+
     print( "===================\nLeaving javascript\n\n\n" );
 
 }

@@ -149,4 +149,11 @@ public class ScriptMethodsForReviewRelation {
     {
         return DCRelation;
     }
+
+    
+    public void writeSomething()
+    {
+	log.info( "Sikke dog en grov hoben humlebier der ligge i den carport!" );
+    }
+
 }
