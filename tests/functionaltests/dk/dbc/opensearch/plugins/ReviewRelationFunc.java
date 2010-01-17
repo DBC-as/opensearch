@@ -36,6 +36,8 @@ import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 
+import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
+
 public class ReviewRelationFunc 
 {
 
@@ -43,7 +45,8 @@ public class ReviewRelationFunc
 
     // We have to omit the xml-literal or the XMLObject in e4x throws up :(
     //"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-    private static String data = "<ting:container xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:marcx=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:oss=\"http://oss.dbc.dk/ns/osstypes\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
+    private static String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+	"<ting:container xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:marcx=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:oss=\"http://oss.dbc.dk/ns/osstypes\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
 	"<dkabm:record>\n" +
 	"<ac:identifier>89655900|870971</ac:identifier>\n" +
 	"<ac:source>870971</ac:source>\n" +
@@ -188,7 +191,9 @@ public class ReviewRelationFunc
 
 	try 
 	{
-	    c.add( dataStreamName, format, submitter, language, mimetype, alias, data.getBytes( "UTF-8" ) );
+	    byte[] XML = E4XXMLHeaderStripper.strip( data.getBytes( "UTF-8" ) );
+	    c.add( dataStreamName, format, submitter, language, mimetype, alias, XML );
+	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data.getBytes( "UTF-8" ) );
 	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data2.getBytes( "UTF-8" ) );
 	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data3.getBytes( "UTF-8" ) );
 	}
