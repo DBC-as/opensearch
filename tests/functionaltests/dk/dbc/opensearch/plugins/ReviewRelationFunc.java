@@ -22,14 +22,21 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
+//import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
+import dk.dbc.opensearch.plugins.ForceFedoraPid;
+import dk.dbc.opensearch.plugins.Store;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+
+//import javax.xml.namespace
 
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
@@ -326,12 +333,26 @@ public class ReviewRelationFunc
         {
             System.out.println( "exception caught when initialising the ObjectRepository" + oe.getMessage() );     
             System.exit(1);
-        }
+        }   
+        
+        //setting identifier, done in forceFedorPid in the plugin flow
+        //so we use that plugin as well here
+        ForceFedoraPid FFPplugin = new ForceFedoraPid();
+      
+        //creating the storeplugin
+        Store storePlugin = new Store();
+
+        //setting the object repository
+        storePlugin.setObjectRepository( repository );
         reviewRelation.setObjectRepository( repository );
 
 	try
 	{
-	    // Run test to ensure that javascript is used uninitialized:
+            //calling the plugin that creates the identifier
+            c = FFPplugin.getCargoContainer( c );	
+            //storing the cargocontainers data in the repository
+            storePlugin.storeCargoContainer( c );
+            // Run test to ensure that javascript is used uninitialized:
 	    CargoContainer c2 = reviewRelation.getCargoContainer( c );
 
 	    // Test again to ensure that the jsavascript is used initialized:
@@ -345,5 +366,4 @@ public class ReviewRelationFunc
 
 	System.out.println( "Same place as Elvis!" );
     }
-
 }

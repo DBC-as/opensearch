@@ -52,51 +52,50 @@ public class ScriptMethodsForReviewRelation {
     private CargoContainer cc;
     private String DCRelation;
 
-    public ScriptMethodsForReviewRelation( IObjectRepository repository ) {
+    public ScriptMethodsForReviewRelation( IObjectRepository repository ) 
+    {
         this.repository = repository;
+        this.cc = cc;
         DCRelation = "";
     }
 
     /**
-     * Method exposed to the script for making relations
+     * Method exposed to the script for creating relations
      * @param object, the pid of the object of the relation
      * @param relation, the name of the relation to make
      * @param subject, the pid of the target of the relation
      */
-    public boolean setRelation( String subject, String relation, String object)
+    public boolean createRelation( String subject, String relation, String object)
     {
         //convert the relation String to an IPredicate/DBCBIB
         //check that the relation param is valid, should be either reviewOf, hasReview
         // or hasFullText
         IPredicate predicate;
-
-        //Find another way to make the enums
+        
+        //convert the object String to an ObjectIdentifier
+        ObjectIdentifier subjectPID = new PID( subject );
+        
+        //\Todo: Find another way to make the enums, bug 9993
         if( relation.equals( "reviewOf" ) )
         {
+            //must be put on the rels-ext stream of the object
             predicate = (IPredicate)DBCBIB.REVIEW_OF;
+            setRelationInFedora( subjectPID, predicate, object );
+            log.info( String.format( "relation created with subject: %s predicate: %s object: %s", subjectPID.getIdentifier(), predicate, object ) );
         }
         else
         {
             if( relation.equals( "hasReview" ) )
             {
+                //must be set on the object in the fedora base
                 predicate = (IPredicate)DBCBIB.HAS_REVIEW;
+                setRelationInFedora( subjectPID, predicate, object );
+                log.info( String.format( "relation created with subject: %s predicate: %s object: %s", subjectPID.getIdentifier(), predicate, object ) );
             }
             else
             {
                 return false;
             }
-        }
-        //convert the object String to an ObjectIdentifier
-        ObjectIdentifier subjectPID = new PID( subject );
-
-        //call the addObjectRelation method
-        try
-        {
-            repository.addObjectRelation( subjectPID, predicate, object );
-        }
-        catch( ObjectRepositoryException ore )
-        {
-            return false;
         }
         return true;
     }
@@ -114,13 +113,13 @@ public class ScriptMethodsForReviewRelation {
         //create a List<InputPair<TargetFields, String>> with the converted field and
         //the value
         TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
-
+        String searchValue = "*:" + value;
         //call the IObjectRepository.getIdentifiers method with the above values,
         //no cutIdentifier and the number of submitters in the maximumResults 
         List<InputPair<TargetFields, String>> searchFields = new ArrayList<InputPair<TargetFields, String>>();
-        searchFields.add( new InputPair<TargetFields, String>( targetField, value ) );
+        searchFields.add( new InputPair<TargetFields, String>( targetField, searchValue ) );
 
-        List<String> resultList = repository.getIdentifiers( searchFields, value, 2 );
+        List<String> resultList = repository.getIdentifiers( searchFields, searchValue, 10000 );
 
         //return the pid if 1 is found else return an empty String
         if( resultList.isEmpty() )
@@ -128,8 +127,6 @@ public class ScriptMethodsForReviewRelation {
             return "";
         }
         return resultList.get( 0 );
-//         System.out.println( "bring deres klæder i orden hr " +value+ "!" );
-//         return "";
     }
 
     /**
@@ -150,10 +147,16 @@ public class ScriptMethodsForReviewRelation {
         return DCRelation;
     }
 
-    
-    public void writeSomething()
+    private boolean setRelationInFedora( ObjectIdentifier subjectPID, IPredicate predicate, String object)
     {
-	log.info( "Sikke dog en grov hoben humlebier der ligge i den carport!" );
+    try
+        {
+            repository.addObjectRelation( subjectPID, predicate, object );
+        }
+        catch( ObjectRepositoryException ore )
+        {
+            return false;
+        }
+    return true;
     }
-
 }

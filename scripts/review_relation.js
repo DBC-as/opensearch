@@ -1,6 +1,6 @@
 
 // I have decided to call he main function, well... main :)
-function main( submitter, format, language, xml_review )
+function main( submitter, format, language, xml_review, pid )
 {
     // This is lame but necessary :(
     xml_review = xml_review.replace(/<\?xml[^>]*\?>/, "");
@@ -30,13 +30,15 @@ function main( submitter, format, language, xml_review )
     var identifier = XML_review2.*.*.*.(@tag=='014').*.(@code=='a');
     
     print( "Identifier: " + identifier + "\n" );    
-
+    print( "pid: " + pid + "\n" );
     // var result = scriptClass.getPID("Balle");
     var result = scriptClass.getPID( identifier );
 
     print( "result: " + result + "\n" );
 
     // scriptClass.writeSomething();
+    scriptClass.createRelation( pid, "reviewOf", result);
+    scriptClass.createRelation( result, "hasReview", pid);
 
     print( "===================\nLeaving javascript\n\n\n" );
 

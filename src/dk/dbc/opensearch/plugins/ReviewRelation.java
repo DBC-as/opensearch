@@ -125,10 +125,12 @@ public class ReviewRelation implements IRelation
 	//       	log.debug( String.format( "TESTING: [%s]", XML ) );
 
 	String entryPointFunc = "main";
+        // get the pid of the cargocontainer
+        String pid = cargo.getIdentifierAsString();
 	try 
 	{
 	    // Running the javascript (trying two different entrypoints):
-	    jsWrapper.run( entryPointFunc, submitter, format, language, XML );
+	    jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
 	    // jsWrapper.run( "test2", "merskumspiben", "badehatten" );
 	} 
 	catch( JavaScriptWrapperException se ) 
