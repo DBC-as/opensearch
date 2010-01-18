@@ -43,6 +43,100 @@ public class ReviewRelationFunc
 
     private static Logger log = Logger.getLogger( ReviewRelationFunc.class );
 
+
+    private static String anm1_submitter = "dbc";
+    private static String anm1_language = "dan";
+    private static String anm1_format = "anmeld";
+    private static String anm1_data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+	"<ting:container xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:marcx=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:oss=\"http://oss.dbc.dk/ns/osstypes\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
+	"<dkabm:record>\n" +
+        "<ac:identifier>33911777|870971</ac:identifier>\n" +
+        "<ac:source>870971</ac:source>\n" +
+        "<dc:title>[Anmeldelse]</dc:title>\n" +
+        "<dc:creator xsi:type=\"oss:aut\">Tom Hermansen</dc:creator>\n" +
+        "<dc:creator xsi:type=\"oss:sort\">Hermansen, Tom</dc:creator>\n" +
+        "<dcterms:abstract>Vurdering: 6/6</dcterms:abstract>\n" +
+        "<dc:date>2009</dc:date>\n" +
+        "<dc:type xsi:type=\"dkdcplus:BibDK-Type\">Anmeldelse</dc:type>\n" +
+        "<dc:type xsi:type=\"oss:pgvaerk\">bog</dc:type>\n" +
+        "<dcterms:extent>Sektion 1(østudgave), s. 18</dcterms:extent>\n" +
+        "<dc:language xsi:type=\"dcterms:ISO639-2\">dan</dc:language>\n" +
+        "<dc:language>Dansk</dc:language>\n" +
+        "<dcterms:isPartOf>Jyllands-posten 2009-10-23</dcterms:isPartOf>\n" +
+        "<dcterms:isPartOf xsi:type=\"dkdcplus:ISSN\">0109-1182</dcterms:isPartOf>\n" +
+	"</dkabm:record>\n" +
+	"<collection>\n" +
+        "<record type=\"Bibliographic\" format=\"danMARC2\">\n" +
+	"<leader>000000000000000000000000</leader>\n" +
+	"<datafield tag=\"001\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">33911777</subfield>\n" +
+	"<subfield code=\"b\">870971</subfield>\n" +
+	"<subfield code=\"c\">20091208094417</subfield>\n" +
+	"<subfield code=\"d\">20091208</subfield>\n" +
+	"<subfield code=\"f\">a</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"004\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"r\">n</subfield>\n" +
+	"<subfield code=\"a\">i</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"008\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"t\">a</subfield>\n" +
+	"<subfield code=\"u\">f</subfield>\n" +
+	"<subfield code=\"a\">2009</subfield>\n" +
+	"<subfield code=\"b\">dk</subfield>\n" +
+	"<subfield code=\"d\">s</subfield>\n" +
+	"<subfield code=\"l\">dan</subfield>\n" +
+	"<subfield code=\"v\">0</subfield>\n" +
+	"<subfield code=\"r\">an</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"009\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">a</subfield>\n" +
+	"<subfield code=\"g\">xx</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"014\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">28022859</subfield>\n" +
+	"<subfield code=\"x\">ANM</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"016\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">03243796</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"032\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">ANU200951</subfield>\n" +
+	"<subfield code=\"a\">DAN200951</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"245\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">[Anmeldelse]</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"300\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">Sektion 1(østudgave), s. 18</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"504\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">Vurdering: 6/6</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"557\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">Jyllands-posten</subfield>\n" +
+	"<subfield code=\"j\">2009</subfield>\n" +
+	"<subfield code=\"z\">0109-1182</subfield>\n" +
+	"<subfield code=\"V\">2009-10-23</subfield>\n" +
+	"<subfield code=\"v\">2009-10-23</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"700\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"&amp;\">ANM</subfield>\n" +
+	"<subfield code=\"a\">Hermansen</subfield>\n" +
+	"<subfield code=\"h\">Tom</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"n01\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">e1ba48a1</subfield>\n" +
+	"<subfield code=\"b\">000011</subfield>\n" +
+	"</datafield>\n" +
+	"<datafield tag=\"s10\" ind1=\"0\" ind2=\"0\">\n" +
+	"<subfield code=\"a\">IDX</subfield>\n" +
+	"</datafield>\n" +
+        "</record>\n" +
+	"</collection>\n" +
+	"</ting:container>";
+
+
     // We have to omit the xml-literal or the XMLObject in e4x throws up :(
     //"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
     private static String data = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -191,8 +285,16 @@ public class ReviewRelationFunc
 
 	try 
 	{
-	    byte[] XML = E4XXMLHeaderStripper.strip( data.getBytes( "UTF-8" ) );
-	    c.add( dataStreamName, format, submitter, language, mimetype, alias, XML );
+	    c.add( dataStreamName, 
+		   anm1_format, 
+		   anm1_submitter, 
+		   anm1_language, 
+		   mimetype, 
+		   alias, 
+		   E4XXMLHeaderStripper.strip( anm1_data.getBytes( "UTF-8" ) ) );
+	    
+	    // byte[] XML = E4XXMLHeaderStripper.strip( data.getBytes( "UTF-8" ) );
+	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, XML );
 	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data.getBytes( "UTF-8" ) );
 	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data2.getBytes( "UTF-8" ) );
 	    // c.add( dataStreamName, format, submitter, language, mimetype, alias, data3.getBytes( "UTF-8" ) );

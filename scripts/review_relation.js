@@ -32,8 +32,11 @@ function main( submitter, format, language, xml_review )
     print( "Identifier: " + identifier + "\n" );    
 
     // var result = scriptClass.getPID("Balle");
+    var result = scriptClass.getPID( identifier );
 
-    scriptClass.writeSomething();
+    print( "result: " + result + "\n" );
+
+    // scriptClass.writeSomething();
 
     print( "===================\nLeaving javascript\n\n\n" );
 
