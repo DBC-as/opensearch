@@ -109,6 +109,8 @@ public class ScriptMethodsForReviewRelation {
      */
     public String getPID( String value )
     {
+
+        log.info( String.format( "getPID called with: %s ", value ) );
         //convert field to the TargetFields type
         //create a List<InputPair<TargetFields, String>> with the converted field and
         //the value
@@ -124,9 +126,12 @@ public class ScriptMethodsForReviewRelation {
         //return the pid if 1 is found else return an empty String
         if( resultList.isEmpty() )
         {
+            log.info( String.format( "returning no PID  when searching for: %s", searchValue ) );
             return "";
         }
-        return resultList.get( 0 );
+        String theResult = resultList.get( 0 );
+        log.info( String.format( "returning pid: %s", theResult ) );
+        return theResult;
     }
 
     /**
