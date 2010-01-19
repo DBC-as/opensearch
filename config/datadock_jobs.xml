@@ -62,6 +62,7 @@
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
+    <plugin name="reviewrelation" classname="dk.dbc.opensearch.plugins.ReviewRelation" />
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_1"  />
   </job>  
   <job submitter="dbc" format="artikler" alias="danmarcxchange">
