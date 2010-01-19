@@ -107,7 +107,7 @@ public class ScriptMethodsForReviewRelation {
      * @param value, the value to match
      * @return the pid of the object containing the value in the specified term
      */
-    public String getPID( String value )
+    public String[] getPID( String value )
     {
 
         log.info( String.format( "getPID called with: %s ", value ) );
@@ -123,15 +123,17 @@ public class ScriptMethodsForReviewRelation {
 
         List<String> resultList = repository.getIdentifiers( searchFields, searchValue, 10000 );
 
-        //return the pid if 1 is found else return an empty String
-        if( resultList.isEmpty() )
-        {
-            log.info( String.format( "returning no PID  when searching for: %s", searchValue ) );
-            return "";
-        }
-        String theResult = resultList.get( 0 );
-        log.info( String.format( "returning pid: %s", theResult ) );
-        return theResult;
+	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
+	String[] sa = new String[resultList.size()];
+	int counter = 0;
+	for( String str : resultList ) 
+	{
+	    
+	    log.info( String.format( "returning pid: %s", str ) );
+	    sa[counter++] = str;
+	}
+	return sa;
+	
     }
 
     /**

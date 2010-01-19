@@ -120,7 +120,7 @@ public class ReviewRelation implements IRelation
 	String submitter = co.getSubmitter();
 	String format    = co.getFormat();
        	String language  = co.getLang();
-	String XML       = new String( co.getBytes() );
+	String XML       = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
 
 	//       	log.debug( String.format( "TESTING: [%s]", XML ) );
 
@@ -131,7 +131,6 @@ public class ReviewRelation implements IRelation
 	{
 	    // Running the javascript (trying two different entrypoints):
 	    jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
-	    // jsWrapper.run( "test2", "merskumspiben", "badehatten" );
 	} 
 	catch( JavaScriptWrapperException se ) 
 	{
