@@ -36,10 +36,11 @@ function main( submitter, format, language, xml_review, pid )
 
     print( "result: " + result + "\n" );
 
+    if( result === "" ){
     // scriptClass.writeSomething();
     scriptClass.createRelation( pid, "reviewOf", result);
     scriptClass.createRelation( result, "hasReview", pid);
-
+    }
     print( "===================\nLeaving javascript\n\n\n" );
 
 }
