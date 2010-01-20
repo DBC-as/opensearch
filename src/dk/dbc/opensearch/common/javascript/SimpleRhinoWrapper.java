@@ -89,7 +89,7 @@ public class SimpleRhinoWrapper
 	// Compile the javascript
 	try {
 	    Object o = cx.evaluateReader((Scriptable)scope, in, jsFileName, 1, null);
-	    script = cx.compileReader(scope, in, jsFileName, 1, null);
+	    script = cx.compileReader(in, jsFileName, 1, null);
 	} catch ( IOException ioe ) {
 	    System.err.println( "Could not run 'evaluateReader'" );
 	    System.exit(1);

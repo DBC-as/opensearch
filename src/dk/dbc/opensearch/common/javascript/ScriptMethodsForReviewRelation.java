@@ -121,37 +121,19 @@ public class ScriptMethodsForReviewRelation {
         List<InputPair<TargetFields, String>> searchFields = new ArrayList<InputPair<TargetFields, String>>();
         searchFields.add( new InputPair<TargetFields, String>( targetField, searchValue ) );
 
-        List<String> resultList = repository.getIdentifiers( searchFields, searchValue, 10000 );
+	// \note: 10000 below is a hardcodet estimate on max amount of results:
+        List<String> resultList = repository.getIdentifiers( searchFields, null, 10000 );
 
 	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
 	String[] sa = new String[resultList.size()];
 	int counter = 0;
 	for( String str : resultList ) 
 	{
-	    
 	    log.info( String.format( "returning pid: %s", str ) );
 	    sa[counter++] = str;
 	}
 	return sa;
 	
-    }
-
-    /**
-     * Method to set the cd.relation on the dc-stream of the cargocontainer 
-     * @param value, the value to set in dc.relation
-     */
-    public void setDCRelation( String value )
-    {
-        DCRelation = value;
-    }
-
-    /**
-     * Method for getting the value the javascript has set as relation
-     * @return the value of the DCRelation
-     */
-    public String getDCRelation()
-    {
-        return DCRelation;
     }
 
     private boolean setRelationInFedora( ObjectIdentifier subjectPID, IPredicate predicate, String object)

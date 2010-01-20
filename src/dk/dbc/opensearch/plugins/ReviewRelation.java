@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Plugin for creating relations between reviews and there target
+ * Plugin for creating relations between reviews and their target
  */
 public class ReviewRelation implements IRelation
 {
@@ -68,7 +68,6 @@ public class ReviewRelation implements IRelation
 	// Creating the javascript:
 	try 
 	{
-	    // jsWrapper = new NaiveJavaScriptWrapper( "review_relation.js" );
 	    jsWrapper = new SimpleRhinoWrapper( "review_relation.js" );
 	}
 	catch( JavaScriptWrapperException jswe )
@@ -123,7 +122,6 @@ public class ReviewRelation implements IRelation
        	String language  = co.getLang();
 	String XML       = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
 
-	//       	log.debug( String.format( "TESTING: [%s]", XML ) );
 
 	String entryPointFunc = "main";
         // get the pid of the cargocontainer
@@ -133,16 +131,13 @@ public class ReviewRelation implements IRelation
 	    // Running the javascript (trying two different entrypoints):
 	    jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
 	} 
-	catch( JavaScriptWrapperException se ) 
+	catch( JavaScriptWrapperException jswe ) 
 	{
 	    String errorMsg = String.format( "An excpetion occured when trying to run the javascript: %s with entrypoint function: %s", jsWrapper.getJavascriptName(), entryPointFunc );
-	    log.fatal( errorMsg, se );
-	    throw new PluginException( errorMsg, se );
+	    log.fatal( errorMsg, jswe );
+	    throw new PluginException( errorMsg, jswe );
 	}
 
-        //setting the dc.relation
-        String relation = scriptClass.getDCRelation();
-        cargo.getDublinCoreMetaData().setRelation( relation );
         return true;
     }
 

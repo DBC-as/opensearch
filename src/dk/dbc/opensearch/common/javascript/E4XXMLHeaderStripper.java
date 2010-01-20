@@ -48,7 +48,7 @@ public class  E4XXMLHeaderStripper
     {
 	log.trace( "Before: " + XML );
 
-	// Hmmmm...... These seem not to work properly:	
+	// Hmmmm...... These do not seem to work properly:	
 	// String newXML = XML.replace( "<[?]xml[^>]*[?]>\\s*", "" );
 	// String newXML = XML.replace( "<?xml[^>]*?>", "" );
 

@@ -9,7 +9,7 @@ function main( submitter, format, language, xml_review, pid )
     log.info( "submitter: " + submitter );
     log.info( "format:    " + format );
     log.info( "language:  " + language );
-    // Omitting xml since it just takes up to much space:
+    // Omitting printing of xml since it just takes up to much space:
     // log.info( "XML: \n" + xml_review  );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
@@ -30,7 +30,6 @@ function main( submitter, format, language, xml_review, pid )
     log.info( "pid: " + pid );
 
     var results = scriptClass.getPID( identifier );
-
 
     for ( var i = 0; i < results.length; ++i ) {
 	result = results[i];
