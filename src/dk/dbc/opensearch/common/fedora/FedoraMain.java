@@ -148,6 +148,7 @@ public class FedoraMain
                             CargoObject co = cc.getCargoObject( DataStreamType.OriginalData );
                             byte[] bytes = co.getBytes();
                             fos.write( bytes );
+                            fos.close();
 
                             j++;
                         }
