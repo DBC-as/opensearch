@@ -33,12 +33,9 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import fedora.server.types.gen.Datastream;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;

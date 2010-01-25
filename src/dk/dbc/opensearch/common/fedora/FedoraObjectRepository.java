@@ -714,7 +714,7 @@ public class FedoraObjectRepository implements IObjectRepository
                             break;
                         case CREATOR:
                             String creator = of.getCreator()[0].toLowerCase();
-                            log.debug( String.format( "Matching '%s' and '%s'", creator, value ) );
+                            log.debug( String.format( "CREATOR Matching '%s' and '%s'", creator, value ) );
                             if ( creator.equals( value ) )
                             {
                                 ret = true;
