@@ -626,7 +626,8 @@ public class FedoraObjectRepository implements IObjectRepository
             String pidValue = objectFields[j].getPid();
             log.debug( String.format( "Matching pid: %s", pidValue ) );
             // Check to weed out in exact matches
-            if ( addPidValue( resultSearchFields, objectFields, namespace ) )
+            ObjectFields of = objectFields[j];
+            if ( addPidValue( resultSearchFields, of, namespace ) )
             {
                 log.debug( String.format( "Matching do addPidValue", "" ) );
                 if ( pidValue.contains( namespace ) )
@@ -648,7 +649,7 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
-    private boolean addPidValue( List< InputPair< TargetFields, String > > resultFields, ObjectFields[] objectFields, String namespace )
+    private boolean addPidValue( List< InputPair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
     {
         boolean ret = false;
         log.debug( String.format( "Matching size: '%s'", resultFields.size() ) );
@@ -657,8 +658,9 @@ public class FedoraObjectRepository implements IObjectRepository
             FedoraObjectFields target = (FedoraObjectFields)pair.getFirst();
             log.debug( String.format( "Matching resultField: '%s'", target ) );
             String value = pair.getSecond();
-            for ( ObjectFields of : objectFields )
-            {
+            //log.debug( String.format( "Matching objectFields length: '%s'", objectFields.length ) );
+            //for ( ObjectFields of : objectFields )
+            //{
                 String pid = of.getPid().toLowerCase();
                 log.debug( String.format( "Matching pid: '%s'", pid ) );
                 if ( pid.contains( namespace ) )
@@ -835,8 +837,14 @@ public class FedoraObjectRepository implements IObjectRepository
                         default:
                             //throw new ObjectRepositoryException( "No match!" );
                     }
+
+                    if ( ret )
+                    {
+                        log.debug( String.format( "RET Matching returning: '%s'", ret ) );
+                        return ret;
+                    }
                 }
-            }
+            //}
         }
 
         log.debug( String.format( "RET Matching returning: '%s'", ret ) );
