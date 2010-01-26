@@ -66,10 +66,11 @@ public class FedoraAuxiliaryMain
         }
 
         types.add( "deletepids" );
+        types.add( "deletesubmitter" );
     }
 
 
-    private void run( String arg ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
+    private void run( String arg, String submitter ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
        init();
         
@@ -78,6 +79,11 @@ public class FedoraAuxiliaryMain
             if ( arg.equals( "deletepids" ) )
             {
                 deletePids();
+            }
+            else if ( arg.equals( "deletesubmitter" ) )
+            {
+                throw new ServiceException("not valid!!!");
+                //deleteSubmitter( submitter );
             }
         }
         else
@@ -94,9 +100,21 @@ public class FedoraAuxiliaryMain
     public static void main( String[] args ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
     {
         String arg = args[0];
+        String submitter = null;
+
+        try
+        {
+            submitter = args[1];
+            System.out.println( submitter );
+        }
+        catch ( Exception ex )
+        {
+            // do nothing
+        }
+
         
         FedoraAuxiliaryMain fam = new FedoraAuxiliaryMain();
-        fam.run( arg );
+        fam.run( arg, submitter );
     }
 
 
@@ -119,6 +137,35 @@ public class FedoraAuxiliaryMain
             {
                 System.out.println( String.format( "Deleting object pid: %s", pid ) );
                 objectRepository.deleteObject( pid, "Deleting from FedoraAuxiliaryMain" );
+            }
+
+            resultSearchFields.clear();
+        }
+    }
+
+
+    static void deleteSubmitter( String submitter ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, ObjectRepositoryException
+    {
+
+        System.out.println( "*** kalder deleteSubmitter ***" );
+        String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
+        List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
+        int maximumResult = 10000000;
+        for ( int i = 0; i < labels.length; i++ )
+        {
+            TargetFields targetLabel = FedoraObjectFields.LABEL;
+            InputPair< TargetFields, String > pair = new InputPair< TargetFields, String >( targetLabel, labels[i] );
+            resultSearchFields.add( pair );
+            List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
+            System.out.println( "pids.length: " + pids.size() );
+
+            for ( String pid : pids )
+            {
+                if ( submitter != null && pid.startsWith( submitter ) )
+                {
+                    System.out.println( String.format( "Deleting object pid: %s", pid ) );
+                    //objectRepository.deleteObject( pid, "Deleting from FedoraAuxiliaryMain" );
+                }
             }
 
             resultSearchFields.clear();

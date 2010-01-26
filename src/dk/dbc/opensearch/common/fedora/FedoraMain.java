@@ -30,6 +30,8 @@ import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.TargetFields;
 import fedora.server.types.gen.Datastream;
 
 import java.io.BufferedReader;
@@ -38,6 +40,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 
@@ -62,8 +66,12 @@ public class FedoraMain
 
     private static final String purge = "-purge";
     private static final String retrieve = "-retrieve";
+    private static final String deleteSubmitter = "-deleteSubmitter";
+    
     private static final String usage = "\n\tUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" +
+                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -purge sanitize.txt\n" +
+                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteSubmitter dbc\n" +
                                         "\tFile format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n";
 
     /**
@@ -160,6 +168,50 @@ public class FedoraMain
             {
                 ioex.printStackTrace();
             }
+        }
+        else if ( action.equals( deleteSubmitter ) )
+        {
+            String submitter = args[1];
+            deleteSubmitter( submitter );
+        }
+    }
+
+
+    private static void deleteSubmitter( String submitter ) throws ObjectRepositoryException
+    {
+        IObjectRepository objectRepository;
+        try
+        {
+            objectRepository = new FedoraObjectRepository();
+        }
+        catch( ObjectRepositoryException ore )
+        {
+            System.out.println( "Could not initialize objectRepository" );
+            throw new ObjectRepositoryException( "Could not initialize FedoraObjectRepository (is fedora running?)" );
+        }
+
+        System.out.println( "*** kalder deleteSubmitter ***" );
+        String[] labels = { "pg" }; //, "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
+        List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
+        int maximumResult = 10000;
+        for ( int i = 0; i < 10; i++ )
+        {
+            TargetFields targetLabel = FedoraObjectFields.LABEL;
+            InputPair< TargetFields, String > pair = new InputPair< TargetFields, String >( targetLabel, labels[0] );
+            resultSearchFields.add( pair );
+            List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
+            //System.out.println( "pids.length: " + pids.size() );
+
+            for ( String pid : pids )
+            {
+                if ( submitter != null && pid.startsWith( submitter ) )
+                {
+                    System.out.println( String.format( "Deleting object pid: %s with label %s", pid, labels[0] ) );
+                    objectRepository.deleteObject( pid, "Deleting from FedoraAuxiliaryMain" );
+                }
+            }
+
+            resultSearchFields.clear();
         }
     }
 
