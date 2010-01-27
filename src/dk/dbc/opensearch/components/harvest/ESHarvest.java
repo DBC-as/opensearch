@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -138,7 +139,7 @@ public class ESHarvest implements IHarvest
         try
         {
             int targetRef = -1;
-                Statement stmt = conn.createStatement();
+	    Statement stmt = conn.createStatement();
 
             //
             // Find the next targetreference:
@@ -157,14 +158,17 @@ public class ESHarvest implements IHarvest
                 // No candidates found. Queue empty.
                 return 0;
             }
+	    rs1.close();
 
             //
             // Set the taskpackage with the found targetreference to active:
             //
-            String updateTargetRefQuery = String.format( "UPDATE taskpackage " +
-                                                         "SET taskstatus=1, accessdate=sysdate, substatus=substatus+1 " +
-                                                         "WHERE targetreference = %s", targetRef );
-            int res = stmt.executeUpdate( updateTargetRefQuery );
+	    PreparedStatement activateTPStmt = conn.prepareStatement( "UPDATE taskpackage " +
+								      "SET taskstatus=1, accessdate=sysdate, substatus=substatus+1 " +
+								      "WHERE targetreference = ?" );
+	    activateTPStmt.setInt( 1, targetRef );
+	    int res = activateTPStmt.executeUpdate();
+
             if ( res != 1 )
             {
                 conn.rollback();
@@ -177,14 +181,14 @@ public class ESHarvest implements IHarvest
             //
             // Retrieve all the lbnr's associated with the targetreference:
             //
-            String selectLbnrQuery = String.format( "SELECT lbnr " +
-                                                    "FROM taskpackagerecordstructure " +
-                                                    "WHERE     targetreference = %s " +
-                                                    "      AND recordstatus = 2 " +
-                                                    "ORDER BY lbnr",
-                                                    targetRef );
+	    PreparedStatement selectLbnrQueryStmt = conn.prepareStatement( "SELECT lbnr " +
+									   "FROM taskpackagerecordstructure " +
+									   "WHERE targetreference = ? " +
+									   "AND recordstatus = 2 " +
+									   "ORDER BY lbnr" );
+	    selectLbnrQueryStmt.setInt( 1, targetRef );
+            ResultSet rs2 = selectLbnrQueryStmt.executeQuery( );
 
-            ResultSet rs2 = stmt.executeQuery( selectLbnrQuery );
             while ( rs2.next() )
             {
                 // ComparablePair pair = new ComparablePair( targetRef, rs2.getInt(1) );
@@ -212,27 +216,39 @@ public class ESHarvest implements IHarvest
 
         try
         {
-            Statement stmt = conn.createStatement();
-            String selectQuery = String.format( "SELECT supplementalid3 " +
-                                                "FROM suppliedrecords " +
-                                                "WHERE     targetreference = %s " +
-                                                "      AND lbnr = %s",
-                                                id.getTargetRef(),
-                                                id.getLbNr() );
+            // Statement stmt = conn.createStatement();
+            // String selectQuery = String.format( "SELECT supplementalid3 " +
+            //                                     "FROM suppliedrecords " +
+            //                                     "WHERE targetreference = %s " +
+            //                                     "AND lbnr = %s",
+            //                                     id.getTargetRef(),
+            //                                     id.getLbNr() );
+            // ResultSet rs = stmt.executeQuery( selectQuery );
 
-            ResultSet rs = stmt.executeQuery( selectQuery );
+	    PreparedStatement pstmt = conn.prepareStatement( "SELECT supplementalid3 " +
+							     "FROM suppliedrecords " +
+							     "WHERE targetreference = ? " +
+							     "AND lbnr = ?");
+	    pstmt.setInt( 1, id.getTargetRef() );
+	    pstmt.setInt( 2, id.getLbNr() );
+	    ResultSet rs = pstmt.executeQuery( );
+
             if ( rs.next() )
             {
                 referenceData = rs.getString(1);
             }
             else
             {
-
+		String errorMsg = String.format( "Could not retrieve reference data for: %s", id );
+		log.error( errorMsg );
+		throw new HarvesterIOException( errorMsg );
             }
         }
         catch( SQLException sqle )
         {
-
+	    String errorMsg = new String( "An sql exception was caught" );
+	    log.fatal( errorMsg, sqle );
+	    throw new HarvesterIOException( errorMsg, sqle );
         }
 
         return referenceData;
