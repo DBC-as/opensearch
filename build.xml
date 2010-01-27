@@ -145,7 +145,11 @@
     </antcall>
     <antcall target="_dist_pti">
       <!--param name="src.dir" value="${src.dir}" /-->
-      <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
+      <param name="project.name" value="dist/${dist.jar}_PTI.jar" />
+    </antcall>
+    <antcall target="_dist_fedora">
+      <!--param name="src.dir" value="${src.dir}" /-->
+      <param name="project.name" value="dist/${dist.jar}_FEDORA.jar" />
     </antcall>
 
     <!-- TO BE DELETED UPON RELEASE!!! -->

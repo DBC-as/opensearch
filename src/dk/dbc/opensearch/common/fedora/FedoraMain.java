@@ -86,93 +86,116 @@ public class FedoraMain
         
         testArgs( "test", args );
 
+        // PURGE
         if ( action.equals( purge ) )
         {
-            testArgs( purge, args );
-            
-            try
-            {
-                BufferedReader input =  new BufferedReader( new FileReader( textFile ) );
-                try
-                {
-                    String line = null;
-                    while ( ( line = input.readLine()) != null )
-                    {
-                        String[] work_mani = line.split( " " );
-                        String pid = work_mani[ 0 ];
-                        for ( int i = 1; i < work_mani.length; i++ )
-                        {
-                            String predicate = "http://oss.dbc.dk/rdf/dkbib#hasManifestation";
-                            String object = work_mani[i];
-                            String dataType = null;
-                            fo.purgeRelationship( pid, predicate, object, dataType );
-                        }
-                    }
-                }
-                finally
-                {
-                    input.close();
-                }
-            }
-            catch ( IOException ioex )
-            {
-                ioex.printStackTrace();
-            }
+            purge( args, fo );
         }
         else if ( action.equals( retrieve ) )
         {
-            testArgs( retrieve, args );
-
-            try
-            {
-                String path = FileSystemConfig.getTrunkPath();
-                BufferedReader input =  new BufferedReader( new FileReader( textFile ) );
-                try
-                {
-                    String line = null;
-                    int j = 1;
-                    while ( ( line = input.readLine()) != null )
-                    {
-                        String[] work_mani = line.split( " " );
-                        
-                        for ( int i = 1; i < work_mani.length; i++ )
-                        {                            
-                            String pid = work_mani[i];
-                            String submitter = pid.split( ":" )[0];
-                            Datastream ds = fo.getDatastream( pid, "originalData.0" );
-                            String format = ds.getLabel();
-
-                            String harvestPath = path + harvestCatalog + "/" + submitter + "/" + format;
-                            File harvestDir = new File( harvestPath );
-                            harvestDir.mkdirs();
-                            String xmlFile = harvestDir + "/" + j + ".xml";
-                            File file = new File( xmlFile );
-                            FileOutputStream fos = new FileOutputStream( file );
-                            
-                            CargoContainer cc = fo.getObject( pid );
-                            CargoObject co = cc.getCargoObject( DataStreamType.OriginalData );
-                            byte[] bytes = co.getBytes();
-                            fos.write( bytes );
-                            fos.close();
-
-                            j++;
-                        }
-                    }
-                }
-                finally
-                {
-                    input.close();
-                }
-            }
-            catch ( IOException ioex )
-            {
-                ioex.printStackTrace();
-            }
+            retrieve( args, fo );
         }
         else if ( action.equals( deleteSubmitter ) )
         {
             String submitter = args[1];
             deleteSubmitter( submitter );
+        }
+    }
+
+
+    private static void purge( String[] args, FedoraObjectRepository fo ) throws Throwable
+    {
+        testArgs( purge, args );
+
+        try
+        {
+            BufferedReader input =  new BufferedReader( new FileReader( textFile ) );
+            try
+            {
+                String line = null;
+                while ( ( line = input.readLine()) != null )
+                {
+                    String[] work_mani = line.split( " " );
+                    String pid = work_mani[ 0 ];
+                    for ( int i = 1; i < work_mani.length; i++ )
+                    {
+                        String predicate = "http://oss.dbc.dk/rdf/dkbib#hasManifestation";
+                        String object = work_mani[i];
+                        String dataType = null;
+                        fo.purgeRelationship( pid, predicate, object, dataType );
+                    }
+                }
+            }
+            finally
+            {
+                input.close();
+            }
+        }
+        catch ( IOException ioex )
+        {
+            ioex.printStackTrace();
+        }
+    }
+
+
+    private static void retrieve( String[] args, FedoraObjectRepository fo ) throws Throwable
+    {
+        testArgs( retrieve, args );
+
+        try
+        {
+            String path = ""; // FileSystemConfig.getTrunkPath();
+            File cwd = new File( "." );
+            try
+            {
+                path = cwd.getCanonicalPath() + "/";
+            }
+            catch ( Exception ex )
+            {
+                ex.printStackTrace();
+            }
+
+            BufferedReader input =  new BufferedReader( new FileReader( textFile ) );
+            try
+            {
+                String line = null;
+                int j = 1;
+                while ( ( line = input.readLine()) != null )
+                {
+                    String[] work_mani = line.split( " " );
+
+                    for ( int i = 1; i < work_mani.length; i++ )
+                    {
+                        String pid = work_mani[i];
+                        String submitter = pid.split( ":" )[0];
+                        Datastream ds = fo.getDatastream( pid, "originalData.0" );
+                        String format = ds.getLabel();
+
+                        String harvestPath = path + harvestCatalog + "/" + submitter + "/" + format;
+                        File harvestDir = new File( harvestPath );
+                        harvestDir.mkdirs();
+                        String xmlFile = harvestDir + "/" + j + ".xml";
+                        File file = new File( xmlFile );
+                        FileOutputStream fos = new FileOutputStream( file );
+
+                        CargoContainer cc = fo.getObject( pid );
+                        CargoObject co = cc.getCargoObject( DataStreamType.OriginalData );
+                        byte[] bytes = co.getBytes();
+                        fos.write( bytes );
+                        fos.close();
+
+                        j++;
+                    }
+                }
+            }
+            finally
+            {
+                input.close();
+            }
+        }
+        catch ( IOException ioex )
+        {
+            ioex.printStackTrace();
         }
     }
 
