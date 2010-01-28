@@ -47,8 +47,10 @@
   </job>
   <job submitter="dbc" format="matvurd" alias="docbook">
     <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLHarvester"/>
+    <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"  />
+    <plugin name="reviewrelation" classname="dk.dbc.opensearch.plugins.ReviewRelation" />
   </job>
   <job submitter="dbc" format="dr_atlas" alias="danmarcxchange">
     <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
