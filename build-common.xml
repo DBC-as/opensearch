@@ -30,7 +30,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   <property name="admin.dir"        value="${base.dir}/admin"/>
   <property name="doc.dir"          value="${base.dir}/docs"/>
-  <property name="api.dir"          value="${doc.dir}/api"/> 
+  <property name="api.dir"          value="${doc.dir}/javadoc"/> 
   <property name="bin.dir"          value="${base.dir}/bin"/>
   <property name="build.dir"        value="${base.dir}/build"/>
   <property name="classes.dir"      value="${build.dir}/classes"/>
@@ -256,10 +256,18 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
   <target name="_doc" description="generates documentation for ${src.dir}">
-    <taskdef name="doxygen"
-             classname="org.doxygen.tools.DoxygenTask"
-             classpath="${alp}" />    
-    <doxygen configFilename="${base.dir}/Doxyfile" />
+    <!-- <taskdef name="doxygen" -->
+    <!--          classname="org.doxygen.tools.DoxygenTask" -->
+    <!--          classpath="${alp}" />     -->
+    <!-- <doxygen configFilename="${base.dir}/Doxyfile" /> -->
+    
+    <javadoc access="package" author="true" classpathref="classpath" 
+             destdir="${api.dir}" doctitle="OpenSearch" nodeprecated="false" 
+             nodeprecatedlist="false" noindex="false" nonavbar="false" 
+             notree="false" overview="${src.dir}/package.html"
+             packagenames="dk.dbc.opensearch.*"
+             source="1.6" sourcepath="${src.dir}" />
+
   </target>
   
 
