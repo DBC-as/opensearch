@@ -98,8 +98,22 @@ public class FedoraMain
         else if ( action.equals( deleteSubmitter ) )
         {
             String submitter = args[1];
-            deleteSubmitter( submitter );
+            for ( int i = 0; i < 100; i++ )
+            {
+                deleteSubmitter( submitter );
+                FedoraMain fm = new FedoraMain();
+                fm.thisSleep( 10000 );
+            }
         }
+    }
+
+    private void thisSleep( long time ) throws InterruptedException
+    {
+        Thread t = Thread.currentThread ( );
+        long timer = System.currentTimeMillis();
+        t.sleep( time );
+        timer = System.currentTimeMillis() - timer;
+        System.out.println( timer );
     }
 
 
@@ -216,9 +230,9 @@ public class FedoraMain
         System.out.println( "*** kalder deleteSubmitter ***" );
         String[] labels = { "pg" }; //, "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
         List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
-        int maximumResult = 10000;
-        for ( int i = 0; i < 10; i++ )
-        {
+        int maximumResult = 100;
+        //for ( int i = 0; i < 10; i++ )
+        //{
             TargetFields targetLabel = FedoraObjectFields.LABEL;
             InputPair< TargetFields, String > pair = new InputPair< TargetFields, String >( targetLabel, labels[0] );
             resultSearchFields.add( pair );
@@ -235,7 +249,7 @@ public class FedoraMain
             }
 
             resultSearchFields.clear();
-        }
+        //}
     }
 
 

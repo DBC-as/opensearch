@@ -82,11 +82,17 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     
         types = new Vector<String>();
         types.add( "Anmeldelse" );
+        types.add( "anmeldelse" );
         types.add( "Artikel" );
+        types.add( "artikel" );
         types.add( "Avis" );
+        types.add( "avis" );
         types.add( "Avisartikel" );
+        types.add( "avisartikel" );
         types.add( "Tidsskrift" );
-        types.add( "Tidsskriftsartikel" );        
+        types.add( "tidsskrift" );
+        types.add( "Tidsskriftsartikel" );
+        types.add( "tidsskriftsartikel" );
     }
 
 
@@ -198,7 +204,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
 
         if ( ! types.contains( dcType ) )
         {
-            log.debug( String.format( "finding work relations for dcType %s", dcType ) );
+            log.debug( String.format( "NOT TYPE: finding work relations for dcType %s", dcType ) );
             if ( ! dcSource.equals( "" ) )
             {
                 log.debug( String.format( "1 WR with dcSource '%s' and dcTitle '%s'", dcSource, dcTitle ) );
@@ -245,6 +251,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
         }
         else
         {
+            log.debug( String.format( "TYPE: finding work relations for dcType %s", dcType ) );
             if ( ! ( dcTitle.equals( "" ) || dcCreator.equals( "" ) ) )
             {
                 log.debug( String.format( "WR with dcTitle '%s' and dcCreator '%s'", dcTitle, dcCreator ) );
