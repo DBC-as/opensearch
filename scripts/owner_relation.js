@@ -21,6 +21,8 @@ dbcmap["louisiana"] = "louisiana" ;
 dbcmap["artikler"] = "artikler" ;
 dbcmap["dsd"] = "free" ;
 dbcmap["pg"] = "pg";
+dbcmap["nmalbum"] = "netmusik_album";
+dbcmap["nmtrack"] = "netmusik_track";
 
 function lookup_dbcmap( format ) {
   if( dbcmap[ format ] == undefined ) {

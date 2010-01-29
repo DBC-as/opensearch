@@ -16,17 +16,19 @@
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 /**
  * \file
  * \brief Adding owner relation information to fedora repository objects
  */
+
+
 package dk.dbc.opensearch.plugins;
+
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
-import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -35,7 +37,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
@@ -54,12 +55,14 @@ import org.apache.log4j.Logger;
  */
 public class OwnerRelation implements IRelation
 {
-
     private static Logger log = Logger.getLogger( OwnerRelation.class );
+
+
     private PluginType pluginType = PluginType.RELATION;
     private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
     private final ScriptEngineManager manager = new ScriptEngineManager();
 
+    
     /**
      * Constructor for the OwnerRelation plugin.
      * @throws PluginException
@@ -180,7 +183,7 @@ public class OwnerRelation implements IRelation
         String submitter = co.getSubmitter();
         String format = co.getFormat();
 
-        if( null == submitter   ||
+        if ( null == submitter   ||
             submitter.isEmpty() ||
             null == format      ||
             format.isEmpty() )
@@ -193,12 +196,12 @@ public class OwnerRelation implements IRelation
         Invocable inv = lookupJavaScript( submitter );
 
         FedoraRelsExt rels = (FedoraRelsExt) cargo.getMetaData( DataStreamType.RelsExtData );
-        if( null == cargo.getIdentifier() )
+        if ( null == cargo.getIdentifier() )
         {
             log.warn( String.format( "CargoContainer has no identifier, this will be a problem in the RELS-EXT generation/validation" ) );
         }
 
-        if( null == rels )
+        if ( null == rels )
         {
             rels = new FedoraRelsExt( );
         }
