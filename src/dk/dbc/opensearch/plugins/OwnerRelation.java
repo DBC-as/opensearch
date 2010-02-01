@@ -42,10 +42,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -96,7 +98,7 @@ public class OwnerRelation implements IRelation
         }
 
         //lookup invocable in cache:
-        if( this.scriptCache.containsKey( submitter ) )
+        if ( this.scriptCache.containsKey( submitter ) )
         {
             log.trace( String.format( "Returning Invocable js for %s", submitter ) );
             return this.scriptCache.get( submitter );
@@ -169,7 +171,7 @@ public class OwnerRelation implements IRelation
     public void setOwnerRelations( CargoContainer cargo ) throws ConfigurationException, FileNotFoundException, Exception
     {
         CargoObject co = null;
-        if( ! cargo.hasCargo( DataStreamType.OriginalData ) )
+        if ( ! cargo.hasCargo( DataStreamType.OriginalData ) )
         {
             String error = String.format( "CargoContainer with id '%s' has no OriginalData to contruct relations from, aborting", cargo.getIdentifier() );
             log.error( error );
@@ -183,10 +185,7 @@ public class OwnerRelation implements IRelation
         String submitter = co.getSubmitter();
         String format = co.getFormat();
 
-        if ( null == submitter   ||
-            submitter.isEmpty() ||
-            null == format      ||
-            format.isEmpty() )
+        if ( null == submitter || submitter.isEmpty() || null == format || format.isEmpty() )
         {
             String error = String.format( "CargoContainer with id '%s' has no information on submitter or format", cargo.getIdentifier() );
             log.error( error );
@@ -203,13 +202,15 @@ public class OwnerRelation implements IRelation
 
         if ( null == rels )
         {
-            rels = new FedoraRelsExt( );
+            rels = new FedoraRelsExt();
         }
 
+        log.debug( String.format( "Trying to add owner relation for rels '%s'; submitter '%s'; format '%s'", rels.toString(), submitter, format ) );
         rels = ( FedoraRelsExt ) inv.invokeFunction( "addOwnerRelation",
                                                      rels,
                                                      submitter,
-                                                     format );
+                                                     format );        
+        log.debug( String.format( "rels: '%s'", rels.toString() ) );
 
         cargo.addMetaData( rels );
     }
