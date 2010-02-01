@@ -61,9 +61,9 @@ public class ScriptMethodsForReviewRelation {
 
     /**
      * Method exposed to the script for creating relations
-     * @param object, the pid of the object of the relation
-     * @param relation, the name of the relation to make
-     * @param subject, the pid of the target of the relation
+     * @param object the pid of the object of the relation
+     * @param relation the name of the relation to make
+     * @param subject the pid of the target of the relation
      */
     public boolean createRelation( String subject, String relation, String object)
     {
@@ -102,10 +102,8 @@ public class ScriptMethodsForReviewRelation {
 
     /**
      * Method exposed to the script for finding pids of object in the objectrepository
-     * @param streamType, the type of stream to search in the objects
-     * @param field, the field in the stream to examine
-     * @param value, the value to match
-     * @return the pid of the object containing the value in the specified term
+     * @param value the value to match
+     * @return the pids of the objects containing the value in the specified term
      */
     public String[] getPID( String value )
     {

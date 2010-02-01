@@ -63,8 +63,7 @@ public class JobMapCreator
     
     /**
      * Retrives the map of lists of tasks for all registrated pairs of submitter, format.
-     * @param classType the class of the calling object, either DatadockMain or PTIMain
-     * @returns the map containing a list of tasks for each pair of submitter, format
+     * @param path
      * @throws IllegalArgumentException if the classType is neither DatadockMain or PTIMain
      * @throws ConfigurationException 
      */

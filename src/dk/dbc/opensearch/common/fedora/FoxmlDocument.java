@@ -375,7 +375,7 @@ public final class FoxmlDocument
      * (allthough) a SAXException will be thrown when trying to add
      * non-well-formed xml to the Digital Object xml document.
      * @param dcdata the dublin core xml document in a string representation.
-     * @param timenow a long suitable for ingesting into {@link java.util.Date(long)}
+     * @param timenow a long suitable for ingesting into {@link #java.util.Date(long)}
      * @throws XPathExpressionException
      */
     public void addDublinCoreDatastream( String dcdata, long timenow ) throws XPathExpressionException, SAXException, IOException
@@ -468,7 +468,7 @@ public final class FoxmlDocument
      * 
      * @param datastreamId id for the datastream to be contructed inside the Digital Object
      * @param content a byte[] containing the data
-     * @param timenow a long suitable for ingesting into {@link java.util.Date(long)}
+     * @param timenow a long suitable for ingesting into {@link #java.util.Date(long)}
      * @throws SAXException
      * @throws IOException
      */
@@ -488,14 +488,14 @@ public final class FoxmlDocument
     /**
      * Add a content location as a datastream on the Digital Object.
      * The content can be either stored internally in the fedora repository,
-     * in which case type should be set to {@link INTERNAL_REF}, or externally stored
-     * in which case type should be set to {@link URL}. This method performs no checks
+     * in which case type should be set to {@link FoxmlDocument.LocationType#INTERNAL_ID}, or externally stored
+     * in which case type should be set to {@link FoxmlDocument.LocationType#URL}. This method performs no checks
      * on whether the content referred by ref actually exists or is reachable,
      * nor does it perform any checks on the uri-scheme of ref.
      *
      * @param datastreamId id for the datastream to be contructed inside the Digital Object
      * @param ref url that references the content
-     * @param type LocationType specifying what kind of reference {@link ref} denotes
+     * @param type LocationType specifying what kind of reference the parameter ref denotes
      * @throws XPathExpressionException
      */
     public void addContentLocation( String datastreamId, String ref, String label, String mimetype, LocationType type, long timenow ) throws XPathExpressionException, SAXException, IOException

@@ -46,7 +46,7 @@ public interface IPluginResolver
     /**
      * Finds and loads a plugin that can solve a specific task on an object 
      * matching the format and submitter through the PluginID object for the
-     * @param pluginID, the PluginID object for the wanted plugin
+     * @param classname
      * @throws FileNotFoundException when the wanted plugin cannot be found or 
      * there are no plugin registration files to be found. 
      * @throws InstantiationException when the plugin cannot be instantiated

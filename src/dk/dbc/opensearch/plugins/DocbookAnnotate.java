@@ -78,9 +78,9 @@ public class DocbookAnnotate implements IAnnotate
      * a webservice. If annotationdata is available it added to the
      * cargocontainer in a new stream typed DublinCoreData
      *
-     * @param CargoContainer The CargoContainer to annotate
+     * @param cargo The CargoContainer to annotate
      *
-     * @returns An annotated CargoContainer
+     * @return An annotated CargoContainer
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */

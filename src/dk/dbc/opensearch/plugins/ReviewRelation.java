@@ -82,10 +82,10 @@ public class ReviewRelation implements IRelation
     /**
      * The "main" method of this plugin.
      *
-     * @param CargoContainer The CargoContainer to add the reviewOf relation to
+     * @param cargo The CargoContainer to add the reviewOf relation to
      * and be the target of a hasReview relation on another object in the objectRepository
      *
-     * @returns A CargoContainer containing relations
+     * @return A CargoContainer containing relations
      *
      * @throws PluginException thrown if anything goes wrong during annotation.
      */

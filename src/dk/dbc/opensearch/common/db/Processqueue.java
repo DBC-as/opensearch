@@ -63,7 +63,6 @@ public class Processqueue implements IProcessqueue
      * Pushes a fedorahandle to the processqueue
      *
      * @param fedorahandle a fedorahandle, i.e. a pointer to a document in the opensearch repository.
-     * @param itemID an  itemID, identifying the dataobject, later used for indexing purposes
      *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
@@ -189,7 +188,7 @@ public class Processqueue implements IProcessqueue
      * commits the pop to the queue. This operation removes the
      * element from the queue for good, and rollback is not possible
      *
-     * @param queueid identifies the element to commit.
+     * @param queueID identifies the element to commit.
      *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
@@ -307,7 +306,7 @@ public class Processqueue implements IProcessqueue
     /**
      * The notDocked method is used to store paths to the files, that we couldnt not store in the repository
      *
-     * @param The path of the problematic file
+     * @param path The path of the problematic file
      *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery
@@ -340,7 +339,7 @@ public class Processqueue implements IProcessqueue
     /**
      * The notIndexed method is used to store queueIDs for indexjobs, that we couldnt not be indexed/
      *
-     * @param The queueID of the problematic job
+     * @param queueID The queueID of the problematic job
      *
      * @throws ClassNotFoundException if the databasedriver is not found
      * @throws SQLException if there is something wrong the database connection or the sqlquery

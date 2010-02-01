@@ -45,6 +45,11 @@ public class SimpleRhinoWrapper
     private Script script = null;
 
 
+    /**
+     * Constructs an instans of a javascript environment.
+     *
+     * @param scriptName The name of the javascript file to associate with the environment.
+     */
     public SimpleRhinoWrapper( String scriptName ) throws JavaScriptWrapperException
     {
 	// Find javascript-file:
@@ -92,32 +97,37 @@ public class SimpleRhinoWrapper
 	    script = cx.compileReader(in, jsFileName, 1, null);
 	} catch ( IOException ioe ) {
 	    System.err.println( "Could not run 'evaluateReader'" );
-	    System.exit(1);
+	    // System.exit(1);
 	}
  
     }							  
 
+    /**
+     * Sets an instans of an object in the Javascript environment making it accesible for the script
+     *
+     * @param key   The name by which the object should be associated in the javascript 
+     * @param value The object
+     */
     public void put( String key, Object value )
     {
-
 	scope.defineProperty( key, value, ScriptableObject.DONTENUM );
-
     }
     
-    public void run( String functionEntryPoint, Object... args ) throws JavaScriptWrapperException
+    public Object run( String functionEntryPoint, Object... args ) throws JavaScriptWrapperException
     {
 
 	Object fObj = scope.get(functionEntryPoint, scope);
+	Object result = null;
 	if (!(fObj instanceof Function)) {
 	    String errorMsg = String.format( "% is undefined or not a function", functionEntryPoint );
 	    log.fatal( errorMsg );
 	    throw new JavaScriptWrapperException( errorMsg );
 	} else {
 	    Function f = (Function)fObj;
-	    Object result = f.call(cx, scope, scope, args);
+	    result = f.call(cx, scope, scope, args);
 	}
-
 	
+	return result;
     }
 
     public String getJavascriptName()

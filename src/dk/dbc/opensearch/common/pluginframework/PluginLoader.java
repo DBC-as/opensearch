@@ -55,7 +55,7 @@ public class PluginLoader
      * Given a qualified class name of the plugin, this method locates the
      * plugin on the classpath and loads and returns the plugin
      * 
-     * @param pluginName the class name of the wanted plugin
+     * @param pluginClassName the class name of the wanted plugin
      * @return the loaded plugin
      * @throws InstantiationException if the classloader cant sinstantiate the desired plugin
      * @throws IllegalAccessException if the wanted plugin cant be accessed

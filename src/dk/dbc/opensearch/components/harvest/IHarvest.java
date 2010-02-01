@@ -83,7 +83,6 @@ public interface IHarvest
      * @see JobStatus for more information on the states of jobs in the {@link IHarvester}
      * 
      * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvester}
-     * @param status a {@link JobStatus} value indicating the client status of the job.
      * 
      * @throws UnknownIdentifierException if the {@code jobId} could not be found in the {@link IHarvester}
      * @throws HarvesterInvalidStatusChangeException if the client tries to set the status more than once on a given {@code jobId}

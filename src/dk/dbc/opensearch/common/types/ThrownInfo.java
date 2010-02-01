@@ -36,8 +36,8 @@ public class ThrownInfo {
     
     /**
      * the public constructor that sets the fields
-     * @param theThrown, the Throwable that shall be contained
-     * @param info, the additional info about the Throwable
+     * @param theThrown the Throwable that shall be contained
+     * @param info the additional info about the Throwable
      */
     public ThrownInfo( Throwable theThrown , String info ) {
     

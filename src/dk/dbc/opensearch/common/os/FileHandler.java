@@ -55,7 +55,7 @@ public class FileHandler
 
     
     /**
-     * @param path: The path to the file
+     * @param path The path to the file
      * @throws NullPointerException if the path is not valid
      */
     public static File getFile( String path )throws NullPointerException
@@ -68,9 +68,9 @@ public class FileHandler
     /**
      * Retrieves a list of filenames from the given path, if they conforms to the filefilter
      * @param path The path of the directory to retrieve filenames from
-     * @param fileFilter: The filefilter to use for identifying the files we want
-     * @param recursive: if true the method will descend recursively down into the specified directory and retrieve filenames
-     * @returns A string vector, with the matching filenames
+     * @param fileFilters The filefilter to use for identifying the files we want
+     * @param descend if true the method will descend recursively down into the specified directory and retrieve filenames
+     * @return A string vector, with the matching filenames
      * @throws IllegalArgumentException if the path does not exist.
      */
     public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ) throws IllegalArgumentException
@@ -121,7 +121,7 @@ public class FileHandler
     /**
      * Reads a file from disk
      * @param file The path to the file that should be read
-     * @returns an inputstream with the file content
+     * @return an inputstream with the file content
      * @throws FileNotFoundException if the file does not exist
      */
     public static FileInputStream readFile( String file ) throws FileNotFoundException

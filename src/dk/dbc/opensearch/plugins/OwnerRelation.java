@@ -81,7 +81,7 @@ public class OwnerRelation implements IRelation
      * one is created from a supplied javascript matching the role of
      * this plugin.
      *
-     * @param cargo
+     * @param submitter
      * @return Configured script engine fitting the submitter value of the CargoContainer
      * @throws ConfigurationException
      * @throws FileNotFoundException
@@ -129,8 +129,8 @@ public class OwnerRelation implements IRelation
 
     /**
      * Entry point of the plugin
-     * @param CargoContainer The {@link CargoContainer} to construct the owner relations from
-     * @returns a {@link CargoContainer} containing a RELS-EXT stream reflecting the owner relations
+     * @param cargo The {@link CargoContainer} to construct the owner relations from
+     * @return a {@link CargoContainer} containing a RELS-EXT stream reflecting the owner relations
      * @throws PluginException, which wraps all exceptions thrown from
      * within this plugin, please refer to {@link PluginException} for
      * more information on how to retrieve information on the

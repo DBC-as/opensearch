@@ -85,7 +85,7 @@ public class AdministrationStream implements MetaData
 
     /**
      * Constructs an empty AdministrationStream object. The client can use the
-     * {@link #addStream(CargoObject, String) to add information about
+     * {@link #addStream(CargoObject, String)} to add information about
      * data into the AdministrationStream.
      */
     public AdministrationStream( String indexingAlias )
@@ -387,7 +387,6 @@ public class AdministrationStream implements MetaData
 
     /**
      * This implementation returns the identifier as identifier
-     * @return
      */    
     public String getIdentifier()
     {

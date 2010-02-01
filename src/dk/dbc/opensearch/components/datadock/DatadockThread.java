@@ -99,11 +99,7 @@ public class DatadockThread implements Callable<Boolean>
      *            the information about the data to be docked
      * @param processqueue
      *            the processqueue handler
-     * @param jobMap
-     *            information about the tasks that should be solved by the
-     *            pluginframework
      * @throws ConfigurationException if no ObjectRepository could be reached
-     * @throws 
      *
      * @throws ParserConfigurationException
      * @throws PluginResolverException
@@ -142,7 +138,7 @@ public class DatadockThread implements Callable<Boolean>
      * will take to bzw. index and save in fedora the data given with the
      * CargoContainer. \see dk.dbc.opensearch.tools.Estimation
      * 
-     * @returns true if job is performed
+     * @return true if job is performed
      * @throws InstantationException
      *             if the PluginResolver cant instantiate a plugin
      * @throws IllegalAccessException

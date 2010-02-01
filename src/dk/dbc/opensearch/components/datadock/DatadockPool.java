@@ -115,7 +115,6 @@ public class DatadockPool
      *
      * @param threadpool The threadpool to submit jobs to
      * @param processqueue the processqueue handler
-     * @param fedoraHandler the fedora repository handler
      */
     public DatadockPool( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IObjectRepository fedoraObjectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException
     {
@@ -136,7 +135,7 @@ public class DatadockPool
     /**
      * submits a job to the threadpool for execution by a datadockThread.
      *
-     * @param DatadockJob The job to start.
+     * @param datadockJob The job to start.
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      * @throws ParserConfigurationException 

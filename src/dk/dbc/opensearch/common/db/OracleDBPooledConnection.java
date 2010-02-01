@@ -60,7 +60,7 @@ public class OracleDBPooledConnection
      *
      * @return a valid database connection.
      *
-     * @throws SQLException if {@link ods} is uninitialized (i.e. is null).
+     * @throws SQLException if {@link #ods} is uninitialized (i.e. is null).
      */
     public synchronized Connection getConnection() throws SQLException
     {
@@ -79,7 +79,7 @@ public class OracleDBPooledConnection
     /**
      * Closes the connection pool
      *
-     * @throws SQLException if something goes wrong in closing down {@link ods}.
+     * @throws SQLException if something goes wrong in closing down {@link #ods}.
      */
     public synchronized void shutdown() throws SQLException
     {

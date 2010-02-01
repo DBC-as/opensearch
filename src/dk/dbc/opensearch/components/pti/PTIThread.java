@@ -73,7 +73,8 @@ public class PTIThread implements Callable< Boolean >
      *
      * @param fedoraPid the handle identifying the data object
      * @param session the compass session this pti should communicate with
-     * @param jobMap information about the tasks that should be solved by the pluginframework
+     * @param objectRepository
+     * @param pluginResolver
      */
     public PTIThread( String fedoraPid, CompassSession session, IObjectRepository objectRepository, PluginResolver pluginResolver ) throws ConfigurationException, IOException, MalformedURLException, ServiceException
         {

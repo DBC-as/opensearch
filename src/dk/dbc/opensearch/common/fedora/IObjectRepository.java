@@ -73,7 +73,7 @@ public interface IObjectRepository
      *
      * @param cargo A {@link CargoContainer} containing the data to be stored.
      * @param logmessage Message describing the storage operation
-     * @param default PID namespace 
+     * @param defaultNamespace PID namespace 
      * 
      * @return A unique identifer for the object in the object repository
      * @throws ObjectRepositoryException if the object cannot be stored
@@ -174,7 +174,7 @@ public interface IObjectRepository
      * for that String in
      * @param cutIdentifier stops the search and returns result if it
      * encounters this identifier
-     * @param maximumResult integer limiting the returned {@link List}
+     * @param maximumResults integer limiting the returned {@link List}
      * of identifiers
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
@@ -192,8 +192,8 @@ public interface IObjectRepository
      * {@link List} of {@code searchableFields} and limiting {@link
      * List} of returned identifiers with {@code maximumResult}
      *
-     * @param resultSearchableFields {@link List} of fields to search in for {@code searchStrings}
-     * @param maximumResult integer limiting the returned {@link List} of identifiers
+     * @param resultSearchFields {@link List} of fields to search in for {@code searchStrings}
+     * @param maximumResults integer limiting the returned {@link List} of identifiers
      *
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
@@ -305,7 +305,7 @@ public interface IObjectRepository
      * 
      * @param objectIdentifier 
      * @param relation
-     * @param subjectIdentifer
+     * @param subject
      * @throws ObjectRepositoryException
      */     
      public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
@@ -315,7 +315,7 @@ public interface IObjectRepository
       * 
       * @param objectIdentifier i
       * @param relation
-      * @param subjectIdentifer
+      * @param subject
       * @throws ObjectRepositoryException
       */
      public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;

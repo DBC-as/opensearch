@@ -73,9 +73,6 @@ public class FedoraRelsExt implements MetaData
      * Constructs an empty RELS-EXT document. {@code id} is used as
      * identifier for the RDF Node in the document
      * 
-     * @param id identifier identifying the digital object as an RDF
-     * Node. Usually this should be the pid of the digital object, but
-     * there are no restrictions on the identifier.
      * @throws ParserConfigurationException 
      */
     public FedoraRelsExt( ) throws ParserConfigurationException

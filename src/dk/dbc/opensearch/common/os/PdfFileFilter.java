@@ -43,7 +43,7 @@ public class PdfFileFilter implements FilenameFilter
      * @param dir the path of the directory to be tested
      * @param name the dir- or filename on the path
      *
-     * @returns true if path denotes a file that ends with ".pdf"
+     * @return true if path denotes a file that ends with ".pdf"
      *
      * @throws NullPointerException if the dir- or filename is null
      */

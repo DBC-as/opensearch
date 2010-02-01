@@ -96,7 +96,7 @@ public class DatadockJobsMap extends JobMapCreator
 
 
     /**
-     * @returns indexalias if one is found, null otherwise
+     * @return indexalias if one is found, null otherwise
      */
     public static String getIndexingAlias( String submitter, String format ) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
     {

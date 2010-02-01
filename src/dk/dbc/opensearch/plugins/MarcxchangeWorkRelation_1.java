@@ -101,9 +101,9 @@ public class MarcxchangeWorkRelation_1 implements IRelation
      * a webservice. If a relation is available it is added to the
      * cargocontainer in a new stream typed RelsExtData
      *
-     * @param CargoContainer The CargoContainer to add relations to
+     * @param cargo The CargoContainer to add relations to
      *
-     * @returns A CargoContainer containing relations
+     * @return A CargoContainer containing relations
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */

@@ -77,7 +77,7 @@ public class CompletedTask<V>
     /**
      * Sets the future of the completedTask
      * 
-     * @param The future
+     * @param future
      */    
     public void setFuture( FutureTask<V> future )
     {
@@ -88,7 +88,7 @@ public class CompletedTask<V>
     /**
      * Sets the result of the completedTask
      * 
-     * @param The result
+     * @param result
      */
     public void setResult( V result )
     {

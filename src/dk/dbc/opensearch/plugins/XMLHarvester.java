@@ -54,7 +54,7 @@ public class XMLHarvester implements ICreateCargoContainer
      * @param job description of the job
      * @param data the xml data to put into the container
      * @param alias The indexing alias to use
-     * @returns a CargoContainer representing the data
+     * @return a CargoContainer representing the data
      * @throws PluginException
      */
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
@@ -83,7 +83,7 @@ public class XMLHarvester implements ICreateCargoContainer
 
     /**
      * Returns PluginType
-     * @returns pluginType
+     * @return pluginType
      */
     public PluginType getPluginType()
     {

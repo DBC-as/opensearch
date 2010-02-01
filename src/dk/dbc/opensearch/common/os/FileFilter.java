@@ -23,7 +23,7 @@ public class FileFilter implements FilenameFilter
      * @param dir the path of the directory to be tested
      * @param name the dir- or filename on the path
      *
-     * @returns true iff path denotes a file not beginning with a '.'
+     * @return true iff path denotes a file not beginning with a '.'
      *
      * @throws NullPointerException if the dir- or filename is null
      */

@@ -229,7 +229,6 @@ public class FedoraObjectRelations
      * 
      * @param pid
      * @param collectionpid
-     * @return
      */
     public boolean addPidToCollection( String pid, String collectionpid ) throws IOException, ServiceException, ConfigurationException
     {
@@ -245,11 +244,11 @@ public class FedoraObjectRelations
 
     /**
      * method for adding a relation to an object
-     * @param pid, the identifier of the digital object to add the relation to
-     * @param predicate, the predicate of the relation to add
-     * @param targetDCIdentifier, the object to relate the object to, can be a literal
-     * @param literal, true if the targetDCIdentifier is a literal
-     * @param datatype, the datatype of the literal, optional
+     * @param pid the identifier of the digital object to add the relation to
+     * @param predicate the predicate of the relation to add
+     * @param targetDCIdentifier the object to relate the object to, can be a literal
+     * @param literal true if the targetDCIdentifier is a literal
+     * @param datatype the datatype of the literal, optional
      * @return true if the relation was added
      * @throws IOException
      * @throws ServiceException
@@ -455,8 +454,8 @@ public class FedoraObjectRelations
 
     /**
      * method for getting the relationships an object has
-     * @param pid, the object to get relations for
-     * @param predicate, the predicate to search for, null means all
+     * @param pid the object to get relations for
+     * @param predicate the predicate to search for, null means all
      * @return RelationshipTuple[] containing the following for each relationship found:
      * String subject, the object this method was called on
      * String predicate,
@@ -505,10 +504,10 @@ public class FedoraObjectRelations
     /**
      * method to see if an object has a certain relationship to another object
      * Its a filtered version of the method getRelationships
-     * @param subject, the pid of the object in question
-     * @param predicate, the relationship in queation
-     * @param target, the target of the predicate
-     * @param isLiteral, true if the target is not an object in the base
+     * @param subject the pid of the object in question
+     * @param predicate the relationship in queation
+     * @param target the target of the predicate
+     * @param isLiteral true if the target is not an object in the base
      * @return true if the relationship exists
      * @throws IOException
      * @throws ServiceException

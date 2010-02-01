@@ -48,7 +48,7 @@ public class PluginResolverException extends Exception
     /**
      * @param exceptionVector is the Vector containing the ThrownInfos, that each 
      * contains a Throwable and aditional information.
-     * @param String, message is the general message about the Exception, stating
+     * @param message is the general message about the Exception, stating
      * what the collection of Throwables are regarding. 
      */
     public PluginResolverException( Vector<ThrownInfo> exceptionVector, String message ) 
@@ -64,7 +64,7 @@ public class PluginResolverException extends Exception
      * caused, but there are values that are not computed or retrived as 
      * expected. The exceptionVector will be null when the exception is 
      * constructed this way.
-     * @param String, message is the general message about the Exception, stating 
+     * @param message is the general message about the Exception, stating 
      * what the collection of Throwables are regarding. 
      */
     public PluginResolverException( String message ) 

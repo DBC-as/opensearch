@@ -52,10 +52,8 @@ public class DatadockJob implements IJob
 
     /**
      * Constructor that initializes the DatadockJob
-     * @param submitter, the submitter of the job
-     * @param format, the format of the job
-     * @param identifier, the identifier of the data of the job
-     * @param referenceData, the data concerning the job
+     * @param identifier the identifier of the data of the job
+     * @param referenceData the data concerning the job
      */
     public DatadockJob( IIdentifier identifier, Document referenceData )
     {
@@ -87,7 +85,7 @@ public class DatadockJob implements IJob
 
     /**
      * Gets the identifier from the job
-     * @returns the identifier of the job
+     * @return the identifier of the job
      */
     @Override
     public IIdentifier getIdentifier()

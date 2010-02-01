@@ -63,8 +63,8 @@ public class PluginResolver implements IPluginResolver
      * Retrives a plugin instance matching the class name given with
      * {@code className}
      *
-     * @param name, the name of the class of the plugin
-     * @returns a plugin matching the key made out of the params  
+     * @param className the name of the class of the plugin
+     * @return a plugin matching the key made out of the params  
      * @throws InstantitionException if the PluginLoader cant load the desired plugin
      * @throws IllegalAccessException if the plugin file cant be accessed by the PluginLoader
      * @throws ClassNotFoundException if the class of the plugin cannot be found

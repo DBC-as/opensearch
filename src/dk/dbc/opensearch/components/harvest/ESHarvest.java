@@ -57,8 +57,8 @@ import org.xml.sax.SAXException;
 
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
- * to a frontend, i.e. the DataDock, delivers data through {@link getData} and maintains the state of 
- * the jobs in the ES-base through {@link setStatusSuccess}, {@link setStatusFailure} and {@link setStatusRetry}.
+ * to a frontend, i.e. the DataDock, delivers data through {@link #getData} and maintains the state of 
+ * the jobs in the ES-base through {@link #setStatusSuccess}, {@link #setStatusFailure} and {@link #setStatusRetry}.
  */
 public class ESHarvest implements IHarvest
 {
@@ -86,10 +86,7 @@ public class ESHarvest implements IHarvest
 
 
     /**
-     *  Starts the ES-Harvester. When the ES-harvester is started, it will look into the ES-base
-     *  and find jobs currently in progress {@link cleanupESBase} and set them to queued.
-     *  Please notice, that as a consequence of the above, only one ES-Harvester is allowed to
-     *  run on an ES-base.
+     * This method is not really used.
      */
     public void start() throws HarvesterIOException
     {

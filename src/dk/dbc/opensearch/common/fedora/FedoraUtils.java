@@ -54,7 +54,7 @@ public class FedoraUtils
 
     /**
      * Creates a fedora digital object document XML representation of a given
-     * {@link #CargoContainer}
+     * {@link dk.dbc.opensearch.common.types.CargoContainer}
      *
      * @param cargo the CargoContainer to create a foxml representation of
      * @return a byte[] containing the xml representation

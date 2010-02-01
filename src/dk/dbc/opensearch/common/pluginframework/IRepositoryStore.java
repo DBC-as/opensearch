@@ -36,8 +36,6 @@ public interface IRepositoryStore extends IPluggable
     /**
      * Stores {@code cargo} in a repository.
      * @param cargo the {@link CargoContainer} to store
-     * @param submitter
-     * @return
      * @throws PluginException
      */
     CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException;

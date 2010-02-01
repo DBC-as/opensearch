@@ -60,7 +60,7 @@ public class CargoObject
      * have the same id. 
      *
      * @param dataStreamName the DataStreamType of the data
-     * @param mimeType the mimetype of the data
+     * @param mimetype the mimetype of the data
      * @param language the language of the data
      * @param submitter the submitter of the data
      * @param format the format of the data

@@ -891,7 +891,7 @@ public class FedoraObjectRepository implements IObjectRepository
      * @param comparisonOperator In most case this should be 'has'. 'eq' cannot be used with namespace not null!!!
      * @param maximumResults
      * @param namespace Used to limit on pid containing namespace.
-     * @return
+     * @return An array of ObjectFields.
      */
     ObjectFields[] searchRepository( String[] resultFields, List< InputPair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults, String namespace )
     {
