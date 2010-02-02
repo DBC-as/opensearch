@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -67,11 +66,13 @@ public class FedoraMain
     private static final String purge = "-purge";
     private static final String retrieve = "-retrieve";
     private static final String deleteSubmitter = "-deleteSubmitter";
+    private static final String deleteWork = "-deleteWork";
     
     private static final String usage = "\n\tUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -purge sanitize.txt\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteSubmitter dbc\n" +
+                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteWork sanitize.txt\n" +
                                         "\tFile format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n";
 
     /**
@@ -85,7 +86,7 @@ public class FedoraMain
         FedoraObjectRepository fo = new FedoraObjectRepository();
         
         testArgs( "test", args );
-
+        
         // PURGE
         if ( action.equals( purge ) )
         {
@@ -104,6 +105,10 @@ public class FedoraMain
                 FedoraMain fm = new FedoraMain();
                 fm.thisSleep( 10000 );
             }
+        }
+        else if ( action.equals( deleteWork ) )
+        {
+            deleteWork( args );
         }
     }
 
@@ -253,6 +258,49 @@ public class FedoraMain
     }
 
 
+    private static void deleteWork( String[] args ) throws ObjectRepositoryException
+    {
+        testArgs( deleteWork, args );
+        
+        IObjectRepository objectRepository;
+        try
+        {
+            objectRepository = new FedoraObjectRepository();
+        }
+        catch( ObjectRepositoryException ore )
+        {
+            System.out.println( "Could not initialize objectRepository" );
+            throw new ObjectRepositoryException( "Could not initialize FedoraObjectRepository (is fedora running?)" );
+        }
+
+        try
+        {
+            BufferedReader input =  new BufferedReader( new FileReader( textFile ) );
+            try
+            {
+                String line = null;
+                while ( ( line = input.readLine()) != null )
+                {
+                    String[] work_mani = line.split( " " );
+                    String pid = work_mani[ 0 ];
+                    for ( int i = 1; i < work_mani.length; i++ )
+                    {
+                        objectRepository.deleteObject( pid, "Deleting from FedoraAuxiliaryMain" );
+                    }
+                }
+            }
+            finally
+            {
+                input.close();
+            }
+        }
+        catch ( IOException ioex )
+        {
+            ioex.printStackTrace();
+        }
+    }
+
+
     private static void testArgs( String actionArg, String[] args )
     {
         if ( actionArg.equals( "test" ) )
@@ -267,7 +315,7 @@ public class FedoraMain
                 System.exit( 0 );
             }
         }
-        else if ( action.equals( "-purge" ) )
+        else if ( action.equals( "-purge" ) || action.equals( "-deleteWork" ) )
         {
             try
             {
