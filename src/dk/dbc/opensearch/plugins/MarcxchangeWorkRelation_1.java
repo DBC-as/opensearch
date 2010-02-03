@@ -41,8 +41,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
-
 import dk.dbc.opensearch.common.types.InputPair;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -65,6 +65,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
 {
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation_1.class );
 
+
     private PluginType pluginType = PluginType.RELATION;
 
     private Vector<String> types;    
@@ -72,6 +73,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     private String workNamespace = "work:";
 
     private final ScriptEngineManager manager = new ScriptEngineManager();    
+
     
     /**
      * Constructor for the MarcxchangeWorlkRelation plugin.

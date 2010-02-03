@@ -282,10 +282,13 @@ public class FedoraMain
                 while ( ( line = input.readLine()) != null )
                 {
                     String[] work_mani = line.split( " " );
-                    String pid = work_mani[ 0 ];
+                    String pid = work_mani[ 1 ];
                     for ( int i = 1; i < work_mani.length; i++ )
                     {
-                        objectRepository.deleteObject( pid, "Deleting from FedoraAuxiliaryMain" );
+                        if ( pid.startsWith( "work" ) )
+                        {
+                            objectRepository.deleteObject( pid, "Deleting from FedoraAuxiliaryMain" );
+                        }
                     }
                 }
             }
