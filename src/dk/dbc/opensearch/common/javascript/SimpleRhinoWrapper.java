@@ -33,6 +33,17 @@ import org.apache.log4j.Logger;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import org.apache.commons.configuration.ConfigurationException;
 
+/**
+ * The purpose of the SimpleRhinoWrapper is to make a very simple wrapper for javascript based 
+ * on Rhino. The class has a very few functions in order to keep the interface simple.
+ * <br>
+ * In order to use the SimpleRhinoWrapper you call the constuctor {@link SimpleRhinoWrapper#SimpleRhinoWrapper}. 
+ * This takes a javascript filename as argument. The javascriptfile is then loaded, and the javascript is 
+ * evaluated, ready for being run.
+ * You can add instantiated objects to the javascript-environment, which then is accessible to the javascript.
+ * This is done using the function {@link SimpleRhinoWrapper#put put}. 
+ * When you are ready to run your javascript you call {@link SimpleRhinoWrapper#run run}
+ */
 public class SimpleRhinoWrapper
 {
 
@@ -46,7 +57,7 @@ public class SimpleRhinoWrapper
 
 
     /**
-     * Constructs an instans of a javascript environment.
+     * Constructs an instans of a javascript environment, containing the given javascript.
      *
      * @param scriptName The name of the javascript file to associate with the environment.
      */
@@ -97,7 +108,6 @@ public class SimpleRhinoWrapper
 	    script = cx.compileReader(in, jsFileName, 1, null);
 	} catch ( IOException ioe ) {
 	    System.err.println( "Could not run 'evaluateReader'" );
-	    // System.exit(1);
 	}
  
     }							  
@@ -130,6 +140,10 @@ public class SimpleRhinoWrapper
 	return result;
     }
 
+    /**
+     * 
+     * @return The filename of the javascript
+     */
     public String getJavascriptName()
     {
 	return jsFileName != null ? jsFileName : "";
