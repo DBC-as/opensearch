@@ -24,6 +24,7 @@
 # Python script to force a commit of all changes since last commit for a Solr server
 
 import subprocess
+import ConfigParser
 
 def commit(solr_hostname, solr_port, solr_webapp):
     """
