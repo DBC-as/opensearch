@@ -46,7 +46,7 @@ def is_database( dbname ):
 
     retcode = subprocess.Popen( cmd_str, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE ).communicate()
     if retcode[1]:
-        print "caught the following error trying to check % table:\n%s" % (dbname, retcode[1])
+        print "caught the following error trying to check %s table:\n%s" % (dbname, retcode[1])
         sys.exit(2)
         
     elif "(0 rows)" in retcode[0]:
@@ -123,10 +123,18 @@ def create( database, username, password):
 
 
 if __name__ == '__main__':
-    if sys.argv[1] == "-h":
-        print "usage:\n   makes user with password and table for each argument given."
+    from optparse import OptionParser
+    usage = "usage:\n   makes user with password and table for each argument given."
+    parser = OptionParser( usage="%prog username1 username2 ..." )
+    (options, args) = parser.parse_args()
+    
+    if len(args) == 0:
+        print "This script needs arguments."
+        print usage
+    elif args[0] == "-h" or args[0] == "-help" or args[0] == "--help":
+        print usage
     else:
-        for arg in sys.argv[1:]: 
-            print "create table and role for %s" % arg
+        for arg in args:
+            print "creating table and role for %s" % arg
             create( arg, arg, arg)
     
