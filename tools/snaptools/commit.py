@@ -25,6 +25,7 @@
 
 import subprocess
 import ConfigParser
+import os
 
 def commit(solr_hostname, solr_port, solr_webapp):
     """
