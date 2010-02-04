@@ -266,7 +266,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
              nodeprecatedlist="false" noindex="false" nonavbar="false" 
              notree="false" overview="${src.dir}/package.html"
              packagenames="dk.dbc.opensearch.*"
-             source="1.6" sourcepath="${src.dir}" />
+             source="1.6" sourcepath="${src.dir}">
+<link offline="false" href="http://java.sun.com/j2se/1.6.0/docs/api/"/>
+</javadoc>
 
   </target>
   

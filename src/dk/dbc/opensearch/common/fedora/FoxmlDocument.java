@@ -375,7 +375,7 @@ public final class FoxmlDocument
      * (allthough) a SAXException will be thrown when trying to add
      * non-well-formed xml to the Digital Object xml document.
      * @param dcdata the dublin core xml document in a string representation.
-     * @param timenow a long suitable for ingesting into {@link #java.util.Date(long)}
+     * @param timenow a long suitable for ingesting into {@link java.util.Date#Date(long)}
      * @throws XPathExpressionException
      */
     public void addDublinCoreDatastream( String dcdata, long timenow ) throws XPathExpressionException, SAXException, IOException
@@ -468,7 +468,7 @@ public final class FoxmlDocument
      * 
      * @param datastreamId id for the datastream to be contructed inside the Digital Object
      * @param content a byte[] containing the data
-     * @param timenow a long suitable for ingesting into {@link #java.util.Date(long)}
+     * @param timenow a long suitable for ingesting into {@link java.util.Date#Date(long)}
      * @throws SAXException
      * @throws IOException
      */
