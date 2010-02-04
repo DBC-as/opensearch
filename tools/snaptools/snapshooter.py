@@ -28,14 +28,24 @@ import datetime
 import subprocess
 import ConfigParser
 
-def snapshooter(master_dir, name, check):
+def lockfile_present(folder):
+    """
+    Return True if writelock file is present in FOLDER, false
+    otherwise.
+    """    
+    if os.path.exists(folder) and os.path.isdir(folder):
+        for f in os.listdir(folder):
+            if "write.lock" in f:
+                return true
+    return false
+
+def snapshooter(master_dir, name, write_lock_folder, check):
     """
     Makes snapshot of index folder located in master_dir, which is
     a folder in master_dir called snapshot.[now] where now is a
     timestamp. this folder contains hardlinks to all files in the
-    index folder
-    """
-    
+    index folder.
+    """    
     now = datetime.datetime.now()
     #print "started %s by %s"%(now.ctime(), os.environ.get( 'USER' ))
 
@@ -64,13 +74,17 @@ def snapshooter(master_dir, name, check):
             print "cmd",cmd_str
             retcode = subprocess.Popen( cmd_str, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE ).communicate()
             if retcode[1]:
-                print "adsaddsa:\n%s" % retcode[1]
+                print "caught error from diff:\n%s" % retcode[1]
                 exit(3)
             if retcode[0].strip() == "0":
                 print "index does not contain any new data. The snapshot would be the same as last time, exiting"
                 exit(3);
                                     
     print "taking snapshot"
+    
+    if lockfile_present(write_lock_folder):
+        print "Found writelock file in folder '%s'. Exiting" % write_lock_folder
+        exit(7)
 
     cmd_str = "cp -lr %s %s" %(index, snaptemp)
     retcode = subprocess.Popen( cmd_str, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE ).communicate()
@@ -91,7 +105,10 @@ if __name__ == '__main__':
     
     parser.add_option( "-c", action="store_true", dest="check", default=False,
                        help="Only take snapshot if different than previous one" )
-  
+
+    parser.add_option( "--lockfolder", dest="lockfilefolder",
+                       help="manually set the folder to look for a writelock file in. Defaults to the master-index folder")
+
     (options, args) = parser.parse_args()
 
     config = ConfigParser.RawConfigParser()
@@ -112,6 +129,10 @@ if __name__ == '__main__':
             exit(1)
         master_index = config.get("snap-configuration", "master_index" )
 
+    lock_folder = master_index
+    if options.lockfilefolder:
+        lock_folder = options.lockfilefolder
+
     index_name = ""
     try:
         index_name = config.get("snap-configuration", "master_index_name" )
@@ -120,5 +141,5 @@ if __name__ == '__main__':
     if index_name == "":
         index_name = "index"
         
-    snapshooter(master_index, index_name, options.check)
+    snapshooter(master_index, index_name, lock_folder, options.check)
     
