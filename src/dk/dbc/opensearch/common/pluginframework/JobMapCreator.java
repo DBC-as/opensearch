@@ -27,10 +27,10 @@ package dk.dbc.opensearch.common.pluginframework;
 
 
 import dk.dbc.opensearch.common.compass.CPMAlias;
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.InputPair;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,7 +59,8 @@ public class JobMapCreator
 
 
     protected static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-    protected static HashMap<InputPair<String, String>, String> aliasMap = new HashMap<InputPair<String, String>, String>();
+    protected static HashMap< InputPair< String, String >, String > aliasMap = new HashMap< InputPair< String, String >, String >();
+
     
     /**
      * Retrives the map of lists of tasks for all registrated pairs of submitter, format.
@@ -114,23 +115,24 @@ public class JobMapCreator
             {
                 log.warn( String.format( "alias '%s' in job submitter='%s', format='%s' is not Valid, ie. not found in the xml.cpm.xml file. If this job is used, expect incexing failures", alias, submitter, format ) );
             }
-            aliasMap.put(new InputPair<String, String>(submitter, format), alias);
+            
+            aliasMap.put( new InputPair< String, String >( submitter, format ), alias );
 
             NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
             int pluginListLength = pluginList.getLength();
 
-            ArrayList<String> sortedPluginList = new ArrayList<String>();
+            ArrayList< String > sortedPluginList = new ArrayList< String >();
 
             String plugin;
             // Store the classname in a List
-            for( int y = 0; y < pluginListLength; y++ )
+            for ( int y = 0; y < pluginListLength; y++ )
             {
                 Element pluginElement = (Element)pluginList.item( y );
                 plugin = pluginElement.getAttribute( "classname" );
                 sortedPluginList.add( plugin );             
             }           
 
-            if( sortedPluginList.isEmpty() )
+            if ( sortedPluginList.isEmpty() )
             {
                 log.warn( String.format( "No jobs (plugins that handle jobs) found for submitter %s, format %s", submitter, format ) );
                 continue;

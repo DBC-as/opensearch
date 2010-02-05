@@ -71,8 +71,7 @@ public class XMLDCHarvester implements ICreateCargoContainer
 
 
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
-    {
-      
+    {      
         return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), data, alias );
     }
 
@@ -87,7 +86,6 @@ public class XMLDCHarvester implements ICreateCargoContainer
      */
     private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data, String alias ) throws PluginException
     {
-
         CargoContainer cargo = new CargoContainer( );
                
         try

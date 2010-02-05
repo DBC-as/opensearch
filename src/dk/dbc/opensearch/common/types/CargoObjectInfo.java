@@ -26,8 +26,6 @@
 package dk.dbc.opensearch.common.types;
 
 
-import dk.dbc.opensearch.common.types.CargoMimeType;
-
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -39,6 +37,7 @@ import org.apache.log4j.Logger;
 public class CargoObjectInfo
 {
     Logger log = Logger.getLogger( CargoObjectInfo.class );
+
 
     /**
      * Property naming type of data stream.

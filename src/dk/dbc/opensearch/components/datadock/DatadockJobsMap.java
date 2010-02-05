@@ -54,7 +54,7 @@ public class DatadockJobsMap extends JobMapCreator
     public DatadockJobsMap() {}
 
 
-    private static void init( String submitter, String format) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
+    private static void init( String submitter, String format ) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
     {
         if ( submitter == null || submitter.isEmpty() ||
              format == null || format.isEmpty() )

@@ -336,32 +336,35 @@ public class FileHarvest implements IHarvest
         return jobs;
     }
 
+
     /**
      * Wrapper to setStatus.
      * Notice that the PID is ignored. 
      */
     public void setStatusSuccess( IIdentifier Id, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
-	// Ignoring the PID!
-	setStatus( Id, JobStatus.SUCCESS );
+        // Ignoring the PID!
+        setStatus( Id, JobStatus.SUCCESS );
     }
-   
+
+
     /**
      * Wrapper to setStatus.
      * Notice that the failureDiagnostic is ignored. 
      */
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
-	// Ignoring the failureDiagnostic!
-	setStatus( Id, JobStatus.FAILURE );
+        // Ignoring the failureDiagnostic!
+        setStatus( Id, JobStatus.FAILURE );
     }
 
+    
     /**
      * Wrapper to setStatus.
      */
     public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
-	setStatus( Id, JobStatus.RETRY );
+        setStatus( Id, JobStatus.RETRY );
     }
 
 
@@ -444,19 +447,19 @@ public class FileHarvest implements IHarvest
      *
      * @return
      */
-    private ArrayList<File> getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
+    private ArrayList< File > getNewJobs() throws FileNotFoundException, IOException, ConfigurationException
     {
         log.debug( "Calling FileHarvest.getNewJobs" );
-        ArrayList< File> jobs = new ArrayList<File>();
+        ArrayList< File > jobs = new ArrayList< File >();
 
         log.debug( "FileHarvest.getNewJobs: ArrayList formats: " + formats.toString() );
-        for( File format : formats )
+        for ( File format : formats )
         {
-            if( format != null )
+            if ( format != null )
             {
                 File[] files = format.listFiles();
                 
-                if( files != null)
+                if ( files != null)
                 {
                     int l = files.length;
                     int i = 0;
@@ -495,7 +498,7 @@ public class FileHarvest implements IHarvest
 
         log.debug( "Creating new destFldr: " + destFldr.getAbsolutePath().toString() );
         boolean ok = false;
-        if( ! destFldr.exists() )
+        if ( ! destFldr.exists() )
         {
             ok = destFldr.mkdirs();
         }
@@ -504,7 +507,7 @@ public class FileHarvest implements IHarvest
             ok = true;
         }
 
-        if( ok )
+        if ( ok )
         {
             log.debug( "destFldr created: " + destFldr.getPath().toString() );
             ok = src.renameTo( dest );
@@ -520,6 +523,7 @@ public class FileHarvest implements IHarvest
             throw new IOException( "IOException thrown in FileHarvest move: Could not create destination folder for old files:" + destFldr.getAbsolutePath().toString() );
 
         }
+        
         log.trace( String.format( "File: %s is moved to: %s", src.getAbsolutePath() , dest.getAbsolutePath() ) );
         return dest;
     }

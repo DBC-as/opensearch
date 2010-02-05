@@ -192,8 +192,8 @@ public class DatadockThread implements Callable<Boolean>
 
                         log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
 
-                        String indexingAlias = DatadockJobsMap.getIndexingAlias(datadockJob.getSubmitter(), datadockJob.getFormat());
-                        log.trace(String.format("retrieved indexingAlias %s", indexingAlias));
+                        String indexingAlias = DatadockJobsMap.getIndexingAlias( datadockJob.getSubmitter(), datadockJob.getFormat() );
+                        log.trace( String.format( "retrieved indexingAlias %s", indexingAlias ) );
 
                         ICreateCargoContainer harvestPlugin = ( ICreateCargoContainer )plugin;
                         timer = System.currentTimeMillis();

@@ -1165,8 +1165,8 @@ public class FedoraObjectRepository implements IObjectRepository
                         log.error( error );
                         throw new ObjectRepositoryException( error, ex );
                     }
-                    cargo.add( datastreamtype, co.getFormat(), co.getSubmitter(), co.getLang(), co
-                            .getMimeType(), co.getIndexingAlias(), data );
+                    
+                    cargo.add( datastreamtype, co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(), co.getIndexingAlias(), data );
                 }
             }
         }
