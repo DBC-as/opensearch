@@ -330,6 +330,11 @@
        name="id"
        xpath="/ting:container/ting:fedoraPid"/>
     <xml-property
+        name="rec.id"
+        xpath="/ting:container/dkabm:record/ac:identifier | /ting:container/ting:fedoraPid"
+        value-converter="sort"
+        />
+    <xml-property
         name="dc.title"
         xpath="/ting:container/dkabm:record/dc:title"
         value-converter="default"
@@ -622,7 +627,7 @@
     <xml-property
         name="rec.id"
         xpath="/ting:container/dkabm:record/ac:identifier"
-       value-converter="default"
+        value-converter="default"
         />
     <xml-property
         name="dc.title" 
