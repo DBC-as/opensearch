@@ -543,12 +543,14 @@ public class ESHarvest implements IHarvest
                 if ( blobLength > 0 )
                 {
                     // Return data
-                    returnData = data.getBytes( 1l, (int)blobLength );
+                    returnData = data.getBytes( 1L, (int)blobLength );
                 }
                 else
                 {
                     // For some unknown reason, there is no data associated with the ID.
-                    log.error( String.format( "No data associated with id %s", ESJobId ) );
+                    String errorMsg = String.format( "No data associated with id %s", ESJobId );
+                    log.error( errorMsg );
+                    throw new HarvesterIOException( errorMsg );
                 }
             }
         }
@@ -624,7 +626,6 @@ public class ESHarvest implements IHarvest
     }
 
 
-    // There are no current scenarios for using setStatusRetry. If this comment is read after february 28th, delete this comment and the commented method below
     // public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     // {
     //     log.info( String.format( "ESHarvest.setStatusRetry( identifier %s ) ", Id ) );
