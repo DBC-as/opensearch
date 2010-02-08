@@ -72,7 +72,7 @@ public class ReviewRelation implements IRelation
 	}
 	catch( JavaScriptWrapperException jswe )
 	{
-	    String errorMsg = new String("An exception occured when trying to instantiate the NaiveJavaScriptWrapper");
+	    String errorMsg = new String("An exception occured when trying to instantiate the SimpleRhinoWrapper");
 	    log.fatal( errorMsg, jswe );
 	    throw new PluginException( errorMsg, jswe );
 	}
@@ -128,7 +128,6 @@ public class ReviewRelation implements IRelation
         String pid = cargo.getIdentifierAsString();
 	try 
 	{
-	    // Running the javascript (trying two different entrypoints):
 	    jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
 	} 
 	catch( JavaScriptWrapperException jswe ) 

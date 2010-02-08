@@ -27,6 +27,8 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
@@ -47,6 +49,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -59,10 +62,10 @@ public class OwnerRelation implements IRelation
 {
     private static Logger log = Logger.getLogger( OwnerRelation.class );
 
-
     private PluginType pluginType = PluginType.RELATION;
     private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
-    private final ScriptEngineManager manager = new ScriptEngineManager();
+
+    private SimpleRhinoWrapper jsWrapper = null;
 
     
     /**
@@ -71,59 +74,18 @@ public class OwnerRelation implements IRelation
      */
     public OwnerRelation() throws PluginException
     {
+	try 
+	{
+	    jsWrapper = new SimpleRhinoWrapper( "owner_relation.js" );
+	}
+	catch( JavaScriptWrapperException jswe )
+	{
+	    String errorMsg = new String("An exception occured when trying to instantiate the SimpleRhinoWrapper");
+	    log.fatal( errorMsg, jswe );
+	    throw new PluginException( errorMsg, jswe );
+	}
+
         log.trace( "OwnerRelation plugin constructed" );
-    }
-
-
-    /**
-     * Tries to do a lookup of a cached instance of the script engine
-     * based on the submitter. If no cached instances are found, a new
-     * one is created from a supplied javascript matching the role of
-     * this plugin.
-     *
-     * @param submitter
-     * @return Configured script engine fitting the submitter value of the CargoContainer
-     * @throws ConfigurationException
-     * @throws FileNotFoundException
-     * @throws ScriptException
-     * @throws PluginException
-     */
-    Invocable lookupJavaScript( String submitter ) throws ConfigurationException, FileNotFoundException, ScriptException, PluginException
-    {
-
-        log.trace( String.format( "Entering lookupJavaScript" ) );
-        if( submitter == null || submitter.isEmpty() )
-        {
-            throw new PluginException( new IllegalArgumentException( "submitter in CargoContainer is not set. Aborting." ) );
-        }
-
-        //lookup invocable in cache:
-        if ( this.scriptCache.containsKey( submitter ) )
-        {
-            log.trace( String.format( "Returning Invocable js for %s", submitter ) );
-            return this.scriptCache.get( submitter );
-        }
-        else // ...or create new invocable + add it to the cache
-        {
-            ScriptEngine engine = manager.getEngineByName( "JavaScript" );
-
-            engine.put( "log", log );
-            engine.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
-            engine.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
-
-            String path = FileSystemConfig.getScriptPath();
-            String jsFileName = path + "owner_relation.js";
-
-            log.debug( String.format( "Using javascript at url '%s'", jsFileName ) );
-            engine.eval( new java.io.FileReader( jsFileName ) );
-
-            Invocable inv = (Invocable) engine;
-
-            this.scriptCache.put( submitter, inv );
-
-            log.trace( String.format( "Returning Invokable js for %s", submitter ) );
-            return inv;
-        }
     }
 
 
@@ -141,35 +103,14 @@ public class OwnerRelation implements IRelation
     {
         log.trace( "getCargoContainer() called" );
 
-        try
-        {
-            setOwnerRelations( cargo );
-
-            //this.fedoraHandle.addRelationship( pid, "info:fedora/fedora-system:def/relations-external#isMemberOfCollection", owner, false, null );
-        }
-        catch( ConfigurationException e )
-        {
-            log.error( "setOwnerRelation: Exception e", e );
-            throw new PluginException( "Error setting OwnerRelation ", e );
-        }
-        catch( IOException e )
-        {
-            log.error( "setOwnerRelation: Exception e", e );
-            throw new PluginException( "Error setting OwnerRelation ", e );
-
-        }
-        catch( Exception e )
-        {
-            log.error( "setOwnerRelation: Exception e", e );
-            throw new PluginException( "Error setting OwnerRelation ", e );
-        }
+	cargo = setOwnerRelations( cargo );
 
         return cargo;
     }
 
-
-    public void setOwnerRelations( CargoContainer cargo ) throws ConfigurationException, FileNotFoundException, Exception
+    public CargoContainer setOwnerRelations( CargoContainer cargo ) throws PluginException
     {
+
         CargoObject co = null;
         if ( ! cargo.hasCargo( DataStreamType.OriginalData ) )
         {
@@ -192,8 +133,6 @@ public class OwnerRelation implements IRelation
             throw new PluginException( new IllegalStateException( error ) );
         }
 
-        Invocable inv = lookupJavaScript( submitter );
-
         FedoraRelsExt rels = (FedoraRelsExt) cargo.getMetaData( DataStreamType.RelsExtData );
         if ( null == cargo.getIdentifier() )
         {
@@ -202,17 +141,42 @@ public class OwnerRelation implements IRelation
 
         if ( null == rels )
         {
-            rels = new FedoraRelsExt();
+	    try 
+	    {
+		rels = new FedoraRelsExt();
+	    }
+	    catch ( ParserConfigurationException pce )
+	    {
+		String errorMsg = new String( "Could not create a new FedoraRelsExt.");
+		log.error( errorMsg, pce );
+		throw new PluginException( errorMsg, pce );
+	    }
         }
 
         log.debug( String.format( "Trying to add owner relation for rels '%s'; submitter '%s'; format '%s'", rels.toString(), submitter, format ) );
-        rels = ( FedoraRelsExt ) inv.invokeFunction( "addOwnerRelation",
-                                                     rels,
-                                                     submitter,
-                                                     format );        
+
+	String entryPointFunc = "addOwnerRelation";
+
+	try 
+	{
+	    rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
+						    rels,
+						    submitter,
+						    format );        
+	} 
+	catch( JavaScriptWrapperException jswe ) 
+	{
+	    String errorMsg = String.format( "An excpetion occured when trying to run the javascript: %s with entrypoint function: %s", jsWrapper.getJavascriptName(), entryPointFunc );
+	    log.fatal( errorMsg, jswe );
+	    throw new PluginException( errorMsg, jswe );
+	}
+
         log.debug( String.format( "rels: '%s'", rels.toString() ) );
 
         cargo.addMetaData( rels );
+	
+	return cargo;
+
     }
 
 
@@ -225,5 +189,8 @@ public class OwnerRelation implements IRelation
 
     public void setObjectRepository( IObjectRepository objectRepository )
     {
+        jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
+	jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
+        jsWrapper.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
     }
 }
