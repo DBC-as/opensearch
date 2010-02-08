@@ -64,10 +64,10 @@ public interface IHarvest
      * obtained from a {@link IJob}, which in turn can be obtained
      * from {@link #getJobs(int)}.
      * 
-     * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvester}
+     * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvest}
      * @return a byte[] containing the data identified by the {@code jobId}
      * 
-     * @throws UnknownIdentifierException if the {@link IIdentifier} is not known to the {@link IHarvester}. I.e. if the jobId can not be found
+     * @throws UnknownIdentifierException if the {@link IIdentifier} is not known to the {@link IHarvest}. I.e. if the jobId can not be found
      */
     byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException;
 
@@ -80,11 +80,11 @@ public interface IHarvest
      * result in an error condition (signalled by an 
      * {@link HarvesterInvalidStatusChangeException}).
      * 
-     * @see JobStatus for more information on the states of jobs in the {@link IHarvester}
+     * @see JobStatus for more information on the states of jobs in the {@link IHarvest}
      * 
-     * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvester}
+     * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvest}
      * 
-     * @throws UnknownIdentifierException if the {@code jobId} could not be found in the {@link IHarvester}
+     * @throws UnknownIdentifierException if the {@code jobId} could not be found in the {@link IHarvest}
      * @throws HarvesterInvalidStatusChangeException if the client tries to set the status more than once on a given {@code jobId}
      */
     //    void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;

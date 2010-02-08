@@ -32,11 +32,11 @@ package dk.dbc.opensearch.components.harvest;
  * in accordance with the outcome of the processing within that
  * client. A {@link Job} will initially be unset and can only be set
  * by the client. Restrictions on the state transitions must be
- * implemented by the {@link IHarvester}.
+ * implemented by the {@link IHarvest}.
  * 
  * The Harvester will recognise three states of a {@link Job};
  * Success, failure or retry. The initial status of a {@link Job} in
- * {@link IHarvester} will be unset and the client is allowed to set
+ * {@link IHarvest} will be unset and the client is allowed to set
  * the status of a {@link Job} to one of the values in {@link JobStatus}.
  * 
  */
@@ -61,7 +61,7 @@ public enum JobStatus
      * Job} itself, but rather to the business logic within the
      * client. 
      * 
-     * The {@link IHarvester} implementation will specify
+     * The {@link IHarvest} implementation will specify
      * the correct course of action taken, if a {@link Job} is
      * marked {@code RETRY}. 
      */

@@ -28,7 +28,7 @@ package dk.dbc.opensearch.common.types;
 
 /**
  * This interface specifies the type that uniquely identifies a 
- * {@link IJob Job} with the {@link dk.dbc.opensearch.components.harvest.IHarvester Harvester} implementation.
+ * {@link IJob Job} with the {@link dk.dbc.opensearch.components.harvest.IHarvest} implementation.
  * Clients must not be allowed to read information from the IIdentifier.
  */
 public interface IIdentifier
