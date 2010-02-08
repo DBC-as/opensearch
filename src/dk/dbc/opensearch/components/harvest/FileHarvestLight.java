@@ -225,10 +225,11 @@ public class FileHarvestLight implements IHarvest
     /**
      * Wrapper to setStatus.
      */
-    public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
-    {
-	setStatus( Id, JobStatus.RETRY );
-    }
+    // There are no current scenarios for using setStatusRetry. If this comment is read after february 28th, delete this comment and the commented method below
+    // public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    // {
+	// setStatus( Id, JobStatus.RETRY );
+    // }
 
     private void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {

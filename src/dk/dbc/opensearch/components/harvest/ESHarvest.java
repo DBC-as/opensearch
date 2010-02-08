@@ -624,27 +624,28 @@ public class ESHarvest implements IHarvest
     }
 
 
-    public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
-    {
-        log.info( String.format( "ESHarvest.setStatusRetry( identifier %s ) ", Id ) );
+    // There are no current scenarios for using setStatusRetry. If this comment is read after february 28th, delete this comment and the commented method below
+    // public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
+    // {
+    //     log.info( String.format( "ESHarvest.setStatusRetry( identifier %s ) ", Id ) );
 
-        Connection conn;
+    //     Connection conn;
 
-        try
-        {
-            conn = connectionPool.getConnection();
-        }
-        catch( SQLException sqle )
-        {
-            String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
-        }
+    //     try
+    //     {
+    //         conn = connectionPool.getConnection();
+    //     }
+    //     catch( SQLException sqle )
+    //     {
+    //         String errorMsg = new String("Could not get a db-connection from the connection pool");
+    //         log.fatal( errorMsg, sqle );
+    //         throw new HarvesterIOException( errorMsg, sqle );
+    //     }
 
-        setStatus( (ESIdentifier)Id, JobStatus.RETRY, conn );
+    //     setStatus( (ESIdentifier)Id, JobStatus.RETRY, conn );
 
-        releaseConnection( conn );
-    }
+    //     releaseConnection( conn );
+    // }
 
 
     /**

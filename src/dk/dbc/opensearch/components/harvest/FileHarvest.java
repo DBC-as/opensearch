@@ -359,13 +359,14 @@ public class FileHarvest implements IHarvest
     }
 
     
+    // There are no current scenarios for using setStatusRetry. If this comment is read after february 28th, delete this comment and the commented method below
     /**
      * Wrapper to setStatus.
      */
-    public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
-    {
-        setStatus( Id, JobStatus.RETRY );
-    }
+    // public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    // {
+    //     setStatus( Id, JobStatus.RETRY );
+    // }
 
 
     /**
