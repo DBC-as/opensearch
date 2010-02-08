@@ -29,6 +29,7 @@ package dk.dbc.opensearch.components.harvest ;
 
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 
 import java.io.ByteArrayInputStream;
@@ -566,6 +567,13 @@ public class ESHarvest implements IHarvest
         return returnData;
     }
 
+    public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
+    {
+        CargoContainer returnCargo = null;
+        
+
+        return returnCargo;
+    }
 
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {

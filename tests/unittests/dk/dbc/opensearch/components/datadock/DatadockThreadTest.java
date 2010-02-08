@@ -152,6 +152,14 @@ public class DatadockThreadTest
             }
             return "".getBytes();
         }
+        
+        public CargoContainer getCargoContainer( IIdentifier id ) throws HarvesterUnknownIdentifierException{
+            if( id.getClass() == UnknownIdentifier.class )
+            {
+                throw new HarvesterUnknownIdentifierException( "" );
+            }
+            return new CargoContainer();
+        }
         public void start() throws HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
         public void shutdown() throws HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
         public List<IJob> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException{throw new UnsupportedOperationException( "Mock method" );}

@@ -25,6 +25,7 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -201,6 +202,15 @@ public class FileHarvestLight implements IHarvest
         }
         return data;
     }
+
+    public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
+    {
+        CargoContainer returnCargo = null;
+        
+
+        return returnCargo;
+    }
+
 
     /**
      * Wrapper to setStatus.

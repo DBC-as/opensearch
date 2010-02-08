@@ -31,6 +31,7 @@ import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
@@ -438,6 +439,14 @@ public class FileHarvest implements IHarvest
             throw new HarvesterUnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
         }
         return data;
+    }
+
+    public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
+    {
+        CargoContainer returnCargo = null;
+        
+
+        return returnCargo;
     }
 
 

@@ -20,6 +20,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import java.util.List;
@@ -71,6 +72,17 @@ public interface IHarvest
      */
     byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException;
 
+    /** 
+     * Given an {@link IIdentifier} the requestor can obtain the CargoContainer
+     * associated with the {@code jobId}. {@code jobId} is usually
+     * obtained from a {@link IJob}, which in turn can be obtained
+     * from {@link #getJobs(int)}.
+     * 
+     * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvest}
+     * 
+     * @return a CargoContainer containing the data retrieved by the harvester
+     */
+    CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException;
 
     /**
      * This method lets the requestor/client set the status of a job
