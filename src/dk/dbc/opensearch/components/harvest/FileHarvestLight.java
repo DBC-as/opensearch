@@ -178,6 +178,10 @@ public class FileHarvestLight implements IHarvest
 
     }
 
+    /**
+     *  @deprecated This function is replaced with {@link #getCargoContainer}.
+     */
+    @Deprecated
     public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
     {
         FileIdentifier theJobId = (FileIdentifier)jobId;

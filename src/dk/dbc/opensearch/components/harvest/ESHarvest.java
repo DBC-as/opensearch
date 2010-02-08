@@ -59,7 +59,7 @@ import org.xml.sax.SAXException;
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
  * to a frontend, i.e. the DataDock, delivers data through {@link #getData} and maintains the state of 
- * the jobs in the ES-base through {@link #setStatusSuccess}, {@link #setStatusFailure} and {@link #setStatusRetry}.
+ * the jobs in the ES-base through {@link #setStatusSuccess}, {@link #setStatusFailure}.
  */
 public class ESHarvest implements IHarvest
 {
@@ -495,7 +495,10 @@ public class ESHarvest implements IHarvest
 
     /**
      *  Retrieves data from the ES-base associated with the jobId.
+     * 
+     *  @deprecated This function is replaced with {@link #getCargoContainer}.
      */
+    @Deprecated
     public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
         log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );

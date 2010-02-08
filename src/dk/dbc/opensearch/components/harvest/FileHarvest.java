@@ -414,8 +414,11 @@ public class FileHarvest implements IHarvest
 
     /**
      * Implements the getData method. It returns the requested file as an array of bytes
+     *
+     *  @deprecated This function is replaced with {@link #getCargoContainer}.
      */
     @Override
+    @Deprecated
     public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
     {
         FileIdentifier theJobId = (FileIdentifier) jobId;
