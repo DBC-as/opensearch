@@ -7,12 +7,12 @@ function generateSearchPairs( cargoXML )
     var XML_cargo = new XML( cargoXML );
     //do stuff
     //right now its a dummy
-    var pairArray = new Array();
+ 
     pairArray[0] = "title";
     pairArray[1] = "Bastard*";
     pairArray[2] = "creator";
     pairArray[3] = "Elif*";
 
-     var pairsString = "<searchpairs><searchpair field=\"title\" value=<\"Bastard*\"></searchpair><searchpair field=\"creator\" value=\"Elif*\"></searchpair></searchpairs>";
-    return pairArray;
+    //var pairsString = "<searchpairs><searchpair field=\"title\" value=<\"Bastard*\"></searchpair><searchpair field=\"creator\" value=\"Elif*\"></searchpair></searchpairs>";
+    //return pairArray;
 } 
