@@ -71,7 +71,7 @@ public enum FedoraObjectFields implements TargetFields
         return this.fieldname;
     }
 
-    public FedoraObjectFields getFedoraObjectFields( String fieldname )
+    public static FedoraObjectFields getFedoraObjectFields( String fieldname )
     {
         FedoraObjectFields FOF = null;
         for ( FedoraObjectFields fof : FedoraObjectFields.values() )
