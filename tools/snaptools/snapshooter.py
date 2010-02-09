@@ -27,6 +27,7 @@ import os.path
 import datetime
 import subprocess
 import ConfigParser
+import time
 
 def lockfile_present(folder):
     """
@@ -36,10 +37,10 @@ def lockfile_present(folder):
     if os.path.exists(folder) and os.path.isdir(folder):
         for f in os.listdir(folder):
             if "write.lock" in f:
-                return true
-    return false
+                return True
+    return False
 
-def snapshooter(master_dir, name, write_lock_folder, check):
+def snapshooter(master_dir, name, write_lock_folder, check, timeout):
     """
     Makes snapshot of index folder located in master_dir, which is
     a folder in master_dir called snapshot.[now] where now is a
@@ -81,9 +82,19 @@ def snapshooter(master_dir, name, write_lock_folder, check):
                 exit(3);
                                     
     print "taking snapshot"
-    
+
+    start_time = int(time.time())
+
+    succes = False
     if lockfile_present(write_lock_folder):
-        print "Found writelock file in folder '%s'. Exiting" % write_lock_folder
+        print "Waiting for lock file to be released"
+    while(int(time.time()) < start_time+int(timeout)):
+        if not lockfile_present(write_lock_folder):
+            succes = True
+            break
+
+    if not succes:
+        print "Found writelock file in folder '%s'. Exiting after timeout" % write_lock_folder
         exit(7)
 
     cmd_str = "cp -lr %s %s" %(index, snaptemp)
@@ -100,6 +111,8 @@ def snapshooter(master_dir, name, write_lock_folder, check):
         
 if __name__ == '__main__':
     from optparse import OptionParser
+
+    default_timeout = 100
     
     parser = OptionParser( usage="%prog [options] master index folder " )
     
@@ -108,6 +121,8 @@ if __name__ == '__main__':
 
     parser.add_option( "--lockfolder", dest="lockfilefolder",
                        help="manually set the folder to look for a writelock file in. Defaults to the master-index folder")
+
+    parser.add_option( "--timeout", dest="timeout", help="sets timeout for copying from index. if lockfile is present, the program retries until succes or timeout is reached, default='%s'"%default_timeout)
 
     (options, args) = parser.parse_args()
 
@@ -140,6 +155,14 @@ if __name__ == '__main__':
         pass
     if index_name == "":
         index_name = "index"
-        
-    snapshooter(master_index, index_name, lock_folder, options.check)
-    
+
+    timeout = default_timeout
+    try:
+        timeout = config.get("snap-configuration", "lockfile_timeout" )
+    except ConfigParser.NoOptionError:
+        pass
+
+    if options.timeout:
+        timeout = options.timeout
+              
+    snapshooter(master_index, index_name, lock_folder, options.check, timeout)
