@@ -150,21 +150,33 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         String dcString = new String ( strippedDC );
         System.out.println( String.format( "the dc-string: %s", dcString ) );
 
-        String[] pairsXml;
+        //give the script the list to put pairs in
+        //List<InputPair<String, String>> pairsList = new ArrayList<InputPair<String, String>>(); 
+        String[] pairArray = new String[100];
+        rhinoWrapper.put( "pairArray", pairArray);
+
+        //execute the script that fills the pairsList
         try
         {        
-            pairsXml = (String[])rhinoWrapper.run( "generateSearchPairs", dcString );
+            rhinoWrapper.run( "generateSearchPairs", dcString );
         }
         catch( JavaScriptWrapperException jswe )
         {
             String msg = "Exception while running generateSearchPairs";
             log.error( msg, jswe );
             throw new PluginException( msg, jswe );
-        } 
-        System.out.println( String.format( "The pairsXml: %s",pairsXml ) );
-        //doc = builder.parse( new InputSource( new ByteArrayInputStream( pairsXml.getBytes() ) ) );
-        //go through the xml and create the pairs and put them on the list
+        }
 
+        //go through the pairArray and create the TargetFields for the searchList
+        int length = pairArray.length; 
+        for( int i = 0; i < length; i += 2 )
+        {
+            if( pairArray[ i ] != null )
+            {
+                searchList.add( new InputPair<TargetFields, String>((TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ] ) );
+            }
+        }
+        System.out.println( searchList.toString() );
         return searchList;
     }
     /**
