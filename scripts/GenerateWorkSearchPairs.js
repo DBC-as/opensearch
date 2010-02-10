@@ -3,7 +3,6 @@
 // xml object which is sent back to the caller 
 function generateSearchPairs( cargoXML )
 {
-
     var XML_cargo = new XML( cargoXML );
     //do stuff
     //right now its a dummy

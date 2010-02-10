@@ -25,13 +25,15 @@
 
 package dk.dbc.opensearch.common.javascript;
 
-import org.mozilla.javascript.*;
-import java.io.*;
-
-import org.apache.log4j.Logger;
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
+
+import java.io.*;
+
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Logger;
+import org.mozilla.javascript.*;
+
 
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple wrapper for javascript based 
@@ -46,9 +48,9 @@ import org.apache.commons.configuration.ConfigurationException;
  */
 public class SimpleRhinoWrapper
 {
-
     private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
 
+    
     private static String jsFileName = null;
 
     private Context cx = Context.enter();
@@ -75,43 +77,48 @@ public class SimpleRhinoWrapper
             throw new JavaScriptWrapperException( errorMsg, ce );
         }
 
-	// Initialize the standard objects (Object, Function, etc.)
-	// This must be done before scripts can be executed. Returns
-	// a scope object that we use in later calls.                                                            
-	scope = cx.initStandardObjects();
-	if (scope == null) 
-	{
-	    // This should never happen!
-	    String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
-	    log.fatal( errorMsg );
-	    throw new JavaScriptWrapperException( errorMsg );
-	}
-	
-	//	JavaScriptHelperFunctions helperFunctions = new JavaScriptHelperFunctions();
-	String[] names = { "print" };
-	scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
+        // Initialize the standard objects (Object, Function, etc.)
+        // This must be done before scripts can be executed. Returns
+        // a scope object that we use in later calls.
+        scope = cx.initStandardObjects();
+        if (scope == null)
+        {
+            // This should never happen!
+            String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
+            log.fatal( errorMsg );
+            throw new JavaScriptWrapperException( errorMsg );
+        }
 
+        //	JavaScriptHelperFunctions helperFunctions = new JavaScriptHelperFunctions();
+        String[] names = { "print" };
+        scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
-	// Create FileReader for the javascriptfile
-	FileReader in = null;
-	try {
-	    in = new FileReader( jsFileName );
-	} catch ( FileNotFoundException fnfe ) {
-	    String errorMsg = String.format( "Could not find file: %s", jsFileName );
-	    log.fatal( errorMsg, fnfe );
-	    throw new JavaScriptWrapperException( errorMsg, fnfe );
-	}
-	
-	// Compile the javascript
-	try {
-	    Object o = cx.evaluateReader((Scriptable)scope, in, jsFileName, 1, null);
-	    script = cx.compileReader(in, jsFileName, 1, null);
-	} catch ( IOException ioe ) {
-	    System.err.println( "Could not run 'evaluateReader'" );
-	}
- 
+        // Create FileReader for the javascriptfile
+        FileReader in = null;
+        try
+        {
+            in = new FileReader( jsFileName );
+        } 
+        catch ( FileNotFoundException fnfe )
+        {
+            String errorMsg = String.format( "Could not find file: %s", jsFileName );
+            log.fatal( errorMsg, fnfe );
+            throw new JavaScriptWrapperException( errorMsg, fnfe );
+        }
+
+        // Compile the javascript
+        try
+        {
+            Object o = cx.evaluateReader((Scriptable)scope, in, jsFileName, 1, null);
+            script = cx.compileReader(in, jsFileName, 1, null);
+        } 
+        catch ( IOException ioe )
+        {
+            System.err.println( "Could not run 'evaluateReader'" );
+        }
     }							  
 
+    
     /**
      * Sets an instans of an object in the Javascript environment making it accesible for the script
      *
@@ -120,33 +127,36 @@ public class SimpleRhinoWrapper
      */
     public void put( String key, Object value )
     {
-	scope.defineProperty( key, value, ScriptableObject.DONTENUM );
+        scope.defineProperty( key, value, ScriptableObject.DONTENUM );
     }
-    
+
+
     public Object run( String functionEntryPoint, Object... args ) throws JavaScriptWrapperException
     {
-
-	Object fObj = scope.get(functionEntryPoint, scope);
-	Object result = null;
-	if (!(fObj instanceof Function)) {
-	    String errorMsg = String.format( "% is undefined or not a function", functionEntryPoint );
-	    log.fatal( errorMsg );
-	    throw new JavaScriptWrapperException( errorMsg );
-	} else {
-	    Function f = (Function)fObj;
-	    result = f.call(cx, scope, scope, args);
-	}
+        Object fObj = scope.get(functionEntryPoint, scope);
+        Object result = null;
+        if ( ! ( fObj instanceof Function ) )
+        {
+            String errorMsg = String.format( "% is undefined or not a function", functionEntryPoint );
+            log.fatal( errorMsg );
+            throw new JavaScriptWrapperException( errorMsg );
+        } 
+        else
+        {
+            Function f = (Function)fObj;
+            result = f.call(cx, scope, scope, args);
+        }
 	
-	return result;
+        return result;
     }
 
+    
     /**
      * 
      * @return The filename of the javascript
      */
     public String getJavascriptName()
     {
-	return jsFileName != null ? jsFileName : "";
+        return jsFileName != null ? jsFileName : "";
     }
-
 }

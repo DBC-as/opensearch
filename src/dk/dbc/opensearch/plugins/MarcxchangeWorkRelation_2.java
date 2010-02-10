@@ -28,37 +28,30 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.types.TargetFields;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 
-import org.w3c.dom.Document;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.ArrayList;
-//import org.mozilla.javascript.xmlimpl.XML;
-
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+
 
 /**
  * !! This code is a draft !! 
@@ -80,25 +73,28 @@ public class MarcxchangeWorkRelation_2 implements IRelation
     private DocumentBuilder builder;
     private Document doc;    
 
+
     public MarcxchangeWorkRelation_2() 
     {
     }
 
+
     @Override
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-       try 
-       {
-           builder = factory.newDocumentBuilder();
-       }
-       catch( ParserConfigurationException pce )
-       {
-           String error = String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() );
-       log.error( error );
-       throw new PluginException( error, pce );
-       }
-       List<InputPair<TargetFields, String>> searchPairs = getSearchPairs( cargo );
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try
+        {
+            builder = factory.newDocumentBuilder();
+        }
+        catch( ParserConfigurationException pce )
+        {
+            String error = String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() );
+            log.error( error );
+            throw new PluginException( error, pce );
+        }
+       
+        List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
         // pidList = getWorkList( searchPairs );
         // thePid = checkMatch( cargo, pidList );
         // if( pid == null )
@@ -108,28 +104,32 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         return cargo;
     }
 
+
     /**
      * method that generates the list containing the fields to look in and the 
      * corresponding values to match with
      * @param cargo, the CargoContianer to generate searchpairs for
      * @return a list of InputPairs containing a serachfield and the value to match 
      */
-    private List<InputPair<TargetFields, String>> getSearchPairs( CargoContainer cargo ) throws PluginException
+    private List< InputPair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
     {
-        List<InputPair<TargetFields, String>> searchList = new ArrayList<InputPair<TargetFields, String>>();
+        List< InputPair< TargetFields, String > > searchList = new ArrayList< InputPair< TargetFields, String > >();
         //calls a javascript, with the dc-stream of the cargo as argument, 
         //that returns an xml with the pairs to generate
         //start with dummy xml on the javascript-side
+        
         try
         {
+            // ought name of .js file to be configurable?
             rhinoWrapper = new SimpleRhinoWrapper( "GenerateWorkSearchPairs.js" );
         }
-        catch( JavaScriptWrapperException jswe )
+        catch ( JavaScriptWrapperException jswe )
         {
             String errorMsg = "An exception occured when trying to instantiate the NaiveJavaScriptWrapper";
-	    log.fatal( errorMsg, jswe );
-	    throw new PluginException( errorMsg, jswe );
+            log.fatal( errorMsg, jswe );
+            throw new PluginException( errorMsg, jswe );
         }
+
         // get the DC-Stream
         DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
         //create outputstream
@@ -146,14 +146,15 @@ public class MarcxchangeWorkRelation_2 implements IRelation
             log.error( msg, oste );
             throw new PluginException(  msg, oste );
         }
+
         byte[] strippedDC = E4XXMLHeaderStripper.strip( dcOutputStream.toByteArray() );
         String dcString = new String ( strippedDC );
         System.out.println( String.format( "the dc-string: %s", dcString ) );
 
         //give the script the list to put pairs in
         //List<InputPair<String, String>> pairsList = new ArrayList<InputPair<String, String>>(); 
-        String[] pairArray = new String[100];
-        rhinoWrapper.put( "pairArray", pairArray);
+        String[] pairArray = new String[ 100 ];
+        rhinoWrapper.put( "pairArray", pairArray );
 
         //execute the script that fills the pairsList
         try
@@ -169,27 +170,32 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
         //go through the pairArray and create the TargetFields for the searchList
         int length = pairArray.length; 
-        for( int i = 0; i < length; i += 2 )
+        for ( int i = 0; i < length; i += 2 )
         {
-            if( pairArray[ i ] != null )
+            if ( pairArray[ i ] != null )
             {
-                searchList.add( new InputPair<TargetFields, String>((TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ] ) );
+                searchList.add( new InputPair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ] ) );
             }
         }
+
         System.out.println( searchList.toString() );
         return searchList;
     }
+
+
     /**
      * method that finds the workobjects that match the cirterias specified in 
      * the searchList
      */
-    private List<PID> getWorkList( List<InputPair<TargetFields, String>> searchList )
+    private List< PID > getWorkList( List< InputPair< TargetFields, String > > searchList )
     {
         //call getIdentifiers on the object repository
         //return the resulting list of PIDs
 
         return null;
     }
+
+
     /**
      * method that checks if the cargo has a match with an existing work object
      * the candidates are each checked by a method in javascript
@@ -197,7 +203,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
      * @param pidList, the list of pids to chack for matches
      * @return the pid of the matching work object, null if none is found
      */
-    private PID checkMatch( CargoContainer cargo, List<PID> pidList )
+    private PID checkMatch( CargoContainer cargo, List< PID > pidList )
     {
         //get the xml for the cargo
         //for each pid in the list 
@@ -207,6 +213,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //if no match occur, return null
         return null;
     }
+    
 
     /**
      * method that creates a workobject from a CargoContainer based upon 
@@ -224,6 +231,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         return null;
     }
 
+
     /**
      * method that relates a post to a work object and the inverse
      * @param cargoPid, the pid of the post 
@@ -234,11 +242,13 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //call the addRelation method on the objectRepository both ways
     }
 
+
     @Override
     public PluginType getPluginType()
     {
         return pluginType;
     }
+
 
     @Override
     public void setObjectRepository( IObjectRepository objectRepository )
