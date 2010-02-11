@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 
-
 # This file is part of opensearch.
 # Copyright © 2009, Dansk Bibliotekscenter a/s, 
 # Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -27,7 +26,7 @@ import subprocess
 import shutil
 import sys
 
-def snapcleaner(num_of_shots, index_folder):
+def snapcleaner(num_of_shots, index_folder, debug):
     """
     function to clean up snapshots of a Solr Lucene collection.
     """
@@ -39,6 +38,8 @@ def snapcleaner(num_of_shots, index_folder):
     for removable_file in old_snapfiles:
         
         cmd_str = "ps -www -U %s |grep -w rsync|grep -v grep|grep -w %s"%(os.environ.get( 'USER' ), removable_file)
+        if debug:
+            print "executing :%s"%cmd_str
         retcode = subprocess.Popen( cmd_str, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE ).communicate()
         if retcode[1]:
             print "caught error while checking if snapshot was syncing: %s" % retcode[1]
@@ -57,7 +58,10 @@ if __name__ == '__main__':
     
     parser.add_option( "-n", type="int", dest="number", default=1,
                        help="leave the newest n snapshots. default to one" )
-  
+
+    parser.add_option( "--debug", action="store_true", dest="debug", default=False,
+                       help="debug output" )
+
     (options, args) = parser.parse_args()
         
     if not args:
@@ -67,4 +71,4 @@ if __name__ == '__main__':
         print "%s doesn't exist, exiting."% args[0]
         exit(1)
 
-    snapcleaner(options.number, args[0])
+    snapcleaner(options.number, args[0], options.debug)
