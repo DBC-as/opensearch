@@ -115,11 +115,6 @@ def main(host):
 
 if __name__ == "__main__":
     from optparse import OptionParser
-
-    """this script print the rows stored in the processqueue and related tables,
-    and prints a small summary."""
-
-    
     
     parser = OptionParser( usage="this script print the rows stored in the processqueue and related tables, and prints a small summary.\n\n%prog [options]" )
 
