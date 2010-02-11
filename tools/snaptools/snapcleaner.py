@@ -25,6 +25,7 @@
 import os.path
 import subprocess
 import shutil
+import sys
 
 def snapcleaner(num_of_shots, index_folder):
     """
