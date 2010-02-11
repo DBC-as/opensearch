@@ -25,14 +25,14 @@
 import psycopg2
 import os
 
-def login():
+def login(host):
     '''handles the login to the database and, if successful, returns a
     connection object'''
     usern = os.environ.get( 'USER' )
     conn = None
 
     try:
-        conn = psycopg2.connect( "dbname='%s' user='%s' host='%s' password='%s'"%( usern, usern, 'localhost', usern))
+        conn = psycopg2.connect( "dbname='%s' user='%s' host='%s' password='%s'"%( usern, usern, host, usern))
     except psycopg2.InterfaceError, ife:
         log.fatal( ife.message )
         sys.exit( "I am unable to connect to the database; %s"%( ife.message ) )
@@ -108,11 +108,23 @@ def showall( cursor ):
     print " Total Number of jobs in notindexed: %s" % (total_rows)
 
 
-def main():
-    conn = login()
+def main(host):
+    conn = login(host)
     showall( conn.cursor() )
     conn.commit()
 
-
 if __name__ == "__main__":
-    main()
+    from optparse import OptionParser
+
+    """this script print the rows stored in the processqueue and related tables,
+    and prints a small summary."""
+
+    
+    
+    parser = OptionParser( usage="this script print the rows stored in the processqueue and related tables, and prints a small summary.\n\n%prog [options]" )
+
+    parser.add_option( "--host", dest="host", default="localhost",
+                       help="The host of the postgres database. defaults to localhost")
+
+    (options, args) = parser.parse_args()
+    main(options.host)
