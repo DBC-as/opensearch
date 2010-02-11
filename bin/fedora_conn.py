@@ -24,7 +24,6 @@
 import urllib2
 import sys
 
-
 def test_fedora_connection( servername, port ):
     theurl = 'http://%s:%s/fedora'%( servername, port )
     req = urllib2.Request( theurl )
@@ -48,6 +47,17 @@ def main( servername, port ):
         
 
 if __name__ == '__main__':
+    from optparse import OptionParser
     
-    main( 'localhost', '8080' )
+    parser = OptionParser( usage="Tests whether the fedora repository is up and running\n\n%prog [options]" )
+
+    parser.add_option( "--host", dest="host", default="localhost",
+                       help="The host of the fedora repository. defaults to localhost")
+
+    parser.add_option( "--port", type=int, dest="port", default="8080",
+                       help="The port of the fedora repository. defaults to 8080")
+
+    (options, args) = parser.parse_args()
+
+    main( options.host, options.port )
 
