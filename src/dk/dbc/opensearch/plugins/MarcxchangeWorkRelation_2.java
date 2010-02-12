@@ -25,21 +25,23 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.types.TargetFields;
+
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.metadata.DublinCore;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
+import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
+import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
@@ -59,7 +61,7 @@ import org.w3c.dom.Document;
  * This plugin handles the matching of objects in the fedora objectrepository 
  * with the special workobjects
  * In contrast to other plugins of the RELATION type it uses more than 1 javascript
- * to handle the business logic
+ * function to handle the business logic
  */
 public class MarcxchangeWorkRelation_2 implements IRelation 
 {
@@ -95,7 +97,10 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         }
        
         List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
-        // pidList = getWorkList( searchPairs );
+        System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
+
+        List< PID > pidList = getWorkList( searchPairs );
+        System.out.println( String.format( "the pidList: %s", pidList.toString() ) );
         // thePid = checkMatch( cargo, pidList );
         // if( pid == null )
         // { pid = createAndStoreWorkobject( cargo ) }
@@ -177,8 +182,6 @@ public class MarcxchangeWorkRelation_2 implements IRelation
                 searchList.add( new InputPair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ] ) );
             }
         }
-
-        System.out.println( searchList.toString() );
         return searchList;
     }
 
@@ -189,10 +192,21 @@ public class MarcxchangeWorkRelation_2 implements IRelation
      */
     private List< PID > getWorkList( List< InputPair< TargetFields, String > > searchList )
     {
+        List< PID > pidList = new ArrayList< PID >();
+        List< String > pidStringList;
+        
         //call getIdentifiers on the object repository
+        pidStringList = objectRepository.getIdentifiers( searchList, null, 10000 );
+        
+        //make PIDs out of the String representations
+        for( String pidString : pidStringList )
+        {
+            System.out.println( String.format( "pidString: %s", pidString ) );
+            pidList.add( new PID( pidString ) );
+        }
+        
         //return the resulting list of PIDs
-
-        return null;
+        return pidList;
     }
 
 
