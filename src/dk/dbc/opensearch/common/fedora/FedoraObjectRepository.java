@@ -602,7 +602,10 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
-    
+    /**
+     * This method only returns exact matches, because of the reality with the 
+     * work matcing right now (12th feb. 2010)
+     */
 
     @Override
     public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace )
@@ -647,7 +650,10 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
-
+    /**
+     * This method sort out all the non exact matches, since fedora searches 
+     * some fields with "has" instead of "eq" 
+     */
 
     private boolean addPidValue( List< InputPair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
     {
