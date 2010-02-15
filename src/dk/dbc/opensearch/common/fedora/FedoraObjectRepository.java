@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 /**
  * \file
@@ -99,7 +99,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
     @Override
     public boolean hasObject( ObjectIdentifier identifier ) throws ObjectRepositoryException
-    {       
+    {
         try
         {
             return this.fedoraHandle.hasObject( identifier.getIdentifier() );
@@ -201,7 +201,7 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
     }
-    
+
 
     /**
      * Stores data in {@code cargo} in the fedora repository
@@ -220,18 +220,18 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( String.format( "No data in CargoContainer, refusing to store nothing" ) );
             throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
         }
-        
+
         ObjectIdentifier identifier = getOrGenerateIdentifier( cargo, defaultPidNamespace );
         cargo.setIdentifier( identifier );
         String identifierAsString = identifier.getIdentifier();
-        
+
         cargo.addMetaData( constructAdministrationStream( cargo ) );
-        
+
         byte[] foxml;
         try
         {
             foxml = FedoraUtils.CargoContainerToFoxml( cargo );
-        
+
         }
         catch ( OpenSearchTransformException ex )
         {
@@ -239,7 +239,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
-        
+
         String returnedobjectIdentifier = null;
         try
         {
@@ -269,7 +269,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error, ex );
             throw new ObjectRepositoryException( error, ex );
         }
-        
+
         if ( returnedobjectIdentifier.equals( "" ) )
         {
             log.info( String.format( "For empty identifier, we recieved '%s' from the ingest", returnedobjectIdentifier ) );
@@ -278,10 +278,10 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             log.warn( String.format( "I expected pid '%s' to be returned from the repository, but got '%s'", identifierAsString, returnedobjectIdentifier ) );
         }
-        
+
         return returnedobjectIdentifier;
     }
-    
+
 
     /**
      * Replaces object identified by {@code identifier} in the fedora repository
@@ -343,25 +343,25 @@ public class FedoraObjectRepository implements IObjectRepository
                 log.error( error );
                 throw new ObjectRepositoryException( error, ex );
             }
-            
+
             if (null == newPid && 1 != newPid.length)
             {
                 String error = String.format( "pid is empty for namespace '%s', but no exception was caught.", prefix );
                 log.error( error );
                 throw new ObjectRepositoryException( error );
             }
-            
+
             cargoIdentifier = newPid[0];
             cargo.setIdentifier( new PID( cargoIdentifier ) );
         }
 
         String logm = String.format( "Replacing object referenced by pid %s with data previously identified by id %s", identifier, cargoIdentifier );
         deleteObject( identifier, logm );
-        
+
         cargo.setIdentifier( new PID( identifier ) );
-        
+
         String storedObjectPid = storeObject( cargo, logm, "auto" );
-        
+
         if ( ! storedObjectPid.equals( identifier ) )
         {
             String error = String.format( "Could not store replacement object with pid '%s': stored with pid '%s' instead", identifier, storedObjectPid );
@@ -371,7 +371,7 @@ public class FedoraObjectRepository implements IObjectRepository
             // perhaps instead of a purge, we should use mark-as-deleted and then commit if storedObjectPid.equals( identifier )
         }
     }
-    
+
 
     /**
      * Retrieves an object encoded as a {@link CargoContainer} from the fedora
@@ -394,7 +394,7 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new IllegalStateException( error );
         }
-        
+
         AdministrationStream adminStream;
         try
         {
@@ -431,10 +431,10 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
-        
+
         CargoContainer cargo = new CargoContainer();
         cargo.setIdentifier( new PID( identifier ) );
-        
+
         for ( InputPair< Integer, InputPair< String, CargoObject > > cargoobjects : adminstreamlist )
         {
             String streamId = cargoobjects.getSecond().getFirst();
@@ -444,7 +444,7 @@ public class FedoraObjectRepository implements IObjectRepository
                 streamId = "DC";
             }
             log.debug( String.format( "id: %s, streamId: %s", identifier, streamId ) );
-            
+
             byte[] datastream;
             try
             {
@@ -476,7 +476,7 @@ public class FedoraObjectRepository implements IObjectRepository
             }
 
             CargoObject co = cargoobjects.getSecond().getSecond();
-            
+
             try
             {
                 if ( co.getDataStreamType() == DataStreamType.DublinCoreData )
@@ -493,7 +493,7 @@ public class FedoraObjectRepository implements IObjectRepository
                         log.error( error );
                         throw new ObjectRepositoryException( error, ex );
                     }
-                    
+
                     String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
                     log.trace( String.format( "Got dc:identifier '%s' from datastream", dcid ) );
                     if( null == dcid )
@@ -505,7 +505,7 @@ public class FedoraObjectRepository implements IObjectRepository
                     {
                         log.info( String.format( "Adding DublinCore data with id '%s' to CargoContainer", dcid ) );
                     }
-                    
+
                     cargo.addMetaData( dc );
                 }
                 else
@@ -566,7 +566,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
-    
+
 
 
     @Override
@@ -602,9 +602,62 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
+
     /**
-     * This method only returns exact matches, because of the reality with the 
-     * work matcing right now (12th feb. 2010)
+     *\Todo: This method is nearly identical to the one just below. The reason
+     * why that isnt changed right now is that the method below is used for the
+     * current matching of works and this method is used for the next generation
+     * of matching including javascript to define the business logic
+     * Please do notice that there is no cutPid param
+     *
+     * The difference between the method below and this method is the call to
+     * either addPidValue or addPidValueExpanded and that there is no cutPid param.
+     */
+    @Override
+    public List< String > getIdentifiersWithNamespace( List< InputPair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace )
+    {
+        String[] resultFields = new String[ resultSearchFields.size() + 1 ];
+        int i = 0;
+        for( InputPair< TargetFields, String > field : resultSearchFields )
+        {
+            TargetFields property = field.getFirst();
+            resultFields[i] = property.fieldname();
+            i++;
+        }
+
+        resultFields[i++] = "pid"; // must be present!
+        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, namespace );
+
+        int ofLength = objectFields.length;
+        List< String > pids = new ArrayList< String >( ofLength );
+        for( int j = 0; j < ofLength; j++ )
+        {
+            String pidValue = objectFields[j].getPid();
+            //log.debug( String.format( "Matching pid: %s", pidValue ) );
+            // System.out.format( String.format( "Matching pid: %s", pidValue ) );
+            ObjectFields of = objectFields[j];
+
+            /**
+             * The addPidValueExpanded method is an expansion of the addPidValue method
+             * used in the very similar method below.
+             */
+            if ( addPidValueExpanded( resultSearchFields, of, namespace ) )
+            {
+                log.debug( String.format( "Matching do addPidValueExpanded %s", pidValue ) );
+                if ( pidValue.contains( namespace ) )
+                {
+                    pids.add( pidValue );
+                }
+            }
+        }
+        return pids;
+    }
+
+
+    /**
+     * This method only returns exact matches, because of the reality with the
+     * work matching right now (12th feb. 2010) 
+     * Remove this method after 1st of July, it shouldnt be used.
      */
 
     @Override
@@ -621,7 +674,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         resultFields[i++] = "pid"; // must be present!
         ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, namespace );
-        
+
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
         for( int j = 0; j < ofLength; j++ )
@@ -651,8 +704,8 @@ public class FedoraObjectRepository implements IObjectRepository
         return pids;
     }
     /**
-     * This method sort out all the non exact matches, since fedora searches 
-     * some fields with "has" instead of "eq" 
+     * This method sort out all the non exact matches, since fedora searches
+     * some fields with "has" instead of "eq"
      */
 
     private boolean addPidValue( List< InputPair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
@@ -667,196 +720,399 @@ public class FedoraObjectRepository implements IObjectRepository
             //log.debug( String.format( "Matching objectFields length: '%s'", objectFields.length ) );
             //for ( ObjectFields of : objectFields )
             //{
-                String pid = of.getPid().toLowerCase();
-                log.debug( String.format( "Matching pid: '%s'", pid ) );
-                if ( pid.contains( namespace ) )
+            String pid = of.getPid().toLowerCase();
+            log.debug( String.format( "Matching pid: '%s'", pid ) );
+            if ( pid.contains( namespace ) )
+            {
+                switch ( target )
                 {
-                    switch ( target )
+                case PID:
+                    log.debug( String.format( "PID Matching '%s' and '%s'", pid, value ) );
+                    if ( pid.equals( value ) )
                     {
-                        case PID:
-                            log.debug( String.format( "PID Matching '%s' and '%s'", pid, value ) );
-                            if ( pid.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case STATE:
-                            String state = of.getState().toLowerCase();
-                            log.debug( String.format( "STATE Matching '%s' and '%s'", state, value ) );
-                            if ( state.equals( value) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case OWNERID:
-                            String ownerId = of.getOwnerId().toLowerCase();
-                            log.debug( String.format( "OWNERID Matching '%s' and '%s'", ownerId, value ) );
-                            if ( ownerId.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case CDATE:
-                            String cDate = of.getCDate().toLowerCase();
-                            log.debug( String.format( "CDATE Matching '%s' and '%s'", cDate, value ) );
-                            if ( cDate.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case MDATE:
-                            String mDate = of.getMDate().toLowerCase();
-                            log.debug( String.format( "MDATE Matching '%s' and '%s'", mDate, value ) );
-                            if ( mDate.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case TITLE:
-                            String title = of.getTitle()[0].toLowerCase();
-                            log.debug( String.format( "TITLE Matching '%s' and '%s'", title, value ) );
-                            if ( title.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case CREATOR:
-                            String creator = of.getCreator()[0].toLowerCase();
-                            log.debug( String.format( "CREATOR Matching '%s' and '%s'", creator, value ) );
-                            if ( creator.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case SUBJECT:
-                            String subject = of.getSubject()[0].toLowerCase();
-                            log.debug( String.format( "SUBJECT Matching '%s' and '%s'", subject, value ) );
-                            if ( subject.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case DESCRIPTION:
-                            String description = of.getDescription()[0].toLowerCase();
-                            log.debug( String.format( "DESCRIPTION Matching '%s' and '%s'", description, value ) );
-                            if ( description.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case PUBLISHER:
-                            String publisher = of.getPublisher()[0].toLowerCase();
-                            log.debug( String.format( "PUBLISHER Matching '%s' and '%s'", publisher, value ) );
-                            if ( publisher.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case CONTRIBUTOR:
-                            String contributor = of.getContributor()[0].toLowerCase();
-                            log.debug( String.format( "CONTRIBUTOR Matching '%s' and '%s'", contributor, value ) );
-                            if ( contributor.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case DATE:
-                            String date = of.getDate()[0].toLowerCase();
-                            log.debug( String.format( "DATE Matching '%s' and '%s'", date, value ) );
-                            if ( date.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case TYPE:
-                            String type = of.getType()[0].toLowerCase();
-                            log.debug( String.format( "TYPE Matching '%s' and '%s'", type, value ) );
-                            if ( type.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case FORMAT:
-                            String format = of.getFormat()[0].toLowerCase();
-                            log.debug( String.format( "FORMAT Matching '%s' and '%s'", format, value ) );
-                            if ( format.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case IDENTIFIER:
-                            String identifier = of.getIdentifier()[0].toLowerCase();
-                            log.debug( String.format( "IDENTIFIER Matching '%s' and '%s'", identifier, value ) );
-                            if ( identifier.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case SOURCE:
-                            String source = of.getSource()[0].toLowerCase();
-                            log.debug( String.format( "SOURCE Matching '%s' and '%s'", source, value ) );
-                            if ( source.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case LANGUAGE:
-                            String language = of.getLanguage()[0].toLowerCase();
-                            log.debug( String.format( "LANGUAGE Matching '%s' and '%s'", language, value ) );
-                            if ( language.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case RELATION:
-                            String relation = of.getRelation()[0].toLowerCase();
-                            log.debug( String.format( "RELATION Matching '%s' and '%s'", relation, value ) );
-                            if ( relation.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case COVERAGE:
-                            String coverage = of.getCoverage()[0].toLowerCase();
-                            log.debug( String.format( "COVERAGE Matching '%s' and '%s'", coverage, value ) );
-                            if ( coverage.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case RIGHTS:
-                            String rights = of.getRights()[0].toLowerCase();
-                            log.debug( String.format( "RIGHTS Matching '%s' and '%s'", rights, value ) );
-                            if ( rights.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        case DCMDATE:
-                            String dcmDate = of.getDcmDate().toLowerCase();
-                            log.debug( String.format( "DCMDATE Matching '%s' and '%s'", dcmDate, value ) );
-                            if ( dcmDate.equals( value ) )
-                            {
-                                ret = true;
-                            }
-                            break;
-                        default:
-                            //throw new ObjectRepositoryException( "No match!" );
+                        ret = true;
                     }
-
-                    if ( ret )
+                    break;
+                case STATE:
+                    String state = of.getState().toLowerCase();
+                    log.debug( String.format( "STATE Matching '%s' and '%s'", state, value ) );
+                    if ( state.equals( value) )
                     {
-                        log.debug( String.format( "RET Matching returning: '%s'", ret ) );
-                        return ret;
+                        ret = true;
                     }
+                    break;
+                case OWNERID:
+                    String ownerId = of.getOwnerId().toLowerCase();
+                    log.debug( String.format( "OWNERID Matching '%s' and '%s'", ownerId, value ) );
+                    if ( ownerId.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case CDATE:
+                    String cDate = of.getCDate().toLowerCase();
+                    log.debug( String.format( "CDATE Matching '%s' and '%s'", cDate, value ) );
+                    if ( cDate.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case MDATE:
+                    String mDate = of.getMDate().toLowerCase();
+                    log.debug( String.format( "MDATE Matching '%s' and '%s'", mDate, value ) );
+                    if ( mDate.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case TITLE:
+                    String title = of.getTitle()[0].toLowerCase();
+                    log.debug( String.format( "TITLE Matching '%s' and '%s'", title, value ) );
+                    if ( title.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case CREATOR:
+                    String creator = of.getCreator()[0].toLowerCase();
+                    log.debug( String.format( "CREATOR Matching '%s' and '%s'", creator, value ) );
+                    if ( creator.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case SUBJECT:
+                    String subject = of.getSubject()[0].toLowerCase();
+                    log.debug( String.format( "SUBJECT Matching '%s' and '%s'", subject, value ) );
+                    if ( subject.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case DESCRIPTION:
+                    String description = of.getDescription()[0].toLowerCase();
+                    log.debug( String.format( "DESCRIPTION Matching '%s' and '%s'", description, value ) );
+                    if ( description.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case PUBLISHER:
+                    String publisher = of.getPublisher()[0].toLowerCase();
+                    log.debug( String.format( "PUBLISHER Matching '%s' and '%s'", publisher, value ) );
+                    if ( publisher.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case CONTRIBUTOR:
+                    String contributor = of.getContributor()[0].toLowerCase();
+                    log.debug( String.format( "CONTRIBUTOR Matching '%s' and '%s'", contributor, value ) );
+                    if ( contributor.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case DATE:
+                    String date = of.getDate()[0].toLowerCase();
+                    log.debug( String.format( "DATE Matching '%s' and '%s'", date, value ) );
+                    if ( date.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case TYPE:
+                    String type = of.getType()[0].toLowerCase();
+                    log.debug( String.format( "TYPE Matching '%s' and '%s'", type, value ) );
+                    if ( type.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case FORMAT:
+                    String format = of.getFormat()[0].toLowerCase();
+                    log.debug( String.format( "FORMAT Matching '%s' and '%s'", format, value ) );
+                    if ( format.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case IDENTIFIER:
+                    String identifier = of.getIdentifier()[0].toLowerCase();
+                    log.debug( String.format( "IDENTIFIER Matching '%s' and '%s'", identifier, value ) );
+                    if ( identifier.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case SOURCE:
+                    String source = of.getSource()[0].toLowerCase();
+                    log.debug( String.format( "SOURCE Matching '%s' and '%s'", source, value ) );
+                    if ( source.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case LANGUAGE:
+                    String language = of.getLanguage()[0].toLowerCase();
+                    log.debug( String.format( "LANGUAGE Matching '%s' and '%s'", language, value ) );
+                    if ( language.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case RELATION:
+                    String relation = of.getRelation()[0].toLowerCase();
+                    log.debug( String.format( "RELATION Matching '%s' and '%s'", relation, value ) );
+                    if ( relation.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case COVERAGE:
+                    String coverage = of.getCoverage()[0].toLowerCase();
+                    log.debug( String.format( "COVERAGE Matching '%s' and '%s'", coverage, value ) );
+                    if ( coverage.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case RIGHTS:
+                    String rights = of.getRights()[0].toLowerCase();
+                    log.debug( String.format( "RIGHTS Matching '%s' and '%s'", rights, value ) );
+                    if ( rights.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                case DCMDATE:
+                    String dcmDate = of.getDcmDate().toLowerCase();
+                    log.debug( String.format( "DCMDATE Matching '%s' and '%s'", dcmDate, value ) );
+                    if ( dcmDate.equals( value ) )
+                    {
+                        ret = true;
+                    }
+                    break;
+                default:
+                    //throw new ObjectRepositoryException( "No match!" );
                 }
+
+                if ( ret )//isnt this to early to return, what if the next value doesnt match?
+                {
+                    log.debug( String.format( "RET Matching returning: '%s'", ret ) );
+                    return ret;
+                }
+            }
             //}
         }
 
         log.debug( String.format( "RET Matching returning: '%s'", ret ) );
         return ret;
     }
-    
+
+
+    /**
+     * Method for getting pids from the fedora that has fields that matches
+     * the match depends on the searchstring. If there are no '*' in the
+     * beginning or the end, the searchstring is matched with the equals method
+     * otherwise it is accepted. The switch is different then in the addPidValue 
+     * method in the way that it returns false if the strings arent equal. 
+     */
+    private boolean addPidValueExpanded( List< InputPair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
+    {
+        boolean ret = true;
+        log.debug( String.format( "Matching size: '%s'", resultFields.size() ) );
+        for ( InputPair< TargetFields, String > pair : resultFields )
+        {
+            FedoraObjectFields target = (FedoraObjectFields)pair.getFirst();
+            log.debug( String.format( "Matching resultField: '%s'", target ) );
+            String value = pair.getSecond();
+            //check the the value neither starts nor ends in a '*'
+            //if it does skip the switch
+            if( ! ( value.startsWith( "*" ) || value.endsWith( "*" ) ) )
+            {
+                String pid = of.getPid().toLowerCase();
+                log.debug( String.format( "Matching pid: '%s'", pid ) );
+
+                switch ( target )
+                {
+                case PID:
+                    log.debug( String.format( "PID Matching '%s' and '%s'", pid, value ) );
+                    if ( ! pid.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case STATE:
+                    String state = of.getState().toLowerCase();
+                    log.debug( String.format( "STATE Matching '%s' and '%s'", state, value ) );
+                    if ( ! state.equals( value) )
+                    {
+                        return false;
+                    }
+                    break;
+                case OWNERID:
+                    String ownerId = of.getOwnerId().toLowerCase();
+                    log.debug( String.format( "OWNERID Matching '%s' and '%s'", ownerId, value ) );
+                    if ( ! ownerId.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case CDATE:
+                    String cDate = of.getCDate().toLowerCase();
+                    log.debug( String.format( "CDATE Matching '%s' and '%s'", cDate, value ) );
+                    if ( ! cDate.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case MDATE:
+                    String mDate = of.getMDate().toLowerCase();
+                    log.debug( String.format( "MDATE Matching '%s' and '%s'", mDate, value ) );
+                    if ( ! mDate.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case TITLE:
+                    String title = of.getTitle()[0].toLowerCase();
+                    log.debug( String.format( "TITLE Matching '%s' and '%s'", title, value ) );
+                    if ( ! title.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case CREATOR:
+                    String creator = of.getCreator()[0].toLowerCase();
+                    log.debug( String.format( "CREATOR Matching '%s' and '%s'", creator, value ) );
+                    if ( ! creator.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case SUBJECT:
+                    String subject = of.getSubject()[0].toLowerCase();
+                    log.debug( String.format( "SUBJECT Matching '%s' and '%s'", subject, value ) );
+                    if ( ! subject.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case DESCRIPTION:
+                    String description = of.getDescription()[0].toLowerCase();
+                    log.debug( String.format( "DESCRIPTION Matching '%s' and '%s'", description, value ) );
+                    if ( ! description.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case PUBLISHER:
+                    String publisher = of.getPublisher()[0].toLowerCase();
+                    log.debug( String.format( "PUBLISHER Matching '%s' and '%s'", publisher, value ) );
+                    if ( ! publisher.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case CONTRIBUTOR:
+                    String contributor = of.getContributor()[0].toLowerCase();
+                    log.debug( String.format( "CONTRIBUTOR Matching '%s' and '%s'", contributor, value ) );
+                    if ( ! contributor.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case DATE:
+                    String date = of.getDate()[0].toLowerCase();
+                    log.debug( String.format( "DATE Matching '%s' and '%s'", date, value ) );
+                    if ( ! date.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case TYPE:
+                    String type = of.getType()[0].toLowerCase();
+                    log.debug( String.format( "TYPE Matching '%s' and '%s'", type, value ) );
+                    if ( ! type.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case FORMAT:
+                    String format = of.getFormat()[0].toLowerCase();
+                    log.debug( String.format( "FORMAT Matching '%s' and '%s'", format, value ) );
+                    if ( ! format.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case IDENTIFIER:
+                    String identifier = of.getIdentifier()[0].toLowerCase();
+                    log.debug( String.format( "IDENTIFIER Matching '%s' and '%s'", identifier, value ) );
+                    if ( ! identifier.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case SOURCE:
+                    String source = of.getSource()[0].toLowerCase();
+                    log.debug( String.format( "SOURCE Matching '%s' and '%s'", source, value ) );
+                    if ( ! source.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case LANGUAGE:
+                    String language = of.getLanguage()[0].toLowerCase();
+                    log.debug( String.format( "LANGUAGE Matching '%s' and '%s'", language, value ) );
+                    if ( ! language.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case RELATION:
+                    String relation = of.getRelation()[0].toLowerCase();
+                    log.debug( String.format( "RELATION Matching '%s' and '%s'", relation, value ) );
+                    if ( ! relation.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case COVERAGE:
+                    String coverage = of.getCoverage()[0].toLowerCase();
+                    log.debug( String.format( "COVERAGE Matching '%s' and '%s'", coverage, value ) );
+                    if ( ! coverage.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case RIGHTS:
+                    String rights = of.getRights()[0].toLowerCase();
+                    log.debug( String.format( "RIGHTS Matching '%s' and '%s'", rights, value ) );
+                    if ( ! rights.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                case DCMDATE:
+                    String dcmDate = of.getDcmDate().toLowerCase();
+                    log.debug( String.format( "DCMDATE Matching '%s' and '%s'", dcmDate, value ) );
+                    if ( ! dcmDate.equals( value ) )
+                    {
+                        return false;
+                    }
+                    break;
+                default:
+
+                }
+            }//end if check for '*' in value start or end
+        }
+
+        log.debug( String.format( "RET Matching returning: '%s'", ret ) );
+        return ret;
+    }
+
 
 
     @Override
@@ -884,7 +1140,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
-    
+
 
 
     /***
@@ -973,12 +1229,12 @@ public class FedoraObjectRepository implements IObjectRepository
             log.warn( "Retrieved no hits from search, returning empty List<String>" );
             return new ObjectFields[]{ };
         }
-        
+
         ObjectFields[] objectFields = fsr.getResultList();
 
         return objectFields;
     }
-    
+
 
     /**
      * This code has been commented out since it is not used anywhere
@@ -1063,7 +1319,7 @@ public class FedoraObjectRepository implements IObjectRepository
     //         throw new ObjectRepositoryException( error );
     //     }
     // }
-    
+
 
     @Override
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
@@ -1122,7 +1378,7 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error );
         }
     }
-    
+
 
     @Override
     public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException
@@ -1133,12 +1389,12 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( new IllegalArgumentException( error ) );
         }
-        
+
         AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
-        
+
         CargoContainer cargo = new CargoContainer();
         cargo.setIdentifier( new PID( objectIdentifier ) );
-        
+
         try
         {
             for( InputPair<Integer, InputPair<String, CargoObject>> pairs : adminStream.getStreams() )
@@ -1171,7 +1427,7 @@ public class FedoraObjectRepository implements IObjectRepository
                         log.error( error );
                         throw new ObjectRepositoryException( error, ex );
                     }
-                    
+
                     cargo.add( datastreamtype, co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(), co.getIndexingAlias(), data );
                 }
             }
@@ -1184,7 +1440,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         log.warn( String.format( "Returning empty CargoContainer for request of %s on %s", streamtype.getName(), objectIdentifier ) );
         return cargo;
-    }    
+    }
 
 
     @Override
@@ -1193,7 +1449,7 @@ public class FedoraObjectRepository implements IObjectRepository
         AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
         CargoContainer cargo = new CargoContainer();
         cargo.setIdentifier( new PID( objectIdentifier ) );
-        
+
         try
         {
             for( InputPair<Integer, InputPair<String, CargoObject>> pairs : adminStream.getStreams() )
@@ -1239,7 +1495,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         return cargo;
     }
-    
+
     /**
      * This code has been commented out since it is not used anywhere
      * and there seems to be no intentions of ever using it. Should
@@ -1258,7 +1514,7 @@ public class FedoraObjectRepository implements IObjectRepository
     //     deleteDataFromObject( objectIdentifier, dataIdentifier );
     //     storeDataInObject( objectIdentifier, cargo, true, true );
     // }
-    
+
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
     {
@@ -1296,7 +1552,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         return adminStream;
     }
-    
+
 
     /**
      * Wrapper around {@link #getDataStream(java.lang.String, dk.dbc.opensearch.common.types.DataStreamType)}
@@ -1338,7 +1594,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         return adminStream;
-    }    
+    }
 
 
     private boolean addDataUpdateAdminstream( String objectIdentifier, String dataIdentifier, CargoObject obj ) throws ObjectRepositoryException
@@ -1385,13 +1641,13 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         return added;
-    }    
+    }
 
 
     private boolean removeDataUpdateAdminstream( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
-    {        
+    {
         AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
-        
+
         boolean removed = adminStream.removeStream( dataIdentifier );
 
         if ( !removed )
@@ -1459,7 +1715,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return ds;
     }
-    
+
 
     private byte[] getDataStreamDissemination( String objectIdentifier, String dataStreamTypeName ) throws ObjectRepositoryException
     {
@@ -1508,7 +1764,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
 
         return ds;
-    }    
+    }
 
 
     private String uploadDatastream( ByteArrayOutputStream datastream ) throws ObjectRepositoryException
@@ -1563,7 +1819,7 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         return location;
     }
-    
+
 
     @Override
     public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
@@ -1601,7 +1857,7 @@ public class FedoraObjectRepository implements IObjectRepository
     {
         return null;
     }
-    
+
 
     @Override
     public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
@@ -1629,7 +1885,7 @@ public class FedoraObjectRepository implements IObjectRepository
             String error = "Failed to add Relation to fedora Object";
             log.error( error, e );
             throw new ObjectRepositoryException( error, e );
-            
+
         }
         catch (ServiceException e)
         {
@@ -1638,11 +1894,11 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, e );
         }
     }
-    
+
 
     /**
      * Internal helper to store
-     * 
+     *
      * @param cargo
      * @return
      * @throws ObjectRepositoryException
@@ -1650,17 +1906,17 @@ public class FedoraObjectRepository implements IObjectRepository
     private ObjectIdentifier getOrGenerateIdentifier( CargoContainer cargo, String defaultPidNameSpace ) throws ObjectRepositoryException
     {
         ObjectIdentifier identifier = cargo.getIdentifier();
-        
+
         if (identifier != null)
         {
             return identifier;
         }
-        
+
         if (defaultPidNameSpace == null)
         {
             defaultPidNameSpace = new String( "auto" );
         }
-        
+
         String newPid = "";
         try
         {
@@ -1682,7 +1938,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             throw new ObjectRepositoryException( String.format( "Unable to get next pid for Prefix ", defaultPidNameSpace ), e );
         }
-        
-        return new PID( newPid );        
-    }    
+
+        return new PID( newPid );
+    }
 }
