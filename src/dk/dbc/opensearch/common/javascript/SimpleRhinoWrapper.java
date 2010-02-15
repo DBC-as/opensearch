@@ -25,15 +25,13 @@
 
 package dk.dbc.opensearch.common.javascript;
 
-
-import dk.dbc.opensearch.common.config.FileSystemConfig;
-
+import org.mozilla.javascript.*;
 import java.io.*;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.mozilla.javascript.*;
 
+//import dk.dbc.opensearch.common.config.FileSystemConfig;
+//import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple wrapper for javascript based 
@@ -48,77 +46,50 @@ import org.mozilla.javascript.*;
  */
 public class SimpleRhinoWrapper
 {
-    private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
 
-    
-    private static String jsFileName = null;
+    private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
 
     private Context cx = Context.enter();
     private ScriptableObject scope = null;
-    private Script script = null;
 
 
     /**
      * Constructs an instans of a javascript environment, containing the given javascript.
      *
-     * @param scriptName The name of the javascript file to associate with the environment.
+     * @param inFile A FileReader containing the javascript file to be read
      */
-    public SimpleRhinoWrapper( String scriptName ) throws JavaScriptWrapperException
+    public SimpleRhinoWrapper( FileReader inFile )
     {
-	// Find javascript-file:
-        try
-        {
-            jsFileName = FileSystemConfig.getScriptPath() + scriptName;
-        }
-        catch( ConfigurationException ce )
-        {
-            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", scriptName );
-            log.fatal( errorMsg, ce );
-            throw new JavaScriptWrapperException( errorMsg, ce );
-        }
 
-        // Initialize the standard objects (Object, Function, etc.)
-        // This must be done before scripts can be executed. Returns
-        // a scope object that we use in later calls.
-        scope = cx.initStandardObjects();
-        if (scope == null)
-        {
-            // This should never happen!
-            String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
-            log.fatal( errorMsg );
-            throw new JavaScriptWrapperException( errorMsg );
-        }
+	// Initialize the standard objects (Object, Function, etc.)
+	// This must be done before scripts can be executed. Returns
+	// a scope object that we use in later calls.                                                            
+	scope = cx.initStandardObjects();
+	if (scope == null) 
+	{
+	    // This should never happen!
+	    String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
+	    log.fatal( errorMsg );
+	    throw new IllegalStateException( errorMsg );
+	}
+	
+	String[] names = { "print" };
+	scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
-        //	JavaScriptHelperFunctions helperFunctions = new JavaScriptHelperFunctions();
-        String[] names = { "print" };
-        scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
-        // Create FileReader for the javascriptfile
-        FileReader in = null;
-        try
-        {
-            in = new FileReader( jsFileName );
-        } 
-        catch ( FileNotFoundException fnfe )
-        {
-            String errorMsg = String.format( "Could not find file: %s", jsFileName );
-            log.fatal( errorMsg, fnfe );
-            throw new JavaScriptWrapperException( errorMsg, fnfe );
-        }
 
-        // Compile the javascript
-        try
-        {
-            Object o = cx.evaluateReader((Scriptable)scope, in, jsFileName, 1, null);
-            script = cx.compileReader(in, jsFileName, 1, null);
-        } 
-        catch ( IOException ioe )
-        {
-            System.err.println( "Could not run 'evaluateReader'" );
-        }
+	// Evaluate the javascript
+	String jsFileName = "script name is unknown"; // We dont know the name of the script! :(
+	try {
+	    Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
+	} catch ( IOException ioe ) {
+	    String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
+	    log.error( errorMsg, ioe );
+	    throw new IllegalStateException( errorMsg, ioe );
+	}
+ 
     }							  
 
-    
     /**
      * Sets an instans of an object in the Javascript environment making it accesible for the script
      *
@@ -127,36 +98,25 @@ public class SimpleRhinoWrapper
      */
     public void put( String key, Object value )
     {
-        scope.defineProperty( key, value, ScriptableObject.DONTENUM );
+	scope.defineProperty( key, value, ScriptableObject.DONTENUM );
     }
-
-
-    public Object run( String functionEntryPoint, Object... args ) throws JavaScriptWrapperException
-    {
-        Object fObj = scope.get(functionEntryPoint, scope);
-        Object result = null;
-        if ( ! ( fObj instanceof Function ) )
-        {
-            String errorMsg = String.format( "% is undefined or not a function", functionEntryPoint );
-            log.fatal( errorMsg );
-            throw new JavaScriptWrapperException( errorMsg );
-        } 
-        else
-        {
-            Function f = (Function)fObj;
-            result = f.call(cx, scope, scope, args);
-        }
-	
-        return result;
-    }
-
     
-    /**
-     * 
-     * @return The filename of the javascript
-     */
-    public String getJavascriptName()
+    public Object run( String functionEntryPoint, Object... args )
     {
-        return jsFileName != null ? jsFileName : "";
+
+	Object fObj = scope.get(functionEntryPoint, scope);
+	Object result = null;
+	if (!(fObj instanceof Function)) {
+	    String errorMsg = String.format( "% is undefined or not a function", functionEntryPoint );
+	    log.fatal( errorMsg );
+	    throw new IllegalStateException( errorMsg );
+	} else {
+	    Function f = (Function)fObj;
+	    result = f.call(cx, scope, scope, args);
+	}
+	
+	return result;
     }
+
+
 }

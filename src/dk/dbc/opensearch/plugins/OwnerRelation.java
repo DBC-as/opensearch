@@ -27,7 +27,6 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
@@ -40,6 +39,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,15 +74,22 @@ public class OwnerRelation implements IRelation
      */
     public OwnerRelation() throws PluginException
     {
+	String jsFileName = new String( "owner_relation.js" );
 	try 
 	{
-	    jsWrapper = new SimpleRhinoWrapper( "owner_relation.js" );
+	    jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
 	}
-	catch( JavaScriptWrapperException jswe )
+	catch( FileNotFoundException fnfe )
 	{
-	    String errorMsg = new String("An exception occured when trying to instantiate the SimpleRhinoWrapper");
-	    log.fatal( errorMsg, jswe );
-	    throw new PluginException( errorMsg, jswe );
+	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+	    log.error( errorMsg, fnfe );
+	    throw new PluginException( errorMsg, fnfe );
+	}
+	catch( ConfigurationException ce )
+	{
+	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+	    log.fatal( errorMsg, ce );
+	    throw new PluginException( errorMsg, ce );
 	}
 
         log.trace( "OwnerRelation plugin constructed" );
@@ -156,20 +163,10 @@ public class OwnerRelation implements IRelation
         log.debug( String.format( "Trying to add owner relation for rels '%s'; submitter '%s'; format '%s'", rels.toString(), submitter, format ) );
 
 	String entryPointFunc = "addOwnerRelation";
-
-	try 
-	{
-	    rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
-						    rels,
-						    submitter,
-						    format );        
-	} 
-	catch( JavaScriptWrapperException jswe ) 
-	{
-	    String errorMsg = String.format( "An excpetion occured when trying to run the javascript: %s with entrypoint function: %s", jsWrapper.getJavascriptName(), entryPointFunc );
-	    log.fatal( errorMsg, jswe );
-	    throw new PluginException( errorMsg, jswe );
-	}
+	rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
+						rels,
+						submitter,
+						format );        
 
         log.debug( String.format( "rels: '%s'", rels.toString() ) );
 

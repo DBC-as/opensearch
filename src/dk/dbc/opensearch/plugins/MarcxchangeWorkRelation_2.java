@@ -26,13 +26,13 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -44,6 +44,8 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -51,6 +53,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
@@ -123,17 +126,24 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //that returns an xml with the pairs to generate
         //start with dummy xml on the javascript-side
         
-        try
-        {
-            // ought name of .js file to be configurable?
-            rhinoWrapper = new SimpleRhinoWrapper( "GenerateWorkSearchPairs.js" );
-        }
-        catch ( JavaScriptWrapperException jswe )
-        {
-            String errorMsg = "An exception occured when trying to instantiate the NaiveJavaScriptWrapper";
-            log.fatal( errorMsg, jswe );
-            throw new PluginException( errorMsg, jswe );
-        }
+	// ought name of .js file to be configurable?
+	String jsFileName = new String( "GenerateWorkSearchPairs.js" );
+	try 
+	{
+	    rhinoWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+	}
+	catch( FileNotFoundException fnfe )
+	{
+	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+	    log.error( errorMsg, fnfe );
+	    throw new PluginException( errorMsg, fnfe );
+	}
+	catch( ConfigurationException ce )
+	{
+	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+	    log.fatal( errorMsg, ce );
+	    throw new PluginException( errorMsg, ce );
+	}
 
         // get the DC-Stream
         DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
@@ -162,16 +172,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         rhinoWrapper.put( "pairArray", pairArray );
 
         //execute the script that fills the pairsList
-        try
-        {        
-            rhinoWrapper.run( "generateSearchPairs", dcString );
-        }
-        catch( JavaScriptWrapperException jswe )
-        {
-            String msg = "Exception while running generateSearchPairs";
-            log.error( msg, jswe );
-            throw new PluginException( msg, jswe );
-        }
+	rhinoWrapper.run( "generateSearchPairs", dcString );
 
         //go through the pairArray and create the TargetFields for the searchList
         int length = pairArray.length; 

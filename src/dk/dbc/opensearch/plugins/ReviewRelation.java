@@ -25,10 +25,10 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
-import dk.dbc.opensearch.common.javascript.JavaScriptWrapperException;
 import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
@@ -38,6 +38,11 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -48,7 +53,6 @@ public class ReviewRelation implements IRelation
 {
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
-    // private NaiveJavaScriptWrapper jsWrapper = null;
     private SimpleRhinoWrapper jsWrapper = null;
     private PluginType pluginType = PluginType.RELATION;
 
@@ -65,17 +69,26 @@ public class ReviewRelation implements IRelation
     public ReviewRelation() throws PluginException
     {
         log.trace( "Constructor called" );
+
 	// Creating the javascript:
+	String jsFileName = new String( "review_relation.js" );
 	try 
 	{
-	    jsWrapper = new SimpleRhinoWrapper( "review_relation.js" );
+	    jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
 	}
-	catch( JavaScriptWrapperException jswe )
+	catch( FileNotFoundException fnfe )
 	{
-	    String errorMsg = new String("An exception occured when trying to instantiate the SimpleRhinoWrapper");
-	    log.fatal( errorMsg, jswe );
-	    throw new PluginException( errorMsg, jswe );
+	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+	    log.error( errorMsg, fnfe );
+	    throw new PluginException( errorMsg, fnfe );
 	}
+	catch( ConfigurationException ce )
+	{
+	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+	    log.fatal( errorMsg, ce );
+	    throw new PluginException( errorMsg, ce );
+	}
+
     }
 
 
@@ -110,7 +123,7 @@ public class ReviewRelation implements IRelation
     }
 
 
-    private boolean addReviewRelation( CargoContainer cargo ) throws PluginException
+    private boolean addReviewRelation( CargoContainer cargo )
     {
         //This mehtod should call a script with the cargocontainer as parameter
         //and expose a getPID and a makeRelation method that enables the script to
@@ -124,18 +137,8 @@ public class ReviewRelation implements IRelation
 
 
 	String entryPointFunc = "main";
-        // get the pid of the cargocontainer
-        String pid = cargo.getIdentifierAsString();
-	try 
-	{
-	    jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
-	} 
-	catch( JavaScriptWrapperException jswe ) 
-	{
-	    String errorMsg = String.format( "An excpetion occured when trying to run the javascript: %s with entrypoint function: %s", jsWrapper.getJavascriptName(), entryPointFunc );
-	    log.fatal( errorMsg, jswe );
-	    throw new PluginException( errorMsg, jswe );
-	}
+        String pid = cargo.getIdentifierAsString(); // get the pid of the cargocontainer
+	jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
 
         return true;
     }
