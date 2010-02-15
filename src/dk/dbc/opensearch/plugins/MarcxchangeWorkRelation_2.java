@@ -84,17 +84,17 @@ public class MarcxchangeWorkRelation_2 implements IRelation
     @Override
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try
-        {
-            builder = factory.newDocumentBuilder();
-        }
-        catch( ParserConfigurationException pce )
-        {
-            String error = String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() );
-            log.error( error );
-            throw new PluginException( error, pce );
-        }
+      //   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//         try
+//         {
+//             builder = factory.newDocumentBuilder();
+//         }
+//         catch( ParserConfigurationException pce )
+//         {
+//             String error = String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() );
+//             log.error( error );
+//             throw new PluginException( error, pce );
+//         }
        
         List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
         System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
@@ -196,7 +196,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         List< String > pidStringList;
         
         //call getIdentifiers on the object repository
-        pidStringList = objectRepository.getIdentifiers( searchList, null, 10000 );
+        pidStringList = objectRepository.getIdentifiersWithNamespace( searchList, 10000, "work:" );
         
         //make PIDs out of the String representations
         for( String pidString : pidStringList )
