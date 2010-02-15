@@ -20,6 +20,9 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
@@ -40,7 +43,11 @@ import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 
 /**
- * 
+ * File for testing the functionality of the MarcxchangeWorkRelation_2 plugin
+ * Be alert that there can be a variaty of sources to why it doesnt work on your 
+ * machine, such as you dont have the correct elements in your fedora base.
+ * This of course will be corrected or at least there will be written here 
+ * which object you should have in your Fedora
  */
 public class MarcWork2Func 
 {  
@@ -192,6 +199,19 @@ public class MarcWork2Func
 	String mimetype = "text/xml";
 	String alias = "fakeAlias";
 
+        //create the repository
+        IObjectRepository repository = null;
+        try
+        {
+            repository = new FedoraObjectRepository();
+        }
+        catch( ObjectRepositoryException oe )
+        {
+            System.out.println( "exception caught when initialising the ObjectRepository" + oe.getMessage() );     
+            System.exit( 1 );
+        }   
+
+        //create the plugins
         MarcxchangeWorkRelation_2 marcWork2Plugin;
         XMLDCHarvester dcPlugin = null;
         try{
@@ -202,18 +222,27 @@ public class MarcWork2Func
               System.err.println( pe );
         }
         marcWork2Plugin = new MarcxchangeWorkRelation_2();
+
+        //give a repository to the marcWork2Plugin 
+        marcWork2Plugin.setObjectRepository( repository );
+
+        //invoke the plugins getCargoContainer method
         try
         {
+            System.out.println( "Calling the getCargoContainer method on the dcPlugin " );
             testCargo = dcPlugin.getCargoContainer( ddj, anm1_data.getBytes( "UTF-8" ), alias );
+            System.out.println( "Calling the method on the marcWork2Plugin " );
             testCargo = marcWork2Plugin.getCargoContainer( testCargo ); 
         }
         catch( PluginException pe )
         {
             System.err.println( pe );
+            System.exit( 1 );
         }
         catch( UnsupportedEncodingException uee )
         {
             System.err.println( uee );
+            System.exit( 1 );
         }   
     }
 }
