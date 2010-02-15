@@ -182,7 +182,37 @@ public interface IObjectRepository
     public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutIdentifier, int maximumResults );
 
 
+
+    /**
+     * This method signature is the result of very specific needs for the 
+     * matching of works. It should be obsolete very soon, so if you see this 
+     * after 1st of July it should be commented out and after the 1st of 
+     * september it should be deleted if no problems have arised.  
+     */
     public List< String > getIdentifiers( List< InputPair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
+
+
+    /** 
+     * Searches the object repository using the a {@link List} of
+     * {@code searchStrings} as query, limiting the search to the
+     * {@link List} of {@code searchableFields} and limiting {@link
+     * List} of returned identifiers with {@code maximumResult}. 
+     * The {@code searchStrings} can have wildcards at the beginning
+     * or at the end
+     * The search only returns members of the {@code namespace}
+     * 
+     * @param resultSearchFields {@link List} of {@link InputPair}s
+     * that contains pairwise search Strings and the fields to search
+     * for that String in
+     * @param cutIdentifier stops the search and returns result if it
+     * encounters this identifier
+     * @param maximumResults integer limiting the returned {@link List}
+     * of identifiers
+     * @param namespace {@link String} is the namespace to search in 
+     * 
+     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
+     */
+    public List< String > getIdentifiersWithNamespace( List< InputPair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace );
 
 
     /**
