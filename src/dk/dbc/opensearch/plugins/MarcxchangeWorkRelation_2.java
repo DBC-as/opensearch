@@ -1,4 +1,4 @@
-/*   
+/*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -59,14 +59,14 @@ import org.w3c.dom.Document;
 
 
 /**
- * !! This code is a draft !! 
+ * !! This code is a draft !!
  *
- * This plugin handles the matching of objects in the fedora objectrepository 
+ * This plugin handles the matching of objects in the fedora objectrepository
  * with the special workobjects
  * In contrast to other plugins of the RELATION type it uses more than 1 javascript
  * function to handle the business logic
  */
-public class MarcxchangeWorkRelation_2 implements IRelation 
+public class MarcxchangeWorkRelation_2 implements IRelation
 {
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation_2.class );
 
@@ -76,10 +76,10 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
     private SimpleRhinoWrapper rhinoWrapper;
     private DocumentBuilder builder;
-    private Document doc;    
+    private Document doc;
 
 
-    public MarcxchangeWorkRelation_2() 
+    public MarcxchangeWorkRelation_2()
     {
     }
 
@@ -87,95 +87,74 @@ public class MarcxchangeWorkRelation_2 implements IRelation
     @Override
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-      //   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//         try
-//         {
-//             builder = factory.newDocumentBuilder();
-//         }
-//         catch( ParserConfigurationException pce )
-//         {
-//             String error = String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() );
-//             log.error( error );
-//             throw new PluginException( error, pce );
-//         }
-       
         List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
         System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
 
         List< PID > pidList = getWorkList( searchPairs );
         System.out.println( String.format( "the pidList: %s", pidList.toString() ) );
-        // thePid = checkMatch( cargo, pidList );
-        // if( pid == null )
-        // { pid = createAndStoreWorkobject( cargo ) }
-        // relate cargo and workobject
-    
+
+        PID workPid = null;
+        workPid = checkMatch( cargo, pidList );
+        //System.out.println( "The matching pid: " + workPid.getIdentifier() );
+        if( workPid == null )
+        { 
+            workPid = createAndStoreWorkobject( cargo ); 
+        }
+        // relatePostAndWork( , workPid );
+
         return cargo;
     }
 
 
     /**
-     * method that generates the list containing the fields to look in and the 
+     * method that generates the list containing the fields to look in and the
      * corresponding values to match with
      * @param cargo, the CargoContianer to generate searchpairs for
-     * @return a list of InputPairs containing a serachfield and the value to match 
+     * @return a list of InputPairs containing a serachfield and the value to match
      */
     private List< InputPair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
     {
         List< InputPair< TargetFields, String > > searchList = new ArrayList< InputPair< TargetFields, String > >();
-        //calls a javascript, with the dc-stream of the cargo as argument, 
+        //calls a javascript, with the dc-stream of the cargo as argument,
         //that returns an xml with the pairs to generate
         //start with dummy xml on the javascript-side
-        
-	// ought name of .js file to be configurable?
-	String jsFileName = new String( "GenerateWorkSearchPairs.js" );
-	try 
-	{
-	    rhinoWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
-	}
-	catch( FileNotFoundException fnfe )
-	{
-	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-	    log.error( errorMsg, fnfe );
-	    throw new PluginException( errorMsg, fnfe );
-	}
-	catch( ConfigurationException ce )
-	{
-	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-	    log.fatal( errorMsg, ce );
-	    throw new PluginException( errorMsg, ce );
-	}
+
+        // ought name of .js file to be configurable?
+        String jsFileName = new String( "workmatch_relation_functions.js" );
+        try
+        {
+            rhinoWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+            log.error( errorMsg, fnfe );
+            throw new PluginException( errorMsg, fnfe );
+        }
+        catch( ConfigurationException ce )
+        {
+            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+            log.fatal( errorMsg, ce );
+            throw new PluginException( errorMsg, ce );
+        }
 
         // get the DC-Stream
         DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
         //create outputstream
-        ByteArrayOutputStream dcOutputStream = new ByteArrayOutputStream();
 
-        // serialize the DC into an outputStream
-        try
-        {
-            theDC.serialize( dcOutputStream, null);
-        }
-        catch( OpenSearchTransformException oste )
-        {
-            String msg = "Exception occured while trying to serialize the dc-stream";
-            log.error( msg, oste );
-            throw new PluginException(  msg, oste );
-        }
-
-        byte[] strippedDC = E4XXMLHeaderStripper.strip( dcOutputStream.toByteArray() );
-        String dcString = new String ( strippedDC );
+        String dcString = getDCStreamAsString( theDC );
         System.out.println( String.format( "the dc-string: %s", dcString ) );
 
         //give the script the list to put pairs in
-        //List<InputPair<String, String>> pairsList = new ArrayList<InputPair<String, String>>(); 
+        //List<InputPair<String, String>> pairsList = new ArrayList<InputPair<String, String>>();
         String[] pairArray = new String[ 100 ];
         rhinoWrapper.put( "pairArray", pairArray );
 
         //execute the script that fills the pairsList
-	rhinoWrapper.run( "generateSearchPairs", dcString );
+        rhinoWrapper.run( "generateSearchPairs", dcString );
 
         //go through the pairArray and create the TargetFields for the searchList
-        int length = pairArray.length; 
+        int length = pairArray.length;
         for ( int i = 0; i < length; i += 2 )
         {
             if ( pairArray[ i ] != null )
@@ -188,24 +167,24 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
 
     /**
-     * method that finds the workobjects that match the cirterias specified in 
+     * method that finds the workobjects that match the cirterias specified in
      * the searchList
      */
     private List< PID > getWorkList( List< InputPair< TargetFields, String > > searchList )
     {
         List< PID > pidList = new ArrayList< PID >();
         List< String > pidStringList;
-        
+
         //call getIdentifiers on the object repository
         pidStringList = objectRepository.getIdentifiersWithNamespace( searchList, 10000, "work:" );
-        
+
         //make PIDs out of the String representations
         for( String pidString : pidStringList )
         {
             System.out.println( String.format( "pidString: %s", pidString ) );
             pidList.add( new PID( pidString ) );
         }
-        
+
         //return the resulting list of PIDs
         return pidList;
     }
@@ -218,28 +197,65 @@ public class MarcxchangeWorkRelation_2 implements IRelation
      * @param pidList, the list of pids to chack for matches
      * @return the pid of the matching work object, null if none is found
      */
-    private PID checkMatch( CargoContainer cargo, List< PID > pidList )
+    private PID checkMatch( CargoContainer cargo, List< PID > pidList ) throws PluginException
     {
+        boolean match = false;
         //get the xml for the cargo
-        //for each pid in the list 
-        //get the objects xml
-        //call the match test with the xmls until a match occurs
-        //return the pid for the matching workobject
+        DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
+        String dcString = getDCStreamAsString( theDC );
+
+        CargoContainer tempCargo = null;
+        DublinCore tempDC = null;
+        String tempDCString = "";
+        //for each pid in the list
+        for( PID pid : pidList )
+        {
+            //get the objects xml
+            try
+            {
+                tempCargo = objectRepository.getObject( pid.getIdentifier() );
+            }
+            catch( ObjectRepositoryException ore )
+            {
+                String errorMsg = String.format( "Couldnt get object with PID : %s from Fedora", pid.getIdentifier() );
+                log.fatal( errorMsg );
+                throw new PluginException( errorMsg, ore );
+            }
+            tempDC = (DublinCore)tempCargo.getMetaData( DataStreamType.DublinCoreData );
+            tempDCString = getDCStreamAsString( tempDC );
+
+            //call the match test with the xmls until a match occurs
+            match = (Boolean)rhinoWrapper.run( "checkmatch", dcString, tempDCString );
+
+            if( match )
+            {
+                return pid;
+            }
+        }
+
         //if no match occur, return null
         return null;
     }
-    
+
 
     /**
-     * method that creates a workobject from a CargoContainer based upon 
+     * method that creates a workobject from a CargoContainer based upon
      * the fields in the searchList. Thje workobject is stored in the objectrepository
      * @param cargo, the post to creare a workobject from
      * @return the pid of the new workobject
      */
-    private PID createAndStoreWorkobject( CargoContainer cargo )
+    private PID createAndStoreWorkobject( CargoContainer cargo ) throws PluginException
     {
         //get the cargos xml
+        DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
+        String tempDCString = getDCStreamAsString( theDC );
+
         //call the javascript that creates a workobject xml from a cargo xml
+        System.out.println( "calling makeworkobject" );
+
+        tempDCString = "<dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:type>Anmeldelse</dc:type><dc:relation>28022859</dc:relation><dc:creator>Tom Hermansen</dc:creator><dc:source></dc:source><dc:title>[Anmeldelse]</dc:title><humle>ged</humle></dc>";
+        String workXml = (String)rhinoWrapper.run( "makeworkobject" ,tempDCString );
+        System.out.println( "workXml :" + workXml );
         //use the xml to create the work object
         //store it in the objectrepository
         //return the PID of the new workobject
@@ -249,7 +265,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
     /**
      * method that relates a post to a work object and the inverse
-     * @param cargoPid, the pid of the post 
+     * @param cargoPid, the pid of the post
      * @param workPid, the pid of the work
      */
     private void relatePostAndWork( PID cargoPid, PID workPid )
@@ -269,5 +285,31 @@ public class MarcxchangeWorkRelation_2 implements IRelation
     public void setObjectRepository( IObjectRepository objectRepository )
     {
         this.objectRepository = objectRepository;
+    }
+
+    /**
+     * helper method for getting the DC-stream of a DublinCore into a
+     * String format acceptable for the javascripts. It strips the xml header
+     */
+    private String getDCStreamAsString( DublinCore theDC ) throws PluginException
+    {
+        ByteArrayOutputStream dcOutputStream = new ByteArrayOutputStream();
+
+        // serialize the DC into an outputStream
+        try
+        {
+            theDC.serialize( dcOutputStream, null);
+        }
+        catch( OpenSearchTransformException oste )
+        {
+            String msg = "Exception occured while trying to serialize the dc-stream";
+            log.error( msg, oste );
+            throw new PluginException(  msg, oste );
+        }
+
+        byte[] strippedDC = E4XXMLHeaderStripper.strip( dcOutputStream.toByteArray() );
+        String dcString = new String ( strippedDC );
+
+        return dcString;
     }
 }
