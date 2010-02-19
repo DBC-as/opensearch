@@ -33,7 +33,7 @@ function checkmatch( newObject, workObject )
 function makeworkobject( cargoXML )
 {
     var XML_cargo = new XML( cargoXML );
-    var ns = new Namespace( "dc", "http://purl.org/dc/elements/1.1" );
+    var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1" );
     //select the elements in the dc-xml that constitutes the work
     //do something with the xml and return it in string format
     print( "XML_cargo:"+ XML_cargo + "\n" );
@@ -42,7 +42,9 @@ function makeworkobject( cargoXML )
     //XML_cargo.dc.appendChild(<identifier/>);
     //print( "XML_cargo:"+ XML_cargo + "\n" );
     
-    print( "title:" + XML_cargo.ns::title +"\n" );
+    print( "type1:" + XML_cargo.dc.dc::type +"\n" );
+    var type =  XML_cargo.dc::type;
+    print( "type2: " +type+ "\n" );
     //var title = XML_cargo.ns::title;
     print( "XML_cargo:"+ XML_cargo + "\n" );
     //print( "title :"+ title +"\n" );

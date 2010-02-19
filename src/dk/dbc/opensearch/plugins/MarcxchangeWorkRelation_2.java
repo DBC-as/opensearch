@@ -253,9 +253,9 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //call the javascript that creates a workobject xml from a cargo xml
         System.out.println( "calling makeworkobject" );
 
-        tempDCString = "<dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:type>Anmeldelse</dc:type><dc:relation>28022859</dc:relation><dc:creator>Tom Hermansen</dc:creator><dc:source></dc:source><dc:title>[Anmeldelse]</dc:title><humle>ged</humle></dc>";
+        tempDCString = "<dc xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:type>Anmeldelse</dc:type><dc:relation>28022859</dc:relation><dc:creator>Tom Hermansen</dc:creator><dc:source></dc:source><dc:title>[Anmeldelse]</dc:title><humle>ged</humle></dc>";
         String workXml = (String)rhinoWrapper.run( "makeworkobject" ,tempDCString );
-        System.out.println( "workXml :" + workXml );
+        //System.out.println( "workXml :" + workXml );
         //use the xml to create the work object
         //store it in the objectrepository
         //return the PID of the new workobject
