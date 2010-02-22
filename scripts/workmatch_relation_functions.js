@@ -1,9 +1,10 @@
-//the only function. Takes a string representation of a marcxchange post
+
+//importClass(Packages.dk.dbc.opensearch.common.metadata.DublinCoreElement);
+
+
+// Takes a string representation of a marcxchange post
 // and makes into an xml object where values are selected for another 
 // xml object which is sent back to the caller 
-
-//Should be part of a file containing the other functions used
-//in making the workrelations
 function generateSearchPairs( cargoXML )
 {
     var XML_cargo = new XML( cargoXML );
@@ -20,6 +21,8 @@ function generateSearchPairs( cargoXML )
 } 
 
 
+// Function that compares an object and a workobject. It gets their content
+// in string representations.
 function checkmatch( newObject, workObject )
 {
     var XML_DC_newObject = new XML( newObject );
@@ -30,31 +33,25 @@ function checkmatch( newObject, workObject )
     return false;
 }
 
-function makeworkobject( cargoXML )
+
+// Function that builds the originaldata and DC of a new workobject
+// It gets a string representation of the content of the object it must
+// be the workobject for and returns a string rep. of the content of the 
+// workobject. The DC is given to the function and filled in as a sideeffect
+function makeworkobject( cargoXML, workDC )
 {
     var XML_cargo = new XML( cargoXML );
-    var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1" );
+    var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
     //select the elements in the dc-xml that constitutes the work
     //do something with the xml and return it in string format
     print( "XML_cargo:"+ XML_cargo + "\n" );
-  
-    print( "humle:" + XML_cargo.humle +"\n" );
-    //XML_cargo.dc.appendChild(<identifier/>);
-    //print( "XML_cargo:"+ XML_cargo + "\n" );
-    
-    print( "type1:" + XML_cargo.dc.dc::type +"\n" );
+   
+    var creator = XML_cargo.dc::creator;
+    var source = XML_cargo.dc::source;
+    var title = XML_cargo.dc::title; 
     var type =  XML_cargo.dc::type;
+
     print( "type2: " +type+ "\n" );
-    //var title = XML_cargo.ns::title;
-    print( "XML_cargo:"+ XML_cargo + "\n" );
-    //print( "title :"+ title +"\n" );
-    
-    //title = XML_cargo.dc.title;
-    //print( "title: " + title + "\n" );
-    title = "Bastarden fra Istanbul";
-    source = "Bastarden fra Istanbul";
-    type = "bog";
-    creator ="Elif Shafak";
 
     res = "<ting:container><dkabm:record>\n"    
     + "<dc:source>internal</dc:source>\n"                                                    
@@ -65,8 +62,10 @@ function makeworkobject( cargoXML )
 
     res = res +"</dkabm:record>\n</ting:container>";
 
-//     var xml_res = new XML( res );
-//     print("xml_res:\n" + xml_res +"\n");
-    //return title;
+    workDC.setTitle( title );
+    workDC.setCreator( creator );
+    workDC.setType( type );
+    workDC.setSource( source );
+
     return res;
 }
