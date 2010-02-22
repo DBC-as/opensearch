@@ -31,6 +31,7 @@ import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
@@ -43,6 +44,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.TargetFields;
 
+import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -95,12 +97,17 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
         PID workPid = null;
         workPid = checkMatch( cargo, pidList );
-        //System.out.println( "The matching pid: " + workPid.getIdentifier() );
+
         if( workPid == null )
-        { 
-            workPid = createAndStoreWorkobject( cargo ); 
+        {
+            //System.out.println( "The matching pid: " + workPid.getIdentifier() );
+            workPid = createAndStoreWorkobject( cargo );
         }
-        // relatePostAndWork( , workPid );
+        
+        System.out.println( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
+        System.out.println( "work pid: "+ workPid.getIdentifier() );
+System.out.println( "Relating object and work");
+        relatePostAndWork( (PID)cargo.getIdentifier(), workPid );
 
         return cargo;
     }
@@ -246,6 +253,8 @@ public class MarcxchangeWorkRelation_2 implements IRelation
      */
     private PID createAndStoreWorkobject( CargoContainer cargo ) throws PluginException
     {
+        DublinCore workDC = new DublinCore();
+        CargoContainer workCargo = new CargoContainer();
         //get the cargos xml
         DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
         String tempDCString = getDCStreamAsString( theDC );
@@ -253,13 +262,36 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //call the javascript that creates a workobject xml from a cargo xml
         System.out.println( "calling makeworkobject" );
 
-        tempDCString = "<dc xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><dc:type>Anmeldelse</dc:type><dc:relation>28022859</dc:relation><dc:creator>Tom Hermansen</dc:creator><dc:source></dc:source><dc:title>[Anmeldelse]</dc:title><humle>ged</humle></dc>";
-        String workXml = (String)rhinoWrapper.run( "makeworkobject" ,tempDCString );
-        //System.out.println( "workXml :" + workXml );
+        //be warned there are sideeffects on the workDC
+        String workXml = (String)rhinoWrapper.run( "makeworkobject", tempDCString, workDC );
+        System.out.println( "workXml :" + workXml );
+
         //use the xml to create the work object
+        try
+        {
+            workCargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", "fakeAlias", workXml.getBytes() );
+        }
+        catch( IOException ioe )
+        {
+            String errorMsg = "Exception adding data to an empty CargoContainer";
+            log.error( errorMsg );
+            throw new PluginException( errorMsg, ioe);
+        }
+        workCargo.addMetaData( workDC );
+
         //store it in the objectrepository
+        try
+        {
+            this.objectRepository.storeObject( workCargo, "internal", "work");
+        }
+        catch ( ObjectRepositoryException ore)
+        {
+            String errorMsg = "Exception when trying to store work object";
+            log.error( errorMsg );
+            throw new PluginException( errorMsg, ore);
+        }
         //return the PID of the new workobject
-        return null;
+        return (PID)cargo.getIdentifier();
     }
 
 
@@ -268,9 +300,34 @@ public class MarcxchangeWorkRelation_2 implements IRelation
      * @param cargoPid, the pid of the post
      * @param workPid, the pid of the work
      */
-    private void relatePostAndWork( PID cargoPid, PID workPid )
+    private void relatePostAndWork( PID cargoPid, PID workPid ) throws PluginException
     {
         //call the addRelation method on the objectRepository both ways
+
+        try
+        {
+            this.objectRepository.addObjectRelation( workPid, DBCBIB.HAS_MANIFESTATION, cargoPid.getIdentifier() );
+
+        }
+        catch( ObjectRepositoryException ore )
+        {
+            String errorMsg = String.format( "Error when trying to add relation HAS_MANIFESTATION between workpid: %s and object: %s", workPid.getIdentifier(), cargoPid.getIdentifier() ) ;
+            log.error( errorMsg );
+            throw new PluginException( errorMsg, ore );
+
+        }
+
+        try{
+            this.objectRepository.addObjectRelation( cargoPid, DBCBIB.IS_MEMBER_OF_WORK, workPid.getIdentifier() );
+        }
+        catch( ObjectRepositoryException ore )
+        {
+            String errorMsg = String.format( "Error when trying to add relation IS_MEMBER_OF_WORK  between object: %s and work: %s", cargoPid.getIdentifier(), workPid.getIdentifier() ) ;
+            log.error( errorMsg );
+            throw new PluginException( errorMsg, ore );
+        }
+
+        System.out.println( "objects related" );
     }
 
 
