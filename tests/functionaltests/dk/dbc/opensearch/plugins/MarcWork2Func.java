@@ -212,17 +212,24 @@ public class MarcWork2Func
         }   
 
         //create the plugins
+        ForceFedoraPid ffpPlugin;
+        Store storePlugin;
         MarcxchangeWorkRelation_2 marcWork2Plugin;
         XMLDCHarvester dcPlugin = null;
-        try{
+        try
+        {
             dcPlugin = new XMLDCHarvester();
         }
         catch( PluginException pe )
         {
               System.err.println( pe );
         }
+        storePlugin = new Store();
+        ffpPlugin = new ForceFedoraPid();
         marcWork2Plugin = new MarcxchangeWorkRelation_2();
 
+        //give a repository to the Store plugin
+        storePlugin.setObjectRepository( repository );
         //give a repository to the marcWork2Plugin 
         marcWork2Plugin.setObjectRepository( repository );
 
@@ -231,7 +238,13 @@ public class MarcWork2Func
         {
             System.out.println( "Calling the getCargoContainer method on the dcPlugin " );
             testCargo = dcPlugin.getCargoContainer( ddj, anm1_data.getBytes( "UTF-8" ), alias );
-            System.out.println( "Calling the method on the marcWork2Plugin " );
+            System.out.println( "Calling the getCargoContainer method on the ffpPlugin" );
+            testCargo = ffpPlugin.getCargoContainer( testCargo );
+            
+            System.out.println( "Calling the storeCargoContainer method on the storePlugin" );
+            storePlugin.storeCargoContainer( testCargo );
+            
+            System.out.println( "Calling the getCargoContainer method on the marcWork2Plugin " );
             testCargo = marcWork2Plugin.getCargoContainer( testCargo ); 
         }
         catch( PluginException pe )
