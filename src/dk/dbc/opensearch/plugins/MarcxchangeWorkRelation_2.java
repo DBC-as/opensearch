@@ -88,7 +88,28 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
     @Override
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
-    {
+    {   
+        //creating the javascript environment
+        String jsFileName = new String( "workmatch_relation_functions.js" );
+        try
+        {
+            rhinoWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+            log.error( errorMsg, fnfe );
+            throw new PluginException( errorMsg, fnfe );
+        }
+        catch( ConfigurationException ce )
+        {
+            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+            log.fatal( errorMsg, ce );
+            throw new PluginException( errorMsg, ce );
+        }
+        rhinoWrapper.put( "log", log );
+        //done creating javascript environment        
+
         List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
         //System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
@@ -132,24 +153,24 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //start with dummy xml on the javascript-side
 
         // ought name of .js file to be configurable?
-        String jsFileName = new String( "workmatch_relation_functions.js" );
-        try
-        {
-            rhinoWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
-        }
-        catch( FileNotFoundException fnfe )
-        {
-            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-            log.error( errorMsg, fnfe );
-            throw new PluginException( errorMsg, fnfe );
-        }
-        catch( ConfigurationException ce )
-        {
-            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-            log.fatal( errorMsg, ce );
-            throw new PluginException( errorMsg, ce );
-        }
-        rhinoWrapper.put( "log", log );
+       //  String jsFileName = new String( "workmatch_relation_functions.js" );
+//         try
+//         {
+//             rhinoWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+//         }
+//         catch( FileNotFoundException fnfe )
+//         {
+//             String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+//             log.error( errorMsg, fnfe );
+//             throw new PluginException( errorMsg, fnfe );
+//         }
+//         catch( ConfigurationException ce )
+//         {
+//             String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+//             log.fatal( errorMsg, ce );
+//             throw new PluginException( errorMsg, ce );
+//         }
+//         rhinoWrapper.put( "log", log );
 
         // get the DC-Stream
         DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
