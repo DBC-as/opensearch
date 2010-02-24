@@ -90,23 +90,28 @@ public class MarcxchangeWorkRelation_2 implements IRelation
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
-        System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
+        log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
+        //System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
 
         List< PID > pidList = getWorkList( searchPairs );
-        System.out.println( String.format( "the pidList: %s", pidList.toString() ) );
+        //System.out.println( String.format( "the pidList: %s", pidList.toString() ) );
+        log.debug( String.format( "the pidList: %s", pidList.toString() ) );
 
         PID workPid = null;
         workPid = checkMatch( cargo, pidList );
 
         if( workPid == null )
         {
-            //System.out.println( "The matching pid: " + workPid.getIdentifier() );
+            log.info( "no matching work found creating and storing one" );
             workPid = createAndStoreWorkobject( cargo );
         }
         
-        System.out.println( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
-        System.out.println( "work pid: "+ workPid.getIdentifier() );
-System.out.println( "Relating object and work");
+        log.debug( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
+        //System.out.println( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
+        log.debug( "work pid: "+ workPid.getIdentifier() );
+        //System.out.println( "work pid: "+ workPid.getIdentifier() );
+        log.debug( "Relating object and work");
+        //System.out.println( "Relating object and work");
         relatePostAndWork( (PID)cargo.getIdentifier(), workPid );
 
         return cargo;
@@ -150,7 +155,8 @@ System.out.println( "Relating object and work");
         //create outputstream
 
         String dcString = getDCStreamAsString( theDC );
-        System.out.println( String.format( "the dc-string: %s", dcString ) );
+        //System.out.println( String.format( "the dc-string: %s", dcString ) );
+        log.debug( String.format( "the dc-string: %s", dcString ) );
         byte[] strippedOrgData = E4XXMLHeaderStripper.strip( cargo.getCargoObject( DataStreamType.OriginalData ).getBytes() );
         String orgData = new String ( strippedOrgData );
 
@@ -198,7 +204,8 @@ System.out.println( "Relating object and work");
         //make PIDs out of the String representations
         for( String pidString : pidStringList )
         {
-            System.out.println( String.format( "pidString: %s", pidString ) );
+            //System.out.println( String.format( "pidString: %s", pidString ) );
+            log.debug( String.format( "pidString: %s", pidString ) );
             pidList.add( new PID( pidString ) );
         }
 
@@ -270,11 +277,13 @@ System.out.println( "Relating object and work");
         String tempDCString = getDCStreamAsString( theDC );
 
         //call the javascript that creates a workobject xml from a cargo xml
-        System.out.println( "calling makeworkobject" );
+        //System.out.println( "calling makeworkobject" );
+        log.info( "calling makeworkobject" );
 
         //be warned there are sideeffects on the workDC
         String workXml = (String)rhinoWrapper.run( "makeworkobject", tempDCString, workDC );
-        System.out.println( "workXml :" + workXml );
+        //System.out.println( "workXml :" + workXml );
+        log.debug( "workXml :" + workXml );
 
         //use the xml to create the work object
         try
@@ -312,6 +321,7 @@ System.out.println( "Relating object and work");
      */
     private void relatePostAndWork( PID cargoPid, PID workPid ) throws PluginException
     {
+        log.info( "entering relatePostAndWork" );
         //call the addRelation method on the objectRepository both ways
 
         try
@@ -337,7 +347,8 @@ System.out.println( "Relating object and work");
             throw new PluginException( errorMsg, ore );
         }
 
-        System.out.println( "objects related" );
+        //System.out.println( "objects related" );
+        log.info( String.format( "post: %s related to work: %s", cargoPid.getIdentifier(), workPid.getIdentifier() ) );
     }
 
 
