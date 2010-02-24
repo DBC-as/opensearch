@@ -2,12 +2,15 @@
 //importClass(Packages.dk.dbc.opensearch.common.metadata.DublinCoreElement);
 
 
-// Takes a string representation of a marcxchange post
-// and makes into an xml object where values are selected for another 
-// xml object which is sent back to the caller 
-function generateSearchPairs( cargoXML )
+// Takes a string representation of a marcxchange posts dc-stream
+// and makes into an xml object where values are selected from. 
+// The selected values are put into an array which resides on the global 
+// namespace for the script. See comment below for use
+//\Todo: Find a better way to handle the return values 
+function generateSearchPairs( dcXML, originalXML, resultArray )
 {
-    var XML_cargo = new XML( cargoXML );
+    var XML_cargo = new XML( originalXML );
+    var XML_dc = new XML( dcXML )
     //do stuff
     //right now its a dummy
  
@@ -16,14 +19,14 @@ function generateSearchPairs( cargoXML )
     //put values in the pairArray that the calling java method looks in 
     //for searchpairs. Even indexes are fieldnames, uneven are values. Yes its hack'ish
     //but it works for now
-    pairArray[0] = "title";
-    pairArray[1] = XML_cargo.dc::title;
-    pairArray[2] = "title";
-    pairArray[3] = XML_cargo.dc::source;
-    pairArray[4] = "source";
-    pairArray[5] = XML_cargo.dc::title;
-    pairArray[6] = "source";
-    pairArray[7] = XML_cargo.dc::source;
+    resultArray[0] = "title";
+    resultArray[1] = XML_cargo.dc::title;
+    resultArray[2] = "title";
+    resultArray[3] = XML_cargo.dc::source;
+    resultArray[4] = "source";
+    resultArray[5] = XML_cargo.dc::title;
+    resultArray[6] = "source";
+    resultArray[7] = XML_cargo.dc::source;
 } 
 
 
@@ -138,10 +141,10 @@ function makeworkobject( cargoXML, workDC )
 
     res = String(xml);
 
-//    workDC.setTitle( title );
-//    workDC.setCreator( creator );
-//    workDC.setType( type );
-//    workDC.setSource( source );
+   workDC.setTitle( XML_cargo.dc::title );
+    workDC.setCreator( XML_cargo.dc::creator );
+    workDC.setType( XML_cargo.dc::type );
+    workDC.setSource( XML_cargo.dc::source );
 
     return res;
 }
