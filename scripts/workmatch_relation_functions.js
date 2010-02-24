@@ -11,13 +11,19 @@ function generateSearchPairs( cargoXML )
     //do stuff
     //right now its a dummy
  
+    var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
+
     //put values in the pairArray that the calling java method looks in 
     //for searchpairs. Even indexes are fieldnames, uneven are values. Yes its hack'ish
     //but it works for now
     pairArray[0] = "title";
-    pairArray[1] = "bastard*";
-    pairArray[2] = "creator";
-    pairArray[3] = "elif*";
+    pairArray[1] = XML_cargo.dc::title;
+    pairArray[2] = "title";
+    pairArray[3] = XML_cargo.dc::source;
+    pairArray[4] = "source";
+    pairArray[5] = XML_cargo.dc::title;
+    pairArray[6] = "source";
+    pairArray[7] = XML_cargo.dc::source;
 } 
 
 
@@ -25,12 +31,74 @@ function generateSearchPairs( cargoXML )
 // in string representations.
 function checkmatch( newObject, workObject )
 {
-    var XML_DC_newObject = new XML( newObject );
-    var XML_DC_workOject = new XML( workObject );
+    var newObjectXml = new XML( newObject );
+    var workObjectXml = new XML( workObject );
+    var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
+
+    var result = false;
+
+    print ("Type new: " + newObjectXml.dc::type + "\n");
+    print ("Type work: " + workObjectXml.dc::type + "\n");
 
     //check for a match. Return true if there is, false if not ;-)
-
-    return false;
+    switch (newObjectXml.dc::type) {
+      case "Anmeldelse":
+        result = false;
+        break;
+      case "Artikel":
+        if (newObjectXml.dc::title === workObjectXml.dc::title && newObjectXml.dc::creator === workObjectXml.dc::creator && workObjectXml.dc::type === "Artikel|Avisartikel|Tidsskriftsartikel") {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "Avis":
+        if (newObjectXml.dc::title === workObjectXml.dc::title && workObjectXml.dc::type === "Avis") {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "Avisartikel":
+        if (newObjectXml.dc::title === workObjectXml.dc::title && newObjectXml.dc::creator === workObjectXml.dc::creator && workObjectXml.dc::type === "Artikel|Avisartikel|Tidsskriftsartikel") {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "Tidsskrift":
+        if (newObjectXml.dc::title === workObjectXml.dc::title && workObjectXml.dc::type === "Tidsskrift") {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "Tidsskriftsartikel":
+        if (newObjectXml.dc::title === workObjectXml.dc::title && newObjectXml.dc::creator === workObjectXml.dc::creator && workObjectXml.dc::type === "Artikel|Avisartikel|Tidsskriftsartikel") {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      default:
+        if (newObjectXml.dc::source === workObjectXml.dc::source && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+          result = true;
+        } else if (newObjectXml.dc::source === workObjectXml.dc::title && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+          result = true;
+        } else if (newObjectXml.dc::title === workObjectXml.dc::source && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+          result = true;
+        } else if (newObjectXml.dc::title === workObjectXml.dc::title && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+    }
+    if (result === false) {
+      return false;
+    } else {
+      return true;
+    }
 }
 
 
@@ -41,31 +109,39 @@ function checkmatch( newObject, workObject )
 function makeworkobject( cargoXML, workDC )
 {
     var XML_cargo = new XML( cargoXML );
+    ting = new Namespace ( "ting", "http://www.dbc.dk/ting" );
+    dkabm = new Namespace ( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" );
+    dc = new Namespace ( "dc", "http://purl.org/dc/elements/1.1/" );
+
     var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
     //select the elements in the dc-xml that constitutes the work
     //do something with the xml and return it in string format
     print( "XML_cargo:"+ XML_cargo + "\n" );
    
-    var creator = XML_cargo.dc::creator;
-    var source = XML_cargo.dc::source;
-    var title = XML_cargo.dc::title; 
-    var type =  XML_cargo.dc::type;
+//    var creator = XML_cargo.dc::creator;
+//    var source = XML_cargo.dc::source;
+//    var title = XML_cargo.dc::title; 
+//    var type =  XML_cargo.dc::type;
 
-    print( "type2: " +type+ "\n" );
+    var xml = new XML (<container/>);
+    xml.addNamespace( ting );
+    xml.addNamespace( dkabm );
+    xml.addNamespace( dc );
+ 
+    xml.dkabm::record = "";
+    xml.dkabm::record.dc::title = XML_cargo.dc::title;
+    xml.dkabm::record.dc::creator = XML_cargo.dc::creator;
+    xml.dkabm::record.dc::type = XML_cargo.dc::type;
+    xml.dkabm::record.dc::source= XML_cargo.dc::source;
 
-    res = "<ting:container><dkabm:record>\n"    
-    + "<dc:source>internal</dc:source>\n"                                                    
-    + "<dc:title>"+title+"</dc:title>\n"
-    + "<dc:source>"+source+"</dc:source>\n"
-    + "<dc:type xsi:type=\"dkdcplus:BibDK-Type\">"+type+"</dc:type>\n"
-    + "<dc:creator>"+creator+"</dc:creator>\n";    
+    print (xml + "\n");
 
-    res = res +"</dkabm:record>\n</ting:container>";
+    res = String(xml);
 
-    workDC.setTitle( title );
-    workDC.setCreator( creator );
-    workDC.setType( type );
-    workDC.setSource( source );
+//    workDC.setTitle( title );
+//    workDC.setCreator( creator );
+//    workDC.setType( type );
+//    workDC.setSource( source );
 
     return res;
 }
