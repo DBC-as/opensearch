@@ -9,7 +9,7 @@
 //\Todo: Find a better way to handle the return values 
 function generateSearchPairs( dcXML, originalXML, resultArray )
 {
-    var XML_cargo = new XML( originalXML );
+    var XML_org = new XML( originalXML );
     var XML_dc = new XML( dcXML )
     //do stuff
     //right now its a dummy
@@ -20,13 +20,13 @@ function generateSearchPairs( dcXML, originalXML, resultArray )
     //for searchpairs. Even indexes are fieldnames, uneven are values. Yes its hack'ish
     //but it works for now
     resultArray[0] = "title";
-    resultArray[1] = XML_cargo.dc::title;
+    resultArray[1] = XML_dc.dc::title;
     resultArray[2] = "title";
-    resultArray[3] = XML_cargo.dc::source;
+    resultArray[3] = XML_dc.dc::source;
     resultArray[4] = "source";
-    resultArray[5] = XML_cargo.dc::title;
+    resultArray[5] = XML_dc.dc::title;
     resultArray[6] = "source";
-    resultArray[7] = XML_cargo.dc::source;
+    resultArray[7] = XML_dc.dc::source;
 } 
 
 
