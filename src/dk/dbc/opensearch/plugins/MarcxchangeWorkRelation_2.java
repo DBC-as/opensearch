@@ -155,7 +155,6 @@ System.out.println( "Relating object and work");
         String orgData = new String ( strippedOrgData );
 
         //give the script the list to put pairs in
-        //List<InputPair<String, String>> pairsList = new ArrayList<InputPair<String, String>>();
         String[] pairArray = new String[ 100 ];
   
         //execute the script that fills the pairsList
@@ -195,9 +194,6 @@ System.out.println( "Relating object and work");
             tempList.add( pair );
             pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) ); 
         }
-
-        //call getIdentifiers on the object repository
-        //pidStringList = objectRepository.getIdentifiersWithNamespace( searchList, 10000, "work:" );
 
         //make PIDs out of the String representations
         for( String pidString : pidStringList )
@@ -305,7 +301,7 @@ System.out.println( "Relating object and work");
             throw new PluginException( errorMsg, ore);
         }
         //return the PID of the new workobject
-        return (PID)cargo.getIdentifier();
+        return (PID)workCargo.getIdentifier();
     }
 
 
