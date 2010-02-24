@@ -7,6 +7,8 @@
 // The selected values are put into an array which resides on the global 
 // namespace for the script. See comment below for use
 //\Todo: Find a better way to handle the return values 
+//logging can be made through use of the "log" object which is part of the namespace
+// the methods log.debug, log.info, log.error, log.fatal are available
 function generateSearchPairs( dcXML, originalXML, resultArray )
 {
     var XML_org = new XML( originalXML );
