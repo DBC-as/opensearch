@@ -95,7 +95,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
         List< PID > pidList = getWorkList( searchPairs );
         //System.out.println( String.format( "the pidList: %s", pidList.toString() ) );
-        log.debug( String.format( "the pidList: %s", pidList.toString() ) );
+        log.debug( String.format( "length of pidList: %s", pidList.size() ) );
 
         PID workPid = null;
         workPid = checkMatch( cargo, pidList );
@@ -174,7 +174,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         {
             if ( pairArray[ i ] != null )
             {
-                searchList.add( new InputPair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ] ) );
+                searchList.add( new InputPair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
             }
         }
         return searchList;
@@ -260,7 +260,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
             //call the match test with the xmls until a match occurs
             match = (Boolean)rhinoWrapper.run( "checkmatch", dcString, tempDCString );
-            log.debug( String.format( "result of match on pid.getIdentifier: %s is %s ", pid.getIdentifier(), match ) );
+            log.debug( String.format( "result of match on post: %s on work: %s is %s ", cargo.getIdentifier().getIdentifier(), pid.getIdentifier(), match ) );
 
             if( match )
             {
