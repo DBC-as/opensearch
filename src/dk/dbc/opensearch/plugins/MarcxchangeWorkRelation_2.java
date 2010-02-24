@@ -149,6 +149,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
             log.fatal( errorMsg, ce );
             throw new PluginException( errorMsg, ce );
         }
+        rhinoWrapper.put( "log", log );
 
         // get the DC-Stream
         DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
@@ -190,16 +191,24 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //and add the results together in pidList
         //see if u can remove duples
 
+        int num = 0;
         List<PID> pidList = new ArrayList<PID>();
         List<String> pidStringList = new ArrayList<String>();
+        List<String> searchResultList = new ArrayList<String>();
         List<InputPair< TargetFields, String > > tempList = new ArrayList< InputPair< TargetFields, String > >();
 
         for( InputPair< TargetFields, String > pair : searchList )
         {
+            num++;
             tempList.clear();
             tempList.add( pair );
-            pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) ); 
+            searchResultList = objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ); 
+    //pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) );
+            log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
+            pidStringList.addAll( searchResultList ); 
         }
+
+        log.debug( String.format( "pidStringList: %s", pidStringList ) );
 
         //make PIDs out of the String representations
         for( String pidString : pidStringList )
@@ -247,9 +256,11 @@ public class MarcxchangeWorkRelation_2 implements IRelation
             }
             tempDC = (DublinCore)tempCargo.getMetaData( DataStreamType.DublinCoreData );
             tempDCString = getDCStreamAsString( tempDC );
+            log.debug( String.format( " matching postdc: %s with workdc: %s", dcString, tempDCString ) );
 
             //call the match test with the xmls until a match occurs
             match = (Boolean)rhinoWrapper.run( "checkmatch", dcString, tempDCString );
+            log.debug( String.format( "result of match on pid.getIdentifier: %s is %s ", pid.getIdentifier(), match ) );
 
             if( match )
             {
