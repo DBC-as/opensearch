@@ -122,8 +122,8 @@ System.out.println( "Relating object and work");
     private List< InputPair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
     {
         List< InputPair< TargetFields, String > > searchList = new ArrayList< InputPair< TargetFields, String > >();
-        //calls a javascript, with the dc-stream of the cargo as argument,
-        //that returns an xml with the pairs to generate
+        //calls a javascript, with the dc-stream and original data of the 
+        //cargo as argument, that returns an xml with the pairs to generate
         //start with dummy xml on the javascript-side
 
         // ought name of .js file to be configurable?
@@ -151,16 +151,18 @@ System.out.println( "Relating object and work");
 
         String dcString = getDCStreamAsString( theDC );
         System.out.println( String.format( "the dc-string: %s", dcString ) );
+        byte[] strippedOrgData = E4XXMLHeaderStripper.strip( cargo.getCargoObject( DataStreamType.OriginalData ).getBytes() );
+        String orgData = new String ( strippedOrgData );
 
         //give the script the list to put pairs in
         //List<InputPair<String, String>> pairsList = new ArrayList<InputPair<String, String>>();
         String[] pairArray = new String[ 100 ];
-        rhinoWrapper.put( "pairArray", pairArray );
-
+  
         //execute the script that fills the pairsList
-        rhinoWrapper.run( "generateSearchPairs", dcString );
+        rhinoWrapper.run( "generateSearchPairs", dcString, orgData, pairArray );
 
-        //go through the pairArray and create the TargetFields for the searchList
+        //go through the pairArray 
+        //create the TargetFields for the searchList
         int length = pairArray.length;
         for ( int i = 0; i < length; i += 2 )
         {
@@ -179,11 +181,23 @@ System.out.println( "Relating object and work");
      */
     private List< PID > getWorkList( List< InputPair< TargetFields, String > > searchList )
     {
-        List< PID > pidList = new ArrayList< PID >();
-        List< String > pidStringList;
+        //for each pair in the searchList, search the repository 
+        //and add the results together in pidList
+        //see if u can remove duples
+
+        List<PID> pidList = new ArrayList<PID>();
+        List<String> pidStringList = new ArrayList<String>();
+        List<InputPair< TargetFields, String > > tempList = new ArrayList< InputPair< TargetFields, String > >();
+
+        for( InputPair< TargetFields, String > pair : searchList )
+        {
+            tempList.clear();
+            tempList.add( pair );
+            pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) ); 
+        }
 
         //call getIdentifiers on the object repository
-        pidStringList = objectRepository.getIdentifiersWithNamespace( searchList, 10000, "work:" );
+        //pidStringList = objectRepository.getIdentifiersWithNamespace( searchList, 10000, "work:" );
 
         //make PIDs out of the String representations
         for( String pidString : pidStringList )
