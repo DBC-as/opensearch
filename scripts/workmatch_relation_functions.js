@@ -42,57 +42,71 @@ function checkmatch( newObject, workObject )
 
     var result = false;
 
-    print ("Type new: " + newObjectXml.dc::type + "\n");
-    print ("Type work: " + workObjectXml.dc::type + "\n");
+    var newTitle = String(newObjectXml.dc::title);
+    var workTitle = String(workObjectXml.dc::title);
+    var newSource = String(newObjectXml.dc::source);
+    var workSource = String(workObjectXml.dc::source);
+    var newCreator = String(newObjectXml.dc::creator);
+    var workType = String(workObjectXml.dc::creator);
+    var newType = String(newObjectXml.dc::type);
+    var workType = String(workObjectXml.dc::type);
 
+    log.debug( "RLO: start match\n");
     //check for a match. Return true if there is, false if not ;-)
-    switch (newObjectXml.dc::type) {
+    switch (newType) {
       case "Anmeldelse":
+        log.debug( "RLO: Anmeldelse\n");
         result = false;
         break;
       case "Artikel":
-        if (newObjectXml.dc::title === workObjectXml.dc::title && newObjectXml.dc::creator === workObjectXml.dc::creator && workObjectXml.dc::type === "Artikel|Avisartikel|Tidsskriftsartikel") {
+        log.debug( "RLO: Artikel\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
           result = true;
         } else {
           result = false;
         }
         break;
       case "Avis":
-        if (newObjectXml.dc::title === workObjectXml.dc::title && workObjectXml.dc::type === "Avis") {
+        log.debug( "RLO: Avis\n");
+        if (newTitle === workTitle && workType === "Avis") {
           result = true;
         } else {
           result = false;
         }
         break;
       case "Avisartikel":
-        if (newObjectXml.dc::title === workObjectXml.dc::title && newObjectXml.dc::creator === workObjectXml.dc::creator && workObjectXml.dc::type === "Artikel|Avisartikel|Tidsskriftsartikel") {
+        log.debug( "RLO: Avisartikel\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
           result = true;
         } else {
           result = false;
         }
         break;
       case "Tidsskrift":
-        if (newObjectXml.dc::title === workObjectXml.dc::title && workObjectXml.dc::type === "Tidsskrift") {
+        log.debug( "RLO: Tidsskrift\n");
+        if (newTitle === workTitle && workType === "Tidsskrift") {
           result = true;
         } else {
           result = false;
         }
         break;
       case "Tidsskriftsartikel":
-        if (newObjectXml.dc::title === workObjectXml.dc::title && newObjectXml.dc::creator === workObjectXml.dc::creator && workObjectXml.dc::type === "Artikel|Avisartikel|Tidsskriftsartikel") {
+        log.debug( "RLO: Tidsskriftsartikel\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
           result = true;
         } else {
           result = false;
         }
         break;
       default:
-        if (newObjectXml.dc::source === workObjectXml.dc::source && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        log.debug( "RLO: default\n");
+        if (newSource !== "" && workSource !== "" && newSource === workSource && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
           result = true;
-        } else if (newObjectXml.dc::source === workObjectXml.dc::title && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
           result = true;
-        } else if (newObjectXml.dc::title === workObjectXml.dc::source && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
           result = true;
-        } else if (newObjectXml.dc::title === workObjectXml.dc::title && workObjectXml.dc::type !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
           result = true;
         } else {
           result = false;
