@@ -89,40 +89,50 @@ public class ForceFedoraPid implements IAnnotate
 
         InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
 
-        // Find title of the docbook document
-        String title;
+        // Find id of the docbook document
+        String regNum;
         try
         {
-            title = xPathExpression.evaluate( docbookSource ).replaceAll( "\\s", "+" );
+            regNum = xPathExpression.evaluate( docbookSource ).replaceAll( "\\s", "+" );
         }
         catch( XPathExpressionException xpe )
         {
-            throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
+            throw new PluginException( "Could not evaluate xpath expression to find registration number", xpe );
         }
 
-        log.trace( String.format( "title found [%s]", title ) );
+        log.trace( String.format( "registration number found [%s]", regNum ) );
 
         String newID = null;
-        if ( title == null || title.equals( "" ) )
+
+        if ( regNum == null || regNum.equals( "" ) )
         {
             return null;
         }
-        else
+        //    else
+        //         {
+        try
         {
-            try
+            newID = co.getSubmitter() + ":" + regNum.substring( 0, regNum.indexOf( '|' ) );
+            if ( newID.length() > 64 )
             {
-                newID = co.getSubmitter() + ":" + title.substring( 0, title.indexOf( '|' ) );
-                if ( newID.length() > 64 )
-                {
-                    log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0, 64 ) ) );
-                    newID = newID.substring( 0, 64 );
-                }
+                log.warn( String.format( "Constructed ID %s to long shortning to %s", newID, newID.substring( 0, 64 ) ) );
+                newID = newID.substring( 0, 64 );
             }
-            catch ( StringIndexOutOfBoundsException sioobe )
-            {
-                log.debug( String.format( "Wrapping index out of bounds exceptio and throwing plugin exception", sioobe.getMessage() ) );
-                throw new PluginException( "Could not get new id for cargo", sioobe );
-            }
+        }
+        catch ( StringIndexOutOfBoundsException sioobe )
+        {
+            log.debug( String.format( "Wrapping index out of bounds exceptio and throwing plugin exception", sioobe.getMessage() ) );
+            throw new PluginException( "Could not get new id for cargo", sioobe );
+        }
+        //   }
+        //We assume that co.submitter is at least 1 in length if set, so newID must be
+        //at least 3 in length to be valid (1 for submitter 1 for ":" and 1 for regNum)
+        //So anything shorter than 3 is invalid and we return null to tell we cant make
+        //a valid indentifier
+
+        if( newID.length() < 3 )
+        {
+            return null;
         }
 
         return newID;
@@ -133,16 +143,25 @@ public class ForceFedoraPid implements IAnnotate
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         String s = getDCIdentifierFromOriginal( cargo );
-        if ( s != null && s.length() > 3 )
+       
+        // if ( s != null && s.length() > 3 )
+        //         {
+        //             log.info( String.format( "Forcing Store ID to %s", s ) );
+        //             cargo.setIdentifier( new PID( s ));
+        //         }
+        //         else if ( s == null )
+        //         {
+        //             throw new PluginException( "Could not obtain identifier from xml using xpath" );
+        //         }
+        
+        if( s == null )
         {
-            log.info( String.format( "Forcing Store ID to %s", s ) );
-            cargo.setIdentifier( new PID( s ));
-        }
-        else if ( s == null )
-        {
-            throw new PluginException( "Could not obtain identifier from xml using xpath" );
+            throw new PluginException( "could not create valid identifier from data" );
         }
 
+        log.info( String.format( "Forcing Store ID to %s", s ) );
+        cargo.setIdentifier( new PID( s ));
+        
         return cargo;
     }
 }
