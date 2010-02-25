@@ -54,6 +54,7 @@ public final class OpensearchNamespaceContext implements NamespaceContext
         DCMI( "dcmitype", "http://purl.org/dc/dcmitype/" ),
         DCTERMS( "dcterms", "http://purl.org/dc/terms/" ),
         AC( "ac", "http://biblstandard.dk/ac/namespace/" ),
+	OSO( "oso", "http://oss.dbc.dk/ns/opensearchobject" ),
         DKDCPLUS( "dkdcplus", "http://biblstandard.dk/abm/namespace/dkdcplus/" );
 
         private String prefix;

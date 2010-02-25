@@ -59,7 +59,7 @@ public class ForceFedoraPid implements IAnnotate
     }
 
 
-    private String getDCIdentifierFromOriginal( CargoContainer cargo ) throws PluginException
+    private String getDCIdentifierFromOriginal( CargoContainer cargo, String xpathStr ) throws PluginException
     {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -77,7 +77,7 @@ public class ForceFedoraPid implements IAnnotate
         xpath.setNamespaceContext( nsc );
         XPathExpression xPathExpression;
 
-        String xpathStr = "/ting:container/dkabm:record/ac:identifier";
+        // String xpathStr = "/ting:container/dkabm:record/ac:identifier";
         try
         {
             xPathExpression = xpath.compile( xpathStr );
@@ -102,14 +102,12 @@ public class ForceFedoraPid implements IAnnotate
 
         log.trace( String.format( "registration number found [%s]", regNum ) );
 
-        String newID = null;
-
         if ( regNum == null || regNum.equals( "" ) )
         {
             return null;
         }
-        //    else
-        //         {
+
+        String newID = null;
         try
         {
             newID = co.getSubmitter() + ":" + regNum.substring( 0, regNum.indexOf( '|' ) );
@@ -124,12 +122,11 @@ public class ForceFedoraPid implements IAnnotate
             log.debug( String.format( "Wrapping index out of bounds exceptio and throwing plugin exception", sioobe.getMessage() ) );
             throw new PluginException( "Could not get new id for cargo", sioobe );
         }
-        //   }
+
         //We assume that co.submitter is at least 1 in length if set, so newID must be
         //at least 3 in length to be valid (1 for submitter 1 for ":" and 1 for regNum)
         //So anything shorter than 3 is invalid and we return null to tell we cant make
         //a valid indentifier
-
         if( newID.length() < 3 )
         {
             return null;
@@ -142,22 +139,19 @@ public class ForceFedoraPid implements IAnnotate
     @Override
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
-        String s = getDCIdentifierFromOriginal( cargo );
-       
-        // if ( s != null && s.length() > 3 )
-        //         {
-        //             log.info( String.format( "Forcing Store ID to %s", s ) );
-        //             cargo.setIdentifier( new PID( s ));
-        //         }
-        //         else if ( s == null )
-        //         {
-        //             throw new PluginException( "Could not obtain identifier from xml using xpath" );
-        //         }
-        
-        if( s == null )
-        {
-            throw new PluginException( "could not create valid identifier from data" );
-        }
+	
+	String s = getDCIdentifierFromOriginal( cargo, "/ting:container/dkabm:record/ac:identifier" );
+	if ( s == null )
+	{
+	    // We did not find anything in the above xpath.
+	    // Lets try this one:
+	    // This is a PG WebService ThemaObject search: (see bug#10085)
+	    s = getDCIdentifierFromOriginal( cargo, "/ting:container/oso:object/oso:identifier" );
+	    if( s == null )
+	    {
+		throw new PluginException( "could not create valid identifier from data" );
+	    }
+	}
 
         log.info( String.format( "Forcing Store ID to %s", s ) );
         cargo.setIdentifier( new PID( s ));
