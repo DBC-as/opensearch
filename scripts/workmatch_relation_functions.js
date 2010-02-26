@@ -51,15 +51,15 @@ function checkmatch( newObject, workObject )
     var newType = String(newObjectXml.dc::type);
     var workType = String(workObjectXml.dc::type);
 
-    log.debug( "RLO: start match\n");
+    Log.debug( "RLO: start match\n");
     //check for a match. Return true if there is, false if not ;-)
     switch (newType) {
       case "Anmeldelse":
-        log.debug( "RLO: Anmeldelse\n");
+        Log.debug( "RLO: Anmeldelse\n");
         result = false;
         break;
       case "Artikel":
-        log.debug( "RLO: Artikel\n");
+        Log.debug( "RLO: Artikel\n");
         if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
           result = true;
         } else {
@@ -67,7 +67,7 @@ function checkmatch( newObject, workObject )
         }
         break;
       case "Avis":
-        log.debug( "RLO: Avis\n");
+        Log.debug( "RLO: Avis\n");
         if (newTitle === workTitle && workType === "Avis") {
           result = true;
         } else {
@@ -75,7 +75,7 @@ function checkmatch( newObject, workObject )
         }
         break;
       case "Avisartikel":
-        log.debug( "RLO: Avisartikel\n");
+        Log.debug( "RLO: Avisartikel\n");
         if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
           result = true;
         } else {
@@ -83,7 +83,7 @@ function checkmatch( newObject, workObject )
         }
         break;
       case "Tidsskrift":
-        log.debug( "RLO: Tidsskrift\n");
+        Log.debug( "RLO: Tidsskrift\n");
         if (newTitle === workTitle && workType === "Tidsskrift") {
           result = true;
         } else {
@@ -91,7 +91,7 @@ function checkmatch( newObject, workObject )
         }
         break;
       case "Tidsskriftsartikel":
-        log.debug( "RLO: Tidsskriftsartikel\n");
+        Log.debug( "RLO: Tidsskriftsartikel\n");
         if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
           result = true;
         } else {
@@ -99,7 +99,7 @@ function checkmatch( newObject, workObject )
         }
         break;
       default:
-        log.debug( "RLO: default\n");
+        Log.debug( "RLO: default\n");
         if (newSource !== "" && workSource !== "" && newSource === workSource && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
           result = true;
         } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {

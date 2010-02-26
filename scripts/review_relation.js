@@ -3,12 +3,12 @@
 function main( submitter, format, language, xml_review, pid )
 {
 
-    log.info( "Entering javascript" );
+    Log.info( "Entering javascript" );
 
     // Writing out the parameters:
-    log.info( "submitter: " + submitter );
-    log.info( "format:    " + format );
-    log.info( "language:  " + language );
+    Log.info( "submitter: " + submitter );
+    Log.info( "format:    " + format );
+    Log.info( "language:  " + language );
     // Omitting printing of xml since it just takes up to much space:
     // log.info( "XML: \n" + xml_review  );
 
@@ -26,21 +26,21 @@ function main( submitter, format, language, xml_review, pid )
 
     var identifier = XML_review2.*.*.*.(@tag=='014').*.(@code=='a');
     
-    log.info( "Identifier: " + identifier );    
-    log.info( "pid: " + pid );
+    Log.info( "Identifier: " + identifier );    
+    Log.info( "pid: " + pid );
 
     var results = scriptClass.getPID( identifier );
 
     for ( var i = 0; i < results.length; ++i ) {
 	result = results[i];
 
-	log.info( "result: " + result );
+	Log.info( "result: " + result );
 
 	scriptClass.createRelation( pid, "reviewOf", result);
 	scriptClass.createRelation( result, "hasReview", pid);
     }
 
 
-    log.info( "Leaving javascript" );
+    Log.info( "Leaving javascript" );
 
 }

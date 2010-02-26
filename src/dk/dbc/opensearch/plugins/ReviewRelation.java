@@ -162,7 +162,7 @@ public class ReviewRelation implements IRelation
         
         scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
         jsWrapper.put( "scriptClass", scriptClass );
-        jsWrapper.put( "log", log );
+        jsWrapper.put( "Log", log ); //SOI likes it with capital "L"
     }
 
 }

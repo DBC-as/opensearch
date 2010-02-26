@@ -107,7 +107,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
             log.fatal( errorMsg, ce );
             throw new PluginException( errorMsg, ce );
         }
-        rhinoWrapper.put( "log", log );
+        rhinoWrapper.put( "Log", log );//SOI prefers it with capital "L"
         //done creating javascript environment        
 
         List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
