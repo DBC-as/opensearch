@@ -26,7 +26,7 @@ function lookup_dbcmap( format )
 {
     if( dbcmap[ format ] == undefined ) 
     {
-        log.error("Unknown folkebib format :" + format );
+        Log.error("Unknown folkebib format :" + format );
         throw new PluginException("Unknown folkebib format :" + format );
     } 
     else 
@@ -45,7 +45,7 @@ function lookup_150014( format )
 {
     if( _150014map[ format ] == undefined ) 
     {
-        log.error("Unknown 150014 format :" + format );
+        Log.error("Unknown 150014 format :" + format );
 	throw new PluginException( "Unknown 150014 format :" + format );
     }
 
@@ -66,7 +66,7 @@ function lookup_folkebib( submitter )
 {
     if( folkebibmap[ submitter ] == undefined ) 
     {
-        log.error("Unknown folkebib submitter :" );
+        Log.error("Unknown folkebib submitter :" );
 	throw new PluginException("Unknown folkebib submitter :" + submitter);
     }
 
@@ -149,7 +149,7 @@ function addOwnerRelation( rels_ext, submitter, format )
     }
     else 
     {
-        log.warn("Unknown submitter - no owner relations set. ");
+        Log.warn("Unknown submitter - no owner relations set. ");
         return rels_ext;
     }
 }
