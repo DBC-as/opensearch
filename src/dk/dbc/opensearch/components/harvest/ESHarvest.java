@@ -27,10 +27,15 @@
 package dk.dbc.opensearch.components.harvest ;
 
 
-import dk.dbc.opensearch.common.types.IJob;
-import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
+import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
+import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -42,10 +47,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -241,6 +250,63 @@ public class ESHarvest implements IHarvest
         return referenceData;
     }
 
+    Document createReferenceDataDocument( String referenceData, ESIdentifier id ) 
+    {
+
+	Document doc = null;
+	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+	boolean DocOK = true; // The Doc structure has no problems
+	try
+            {
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
+            }
+	catch( ParserConfigurationException pce )
+            {
+                log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
+                DocOK = false;
+            }
+	catch( SAXException se )
+            {
+                log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
+                DocOK = false;
+            }
+	catch( IOException ioe )
+            {
+                log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
+                DocOK = false;
+            }
+
+	if ( DocOK )
+            {
+		//                IJob theJob = new Job( id, doc );
+		//                theJobList.add( theJob );
+		return doc;
+            }
+	else
+            {
+                try
+		    {
+			setStatusFailure( id, "The referencedata contains malformed XML" );
+		    }
+                catch ( HarvesterUnknownIdentifierException huie )
+		    {
+			log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
+		    }
+                catch ( HarvesterInvalidStatusChangeException hisce )
+		    {
+			log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
+		    }
+		catch ( HarvesterIOException hioe )
+		{
+		    log.error( String.format( "IO Error when changing JobStatus ID: %s Msg: %s ", id, hioe.getMessage() ), hioe );
+		}
+            }
+
+	return doc;
+
+    }
 
     public List< IJob > getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
@@ -300,51 +366,55 @@ public class ESHarvest implements IHarvest
 
             String referenceData = retrieveReferenceData( id, conn );
 
-            Document doc = null;
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	    Document doc = createReferenceDataDocument( referenceData, id );
+	    IJob theJob = new Job( id, doc );
+	    theJobList.add( theJob );
 
-            boolean DocOK = true; // The Doc structure has no problems
-            try
-            {
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
-            }
-            catch( ParserConfigurationException pce )
-            {
-                log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
-                DocOK = false;
-            }
-            catch( SAXException se )
-            {
-                log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
-                DocOK = false;
-            }
-            catch( IOException ioe )
-            {
-                log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
-                DocOK = false;
-            }
+            // Document doc = null;
+            // DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-            if ( DocOK )
-            {
-                IJob theJob = new Job( id, doc );
-                theJobList.add( theJob );
-            }
-            else
-            {
-                try
-                {
-                    setStatusFailure( id, "The referencedata contains malformed XML" );
-                }
-                catch ( HarvesterUnknownIdentifierException huie )
-                {
-                    log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
-                }
-                catch ( HarvesterInvalidStatusChangeException hisce )
-                {
-                    log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
-                }
-            }
+            // boolean DocOK = true; // The Doc structure has no problems
+            // try
+            // {
+            //     DocumentBuilder builder = factory.newDocumentBuilder();
+            //     doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
+            // }
+            // catch( ParserConfigurationException pce )
+            // {
+            //     log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
+            //     DocOK = false;
+            // }
+            // catch( SAXException se )
+            // {
+            //     log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
+            //     DocOK = false;
+            // }
+            // catch( IOException ioe )
+            // {
+            //     log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
+            //     DocOK = false;
+            // }
+
+            // if ( DocOK )
+            // {
+            //     IJob theJob = new Job( id, doc );
+            //     theJobList.add( theJob );
+            // }
+            // else
+            // {
+            //     try
+            //     {
+            //         setStatusFailure( id, "The referencedata contains malformed XML" );
+            //     }
+            //     catch ( HarvesterUnknownIdentifierException huie )
+            //     {
+            //         log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
+            //     }
+            //     catch ( HarvesterInvalidStatusChangeException hisce )
+            //     {
+            //         log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
+            //     }
+            // }
         }
 
         log.info( String.format( "Found %s available Jobs", theJobList.size() ) );
@@ -430,12 +500,55 @@ public class ESHarvest implements IHarvest
         return returnData;
     }
 
+
+
     public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
-        CargoContainer returnCargo = null;
-        
+	ESIdentifier id = (ESIdentifier)jobId;
 
-        return returnCargo;
+        // get a connection from the connectionpool:
+        Connection conn;
+        try
+        {
+            conn = connectionPool.getConnection();
+        }
+        catch ( SQLException sqle )
+        {
+            String errorMsg = new String("Could not get a db-connection from the connection pool");
+            log.fatal( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, sqle );
+        }
+	
+	String referenceData = retrieveReferenceData( id, conn );
+	Document doc = createReferenceDataDocument( referenceData, id );
+	DatadockJob job = new DatadockJob( id, doc );
+
+	// Retrieve the data.
+	// Notice: This is _not_ the right way to do it, since we call a function 
+	// which creates a new connection, i.e. we now have two open db-connections.
+	// When getData is supposed to be removed, it should probably just be refactored in
+	// to a more simple function taking a connection as a parameter.
+	byte[] data = getData( id );
+
+	// Hmmmm.... I'm not sure how to retrieve the alias.
+	// For now, just to make the compiler eat this function, i'll add a hardcoded string:
+	String alias = new String( "HardCodedAliasString!" );
+
+	log.debug( "Creating CargoContainer" );
+        CargoContainer cargo = new CargoContainer();
+
+	try
+	{
+	    cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), "da", "text/xml", alias, data );
+	} 
+	catch ( IOException ioe )
+	{
+	    String errMsg = new String( "Could not add OriginalData to CargoContainer" );
+	    log.fatal( errMsg, ioe );
+	    throw new HarvesterIOException( errMsg, ioe );
+	}
+
+        return cargo;
     }
 
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
