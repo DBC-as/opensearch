@@ -419,34 +419,12 @@ public class ESHarvest implements IHarvest
     	return theJobList;
     }
 
-
-    /**
-     *  Retrieves data from the ES-base associated with the jobId.
-     * 
-     *  @deprecated This function is replaced with {@link #getCargoContainer}.
-     */
-    @Deprecated
-    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
+    
+    // This function consist of a part of the "old" getData function,
+    // since part of the functionbody was needed in getCargoContainer 
+    private byte[] getDataDBCall( ESIdentifier ESJobId, Connection conn ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
-        log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
-
-        // get a connection from the connectionpool:
-        Connection conn;
-
-        try
-        {
-            conn = connectionPool.getConnection();
-        }
-        catch( SQLException sqle )
-        {
-            String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
-        }
-
-        //get the data associated with the identifier from the record field
-        byte[] returnData = null;
-        ESIdentifier ESJobId = (ESIdentifier)jobId;
+	byte[] returnData = null;
 
         try
         {
@@ -489,6 +467,82 @@ public class ESHarvest implements IHarvest
             log.fatal(  errorMsg, sqle );
             throw new HarvesterIOException( errorMsg, sqle );
         }
+	
+	return returnData;
+
+    }
+
+    /**
+     *  Retrieves data from the ES-base associated with the jobId.
+     * 
+     *  @deprecated This function is replaced with {@link #getCargoContainer}.
+     */
+    @Deprecated
+    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
+    {
+        log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
+
+        // get a connection from the connectionpool:
+        Connection conn;
+
+        try
+        {
+            conn = connectionPool.getConnection();
+        }
+        catch( SQLException sqle )
+        {
+            String errorMsg = new String("Could not get a db-connection from the connection pool");
+            log.fatal( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, sqle );
+        }
+
+        //get the data associated with the identifier from the record field
+        byte[] returnData = null;
+        ESIdentifier ESJobId = (ESIdentifier)jobId;
+
+	returnData = getDataDBCall( ESJobId, conn ); // the deleted function below is moved into a method of its own
+
+        // try
+        // {
+	//     PreparedStatement pstmt = conn.prepareStatement( "SELECT record " +
+	// 						     "FROM suppliedrecords " +
+	// 						     "WHERE targetreference = ? " +
+	// 						     "AND lbnr = ?" );
+	//     pstmt.setInt( 1, ESJobId.getTargetRef() );
+	//     pstmt.setInt( 2, ESJobId.getLbNr() );
+        //     ResultSet rs = pstmt.executeQuery( );
+        //     if ( ! rs.next() )
+        //     {
+        //         // The ID does not exist
+        //         String errorMsg = String.format( "the Identifier %s is unknown in the base", ESJobId );
+        //         log.error( errorMsg );
+        //         throw new HarvesterUnknownIdentifierException( errorMsg );
+        //     }
+        //     else
+        //     {
+        //         // The ID exist
+        //         Blob data = rs.getBlob( 1 );
+        //         long blobLength = data.length();
+        //         if ( blobLength > 0 )
+        //         {
+        //             // Return data
+        //             returnData = data.getBytes( 1L, (int)blobLength );
+        //         }
+        //         else
+        //         {
+        //             // For some unknown reason, there is no data associated with the ID.
+        //             String errorMsg = String.format( "No data associated with id %s", ESJobId );
+        //             log.error( errorMsg );
+        //             throw new HarvesterIOException( errorMsg );
+        //         }
+        //     }
+        // }
+        // catch( SQLException sqle )
+        // {
+        //     String errorMsg = new String( "A database error occured " );
+        //     log.fatal(  errorMsg, sqle );
+        //     throw new HarvesterIOException( errorMsg, sqle );
+        // }
 
         releaseConnection( conn );
 
@@ -519,17 +573,10 @@ public class ESHarvest implements IHarvest
 	DatadockJob job = new DatadockJob( id, doc );
 
 	// Retrieve the data.
-	// Notice: This is _not_ the right way to do it, since we call a function 
-	// which creates a new connection, i.e. we now have two open db-connections.
-	// When getData is supposed to be removed, it should probably just be refactored in
-	// to a more simple function taking a connection as a parameter.
-	byte[] data = getData( id );
-
-	// Hmmmm.... I'm not sure how to retrieve the alias.
-	// For now, just to make the compiler eat this function, i'll add a hardcoded string:
-	String alias = null;
+	byte[] data = getDataDBCall( id , conn );
 
 	// Retriving alias:
+	String alias = null;
 	String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
 	try
 	{
