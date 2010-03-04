@@ -27,8 +27,6 @@
 package dk.dbc.opensearch.components.harvest ;
 
 
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -36,6 +34,7 @@ import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
+import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,15 +46,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -532,7 +527,34 @@ public class ESHarvest implements IHarvest
 
 	// Hmmmm.... I'm not sure how to retrieve the alias.
 	// For now, just to make the compiler eat this function, i'll add a hardcoded string:
-	String alias = new String( "HardCodedAliasString!" );
+	String alias = null;
+
+	// Retriving alias:
+	String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
+	try
+	{
+	    alias = DatadockJobsMap.getIndexingAlias( job.getSubmitter(), job.getFormat() );
+	}
+       	catch( ConfigurationException ce)
+	{
+	    log.error( errMsg, ce );
+	    throw new HarvesterIOException( errMsg, ce );
+	}
+	catch( IOException ioe )
+	{
+	    log.error( errMsg, ioe );
+	    throw new HarvesterIOException( errMsg, ioe );
+	}
+	catch( ParserConfigurationException pce )
+	{
+	    log.error( errMsg, pce );
+	    throw new HarvesterIOException( errMsg, pce );
+	}
+	catch( SAXException saxe )
+	{
+	    log.error( errMsg, saxe );
+	    throw new HarvesterIOException( errMsg, saxe );
+	}
 
 	log.debug( "Creating CargoContainer" );
         CargoContainer cargo = new CargoContainer();
@@ -543,9 +565,9 @@ public class ESHarvest implements IHarvest
 	} 
 	catch ( IOException ioe )
 	{
-	    String errMsg = new String( "Could not add OriginalData to CargoContainer" );
-	    log.fatal( errMsg, ioe );
-	    throw new HarvesterIOException( errMsg, ioe );
+	    String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
+	    log.fatal( errorMsg, ioe );
+	    throw new HarvesterIOException( errorMsg, ioe );
 	}
 
         return cargo;
