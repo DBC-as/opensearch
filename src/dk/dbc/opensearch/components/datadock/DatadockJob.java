@@ -46,6 +46,7 @@ public class DatadockJob implements IJob
     
     private String submitter;
     private String format;
+    private String language;
 
     private IIdentifier identifier;
     private Document referenceData;
@@ -80,6 +81,15 @@ public class DatadockJob implements IJob
     public String getFormat()
     {
         return this.format;
+    }
+
+    /**
+     * Gets the language
+     * @return The language
+     */
+    public String getLanguage()
+    {
+	return this.language;
     }
 
 
@@ -133,5 +143,6 @@ public class DatadockJob implements IJob
         NamedNodeMap attributes = info.getAttributes();
         this.format = attributes.getNamedItem( "format" ).getNodeValue();
         this.submitter = attributes.getNamedItem( "submitter" ).getNodeValue();
+        this.language = attributes.getNamedItem( "lang" ).getNodeValue();
     }
 }

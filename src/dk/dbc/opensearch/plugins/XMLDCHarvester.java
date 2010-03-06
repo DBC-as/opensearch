@@ -72,7 +72,7 @@ public class XMLDCHarvester implements ICreateCargoContainer
 
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
     {      
-        return createCargoContainerFromFile( job.getSubmitter(), job.getFormat(), data, alias );
+        return createCargoContainerFromFile( job, data, alias );
     }
 
 
@@ -84,14 +84,14 @@ public class XMLDCHarvester implements ICreateCargoContainer
      * @throws XPathExpressionException
      * @throws IOException if the data cannot be read
      */
-    private CargoContainer createCargoContainerFromFile( String submitter, String format, byte[] data, String alias ) throws PluginException
+    private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data, String alias ) throws PluginException
     {
         CargoContainer cargo = new CargoContainer( );
                
         try
         {
             /** \todo: hardcoded values for mimetype, language*/
-            cargo.add( DataStreamType.OriginalData, format, submitter, "da", "text/xml", alias, data );
+            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", alias, data );
 
             
             log.trace( "Constructing DC datastream" );

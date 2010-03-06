@@ -63,12 +63,11 @@ public class XMLHarvester implements ICreateCargoContainer
         
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
-        String lang = "da";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
 
         try
         {
-            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), lang, mimetype, alias, data );
+            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), job.getLanguage(), mimetype, alias, data );
         }
         catch (IOException ioe)
         {

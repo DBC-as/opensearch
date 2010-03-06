@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
 
 public class DatadockJobTest {
 
-    static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\"/></referencedata>";
+    static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"da\"/></referencedata>";
     @Mocked IIdentifier mockIdentifier;
     private Document xmldata;
 
@@ -50,6 +50,7 @@ public class DatadockJobTest {
         assertEquals( mockIdentifier, job.getIdentifier() );
         assertEquals( "775100", job.getSubmitter() );
         assertEquals( "ebrary", job.getFormat() );
+	assertEquals( "da", job.getLanguage() );
     }
 
     @Test( expected=IllegalStateException.class )
