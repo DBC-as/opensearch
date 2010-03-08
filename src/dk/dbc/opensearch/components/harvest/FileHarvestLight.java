@@ -72,9 +72,13 @@ public class FileHarvestLight implements IHarvest
     
     private Vector<String> FileVector;
     private Iterator iter;
-    private String dir = "Harvest";
     private File path;
     private FilenameFilter[] filterArray;
+    private String harvesterDirName = "Harvest";
+    private String successDirName = "success";
+    private String failureDirName = "failure";
+
+
     /**
      *
      */
@@ -82,7 +86,7 @@ public class FileHarvestLight implements IHarvest
     {
         filterArray = new FilenameFilter[] { new NoRefFileFilter() };
 
-        path = FileHandler.getFile( dir );
+        path = FileHandler.getFile( harvesterDirName );
         if( ! path.exists() )
         {
             String errMsg = String.format( "Harvest folder %s does not exist!", path );
@@ -90,13 +94,16 @@ public class FileHarvestLight implements IHarvest
             throw new HarvesterIOException( errMsg );
         }
 
+	createDirectoryIfNotExisting( path, successDirName );
+	createDirectoryIfNotExisting( path, failureDirName );
+
     }
 
 
     public void start()
     {
         //get the files in the dir
-        FileVector = FileHandler.getFileList( dir , filterArray, false );
+        FileVector = FileHandler.getFileList( harvesterDirName , filterArray, false );
         iter = FileVector.iterator();
 
     }
@@ -236,19 +243,34 @@ public class FileHarvestLight implements IHarvest
 	setStatus( Id, JobStatus.FAILURE );
     }
 
-    /**
-     * Wrapper to setStatus.
+    /*
+     *  setStatus
      */
-    // There are no current scenarios for using setStatusRetry. If this comment is read after february 28th, delete this comment and the commented method below
-    // public void setStatusRetry( IIdentifier Id ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
-    // {
-	// setStatus( Id, JobStatus.RETRY );
-    // }
-
     private void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
         FileIdentifier ID = (FileIdentifier)jobId;
-        //System.out.println( String.format("the file %s was given status %s", ID.getURI().getRawPath() ,status) );
         log.info( String.format("the file %s was given status %s", ID.getURI().getRawPath() ,status) );
     }
+
+
+    /*
+     *  \todo: I'm not sure this is the right location for this function
+     */
+    private void createDirectoryIfNotExisting( File currentPath, String dirName ) throws HarvesterIOException
+    {
+	File path = FileHandler.getFile( currentPath + System.getProperty("file.separator") + dirName );
+	if ( !path.exists() )
+	{
+	    log.info( String.format( "Creating directory: %s", dirName ) );
+	    // create path:
+	    if ( !path.mkdir() )
+	    {
+		String errMsg = String.format( "Could not create necessary directory: %s", dirName );
+		log.error( errMsg );
+		throw new HarvesterIOException( errMsg );
+	    }
+	}
+
+    }
+
 }

@@ -191,6 +191,7 @@ public class DatadockMain
         
         try
         {
+	    log.debug( String.format( "Harvester type from commandline: %s", System.getProperty( "harvester" ) ) );
             harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
         }
         catch( NullPointerException npe )
