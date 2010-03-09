@@ -145,8 +145,10 @@ public class ESHarvest implements IHarvest
 	    PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference " +
 							     "FROM updatepackages " +
 							     "WHERE taskstatus = ? " +
+							     "AND databasename = ? " +
 							     "ORDER BY update_priority , creationdate , targetreference" );
 	    pstmt.setInt( 1, 0 ); // taskstatus
+	    pstmt.setString( 2, databasename );
             ResultSet rs1 = pstmt.executeQuery ( );
             if ( rs1.next() )
             {
