@@ -31,16 +31,24 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.TargetFields;
+
+import fedora.common.Constants;
 import fedora.server.types.gen.Datastream;
+import fedora.server.types.gen.Condition;
+import fedora.server.types.gen.ComparisonOperator;
+import fedora.server.types.gen.Datastream;
+import fedora.server.types.gen.FieldSearchQuery;
+import fedora.server.types.gen.FieldSearchResult;
+import fedora.server.types.gen.ObjectFields;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 
 
@@ -58,33 +66,52 @@ public class FedoraMain
 
 
     public FedoraMain() {}
+    
 
+    private static FedoraHandle fedoraHandle;
+    
     private static String action = "";
     private static String textFile = "";
     private static String harvestCatalog = "";
 
     private static final String purge = "-purge";
     private static final String retrieve = "-retrieve";
+    private static final String getObjects = "-getObjects";
     private static final String deleteSubmitter = "-deleteSubmitter";
     private static final String deleteWork = "-deleteWork";
-    
+
+    private static ComparisonOperator gt = ComparisonOperator.fromString( "gt" );
+    private static ComparisonOperator lt = ComparisonOperator.fromString( "lt" );
+    private static ComparisonOperator eq = ComparisonOperator.fromString( "eq" );
+
+    private static String cDateBegin = "";
+    private static String cDateEnd = "";
+    private static String mDateBegin = "";
+    private static String mDateEnd = "";
+    private static String submitter = "";
+    private static String format = "";
+    private static int condLen = 0;
+
     private static final String usage = "\n\tUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -purge sanitize.txt\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteSubmitter dbc\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteWork sanitize.txt\n" +
+                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -getObjects -h harvest-katalog [-cDate <created date interval> -mDate <last modified date interval> -format <format> -submitter <submitter>]\n" +
+                                        "\tEx:                                           -getObjects -h Harvest -cDate 20100129[-20100229] -mDate 20100129[-20100229] -format katalog -submitter 775100\n" +
                                         "\tFile format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n";
 
     /**
      * The datadocks main method.
      * Starts the datadock and starts the datadockManager.
      */
-    static public void main( String[] args ) throws Throwable
+    public static void main( String[] args ) throws Throwable
     {
         log.trace( "FedoraMain main called" );
 
         FedoraObjectRepository fo = new FedoraObjectRepository();
-        
+        fedoraHandle = new FedoraHandle();
+
         testArgs( "test", args );
         
         // PURGE
@@ -92,13 +119,20 @@ public class FedoraMain
         {
             purge( args, fo );
         }
+        // RETRIEVE
         else if ( action.equals( retrieve ) )
         {
             retrieve( args, fo );
         }
+        // GET OBJECTS
+        else if ( action.equals( getObjects ) )
+        {
+            getObjects( args, fo );
+        }
+        // DELETE SUBMITTER
         else if ( action.equals( deleteSubmitter ) )
         {
-            String submitter = args[1];
+            submitter = args[1];
             for ( int i = 0; i < 600; i++ )
             {
                 deleteSubmitter( submitter );
@@ -106,6 +140,7 @@ public class FedoraMain
                 fm.thisSleep( 10000 );
             }
         }
+        // DELETE WORK
         else if ( action.equals( deleteWork ) )
         {
             deleteWork( args );
@@ -186,9 +221,9 @@ public class FedoraMain
                     for ( int i = 1; i < work_mani.length; i++ )
                     {
                         String pid = work_mani[i];
-                        String submitter = pid.split( ":" )[0];
+                        submitter = pid.split( ":" )[0];
                         Datastream ds = fo.getDatastream( pid, "originalData.0" );
-                        String format = ds.getLabel();
+                        format = ds.getLabel();
 
                         String harvestPath = path + harvestCatalog + "/" + submitter + "/" + format;
                         File harvestDir = new File( harvestPath );
@@ -216,6 +251,177 @@ public class FedoraMain
         {
             ioex.printStackTrace();
         }
+    }
+
+
+    private static void getObjects( String[] args, FedoraObjectRepository fo )
+    {
+        testArgs( getObjects, args );
+
+        try
+        {
+            String path = ""; 
+            File cwd = new File( "." );
+            try
+            {
+                path = cwd.getCanonicalPath() + "/";
+            }
+            catch ( Exception ex )
+            {
+                ex.printStackTrace();
+            }
+
+            try
+            {
+                setVariables( args );
+                printSearchVariables();
+
+                Condition[] cond = new Condition[ condLen ];
+                int pos = 0;
+                pos = setDateConditions( cond, pos, cDateBegin, cDateEnd );
+                pos = setDateConditions( cond, pos, mDateBegin, mDateEnd );
+                
+                if ( !format.isEmpty() )
+                {
+                    cond[ pos ] = new Condition( FedoraObjectFields.LABEL.fieldname(), eq, format );
+                    pos++;
+                }
+
+                if ( !submitter.isEmpty() )
+                {
+                    cond[ pos ] = new Condition( FedoraObjectFields.OWNERID.fieldname(), eq, submitter );
+                    pos++;
+                }
+
+                for ( int i = 0; i < condLen; i++ )
+                {
+                    System.out.println(cond[ i ].getValue() );
+                }
+                //String[] resultFields = new String[ resultSearchFields.size() + 1 ];
+                //this.fedoraHandle.findObjects( resultFields, 1000, fsq );
+
+                /*        String pid = work_mani[i];
+                        String submitter = pid.split( ":" )[0];
+                        Datastream ds = fo.getDatastream( pid, "originalData.0" );
+                        String format = ds.getLabel();
+                 */
+
+                   /*     String harvestPath = path + harvestCatalog + "/" + submitter + "/" + format;
+                        File harvestDir = new File( harvestPath );
+                        harvestDir.mkdirs();
+                        String xmlFile = harvestDir + "/" + j + ".xml";
+                        File file = new File( xmlFile );
+                        FileOutputStream fos = new FileOutputStream( file );
+
+                        CargoContainer cc = fo.getObject( pid );
+                        CargoObject co = cc.getCargoObject( DataStreamType.OriginalData );
+                        byte[] bytes = co.getBytes();
+                        fos.write( bytes );
+                        fos.close();
+
+                        j++;
+                    }
+                    */
+                //}
+            }
+            finally
+            {
+                //input.close();
+            }
+        }
+        catch ( Exception ioex )
+        {
+            ioex.printStackTrace();
+        }
+    }
+
+
+    private static void printSearchVariables()
+    {
+        System.out.println( "\nSearching fedora repository specified in config/config.txt with values:");
+        System.out.println( "\t Storing files in harvest catalog: " + harvestCatalog );
+        System.out.println( "\t Created date interval:            " + cDateBegin + "-" + cDateEnd );
+        System.out.println( "\t Last modified date interval:      " + mDateBegin + "-" + mDateEnd );
+        System.out.println( "\t Submitter:                        " + submitter );
+        System.out.println( "\t Format:                           " + format + "\n" );
+    }
+    
+
+    private static void setVariables( String[] args )
+    {
+        for ( int i = 1; i < args.length; i++ )
+        {
+            String arg = args[i];
+            if ( arg.equals( "-h" ) )
+            {
+                harvestCatalog = args[ ++i ];
+            }
+            else if ( arg.equals( "-cDate" ) )
+            {
+                String cDates = args[ ++i ];
+                String[] dates = cDates.split( "-" );
+                try
+                {
+                    cDateBegin = dates[ 0 ];
+                    condLen++;
+                    cDateEnd = dates[ 1 ];
+                    condLen++;
+                }
+                catch( IndexOutOfBoundsException ioobex )
+                {
+                    // do nothing!
+                }
+            }
+            else if ( arg.equals( "-mDate" ) )
+            {
+                String mDates = args[ ++i ];
+                String[] dates = mDates.split( "-" );
+                try
+                {
+                    mDateBegin = dates[ 0 ];
+                    condLen++;
+                    mDateEnd = dates[ 1 ];
+                    condLen++;
+                }
+                catch( IndexOutOfBoundsException ioobex )
+                {
+                    // do nothing!
+                }
+            }
+            else if ( arg.equals( "-submitter" ) )
+            {
+                submitter = args[ ++i ];
+                condLen++;
+            }
+            else if ( arg.equals( "-format" ) )
+            {
+                format = args[ ++i ];
+                condLen++;
+            }
+        }
+    }
+
+    
+    private static int setDateConditions( Condition[] cond, int position, String dateBegin, String dateEnd )
+    {
+        if ( !dateBegin.isEmpty() && !dateEnd.isEmpty() )
+        {
+            cond[ position ] = new Condition( FedoraObjectFields.CDATE.fieldname(), gt, dateBegin );
+            cond[ ++position ] = new Condition( FedoraObjectFields.CDATE.fieldname(), lt, dateEnd );
+            position++;
+        }
+        else if ( !dateBegin.isEmpty() && dateEnd.isEmpty() )
+        {
+            cond[ position ] = new Condition( FedoraObjectFields.CDATE.fieldname(), gt, dateBegin );
+            position++;
+        }
+        else
+        {
+            System.out.println( "Something is wrong with your date interval!");
+            System.exit( 0 );
+        }
+
+        return position;
     }
 
 
@@ -344,6 +550,24 @@ public class FedoraMain
                 System.out.println( usage );
                 System.exit( 0 );
             }
+        }
+        else if ( action.equals( getObjects ) )
+        {
+            try
+            {
+                action = (String)args[0];
+                //harvestCatalog = (String)args[1];
+            }
+            catch ( IndexOutOfBoundsException iob )
+            {
+                System.out.println( "test" + usage );
+                System.exit( 0 );
+            }
+        }
+        else
+        {
+            System.out.println( "usage: " + usage );
+            System.exit( 0 );
         }
     }
 }

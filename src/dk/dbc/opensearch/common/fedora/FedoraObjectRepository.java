@@ -539,6 +539,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
+    @Deprecated
     public List< String > getIdentifiers( String verbatimSearchString, List< TargetFields > searchableFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ searchableFields.size() ];
@@ -703,11 +704,12 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return pids;
     }
+
+
     /**
      * This method sort out all the non exact matches, since fedora searches
      * some fields with "has" instead of "eq"
      */
-
     private boolean addPidValue( List< InputPair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
     {
         boolean ret = false;
