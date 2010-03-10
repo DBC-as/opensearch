@@ -159,7 +159,7 @@
         />
     <xml-property
         name="facet.subject"
-        xpath="/ting:container/dkabm:record/dc:subject[not(@xsi:type='dkdcplus:DK5')]"
+        xpath="/ting:container/dkabm:record/dc:subject[not(@xsi:type='dkdcplus:DK5' or @xsi:type='dkdcplus:DK5-Text')]"
         index="un_tokenized"
         value-converter="facet"
         />
@@ -810,7 +810,7 @@
         />
     <xml-property
         name="cql.anyIndexes" 
-        xpath="/ting:container/dkabm:record/*"
+        xpath="/ting:container/dkabm:record/* | /*/*/*/*[@tag='245']/*[@code='e'] | /*/*/*/*[@tag='245']/*[@code='f'] | /*/*/*/*[@tag='770']/*[@code='a'] | /*/*/*/*[@tag='770']/*[@code='h'] | /*/*/*/*[@tag='780']/*[@code='a'] | /*/*/*/*[@tag='652']/*[@code='p'] | /*/*/*/*[@tag='652']/*[@code='i'] | /*/*/*/*[@tag='520']/*[@code='t'] | /*/*/*/*[@tag='526']/*[@code='t'] | /*/*/*/*[@tag='239']/*[@code='t'] | /*/*/*/*[@tag='239']/*[@code='v'] | /*/*/*/*[@tag='795']/*[@code='a'] | /*/*/*/*[@tag='795']/*[@code='v']"
        value-converter="default"
         />
     <xml-property
@@ -828,7 +828,7 @@
         />
     <xml-property
         name="phrase.anyIndexes"
-        xpath="/ting:container/dkabm:record/*"
+        xpath="/ting:container/dkabm:record/* | /*/*/*/*[@tag='245']/*[@code='e'] | /*/*/*/*[@tag='245']/*[@code='f'] | /*/*/*/*[@tag='770']/*[@code='a'] | /*/*/*/*[@tag='770']/*[@code='h'] | /*/*/*/*[@tag='780']/*[@code='a'] | /*/*/*/*[@tag='652']/*[@code='p'] | /*/*/*/*[@tag='652']/*[@code='i'] | /*/*/*/*[@tag='520']/*[@code='t'] | /*/*/*/*[@tag='526']/*[@code='t'] | /*/*/*/*[@tag='239']/*[@code='t'] | /*/*/*/*[@tag='239']/*[@code='v'] | /*/*/*/*[@tag='795']/*[@code='a'] | /*/*/*/*[@tag='795']/*[@code='v']"
         index="un_tokenized"
         value-converter="phrase"
         />
@@ -972,7 +972,7 @@
         />
     <xml-property
         name="facet.subject"
-        xpath="/ting:container/dkabm:record/dc:subject[not(@xsi:type='dkdcplus:DK5')]"
+        xpath="/ting:container/dkabm:record/dc:subject[not(@xsi:type='dkdcplus:DK5' or @xsi:type='dkdcplus:DK5-Text')]"
         index="un_tokenized"
         value-converter="facet"
         />
