@@ -76,7 +76,7 @@ function checkmatch( newObject, workObject )
         break;
       case "Avisartikel":
         Log.debug( "RLO: Avisartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
+        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel") {
           result = true;
         } else {
           result = false;
@@ -92,7 +92,7 @@ function checkmatch( newObject, workObject )
         break;
       case "Tidsskriftsartikel":
         Log.debug( "RLO: Tidsskriftsartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
+        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Tidsskriftsartikel") {
           result = true;
         } else {
           result = false;
