@@ -72,12 +72,14 @@ public class FileHarvestLight implements IHarvest
     
     private Vector<String> FileVector;
     private Iterator iter;
-    private File path;
-    private FilenameFilter[] filterArray;
-    private String harvesterDirName = "Harvest";
-    private String successDirName = "success";
-    private String failureDirName = "failure";
-
+    private final FilenameFilter[] filterArray;
+    // Some default values:
+    private final String harvesterDirName = "Harvest";
+    private final String successDirName = "success"; // will be made subdir of harvesterDirName
+    private final String failureDirName = "failure"; // will be made subdir of harvesterDirName
+    private final File dataFile;
+    private final File successDir;
+    private final File failureDir;
 
     /**
      *
@@ -86,16 +88,16 @@ public class FileHarvestLight implements IHarvest
     {
         filterArray = new FilenameFilter[] { new NoRefFileFilter() };
 
-        path = FileHandler.getFile( harvesterDirName );
-        if( ! path.exists() )
+        dataFile = FileHandler.getFile( harvesterDirName );
+        if( ! dataFile.exists() )
         {
-            String errMsg = String.format( "Harvest folder %s does not exist!", path );
+            String errMsg = String.format( "Harvest folder %s does not exist!", dataFile );
             log.fatal( "FileHarvestLight: " + errMsg );
             throw new HarvesterIOException( errMsg );
         }
 
-	createDirectoryIfNotExisting( path, successDirName );
-	createDirectoryIfNotExisting( path, failureDirName );
+	successDir = createDirectoryIfNotExisting( dataFile, successDirName );
+	failureDir = createDirectoryIfNotExisting( dataFile, failureDirName );
 
     }
 
@@ -105,7 +107,6 @@ public class FileHarvestLight implements IHarvest
         //get the files in the dir
         FileVector = FileHandler.getFileList( harvesterDirName , filterArray, false );
         iter = FileVector.iterator();
-
     }
 
 
@@ -223,6 +224,7 @@ public class FileHarvestLight implements IHarvest
     }
 
 
+
     /**
      * Wrapper to setStatus.
      * Notice that the PID is ignored. 
@@ -230,7 +232,13 @@ public class FileHarvestLight implements IHarvest
     public void setStatusSuccess( IIdentifier Id, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
 	// Ignoring the PID!
-	setStatus( Id, JobStatus.SUCCESS );
+	FileIdentifier id = (FileIdentifier)Id;
+	log.info( String.format("the file %s was handled successfully", id.getURI().getRawPath() ) );
+
+	File dataFile = new File( id.getURI().getRawPath() );
+
+	setStatus( dataFile, successDir );
+
     }
    
     /**
@@ -239,24 +247,89 @@ public class FileHarvestLight implements IHarvest
      */
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
-	// Ignoring the failureDiagnostic!
-	setStatus( Id, JobStatus.FAILURE );
+	FileIdentifier id = (FileIdentifier)Id;
+	log.info( String.format("the file %s was handled unsuccessfully", id.getURI().getRawPath() ) );
+	log.info( String.format("FailureDiagnostic: %s", failureDiagnostic ) );
+
+	File dataFile = new File( id.getURI().getRawPath() );
+
+	setStatus( dataFile, failureDir );
     }
 
     /*
      *  setStatus
      */
-    private void setStatus( IIdentifier jobId, JobStatus status ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
+    private void setStatus( File dataFile, File destDir ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
-        FileIdentifier ID = (FileIdentifier)jobId;
-        log.info( String.format("the file %s was given status %s", ID.getURI().getRawPath() ,status) );
+	File refFile = createRefFile( dataFile );
+
+	log.trace( String.format( "dataFile absolute path: %s", dataFile.getAbsolutePath() ) );
+	log.trace( String.format( "refFile absolute path : %s", refFile.getAbsolutePath() ) );
+
+	moveFile( refFile, destDir );
+	moveFile( dataFile, destDir );
+    }
+
+    private void moveFile( File f, File toDir )
+    {
+	// This method ought to check whether f actually is a file, 
+	// and whether toDir actually is a directory.
+
+	log.trace( String.format( "Called with filename: [%s]", f.getName() ) );
+	log.trace( String.format( "Called with destination directory: [%s]", toDir.getName() ) );
+
+	// Some tests for validity:
+	if ( ! f.exists() )
+	{
+	    log.error( String.format( "The file: [%s] does not exist.", f.getAbsolutePath() ) );
+	    return;
+	}
+	if ( ! f.isFile() ) 
+	{
+	    log.error( String.format( "[%s] is not a file.", f.getAbsolutePath() ) );
+	    return;
+	}
+	if ( ! toDir.exists() )
+	{
+	    log.error( String.format( "The directory: [%s] does not exist.", toDir.getAbsolutePath() ) );
+	    return;
+	}
+	if ( ! toDir.isDirectory() ) 
+	{
+	    log.error( String.format( "[%s] is not a directory.", toDir.getAbsolutePath() ) );
+	    return;
+	}
+	
+
+	boolean res = f.renameTo( new File( toDir, f.getName() ) );
+	if (res) {
+	    log.info( String.format( "File successfully moved: [%s]", f.getName() ) );
+	} else {
+	    log.error( String.format( "Could not move the file: [%s]", f.getName() ) );
+	}
+    }
+
+    /*
+     *  Private function for creating reference filenames from existing (currently xml) filenames.
+     *  \note: This function has a problem: It searches for the last index of . (dot), it will
+     *  therefore not correctly handle filnames as 'filename.tar.gz'.
+     */
+    private File createRefFile( File f )
+    {
+	final String refExtension = ".ref";
+
+	String origFileName = f.getName();
+	int dotPos = origFileName.lastIndexOf( "." );
+	String strippedFileName = origFileName.substring( 0, dotPos ); // filename without extension, and without the dot!
+
+	return new File ( new String( harvesterDirName + System.getProperty("file.separator") + strippedFileName + refExtension ) );
     }
 
 
     /*
      *  \todo: I'm not sure this is the right location for this function
      */
-    private void createDirectoryIfNotExisting( File currentPath, String dirName ) throws HarvesterIOException
+    private File createDirectoryIfNotExisting( File currentPath, String dirName ) throws HarvesterIOException
     {
 	File path = FileHandler.getFile( currentPath + System.getProperty("file.separator") + dirName );
 	if ( !path.exists() )
@@ -270,7 +343,8 @@ public class FileHarvestLight implements IHarvest
 		throw new HarvesterIOException( errMsg );
 	    }
 	}
-
+	
+	return path;
     }
 
 }
