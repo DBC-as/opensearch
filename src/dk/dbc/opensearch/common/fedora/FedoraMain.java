@@ -26,14 +26,13 @@
 package dk.dbc.opensearch.common.fedora;
 
 
+import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
-import fedora.common.Constants;
-import fedora.server.types.gen.Datastream;
 import fedora.server.types.gen.Condition;
 import fedora.server.types.gen.ComparisonOperator;
 import fedora.server.types.gen.Datastream;
@@ -43,12 +42,18 @@ import fedora.server.types.gen.ObjectFields;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.rpc.ServiceException;
+
+import org.apache.axis.types.NonNegativeInteger;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -84,21 +89,25 @@ public class FedoraMain
     private static ComparisonOperator lt = ComparisonOperator.fromString( "lt" );
     private static ComparisonOperator eq = ComparisonOperator.fromString( "eq" );
 
+    private static String pidBegin = "";
+    private static String pidEnd = "";
     private static String cDateBegin = "";
     private static String cDateEnd = "";
     private static String mDateBegin = "";
     private static String mDateEnd = "";
     private static String submitter = "";
     private static String format = "";
+    private static long noOfObjects = 0;
     private static int condLen = 0;
+    private static int resultLen = 0;
 
     private static final String usage = "\n\tUsage: $ java -jar dist/OpenSearch_FEDORA.jar -[retrieve|purge] file_name harvest_katalog\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -retrieve sanitize.txt HarvestAgain\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -purge sanitize.txt\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteSubmitter dbc\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteWork sanitize.txt\n" +
-                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -getObjects -h harvest-katalog [-cDate <created date interval> -mDate <last modified date interval> -format <format> -submitter <submitter>]\n" +
-                                        "\tEx:                                           -getObjects -h Harvest -cDate 20100129[-20100229] -mDate 20100129[-20100229] -format katalog -submitter 775100\n" +
+                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -getObjects -h harvest-katalog [-cDate YYYY-mm-dd mDate YYYY-mm-dd -format <format> -submitter <submitter>] -n <No to retrieve>\n" +
+                                        "\tEx:                                           -getObjects -h Harvest -cDate 2010-01-29[--2010-02-29] -mDate 2010-01-29[--2010-02-29] -format katalog -submitter 775100 -n 10\n" +
                                         "\tFile format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n";
 
     /**
@@ -107,6 +116,7 @@ public class FedoraMain
      */
     public static void main( String[] args ) throws Throwable
     {
+        Log4jConfiguration.configure( "log4j_fedora.xml" );
         log.trace( "FedoraMain main called" );
 
         FedoraObjectRepository fo = new FedoraObjectRepository();
@@ -258,81 +268,229 @@ public class FedoraMain
     {
         testArgs( getObjects, args );
 
+        String path = "";
+        File cwd = new File( "." );
         try
         {
-            String path = ""; 
-            File cwd = new File( "." );
+            path = cwd.getCanonicalPath() + "/";
+        }
+        catch ( Exception ex )
+        {
+            ex.printStackTrace();
+        }
+
+        // DO NOT SET ANY GLOBAL VARIABLES AFTER CALL TO setVariables!!!
+        setVariables( args );
+        // DO NOT SET ANY GLOBAL VARIABLES AFTER CALL TO setVariables!!!
+
+        printSearchVariables();
+
+        if ( !submitter.isEmpty() && !format.isEmpty() && pidBegin.isEmpty() && pidEnd.isEmpty() )
+        {
+            Condition[] cond = new Condition[ condLen ];
+            String[] resultFields = new String[ resultLen ];
+            cond = setConditions( cond, resultFields );
+
+            for ( int i = 0; i < condLen; i++ )
+            {
+                System.out.println(cond[ i ].getValue() );
+                System.out.println(resultFields[ i ] );
+            }
+
+            NonNegativeInteger max = new NonNegativeInteger( Integer.toString( 1000 ) );
+            FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
             try
             {
-                path = cwd.getCanonicalPath() + "/";
-            }
-            catch ( Exception ex )
-            {
-                ex.printStackTrace();
-            }
-
-            try
-            {
-                setVariables( args );
-                printSearchVariables();
-
-                Condition[] cond = new Condition[ condLen ];
-                int pos = 0;
-                pos = setDateConditions( cond, pos, cDateBegin, cDateEnd );
-                pos = setDateConditions( cond, pos, mDateBegin, mDateEnd );
-                
-                if ( !format.isEmpty() )
+                FieldSearchResult result = fedoraHandle.findObjects( resultFields, max, fsq );
+                ObjectFields[] objectFields = result.getResultList();
+                int ofLength = objectFields.length;
+                log.debug( String.format( "No of objectFields lines %s", objectFields.length ) );
+                int j = 1;
+                for( int i = 0; i < ofLength; i++ )
                 {
-                    cond[ pos ] = new Condition( FedoraObjectFields.LABEL.fieldname(), eq, format );
-                    pos++;
-                }
-
-                if ( !submitter.isEmpty() )
-                {
-                    cond[ pos ] = new Condition( FedoraObjectFields.OWNERID.fieldname(), eq, submitter );
-                    pos++;
-                }
-
-                for ( int i = 0; i < condLen; i++ )
-                {
-                    System.out.println(cond[ i ].getValue() );
-                }
-                //String[] resultFields = new String[ resultSearchFields.size() + 1 ];
-                //this.fedoraHandle.findObjects( resultFields, 1000, fsq );
-
-                /*        String pid = work_mani[i];
-                        String submitter = pid.split( ":" )[0];
-                        Datastream ds = fo.getDatastream( pid, "originalData.0" );
-                        String format = ds.getLabel();
-                 */
-
-                   /*     String harvestPath = path + harvestCatalog + "/" + submitter + "/" + format;
-                        File harvestDir = new File( harvestPath );
-                        harvestDir.mkdirs();
-                        String xmlFile = harvestDir + "/" + j + ".xml";
-                        File file = new File( xmlFile );
-                        FileOutputStream fos = new FileOutputStream( file );
-
-                        CargoContainer cc = fo.getObject( pid );
-                        CargoObject co = cc.getCargoObject( DataStreamType.OriginalData );
-                        byte[] bytes = co.getBytes();
-                        fos.write( bytes );
-                        fos.close();
-
-                        j++;
+                    String pid = objectFields[i].getPid();
+                    try
+                    {
+                        if ( noOfObjects != 0 && j > noOfObjects )
+                        {
+                            break;
+                        }
+                        
+                        if ( writeDatastream( fo, pid, path, j ) )
+                        {
+                            j++;
+                        }
                     }
-                    */
-                //}
+                    catch ( ObjectRepositoryException orex )
+                    {
+                        //orex.printStackTrace();
+                    }
+                }
             }
-            finally
+            catch ( ConfigurationException cex )
             {
-                //input.close();
+                cex.printStackTrace();
+            }
+            catch ( MalformedURLException muex )
+            {
+                muex.printStackTrace();
+            }
+            catch ( IOException ioex )
+            {
+                ioex.printStackTrace();
+            }
+            catch ( ServiceException sex )
+            {
+                sex.printStackTrace();
             }
         }
-        catch ( Exception ioex )
+        else if ( !pidBegin.isEmpty() && !pidEnd.isEmpty() )
+        {
+            String[] firstPid = pidBegin.split( ":" );
+
+            String[] lastPid = pidEnd.split( ":" );
+
+            if ( submitter.isEmpty() )
+            {
+                submitter = firstPid[0];
+            }
+
+            String firstPost = firstPid[1].toString();
+            String lastPost = lastPid[1].toString();
+
+            String currPost = firstPost;
+            int j = 1;
+            while ( lessThanOrEqualTo( currPost, lastPost ) )
+            {
+                String currPid = submitter + ":" + currPost;
+                try
+                {
+                    if ( noOfObjects != 0 && j > noOfObjects )
+                    {
+                        break;
+                    }
+
+                    if ( writeDatastream( fo, currPid, path, j ) )
+                    {
+                        j++;
+                    }
+                }
+                catch( ObjectRepositoryException orex )
+                {
+                    //orex.printStackTrace();
+                }
+
+                currPost = addOne( currPost );
+            }
+        }
+    }
+
+
+    private static boolean writeDatastream( FedoraObjectRepository fo, String currPid, String path, int fileNo ) throws ObjectRepositoryException
+    {
+        Datastream ds = fo.getDatastream( currPid, "originalData.0" );
+
+        String postFormat = ds.getLabel();
+        
+        String harvestPath = "";
+        if ( !format.isEmpty() && format.equals( postFormat ) )
+        {
+            harvestPath = path + harvestCatalog + "/" + submitter + "/" + format;
+        }
+        else if ( format.isEmpty() )
+        {
+            harvestPath = path + harvestCatalog + "/" + submitter + "/" + postFormat;
+        }
+
+        File harvestDir = new File( harvestPath );
+        harvestDir.mkdirs();
+        harvestDir.mkdirs();
+        String xmlFile = harvestDir + "/" + fileNo + ".xml";
+        File file = new File( xmlFile );
+        try
+        {
+            FileOutputStream fos = new FileOutputStream( file );
+            CargoContainer cc = fo.getObject( currPid );
+            CargoObject co = cc.getCargoObject( DataStreamType.OriginalData );
+            byte[] bytes = co.getBytes();
+            fos.write( bytes );
+            fos.close();
+        }
+        catch ( FileNotFoundException fnfex )
+        {
+            fnfex.printStackTrace();
+        }
+        catch ( IOException ioex )
         {
             ioex.printStackTrace();
         }
+
+        return true;
+    }
+
+
+    private static String addOne( String fedoraPid)
+    {
+        String leadingZeros = fedoraPid.replaceAll("[1-9]+0*", "");
+        int intValue = new Integer( fedoraPid );
+        intValue++;
+        fedoraPid = leadingZeros + new Integer( intValue ).toString();
+        
+        return fedoraPid;
+    }
+
+    private static boolean lessThanOrEqualTo( String first, String second )
+    {
+        int firstInt = new Integer( first );
+        int secondInt = new Integer( second );
+        if ( firstInt <= secondInt )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    private static Condition[] setConditions( Condition[] cond, String[] resultFields )
+    {
+        int condPos = 0;
+        int resPos = 0;
+
+        resultFields[ resPos ] = FedoraObjectFields.PID.fieldname();
+        resPos++;
+        
+        if ( !cDateBegin.isEmpty() || !cDateEnd.isEmpty() )
+        {
+            resultFields[ resPos ] = FedoraObjectFields.CDATE.fieldname();
+            resPos++;
+        }
+        
+        if ( !mDateBegin.isEmpty() || !mDateEnd.isEmpty() )
+        {
+            resultFields[ resPos ] = FedoraObjectFields.MDATE.fieldname();
+            resPos++;
+        }
+
+        if ( !format.isEmpty() )
+        {
+            cond[ condPos ] = new Condition( FedoraObjectFields.LABEL.fieldname(), eq, format );
+            condPos++;
+            resultFields[ resPos ] = FedoraObjectFields.LABEL.fieldname();
+            resPos++;
+        }
+
+        if ( !submitter.isEmpty() )
+        {
+            cond[ condPos ] = new Condition( FedoraObjectFields.OWNERID.fieldname(), eq, submitter );
+            condPos++;
+            resultFields[ resPos ] = FedoraObjectFields.CDATE.fieldname();
+            resPos++;
+        }
+
+        return cond;
     }
 
 
@@ -340,6 +498,7 @@ public class FedoraMain
     {
         System.out.println( "\nSearching fedora repository specified in config/config.txt with values:");
         System.out.println( "\t Storing files in harvest catalog: " + harvestCatalog );
+        System.out.println( "\t Pid interval:                     " + pidBegin + "-" + pidEnd );
         System.out.println( "\t Created date interval:            " + cDateBegin + "-" + cDateEnd );
         System.out.println( "\t Last modified date interval:      " + mDateBegin + "-" + mDateEnd );
         System.out.println( "\t Submitter:                        " + submitter );
@@ -349,23 +508,37 @@ public class FedoraMain
 
     private static void setVariables( String[] args )
     {
+        boolean pidIsSet = false;
         for ( int i = 1; i < args.length; i++ )
         {
             String arg = args[i];
-            if ( arg.equals( "-h" ) )
+
+            if ( arg.equals( "-pid" ) )
+            {
+                String pid = args[ ++i ];
+                String[] pids = pid.split( "--" );
+                pidBegin = pids[ 0 ];
+                //condLen++;
+                pidEnd = pids[ 1 ];
+                //condLen++;
+                resultLen++;
+                pidIsSet = true;
+            }
+            else if ( arg.equals( "-h" ) )
             {
                 harvestCatalog = args[ ++i ];
             }
             else if ( arg.equals( "-cDate" ) )
             {
                 String cDates = args[ ++i ];
-                String[] dates = cDates.split( "-" );
+                String[] dates = cDates.split( "--" );
                 try
                 {
                     cDateBegin = dates[ 0 ];
-                    condLen++;
+                    //condLen++;
                     cDateEnd = dates[ 1 ];
-                    condLen++;
+                    //condLen++;
+                    resultLen++;
                 }
                 catch( IndexOutOfBoundsException ioobex )
                 {
@@ -375,13 +548,14 @@ public class FedoraMain
             else if ( arg.equals( "-mDate" ) )
             {
                 String mDates = args[ ++i ];
-                String[] dates = mDates.split( "-" );
+                String[] dates = mDates.split( "--" );
                 try
                 {
                     mDateBegin = dates[ 0 ];
-                    condLen++;
+                    //condLen++;
                     mDateEnd = dates[ 1 ];
-                    condLen++;
+                    //condLen++;
+                    resultLen++;
                 }
                 catch( IndexOutOfBoundsException ioobex )
                 {
@@ -392,28 +566,45 @@ public class FedoraMain
             {
                 submitter = args[ ++i ];
                 condLen++;
+                resultLen++;
             }
             else if ( arg.equals( "-format" ) )
             {
                 format = args[ ++i ];
                 condLen++;
+                resultLen++;
             }
+            else if ( arg.equals( "-n" ) )
+            {
+                noOfObjects = new Long( args[ ++i ] );
+            }
+        }
+
+        if ( !pidIsSet )
+        {
+            resultLen++;
         }
     }
 
     
-    private static int setDateConditions( Condition[] cond, int position, String dateBegin, String dateEnd )
+    private static int setDateConditions( Condition[] cond, String[] resultFields, int position, String dateBegin, String dateEnd )
     {
         if ( !dateBegin.isEmpty() && !dateEnd.isEmpty() )
         {
             cond[ position ] = new Condition( FedoraObjectFields.CDATE.fieldname(), gt, dateBegin );
+            resultFields[ position ] = FedoraObjectFields.CDATE.fieldname();
             cond[ ++position ] = new Condition( FedoraObjectFields.CDATE.fieldname(), lt, dateEnd );
             position++;
         }
         else if ( !dateBegin.isEmpty() && dateEnd.isEmpty() )
         {
             cond[ position ] = new Condition( FedoraObjectFields.CDATE.fieldname(), gt, dateBegin );
+            resultFields[ position ] = FedoraObjectFields.CDATE.fieldname();
             position++;
+        }
+        else if ( dateBegin.isEmpty() && dateEnd.isEmpty() )
+        {
+            // do nothing!
         }
         else
         {

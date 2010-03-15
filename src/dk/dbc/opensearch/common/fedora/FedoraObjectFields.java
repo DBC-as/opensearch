@@ -71,17 +71,19 @@ public enum FedoraObjectFields implements TargetFields
         return this.fieldname;
     }
 
+    
     public static FedoraObjectFields getFedoraObjectFields( String fieldname )
     {
         FedoraObjectFields FOF = null;
         for ( FedoraObjectFields fof : FedoraObjectFields.values() )
         {
             //yes we are forgiving
-            if( fieldname.toLowerCase().equals( fof.fieldname().toLowerCase() ) )
+            if ( fieldname.toLowerCase().equals( fof.fieldname().toLowerCase() ) )
             {
                 FOF = fof;
             }
         }
+
         return FOF;
     }
 }
