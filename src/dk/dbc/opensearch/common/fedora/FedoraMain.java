@@ -279,6 +279,8 @@ public class FedoraMain
             ex.printStackTrace();
         }
 
+        log.debug( String.format( "getObjects path: %s", path ) );
+
         // DO NOT SET ANY GLOBAL VARIABLES AFTER CALL TO setVariables!!!
         setVariables( args );
         // DO NOT SET ANY GLOBAL VARIABLES AFTER CALL TO setVariables!!!
@@ -291,11 +293,11 @@ public class FedoraMain
             String[] resultFields = new String[ resultLen ];
             cond = setConditions( cond, resultFields );
 
-            for ( int i = 0; i < condLen; i++ )
+            /*for ( int i = 0; i < condLen; i++ )
             {
                 System.out.println(cond[ i ].getValue() );
                 System.out.println(resultFields[ i ] );
-            }
+            }*/
 
             NonNegativeInteger max = new NonNegativeInteger( Integer.toString( 1000 ) );
             FieldSearchQuery fsq = new FieldSearchQuery( cond, null );

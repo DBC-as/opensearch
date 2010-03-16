@@ -1731,7 +1731,7 @@ public class FedoraObjectRepository implements IObjectRepository
         byte[] ds = null;
         try
         {
-            System.out.println( "objec id: " + objectIdentifier );
+            //System.out.println( "object id: " + objectIdentifier );
             ds = this.fedoraHandle.getDatastreamDissemination( objectIdentifier, dataStreamTypeName, null );
         }
         catch( ConfigurationException ex )
