@@ -67,7 +67,7 @@ import org.apache.log4j.Logger;
  */
 public class FedoraMain
 {
-    static Logger log = Logger.getLogger( FedoraMain.class );
+    //static Logger log = Logger.getLogger( FedoraMain.class );
 
 
     public FedoraMain() {}
@@ -117,7 +117,7 @@ public class FedoraMain
     public static void main( String[] args ) throws Throwable
     {
         Log4jConfiguration.configure( "log4j_fedora.xml" );
-        log.trace( "FedoraMain main called" );
+        //log.trace( "FedoraMain main called" );
 
         FedoraObjectRepository fo = new FedoraObjectRepository();
         fedoraHandle = new FedoraHandle();
@@ -279,7 +279,7 @@ public class FedoraMain
             ex.printStackTrace();
         }
 
-        log.debug( String.format( "getObjects path: %s", path ) );
+        //log.debug( String.format( "getObjects path: %s", path ) );
 
         // DO NOT SET ANY GLOBAL VARIABLES AFTER CALL TO setVariables!!!
         setVariables( args );
@@ -306,7 +306,7 @@ public class FedoraMain
                 FieldSearchResult result = fedoraHandle.findObjects( resultFields, max, fsq );
                 ObjectFields[] objectFields = result.getResultList();
                 int ofLength = objectFields.length;
-                log.debug( String.format( "No of objectFields lines %s", objectFields.length ) );
+                //log.debug( String.format( "No of objectFields lines %s", objectFields.length ) );
                 int j = 1;
                 for( int i = 0; i < ofLength; i++ )
                 {
