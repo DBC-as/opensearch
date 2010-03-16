@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
+//import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -116,7 +116,7 @@ public class FedoraMain
      */
     public static void main( String[] args ) throws Throwable
     {
-        Log4jConfiguration.configure( "log4j_fedora.xml" );
+        //Log4jConfiguration.configure( "log4j_fedora.xml" );
         //log.trace( "FedoraMain main called" );
 
         FedoraObjectRepository fo = new FedoraObjectRepository();
