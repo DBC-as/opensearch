@@ -626,7 +626,7 @@
        xpath="/ting:container/dkabm:record/ac:identifier"/>
     <xml-property
         name="rec.id"
-        xpath="/ting:container/dkabm:record/ac:identifier"
+        xpath="/ting:container/dkabm:record/ac:identifier | /ting:container/ting:fedoraPid"
         value-converter="default"
         />
     <xml-property
