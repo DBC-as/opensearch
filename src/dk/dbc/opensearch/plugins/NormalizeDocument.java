@@ -1,21 +1,21 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /**
  * \file NormalizeDocument.java
  * \brief plugin used to copy and normalize fields
@@ -140,6 +140,7 @@ public class NormalizeDocument implements IProcesser
                         {
                             log.trace( "phrase contains characters that need normalization" );
                             String newPath = map.get( orgPath );
+                            log.trace( String.format( "newPath: '%s'", newPath ) );
                             String[] pathSplit = newPath.split( "/" );
                             Element elem = doc.getDocumentElement();
                             // Build node
@@ -152,18 +153,69 @@ public class NormalizeDocument implements IProcesser
                                 }
                                 else
                                 {
-                                    Element newElem = doc.createElement( pathSplit[j].trim() );
+                                    log.trace( String.format("create Node from string='%s' - trimmed='%s'",pathSplit[j],pathSplit[j].trim() ) );
+                                    String name = pathSplit[j].trim();
+
+                                    // if the path part contains * it is substituted with phraseCopy
+                                    // should also see if an attribute is present and add that
+
+                                    String attributeName= "";//tag = "";
+                                    String attributeValue= "";
+                                    if( name.contains( "[@" ) && name.contains( "]" ) )
+                                    {
+                                        int beg = name.indexOf("[@")+2;
+                                        int eq = name.indexOf("=");
+                                        int end = name.indexOf("']");
+                                        attributeName = name.substring(beg, eq);
+                                        attributeValue = name.substring(eq+2, end);
+                                        log.trace( String.format( "attribute: ['%s'='%s']", attributeName, attributeValue) );
+                                    }
+
+                                    if( name.contains( "*" ) )
+                                    {
+                                        name = "phraseCopy";
+                                    }
+
+                                    log.trace( String.format( "NAME: %s", name ) );
+                                    Element newElem = doc.createElement( name );
+                                    if(! attributeName.equals("") )
+                                    {
+                                        newElem.setAttribute( attributeName, attributeValue );
+                                    }
+
                                     elem.appendChild( newElem );
                                     elem = newElem;
                                 }
                             }
                             // build and append text node
                             String elementName = pathSplit[pathSplit.length - 1].trim();
-                            if( elementName.equals( "*" ) )
+
+                            // if the path part contains * it is substituted with phraseCopy
+                            // should also see if an attribute is present and add that
+                            
+                            String innerAttributeName= "";
+                            String innerAttributeValue= "";
+                            if( elementName.contains( "[@" ) && elementName.contains( "]" ) )
+                            {
+                                int beg = elementName.indexOf("[@")+2;
+                                int eq = elementName.indexOf("=");
+                                int end = elementName.indexOf("']");
+                                innerAttributeName = elementName.substring(beg, eq);
+                                innerAttributeValue = elementName.substring(eq+2, end);
+                                log.trace( String.format( "inner attribute: ['%s'='%s']", innerAttributeName, innerAttributeValue) );
+                            }
+
+                            if( elementName.contains( "*" ) )
                             {
                                 elementName = "phraseCopy";
                             }
+
                             Element newElem = doc.createElement( elementName );
+                            if(! innerAttributeName.equals("") )
+                            {
+                                newElem.setAttribute( innerAttributeName, innerAttributeValue );
+                            }
+
                             elem.appendChild( newElem );
                             elem = newElem;
                             String valueText = StringUtils.replace( pathValue, replaceMap );
@@ -186,12 +238,12 @@ public class NormalizeDocument implements IProcesser
             try
             {
                 cargoContainer.add( DataStreamType.OriginalData,
-                        co.getFormat(),
-                        co.getSubmitter(),
-                        co.getLang(),
-                        co.getMimeType(),
-                        co.getIndexingAlias(),
-                        XMLUtils.getByteArray( doc.getDocumentElement() ) );
+                                    co.getFormat(),
+                                    co.getSubmitter(),
+                                    co.getLang(),
+                                    co.getMimeType(),
+                                    co.getIndexingAlias(),
+                                    XMLUtils.getByteArray( doc.getDocumentElement() ) );
             }
             catch( IOException ioe )
             {
