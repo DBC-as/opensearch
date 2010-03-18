@@ -118,7 +118,7 @@ public class DatadockJob implements IJob
     
     private void initValuesFromReferenceData()
     {
-        if( this.referenceData == null )
+        if ( this.referenceData == null )
         {
             String error = "ReferenceData is empty or null. Aborting";
             log.error( error );
@@ -127,10 +127,10 @@ public class DatadockJob implements IJob
 
         NodeList elementSet = this.referenceData.getElementsByTagName( "es:info" );
 
-        if( elementSet.getLength() == 0 )
+        if ( elementSet.getLength() == 0 )
         {
             elementSet = this.referenceData.getElementsByTagName( "info" );
-            if( elementSet.getLength() == 0 )
+            if ( elementSet.getLength() == 0 )
             {
 
                 String error = "Failed to get either Document Element named 'info' or 'es:info' from referencedata";
@@ -143,6 +143,21 @@ public class DatadockJob implements IJob
         NamedNodeMap attributes = info.getAttributes();
         this.format = attributes.getNamedItem( "format" ).getNodeValue();
         this.submitter = attributes.getNamedItem( "submitter" ).getNodeValue();
-        this.language = attributes.getNamedItem( "lang" ).getNodeValue();
+        try
+        {
+            String lang = attributes.getNamedItem( "lang" ).getNodeValue();
+            if ( !lang.isEmpty() || lang == null)
+            {
+                this.language = lang;
+            }
+            else
+            {
+                this.language = "";
+            }
+        }
+        catch ( NullPointerException npe )
+        {
+            this.language = "";
+        }
     }
 }
