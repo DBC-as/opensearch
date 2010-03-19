@@ -23,15 +23,15 @@ package dk.dbc.opensearch.common.pluginframework;
 
 public enum PluginType
 {
-    HARVEST,
     ANNOTATE,
-    RELATION,
-    WORKRELATION,
-    REVIEWRELATION,
-    OWNER,
     GETESTIMATE,
-    STORE,
+    HARVEST,
     INDEX,
+    OWNER,
     PROCESS,
-    RETRIEVE;
+    RELATION,
+    RETRIEVE,
+    REVIEWRELATION,
+    STORE,
+    WORKRELATION;
 }
