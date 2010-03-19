@@ -152,12 +152,12 @@ public class DatadockJob implements IJob
             }
             else
             {
-                this.language = "";
+                this.language = "DA";
             }
         }
         catch ( NullPointerException npe )
         {
-            this.language = "";
+            this.language = "DA";
         }
     }
 }
