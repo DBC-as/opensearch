@@ -92,7 +92,6 @@ public class XMLDCHarvester implements ICreateCargoContainer
         {
             /** \todo: hardcoded values for mimetype, language*/
             cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", alias, data );
-
             
             log.trace( "Constructing DC datastream" );
 
