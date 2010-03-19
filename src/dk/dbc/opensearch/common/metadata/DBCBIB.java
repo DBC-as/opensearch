@@ -39,7 +39,6 @@ public enum DBCBIB implements IPredicate
         
     IS_AFFILIATED_WITH( "isAffiliatedWith" ),
 
-
     HAS_REVIEW( "hasReview" ),
     REVIEW_OF( "reviewOf" ),
     HAS_FULLTEXT( "hasFullText" );
@@ -53,11 +52,13 @@ public enum DBCBIB implements IPredicate
         this.localName = name;
     }
 
+
     public QName getPredicate()
     {
         return new QName( NS, this.localName, prefix );
     }
 
+    
     @Override
     public String getPredicateString()
     {       
