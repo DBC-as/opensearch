@@ -89,16 +89,15 @@ public class FileHarvestLight implements IHarvest
         filterArray = new FilenameFilter[] { new NoRefFileFilter() };
 
         dataFile = FileHandler.getFile( harvesterDirName );
-        if( ! dataFile.exists() )
+        if ( ! dataFile.exists() )
         {
             String errMsg = String.format( "Harvest folder %s does not exist!", dataFile );
             log.fatal( "FileHarvestLight: " + errMsg );
             throw new HarvesterIOException( errMsg );
         }
 
-	successDir = createDirectoryIfNotExisting( dataFile, successDirName );
-	failureDir = createDirectoryIfNotExisting( dataFile, failureDirName );
-
+        successDir = createDirectoryIfNotExisting( dataFile, successDirName );
+        failureDir = createDirectoryIfNotExisting( dataFile, failureDirName );
     }
 
 
@@ -145,7 +144,7 @@ public class FileHarvestLight implements IHarvest
             refFileName = fileName.substring( 0, fileName.lastIndexOf( "." ) ) + ".ref";
             //System.out.println( String.format( "created ref name %s for file %s", refFileName, fileName ) );
             File refFile = FileHandler.getFile( refFileName );
-            if( refFile.exists() )
+            if ( refFile.exists() )
             {
                 try
                 {
@@ -174,7 +173,7 @@ public class FileHarvestLight implements IHarvest
 
                 File theFile = FileHandler.getFile( fileName );
 
-                list.add((IJob) new Job( new FileIdentifier( theFile.toURI() ), doc ) );
+                list.add( (IJob) new Job( new FileIdentifier( theFile.toURI() ), doc ) );
             }
             else
             {

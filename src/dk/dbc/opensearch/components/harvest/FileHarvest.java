@@ -134,7 +134,7 @@ public class FileHarvest implements IHarvest
     {
         toHarvestFolder = HarvesterConfig.getFolder();
         toHarvestFile = FileHandler.getFile( toHarvestFolder );
-        if( ! toHarvestFile.exists() )
+        if ( ! toHarvestFile.exists() )
         {
             String errMsg = String.format( "Harvest folder '%s' does not exist!", toHarvestFile );
             log.error( "FileHarvest: " + errMsg );
@@ -152,7 +152,7 @@ public class FileHarvest implements IHarvest
 
         harvestDoneFolder = HarvesterConfig.getDoneFolder();
         harvestDoneFile = FileHandler.getFile( harvestDoneFolder );
-        if( !harvestDoneFile.exists() )
+        if ( !harvestDoneFile.exists() )
         {
             String errMsg = String.format( "'Harvest done folder' '%s' does not exist!", harvestDoneFile );
             log.error( "FileHarvest: " + errMsg );

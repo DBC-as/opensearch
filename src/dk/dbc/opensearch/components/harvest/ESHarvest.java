@@ -28,7 +28,6 @@ package dk.dbc.opensearch.components.harvest ;
 
 
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
@@ -142,13 +141,13 @@ public class ESHarvest implements IHarvest
             //
             // Find the next targetreference:
             //
-	    PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference " +
-							     "FROM updatepackages " +
-							     "WHERE taskstatus = ? " +
-							     "AND databasename = ? " +
-							     "ORDER BY update_priority , creationdate , targetreference" );
-	    pstmt.setInt( 1, 0 ); // taskstatus
-	    pstmt.setString( 2, databasename );
+            PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference " +
+                                     "FROM updatepackages " +
+                                     "WHERE taskstatus = ? " +
+                                     "AND databasename = ? " +
+                                     "ORDER BY update_priority , creationdate , targetreference" );
+            pstmt.setInt( 1, 0 ); // taskstatus
+            pstmt.setString( 2, databasename );
             ResultSet rs1 = pstmt.executeQuery ( );
             if ( rs1.next() )
             {
@@ -159,22 +158,23 @@ public class ESHarvest implements IHarvest
                 // No candidates found. Queue empty.
                 return 0;
             }
-	    rs1.close();
+
+            rs1.close();
 
             //
             // Set the taskpackage with the found targetreference to active:
             //
-	    PreparedStatement activateTPStmt = conn.prepareStatement( "UPDATE taskpackage " +
-								      "SET taskstatus=1, accessdate=sysdate, substatus=substatus+1 " +
-								      "WHERE targetreference = ?" );
-	    activateTPStmt.setInt( 1, targetRef );
-	    int res = activateTPStmt.executeUpdate();
+            PreparedStatement activateTPStmt = conn.prepareStatement( "UPDATE taskpackage " +
+                                          "SET taskstatus=1, accessdate=sysdate, substatus=substatus+1 " +
+                                          "WHERE targetreference = ?" );
+            activateTPStmt.setInt( 1, targetRef );
+            int res = activateTPStmt.executeUpdate();
 
             if ( res != 1 )
             {
                 conn.rollback();
                 // stmt.close();
-		pstmt.close();
+                pstmt.close();
                 String errorMsg = String.format( "Error: updated %s row(s). 1 row was expected", res );
                 log.fatal( errorMsg );
                 throw new HarvesterIOException( errorMsg );
@@ -183,12 +183,12 @@ public class ESHarvest implements IHarvest
             //
             // Retrieve all the lbnr's associated with the targetreference:
             //
-	    PreparedStatement selectLbnrQueryStmt = conn.prepareStatement( "SELECT lbnr " +
-									   "FROM taskpackagerecordstructure " +
-									   "WHERE targetreference = ? " +
-									   "AND recordstatus = 2 " +
-									   "ORDER BY lbnr" );
-	    selectLbnrQueryStmt.setInt( 1, targetRef );
+            PreparedStatement selectLbnrQueryStmt = conn.prepareStatement( "SELECT lbnr " +
+                                           "FROM taskpackagerecordstructure " +
+                                           "WHERE targetreference = ? " +
+                                           "AND recordstatus = 2 " +
+                                           "ORDER BY lbnr" );
+            selectLbnrQueryStmt.setInt( 1, targetRef );
             ResultSet rs2 = selectLbnrQueryStmt.executeQuery( );
 
             while ( rs2.next() )
@@ -218,13 +218,13 @@ public class ESHarvest implements IHarvest
 
         try
         {
-	    PreparedStatement pstmt = conn.prepareStatement( "SELECT supplementalid3 " +
-							     "FROM suppliedrecords " +
-							     "WHERE targetreference = ? " +
-							     "AND lbnr = ?");
-	    pstmt.setInt( 1, id.getTargetRef() );
-	    pstmt.setInt( 2, id.getLbNr() );
-	    ResultSet rs = pstmt.executeQuery( );
+            PreparedStatement pstmt = conn.prepareStatement( "SELECT supplementalid3 " +
+                                     "FROM suppliedrecords " +
+                                     "WHERE targetreference = ? " +
+                                     "AND lbnr = ?");
+            pstmt.setInt( 1, id.getTargetRef() );
+            pstmt.setInt( 2, id.getLbNr() );
+            ResultSet rs = pstmt.executeQuery( );
 
             if ( rs.next() )
             {
@@ -232,16 +232,16 @@ public class ESHarvest implements IHarvest
             }
             else
             {
-		String errorMsg = String.format( "Could not retrieve reference data for: %s", id );
-		log.error( errorMsg );
-		throw new HarvesterIOException( errorMsg );
+                String errorMsg = String.format( "Could not retrieve reference data for: %s", id );
+                log.error( errorMsg );
+                throw new HarvesterIOException( errorMsg );
             }
         }
         catch( SQLException sqle )
         {
-	    String errorMsg = new String( "An sql exception was caught" );
-	    log.fatal( errorMsg, sqle );
-	    throw new HarvesterIOException( errorMsg, sqle );
+            String errorMsg = new String( "An sql exception was caught" );
+            log.fatal( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, sqle );
         }
 
         return referenceData;
@@ -250,60 +250,60 @@ public class ESHarvest implements IHarvest
     Document createReferenceDataDocument( String referenceData, ESIdentifier id ) 
     {
 
-	Document doc = null;
-	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = null;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-	boolean DocOK = true; // The Doc structure has no problems
-	try
-            {
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
-            }
-	catch( ParserConfigurationException pce )
-            {
-                log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
-                DocOK = false;
-            }
-	catch( SAXException se )
-            {
-                log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
-                DocOK = false;
-            }
-	catch( IOException ioe )
-            {
-                log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
-                DocOK = false;
-            }
+        boolean DocOK = true; // The Doc structure has no problems
+        try
+        {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
+        }
+        catch( ParserConfigurationException pce )
+        {
+            log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
+            DocOK = false;
+        }
+        catch( SAXException se )
+        {
+            log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
+            DocOK = false;
+        }
+        catch( IOException ioe )
+        {
+            log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
+            DocOK = false;
+        }
 
-	if ( DocOK )
+        if ( DocOK )
+        {
+            //IJob theJob = new Job( id, doc );
+            //theJobList.add( theJob );
+            return doc;
+        }
+        else
+        {
+            try
             {
-		//                IJob theJob = new Job( id, doc );
-		//                theJobList.add( theJob );
-		return doc;
+                setStatusFailure( id, "The referencedata contains malformed XML" );
             }
-	else
+            catch ( HarvesterUnknownIdentifierException huie )
             {
-                try
-		    {
-			setStatusFailure( id, "The referencedata contains malformed XML" );
-		    }
-                catch ( HarvesterUnknownIdentifierException huie )
-		    {
-			log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
-		    }
-                catch ( HarvesterInvalidStatusChangeException hisce )
-		    {
-			log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
-		    }
-		catch ( HarvesterIOException hioe )
-		{
-		    log.error( String.format( "IO Error when changing JobStatus ID: %s Msg: %s ", id, hioe.getMessage() ), hioe );
-		}
+                log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
             }
+            catch ( HarvesterInvalidStatusChangeException hisce )
+            {
+                log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
+            }
+            catch ( HarvesterIOException hioe )
+            {
+                log.error( String.format( "IO Error when changing JobStatus ID: %s Msg: %s ", id, hioe.getMessage() ), hioe );
+            }
+        }
 
-	return doc;
-
+        return doc;
     }
+    
 
     public List< IJob > getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
@@ -363,9 +363,9 @@ public class ESHarvest implements IHarvest
 
             String referenceData = retrieveReferenceData( id, conn );
 
-	    Document doc = createReferenceDataDocument( referenceData, id );
-	    IJob theJob = new Job( id, doc );
-	    theJobList.add( theJob );
+            Document doc = createReferenceDataDocument( referenceData, id );
+            IJob theJob = new Job( id, doc );
+            theJobList.add( theJob );
 
             // Document doc = null;
             // DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -430,12 +430,12 @@ public class ESHarvest implements IHarvest
 
         try
         {
-	    PreparedStatement pstmt = conn.prepareStatement( "SELECT record " +
-							     "FROM suppliedrecords " +
-							     "WHERE targetreference = ? " +
-							     "AND lbnr = ?" );
-	    pstmt.setInt( 1, ESJobId.getTargetRef() );
-	    pstmt.setInt( 2, ESJobId.getLbNr() );
+            PreparedStatement pstmt = conn.prepareStatement( "SELECT record " +
+                                     "FROM suppliedrecords " +
+                                     "WHERE targetreference = ? " +
+                                     "AND lbnr = ?" );
+            pstmt.setInt( 1, ESJobId.getTargetRef() );
+            pstmt.setInt( 2, ESJobId.getLbNr() );
             ResultSet rs = pstmt.executeQuery( );
             if ( ! rs.next() )
             {
@@ -470,10 +470,10 @@ public class ESHarvest implements IHarvest
             throw new HarvesterIOException( errorMsg, sqle );
         }
 	
-	return returnData;
-
+        return returnData;
     }
 
+    
     /**
      *  Retrieves data from the ES-base associated with the jobId.
      * 
@@ -502,7 +502,7 @@ public class ESHarvest implements IHarvest
         byte[] returnData = null;
         ESIdentifier ESJobId = (ESIdentifier)jobId;
 
-	returnData = getDataDBCall( ESJobId, conn ); // the deleted function below is moved into a method of its own
+        returnData = getDataDBCall( ESJobId, conn ); // the deleted function below is moved into a method of its own
 
         // try
         // {
@@ -555,7 +555,7 @@ public class ESHarvest implements IHarvest
 
     public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
-	ESIdentifier id = (ESIdentifier)jobId;
+        ESIdentifier id = (ESIdentifier)jobId;
 
         // get a connection from the connectionpool:
         Connection conn;
@@ -570,57 +570,58 @@ public class ESHarvest implements IHarvest
             throw new HarvesterIOException( errorMsg, sqle );
         }
 	
-	String referenceData = retrieveReferenceData( id, conn );
-	Document doc = createReferenceDataDocument( referenceData, id );
-	DatadockJob job = new DatadockJob( id, doc );
+        String referenceData = retrieveReferenceData( id, conn );
+        Document doc = createReferenceDataDocument( referenceData, id );
+        DatadockJob job = new DatadockJob( id, doc );
 
-	// Retrieve the data.
-	byte[] data = getDataDBCall( id , conn );
+        // Retrieve the data.
+        byte[] data = getDataDBCall( id , conn );
 
-	// Retriving alias:
-	String alias = null;
-	String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
-	try
-	{
-	    alias = DatadockJobsMap.getIndexingAlias( job.getSubmitter(), job.getFormat() );
-	}
-       	catch( ConfigurationException ce)
-	{
-	    log.error( errMsg, ce );
-	    throw new HarvesterIOException( errMsg, ce );
-	}
-	catch( IOException ioe )
-	{
-	    log.error( errMsg, ioe );
-	    throw new HarvesterIOException( errMsg, ioe );
-	}
-	catch( ParserConfigurationException pce )
-	{
-	    log.error( errMsg, pce );
-	    throw new HarvesterIOException( errMsg, pce );
-	}
-	catch( SAXException saxe )
-	{
-	    log.error( errMsg, saxe );
-	    throw new HarvesterIOException( errMsg, saxe );
-	}
+        // Retriving alias:
+        String alias = null;
+        String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
+        try
+        {
+            alias = DatadockJobsMap.getIndexingAlias( job.getSubmitter(), job.getFormat() );
+        }
+            catch( ConfigurationException ce)
+        {
+            log.error( errMsg, ce );
+            throw new HarvesterIOException( errMsg, ce );
+        }
+        catch( IOException ioe )
+        {
+            log.error( errMsg, ioe );
+            throw new HarvesterIOException( errMsg, ioe );
+        }
+        catch( ParserConfigurationException pce )
+        {
+            log.error( errMsg, pce );
+            throw new HarvesterIOException( errMsg, pce );
+        }
+        catch( SAXException saxe )
+        {
+            log.error( errMsg, saxe );
+            throw new HarvesterIOException( errMsg, saxe );
+        }
 
-	log.debug( "Creating CargoContainer" );
-        CargoContainer cargo = new CargoContainer();
+        log.debug( "Creating CargoContainer" );
+            CargoContainer cargo = new CargoContainer();
 
-	try
-	{
-	    cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", alias, data );
-	} 
-	catch ( IOException ioe )
-	{
-	    String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
-	    log.fatal( errorMsg, ioe );
-	    throw new HarvesterIOException( errorMsg, ioe );
-	}
+        try
+        {
+            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", alias, data );
+        }
+        catch ( IOException ioe )
+        {
+            String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
+            log.fatal( errorMsg, ioe );
+            throw new HarvesterIOException( errorMsg, ioe );
+        }
 
         return cargo;
     }
+
 
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {
@@ -700,13 +701,13 @@ public class ESHarvest implements IHarvest
         try
         {
             // Lock row for update
-	    PreparedStatement pstmt = conn.prepareStatement( "SELECT recordstatus " +
-							    "FROM taskpackagerecordstructure " +
-							    "WHERE targetreference = ? " +
-							    "AND lbnr = ? " +
-							    "FOR UPDATE OF recordstatus" );
-	    pstmt.setInt( 1, ESJobId.getTargetRef() );
-	    pstmt.setInt( 2, ESJobId.getLbNr() );
+            PreparedStatement pstmt = conn.prepareStatement( "SELECT recordstatus " +
+                                    "FROM taskpackagerecordstructure " +
+                                    "WHERE targetreference = ? " +
+                                    "AND lbnr = ? " +
+                                    "FOR UPDATE OF recordstatus" );
+            pstmt.setInt( 1, ESJobId.getTargetRef() );
+            pstmt.setInt( 2, ESJobId.getLbNr() );
             ResultSet rs = pstmt.executeQuery( );
 	    
             int counter = 0;
@@ -758,13 +759,13 @@ public class ESHarvest implements IHarvest
                         throw new HarvesterInvalidStatusChangeException( "Unknown status" );
                 }
 
-		PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-								  "SET recordstatus = ? " +
-								  "WHERE targetreference = ? " +
-								  "AND lbnr = ? " );
-		pstmt2.setInt( 1, new_recordStatus );
-		pstmt2.setInt( 2, ESJobId.getTargetRef() );
-		pstmt2.setInt( 3, ESJobId.getLbNr() );
+                PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
+                                          "SET recordstatus = ? " +
+                                          "WHERE targetreference = ? " +
+                                          "AND lbnr = ? " );
+                pstmt2.setInt( 1, new_recordStatus );
+                pstmt2.setInt( 2, ESJobId.getTargetRef() );
+                pstmt2.setInt( 3, ESJobId.getLbNr() );
                 int updateResult = pstmt2.executeUpdate( );
 
                 if( updateResult != 1 )
@@ -808,43 +809,43 @@ public class ESHarvest implements IHarvest
 
         try
         {
-	    PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference, lbnr, recordstatus " + 
-							     "FROM taskpackagerecordstructure " + 
-							     "WHERE recordstatus = 3 " + 
-							     "AND targetreference IN " + 
-							     "(SELECT targetreference FROM taskspecificupdate WHERE databasename = ? ) " + 
-							     "FOR UPDATE OF recordstatus" );
-	    pstmt.setString( 1, databasename );
-	    ResultSet rs = pstmt.executeQuery( );
+            PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference, lbnr, recordstatus " +
+                                     "FROM taskpackagerecordstructure " +
+                                     "WHERE recordstatus = 3 " +
+                                     "AND targetreference IN " +
+                                     "(SELECT targetreference FROM taskspecificupdate WHERE databasename = ? ) " +
+                                     "FOR UPDATE OF recordstatus" );
+            pstmt.setString( 1, databasename );
+            ResultSet rs = pstmt.executeQuery( );
 
-	    int counter = 0;
-	    while ( rs.next() ) 
-	    {
-		++counter;
-	        int targetRef = rs.getInt(1);
-		int lbnr      = rs.getInt(2);
-		log.info( String.format( "Locking for update: targetRef: %s  Lbnr: %s", targetRef, lbnr ) );
-	    }
-	    log.info( String.format( "Locked %d rows for update.", counter ) );
-	    if ( counter == 0 )
-	    {
+            int counter = 0;
+            while ( rs.next() )
+            {
+            ++counter;
+                int targetRef = rs.getInt(1);
+            int lbnr      = rs.getInt(2);
+            log.info( String.format( "Locking for update: targetRef: %s  Lbnr: %s", targetRef, lbnr ) );
+            }
+            log.info( String.format( "Locked %d rows for update.", counter ) );
+            if ( counter == 0 )
+            {
                 // no rows for update - just close down the statement:
                 conn.rollback();
                 pstmt.close();
-	    }
+            }
             else
             {
-		PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-								  "SET recordstatus = ? " + 
-								  "WHERE recordstatus = ? " + 
-								  "AND targetreference " + 
-								  "IN (SELECT targetreference " + 
-								  "FROM taskspecificupdate " + 
-								  "WHERE databasename = '?')" );
-		pstmt2.setInt( 1, 2 );
-		pstmt2.setInt( 2, 3 );
-		pstmt2.setString( 3, databasename );
-		int res2 = pstmt.executeUpdate( );
+                PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
+                                          "SET recordstatus = ? " +
+                                          "WHERE recordstatus = ? " +
+                                          "AND targetreference " +
+                                          "IN (SELECT targetreference " +
+                                          "FROM taskspecificupdate " +
+                                          "WHERE databasename = '?')" );
+                pstmt2.setInt( 1, 2 );
+                pstmt2.setInt( 2, 3 );
+                pstmt2.setString( 3, databasename );
+                int res2 = pstmt.executeUpdate( );
 
                 log.info("Updating " + res2 + " rows");
 
@@ -853,53 +854,53 @@ public class ESHarvest implements IHarvest
                 conn.commit();
             }
 
-	    // Update taskpackage.taskstatus and taskpackage.substatus:
-	    PreparedStatement pTpStmt = conn.prepareStatement( "SELECT targetreference " +
-							       "FROM updatepackages " +
-							       "WHERE taskstatus = ? " +
-							       "AND targetreference " + 
-							       "IN (SELECT targetreference " + 
-							       "FROM taskspecificupdate " + 
-							       "WHERE databasename = '?') " +
-							       "FOR UPDATE OF taskstatus, substatus " );
-	    pTpStmt.setInt( 1, 1 );
-	    pTpStmt.setString( 2, databasename );
-	    ResultSet tpRs = pTpStmt.executeQuery( );
+            // Update taskpackage.taskstatus and taskpackage.substatus:
+            PreparedStatement pTpStmt = conn.prepareStatement( "SELECT targetreference " +
+                                       "FROM updatepackages " +
+                                       "WHERE taskstatus = ? " +
+                                       "AND targetreference " +
+                                       "IN (SELECT targetreference " +
+                                       "FROM taskspecificupdate " +
+                                       "WHERE databasename = '?') " +
+                                       "FOR UPDATE OF taskstatus, substatus " );
+            pTpStmt.setInt( 1, 1 );
+            pTpStmt.setString( 2, databasename );
+            ResultSet tpRs = pTpStmt.executeQuery( );
 
-	    int tpCounter = 0;
-	    while( tpRs.next() ) 
-	    {
-		int targetRef = tpRs.getInt( 1 );
-		log.info( String.format( "Updating taskpackage with targetref: %s", targetRef ) ); 
-		tpCounter++;
+            int tpCounter = 0;
+            while( tpRs.next() )
+            {
+            int targetRef = tpRs.getInt( 1 );
+            log.info( String.format( "Updating taskpackage with targetref: %s", targetRef ) );
+            tpCounter++;
 
-		PreparedStatement pTpStmt2 = conn.prepareStatement( "UPDATE taskpackage " +
-								    "SET taskstatus = ?, " + 
-								    "substatus = substatus - 1 " + 
-								    "WHERE targetreference = ?" );
-		pTpStmt2.setInt( 1, 0 );
-		pTpStmt2.setInt( 2, targetRef );
-		int tpRes = pTpStmt2.executeUpdate( );
+            PreparedStatement pTpStmt2 = conn.prepareStatement( "UPDATE taskpackage " +
+                                        "SET taskstatus = ?, " +
+                                        "substatus = substatus - 1 " +
+                                        "WHERE targetreference = ?" );
+            pTpStmt2.setInt( 1, 0 );
+            pTpStmt2.setInt( 2, targetRef );
+            int tpRes = pTpStmt2.executeUpdate( );
 
-		if ( tpRes != 1 )
-		{
-		    log.warn( String.format( "An unexpected number of rows updated: %s. Expected 1", tpRes ) );
-		}
-		pTpStmt2.close();
-		
-	    }
-	    if( tpCounter == 0 )
-	    {
-		// No rows for update - rollback and close down:
-		conn.rollback();
-		pTpStmt.close();
-	    }
-	    else
-	    {
-		log.info( "Commiting" );
-		conn.commit();
-		pTpStmt.close();
-	    }
+            if ( tpRes != 1 )
+            {
+                log.warn( String.format( "An unexpected number of rows updated: %s. Expected 1", tpRes ) );
+            }
+            pTpStmt2.close();
+
+            }
+            if( tpCounter == 0 )
+            {
+            // No rows for update - rollback and close down:
+            conn.rollback();
+            pTpStmt.close();
+            }
+            else
+            {
+            log.info( "Commiting" );
+            conn.commit();
+            pTpStmt.close();
+            }
 
         }
         catch( SQLException sqle )
@@ -914,6 +915,7 @@ public class ESHarvest implements IHarvest
 
         log.debug( "Done cleaning up ES-base" );
     }
+
 
     public void changeRecordstatusFromInProgressToQueued2( ) throws HarvesterIOException
     {
@@ -934,48 +936,48 @@ public class ESHarvest implements IHarvest
 
         try
         {
-	    PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference, lbnr, recordstatus " + 
-							     "FROM taskpackagerecordstructure " + 
-							     "WHERE recordstatus = ? " + 
-							     "AND targetreference IN " + 
-							     "(SELECT targetreference FROM taskspecificupdate WHERE databasename = '?') " + 
-							     "FOR UPDATE OF recordstatus" );
-	    pstmt.setInt( 1, 3 );
-	    pstmt.setString( 2, databasename );
-	    ResultSet rs = pstmt.executeQuery( );
+            PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference, lbnr, recordstatus " +
+                                     "FROM taskpackagerecordstructure " +
+                                     "WHERE recordstatus = ? " +
+                                     "AND targetreference IN " +
+                                     "(SELECT targetreference FROM taskspecificupdate WHERE databasename = '?') " +
+                                     "FOR UPDATE OF recordstatus" );
+            pstmt.setInt( 1, 3 );
+            pstmt.setString( 2, databasename );
+            ResultSet rs = pstmt.executeQuery( );
 
-	    int counter = 0;
-	    while ( rs.next() ) 
-	    {
-		++counter;
-		int targetRef = rs.getInt(1);
-		int lbnr      = rs.getInt(2);
-		log.info( String.format( "Locking for update: targetRef: %s  Lbnr: %s", targetRef, lbnr ) );
-	    }
-	    log.info( String.format( "Locked %d rows for update.", counter ) );
-	    if ( counter == 0 )
-	    {
-                // no rows for update - just close down the statement:
-                conn.rollback();
-                pstmt.close();
-	    }
+            int counter = 0;
+            while ( rs.next() )
+            {
+            ++counter;
+            int targetRef = rs.getInt(1);
+            int lbnr      = rs.getInt(2);
+            log.info( String.format( "Locking for update: targetRef: %s  Lbnr: %s", targetRef, lbnr ) );
+            }
+            log.info( String.format( "Locked %d rows for update.", counter ) );
+            if ( counter == 0 )
+            {
+                    // no rows for update - just close down the statement:
+                    conn.rollback();
+                    pstmt.close();
+            }
             else
             {
-		PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-								  "SET recordstatus = ? " + 
-								  "WHERE recordstatus = ? " + 
-								  "AND targetreference " + 
-								  "IN (SELECT targetreference " + 
-								  "FROM taskspecificupdate " + 
-								  "WHERE databasename = '?')" );
-		pstmt2.setInt( 1, 2 );
-		pstmt2.setInt( 2, 3 );
-		pstmt2.setString( 3, databasename );
-		int res2 = pstmt2.executeUpdate( );
+                PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
+                                          "SET recordstatus = ? " +
+                                          "WHERE recordstatus = ? " +
+                                          "AND targetreference " +
+                                          "IN (SELECT targetreference " +
+                                          "FROM taskspecificupdate " +
+                                          "WHERE databasename = '?')" );
+                pstmt2.setInt( 1, 2 );
+                pstmt2.setInt( 2, 3 );
+                pstmt2.setString( 3, databasename );
+                int res2 = pstmt2.executeUpdate( );
 
-                log.info("Updating " + res2 + " rows");
-		pstmt.close();
-		pstmt2.close();
+                        log.info("Updating " + res2 + " rows");
+                pstmt.close();
+                pstmt2.close();
                 conn.commit();
             }
         }
@@ -1002,16 +1004,16 @@ public class ESHarvest implements IHarvest
         log.info( String.format( "Updating recordstatus for ID: %s", ESJobId ) );
 
         // Locking the row for update:
-	PreparedStatement pstmt = conn.prepareStatement( "SELECT recordstatus " +
-							 "FROM taskpackagerecordstructure " +
-							 "WHERE targetreference = ? " + 
-							 "AND lbnr = ? " + 
-							 "AND recordstatus = ? " +
-							 "FOR UPDATE OF recordstatus" );
-	pstmt.setInt( 1, ESJobId.getTargetRef() );
-	pstmt.setInt( 2, ESJobId.getLbNr() );
-	pstmt.setInt( 3, 2 ); // recordstatus
-	int res1 = pstmt.executeUpdate( );
+        PreparedStatement pstmt = conn.prepareStatement( "SELECT recordstatus " +
+                                 "FROM taskpackagerecordstructure " +
+                                 "WHERE targetreference = ? " +
+                                 "AND lbnr = ? " +
+                                 "AND recordstatus = ? " +
+                                 "FOR UPDATE OF recordstatus" );
+        pstmt.setInt( 1, ESJobId.getTargetRef() );
+        pstmt.setInt( 2, ESJobId.getLbNr() );
+        pstmt.setInt( 3, 2 ); // recordstatus
+        int res1 = pstmt.executeUpdate( );
         
         // Testing all went well:
         if (res1 != 1)
@@ -1020,29 +1022,29 @@ public class ESHarvest implements IHarvest
             log.fatal( "Error: Result from select for update was " + res1 + ". Not 1." );
             String errorMsg = String.format( "RecordStatus was allready set in ES-base for %s", ESJobId );
             log.fatal( errorMsg );
-	    pstmt.close();
+            pstmt.close();
             conn.rollback();
             throw new HarvesterIOException( errorMsg );
         }
 
         // Updating recordstatus in row:
-	PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-							  "SET recordstatus = ? " +
-							  "WHERE targetreference = ? " +
-							  "AND lbnr = ? " + 
-							  "AND recordstatus = ?" );
-	pstmt2.setInt( 1, 3 ); // recordstatus (after)
-	pstmt2.setInt( 2, ESJobId.getTargetRef() ); 
-	pstmt2.setInt( 3, ESJobId.getLbNr() ); 
-	pstmt2.setInt( 4, 2 ); // recordstatus (before)
-	int res2 = pstmt2.executeUpdate( );
+        PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
+                                  "SET recordstatus = ? " +
+                                  "WHERE targetreference = ? " +
+                                  "AND lbnr = ? " +
+                                  "AND recordstatus = ?" );
+        pstmt2.setInt( 1, 3 ); // recordstatus (after)
+        pstmt2.setInt( 2, ESJobId.getTargetRef() );
+        pstmt2.setInt( 3, ESJobId.getLbNr() );
+        pstmt2.setInt( 4, 2 ); // recordstatus (before)
+        int res2 = pstmt2.executeUpdate( );
 
         if ( res2 != 1 )
         {
             // Something went wrong - we did not update a single row
             log.error( "Error: Result from update was " + res2 + ". Not 1" );
-	    pstmt.close();
-	    pstmt2.close();
+            pstmt.close();
+            pstmt2.close();
             conn.rollback();
             return;
         }
@@ -1068,10 +1070,10 @@ public class ESHarvest implements IHarvest
     {	
         log.info( "Testing wether Taskpackage.Taskstatus should be updated.");
 
-	PreparedStatement pstmt = conn.prepareStatement( "SELECT taskstatus " +
-							 "FROM taskpackage " +
-							 "WHERE targetreference = ?" );
-	pstmt.setInt( 1, targetref );
+        PreparedStatement pstmt = conn.prepareStatement( "SELECT taskstatus " +
+                                 "FROM taskpackage " +
+                                 "WHERE targetreference = ?" );
+        pstmt.setInt( 1, targetref );
         ResultSet rs = pstmt.executeQuery( );
 
         if ( rs.next() )
@@ -1120,34 +1122,34 @@ public class ESHarvest implements IHarvest
         }
 
         // lock row for update:
-	PreparedStatement pstmt = conn.prepareStatement( "SELECT taskstatus, substatus " +
-							 "FROM taskpackage " +
-							 "WHERE targetreference = ? " +
-							 "FOR UPDATE OF taskstatus, substatus" );
-	pstmt.setInt( 1, targetref );
-	ResultSet rs = pstmt.executeQuery( );
+        PreparedStatement pstmt = conn.prepareStatement( "SELECT taskstatus, substatus " +
+                                 "FROM taskpackage " +
+                                 "WHERE targetreference = ? " +
+                                 "FOR UPDATE OF taskstatus, substatus" );
+        pstmt.setInt( 1, targetref );
+        ResultSet rs = pstmt.executeQuery( );
 
-	if ( !rs.next() )
-	{
-	    // No rows for update - give a warning:
-            log.warn( String.format( "Could not find a row for update for targetref: %s", targetref ) );
-            conn.rollback();
-	    pstmt.close();
-	    
-	}
+        if ( !rs.next() )
+        {
+            // No rows for update - give a warning:
+                log.warn( String.format( "Could not find a row for update for targetref: %s", targetref ) );
+                conn.rollback();
+            pstmt.close();
+
+        }
         else
         {
-	    int substatus = rs.getInt(2);
-	    substatus++; // increment to next value for update of substatus
+            int substatus = rs.getInt(2);
+            substatus++; // increment to next value for update of substatus
 
-            // Perform the update:
-	    PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackage " +
-							     "SET taskstatus = ?, substatus = ? " + 
-							     "WHERE targetreference = ? ");
-	    pstmt2.setInt( 1, taskstatus );
-	    pstmt2.setInt( 2, substatus );
-	    pstmt2.setInt( 3, targetref );
-	    int res2 = pstmt2.executeUpdate( );
+                // Perform the update:
+            PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackage " +
+                                     "SET taskstatus = ?, substatus = ? " +
+                                     "WHERE targetreference = ? ");
+            pstmt2.setInt( 1, taskstatus );
+            pstmt2.setInt( 2, substatus );
+            pstmt2.setInt( 3, targetref );
+            int res2 = pstmt2.executeUpdate( );
 
             if ( res2 == 0 )
             {
@@ -1171,10 +1173,10 @@ public class ESHarvest implements IHarvest
     {
         log.debug( String.format( "setTaskPackageStatus with targetRef %s", targetref ) );
 
-	PreparedStatement pstmt = conn.prepareStatement( "SELECT noofrecs, noofrecs_treated " +
-							 "FROM taskspecificupdate " +
-							 "WHERE targetreference = ?" );
-	pstmt.setInt( 1, targetref );
+        PreparedStatement pstmt = conn.prepareStatement( "SELECT noofrecs, noofrecs_treated " +
+                                 "FROM taskspecificupdate " +
+                                 "WHERE targetreference = ?" );
+        pstmt.setInt( 1, targetref );
         ResultSet rs1 = pstmt.executeQuery( );
 
         while ( rs1.next() )
@@ -1193,20 +1195,20 @@ public class ESHarvest implements IHarvest
             {
 		
                 // find the number of success and failures on the taskpackage:
-		PreparedStatement pstmt2 = conn.prepareStatement( "SELECT scount, fcount  " +
-								  "FROM " +
-								  "(SELECT count( recordstatus ) scount " +
-								  " FROM taskpackagerecordstructure " +
-								  " WHERE targetreference = ? " +
-								  " AND recordstatus = ?) a , " +
-								  "(SELECT count( recordstatus ) fcount " +
-								  " FROM taskpackagerecordstructure " +
-								  " WHERE targetreference = ? " +
-								  " AND recordstatus = ?) b" );
-		pstmt2.setInt( 1, targetref );
-		pstmt2.setInt( 2, 1 ); // recordstatus == 1 (success)
-		pstmt2.setInt( 3, targetref );
-		pstmt2.setInt( 4, 4 ); // recordstatus == 4 (failure)
+                PreparedStatement pstmt2 = conn.prepareStatement( "SELECT scount, fcount  " +
+                                          "FROM " +
+                                          "(SELECT count( recordstatus ) scount " +
+                                          " FROM taskpackagerecordstructure " +
+                                          " WHERE targetreference = ? " +
+                                          " AND recordstatus = ?) a , " +
+                                          "(SELECT count( recordstatus ) fcount " +
+                                          " FROM taskpackagerecordstructure " +
+                                          " WHERE targetreference = ? " +
+                                          " AND recordstatus = ?) b" );
+                pstmt2.setInt( 1, targetref );
+                pstmt2.setInt( 2, 1 ); // recordstatus == 1 (success)
+                pstmt2.setInt( 3, targetref );
+                pstmt2.setInt( 4, 4 ); // recordstatus == 4 (failure)
                 ResultSet failure_success_rs = pstmt2.executeQuery( );
 
                 int counter2 = 0;
@@ -1218,7 +1220,8 @@ public class ESHarvest implements IHarvest
                     failure_count = failure_success_rs.getInt( 2 );
                     ++counter2;
                 }
-		pstmt2.close();
+
+                pstmt2.close();
 
                 if (counter2 != 1 )
                 {
@@ -1246,11 +1249,11 @@ public class ESHarvest implements IHarvest
                     update_status = 2;
                 }
 
-		PreparedStatement pstmt3 = conn.prepareStatement( "SELECT updatestatus " +
-								  "FROM taskspecificupdate " +
-								  "WHERE targetreference = ? " +
-								  "FOR UPDATE OF updatestatus" );
-		pstmt3.setInt( 1, targetref );
+                PreparedStatement pstmt3 = conn.prepareStatement( "SELECT updatestatus " +
+                                          "FROM taskspecificupdate " +
+                                          "WHERE targetreference = ? " +
+                                          "FOR UPDATE OF updatestatus" );
+                pstmt3.setInt( 1, targetref );
                 ResultSet update_taskpackage_status_rs = pstmt3.executeQuery( );
 
                 if ( ! update_taskpackage_status_rs.next() )
@@ -1258,7 +1261,7 @@ public class ESHarvest implements IHarvest
                     String errorMsg = String.format( "The updatestatus for the taskpackage could not be updated. TaskSpecificUpdate with targetref %s was not found in base", targetref );
                     log.error( errorMsg );
                     conn.rollback();
-		    pstmt3.close();
+                    pstmt3.close();
                     throw new HarvesterInvalidStatusChangeException( errorMsg );
                 }
                 else
@@ -1270,20 +1273,20 @@ public class ESHarvest implements IHarvest
                         String errorMsg = String.format( "The status for the taskpackage with targetRef %s was allready set to %s", targetref, current_update_status );
                         log.error( errorMsg );
                         conn.rollback();
-			pstmt3.close();
+                        pstmt3.close();
                         throw new HarvesterInvalidStatusChangeException( errorMsg );
 			
                     }
 
-		    PreparedStatement pstmt4 = conn.prepareStatement( "UPDATE taskspecificupdate " +
-                                                                      "SET updatestatus = ? " +
-                                                                      "WHERE targetreference = ?" );
-		    pstmt4.setInt( 1, update_status );
-		    pstmt4.setInt( 2, targetref );
+                    PreparedStatement pstmt4 = conn.prepareStatement( "UPDATE taskspecificupdate " +
+                                                                              "SET updatestatus = ? " +
+                                                                              "WHERE targetreference = ?" );
+                    pstmt4.setInt( 1, update_status );
+                    pstmt4.setInt( 2, targetref );
 
                     try
                     {
-			int res = pstmt4.executeUpdate( );
+                        int res = pstmt4.executeUpdate( );
                         log.debug( String.format( "%s rows updated" , res ) );
                         conn.commit();
                         // set the taskpackage.taskstatus to complete:
@@ -1293,15 +1296,17 @@ public class ESHarvest implements IHarvest
                     {
                         String errorMsg = String.format( "An SQL error occured when trying to update updatestatus in TaskSpecificUpdate with targetref %s" , targetref);
                         log.error( errorMsg, sqle );
-			pstmt4.close();
+                        pstmt4.close();
                         conn.rollback();
                         throw new HarvesterInvalidStatusChangeException( errorMsg, sqle );
                     }
                 }
-		pstmt3.close();
+
+                pstmt3.close();
             }
         }
-	pstmt.close();
+
+        pstmt.close();
     }
 
 
@@ -1316,18 +1321,19 @@ public class ESHarvest implements IHarvest
         log.info( String.format( "NEW: setStatusFailure with failure diagnostic: [%s]", failureDiagnostic ) );
 
         int diagnosticId = 0;
-	PreparedStatement pstmt = null;
+        PreparedStatement pstmt = null;
+
         try
         {
             // Get unique diagnostics.number:
-	    pstmt = conn.prepareStatement( "select diagIdSeq.nextval from dual" );
+    	    pstmt = conn.prepareStatement( "select diagIdSeq.nextval from dual" );
             ResultSet rs = pstmt.executeQuery( );
 
             if ( !rs.next() )
             {
                 String errorMsg = String.format( "Could not create a unique identifier for diagIdSeq in the ES base for ESId: %s.", Id );
                 log.fatal( errorMsg );
-		pstmt.close();
+        		pstmt.close();
                 conn.rollback();
                 throw new HarvesterIOException( errorMsg );
             }
@@ -1338,27 +1344,28 @@ public class ESHarvest implements IHarvest
         {
             String errorMsg = String.format( "A database error occured when trying to retrive unique id from diagIdSeq in ES base for ESId: %s.", Id );
             log.fatal( errorMsg, sqle );
-	    pstmt.close();
+            pstmt.close();
             conn.rollback();
             throw new HarvesterIOException( errorMsg, sqle );
         }
-	pstmt.close();
+
+        pstmt.close();
 
         // Create new row in diagnostics table:
-	PreparedStatement pstmt2 = null;
+        PreparedStatement pstmt2 = null;
         try
         {
             int lbnr = 1;
             String diagSetId = new String("'10.100.1.1'");
             int condition = 100;
 
-	    pstmt2 = conn.prepareStatement( "INSERT INTO " + "diagnostics (id, lbnr, diagnosticSetId, condition, addInfo) " +
-					    "VALUES ( ?, ?, '?', ?, '?' )" );
-	    pstmt2.setInt( 1, diagnosticId );
-	    pstmt2.setInt( 2, lbnr );
-	    pstmt2.setString( 3, diagSetId );
-	    pstmt2.setInt( 4, condition );
-	    pstmt2.setString( 5, failureDiagnostic );
+            pstmt2 = conn.prepareStatement( "INSERT INTO " + "diagnostics (id, lbnr, diagnosticSetId, condition, addInfo) " +
+                            "VALUES ( ?, ?, '?', ?, '?' )" );
+            pstmt2.setInt( 1, diagnosticId );
+            pstmt2.setInt( 2, lbnr );
+            pstmt2.setString( 3, diagSetId );
+            pstmt2.setInt( 4, condition );
+            pstmt2.setString( 5, failureDiagnostic );
             pstmt2.executeQuery( );
 
         }
@@ -1367,61 +1374,60 @@ public class ESHarvest implements IHarvest
             String errorMsg = new String( "Could not insert diagnostic with id: " + diagnosticId );
             log.fatal( errorMsg, sqle );
             conn.rollback();
-	    pstmt2.close();
+            pstmt2.close();
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
         // Attach diagnostic to failed record:
-	PreparedStatement pstmt3 = null;
+        PreparedStatement pstmt3 = null;
         try
         {
-	    pstmt3 = conn.prepareStatement( "SELECT recordOrSurDiag2 " +
-					    "FROM taskpackagerecordstructure " +
-					    "WHERE targetreference = ? " +
-					    "AND lbnr = ? " +
-					    "FOR UPDATE OF recordOrSurDiag2" );
-	    pstmt3.setInt( 1, Id.getTargetRef() );
-	    pstmt3.setInt( 2, Id.getLbNr() );
+            pstmt3 = conn.prepareStatement( "SELECT recordOrSurDiag2 " +
+                            "FROM taskpackagerecordstructure " +
+                            "WHERE targetreference = ? " +
+                            "AND lbnr = ? " +
+                            "FOR UPDATE OF recordOrSurDiag2" );
+            pstmt3.setInt( 1, Id.getTargetRef() );
+            pstmt3.setInt( 2, Id.getLbNr() );
             int res = pstmt3.executeUpdate( );
-
 
             // Testing all went well:
             if (res != 1)
             {
                 // Something went wrong - we did not lock a single row for update
                 log.error( "Error: Result from select for update was " + res + ". Not 1." );
-		pstmt3.close();
+                pstmt3.close();
                 conn.rollback();
                 return;
             }
 
             // Updating recordOrSurDiag2 in row:
-	    pstmt3 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-					    "SET recordOrSurDiag2 = %s " +
-					    "WHERE targetreference = %s " +
-					    "AND lbnr = %s" );
-	    pstmt3.setInt( 1, diagnosticId );
-	    pstmt3.setInt( 2, Id.getTargetRef() );
-	    pstmt3.setInt( 3, Id.getLbNr() );
+            pstmt3 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
+                		    "SET recordOrSurDiag2 = %s " +
+                    	    "WHERE targetreference = %s " +
+                            "AND lbnr = %s" );
+    	    pstmt3.setInt( 1, diagnosticId );
+            pstmt3.setInt( 2, Id.getTargetRef() );
+            pstmt3.setInt( 3, Id.getLbNr() );
             int res2 = pstmt3.executeUpdate( );
 	    
             if (res2 != 1)
             {
                 // Something went wrong - we did not update a single row
                 log.error( "Error: Result from update was " + res2 + ". Not 1" );
-		pstmt3.close();
+                pstmt3.close();
                 conn.rollback();
                 return;
             }
 
-	    pstmt3.close();
+            pstmt3.close();
             conn.commit();
         }
         catch ( SQLException sqle )
         {
             String errorMsg = String.format( "Could not attach diagnostic (Id: %s) to taskpackagerecordstructure (Id: %s) with text: [%s]", diagnosticId, Id, failureDiagnostic );
             log.fatal( errorMsg, sqle );
-	    pstmt3.close();
+            pstmt3.close();
             conn.rollback();
             throw new HarvesterIOException( errorMsg, sqle );
         }
@@ -1437,13 +1443,13 @@ public class ESHarvest implements IHarvest
 
         try
         {
-	    PreparedStatement pstmt = conn.prepareStatement( "SELECT record_id " +
-							     "FROM taskpackagerecordstructure " +
-							     "WHERE targetreference = ? " +
-							     "AND lbnr = ? " +
-							     "FOR UPDATE OF record_id" );
-	    pstmt.setInt( 1, Id.getTargetRef() );
-	    pstmt.setInt( 2, Id.getLbNr() );
+            PreparedStatement pstmt = conn.prepareStatement( "SELECT record_id " +
+                                     "FROM taskpackagerecordstructure " +
+                                     "WHERE targetreference = ? " +
+                                     "AND lbnr = ? " +
+                                     "FOR UPDATE OF record_id" );
+            pstmt.setInt( 1, Id.getTargetRef() );
+            pstmt.setInt( 2, Id.getLbNr() );
             int res1 = pstmt.executeUpdate( );
 
             // Testing all went well:
@@ -1451,32 +1457,33 @@ public class ESHarvest implements IHarvest
             {
                 // Something went wrong - we did not lock a single row for update
                 log.error( "Error: Result from select for update was " + res1 + ". Not 1." );
-		pstmt.close();
+                pstmt.close();
                 conn.rollback();
                 return;
             }
-	    pstmt.close();
+
+            pstmt.close();
 	   
-	    PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-							      "SET record_id = '?' " +
-							      "WHERE targetreference = ? " +
-							      "AND lbnr = ?" );
-	    pstmt2.setString( 1, PID );
-	    pstmt2.setInt( 2, Id.getTargetRef() );
-	    pstmt2.setInt( 3, Id.getLbNr() );
-            int res2 = pstmt2.executeUpdate( );
-	    
+            PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
+                                      "SET record_id = '?' " +
+                                      "WHERE targetreference = ? " +
+                                      "AND lbnr = ?" );
+            pstmt2.setString( 1, PID );
+            pstmt2.setInt( 2, Id.getTargetRef() );
+            pstmt2.setInt( 3, Id.getLbNr() );
+                int res2 = pstmt2.executeUpdate( );
+
             // Testing all went well:
             if (res2 != 1)
             {
                 // Something went wrong - we did not lock a single row for update
                 log.error( "Error: Result from select for update was " + res2 + ". Not 1." );
-		pstmt2.close();
+                pstmt2.close();
                 conn.rollback();
                 return;
             }
 
-	    pstmt2.close();
+            pstmt2.close();
             conn.commit();
         }
         catch( SQLException sqle )
@@ -1511,7 +1518,6 @@ public class ESHarvest implements IHarvest
 
     private final class ESIdentifier implements IIdentifier
     {
-
         private int targetReference;
         private int lbNr;
 
