@@ -386,18 +386,18 @@ public class DatadockMain
                 log.trace( "DatadockMain calling datadockManager update" );
 
                 long timer = System.currentTimeMillis();
-                int jobsSubmited = datadockManager.update();
+                int jobsSubmitted = datadockManager.update();
                 timer = System.currentTimeMillis() - timer;
 
-                mainJobsSubmitted += jobsSubmited;
+                mainJobsSubmitted += jobsSubmitted;
 
-                if ( jobsSubmited > 0 )
+                if ( jobsSubmitted > 0 )
                 {
-                    log.info(String.format( "%1$d Jobs submittet in %2$d ms - %3$f jobs/s", jobsSubmited, timer, jobsSubmited/ (timer / 1000.0 ) ) );
+                    log.info(String.format( "%1$d Jobs submitted in %2$d ms - %3$f jobs/s", jobsSubmitted, timer, jobsSubmitted/ (timer / 1000.0 ) ) );
                 }
                 else
                 {
-                    log.info( String.format( "%1$d Jobs submittet in %2$d ms - ", jobsSubmited, timer ) );
+                    log.info( String.format( "%1$d Jobs submitted in %2$d ms - ", jobsSubmitted, timer ) );
                     if ( terminateOnZeroSubmitted )
                     {
                         DatadockMain.shutdown();
@@ -434,11 +434,11 @@ public class DatadockMain
 
         if ( mainJobsSubmitted > 0 )
         {
-            log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - %3$f jobs/s", mainJobsSubmitted, mainTimer, mainJobsSubmitted/ (mainTimer / 1000.0)));
+            log.info(String.format("Total: %1$d Jobs submitted in %2$d ms - %3$f jobs/s", mainJobsSubmitted, mainTimer, mainJobsSubmitted/ (mainTimer / 1000.0)));
         }
         else
         {
-            log.info(String.format("Total: %1$d Jobs submittet in %2$d ms - ", mainJobsSubmitted, mainTimer));
+            log.info(String.format("Total: %1$d Jobs submitted in %2$d ms - ", mainJobsSubmitted, mainTimer));
         }
     }
 }
