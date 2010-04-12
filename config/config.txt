@@ -73,7 +73,7 @@ path:                config/datadock_jobs.xml
 # FEDORA: Configuration values relating to the fedora repository
 [fedora]
 # hostname of the server running the fedora repository
-host:       nuovo 
+host:       localhost 
 # port on which the fedora repository is running (the tomcat http port)
 port:       8080
 # username for the fedora repository
@@ -91,13 +91,13 @@ passphrase: fedoraAdmin
 # HARVEST configuration relating to the harvester module
 [harvester]
 # folder name of the folder to harvest files from
-toharvest:       Harvest
+toharvest:       bin/Harvest
 # folder name of the folder to temporarily store files while in progress
 harvestprogress: HarvestProgress
 # folder name of the folder to put processed files in
-harvestdone:     HarvestDone
+harvestdone:  	 bin/HarvestDone
 # folder name of the folder to put files in which didn't get progressed properly
-harvestfailure:  HarvestFailure
+harvestfailure:	 bin/HarvestFailure
 # number of files to process in batches
 maxtoharvest: 1000
 

@@ -25,13 +25,13 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.common.os.NoRefFileFilter;
-
 import dk.dbc.opensearch.common.xml.XMLUtils;
 
 import java.io.File;
@@ -44,12 +44,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
-
 import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -74,9 +74,11 @@ public class FileHarvestLight implements IHarvest
     private Iterator iter;
     private final FilenameFilter[] filterArray;
     // Some default values:
-    private final String harvesterDirName = "Harvest";
-    private final String successDirName = "success"; // will be made subdir of harvesterDirName
-    private final String failureDirName = "failure"; // will be made subdir of harvesterDirName
+    private final String harvesterDirName; // = "Harvest";
+    private final String defaultSuccessDirName = /*harvesterDirName + File.separator + */"success";
+    private final String defaultFailureDirName = /*harvesterDirName + File.separator + */"failure";
+    private final String successDirName;
+    private final String failureDirName;
     private final File dataFile;
     private final File successDir;
     private final File failureDir;
@@ -87,6 +89,26 @@ public class FileHarvestLight implements IHarvest
     public FileHarvestLight() throws HarvesterIOException
     {
         filterArray = new FilenameFilter[] { new NoRefFileFilter() };
+       	
+	String harvesterConfigDir;
+	String successConfigDir;
+	String failureConfigDir;
+	try
+	{
+	    harvesterConfigDir = HarvesterConfig.getFolder();
+	    successConfigDir   = HarvesterConfig.getDoneFolder();
+	    failureConfigDir   = HarvesterConfig.getFailureFolder();
+	}
+	catch ( ConfigurationException ce)
+	{
+	    String errMsg = "Could not handle on of the following in HarvesterConfig: getFolder(), getDoneFolder(), getFailurefolder()";
+	    log.error( errMsg );
+	    throw new HarvesterIOException( errMsg, ce );
+	}
+
+	harvesterDirName = harvesterConfigDir.isEmpty() ? "Harvest" : harvesterConfigDir;
+	successDirName = successConfigDir.isEmpty() ? "success" : successConfigDir;
+	failureDirName = failureConfigDir.isEmpty() ? "failure" : failureConfigDir;
 
         dataFile = FileHandler.getFile( harvesterDirName );
         if ( ! dataFile.exists() )
@@ -96,8 +118,10 @@ public class FileHarvestLight implements IHarvest
             throw new HarvesterIOException( errMsg );
         }
 
-        successDir = createDirectoryIfNotExisting( dataFile, successDirName );
-        failureDir = createDirectoryIfNotExisting( dataFile, failureDirName );
+	// Notice we do not create the Harvest dir, since this is where the 
+	// data/ref-files are supposed to be. No dir => no files => no need to do anything.
+	successDir = createDirectoryIfNotExisting( successDirName );
+	failureDir = createDirectoryIfNotExisting( failureDirName );
     }
 
 
@@ -234,7 +258,7 @@ public class FileHarvestLight implements IHarvest
 	FileIdentifier id = (FileIdentifier)Id;
 	log.info( String.format("the file %s was handled successfully", id.getURI().getRawPath() ) );
 
-	File dataFile = new File( id.getURI().getRawPath() );
+	File dataFile = FileHandler.getFile( id.getURI().getRawPath() );
 
 	setStatus( dataFile, successDir );
 
@@ -250,7 +274,7 @@ public class FileHarvestLight implements IHarvest
 	log.info( String.format("the file %s was handled unsuccessfully", id.getURI().getRawPath() ) );
 	log.info( String.format("FailureDiagnostic: %s", failureDiagnostic ) );
 
-	File dataFile = new File( id.getURI().getRawPath() );
+	File dataFile = FileHandler.getFile( id.getURI().getRawPath() );
 
 	setStatus( dataFile, failureDir );
     }
@@ -271,8 +295,6 @@ public class FileHarvestLight implements IHarvest
 
     private void moveFile( File f, File toDir )
     {
-	// This method ought to check whether f actually is a file, 
-	// and whether toDir actually is a directory.
 
 	log.trace( String.format( "Called with filename: [%s]", f.getName() ) );
 	log.trace( String.format( "Called with destination directory: [%s]", toDir.getName() ) );
@@ -321,16 +343,16 @@ public class FileHarvestLight implements IHarvest
 	int dotPos = origFileName.lastIndexOf( "." );
 	String strippedFileName = origFileName.substring( 0, dotPos ); // filename without extension, and without the dot!
 
-	return new File ( new String( harvesterDirName + System.getProperty("file.separator") + strippedFileName + refExtension ) );
+	return FileHandler.getFile( new String( harvesterDirName + File.separator + strippedFileName + refExtension ) );
     }
 
 
     /*
      *  \todo: I'm not sure this is the right location for this function
      */
-    private File createDirectoryIfNotExisting( File currentPath, String dirName ) throws HarvesterIOException
+    private File createDirectoryIfNotExisting( String dirName ) throws HarvesterIOException
     {
-	File path = FileHandler.getFile( currentPath + System.getProperty("file.separator") + dirName );
+	File path = FileHandler.getFile( dirName );
 	if ( !path.exists() )
 	{
 	    log.info( String.format( "Creating directory: %s", dirName ) );
