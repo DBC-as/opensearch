@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="info:opensearch.dbc.dk#"
+            xmlns="info:opensearch.dbc.dk#"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+  <xsd:element name="workflows">
+    <xsd:annotation>
+      <xsd:documentation/>
+    </xsd:annotation>
+    
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="workflowType"/>
+        </xsd:complexContent>
+    </xsd:complexType>  
+
+  </xsd:element>
+
+  <xsd:complexType name="workflowType">
+    <xsd:sequence>
+      <xsd:element name="workflow" type="workflowProps" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="workflowProps">
+    <xsd:sequence>
+      <xsd:element name="plugin" type="pluginType" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="format" use="required"/>
+    <xsd:attribute name="submitter" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="pluginType">
+    <xsd:sequence>
+      <xsd:element name="args" type="argsType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="script" type="scriptType" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="class" type="xsd:string" use="required">
+  </xsd:complexType>
+
+    <xsd:complexType name="argsType">
+      <xsd:sequence>
+        <xsd:element name="name" type="nameType" minOccurs="1" maxOccurs="unbounded"/>
+        <xsd:element name="value" type="valueType" minOccurs="1" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="scriptType">
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    
+  </xsd:schema>
+  
