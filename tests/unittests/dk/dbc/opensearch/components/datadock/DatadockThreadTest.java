@@ -73,11 +73,6 @@ import mockit.Mockit;
 import org.w3c.dom.Document;
 
 /**
- * methods are being ignored, bug 9385
- */
-
-
-/**
  * Unittest for the DatadockThread
  */
 public class DatadockThreadTest 
@@ -340,7 +335,7 @@ public class DatadockThreadTest
      * it a second time. A HarvesterInvalidStatusChangeException
      * is thrown by the harvester
      */
-    @Test( expected=HarvesterInvalidStatusChangeException.class )
+    @Ignore @Test( expected=HarvesterInvalidStatusChangeException.class )
 	public void testHarvesterInvalidStatusChangeException() throws Exception
     {
 
