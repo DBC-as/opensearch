@@ -1,6 +1,7 @@
 package dk.dbc.opensearch.common.pluginframework;
  
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,6 +32,7 @@ public class FlowMapCreatorTest
 
     FlowMapCreator fmc;
     String path;
+    String xsdPath;
     Map<String, List<PluginTask>> flowMap;
 
     String format1 = "format1";
@@ -50,14 +52,15 @@ public class FlowMapCreatorTest
 
     @Before public void setUp() throws Exception
     {
-
         File workFlowFile = FileHandler.getFile( "workFlow.xml" );
         workFlowFile.deleteOnExit();
         
         //create the xml file to build the map from
         createWorkFlowFile( workFlowFile );
         path = workFlowFile.getAbsolutePath();
-
+    
+        File XSDFile = FileHandler.getFile( "config/workflows.xsd" );
+        xsdPath = XSDFile.getAbsolutePath();
     }
 
     @After public void tearDown() throws Exception
@@ -68,17 +71,16 @@ public class FlowMapCreatorTest
      * happy path constructor test that checks that there is a file to 
      * build the map from
      */
-    @Test public void constructorTest() throws IllegalStateException
+    @Test public void constructorTest() throws Exception
     {
-        fmc = new FlowMapCreator( path );
+        fmc = new FlowMapCreator( path, xsdPath );
     }
 
     @Test public void createMapTest() throws Exception
     {
-        fmc = new FlowMapCreator( path );
+        fmc = new FlowMapCreator( path, xsdPath );
         flowMap = fmc.createMap();
         assertTrue( validateMap1( flowMap ) );
-       
     }
 
     /**
@@ -88,6 +90,8 @@ public class FlowMapCreatorTest
     /**
      * method that validates that a map contains 2 elements, that the first has length 2, the second length 1
      * that the first elements first member has scriptname value "scriptName"  
+     * further more it checks that the first PluginTask has an argList and that the first members first value 
+     * equals argName1 and the second argValue1
      */
     private boolean validateMap1( Map<String, List<PluginTask>> flowMap )
     {
@@ -103,7 +107,17 @@ public class FlowMapCreatorTest
         {
             return false;
         }
-        if(! ( flowMap.get( format1 + submitter1 ).get( 0 ).getScriptName().equals( "scriptName1" ) ) )
+
+        PluginTask task0 = flowMap.get( format1 + submitter1 ).get( 0 );
+
+        if(! ( task0.getScriptName().equals( "scriptName1" ) ) )
+        {
+            return false;
+        }
+
+        InputPair<String, String> argPair0 = task0.getArgList().get( 0 );
+
+        if(! ( argPair0.getFirst().equals( argName1 ) && argPair0.getSecond().equals( argValue1 ) ) )
         {
             return false;
         }
@@ -127,9 +141,10 @@ public class FlowMapCreatorTest
         {
             xmlw = xmlof.createXMLStreamWriter( out );
 
-            xmlw.writeStartDocument();
-            xmlw.writeStartElement( "workflows" );
+            xmlw.writeStartDocument("UTF-8", "1.0");
             
+            xmlw.writeStartElement( "workflows" );
+            xmlw.writeDefaultNamespace( "info:opensearch.dbc.dk#" );
             xmlw.writeStartElement( "workflow" );
             xmlw.writeAttribute( "format", format1 );
             xmlw.writeAttribute( "submitter", submitter1 );
@@ -137,12 +152,10 @@ public class FlowMapCreatorTest
             xmlw.writeStartElement( "plugin" );
             xmlw.writeAttribute( "class", pluginClassName1 );
             xmlw.writeStartElement( "args" );
-            xmlw.writeStartElement( "name" );
-            xmlw.writeCharacters( argName1 );
-            xmlw.writeEndElement();//ends name
-            xmlw.writeStartElement( "value" );
-            xmlw.writeCharacters( argValue1 );
-            xmlw.writeEndElement();//ends value
+            xmlw.writeStartElement( "arg" );
+            xmlw.writeAttribute( "name", argName1 );
+            xmlw.writeAttribute( "value", argValue1);
+            xmlw.writeEndElement();//ends arg
             xmlw.writeEndElement();//ends args
             xmlw.writeStartElement( "script" );
             xmlw.writeAttribute( "name", scriptName1 );
@@ -166,12 +179,10 @@ public class FlowMapCreatorTest
             xmlw.writeStartElement( "plugin" );
             xmlw.writeAttribute( "class", pluginClassName3 );
             xmlw.writeStartElement( "args" );
-            xmlw.writeStartElement( "name" );
-            xmlw.writeCharacters( argName2 );
-            xmlw.writeEndElement();//ends name
-            xmlw.writeStartElement( "value" );
-            xmlw.writeCharacters( argValue2 );
-            xmlw.writeEndElement();//ends value
+            xmlw.writeStartElement( "arg" );
+            xmlw.writeAttribute( "name", argName2 );
+            xmlw.writeAttribute( "value", argValue2 );
+            xmlw.writeEndElement();//ends arg
             xmlw.writeEndElement();//ends args
             xmlw.writeStartElement( "script" );
             xmlw.writeAttribute( "name", scriptName3 );
