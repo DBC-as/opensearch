@@ -64,7 +64,7 @@ public class FlowMapCreator
     public FlowMapCreator( String path, String xsdPath ) throws IllegalStateException, SAXException, IOException//, ConfigurationException
     {
         //validate the file
-        validateWorkflowsXMLFile( path, xsdPath );
+        //validateWorkflowsXMLFile( path, xsdPath );
 
         try
         {
