@@ -44,6 +44,13 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.Attribute;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.xml.sax.SAXException;
 
 import org.apache.log4j.Logger;
 
@@ -54,8 +61,11 @@ public class FlowMapCreator
     private InputStream workflowStream;
 
     //initiates the object with the path to the workflow xml file and creates an InputStream
-    public FlowMapCreator( String path ) throws IllegalStateException
+    public FlowMapCreator( String path, String xsdPath ) throws IllegalStateException, SAXException, IOException//, ConfigurationException
     {
+        //validate the file
+        validateWorkflowsXMLFile( path, xsdPath );
+
         try
         {
             workflowStream = (InputStream)FileHandler.readFile( path );
@@ -92,7 +102,6 @@ public class FlowMapCreator
             EndElement endElement; 
             List<PluginTask> taskList = new ArrayList<PluginTask>();
             List<InputPair<String, String>> inputPairList = new ArrayList<InputPair<String, String>>();
-            //Map<String, List<PluginTask>> flowMap = new HashMap<String, List<PluginTask>>();
 
             while( eventReader.hasNext() )
             {
@@ -135,16 +144,11 @@ public class FlowMapCreator
                         break;
                     }
 
-                    if( startElement.getName().getLocalPart().equals( "name" ) )
+                    if( startElement.getName().getLocalPart().equals( "arg" ) )
                     {
-                        name = ((Characters) eventReader.next()).getData();
-                        break;
-                    }
-
-                    if( startElement.getName().getLocalPart().equals( "value" ) )
-                    {
-                        value = ((Characters) eventReader.next()).getData();
-                        inputPairList.add( new InputPair( name, value ) );
+                        name = startElement.getAttributeByName( new QName( "name" )).getValue();
+                        value = startElement.getAttributeByName( new QName( "value" )).getValue();
+                        inputPairList.add( new InputPair<String, String>( name, value) );
                         break;
                     }
                     
@@ -182,5 +186,25 @@ public class FlowMapCreator
             throw new IllegalStateException( error, xse );
         }
         return flowMap;
+    }
+
+    private static void validateWorkflowsXMLFile( String xmlPath, String xsdPath ) throws IOException,/* ConfigurationException, */SAXException
+    {
+        SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
+        File schemaLocation = FileHandler.getFile( xsdPath );
+        Schema schema = factory.newSchema( schemaLocation );
+        Validator validator = schema.newValidator();
+        Source source = new StreamSource( xmlPath);
+
+        try
+        {
+            validator.validate( source );
+        }
+        catch( SAXException se )
+        {
+            String error = "Could not validate workflows xml file";
+            log.fatal( error, se );
+            throw se;
+        }
     }
 }
