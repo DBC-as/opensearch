@@ -26,6 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.string.StringUtils;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -36,11 +38,11 @@ public class MarcxchangeWorkRelationTest
     public void testNormalizeString( ) throws Exception
     {
         String es = new String("harry potter");
-        String res = MarcxchangeWorkRelation_1.normalizeString("Harry Potter");
+        String res = StringUtils.normalizeString("Harry Potter");
         assertEquals(es, res);
        
         es = new String("jacobfisk");
-        res = MarcxchangeWorkRelation_1.normalizeString("jacob~'fisk");
+        res = StringUtils.normalizeString("jacob~'fisk");
         assertEquals(es, res);
     }
 }

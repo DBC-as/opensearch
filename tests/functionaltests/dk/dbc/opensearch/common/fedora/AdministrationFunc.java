@@ -27,9 +27,13 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.common.metadata.DBCBIB;
+import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.common.PID;
@@ -110,7 +114,9 @@ public class AdministrationFunc
         String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink" };
         testDeleteObjectPids( labels, 50 );*/
 
-        testGetSubjectRelations();
+        //testGetSubjectRelations();
+
+        testGetObjectRelations();
 
         /*System.out.println( "*** kalder getDataStreamsOfType første gang ***" );
         testGetDataStreamsOfType( pid );
@@ -169,6 +175,36 @@ public class AdministrationFunc
         {
             System.out.println( "ioe caught" );
             ioe.printStackTrace();
+        }
+    }
+
+
+    static void testGetObjectRelations() throws ObjectRepositoryException
+    {
+        System.out.println( "************ CALLING testGetObjectRelations **************" );
+        //String subject = "info:fedora/710100:20078138";
+        String subject = "710100:20078138";
+        String predicate = DBCBIB.IS_MEMBER_OF_WORK.getPredicateString();
+        IPredicate workPredicate = DBCBIB.HAS_MANIFESTATION;
+        //System.out.println( subject + " " + predicate );
+        ObjectIdentifier identifier = new dk.dbc.opensearch.common.fedora.PID( subject );
+        if ( objectRepository.hasObject( identifier ) )
+        {
+            List< InputPair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, predicate );
+
+            if ( relations != null )
+            {
+                for ( InputPair pair : relations )
+                {
+                    String work = pair.getSecond().toString();                    
+                    List< InputPair< IPredicate, String > > workRelations = objectRepository.getObjectRelations( work, workPredicate.getPredicateString() );
+                    if ( workRelations.size() > 0 )
+                    {
+                        ObjectIdentifier workIdentifier = new dk.dbc.opensearch.common.fedora.PID( work );
+                        objectRepository.removeObjectRelation( workIdentifier, workPredicate, subject );
+                    }
+                }
+            }
         }
     }
 
