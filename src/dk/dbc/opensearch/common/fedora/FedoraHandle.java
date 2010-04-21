@@ -399,6 +399,7 @@ public class FedoraHandle
 
         if ( log.isDebugEnabled() )
         {
+            log.debug( String.format( "calling with subject '%s' and predicate '%s'", subject, predicate ) );
             timer = System.currentTimeMillis();
         }
 

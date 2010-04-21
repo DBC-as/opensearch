@@ -121,7 +121,7 @@ public class HarvestFunc
 
     private static void startESHarvestTest() throws HarvesterIOException, SQLException
     {
-	String databasename = "test";
+	String databasename = "ting";
 
 	OracleDataSource ods = null;
 	String cache_name = new String( "ESHARVESTER_CACHE" );
@@ -176,6 +176,20 @@ public class HarvestFunc
         esh.start();
     }
 
+    /*
+    private static void setFailureTest() throws HarvesterIOException, HarvesterInvalidStatusChangeException
+    {
+
+        List<IJob> jobL = esh.getJobs( i );
+        Iterator iter = jobL.iterator();
+        System.out.println( "got jobs:" );
+        while( iter.hasNext() )
+	{
+	    
+	}
+	
+    }
+    */
 
     private static void getJobsNDataTest() throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {

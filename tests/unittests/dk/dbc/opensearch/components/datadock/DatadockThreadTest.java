@@ -30,47 +30,50 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
-import dk.dbc.opensearch.common.types.IJob;
-import dk.dbc.opensearch.plugins.DocbookAnnotate;
-import dk.dbc.opensearch.plugins.Store;
-import dk.dbc.opensearch.plugins.OwnerRelation;
-import dk.dbc.opensearch.plugins.XMLHarvester;
-import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
-import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
-import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
+import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
+import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.plugins.DocbookAnnotate;
+import dk.dbc.opensearch.plugins.OwnerRelation;
+import dk.dbc.opensearch.plugins.Store;
+import dk.dbc.opensearch.plugins.XMLHarvester;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-
 import java.util.List;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.configuration.ConfigurationException;
-import static org.junit.Assert.*;
-import org.junit.*;
-import org.xml.sax.SAXException;
-
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
 import mockit.Mockit;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.junit.*;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import static org.junit.Assert.*;
 
 /**
  * Unittest for the DatadockThread
@@ -93,6 +96,9 @@ public class DatadockThreadTest
     @BeforeClass
     public static void classSetup() throws Exception
     {
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel( Level.TRACE );
+
         referenceData = XMLUtils.documentFromString( refdata );
         mockCC = new CargoContainer();
         mockCC.setIdentifier( new PID( "710100:1" ) );
@@ -129,6 +135,7 @@ public class DatadockThreadTest
 
         @Mock
         public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{
+            System.out.println( "calling setStatusSuccess" );
             if( isset )
             {
                 throw new HarvesterInvalidStatusChangeException( "already set" );

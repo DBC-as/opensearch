@@ -32,6 +32,9 @@ import oracle.jdbc.pool.OracleDataSource;
 
 import org.apache.log4j.Logger;
 
+import oracle.jdbc.pool.OracleConnectionCacheManager;
+
+
 
 /**
  * Handles an Oracle Connection Pool. 
@@ -64,17 +67,19 @@ public class OracleDBPooledConnection
      */
     public synchronized Connection getConnection() throws SQLException
     {
-	log.info( "Requesting a connection" );
+	log.trace( "Requesting a connection" );
+
+	// cacheInfo();
 
 	Connection tmp = ods.getConnection();
 	if ( tmp == null ) {
 	    log.info( "THIS IS NOT RIGHT!" ); 
 	    throw new SQLException( " Did not recieve a connection " );
 	}
-	log.info( "Returning connection" );
+	log.trace( "Returning connection" );
 	return tmp;
     } 
-    
+
 
     /**
      * Closes the connection pool
@@ -89,5 +94,24 @@ public class OracleDBPooledConnection
 	}
     }
 
+
+
+    private synchronized void cacheInfo( ) throws SQLException
+    {
+	log.debug( "1) CACHE_NAME = " + CACHE_NAME );
+	log.debug( "2) CACHE_NAME = " + ods.getConnectionCacheName() );
+
+	OracleConnectionCacheManager occm =
+	    OracleConnectionCacheManager.getConnectionCacheManagerInstance();
+
+
+	log.debug( occm.getNumberOfAvailableConnections(CACHE_NAME)
+	   + " connections are available in cache " + CACHE_NAME);
+
+	log.debug( occm.getNumberOfActiveConnections(CACHE_NAME)
+	   + " connections are active");
+ 
+    }
+    
 
 }

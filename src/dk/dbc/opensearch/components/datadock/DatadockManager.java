@@ -31,12 +31,17 @@ import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
@@ -61,6 +66,8 @@ public class DatadockManager
     XMLConfiguration config = null;
     List<IJob> registeredJobs = null;
 
+    private final Map< Pair< String,String >, Boolean > jobExecutionCheckSet = 
+        Collections.synchronizedMap( new HashMap< Pair< String,String >, Boolean >() );
 
     /**
      * Constructs the the DatadockManager instance.
@@ -106,21 +113,21 @@ public class DatadockManager
     {
         log.trace( "DatadockManager update called" );
 
-        // Check if there are any registered jobs ready for docking
-        // if not... new jobs are requested from the harvester
-        if( null != registeredJobs && registeredJobs.isEmpty() )
-        {
-            log.trace( "no more jobs. requesting new jobs from the harvester" );
-            registeredJobs = this.harvester.getJobs( 100 );
-        }
-
         if( null == registeredJobs )
         {
             String error = "Internal job list was null, much to my surprise. Cannot continue";
             log.error( error );
             throw new IllegalStateException( error );
         }
-        
+
+        // Check if there are any registered jobs ready for docking
+        // if not... new jobs are requested from the harvester
+        if( registeredJobs.isEmpty() )
+        {
+            log.trace( "no more jobs. requesting new jobs from the harvester" );
+            registeredJobs = this.harvester.getJobs( 100 );
+        }
+
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
         int jobs_submitted = 0;
 
@@ -134,12 +141,21 @@ public class DatadockManager
             IJob theJob = registeredJobs.get( 0 );
             DatadockJob job = buildDatadockJob( theJob );
             log.trace( String.format( "submitting job %s as datadockJob %s", theJob.toString(), job.toString() ) );
-            
-            pool.submit( job );
-            registeredJobs.remove( 0 );
-            ++jobs_submitted;
-            
-            log.debug( String.format( "submitted job: '%s'", job ) );
+
+            if( isJobIsPossible( job ) )
+            {
+                pool.submit( job );
+                registeredJobs.remove( 0 );
+                ++jobs_submitted;
+
+                log.debug( String.format( "submitted job: '%s'", job ) );
+
+            }
+            else
+            {
+                log.warn( String.format( "Jobs for submitter, format \"%s,%s\" has no joblist from plugins and will henceforth be rejected.", job.getSubmitter(), job.getFormat() ) );
+                registeredJobs.remove( 0 );
+            }
             }
             catch ( RuntimeException re )
             {
@@ -153,6 +169,31 @@ public class DatadockManager
         return jobs_submitted;
     }
 
+
+    private synchronized Boolean isJobIsPossible( DatadockJob job )
+    {
+        Boolean exists = Boolean.FALSE;
+        final Pair<String, String> entry = new InputPair<String,String>( job.getSubmitter(), job.getFormat() );
+
+        if( ! this.jobExecutionCheckSet.containsKey( entry ) )
+        {
+            if ( DatadockJobsMap.hasPluginList( job.getSubmitter(), job.getFormat() ) )
+            {
+                exists = Boolean.TRUE;
+            }else
+            {
+                exists = Boolean.FALSE;
+            }
+
+            this.jobExecutionCheckSet.put( entry, exists );
+
+        }else
+        {
+            return this.jobExecutionCheckSet.get( entry );
+        }
+
+        return exists;
+    }
 
     /**
      * shuts down the resources of the datadock and the datadock

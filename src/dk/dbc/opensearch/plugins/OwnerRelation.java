@@ -115,7 +115,7 @@ public class OwnerRelation implements IRelation
         return cargo;
     }
 
-    public CargoContainer setOwnerRelations( CargoContainer cargo ) throws PluginException
+    synchronized public CargoContainer setOwnerRelations( CargoContainer cargo ) throws PluginException
     {
 
         CargoObject co = null;

@@ -60,7 +60,7 @@ function checkmatch( newObject, workObject )
         break;
       case "Artikel":
         Log.debug( "RLO: Artikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel|Tidsskriftsartikel") {
+        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel") {
           result = true;
         } else {
           result = false;

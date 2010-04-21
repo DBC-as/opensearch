@@ -140,13 +140,13 @@ public class ForceFedoraPid implements IAnnotate
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
 	
-	String s = getDCIdentifierFromOriginal( cargo, "/ting:container/dkabm:record/ac:identifier" );
+	String s = getDCIdentifierFromOriginal( cargo, "/ting:container/oso:object/oso:identifier" );
 	if ( s == null )
 	{
 	    // We did not find anything in the above xpath.
 	    // Lets try this one:
 	    // This is a PG WebService ThemaObject search: (see bug#10085)
-	    s = getDCIdentifierFromOriginal( cargo, "/ting:container/oso:object/oso:identifier" );
+	    s = getDCIdentifierFromOriginal( cargo, "/ting:container/dkabm:record/ac:identifier" );
 	    if( s == null )
 	    {
 		throw new PluginException( "could not create valid identifier from data" );

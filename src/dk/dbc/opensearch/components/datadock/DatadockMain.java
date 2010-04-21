@@ -254,11 +254,9 @@ public class DatadockMain
             IObjectRepository repository = new FedoraObjectRepository();
             pluginResolver = new PluginResolver(); 
             OracleDataSource ods;
-            //IFedoraAdministration fedoraAdministration = new FedoraAdministration( repository );
 
             log.trace( "Starting datadockPool" );
 
-            // datadockpool
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
             ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
             threadpool.purge();
@@ -270,7 +268,7 @@ public class DatadockMain
                 case ESHarvest:
                     log.trace( "selecting ES" );
                     String dataBaseName = DataBaseConfig.getOracleDataBaseName();
-                    String oracleCacheName = DataBaseConfig.getOracleCacheName();
+		    String oracleCacheName = DataBaseConfig.getOracleCacheName();
                     String oracleUrl = DataBaseConfig.getOracleUrl();
                     String oracleUser = DataBaseConfig.getOracleUserID();
                     String oraclePassWd = DataBaseConfig.getOraclePassWd();

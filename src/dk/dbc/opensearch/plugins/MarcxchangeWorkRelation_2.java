@@ -86,7 +86,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
 
 
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    synchronized public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {   
         //creating the javascript environment
         String jsFileName = new String( "workmatch_relation_functions.js" );
@@ -190,6 +190,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         //go through the pairArray 
         //create the TargetFields for the searchList
         int length = pairArray.length;
+        log.debug( String.format( "length of search list: %s", length ) );
         for ( int i = 0; i < length; i += 2 )
         {
             if ( pairArray[ i ] != null )
@@ -223,7 +224,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
             tempList.clear();
             tempList.add( pair );
             searchResultList = objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ); 
-    //pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) );
+            //pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) );
             log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
             pidStringList.addAll( searchResultList ); 
         }

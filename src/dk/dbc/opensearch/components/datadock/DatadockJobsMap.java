@@ -54,7 +54,7 @@ public class DatadockJobsMap extends JobMapCreator
     public DatadockJobsMap() {}
 
 
-    private static void init( String submitter, String format ) throws ConfigurationException, IOException, ParserConfigurationException, SAXException
+    private static void init( String submitter, String format )
     {
         if ( submitter == null || submitter.isEmpty() ||
              format == null || format.isEmpty() )
@@ -66,15 +66,52 @@ public class DatadockJobsMap extends JobMapCreator
 
         if ( ! initiated )
         {
-            String XMLPath = DatadockConfig.getPath();
-            String XSDPath = FileSystemConfig.getDataDockJobsXsdPath();
+            try
+            {
+                String XMLPath = DatadockConfig.getPath();
+                String XSDPath = FileSystemConfig.getDataDockJobsXsdPath();
 
-            JobMapCreator.validateXsdJobXmlFile( XMLPath, XSDPath );
-            JobMapCreator.init( XMLPath );
+                JobMapCreator.validateXsdJobXmlFile( XMLPath, XSDPath );
+                JobMapCreator.init( XMLPath );
 
-            datadockJobMap = JobMapCreator.jobMap;
-            initiated = true;
+                datadockJobMap = JobMapCreator.jobMap;
+                initiated = true;
+            }catch( ParserConfigurationException ex )
+            {
+                String error = "Could not configure parser for reading ";
+                log.error( error, ex );
+                throw new IllegalStateException( error, ex );
+                    
+            }catch(  ConfigurationException ex )
+            {
+                String error = "Could not configure parser for reading ";
+                log.error( error, ex );
+                throw new IllegalStateException( error, ex );
+
+            }catch( SAXException ex )
+            {
+                String error = "Could not read configuration file";
+                log.error( error, ex );
+                throw new IllegalStateException( error, ex );
+
+            }catch( IOException ex )
+            {
+                String error = "Could not read configuration file";
+                log.error( error, ex );
+                throw new IllegalStateException( error, ex );
+            }
         }
+    }
+
+    public static boolean hasPluginList( String submitter, String format )
+    {
+        init( submitter, format );
+
+        if( null ==  datadockJobMap.get( new InputPair< String, String >( submitter, format ) ) )
+        {
+            return false;
+        }
+        return true;
     }
 
 

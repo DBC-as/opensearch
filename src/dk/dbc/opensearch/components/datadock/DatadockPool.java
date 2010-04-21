@@ -202,7 +202,8 @@ public class DatadockPool
                     log.info( String.format( "Setting status to FAILURE for identifier: %s with message: '%s'", id, cause.getMessage() ) );
                     try
                     {
-                        harvester.setStatusFailure( id, cause.getMessage() );
+			String msg = cause.getMessage() == null ? "" : cause.getMessage(); // avoid giving null to setStatusFailure
+                        harvester.setStatusFailure( id, msg );
                     }
                     catch( HarvesterUnknownIdentifierException ex )
                     {

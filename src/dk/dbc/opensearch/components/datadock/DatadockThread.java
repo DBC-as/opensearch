@@ -84,7 +84,7 @@ public class DatadockThread implements Callable<Boolean>
     private DatadockJob             datadockJob;
     private String                  submitter;
     private String                  format;
-    private ArrayList<String>       list;
+    private ArrayList<String>       pluginListForThread;
     private final IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
     
@@ -121,7 +121,7 @@ public class DatadockThread implements Callable<Boolean>
         log.trace( String.format( "submitter: %s, format: %s", submitter, format ) );
         log.trace( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
         
-        list = DatadockJobsMap.getDatadockPluginsList( submitter, format );
+        pluginListForThread = DatadockJobsMap.getDatadockPluginsList( submitter, format );
                 
         queue = processqueue;
         
@@ -159,14 +159,14 @@ public class DatadockThread implements Callable<Boolean>
         log.trace( "DatadockThread call method called" );
 
         // Validate plugins
-        log.debug( String.format( "pluginList classname %s", list.toString() ) );
+        log.debug( String.format( "pluginList classname %s", pluginListForThread.toString() ) );
         Boolean success = Boolean.FALSE;
         byte[] data = null;
         long timer = 0;
 
 //        try
 //        {
-            for ( String classname : list )
+            for ( String classname : pluginListForThread )
             {
                 log.trace( "DatadockThread getPlugin 'classname' " + classname );
 

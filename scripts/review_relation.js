@@ -36,7 +36,7 @@ function main( submitter, format, language, xml_review, pid )
 
 	Log.info( "result: " + result );
 
-	scriptClass.createRelation( pid, "reviewOf", result);
+	scriptClass.createRelation( pid, "isReviewOf", result);
 	scriptClass.createRelation( result, "hasReview", pid);
     }
 

@@ -240,8 +240,6 @@ if __name__ == '__main__':
                   'port': '8080'
                   }
     actions = ["start", "stop", "restart", "bench"]
-
-
         
     # if harvester == "file":
     #     harvester = "FileHarvest"
@@ -249,7 +247,6 @@ if __name__ == '__main__':
     #     harvester = "FileHarvestLight"  
     # elif harvester == "es":
     #     harvester = "ESHarvest"
-
 
     harvester_list = [ ["file", "FileHarvest"],
                        ["light", "FileHarvestLight"],
@@ -284,7 +281,7 @@ if __name__ == '__main__':
     mem_allocation = [options.Xms, options.Xmx]
 
 
-    if len(args) == 0:
+    if len( args ) == 0:
         print "\nPlease supply some arguments!\n"
         sys.exit( parser.print_help() )
     if options.port:
@@ -305,7 +302,7 @@ if __name__ == '__main__':
     if not options.monitor:
         options.monitor = ''
 
-    harvester = None
+    harvester = None 
     if options.harvester:
         for known_harvester in harvester_list:
             if options.harvester == known_harvester[0]:
@@ -319,10 +316,8 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit( "Can only start one of: %s"%( ', '.join( app_list ) ) )
 
-
     if len( args ) != 1:
         sys.exit( parser.print_help() )
-
 
     if options.app == 'both':
         main( 'pti', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup )

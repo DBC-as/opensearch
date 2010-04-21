@@ -27,27 +27,31 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.common.types.IJob;
-import dk.dbc.opensearch.common.types.IIdentifier;
-
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
 import java.util.concurrent.ThreadPoolExecutor;
 
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
-import static mockit.Mockit.setUpMocks;
-import static mockit.Mockit.tearDownMocks;
+import mockit.NonStrictExpectations;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.junit.*;
 import org.w3c.dom.Document;
 
-import org.junit.*;
+
+import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
 import static org.junit.Assert.*;
 
 
@@ -57,17 +61,16 @@ import static org.junit.Assert.*;
 public class DatadockManagerTest
 {
 
-    @Mocked
-    IHarvest mockHarvester;
+    @Mocked IHarvest mockHarvester;
+    @Mocked static IIdentifier mockIdentifier;
+    @Mocked DatadockJobsMap jobMapHandler;
+
     DatadockPool mockDatadockPool;
     static Vector<IJob> mockJobs = new Vector<IJob>();
 
-    ;
     DatadockJob mockDatadockJob;
     IJob mockJob;
     static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\"/></referencedata>";
-    @Mocked
-    static IIdentifier mockIdentifier;
     private static Document xmldata;
 
     @MockClass( realClass = ESHarvest.class )
@@ -98,8 +101,6 @@ public class DatadockManagerTest
             }
             return list;
         }
-
-
     }
 
     @MockClass( realClass = DatadockPool.class )
@@ -124,14 +125,25 @@ public class DatadockManagerTest
 
         @Mock( invocations = 1 )
         public void shutdown(){}
-
-
-
     }
+
+    // @MockClass( realClass = DatadockJob.class )
+    // public static class MockDatadockJob
+    // {
+    //     @Mocked
+    //     public static boolean hasPluginList( String submitter, String format )
+    //     {
+    //         return true;
+    //     }
+    // }
 
     @BeforeClass
     public static void classSetup() throws Exception
     {
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel( Level.TRACE );
+
+
         xmldata = XMLUtils.documentFromString( referenceData );
     }
 
@@ -176,6 +188,14 @@ public class DatadockManagerTest
         mockDatadockPool.submit( job );
 
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
+
+        //final DatadockJob ddjob = (DatadockJob) job;
+
+        new NonStrictExpectations()
+        {{
+            DatadockJobsMap.hasPluginList( anyString, anyString );returns( true );
+        }};
+
         int update = datadockManager.update();
         datadockManager.shutdown();
 

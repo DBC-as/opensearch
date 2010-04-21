@@ -68,7 +68,7 @@ public class ScriptMethodsForReviewRelation {
     public boolean createRelation( String subject, String relation, String object)
     {
         //convert the relation String to an IPredicate/DBCBIB
-        //check that the relation param is valid, should be either reviewOf, hasReview
+        //check that the relation param is valid, should be either isReviewOf, hasReview
         // or hasFullText
         IPredicate predicate;
         
@@ -76,10 +76,10 @@ public class ScriptMethodsForReviewRelation {
         ObjectIdentifier subjectPID = new PID( subject );
         
         //\Todo: Find another way to make the enums, bug 9993
-        if( relation.equals( "reviewOf" ) )
+        if( relation.equals( "isReviewOf" ) )
         {
             //must be put on the rels-ext stream of the object
-            predicate = (IPredicate)DBCBIB.REVIEW_OF;
+            predicate = (IPredicate)DBCBIB.IS_REVIEW_OF;
             setRelationInFedora( subjectPID, predicate, object );
             log.info( String.format( "relation created with subject: %s predicate: %s object: %s", subjectPID.getIdentifier(), predicate, object ) );
         }

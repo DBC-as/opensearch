@@ -1867,7 +1867,7 @@ public class FedoraObjectRepository implements IObjectRepository
     {
         try
         {
-            //System.out.println( "getting reltionships" );
+            log.debug( String.format( "calling with subject '%s' and predicate '%s'", subject, predicate ) );
             RelationshipTuple[] tuple = this.fedoraHandle.getRelationships( subject, predicate );
             if ( tuple != null )
             {
@@ -1907,6 +1907,7 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ioe );
         }
 
+        log.debug( "returning null" );
         return null;
     }
 
@@ -1919,17 +1920,16 @@ public class FedoraObjectRepository implements IObjectRepository
             String relationString = relation.getPredicateString();
             String pid = objectIdentifier.getIdentifier();
 
-            System.out.println( String.format( "trying to remove %s with relation %s from %s", pid, relationString, subject ) );
-            log.debug( String.format( "trying to remove %s - %s -> %s", pid, relationString, subject ) );
+            log.debug( String.format( "trying to remove object %s with relation %s from pid %s", subject, relationString, pid ) );
             boolean purgeRelationship = this.fedoraHandle.purgeRelationship( pid, relationString, subject, true, null );
             if ( purgeRelationship )
             {
-                System.out.println("purged");
+                log.debug("purged");
                 log.info( String.format( "Ignored error from purgeRelationeship : on %s-%s->%s", pid, relationString, subject ) );
             }
             else
             {
-                System.out.println("not purged");
+                log.debug("not purged");
             }
         }
         catch( IOException ex )

@@ -102,7 +102,7 @@ public class ReviewRelation implements IRelation
      *
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    synchronized public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
         if( objectRepository == null )

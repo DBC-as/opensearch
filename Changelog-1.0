@@ -1,0 +1,10 @@
+1.0.0
+   - bug [10469] "Når datadocken kører med flere (end en) tråde, fejler javascript"
+   - bug [10426] "Håndtering af ugyldigt formateringstegn i SimpleRhinoWrapper fejler"
+   - bug [10422] "Problemer med threading i ES-harvesteren"
+   - bug [10382] "Diskrepans mellem navne på relationer i javascript og i RDF-modellen"
+   - bug [10382] "Diskrepans mellem navne på relationer i javascript og i RDF-modellen"
+   - bug [9863] "Datadock kan ikke få forbindelse til oraklet"
+   - bug [9512] "ESHarvester skal benytte ES-diagnostics"
+   - bug [10234] "'INVALID_CHARACTER_ERR: An invalid or illegal XML character is specified. '"
+   - bug [10200] "Der hvor der selectes TP'er i ESHarvest skal ændres så der også kan bruges databasenavn"

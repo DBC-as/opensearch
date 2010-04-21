@@ -104,7 +104,7 @@ public class FedoraMain
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -purge sanitize.txt\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteSubmitter dbc\n" +
                                         "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -deleteWork sanitize.txt\n" +
-                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -getObjects -h harvest-katalog [-cDate YYYY-mm-dd mDate YYYY-mm-dd -format <format> -submitter <submitter>] -n <No to retrieve>\n" +
+                                        "\tEx:    $ java -jar dist/OpenSearch_FEDORA.jar -getObjects -h harvest-katalog -fileNo <fileNo> [-cDate YYYY-mm-dd -mDate YYYY-mm-dd -format <format> -submitter <submitter>] -n <No to retrieve>\n" +
                                         "\tEx:                                           -getObjects -h Harvest -cDate 2010-01-29[--2010-02-29] -mDate 2010-01-29[--2010-02-29] -format katalog -submitter 775100 -n 10\n" +
                                         "\tFile format for file_name: work:xxx submitter:pid. E.g. \"work:1 710100:097838 710100:895623 ...\"\n";
 
@@ -135,7 +135,27 @@ public class FedoraMain
         // GET OBJECTS
         else if ( action.equals( getObjects ) )
         {
-            getObjects( args, fo );
+            int fileNo = 0;
+            for ( int k = 0; k < args.length; k++ )
+            {
+                String arg = args[ k ];
+                if ( arg.equals( "fileNo" ) )
+                {
+                  fileNo = new Integer( arg );
+                }
+            }
+            
+            if ( fileNo == 0 )
+            {
+                fileNo = 1;
+            }
+            
+            for ( int i = 0; i < 10000; i++ )
+            {
+                getObjects( args, fo, fileNo );
+                FedoraMain fm = new FedoraMain();
+                fm.thisSleep( 10000 );
+            }
         }
         // DELETE SUBMITTER
         else if ( action.equals( deleteSubmitter ) )
@@ -263,7 +283,7 @@ public class FedoraMain
     }
 
 
-    private static void getObjects( String[] args, FedoraObjectRepository fo )
+    private static void getObjects( String[] args, FedoraObjectRepository fo, int fileNo )
     {
         testArgs( getObjects, args );
 
@@ -304,9 +324,8 @@ public class FedoraMain
             {
                 FieldSearchResult result = fedoraHandle.findObjects( resultFields, max, fsq );
                 ObjectFields[] objectFields = result.getResultList();
-                int ofLength = objectFields.length;
-                //log.debug( String.format( "No of objectFields lines %s", objectFields.length ) );
-                int j = 1;
+                int ofLength = objectFields.length;                
+                int j = 0;
                 for( int i = 0; i < ofLength; i++ )
                 {
                     String pid = objectFields[i].getPid();
@@ -317,7 +336,7 @@ public class FedoraMain
                             break;
                         }
                         
-                        if ( writeDatastream( fo, pid, path, j ) )
+                        if ( writeDatastream( fo, pid, path, fileNo + j ) )
                         {
                             j++;
                         }

@@ -25,13 +25,11 @@
 
 package dk.dbc.opensearch.common.javascript;
 
-import org.mozilla.javascript.*;
 import java.io.*;
 
 import org.apache.log4j.Logger;
+import org.mozilla.javascript.*;
 
-//import dk.dbc.opensearch.common.config.FileSystemConfig;
-//import org.apache.commons.configuration.ConfigurationException;
 
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple wrapper for javascript based 
@@ -46,8 +44,8 @@ import org.apache.log4j.Logger;
  */
 public class SimpleRhinoWrapper
 {
-
     private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
+
 
     private Context cx = Context.enter();
     private ScriptableObject scope = null;
@@ -64,7 +62,7 @@ public class SimpleRhinoWrapper
         // This must be done before scripts can be executed. Returns
         // a scope object that we use in later calls.
         scope = cx.initStandardObjects();
-        if (scope == null)
+        if ( scope == null )
         {
             // This should never happen!
             String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
@@ -80,7 +78,7 @@ public class SimpleRhinoWrapper
         try
         {
             Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
-        }
+        } 
         catch ( IOException ioe )
         {
             String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
@@ -101,9 +99,10 @@ public class SimpleRhinoWrapper
         scope.defineProperty( key, value, ScriptableObject.DONTENUM );
     }
 
-
+    
     public Object run( String functionEntryPoint, Object... args )
     {
+        log.trace( String.format( "Entering run function with %s", functionEntryPoint ) );
         Object fObj = scope.get( functionEntryPoint, scope );
         Object result = null;
         if ( !( fObj instanceof Function ) )

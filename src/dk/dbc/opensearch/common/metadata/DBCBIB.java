@@ -40,7 +40,7 @@ public enum DBCBIB implements IPredicate
     IS_AFFILIATED_WITH( "isAffiliatedWith" ),
 
     HAS_REVIEW( "hasReview" ),
-    REVIEW_OF( "reviewOf" ),
+    IS_REVIEW_OF( "isReviewOf" ),
     HAS_FULLTEXT( "hasFullText" );
 
     private String localName;

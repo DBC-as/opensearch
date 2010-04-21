@@ -42,7 +42,7 @@ oracle_cache_name: es_harvest_cache
 # minimum limit of connections for the dbconnectionpools cache
 oracle_min_limit: 1
 # maximum limit of connections for the dbconnectionpools cachs
-oracle_max_limit: 1
+oracle_max_limit: 4
 # initial number of connections for the dbconnectionpools cache
 oracle_initial_limit: 1
 # The timeout limit for the connection
@@ -75,7 +75,7 @@ path:                config/datadock_jobs.xml
 # hostname of the server running the fedora repository
 host:       localhost 
 # port on which the fedora repository is running (the tomcat http port)
-port:       8080
+port:      9080 
 # username for the fedora repository
 user:       fedoraAdmin
 # password for the fedora repository
@@ -91,13 +91,13 @@ passphrase: fedoraAdmin
 # HARVEST configuration relating to the harvester module
 [harvester]
 # folder name of the folder to harvest files from
-toharvest:       bin/Harvest
+toharvest:       Harvest
 # folder name of the folder to temporarily store files while in progress
 harvestprogress: HarvestProgress
 # folder name of the folder to put processed files in
-harvestdone:  	 bin/HarvestDone
+harvestdone:  	 HarvestDone
 # folder name of the folder to put files in which didn't get progressed properly
-harvestfailure:	 bin/HarvestFailure
+harvestfailure:	 HarvestFailure
 # number of files to process in batches
 maxtoharvest: 1000
 
