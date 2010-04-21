@@ -22,10 +22,10 @@ import javax.xml.stream.XMLStreamWriter;
 import static org.junit.Assert.*;
 import org.junit.*;
 
-//import mockit.Mock;
-//import mockit.MockClass;
+import mockit.Mock;
+import mockit.MockClass;
 //import mockit.Mocked;
-//import mockit.Mockit;
+import mockit.Mockit;
 
 public class FlowMapCreatorTest
 {
@@ -50,6 +50,16 @@ public class FlowMapCreatorTest
     String scriptName2 = "scriptName2";
     String scriptName3 = "scriptName3";
 
+    @MockClass( realClass = FlowMapCreator.class )
+    public static class MockFlowMapCreator
+    {
+        @Mock public void validateWorkflowsXMLFile( String xmlPath, String sxdPath )
+        {
+            System.out.println( "validates fine, tx mate" );
+        }
+
+    }
+
     @Before public void setUp() throws Exception
     {
         File workFlowFile = FileHandler.getFile( "workFlow.xml" );
@@ -61,10 +71,12 @@ public class FlowMapCreatorTest
     
         File XSDFile = FileHandler.getFile( "config/workflows.xsd" );
         xsdPath = XSDFile.getAbsolutePath();
+        Mockit.setUpMocks( MockFlowMapCreator.class );
     }
 
     @After public void tearDown() throws Exception
     {
+        Mockit.tearDownMocks();        
     }
 
     /**
