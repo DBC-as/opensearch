@@ -128,4 +128,22 @@ public class StringUtils
         }
         return replace(retStr, replaceMap).trim();
     }
+
+
+    public static String normalizeString(String s)
+    {
+        s = s.toLowerCase();
+        String killchars = "~'-";
+
+        StringBuffer res = new StringBuffer();
+        for (int i = 0; i < s.length(); ++i)
+        {
+            if (-1 == killchars.indexOf(s.charAt(i)))
+            {
+                res.append(s.charAt(i));
+            }
+        }
+
+        return res.toString();
+    }
 }

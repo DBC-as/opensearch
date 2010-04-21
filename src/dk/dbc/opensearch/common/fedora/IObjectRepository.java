@@ -329,6 +329,9 @@ public interface IObjectRepository
     public List< InputPair<IPredicate, String> > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
 
 
+    public List< InputPair<IPredicate, String> > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException;
+
+
     /**
      *  Adds 
      *  

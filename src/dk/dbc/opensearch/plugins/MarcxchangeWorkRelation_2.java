@@ -52,8 +52,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -71,6 +69,7 @@ import org.w3c.dom.Document;
 public class MarcxchangeWorkRelation_2 implements IRelation
 {
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation_2.class );
+
 
     private PluginType pluginType = PluginType.RELATION;
 
@@ -218,7 +217,7 @@ public class MarcxchangeWorkRelation_2 implements IRelation
         List<String> searchResultList = new ArrayList<String>();
         List<InputPair< TargetFields, String > > tempList = new ArrayList< InputPair< TargetFields, String > >();
 
-        for( InputPair< TargetFields, String > pair : searchList )
+        for ( InputPair< TargetFields, String > pair : searchList )
         {
             num++;
             tempList.clear();

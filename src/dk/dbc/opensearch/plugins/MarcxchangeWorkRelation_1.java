@@ -38,6 +38,7 @@ import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.string.StringUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
@@ -80,7 +81,7 @@ public class MarcxchangeWorkRelation_1 implements IRelation
      */
     public MarcxchangeWorkRelation_1() throws PluginException
     {
-        log.debug( "MarcxchangeWorkRelation constructor called" );
+        log.trace( "MarcxchangeWorkRelation constructor called" );
     
         types = new Vector<String>();
         types.add( "Anmeldelse" );
@@ -165,24 +166,6 @@ public class MarcxchangeWorkRelation_1 implements IRelation
     }
 
 
-    public static String normalizeString(String s)
-    {
-        s = s.toLowerCase();
-        String killchars = "~'-";
-        
-        StringBuffer res = new StringBuffer();
-        for (int i = 0; i < s.length(); ++i)
-        {
-            if (-1 == killchars.indexOf(s.charAt(i)))
-            {
-                res.append(s.charAt(i));
-            }
-        }
-
-        return res.toString();      
-    }
-
-
     synchronized private boolean addWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
     {
         DublinCore dc = cargo.getDublinCoreMetaData();
@@ -194,10 +177,10 @@ public class MarcxchangeWorkRelation_1 implements IRelation
             throw new PluginException( error );
         }
 
-        String dcTitle = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
-        String dcType = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TYPE ) );
-        String dcCreator = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR ) );
-        String dcSource = normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE ) );
+        String dcTitle = StringUtils.normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
+        String dcType = StringUtils.normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_TYPE ) );
+        String dcCreator = StringUtils.normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_CREATOR ) );
+        String dcSource = StringUtils.normalizeString( dc.getDCValue( DublinCoreElement.ELEMENT_SOURCE ) );
         String pidAsString = cargo.getIdentifier().getIdentifier();
         
         List< String > fedoraPids = new ArrayList< String >();        

@@ -402,7 +402,7 @@ public class FedoraHandle
             timer = System.currentTimeMillis();
         }
 
-        RelationshipTuple[] rt = this.getAPIM().getRelationships( subject, predicate);
+        RelationshipTuple[] rt = this.getAPIM().getRelationships( subject, predicate );
 
         if ( log.isDebugEnabled() )
         {

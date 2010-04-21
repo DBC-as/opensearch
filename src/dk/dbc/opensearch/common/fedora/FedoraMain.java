@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-//import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -54,7 +53,6 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
 
 
 /**
@@ -157,6 +155,7 @@ public class FedoraMain
         }
     }
 
+    
     private void thisSleep( long time ) throws InterruptedException
     {
         Thread t = Thread.currentThread ( );
@@ -349,7 +348,6 @@ public class FedoraMain
         else if ( !pidBegin.isEmpty() && !pidEnd.isEmpty() )
         {
             String[] firstPid = pidBegin.split( ":" );
-
             String[] lastPid = pidEnd.split( ":" );
 
             if ( submitter.isEmpty() )

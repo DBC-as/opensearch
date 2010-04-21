@@ -126,8 +126,10 @@ public class DatadockManager
 
         while ( registeredJobs.size() > 0 )
         {
-            log.trace( String.format( "processing job: %s", registeredJobs.get( 0 ).toString() ) );
+            log.trace( String.format( "processing job: %s", registeredJobs.get( 0 ).getIdentifier() ) );
 
+            try
+            {
             //build the DatadockJob
             IJob theJob = registeredJobs.get( 0 );
             DatadockJob job = buildDatadockJob( theJob );
@@ -138,6 +140,12 @@ public class DatadockManager
             ++jobs_submitted;
             
             log.debug( String.format( "submitted job: '%s'", job ) );
+            }
+            catch ( RuntimeException re )
+            {
+                String error = "Runtime exception caught " + re.getMessage();
+                log.error( error, re );
+            }
         }
         //checking for finished jobs in the pool
         pool.checkJobs();
@@ -171,6 +179,7 @@ public class DatadockManager
      */
     private DatadockJob buildDatadockJob( IJob theJob )
     {
+        log.trace( "building datadock job " + theJob.getIdentifier() );        
         Document referenceData = theJob.getReferenceData();
 
         if( null == referenceData.getDocumentElement() )

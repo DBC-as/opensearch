@@ -60,35 +60,35 @@ public class SimpleRhinoWrapper
      */
     public SimpleRhinoWrapper( FileReader inFile )
     {
+        // Initialize the standard objects (Object, Function, etc.)
+        // This must be done before scripts can be executed. Returns
+        // a scope object that we use in later calls.
+        scope = cx.initStandardObjects();
+        if (scope == null)
+        {
+            // This should never happen!
+            String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
+            log.fatal( errorMsg );
+            throw new IllegalStateException( errorMsg );
+        }
 
-	// Initialize the standard objects (Object, Function, etc.)
-	// This must be done before scripts can be executed. Returns
-	// a scope object that we use in later calls.                                                            
-	scope = cx.initStandardObjects();
-	if (scope == null) 
-	{
-	    // This should never happen!
-	    String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
-	    log.fatal( errorMsg );
-	    throw new IllegalStateException( errorMsg );
-	}
-	
-	String[] names = { "print" };
-	scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
+        String[] names = { "print" };
+        scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
-
-
-	// Evaluate the javascript
-	String jsFileName = "script name is unknown"; // We dont know the name of the script! :(
-	try {
-	    Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
-	} catch ( IOException ioe ) {
-	    String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
-	    log.error( errorMsg, ioe );
-	    throw new IllegalStateException( errorMsg, ioe );
-	}
- 
+        // Evaluate the javascript
+        String jsFileName = "script name is unknown"; // We dont know the name of the script! :(
+        try
+        {
+            Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
+        }
+        catch ( IOException ioe )
+        {
+            String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
+            log.error( errorMsg, ioe );
+            throw new IllegalStateException( errorMsg, ioe );
+        }
     }							  
+
 
     /**
      * Sets an instans of an object in the Javascript environment making it accesible for the script
@@ -98,25 +98,27 @@ public class SimpleRhinoWrapper
      */
     public void put( String key, Object value )
     {
-	scope.defineProperty( key, value, ScriptableObject.DONTENUM );
+        scope.defineProperty( key, value, ScriptableObject.DONTENUM );
     }
-    
+
+
     public Object run( String functionEntryPoint, Object... args )
     {
+        Object fObj = scope.get( functionEntryPoint, scope );
+        Object result = null;
+        if ( !( fObj instanceof Function ) )
+        {
+            String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
+            log.fatal( errorMsg );
+            throw new IllegalStateException( errorMsg );
+        }
+        else
+        {
+            log.debug( String.format( "%s is defined or is a function", functionEntryPoint ) );
+            Function f = (Function)fObj;
+            result = f.call(cx, scope, scope, args);
+        }
 
-	Object fObj = scope.get(functionEntryPoint, scope);
-	Object result = null;
-	if (!(fObj instanceof Function)) {
-	    String errorMsg = String.format( "% is undefined or not a function", functionEntryPoint );
-	    log.fatal( errorMsg );
-	    throw new IllegalStateException( errorMsg );
-	} else {
-	    Function f = (Function)fObj;
-	    result = f.call(cx, scope, scope, args);
-	}
-	
-	return result;
+        return result;
     }
-
-
 }

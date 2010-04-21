@@ -34,16 +34,15 @@ import dk.dbc.opensearch.common.types.ObjectIdentifier;
  */
 public class PID implements ObjectIdentifier
 {
-
     private String id;
 
     public PID( String identifier )
     {
-        if( identifier.length() > 64 )
+        if ( identifier.length() > 64 )
         {
             throw new IllegalArgumentException( "The identifier for fedora objects cannot be longer than 25 characters" );
         }
-        else if( identifier.isEmpty() )
+        else if ( identifier.isEmpty() )
         {
             throw new IllegalArgumentException( "The identifier for fedora objects cannot be empty" );
         }

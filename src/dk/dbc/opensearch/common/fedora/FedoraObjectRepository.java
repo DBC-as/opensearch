@@ -46,6 +46,7 @@ import fedora.server.types.gen.Datastream;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
+import fedora.server.types.gen.RelationshipTuple;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -1862,6 +1863,54 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
+    public List< InputPair< IPredicate, String > > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
+    {
+        try
+        {
+            //System.out.println( "getting reltionships" );
+            RelationshipTuple[] tuple = this.fedoraHandle.getRelationships( subject, predicate );
+            if ( tuple != null )
+            {
+                List< InputPair< IPredicate, String > > ret = new ArrayList< InputPair< IPredicate, String> >();
+                for ( RelationshipTuple relationship : tuple )
+                {
+                    String object = relationship.getObject();
+                    InputPair< IPredicate, String > pair = new InputPair( predicate, object );
+                    ret.add( pair );
+                }
+
+                return ret;
+            }
+        }
+        catch ( ConfigurationException ce )
+        {
+            String error = "Failed to get relation from fedora object";
+            log.error( error, ce );
+            throw new ObjectRepositoryException( error, ce );
+        }
+        catch( ServiceException se )
+        {
+            String error = "Failed to get relation from fedora object";
+            log.error( error, se );
+            throw new ObjectRepositoryException( error, se );
+        }
+        catch( MalformedURLException mue )
+        {
+            String error = "Failed to get relation from fedora object";
+            log.error( error, mue );
+            throw new ObjectRepositoryException( error, mue );
+        }
+        catch( IOException ioe )
+        {
+            String error = "Failed to get relation from fedora object";
+            log.error( error, ioe );
+            throw new ObjectRepositoryException( error, ioe );
+        }
+
+        return null;
+    }
+
+
     @Override
     public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
@@ -1870,11 +1919,17 @@ public class FedoraObjectRepository implements IObjectRepository
             String relationString = relation.getPredicateString();
             String pid = objectIdentifier.getIdentifier();
 
-            log.debug( String.format( "trying to removed %s - %s -> %s", pid, relationString, subject ) );
+            System.out.println( String.format( "trying to remove %s with relation %s from %s", pid, relationString, subject ) );
+            log.debug( String.format( "trying to remove %s - %s -> %s", pid, relationString, subject ) );
             boolean purgeRelationship = this.fedoraHandle.purgeRelationship( pid, relationString, subject, true, null );
-            if( purgeRelationship )
+            if ( purgeRelationship )
             {
+                System.out.println("purged");
                 log.info( String.format( "Ignored error from purgeRelationeship : on %s-%s->%s", pid, relationString, subject ) );
+            }
+            else
+            {
+                System.out.println("not purged");
             }
         }
         catch( IOException ex )

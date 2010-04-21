@@ -25,17 +25,19 @@
 
 package dk.dbc.opensearch.common.types;
 
+
 /**
  * Uniquely identifies objects in the object repository and in CargoContainers
  */
-public interface ObjectIdentifier {
-
+public interface ObjectIdentifier
+{
     /**
      * Accessor for the string representation of the identifier
      * @return a String containing the identifier in a String representation
      */
     public String getIdentifier();
 
+    
     /**
      * Accessor for the namespace (if any) on the object identifier.
      * @return a String containing the namespace (if the identifier has one)
