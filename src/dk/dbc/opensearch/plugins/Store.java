@@ -23,7 +23,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.pluginframework.IRepositoryStore;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 /**
  * Class for storing CargoContainers
  */
-public class Store implements IRepositoryStore
+public class Store implements IPluggable
 {
     private static Logger log = Logger.getLogger( Store.class );
 
@@ -45,7 +45,7 @@ public class Store implements IRepositoryStore
 
     
 
-    synchronized public CargoContainer storeCargoContainer( CargoContainer cargo ) throws PluginException
+    synchronized public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
     	log.trace( "Entering storeCargoContainer( CargoContainer )" );
 

@@ -35,7 +35,7 @@ import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
-import dk.dbc.opensearch.common.pluginframework.IRelation;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
@@ -66,7 +66,7 @@ import org.w3c.dom.Document;
  * In contrast to other plugins of the RELATION type it uses more than 1 javascript
  * function to handle the business logic
  */
-public class MarcxchangeWorkRelation_2 implements IRelation
+public class MarcxchangeWorkRelation_2 implements IPluggable
 {
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation_2.class );
 

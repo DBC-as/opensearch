@@ -20,13 +20,16 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginID;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-
+import dk.dbc.opensearch.common.types.CargoContainer;
 import java.io.InputStream;
 
+/**
+ * \Todo: this class should be removed, see bug 10481
+ */
 
 public class TestPlugin implements IPluggable
 {
@@ -50,4 +53,13 @@ public class TestPlugin implements IPluggable
     {
         return PluginType.ANNOTATE;
     }
+
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
+
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    {
+        return null;
+    }
+
 }

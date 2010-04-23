@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
-import dk.dbc.opensearch.common.pluginframework.IRelation;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -58,7 +58,7 @@ import org.apache.log4j.Logger;
 /**
  * Plugin for adding owner relation to cargoContainers
  */
-public class OwnerRelation implements IRelation
+public class OwnerRelation implements IPluggable
 {
     private static Logger log = Logger.getLogger( OwnerRelation.class );
 

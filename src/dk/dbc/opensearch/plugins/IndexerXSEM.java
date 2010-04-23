@@ -26,7 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.compass.CPMAlias;
-import dk.dbc.opensearch.common.pluginframework.IIndexer;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -61,7 +62,7 @@ import org.xml.sax.SAXException;
  * cargocontainer, and writes the resulting values in a document to
  * the index.
  */
-public class IndexerXSEM implements IIndexer
+public class IndexerXSEM implements IPluggable
 {
     private static Logger log = Logger.getLogger( IndexerXSEM.class );
 
@@ -71,7 +72,6 @@ public class IndexerXSEM implements IIndexer
     /**
      * The main method of the IndexerXSEM plugin
      */
-    @Override
     public boolean index(CargoContainer cargo, CompassSession session, String fedoraHandle ) throws PluginException, ConfigurationException
     {
         boolean success = false;
@@ -294,4 +294,22 @@ public class IndexerXSEM implements IIndexer
     {
         return pluginType;
     }
+
+    /**
+     * A dummy method to satisfy the interface until we refactor this 
+     * class that is bound to e obsolete soon 
+     * \Todo: bug 10479
+     */
+    @Override
+        public synchronized CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    {
+        return null;
+    }
+
+    /**
+     * The method for setting an objectrepository, will not be needed here
+     */
+    @Override
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
 }

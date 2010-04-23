@@ -242,7 +242,7 @@ public class MarcWork2Func
             testCargo = ffpPlugin.getCargoContainer( testCargo );
             
             System.out.println( "Calling the storeCargoContainer method on the storePlugin" );
-            storePlugin.storeCargoContainer( testCargo );
+            storePlugin.getCargoContainer( testCargo );
             
             System.out.println( "Calling the getCargoContainer method on the marcWork2Plugin " );
             testCargo = marcWork2Plugin.getCargoContainer( testCargo ); 

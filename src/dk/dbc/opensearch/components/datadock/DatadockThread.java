@@ -163,6 +163,17 @@ public class DatadockThread implements Callable<Boolean>
         Boolean success = Boolean.FALSE;
         byte[] data = null;
         long timer = 0;
+        IIdentifier tmpid = datadockJob.getIdentifier();
+        try
+        {
+            cargo = harvester.getCargoContainer( tmpid );
+        }
+        catch( HarvesterUnknownIdentifierException huie )
+        {
+            String error = "Could not get CargoContainer from harvester";
+            log.error( error );
+            throw new HarvesterUnknownIdentifierException( error, huie );
+        }  
 
 //        try
 //        {
@@ -176,7 +187,9 @@ public class DatadockThread implements Callable<Boolean>
 
                 switch ( plugin.getPluginType() )
                 {
-                    case HARVEST:
+                case HARVEST:
+                        
+                        /*
                         //get data from harvester
                         try
                         {
@@ -189,16 +202,16 @@ public class DatadockThread implements Callable<Boolean>
                             log.error( error, huie );
                             throw new HarvesterUnknownIdentifierException( error, huie );
                         }
-
+                    */
                         log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
-
+                        /*
                         String indexingAlias = DatadockJobsMap.getIndexingAlias( datadockJob.getSubmitter(), datadockJob.getFormat() );
                         log.trace( String.format( "retrieved indexingAlias %s", indexingAlias ) );
-
-                        ICreateCargoContainer harvestPlugin = ( ICreateCargoContainer )plugin;
+                        */
+                        IPluggable harvestPlugin = plugin;
                         timer = System.currentTimeMillis();
 
-                        cargo = harvestPlugin.getCargoContainer( datadockJob, data, indexingAlias );
+                        cargo = harvestPlugin.getCargoContainer( cargo );
 
                         timer = System.currentTimeMillis() - timer;
                         log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
@@ -211,10 +224,11 @@ public class DatadockThread implements Callable<Boolean>
                         }
 
                         break;
+             
                     case ANNOTATE:
                         log.trace( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
 
-                        IAnnotate annotatePlugin = (IAnnotate)plugin;
+                        IPluggable annotatePlugin = plugin;
 
                         timer = System.currentTimeMillis();
 
@@ -234,7 +248,7 @@ public class DatadockThread implements Callable<Boolean>
                     case RELATION:
                         log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
 
-                        IRelation relationPlugin = (IRelation)plugin;
+                        IPluggable relationPlugin = plugin;
                         relationPlugin.setObjectRepository( this.objectRepository );
                         timer = System.currentTimeMillis();
 
@@ -254,10 +268,10 @@ public class DatadockThread implements Callable<Boolean>
                     case STORE:
                         log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
 
-                        IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
+                        IPluggable repositoryStore = plugin;
                         repositoryStore.setObjectRepository( this.objectRepository );
                         timer = System.currentTimeMillis();
-                        cargo = repositoryStore.storeCargoContainer( cargo );
+                        cargo = repositoryStore.getCargoContainer( cargo );
 
                         if( null == cargo || cargo.getCargoObjectCount() < 1 )
                         {

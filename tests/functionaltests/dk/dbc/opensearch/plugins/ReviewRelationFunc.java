@@ -351,7 +351,7 @@ public class ReviewRelationFunc
             //calling the plugin that creates the identifier
             c = FFPplugin.getCargoContainer( c );	
             //storing the cargocontainers data in the repository
-            storePlugin.storeCargoContainer( c );
+            storePlugin.getCargoContainer( c );
             // Run test to ensure that javascript is used uninitialized:
 	    CargoContainer c2 = reviewRelation.getCargoContainer( c );
 

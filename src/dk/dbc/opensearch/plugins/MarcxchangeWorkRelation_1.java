@@ -35,7 +35,7 @@ import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
-import dk.dbc.opensearch.common.pluginframework.IRelation;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.string.StringUtils;
@@ -62,7 +62,7 @@ import org.apache.log4j.Logger;
 /**
  * Plugin for annotating docbook carcoContainers
  */
-public class MarcxchangeWorkRelation_1 implements IRelation
+public class MarcxchangeWorkRelation_1 implements IPluggable
 {
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation_1.class );
 

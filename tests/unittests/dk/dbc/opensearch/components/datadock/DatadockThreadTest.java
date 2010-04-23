@@ -180,7 +180,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer getCargoContainer( DatadockJob job, byte[] referenceData, String alias )
+        public CargoContainer getCargoContainer( CargoContainer cargo )
         {
             return mockCC;
         }
@@ -196,7 +196,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer storeCargoContainer( CargoContainer cargo )
+        public CargoContainer getCargoContainer( CargoContainer cargo )
         {
             return mockCC;
         }

@@ -20,9 +20,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.pluginframework.IAnnotate;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -56,7 +57,7 @@ import org.xml.sax.SAXException;
 /**
  * Plugin for annotating docbook data from {@link CargoContainer}
  */
-public class DocbookAnnotate implements IAnnotate
+public class DocbookAnnotate implements IPluggable
 {
 
     static Logger log = Logger.getLogger( DocbookAnnotate.class );
@@ -416,4 +417,7 @@ public class DocbookAnnotate implements IAnnotate
     {
         return pluginType;
     }
+
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
 }

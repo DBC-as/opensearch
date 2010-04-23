@@ -25,11 +25,11 @@
 
 package dk.dbc.opensearch.plugins;
 
-
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
-import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -59,7 +59,7 @@ import org.xml.sax.InputSource;
  * this fails, an empty metadata element will be added to the CargoContainer,
  * which will also contain the (incorrect) data given to the plugin.
  */
-public class XMLDCHarvester implements ICreateCargoContainer
+public class XMLDCHarvester implements IPluggable
 {
     private static Logger log = Logger.getLogger( XMLDCHarvester.class );
 
@@ -69,7 +69,37 @@ public class XMLDCHarvester implements ICreateCargoContainer
     {
     }
 
+    @Override
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    {
+        log.trace( "Constructing DC datastream" );
+    
+            DublinCore dcStream = createDublinCore( cargo );
+            
+            log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
+            cargo.addMetaData( dcStream );
+    
+    /*catch ( IOException ioe )
+        {
+            String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
+            log.error( msg );
+            throw new PluginException( msg, ioe );
+            }
+        catch( IllegalArgumentException iae )
+        {
+            String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
+            log.error( msg );
+            throw new PluginException( msg, iae );
+        }*/
 
+        log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
+
+        log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
+
+        return cargo;
+    }
+
+    @Deprecated
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
     {      
         return createCargoContainerFromFile( job, data, alias );
@@ -166,6 +196,10 @@ public class XMLDCHarvester implements ICreateCargoContainer
     {
         return pluginType;
     }
+
+    @Override
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
 
     private DublinCore createDublinCore( CargoContainer cargo ) throws PluginException
     {        

@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.IPredicate;
-import dk.dbc.opensearch.common.pluginframework.IRelation;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 /**
  * Plugin for annotating docbook carcoContainers
  */
-public class PurgeRelations implements IRelation
+public class PurgeRelations implements IPluggable
 {
     private static Logger log = Logger.getLogger( PurgeRelations.class );
 

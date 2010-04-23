@@ -24,8 +24,8 @@
 
 package dk.dbc.opensearch.plugins;
 
-
-import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -39,15 +39,21 @@ import org.w3c.dom.Document;
 
 
 /**
- * XMLHarvester provides method for constructing CargoCcontainer from
+ * XMLHarvester provides method for constructing CargoContainer from
  * XML data
  */
-public class XMLHarvester implements ICreateCargoContainer
+public class XMLHarvester implements IPluggable
 {
     Logger log = Logger.getLogger( XMLHarvester.class );
 
     private Document referenceData;
     private PluginType pluginType = PluginType.HARVEST;
+
+    @Override
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    {
+        return cargo;
+    }
 
     /**
      * Constructs CargoContainer from XMl data
@@ -57,6 +63,7 @@ public class XMLHarvester implements ICreateCargoContainer
      * @return a CargoContainer representing the data
      * @throws PluginException
      */
+    @Deprecated
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
     {
         CargoContainer cargo = new CargoContainer();        
@@ -89,5 +96,9 @@ public class XMLHarvester implements ICreateCargoContainer
         return pluginType;
     }
 
+    @Override
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {
+    }
 
 }

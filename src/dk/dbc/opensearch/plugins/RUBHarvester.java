@@ -20,10 +20,11 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.common.pluginframework.ICreateCargoContainer;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 
@@ -41,7 +42,7 @@ import org.w3c.dom.Element;
 /**
  * Plugin class for harvesting RUB data.
  */
-public class RUBHarvester implements ICreateCargoContainer
+public class RUBHarvester implements IPluggable
 {
     private static Logger log = Logger.getLogger( RUBHarvester.class );
 
@@ -89,5 +90,15 @@ public class RUBHarvester implements ICreateCargoContainer
     public PluginType getPluginType()
     {
         return pluginType;
+    }
+
+    @Override
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
+
+    @Override
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    {
+        return null;
     }
 }

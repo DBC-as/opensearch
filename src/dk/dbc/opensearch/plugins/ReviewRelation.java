@@ -32,7 +32,7 @@ import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.pluginframework.IRelation;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -49,7 +49,7 @@ import org.apache.log4j.Logger;
 /**
  * Plugin for creating relations between reviews and their target
  */
-public class ReviewRelation implements IRelation
+public class ReviewRelation implements IPluggable
 {
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 

@@ -23,7 +23,8 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.compass.PhraseMap;
-import dk.dbc.opensearch.common.pluginframework.IProcesser;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.string.StringUtils;
@@ -51,7 +52,7 @@ import org.xml.sax.SAXException;
 /**
  * Plugin used to copy and normalize fields. Implements IProcesser
  */
-public class NormalizeDocument implements IProcesser
+public class NormalizeDocument implements IPluggable
 {
 
     static Logger log = Logger.getLogger( NormalizeDocument.class );
@@ -74,6 +75,7 @@ public class NormalizeDocument implements IProcesser
      * @return Modified CargoContainer
      * @throws PluginException
      */
+    @Override
     public CargoContainer getCargoContainer( CargoContainer cargoContainer ) throws PluginException
     {
         log.trace( "Retrieving orignial Data from cargoContainer" );
@@ -271,5 +273,8 @@ public class NormalizeDocument implements IProcesser
         return pluginType;
     }
 
-
+    @Override
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
+ 
 }

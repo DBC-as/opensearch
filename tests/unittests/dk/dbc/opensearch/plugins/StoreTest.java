@@ -166,7 +166,7 @@ public class StoreTest
         storePlugin = new Store();
 
         storePlugin.setObjectRepository( fedObjRep );
-        returnCargo = storePlugin.storeCargoContainer( cargo );
+        returnCargo = storePlugin.getCargoContainer( cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
     }
@@ -185,7 +185,7 @@ public class StoreTest
         storePlugin = new Store();
 
         storePlugin.setObjectRepository( fedObjRep );
-        returnCargo = storePlugin.storeCargoContainer( cargo );
+        returnCargo = storePlugin.getCargoContainer( cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
     }
@@ -203,7 +203,7 @@ public class StoreTest
         storePlugin = new Store();
 
         storePlugin.setObjectRepository( fedObjRep );
-        returnCargo = storePlugin.storeCargoContainer( cargo );
+        returnCargo = storePlugin.getCargoContainer( cargo );
        
         assertEquals( returnCargo.getIdentifierAsString(), "" );
         
@@ -223,7 +223,7 @@ public class StoreTest
 
         try
         {
-            returnCargo = storePlugin.storeCargoContainer( cargo );
+            returnCargo = storePlugin.getCargoContainer( cargo );
         }
         catch( PluginException pe )
         {
@@ -240,7 +240,7 @@ public class StoreTest
         CargoContainer returnCargo;
         storePlugin = new Store();
 
-        returnCargo = storePlugin.storeCargoContainer( cargo );
+        returnCargo = storePlugin.getCargoContainer( cargo );
     }
 
 }

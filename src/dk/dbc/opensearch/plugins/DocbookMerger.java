@@ -18,9 +18,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.pluginframework.IProcesser;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -49,7 +50,7 @@ import org.xml.sax.SAXException;
 /**
  *
  */
-public class DocbookMerger implements IProcesser
+public class DocbookMerger implements IPluggable
 {
 
     private static Logger log = Logger.getLogger( DocbookMerger.class );
@@ -214,6 +215,10 @@ public class DocbookMerger implements IProcesser
     {
         return this.pluginType;
     }
+
+    @Override
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
 
 
 }

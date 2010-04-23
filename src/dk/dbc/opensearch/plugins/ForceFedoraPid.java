@@ -25,10 +25,10 @@
 
 package dk.dbc.opensearch.plugins;
 
-
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.pluginframework.IAnnotate;
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 
 
-public class ForceFedoraPid implements IAnnotate
+public class ForceFedoraPid implements IPluggable
 {
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
 
@@ -158,4 +158,8 @@ public class ForceFedoraPid implements IAnnotate
         
         return cargo;
     }
+
+    @Override
+    public void setObjectRepository( IObjectRepository objectRepository )
+    {}
 }

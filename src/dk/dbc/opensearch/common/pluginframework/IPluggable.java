@@ -58,8 +58,25 @@ package dk.dbc.opensearch.common.pluginframework;
  * 
  * 
  */
+
+import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+
 public interface IPluggable
 {
+
+    /**
+     * getCargoContainer is the method that takes data (a CargoContainer), 
+     * work on it and return it again.
+     */
+    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException;
+
+    /**
+     * setObjectRepository is the method for giving the plugins acces to a
+     * repository
+     */
+    public void setObjectRepository( IObjectRepository objectRepository );
+
     /**
      * getPluginType returns the - at compile time given - type of the
      * task the plugin is constructed to handle. The plugin type is used

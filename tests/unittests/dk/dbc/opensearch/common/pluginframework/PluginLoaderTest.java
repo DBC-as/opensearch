@@ -23,6 +23,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+/**
+ * \Todo: refactor this class see bug 10481
+ */
+
 import dk.dbc.opensearch.common.pluginframework.PluginLoader;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginClassLoader;

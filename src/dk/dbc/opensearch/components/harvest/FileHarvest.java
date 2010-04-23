@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.components.harvest;
 
 
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.config.DatadockConfig;
@@ -35,6 +36,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
+import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -446,9 +448,63 @@ public class FileHarvest implements IHarvest
 
     public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
-        CargoContainer returnCargo = null;
+        CargoContainer returnCargo =  new CargoContainer();
+        byte[] data = getData( jobId );
+        FileIdentifier theJobId = (FileIdentifier) jobId;
+        //retrieve format and submitter from the URI 
+        // "something/submitter/format/file"
+        String theRawPath = theJobId.getURI().getRawPath();
+        int fileSlash = theRawPath.lastIndexOf( "/");
+        String noFileString = theRawPath.substring( 0, fileSlash);
+        int formatSlash = noFileString.lastIndexOf( "/" );
+        String format = noFileString.substring( formatSlash + 1 );
+        String noFormatString = theRawPath.substring( 0, formatSlash );
+        int submitterSlash = noFormatString.lastIndexOf( "/" );
+        String submitter = noFormatString.substring( submitterSlash + 1 );
+        String alias;
+        String errMsg = "Could not retrive indexingAlias from map";
         
+        try
+        {
+        alias = DatadockJobsMap.getIndexingAlias( submitter, format);
+        }
+        catch( ConfigurationException ce)
+        {
+            log.error( errMsg, ce );
+            throw new HarvesterIOException( errMsg, ce );
+        }
+        catch( IOException ioe )
+        {
+            log.error( errMsg, ioe );
+            throw new HarvesterIOException( errMsg, ioe );
+        }
+        catch( ParserConfigurationException pce )
+        {
+            log.error( errMsg, pce );
+            throw new HarvesterIOException( errMsg, pce );
+        }
+        catch( SAXException saxe )
+        {
+            log.error( errMsg, saxe );
+            throw new HarvesterIOException( errMsg, saxe );
+        }
 
+        if( alias == null )
+        {
+            log.error( String.format( "got null back when asked for alias with values submitter: %s format: %s ", submitter, format ) );
+        } 
+ 
+        log.debug( String.format("constructing datadock with values: format = %s submitter = %s alias = %s", format, submitter, alias ) );
+        try
+        {
+            returnCargo.add( DataStreamType.OriginalData, format, submitter, "DA", "text/xml", alias, data );
+        }
+        catch ( IOException ioe )
+        {
+            String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
+            log.fatal( errorMsg, ioe );
+            throw new HarvesterIOException( errorMsg, ioe );
+        }
         return returnCargo;
     }
 
