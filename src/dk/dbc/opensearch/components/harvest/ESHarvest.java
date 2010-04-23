@@ -627,7 +627,7 @@ public class ESHarvest implements IHarvest
             log.fatal( errorMsg, ioe );
             throw new HarvesterIOException( errorMsg, ioe );
         }
-
+        releaseConnection( conn );
         return cargo;
     }
 
