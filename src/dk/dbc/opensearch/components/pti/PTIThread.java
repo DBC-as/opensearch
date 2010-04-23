@@ -22,10 +22,8 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.IIndexer;
+import dk.dbc.opensearch.plugins.IndexerXSEM;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
-import dk.dbc.opensearch.common.pluginframework.IProcesser;
-import dk.dbc.opensearch.common.pluginframework.IRelation;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
@@ -169,20 +167,20 @@ public class PTIThread implements Callable< Boolean >
                 {
                     case PROCESS:
                         log.debug( "calling processerplugin" );
-                        IProcesser processPlugin = (IProcesser) plugin;
-                        cc = processPlugin.getCargoContainer( cc );
+
+                        cc = plugin.getCargoContainer( cc );
                         log.debug( "PTIThread PROCESS plugin done" );
                         break;
                     case RELATION:
                         log.trace( "calling relation plugin" );
-                        IRelation relationPlugin = (IRelation) plugin;
-                        relationPlugin.setObjectRepository( objectRepository );
-                        cc = relationPlugin.getCargoContainer( cc );
+
+                        plugin.setObjectRepository( objectRepository );
+                        plugin.getCargoContainer( cc );
                         log.trace( "PTIThread RELATION plugin done" );
                         break;
                     case INDEX:
                         log.debug( "calling indexerplugin" );
-                        IIndexer indexPlugin = (IIndexer) plugin;
+                        IndexerXSEM indexPlugin = (IndexerXSEM) plugin;
                         success = indexPlugin.index( cc, session, fedoraPid );
                         log.debug( "PTIThread INDEX plugin done" );
                         break;

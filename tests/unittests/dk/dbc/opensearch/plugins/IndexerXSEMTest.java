@@ -24,7 +24,7 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.pluginframework.IIndexer;
+
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
