@@ -96,9 +96,10 @@ public class DatadockThreadTest
     @BeforeClass
     public static void classSetup() throws Exception
     {
+        /**
         BasicConfigurator.configure();
         LogManager.getRootLogger().setLevel( Level.TRACE );
-
+        */
         referenceData = XMLUtils.documentFromString( refdata );
         mockCC = new CargoContainer();
         mockCC.setIdentifier( new PID( "710100:1" ) );
