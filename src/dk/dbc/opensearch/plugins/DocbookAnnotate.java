@@ -63,6 +63,7 @@ public class DocbookAnnotate implements IPluggable
     static Logger log = Logger.getLogger( DocbookAnnotate.class );
     private PluginType pluginType = PluginType.ANNOTATE;
     private NamespaceContext nsc;
+    private IObjectRepository objectRepository;
 
     /**
      * Constructor for the DocbookAnnotate plugin.
@@ -412,12 +413,15 @@ public class DocbookAnnotate implements IPluggable
         return sb.toString();
     }
 
-
+    @Override
     public PluginType getPluginType()
     {
         return pluginType;
     }
 
+    @Override
     public void setObjectRepository( IObjectRepository objectRepository )
-    {}
+    {
+        this.objectRepository = objectRepository;
+    }
 }

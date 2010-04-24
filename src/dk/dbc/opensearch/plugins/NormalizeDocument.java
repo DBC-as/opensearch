@@ -57,6 +57,7 @@ public class NormalizeDocument implements IPluggable
 
     static Logger log = Logger.getLogger( NormalizeDocument.class );
     private PluginType pluginType = PluginType.PROCESS;
+    private IObjectRepository objectRepository;
 
     /**
      * Empty Constructor
@@ -275,6 +276,8 @@ public class NormalizeDocument implements IPluggable
 
     @Override
     public void setObjectRepository( IObjectRepository objectRepository )
-    {}
+    { 
+        this.objectRepository = objectRepository;
+    }
  
 }

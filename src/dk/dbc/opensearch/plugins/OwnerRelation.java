@@ -186,6 +186,9 @@ public class OwnerRelation implements IPluggable
 
     public void setObjectRepository( IObjectRepository objectRepository )
     {
+        /**
+         * \Todo: why is this not in the constructor? bug 10494
+         */
         jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
 	jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
         jsWrapper.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );

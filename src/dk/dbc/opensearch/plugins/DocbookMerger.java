@@ -56,6 +56,7 @@ public class DocbookMerger implements IPluggable
     private static Logger log = Logger.getLogger( DocbookMerger.class );
     private PluginType pluginType = PluginType.PROCESS;
     private NamespaceContext nsc;
+    private IObjectRepository objectRepository;
 
     public DocbookMerger()
     {
@@ -218,7 +219,9 @@ public class DocbookMerger implements IPluggable
 
     @Override
     public void setObjectRepository( IObjectRepository objectRepository )
-    {}
+    {
+         this.objectRepository = objectRepository;
+    }
 
 
 }
