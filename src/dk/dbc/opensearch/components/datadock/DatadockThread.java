@@ -15,7 +15,7 @@
 
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 /**
  * \file
@@ -60,9 +60,9 @@ import org.xml.sax.SAXException;
  * indexed by Lucene. When submitted, the data is validated against a dictionary
  * of possible handlers using the supplied metadata and object-information. All
  * methods throw exceptions on errors.
- * 
+ *
  * \todo a schema for errors returned should be defined
- * 
+ *
  * DataDock is the central class in the datadock component. This class offers
  * the service of receiving data, metadata and objectinfo for later processing
  * with lucene. The primary responsibility of the DataDock is to validate
@@ -73,7 +73,7 @@ import org.xml.sax.SAXException;
 public class DatadockThread implements Callable<Boolean>
 {
     private Logger                  log = Logger.getLogger( DatadockThread.class );
-    
+
     private IHarvest                harvester;
     private CargoContainer          cargo;
     private IProcessqueue           queue;
@@ -83,14 +83,14 @@ public class DatadockThread implements Callable<Boolean>
     private ArrayList<String>       pluginListForThread;
     private final IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
-    
+
 
     /**
      *\todo: Wheet out in the Exceptions
-     * 
+     *
      * DataDock is initialized with a DatadockJob containing information about
      * the data to be 'docked' into to system
-     * 
+     *
      * @param datadockJob
      *            the information about the data to be docked
      * @param processqueue
@@ -104,26 +104,26 @@ public class DatadockThread implements Callable<Boolean>
     public DatadockThread( IJob datadockJob, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
-        
+
         this.datadockJob = (DatadockJob)datadockJob;
         this.harvester = harvester;
         this.objectRepository = objectRepository;
         this.pluginResolver = pluginResolver;
-        
+
         // Each pair identifies a plugin by p1:submitter and p2:format
         submitter = this.datadockJob.getSubmitter();
         format = this.datadockJob.getFormat();
-        
+
         log.trace( String.format( "submitter: %s, format: %s", submitter, format ) );
         log.trace( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
-        
+
         pluginListForThread = DatadockJobsMap.getDatadockPluginsList( submitter, format );
-                
+
         queue = processqueue;
-        
+
         log.trace( String.format( "DatadockThread Construction finished" ) );
     }
-    
+
 
     /**
      * call() is the thread entry method on the DataDock. Call operates on the
@@ -133,7 +133,7 @@ public class DatadockThread implements Callable<Boolean>
      * exception or termination) will return an estimation of how long time it
      * will take to bzw. index and save in fedora the data given with the
      * CargoContainer. \see dk.dbc.opensearch.tools.Estimation
-     * 
+     *
      * @return true if job is performed
      * @throws InstantationException
      *             if the PluginResolver cant instantiate a plugin
@@ -148,7 +148,7 @@ public class DatadockThread implements Callable<Boolean>
      * @throws SQLException
      */
     @Override
-    public Boolean call() throws ConfigurationException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException
+        public Boolean call() throws ConfigurationException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
@@ -169,149 +169,44 @@ public class DatadockThread implements Callable<Boolean>
             String error = "Could not get CargoContainer from harvester";
             log.error( error );
             throw new HarvesterUnknownIdentifierException( error, huie );
-        }  
+        }
 
-//        try
-//        {
-            for ( String classname : pluginListForThread )
+        for( String classname : pluginListForThread )
+        {
+            log.trace( "DatadockThread getPlugin 'classname' " + classname );   
+            
+            IPluggable plugin = pluginResolver.getPlugin( classname );
+            
+            timer = System.currentTimeMillis();
+            plugin.setObjectRepository( this.objectRepository );
+            cargo = plugin.getCargoContainer( cargo);
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: %s time: ", classname, timer ) );  
+            
+            if( null == cargo || cargo.getCargoObjectCount() < 1 )
             {
-                log.trace( "DatadockThread getPlugin 'classname' " + classname );
-
-                IPluggable plugin = pluginResolver.getPlugin( classname );               
-                
-                log.trace( String.format( "getPluginType = '%s'", plugin.getPluginType() ) );
-
-                switch ( plugin.getPluginType() )
-                {
-                case HARVEST:
-                        
-                        /*
-                        //get data from harvester
-                        try
-                        {
-                            IIdentifier tmpid = datadockJob.getIdentifier();
-                            data = harvester.getData( tmpid );
-                        }
-                        catch( HarvesterUnknownIdentifierException huie )
-                        {
-                            String error = String.format( "could not get data from harvester, exception message: %s, terminating thread", huie.getMessage() );
-                            log.error( error, huie );
-                            throw new HarvesterUnknownIdentifierException( error, huie );
-                        }
-                    */
-                        log.trace( String.format( "case HARVEST pluginType %s", plugin.getPluginType().toString() ) );
-                        /*
-                        String indexingAlias = DatadockJobsMap.getIndexingAlias( datadockJob.getSubmitter(), datadockJob.getFormat() );
-                        log.trace( String.format( "retrieved indexingAlias %s", indexingAlias ) );
-                        */
-                        IPluggable harvestPlugin = plugin;
-                        timer = System.currentTimeMillis();
-
-                        cargo = harvestPlugin.getCargoContainer( cargo );
-
-                        timer = System.currentTimeMillis() - timer;
-                        log.trace( String.format( "Timing: ( HARVEST ) %s", timer ) );
-
-                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
-                        {
-                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getPluginType().toString() );
-                            log.error( error );
-                            throw new IllegalStateException( error );
-                        }
-
-                        break;
-             
-                    case ANNOTATE:
-                        log.trace( String.format( "case ANNOTATE pluginType %s", plugin.getPluginType().toString() ) );
-
-                        IPluggable annotatePlugin = plugin;
-
-                        timer = System.currentTimeMillis();
-
-                        cargo = annotatePlugin.getCargoContainer( cargo );
-
-                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
-                        {
-                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getClass() );
-                            log.error( error );
-                            throw new IllegalStateException( error );
-                        }
-
-                        timer = System.currentTimeMillis() - timer;
-                        log.trace( String.format( "Timing: ( ANNOTATE ) %s", timer ) );
-
-                        break;
-                    case RELATION:
-                        log.trace( String.format( "case RELATION pluginType %s", plugin.getPluginType().toString() ) );
-
-                        IPluggable relationPlugin = plugin;
-                        relationPlugin.setObjectRepository( this.objectRepository );
-                        timer = System.currentTimeMillis();
-
-                        cargo = relationPlugin.getCargoContainer( cargo );
-
-                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
-                        {
-                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getPluginType().toString() );
-                            log.error( error );
-                            throw new IllegalStateException( error );
-                        }
-
-                        timer = System.currentTimeMillis() - timer;
-                        log.trace( String.format( "Timing: ( RELATION, %s ) %s", classname, timer ) );
-
-                        break;
-                    case STORE:
-                        log.trace( String.format( "case STORE pluginType %s", plugin.getPluginType().toString() ) );
-
-                        IPluggable repositoryStore = plugin;
-                        repositoryStore.setObjectRepository( this.objectRepository );
-                        timer = System.currentTimeMillis();
-                        cargo = repositoryStore.getCargoContainer( cargo );
-
-                        if( null == cargo || cargo.getCargoObjectCount() < 1 )
-                        {
-                            String error = String.format( "Plugin '%s' returned an empty CargoContainer", plugin.getPluginType().toString() );
-                            log.error( error );
-                            throw new IllegalStateException( error );
-                        }
-
-                        timer = System.currentTimeMillis() - timer;
-                        log.trace( String.format( "Timing: ( STORE ) %s", timer ) );
-
-                        // DO NOT CHANGE log level to trace or debug!
-                        log.info( "STORE pid: " + cargo.getIdentifier() );
-
-                        break;
-                    default:
-                        log.warn( String.format( "plugin type '%s' was not recognized", plugin.getPluginType() ) );
-                }
+                String error = String.format( "Plugin '%s' returned an empty CargoContainer", classname );
+                log.error( error );
+                throw new IllegalStateException( error );
             }
+        }
 
-            String identifierAsString = cargo.getIdentifierAsString();          
+        String identifierAsString = cargo.getIdentifierAsString();
 
-            //push to processqueue job to processqueue
-            queue.push( identifierAsString );
+        //push to processqueue job to processqueue
+        queue.push( identifierAsString );
 
-            //inform the harvester that it was a success
-            try
-            {
-                harvester.setStatusSuccess( datadockJob.getIdentifier(), identifierAsString );
-                success = Boolean.TRUE;
-            }
-            catch ( HarvesterInvalidStatusChangeException hisce )
-            {
-                log.error( hisce.getMessage() , hisce);
-                return false;
-            }
-            return success;
-//        }
-//        catch ( Exception e )
-//        {
-//            String errorMsg = String.format( "Error in %s plugin handling. Message: %s", this.getClass().toString(), e.getMessage() );
-//            log.error( String.format( "setting status to FAILURE for identifier: %s with message: '%s'", datadockJob.getIdentifier(), errorMsg ), e);
-//            harvester.setStatusFailure( datadockJob.getIdentifier(), errorMsg );
-//            return success;
-//        }
+        //inform the harvester that it was a success
+        try
+        {
+            harvester.setStatusSuccess( datadockJob.getIdentifier(), identifierAsString );
+            success = Boolean.TRUE;
+        }
+        catch ( HarvesterInvalidStatusChangeException hisce )
+        {
+            log.error( hisce.getMessage() , hisce);
+            return false;
+        }
+        return success;
     }
 }
