@@ -96,7 +96,6 @@ public class FlowMapCreator
             String format;
             String submitter;
             String key = "";
-            String script = "";
             XMLEvent event = null;
             StartElement startElement; 
             EndElement endElement; 
@@ -152,11 +151,6 @@ public class FlowMapCreator
                         break;
                     }
                     
-                    if( startElement.getName().getLocalPart().equals( "script" ) )
-                    {
-                        script = startElement.getAttributeByName( new QName( "name" )).getValue();
-                        break;
-                    }
                     break;
 
                 case XMLStreamConstants.END_ELEMENT:
@@ -164,7 +158,7 @@ public class FlowMapCreator
                     
                     if( endElement.getName().getLocalPart().equals( "plugin" ) )
                     {
-                        taskList.add( new PluginTask( pluginclass, script, new ArrayList<InputPair<String, String>>( inputPairList ) ) );
+                        taskList.add( new PluginTask( pluginclass, new ArrayList<InputPair<String, String>>( inputPairList ) ) );
                         break;
                     }
 

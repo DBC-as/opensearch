@@ -30,24 +30,17 @@ import org.apache.log4j.Logger;
 public class PluginTask
 {
     private String pluginName;
-    private String scriptName;
     private List<InputPair<String, String>> argList;
 
-    public PluginTask( String pluginName, String scriptName, List<InputPair<String, String>> argList )
+    public PluginTask( String pluginName,  List<InputPair<String, String>> argList )
     {
         this.pluginName = pluginName;
-        this.scriptName = scriptName;
         this.argList = argList;
     }
 
     public String getPluginName()
     {
         return pluginName;
-    }
-
-    public String getScriptName()
-    {
-        return scriptName;
     }
 
     public List<InputPair<String, String>> getArgList()
