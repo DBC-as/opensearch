@@ -29,6 +29,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 
@@ -92,5 +94,15 @@ public class Store implements IPluggable
     public void setObjectRepository( IObjectRepository objectRepository )
     {
         this.objectRepository = objectRepository;
+    }
+
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String>argsMap )
+    {
+        return true;
     }
 }

@@ -31,10 +31,12 @@ import dk.dbc.opensearch.common.string.StringUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathConstants;
@@ -279,5 +281,14 @@ public class NormalizeDocument implements IPluggable
     { 
         this.objectRepository = objectRepository;
     }
- 
+   
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
+    }
 }

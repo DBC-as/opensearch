@@ -35,13 +35,13 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-
 import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
 import java.util.List;
+import java.util.Map;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -49,7 +49,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Plugin for annotating docbook carcoContainers
+ * Plugin for annotating docbook cargoContainers
  */
 public class PurgeRelations implements IPluggable
 {
@@ -247,5 +247,15 @@ public class PurgeRelations implements IPluggable
     public void setObjectRepository( IObjectRepository objectRepository )
     {
         this.objectRepository = objectRepository;
+    }
+
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
     }
 }

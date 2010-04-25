@@ -62,18 +62,34 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
+import java.util.Map;
+
 public interface IPluggable
 {
 
     /**
-     * getCargoContainer is the method that takes data (a CargoContainer), 
+     * getCargoContainer is the main method that takes data (a CargoContainer), 
      * work on it and return it again.
+     * @return CargoContainer, the transformed data
      */
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException;
 
     /**
+     * this method takes a list of arguments that the plugin should use for the 
+     * work in the getCargoContainer method
+     */
+    public void setArgs( Map<String,String> argsMap );
+
+    /**
+     * this method validates that the needed arguments for the plugin are present 
+     * It says nothing about the validity of the arguments themselves
+     */
+    public boolean validateArgs( Map<String,String> argsMap );
+
+    /**
      * setObjectRepository is the method for giving the plugins acces to a
-     * repository
+     * repository. Should be set before the getCargoContianer method is called
+     * if work are to be done on the repository
      */
     public void setObjectRepository( IObjectRepository objectRepository );
 

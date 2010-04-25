@@ -42,6 +42,8 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
+import java.util.Map;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
@@ -61,6 +63,7 @@ public class ReviewRelation implements IPluggable
     private final String namespace = "review";
     private IObjectRepository objectRepository;
     private ScriptMethodsForReviewRelation scriptClass;
+    private String script;
 
 
     /**
@@ -69,10 +72,18 @@ public class ReviewRelation implements IPluggable
     public ReviewRelation() throws PluginException
     {
         log.trace( "Constructor called" );
-
+        String jsFileName;
 	// Creating the javascript:
-	String jsFileName = new String( "review_relation.js" );
-	try 
+        if( script == null )
+        {
+            jsFileName = new String( "review_relation.js" );
+	}
+        else
+        {
+            jsFileName = new String( script );
+        }
+
+        try 
 	{
 	    jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
 	}
@@ -165,4 +176,19 @@ public class ReviewRelation implements IPluggable
         jsWrapper.put( "Log", log ); //SOI likes it with capital "L"
     }
 
+  @Override
+    public void setArgs( Map<String, String> argsMap )
+    {
+        script = argsMap.get( "script" );
+    }
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        if( argsMap.get( "script" ) == null ||  argsMap.get( "script" ).equals( "" ) )
+        {
+            return false;
+        }
+        return true;
+    }
 }

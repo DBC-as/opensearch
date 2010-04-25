@@ -66,31 +66,32 @@ public class OwnerRelation implements IPluggable
     private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
 
     private SimpleRhinoWrapper jsWrapper = null;
+    private String script;
 
-    
+
     /**
      * Constructor for the OwnerRelation plugin.
      * @throws PluginException
      */
     public OwnerRelation() throws PluginException
     {
-	String jsFileName = new String( "owner_relation.js" );
-	try 
-	{
-	    jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
-	}
-	catch( FileNotFoundException fnfe )
-	{
-	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-	    log.error( errorMsg, fnfe );
-	    throw new PluginException( errorMsg, fnfe );
-	}
-	catch( ConfigurationException ce )
-	{
-	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-	    log.fatal( errorMsg, ce );
-	    throw new PluginException( errorMsg, ce );
-	}
+        String jsFileName = new String( "owner_relation.js" );
+        try
+        {
+            jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+            log.error( errorMsg, fnfe );
+            throw new PluginException( errorMsg, fnfe );
+        }
+        catch( ConfigurationException ce )
+        {
+            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+            log.fatal( errorMsg, ce );
+            throw new PluginException( errorMsg, ce );
+        }
 
         log.trace( "OwnerRelation plugin constructed" );
     }
@@ -110,7 +111,7 @@ public class OwnerRelation implements IPluggable
     {
         log.trace( "getCargoContainer() called" );
 
-	cargo = setOwnerRelations( cargo );
+        cargo = setOwnerRelations( cargo );
 
         return cargo;
     }
@@ -148,31 +149,31 @@ public class OwnerRelation implements IPluggable
 
         if ( null == rels )
         {
-	    try 
-	    {
-		rels = new FedoraRelsExt();
-	    }
-	    catch ( ParserConfigurationException pce )
-	    {
-		String errorMsg = new String( "Could not create a new FedoraRelsExt.");
-		log.error( errorMsg, pce );
-		throw new PluginException( errorMsg, pce );
-	    }
+            try
+            {
+                rels = new FedoraRelsExt();
+            }
+            catch ( ParserConfigurationException pce )
+            {
+                String errorMsg = new String( "Could not create a new FedoraRelsExt.");
+                log.error( errorMsg, pce );
+                throw new PluginException( errorMsg, pce );
+            }
         }
 
         log.debug( String.format( "Trying to add owner relation for rels '%s'; submitter '%s'; format '%s'", rels.toString(), submitter, format ) );
 
-	String entryPointFunc = "addOwnerRelation";
-	rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
-						rels,
-						submitter,
-						format );        
+        String entryPointFunc = "addOwnerRelation";
+        rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
+                                                rels,
+                                                submitter,
+                                                format );
 
         log.debug( String.format( "rels: '%s'", rels.toString() ) );
 
         cargo.addMetaData( rels );
-	
-	return cargo;
+
+        return cargo;
 
     }
 
@@ -190,7 +191,24 @@ public class OwnerRelation implements IPluggable
          * \Todo: why is this not in the constructor? bug 10494
          */
         jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
-	jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
+        jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
         jsWrapper.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
     }
+
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {
+        script = argsMap.get( "script" );
+    }
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        if( argsMap.get( "script" ) == null ||  argsMap.get( "script" ).equals( "" ) )
+        {
+            return false;
+        }
+        return true;
+    }
+
 }

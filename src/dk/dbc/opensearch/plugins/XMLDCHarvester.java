@@ -39,6 +39,9 @@ import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
+import java.util.Map;
+
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -73,24 +76,24 @@ public class XMLDCHarvester implements IPluggable
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         log.trace( "Constructing DC datastream" );
-    
-            DublinCore dcStream = createDublinCore( cargo );
-            
-            log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-            cargo.addMetaData( dcStream );
-    
-    /*catch ( IOException ioe )
-        {
-            String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
-            log.error( msg );
-            throw new PluginException( msg, ioe );
-            }
-        catch( IllegalArgumentException iae )
-        {
-            String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
-            log.error( msg );
-            throw new PluginException( msg, iae );
-        }*/
+
+        DublinCore dcStream = createDublinCore( cargo );
+
+        log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
+        cargo.addMetaData( dcStream );
+
+        /*catch ( IOException ioe )
+          {
+          String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
+          log.error( msg );
+          throw new PluginException( msg, ioe );
+          }
+          catch( IllegalArgumentException iae )
+          {
+          String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
+          log.error( msg );
+          throw new PluginException( msg, iae );
+          }*/
 
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
 
@@ -101,7 +104,7 @@ public class XMLDCHarvester implements IPluggable
 
     @Deprecated
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
-    {      
+    {
         return createCargoContainerFromFile( job, data, alias );
     }
 
@@ -117,16 +120,16 @@ public class XMLDCHarvester implements IPluggable
     private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data, String alias ) throws PluginException
     {
         CargoContainer cargo = new CargoContainer( );
-               
+
         try
         {
             /** \todo: hardcoded values for mimetype, language*/
             cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", alias, data );
-            
+
             log.trace( "Constructing DC datastream" );
 
             DublinCore dcStream = createDublinCore( cargo );
-          
+
             log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
             cargo.addMetaData( dcStream );
         }
@@ -202,7 +205,7 @@ public class XMLDCHarvester implements IPluggable
     {}
 
     private DublinCore createDublinCore( CargoContainer cargo ) throws PluginException
-    {        
+    {
         DublinCore dc = new DublinCore( );
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -241,5 +244,16 @@ public class XMLDCHarvester implements IPluggable
         log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
 
         return dc;
+    }
+
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        //if there is a 
+        return true;
     }
 }

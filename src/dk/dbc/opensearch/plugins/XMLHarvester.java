@@ -30,9 +30,12 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 
 import java.io.IOException;
+
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -48,9 +51,10 @@ public class XMLHarvester implements IPluggable
 
     private Document referenceData;
     private PluginType pluginType = PluginType.HARVEST;
+    private String alias;
 
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public synchronized CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         return cargo;
     }
@@ -66,8 +70,8 @@ public class XMLHarvester implements IPluggable
     @Deprecated
     public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
     {
-        CargoContainer cargo = new CargoContainer();        
-        
+        CargoContainer cargo = new CargoContainer();
+
         /** \todo: hardcoded values for mimetype, langugage and data type */
         String mimetype = "text/xml";
         DataStreamType dataStreamName = DataStreamType.OriginalData;
@@ -99,6 +103,22 @@ public class XMLHarvester implements IPluggable
     @Override
     public void setObjectRepository( IObjectRepository objectRepository )
     {
+    }
+
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {
+        this.alias = argsMap.get( "alias" ); 
+    }
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        if( argsMap.get( "alias" ) == null || argsMap.get( "alias" ).equals( "" ) )
+        {
+            return false;
+        }
+        return true;
     }
 
 }

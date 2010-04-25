@@ -12,6 +12,9 @@
     <plugin class="dk.dbc.opensearch.plugins.DocBookAnnotate">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -21,29 +24,38 @@
       <args>
         <arg name="alias" value="docbook"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.DocbookAnnotate">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
   </workflow>
-  <workflow format="katalog" submitter="775100">  
-   <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+  <workflow format="katalog" submitter="775100">
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="ebsco" submitter="775100">
@@ -51,14 +63,20 @@
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="ebrary" submitter="775100">
@@ -66,15 +84,21 @@
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
       <script name=""/>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="katalog" submitter="710100">
@@ -82,14 +106,20 @@
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">  
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="matvurd" submitter="dbc">
@@ -97,16 +127,28 @@
       <args>
         <arg name="alias" value="docbook"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ReviewRelation">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+      <args>
+        <arg name="script" value="review_relation.js"/>
+      </args>
+      <args>
+        <arg name="script" value="review_relation.js"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="dr_atlas" submitter="dbc">
@@ -114,14 +156,20 @@
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin> 
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="anmeld" submitter="dbc">
@@ -129,16 +177,25 @@
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ReviewRelation">
-    </plugin> 
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+      <args>
+        <arg name="script" value="review_relation.js"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_function.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="artikler" submitter="dbc">
@@ -146,14 +203,20 @@
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin>   
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_function.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="dr_bonanza" submitter="dbc">
@@ -161,8 +224,11 @@
       <args>
         <arg name="alias" value="dkabm"/>
       </args>
-    </plugin>   
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -172,8 +238,11 @@
       <args>
         <arg name="alias" value="dkabm"/>
       </args>
-    </plugin>   
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -183,8 +252,11 @@
       <args>
         <arg name="alias" value="dkabm"/>
       </args>
-    </plugin>   
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -194,14 +266,20 @@
       <args>
         <arg name="alias" value="danmarcxchange"/>
       </args>
-    </plugin> 
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="pg" submitter="150013">
@@ -209,14 +287,20 @@
       <args>
         <arg name="alias" value="dkabm"/>
       </args>
-    </plugin> 
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="nmalbum" submitter="150014">
@@ -224,14 +308,20 @@
       <args>
         <arg name="alias" value="dkabm"/>
       </args>
-    </plugin> 
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation_2">
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="script" value="workmatch_relation_funtions.js"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="nmtrack" submitter="150014">
@@ -239,8 +329,11 @@
       <args>
         <arg name="alias" value="dkabm"/>
       </args>
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -250,8 +343,11 @@
       <args>
         <arg name="alias" value="dkabm"/>
       </args>
-    </plugin>  
-    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
+      <args>
+        <arg name="script" value="owner_relation.js"/>
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>

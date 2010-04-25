@@ -37,6 +37,8 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
 
+import java.util.Map;
+
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
@@ -162,4 +164,14 @@ public class ForceFedoraPid implements IPluggable
     @Override
     public void setObjectRepository( IObjectRepository objectRepository )
     {}
+
+    @Override
+    public void setArgs( Map<String, String>argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
+    }
 }

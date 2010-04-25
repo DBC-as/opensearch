@@ -25,7 +25,10 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginID;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
+
 import java.io.InputStream;
+
+import java.util.Map;
 
 /**
  * \Todo: this class should be removed, see bug 10481
@@ -60,6 +63,16 @@ public class TestPlugin implements IPluggable
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         return null;
+    }
+
+   @Override
+    public void setArgs( Map<String, String> argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
     }
 
 }

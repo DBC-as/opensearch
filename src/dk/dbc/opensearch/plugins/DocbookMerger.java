@@ -34,6 +34,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.util.Map;
+
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -223,5 +225,13 @@ public class DocbookMerger implements IPluggable
          this.objectRepository = objectRepository;
     }
 
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {}
 
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
+    }
 }

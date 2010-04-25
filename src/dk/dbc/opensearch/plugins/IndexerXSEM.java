@@ -38,6 +38,7 @@ import dk.dbc.opensearch.common.xml.XMLUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -301,7 +302,7 @@ public class IndexerXSEM implements IPluggable
      * \Todo: bug 10479
      */
     @Override
-        public synchronized CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public synchronized CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         return null;
     }
@@ -312,4 +313,14 @@ public class IndexerXSEM implements IPluggable
     @Override
     public void setObjectRepository( IObjectRepository objectRepository )
     {}
+
+    @Override
+    public void setArgs( Map<String, String>argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
+    }
 }

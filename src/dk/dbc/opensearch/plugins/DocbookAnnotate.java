@@ -29,6 +29,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+//import dk.dbc.opensearch.common.types.InputPair;
+
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -37,6 +39,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+//import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -424,4 +429,15 @@ public class DocbookAnnotate implements IPluggable
     {
         this.objectRepository = objectRepository;
     }
+
+    @Override
+    public void setArgs(Map<String, String> argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
+    }
+
 }

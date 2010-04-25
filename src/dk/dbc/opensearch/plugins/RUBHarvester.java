@@ -31,6 +31,8 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import java.io.InputStream;
 import java.io.IOException;
 
+import java.util.Map;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
@@ -100,5 +102,15 @@ public class RUBHarvester implements IPluggable
     public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
     {
         return null;
+    }
+
+    @Override
+    public void setArgs( Map<String, String> argsMap )
+    {}
+
+    @Override
+    public boolean validateArgs( Map<String, String> argsMap )
+    {
+        return true;
     }
 }
