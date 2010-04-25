@@ -20,7 +20,6 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.os.FileHandler;
 
 import java.io.File;
@@ -100,7 +99,7 @@ public class FlowMapCreator
             StartElement startElement; 
             EndElement endElement; 
             List<PluginTask> taskList = new ArrayList<PluginTask>();
-            List<InputPair<String, String>> inputPairList = new ArrayList<InputPair<String, String>>();
+            Map<String, String> argsMap = new HashMap<String, String>();
 
             while( eventReader.hasNext() )
             {
@@ -139,7 +138,7 @@ public class FlowMapCreator
 
                     if( startElement.getName().getLocalPart().equals( "args" ) )
                     {
-                        inputPairList.clear();
+                        argsMap.clear();
                         break;
                     }
 
@@ -147,7 +146,7 @@ public class FlowMapCreator
                     {
                         name = startElement.getAttributeByName( new QName( "name" )).getValue();
                         value = startElement.getAttributeByName( new QName( "value" )).getValue();
-                        inputPairList.add( new InputPair<String, String>( name, value) );
+                        argsMap.put( name, value );
                         break;
                     }
                     
@@ -158,7 +157,7 @@ public class FlowMapCreator
                     
                     if( endElement.getName().getLocalPart().equals( "plugin" ) )
                     {
-                        taskList.add( new PluginTask( pluginclass, new ArrayList<InputPair<String, String>>( inputPairList ) ) );
+                        taskList.add( new PluginTask( pluginclass, new HashMap<String, String>( argsMap ) ) );
                         break;
                     }
 

@@ -97,9 +97,10 @@ public class FlowMapCreatorTest
      */
 
     /**
-     * method that validates that a map contains 2 elements, that the first has length 2, the second length 1
-     * that furthermore it checks that the first PluginTask has an argList and that the first members first value 
-     * equals argName1 and the second argValue1
+     * method that validates that a map contains 2 elements, that the 
+     * first has length 2, the second length 1
+     * that furthermore it checks that the first PluginTask has an 
+     * argsMap with key argName1 and corosponding value argValue1  
      */
     private boolean validateMap1( Map<String, List<PluginTask>> flowMap )
     {
@@ -117,9 +118,9 @@ public class FlowMapCreatorTest
 
         PluginTask task0 = flowMap.get( format1 + submitter1 ).get( 0 );
 
-        InputPair<String, String> argPair0 = task0.getArgList().get( 0 );
+        String value1 = task0.getArgsMap().get( argName1 );
 
-        if(! ( argPair0.getFirst().equals( argName1 ) && argPair0.getSecond().equals( argValue1 ) ) )
+        if(! value1.equals( argValue1 ) )
         {
             return false;
         }

@@ -20,22 +20,20 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.types.InputPair;
-
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
 public class PluginTask
 {
     private String pluginName;
-    private List<InputPair<String, String>> argList;
+    private Map<String, String> argsMap;
 
-    public PluginTask( String pluginName,  List<InputPair<String, String>> argList )
+    public PluginTask( String pluginName,  Map<String, String> argsMap )
     {
         this.pluginName = pluginName;
-        this.argList = argList;
+        this.argsMap = argsMap;
     }
 
     public String getPluginName()
@@ -43,8 +41,8 @@ public class PluginTask
         return pluginName;
     }
 
-    public List<InputPair<String, String>> getArgList()
+    public Map<String, String> getArgsMap()
     {
-        return argList;
+        return argsMap;
     }
 }
