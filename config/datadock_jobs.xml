@@ -24,14 +24,14 @@
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"/>
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"/>
   </job>
-  <job submitter="775100" format="ebsco" alias="danmarcxchange">
+  <job submitter="150010" format="ebsco" alias="danmarcxchange">
     <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/>   
     <plugin name="store" classname="dk.dbc.opensearch.plugins.Store"/>
     <plugin name="marcxchangeworkrelation" classname="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation"/>
   </job>
-  <job submitter="775100" format="ebrary" alias="danmarcxchange">
+  <job submitter="150008" format="ebrary" alias="danmarcxchange">
     <plugin name="xmlharvester" classname="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin name="forcefedorapid" classname="dk.dbc.opensearch.plugins.ForceFedoraPid" />
     <plugin name="ownerrelation" classname="dk.dbc.opensearch.plugins.OwnerRelation"/> 
