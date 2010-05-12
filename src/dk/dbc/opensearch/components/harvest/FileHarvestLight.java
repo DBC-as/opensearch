@@ -74,12 +74,10 @@ public class FileHarvestLight implements IHarvest
     private Iterator iter;
     private final FilenameFilter[] filterArray;
     // Some default values:
-    private final String harvesterDirName; // = "Harvest";
-    private final String defaultSuccessDirName = /*harvesterDirName + File.separator + */"success";
-    private final String defaultFailureDirName = /*harvesterDirName + File.separator + */"failure";
+    private final String harvesterDirName;
     private final String successDirName;
     private final String failureDirName;
-    private final File dataFile;
+    //    private final File dataFile;
     private final File successDir;
     private final File failureDir;
 
@@ -106,11 +104,12 @@ public class FileHarvestLight implements IHarvest
 	    throw new HarvesterIOException( errMsg, ce );
 	}
 
+	// Set folders from config, or set default names:
 	harvesterDirName = harvesterConfigDir.isEmpty() ? "Harvest" : harvesterConfigDir;
 	successDirName = successConfigDir.isEmpty() ? "success" : successConfigDir;
 	failureDirName = failureConfigDir.isEmpty() ? "failure" : failureConfigDir;
 
-        dataFile = FileHandler.getFile( harvesterDirName );
+        File dataFile = FileHandler.getFile( harvesterDirName );
         if ( ! dataFile.exists() )
         {
             String errMsg = String.format( "Harvest folder %s does not exist!", dataFile );
@@ -238,10 +237,12 @@ public class FileHarvestLight implements IHarvest
         return data;
     }
 
+    /**
+     *
+     */
     public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
         CargoContainer returnCargo = null;
-        
 
         return returnCargo;
     }
@@ -279,7 +280,7 @@ public class FileHarvestLight implements IHarvest
 	setStatus( dataFile, failureDir );
     }
 
-    /*
+    /**
      *  setStatus
      */
     private void setStatus( File dataFile, File destDir ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
@@ -330,7 +331,7 @@ public class FileHarvestLight implements IHarvest
 	}
     }
 
-    /*
+    /**
      *  Private function for creating reference filenames from existing (currently xml) filenames.
      *  \note: This function has a problem: It searches for the last index of . (dot), it will
      *  therefore not correctly handle filnames as 'filename.tar.gz'.
