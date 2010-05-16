@@ -27,33 +27,47 @@ package dk.dbc.opensearch.components.harvest;
 
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.common.os.NoRefFileFilter;
 import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.NoSuchElementException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -242,8 +256,262 @@ public class FileHarvestLight implements IHarvest
      */
     public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
     {
-        CargoContainer returnCargo = null;
+        DocumentBuilderFactory docBuilderFact;
+        DocumentBuilder docBuilder = null;
 
+        Document refDoc = null;
+        CargoContainer returnCargo = new CargoContainer();
+        FileIdentifier theJobId = (FileIdentifier)jobId;
+        byte[] data;
+        InputStream ISdata;
+        InputStream refStream = null;
+        
+        //getting data
+        try
+        {
+            ISdata = FileHandler.readFile( theJobId.getURI().getRawPath() );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            throw new HarvesterUnknownIdentifierException( String.format( "File for path: %s couldnt be read", theJobId.getURI().getRawPath() ) );
+        }
+
+        try
+        {
+            data = StreamHandler.bytesFromInputStream( ISdata, 0 );
+        }
+        catch( IOException ioe )
+        {
+            throw new HarvesterUnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
+        }
+        
+        
+        //retrieve format and submitter from the .ref file
+        String submitter = null;
+        String format = null;
+        String language = null;
+        String filePath = theJobId.getURI().getRawPath();
+        //create name of ref file form the name of the datafile
+        String refFilePath = filePath.substring( 0, filePath.indexOf( "." ) ) + ".ref";
+        File refFile = FileHandler.getFile( refFilePath );
+        
+        //FileInputStream refStream = null;
+
+        if( refFile.exists() )
+        {
+            docBuilderFact = DocumentBuilderFactory.newInstance();
+            try
+            {
+                docBuilder = docBuilderFact.newDocumentBuilder();
+
+            }
+            catch( ParserConfigurationException pce )
+            {
+                String error =  "Cannot build the documentBuilder";
+                log.error( error, pce );
+                throw new HarvesterIOException( error, pce );
+            }
+            
+            try
+            {
+                refDoc = docBuilder.parse( refFile );
+            }
+            catch( SAXException se )
+            {
+                String error = String.format( "could not parse file: %s", refFile.toString() );
+                log.error( error, se );
+                throw new HarvesterIOException( error, se );
+            }
+            catch( IOException ioe )
+            {
+                String error = String.format( "could not parse file: %s", refFile.toString() );
+                log.error( error, ioe );
+                throw new HarvesterIOException( error, ioe );
+            }
+            
+            Element xmlRoot = refDoc.getDocumentElement();
+            NodeList elementSet = xmlRoot.getElementsByTagName( "es:info" );
+
+            if( elementSet.getLength() == 0 )
+            {
+                elementSet = xmlRoot.getElementsByTagName( "info" );
+                if( elementSet.getLength() == 0 )
+                {
+                    String error = "Failed to get either Document Element named 'info' or 'es:info' from referencedata";
+                    log.error( error );
+                    throw new IllegalArgumentException( error );
+                }
+            }
+
+            Node info = elementSet.item( 0 );
+            NamedNodeMap attributes = info.getAttributes();
+            format = attributes.getNamedItem( "format" ).getNodeValue();
+            submitter = attributes.getNamedItem( "submitter" ).getNodeValue();
+        
+            try
+            {
+                String lang = attributes.getNamedItem( "lang" ).getNodeValue();
+                if ( !lang.isEmpty() || lang == null)
+                {
+                    language = lang;
+                }
+                else
+                {
+                    language = "DA";
+                }
+            }
+            catch ( NullPointerException npe )
+            {
+                language = "DA";
+            }
+            
+        }
+        else
+        {
+            String error =  String.format( "the file %s no longer has a .ref file, very strange", filePath );
+            log.error( error );
+            throw new IllegalArgumentException( error );
+        }
+
+        /**
+         * made a comment until we get the "es" namespace defined or 
+         rid of it, it causes a NoSuchElementException 
+        
+        if( refFile.exists() )
+        {
+            try
+            {
+                refStream = (InputStream)FileHandler.readFile( refFilePath );
+            }
+            catch( FileNotFoundException fnfe )
+            {
+                String error = String.format( "Could not open referencedata file %s", refFilePath );
+                log.fatal( error, fnfe );
+                throw new IllegalStateException( error, fnfe );
+            }  
+        }
+        else
+        {
+            log.error( String.format( "the file %s no longer has a .ref file, very strange", filePath ) );
+        }
+        //The parsing of the file should be in the true part of 
+        // the if case above...
+        
+        //go through the stream
+        XMLInputFactory infac = XMLInputFactory.newInstance();
+        //read the stream into the xmlEventReader
+        try
+        {
+            XMLEventReader eventReader = infac.createXMLEventReader( refStream );
+            XMLEvent event = null;
+            while( eventReader.hasNext() )
+            {
+                try
+                {
+                    event = (XMLEvent) eventReader.next();
+                }
+                catch( NoSuchElementException nsee )
+                {
+                    String error = String.format( "Could not parse incoming data, previously correctly parsed content from stream was: %s", event.toString() );
+                    log.error( error, nsee );
+                    throw new IllegalStateException( error, nsee );
+                }
+                
+                StartElement startElement;
+                
+                switch( event.getEventType() )
+                {
+                case XMLStreamConstants.START_ELEMENT:
+                    startElement = event.asStartElement();
+
+                    if( startElement.getName().getLocalPart().equals( "info" ) )
+                    {
+                        submitter = startElement.getAttributeByName( new QName( "submitter" ) ).getValue();
+                        format = startElement.getAttributeByName( new QName( "format" ) ).getValue();
+                        try
+                        {
+                        language = startElement.getAttributeByName( new QName( "lang" ) ).getValue();
+                        }
+                        catch( NullPointerException npe )
+                        {
+                            language = "DA";
+                        }
+                        if( language == null )
+                        {
+                            language = "DA";
+                        }
+
+                    }
+                    break;
+                default:
+                    log.trace( String.format( "didnt use: %s from the ref data", event.toString()));
+                    break;
+                }
+            }
+        }
+        catch( XMLStreamException xse )
+        {
+            String error = "could not create XMLEventReader";
+            log.fatal( error, xse );
+            throw new IllegalStateException( error, xse );
+        }
+
+        if( submitter == null || format == null )
+        {
+            String error = String.format("the reference data for %s is invalid", filePath );
+            log.error( error );
+            throw new IllegalArgumentException( error );
+        }
+        */
+
+
+        String alias;
+        String errMsg = "Could not retrive indexingAlias from map";
+        
+        //retrieving indexingAlias from DatadockJobsmap
+        try
+        {
+            alias = DatadockJobsMap.getIndexingAlias( submitter, format );
+        }
+        catch( ConfigurationException ce)
+        {
+            log.error( errMsg, ce );
+            throw new HarvesterIOException( errMsg, ce );
+        }
+        catch( IOException ioe )
+        {
+            log.error( errMsg, ioe );
+            throw new HarvesterIOException( errMsg, ioe );
+        }
+        catch( ParserConfigurationException pce )
+        {
+            log.error( errMsg, pce );
+            throw new HarvesterIOException( errMsg, pce );
+        }
+        catch( SAXException saxe )
+        {
+            log.error( errMsg, saxe );
+            throw new HarvesterIOException( errMsg, saxe );
+        }
+
+        if( alias == null )
+        {
+            log.error( String.format( "got null back when asked for alias with values submitter: %s format: %s ", submitter, format ) );
+        } 
+
+        log.debug( String.format("constructing datadock with values: format = %s submitter = %s alias = %s", format, submitter, alias ) );
+        
+        try
+        {
+            returnCargo.add( DataStreamType.OriginalData, format, submitter, language, "text/xml", alias, data );
+        }
+        catch ( IOException ioe )
+        {
+            String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
+            log.fatal( errorMsg, ioe );
+            throw new HarvesterIOException( errorMsg, ioe );
+        }
+        
         return returnCargo;
     }
 
@@ -267,7 +535,6 @@ public class FileHarvestLight implements IHarvest
    
     /**
      * Wrapper to setStatus.
-     * Notice that the failureDiagnostic is ignored. 
      */
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException
     {
@@ -278,6 +545,18 @@ public class FileHarvestLight implements IHarvest
 	File dataFile = FileHandler.getFile( id.getURI().getRawPath() );
 
 	setStatus( dataFile, failureDir );
+        try
+        {
+        createAndPlaceDiacFile( dataFile, failureDiagnostic );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            log.error( "method createAndPlaceDiacFile cannot find the file when trying to open an FileOutputStream to it", fnfe );
+        }
+        catch( IOException ioe )
+        {
+            log.error( "method createAndPlaceDiacFile has problems either writng to or closing the FileOutputStream to the diac file" );
+        }
     }
 
     /**
@@ -347,6 +626,29 @@ public class FileHarvestLight implements IHarvest
 	return FileHandler.getFile( new String( harvesterDirName + File.separator + strippedFileName + refExtension ) );
     }
 
+    /**
+     * Private method for creating a file that contains the diagnositcs 
+     * of a failed file and placing it in the same dir as the failed file.
+     * the name of this diagnostic file is filename.diac.
+     * Its only meant to be called from the setStatusFailure method.
+     */
+    private void createAndPlaceDiacFile( File dataFile, String diagnostic ) throws FileNotFoundException, IOException
+    {
+        FileOutputStream fopStream;
+        final String diacExtension = ".diac";
+        String origFileName = dataFile.getName();
+        int dotPos = origFileName.lastIndexOf( "." );
+        String strippedFileName = origFileName.substring( 0, dotPos ); // filename without extension, and without the dot!
+
+        //create the file
+        File diacFile = FileHandler.getFile( new String( failureDir + File.separator + strippedFileName + diacExtension ) );
+        byte[] diacData = diagnostic.getBytes();
+        
+        //fill the diagnostic in to it
+        fopStream = new FileOutputStream( diacFile );
+        fopStream.write( diacData );
+        fopStream.close();
+    }
 
     /*
      *  \todo: I'm not sure this is the right location for this function
