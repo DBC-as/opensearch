@@ -374,6 +374,7 @@ public class FileHarvestLight implements IHarvest
         }
 
         /**
+         * \todo: bug 10681
          * made a comment until we get the "es" namespace defined or 
          rid of it, it causes a NoSuchElementException 
         
