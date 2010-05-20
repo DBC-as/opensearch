@@ -68,7 +68,10 @@ keep_alive_time:     10
 job_limit:           20
 # (relative) path to the plugin configuration file
 path:                config/datadock_jobs.xml
-
+# (relative) path to the plugin flow file
+pluginflowxmlpath:   config/workflows.xml
+# (relative) path to the plugin configuration file
+pluginflowxsdpath:   config/workflows.xsd
 
 # FEDORA: Configuration values relating to the fedora repository
 [fedora]
