@@ -52,9 +52,15 @@ public class XMLHarvester implements IPluggable
     private Document referenceData;
     private PluginType pluginType = PluginType.HARVEST;
     private String alias;
+    //private IObjectRepository repository; 
+
+    public XMLHarvester( IObjectRepository repository )
+    {
+        //this.repository = repository;
+    }
 
     @Override
-    public synchronized CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public synchronized CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         return cargo;
     }
@@ -100,19 +106,7 @@ public class XMLHarvester implements IPluggable
         return pluginType;
     }
 
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-    }
-
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {
-        this.alias = argsMap.get( "alias" ); 
-    }
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
+    private boolean validateArgs( Map<String, String> argsMap )
     {
         if( argsMap.get( "alias" ) == null || argsMap.get( "alias" ).equals( "" ) )
         {

@@ -24,6 +24,7 @@ import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import java.io.ByteArrayInputStream;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -31,6 +32,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.custommonkey.xmlunit.XMLUnit;
+
+import java.util.Map;
+
+import mockit.Mocked;
 
 /**
  *
@@ -42,8 +47,8 @@ public class DocbookMergerTest {
     static final String originalData  = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><stuff xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:ISO639-2=\"http://lcweb.loc.gov/standards/iso639-2/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dkabm:record>æøå</dkabm:record></stuff>";
     static final String happyPathData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><ting:container xmlns:ting=\"http://www.dbc.dk/ting/\"><dc:title xmlns:dc=\"hej\">æøå</dc:title><stuff xmlns:ting=\"http://www.dbc.dk/ting\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns=\"http://www.bs.dk/standards/MarcXchange\" xmlns:dkabm=\"http://biblstandard.dk/abm/namespace/dkabm/\" xmlns:ISO639-2=\"http://lcweb.loc.gov/standards/iso639-2/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:ac=\"http://biblstandard.dk/ac/namespace/\" xmlns:dkdcplus=\"http://biblstandard.dk/abm/namespace/dkdcplus/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dkabm:record>æøå</dkabm:record></stuff></ting:container>";
     private CargoContainer cargo;
-
-
+    @Mocked IObjectRepository mockIObjectRepository;
+    @Mocked Map<String, String> mockArgsMap;
     public DocbookMergerTest() {
     }
 
@@ -73,8 +78,8 @@ public class DocbookMergerTest {
     @Test
     public void testGetCargoContainer() throws Exception
     {
-        DocbookMerger instance = new DocbookMerger();
-        CargoContainer result = instance.getCargoContainer( cargo );
+        DocbookMerger instance = new DocbookMerger( mockIObjectRepository );
+        CargoContainer result = instance.getCargoContainer( cargo, mockArgsMap );
         XMLUnit.compareXML( happyPathData, new String( result.getCargoObject( DataStreamType.OriginalData ).getBytes() ) );
     }
 
@@ -85,7 +90,7 @@ public class DocbookMergerTest {
     @Test
     public void testGetPluginType()
     {
-        DocbookMerger instance = new DocbookMerger();
+        DocbookMerger instance = new DocbookMerger( mockIObjectRepository );
         PluginType expResult = PluginType.PROCESS;
         PluginType result = instance.getPluginType();
         assertEquals( expResult, result );

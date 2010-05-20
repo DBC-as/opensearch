@@ -76,17 +76,17 @@ public class MarcxchangeWorkRelation implements IPluggable
     private IObjectRepository objectRepository;
 
     private SimpleRhinoWrapper rhinoWrapper;
-    private DocumentBuilder builder;
-    private Document doc;
-    private String script;
+    //private DocumentBuilder builder;
+    //private Document doc;
 
-    public MarcxchangeWorkRelation()
+    public MarcxchangeWorkRelation( IObjectRepository repository )
     {
+        this.objectRepository = repository;
     }
 
 
     @Override
-    synchronized public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    synchronized public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {   
         //creating the javascript environment
         String jsFileName = new String( "workmatch_relation_functions.js" );
@@ -370,13 +370,6 @@ public class MarcxchangeWorkRelation implements IPluggable
         return pluginType;
     }
 
-
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-        this.objectRepository = objectRepository;
-    }
-
     /**
      * helper method for getting the DC-stream of a DublinCore into a
      * String format acceptable for the javascripts. It strips the xml header
@@ -402,20 +395,4 @@ public class MarcxchangeWorkRelation implements IPluggable
 
         return dcString;
     } 
-    
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {
-        script = argsMap.get( "script" );
-    }
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
-    {
-        if( argsMap.get( "script" ) == null ||  argsMap.get( "script" ).equals( "" ) )
-        {
-            return false;
-        }
-        return true;
-    }
 }

@@ -27,6 +27,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.xml.XMLUtils;
@@ -34,6 +35,7 @@ import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -108,7 +110,7 @@ public class DatadockManagerTest
     {
 
         @Mock
-        public void $init( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IObjectRepository fedoraObjectRepository, IHarvest harvester, PluginResolver pluginResolver )
+        public void $init( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
         { // mock default constructor.
         }
 
@@ -127,15 +129,6 @@ public class DatadockManagerTest
         public void shutdown(){}
     }
 
-    // @MockClass( realClass = DatadockJob.class )
-    // public static class MockDatadockJob
-    // {
-    //     @Mocked
-    //     public static boolean hasPluginList( String submitter, String format )
-    //     {
-    //         return true;
-    //     }
-    // }
 
     @BeforeClass
     public static void classSetup() throws Exception
@@ -169,7 +162,7 @@ public class DatadockManagerTest
     public void testConstructor() throws Exception
     {
         mockHarvester = new ESHarvest( null, null );
-        mockDatadockPool = new DatadockPool( null, null, null, mockHarvester, null );
+        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
         datadockManager.shutdown();
 
@@ -185,7 +178,7 @@ public class DatadockManagerTest
         jobs.add( mockJob );
         mockHarvester = new ESHarvest( null, null );
 
-        mockDatadockPool = new DatadockPool( null, null, null, mockHarvester, null );
+        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
         mockDatadockPool.submit( job );
 
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
@@ -208,7 +201,7 @@ public class DatadockManagerTest
     public void testShutdown() throws Exception
     {
         mockHarvester = new ESHarvest( null, null );
-        mockDatadockPool = new DatadockPool( null, null, null, mockHarvester, null );
+        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
         DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
         datadockmanager.shutdown();
     }

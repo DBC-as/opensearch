@@ -49,6 +49,12 @@ public class RUBHarvester implements IPluggable
     private static Logger log = Logger.getLogger( RUBHarvester.class );
 
     private PluginType pluginType = PluginType.HARVEST;
+    private IObjectRepository repository; 
+
+    public RUBHarvester( IObjectRepository repository )
+    {
+        this.repository = repository;
+    }
 
     /**
      * The getCargoContainer returns a cargoContainer with the data
@@ -94,22 +100,18 @@ public class RUBHarvester implements IPluggable
         return pluginType;
     }
 
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {}
+    /**
+     * satisfying the interface
+     */
 
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         return null;
     }
 
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
+   
+    private boolean validateArgs( Map<String, String> argsMap )
     {
         return true;
     }

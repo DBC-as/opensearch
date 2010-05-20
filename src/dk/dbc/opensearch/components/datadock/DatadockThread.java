@@ -26,12 +26,13 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
@@ -40,8 +41,11 @@ import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.List;
+//import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -80,8 +84,9 @@ public class DatadockThread implements Callable<Boolean>
     private DatadockJob             datadockJob;
     private String                  submitter;
     private String                  format;
-    private ArrayList<String>       pluginListForThread;
-    private final IObjectRepository objectRepository;
+    private Map<String, List<PluginTask>> flowMap;
+    //    private ArrayList<String>       pluginListForThread;
+    //private final IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
 
 
@@ -101,25 +106,21 @@ public class DatadockThread implements Callable<Boolean>
      * @throws PluginResolverException
      * @throws SAXException
      */
-    public DatadockThread( IJob datadockJob, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
+    public DatadockThread( IJob datadockJob, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
+        /**
+         * \todo: We should get rid of the datadockjob. the info lies in 
+         * the cargoContainer, so all that is needed is the identifier
+         */
+
         this.datadockJob = (DatadockJob)datadockJob;
         this.harvester = harvester;
-        this.objectRepository = objectRepository;
+        //this.objectRepository = objectRepository;
         this.pluginResolver = pluginResolver;
-
-        // Each pair identifies a plugin by p1:submitter and p2:format
-        submitter = this.datadockJob.getSubmitter();
-        format = this.datadockJob.getFormat();
-
-        log.trace( String.format( "submitter: %s, format: %s", submitter, format ) );
-        log.trace( String.format( "Calling jobMap.get( new Pair< String, String >( %s, %s ) )", submitter, format ) );
-
-        pluginListForThread = DatadockJobsMap.getDatadockPluginsList( submitter, format );
-
-        queue = processqueue;
+        this.flowMap = flowMap;
+        this.queue = processqueue;
 
         log.trace( String.format( "DatadockThread Construction finished" ) );
     }
@@ -148,16 +149,15 @@ public class DatadockThread implements Callable<Boolean>
      * @throws SQLException
      */
     @Override
-        public Boolean call() throws ConfigurationException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException
+        public Boolean call() throws ConfigurationException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException, InvocationTargetException
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
         log.trace( "DatadockThread call method called" );
 
         // Validate plugins
-        log.debug( String.format( "pluginList classname %s", pluginListForThread.toString() ) );
+        //        log.debug( String.format( "pluginList classname %s", pluginListForThread.toString() ) );
         Boolean success = Boolean.FALSE;
-        byte[] data = null;
         long timer = 0;
         IIdentifier tmpid = datadockJob.getIdentifier();
         try
@@ -171,15 +171,24 @@ public class DatadockThread implements Callable<Boolean>
             throw new HarvesterUnknownIdentifierException( error, huie );
         }
 
-        for( String classname : pluginListForThread )
+        //get submitter and format from the first cargoObject in the cargoContainer
+        submitter = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
+        format = cargo.getCargoObject( DataStreamType.OriginalData ).getFormat();
+        List<PluginTask> pluginTaskList = flowMap.get( submitter + format);
+
+        for( PluginTask pluginTask : pluginTaskList )
+            //      for( String classname : pluginListForThread )
         {
-            log.trace( "DatadockThread getPlugin 'classname' " + classname );   
             
+            String classname = pluginTask.getPluginName();
+            Map<String, String> argsMap = pluginTask.getArgsMap();
+            log.trace( "the argsMap: " + argsMap.toString() ); 
+            log.trace( "DatadockThread getPlugin 'classname' " + classname );   
             IPluggable plugin = pluginResolver.getPlugin( classname );
             
             timer = System.currentTimeMillis();
-            plugin.setObjectRepository( this.objectRepository );
-            cargo = plugin.getCargoContainer( cargo);
+            //plugin.setObjectRepository( this.objectRepository );
+            cargo = plugin.getCargoContainer( cargo, argsMap );
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: %s time: ", classname, timer ) );  
             

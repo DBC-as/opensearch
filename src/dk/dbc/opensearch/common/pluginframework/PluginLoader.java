@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
 import org.apache.log4j.Logger;
 
@@ -27,6 +28,9 @@ import java.lang.Class;
 import java.lang.ClassNotFoundException;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
+import java.lang.NoSuchMethodException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * The PluginLoader class contains one method used for loading plugins.
@@ -38,14 +42,12 @@ public class PluginLoader
 {
     static Logger log = Logger.getLogger( PluginLoader.class );
     
-    
-    ClassLoader cl;
-
+    private ClassLoader cl;
 
     /**
      * 
      */
-    public PluginLoader( ClassLoader cl ) 
+    public PluginLoader( ClassLoader cl) 
     {
         this.cl = cl;
     }
@@ -61,15 +63,20 @@ public class PluginLoader
      * @throws IllegalAccessException if the wanted plugin cant be accessed
      * @throws ClassNotFoundException if the specified class cannot found  
      */
-    IPluggable getPlugin( String pluginClassName ) throws InstantiationException, IllegalAccessException, ClassNotFoundException
+    IPluggable getPlugin( String pluginClassName, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, PluginException, InvocationTargetException
     {
         try
         {
             Class loadedClass = null;
-        
+            //Class repoClass = repository.getClass();        
+            Class[] parameterTypes = new Class[] { IObjectRepository.class };
+            Constructor pluginConstructor;
+
             log.debug( String.format( "PluginLoader loading plugin class name '%s'", pluginClassName) );       
-            loadedClass = cl.loadClass( pluginClassName );       
-            IPluggable thePlugin = ( IPluggable )loadedClass.newInstance();
+            loadedClass = cl.loadClass( pluginClassName );
+            pluginConstructor = loadedClass.getConstructor( parameterTypes );
+            IPluggable thePlugin = (IPluggable)pluginConstructor.newInstance( new Object[]{ repository });
+            //IPluggable thePlugin = ( IPluggable )loadedClass.newInstance();
 
             return thePlugin;
         }
@@ -78,6 +85,18 @@ public class PluginLoader
             String error = String.format( "No value for className: %s ", pluginClassName );
             log.error( error, cnfe );
             throw new ClassNotFoundException( error, cnfe );
+        }
+        catch( NoSuchMethodException nsme )
+        {
+            String error = String.format( "the class: %s lacks a constructor with IObjectRepository as argument", pluginClassName );
+            log.error( error, nsme );
+            throw new PluginException( error, nsme );
+        }
+        catch( InvocationTargetException ite )
+        {
+            String error = String.format( "couldnt invoke class: %s ", pluginClassName );
+            log.error( error, ite );
+            throw new InvocationTargetException( ite, error );
         }
     }
 }

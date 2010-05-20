@@ -82,9 +82,7 @@ public class ReviewRelationTest
     @Test
     public void getCargoContainerTestHappy() throws Exception
     {
-        // setUpMocks( MockFedoraObjectRelations.class );
-//         RRPlugin = new ReviewRelation();
-//         RRPlugin.setObjectRepository( mockRepository );
+ 
     }
     
     @Test
@@ -93,7 +91,7 @@ public class ReviewRelationTest
 	PluginType pt = null;
 	try
 	{
-	    RRPlugin = new ReviewRelation();
+	    RRPlugin = new ReviewRelation( mockRepository);
 	    pt = RRPlugin.getPluginType();
 	}
 	catch( PluginException pe )

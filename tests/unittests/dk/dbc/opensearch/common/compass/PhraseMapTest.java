@@ -15,10 +15,11 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPathExpression;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 /**
- *
+ * \Todo: The test contains ignored test cases, see bug 10708
  */
 public class PhraseMapTest {
 
@@ -53,6 +54,7 @@ public class PhraseMapTest {
     /**
      * Test of instance method, of class PhraseMap.
      */
+   
     @Test
     public void testBuildPhraseMap() throws Exception
     {
@@ -72,6 +74,7 @@ public class PhraseMapTest {
         assertEquals(tempFileNameContent, expectedCpm);
     }
 
+  
     @Test
     public void testSingeltonPattern() throws Exception
     {
@@ -80,6 +83,7 @@ public class PhraseMapTest {
         assertSame(phraseMap, phraseMap2);
     }
 
+ 
     @Test
     public void tesstGetPhraseMap() throws Exception
     {

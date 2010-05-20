@@ -25,6 +25,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
@@ -35,6 +36,8 @@ import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeExceptio
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -92,7 +95,7 @@ public class DatadockPoolTest
     public static class MockDatadockThread implements Callable<Boolean>
     {
         @Mock
-        public void $init( IJob datadockJob, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver )
+            public void $init( IJob datadockJob, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
         { 
         }
 
@@ -107,7 +110,7 @@ public class DatadockPoolTest
     public static class MockNullDatadockThread implements Callable<Boolean>
     {
         @Mock
-        public void $init( IJob datadockJob, IProcessqueue processqueue, IObjectRepository objectRepository, IHarvest harvester, PluginResolver pluginResolver )
+            public void $init( IJob datadockJob, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
         {
         }
 
@@ -131,24 +134,24 @@ public class DatadockPoolTest
     {
     }
 
-    @MockClass( realClass = ESHarvest.class )
-    public static class MockHarvester
-    {
+    // @MockClass( realClass = ESHarvest.class )
+    // public static class MockHarvester
+    // {
 
-        @Mock
-        public byte[] getData( IIdentifier id ) throws HarvesterUnknownIdentifierException
-        {
-            return "".getBytes();
-        }
+    //     @Mock
+    //     public byte[] getData( IIdentifier id ) throws HarvesterUnknownIdentifierException
+    //     {
+    //         return "".getBytes();
+    //     }
 
-        @Mock
-        public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{
-        }
+    //     @Mock
+    //     public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{
+    //     }
         
-        @Mock
-        public void setStatusFailure( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{
-        }
-    }
+    //     @Mock
+    //     public void setStatusFailure( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{
+    //     }
+    // }
 
     private class MockIdentifier implements IIdentifier{}
 
@@ -159,7 +162,7 @@ public class DatadockPoolTest
         setUpMocks( MockThreadPool.class );
         setUpMocks( MockDatadockPool.class );
         setUpMocks( MockDatadockJob.class );
-        setUpMocks( MockHarvester.class );
+        //setUpMocks( MockHarvester.class );
     }
 
 
@@ -195,7 +198,7 @@ public class DatadockPoolTest
 
          IJob job = new DatadockJob( new MockIdentifier(), referenceData );
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
-         DatadockPool pool = new DatadockPool( tpe, null, null, mockHarvester, null );
+         DatadockPool pool = new DatadockPool( tpe, null, mockHarvester, null, null );
          pool.submit( job );
          pool.checkJobs();
      }

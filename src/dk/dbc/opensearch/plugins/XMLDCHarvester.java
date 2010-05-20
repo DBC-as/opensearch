@@ -67,13 +67,15 @@ public class XMLDCHarvester implements IPluggable
     private static Logger log = Logger.getLogger( XMLDCHarvester.class );
 
     private PluginType pluginType = PluginType.HARVEST;
+    private IObjectRepository repository;
 
-    public XMLDCHarvester() throws PluginException
+    public XMLDCHarvester( IObjectRepository repository ) throws PluginException
     {
+        this.repository = repository;
     }
 
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( "Constructing DC datastream" );
 
@@ -176,7 +178,6 @@ public class XMLDCHarvester implements IPluggable
             throw new PluginException( msg, xpee );
         }
 
-
         try
         {
             //This line writes a fatal error when given an '&' as the only content in the xml
@@ -199,10 +200,6 @@ public class XMLDCHarvester implements IPluggable
     {
         return pluginType;
     }
-
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {}
 
     private DublinCore createDublinCore( CargoContainer cargo ) throws PluginException
     {
@@ -245,15 +242,9 @@ public class XMLDCHarvester implements IPluggable
 
         return dc;
     }
-
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
+    
+    private boolean validateArgs( Map<String, String> argsMap )
     {
-        //if there is a 
         return true;
     }
 }

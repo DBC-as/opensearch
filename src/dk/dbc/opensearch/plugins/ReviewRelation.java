@@ -69,9 +69,10 @@ public class ReviewRelation implements IPluggable
     /**
      * Constructor for the ReviewRelation plugin.
      */
-    public ReviewRelation() throws PluginException
+    public ReviewRelation( IObjectRepository repository ) throws PluginException
     {
         log.trace( "Constructor called" );
+        this.objectRepository = repository;
         String jsFileName;
 	// Creating the javascript:
         if( script == null )
@@ -100,6 +101,10 @@ public class ReviewRelation implements IPluggable
 	    throw new PluginException( errorMsg, ce );
 	}
 
+        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+        jsWrapper.put( "scriptClass", scriptClass );
+        jsWrapper.put( "Log", log ); //SOI likes it with capital "L"
+
     }
 
 
@@ -113,15 +118,10 @@ public class ReviewRelation implements IPluggable
      *
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    synchronized public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    synchronized public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
-        if( objectRepository == null )
-        {
-            String msg = "no repository set";
-            log.error( msg );
-            throw new PluginException( msg );
-        }
+  
         boolean ok = false;
         ok = addReviewRelation( cargo );
 
@@ -160,30 +160,7 @@ public class ReviewRelation implements IPluggable
         return pluginType;
     }
 
-    /**
-     * Method to give the plugin an objectRepository
-     * There is more that happens there than the name suggests. The scriptClass 
-     * is constructed here and "put" onto the jsWrapper. This cannot be done in this 
-     * plugin's constructor since it needs the objectRepository.
-     * log is put onto here as well so that the putting is kept together
-     */
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-        this.objectRepository = objectRepository;
-        
-        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
-        jsWrapper.put( "scriptClass", scriptClass );
-        jsWrapper.put( "Log", log ); //SOI likes it with capital "L"
-    }
-
-  @Override
-    public void setArgs( Map<String, String> argsMap )
-    {
-        script = argsMap.get( "script" );
-    }
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
+    private boolean validateArgs( Map<String, String> argsMap )
     {
         if( argsMap.get( "script" ) == null ||  argsMap.get( "script" ).equals( "" ) )
         {

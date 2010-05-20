@@ -52,7 +52,12 @@ import org.xml.sax.InputSource;
 public class ForceFedoraPid implements IPluggable
 {
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
+    private IObjectRepository repository;
 
+    public ForceFedoraPid( IObjectRepository repository )
+    {
+        this.repository = repository;
+    }
 
     @Override
     public PluginType getPluginType()
@@ -139,7 +144,7 @@ public class ForceFedoraPid implements IPluggable
 
 
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
 	
 	String s = getDCIdentifierFromOriginal( cargo, "/ting:container/oso:object/oso:identifier" );
@@ -159,19 +164,5 @@ public class ForceFedoraPid implements IPluggable
         cargo.setIdentifier( new PID( s ));
         
         return cargo;
-    }
-
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {}
-
-    @Override
-    public void setArgs( Map<String, String>argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
     }
 }

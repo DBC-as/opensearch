@@ -29,8 +29,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-//import dk.dbc.opensearch.common.types.InputPair;
-
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -40,7 +38,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-//import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
@@ -73,7 +70,7 @@ public class DocbookAnnotate implements IPluggable
     /**
      * Constructor for the DocbookAnnotate plugin.
      */
-    public DocbookAnnotate()
+    public DocbookAnnotate( IObjectRepository repository )
     {
         log.trace( "DocbookAnnotate Constructor() called" );
         nsc = new OpensearchNamespaceContext();
@@ -91,7 +88,7 @@ public class DocbookAnnotate implements IPluggable
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String,String> argsMap ) throws PluginException
     {
         log.trace( "DocbookAnnotate getCargoContainer() called" );
 
@@ -422,22 +419,6 @@ public class DocbookAnnotate implements IPluggable
     public PluginType getPluginType()
     {
         return pluginType;
-    }
-
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-        this.objectRepository = objectRepository;
-    }
-
-    @Override
-    public void setArgs(Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
     }
 
 }

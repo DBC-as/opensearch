@@ -27,15 +27,18 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  * \Todo: refactor this class see bug 10481
  */
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginLoader;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginClassLoader;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
 import static org.junit.Assert.*;
 import org.junit.*;
 import static org.easymock.classextension.EasyMock.*;
 import mockit.Mockit;
+import mockit.Mocked;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -58,6 +61,7 @@ public class PluginLoaderTest
     IPluggable testIPlug;
     String testClassString;
     String invalidClassString;
+    @Mocked IObjectRepository mockRepository;
 
 
     /**
@@ -112,8 +116,8 @@ public class PluginLoaderTest
     public void getPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException 
     {
         Method method;
-        Class[] argClasses = new Class[]{ String.class };
-        Object[] args = new Object[]{ testClassString };
+        Class[] argClasses = new Class[]{ String.class, IObjectRepository.class };
+        Object[] args = new Object[]{ testClassString, mockRepository };
 
         pl = new PluginLoader( pcl );
         method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
@@ -133,8 +137,8 @@ public class PluginLoaderTest
     public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException
     {
         Method method;
-        Class[] argClasses = new Class[]{ String.class };
-        Object[] args = new Object[]{ invalidClassString };
+        Class[] argClasses = new Class[]{ String.class, IObjectRepository.class };
+        Object[] args = new Object[]{ invalidClassString, mockRepository };
     
         try
         {

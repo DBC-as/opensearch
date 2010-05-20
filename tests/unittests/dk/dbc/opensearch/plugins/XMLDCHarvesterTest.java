@@ -25,6 +25,7 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -72,7 +73,8 @@ public class XMLDCHarvesterTest
     static final byte[] noDataBytes = noData.getBytes();
 
     @Mocked IIdentifier mockIdentifier;
-    
+    @Mocked IObjectRepository mockRepository;
+
     @MockClass( realClass = CargoContainer.class )
     public static class MockCargoContainer
     {
@@ -126,7 +128,7 @@ public class XMLDCHarvesterTest
     @Test
     public void getCargoContainerTest() throws Exception
     {
-        harvestPlugin = new XMLDCHarvester();
+        harvestPlugin = new XMLDCHarvester( mockRepository );
         cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias");
         //There is data in the returned CargoContainer
         assertEquals( 1, cc.getCargoObjectCount() );
@@ -150,7 +152,7 @@ public class XMLDCHarvesterTest
     @Test( expected = XPathExpressionException.class )
     public void getCargoContainerWithInvalidData() throws Exception
     {       
-        harvestPlugin = new XMLDCHarvester();
+        harvestPlugin = new XMLDCHarvester( mockRepository );
         try{
             cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes, "fakeAlias" );
         }
@@ -166,7 +168,7 @@ public class XMLDCHarvesterTest
     @Test
     public void testPluginType() throws Exception
     {        
-        harvestPlugin = new XMLDCHarvester();
+        harvestPlugin = new XMLDCHarvester( mockRepository );
         assertEquals( PluginType.HARVEST, harvestPlugin.getPluginType() );
 
     }
@@ -179,7 +181,7 @@ public class XMLDCHarvesterTest
     @Test( expected = IllegalArgumentException.class )
     public void noDataGivenTest() throws Exception
     {      
-        harvestPlugin = new XMLDCHarvester();
+        harvestPlugin = new XMLDCHarvester( mockRepository );
         try
         {
             cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes, "fakealias" );
@@ -198,7 +200,7 @@ public class XMLDCHarvesterTest
     public void cargoContainerCantAddDataTest() throws Exception
     {
         setUpMocks( MockCargoContainer.class );
-      harvestPlugin = new XMLDCHarvester();
+      harvestPlugin = new XMLDCHarvester( mockRepository );
         try
         {
             cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias" );

@@ -61,11 +61,9 @@ public class NormalizeDocument implements IPluggable
     private PluginType pluginType = PluginType.PROCESS;
     private IObjectRepository objectRepository;
 
-    /**
-     * Empty Constructor
-     */
-    public NormalizeDocument()
+    public NormalizeDocument( IObjectRepository repository )
     {
+        this.objectRepository = repository;
     }
 
 
@@ -79,7 +77,7 @@ public class NormalizeDocument implements IPluggable
      * @throws PluginException
      */
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargoContainer ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargoContainer, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( "Retrieving orignial Data from cargoContainer" );
         CargoObject co = cargoContainer.getCargoObject( DataStreamType.OriginalData );
@@ -274,21 +272,5 @@ public class NormalizeDocument implements IPluggable
     public PluginType getPluginType()
     {
         return pluginType;
-    }
-
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    { 
-        this.objectRepository = objectRepository;
-    }
-   
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
     }
 }

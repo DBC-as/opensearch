@@ -60,11 +60,27 @@ public class FlowMapCreator
     private InputStream workflowStream;
 
     //initiates the object with the path to the workflow xml file and creates an InputStream
-    public FlowMapCreator( String path, String xsdPath ) throws IllegalStateException, SAXException, IOException//, ConfigurationException
+    public FlowMapCreator( String path, String xsdPath ) throws IllegalStateException//, SAXException, IOException, ConfigurationException
     {
         //validate the file
-        validateWorkflowsXMLFile( path, xsdPath );
+        try
+        {
+            validateWorkflowsXMLFile( path, xsdPath );
+        }
+        catch( IOException ioe )
+        {
+             String error = "IOException while trying to validate workflow file";
+            log.fatal( error, ioe );
+            throw new IllegalStateException( error, ioe );
+        }
+        catch( SAXException se )
+        {
+         String error = "SAXException while trying to validate workflow file";
+            log.fatal( error, se );
+            throw new IllegalStateException( error, se );
+        }
 
+        
         try
         {
             workflowStream = (InputStream)FileHandler.readFile( path );
@@ -125,7 +141,7 @@ public class FlowMapCreator
                         format = startElement.getAttributeByName( new QName( "format" )).getValue();
                         submitter = startElement.getAttributeByName( new QName( "submitter" )).getValue();
                                   
-                        key = format + submitter;
+                        key = submitter + format;
                         //System.out.println( "key generated:" + key );
                         break;
                     }

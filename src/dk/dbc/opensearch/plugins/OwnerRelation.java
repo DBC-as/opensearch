@@ -66,15 +66,18 @@ public class OwnerRelation implements IPluggable
     private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
 
     private SimpleRhinoWrapper jsWrapper = null;
-    private String script;
+    private IObjectRepository repository;
 
 
     /**
      * Constructor for the OwnerRelation plugin.
+     * @param repository is the {@link IObjectRepository} to access if needed by the plugin
      * @throws PluginException
      */
-    public OwnerRelation() throws PluginException
+    public OwnerRelation( IObjectRepository repository ) throws PluginException
     {
+        this.repository = repository;
+        
         String jsFileName = new String( "owner_relation.js" );
         try
         {
@@ -93,6 +96,10 @@ public class OwnerRelation implements IPluggable
             throw new PluginException( errorMsg, ce );
         }
 
+        jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
+        jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
+        jsWrapper.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
+
         log.trace( "OwnerRelation plugin constructed" );
     }
 
@@ -100,6 +107,7 @@ public class OwnerRelation implements IPluggable
     /**
      * Entry point of the plugin
      * @param cargo The {@link CargoContainer} to construct the owner relations from
+     * @param argsMap, the remaining arguments for the method
      * @return a {@link CargoContainer} containing a RELS-EXT stream reflecting the owner relations
      * @throws PluginException, which wraps all exceptions thrown from
      * within this plugin, please refer to {@link PluginException} for
@@ -107,9 +115,19 @@ public class OwnerRelation implements IPluggable
      * originating exception.
      */
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
-    {
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    { 
         log.trace( "getCargoContainer() called" );
+        // if( validateArgs( argsMap) )
+        // {
+        //     script = argsMap.get( "script" );
+        // }
+        // else
+        // {
+        //     String error = String.format( "these: %s invalid args given to getCargoContainer method ", argsMap.toString() );
+        //     log.error( error );
+        //     throw new PluginException( new IllegalStateException( error ) );
+        // }
 
         cargo = setOwnerRelations( cargo );
 
@@ -118,7 +136,6 @@ public class OwnerRelation implements IPluggable
 
     synchronized public CargoContainer setOwnerRelations( CargoContainer cargo ) throws PluginException
     {
-
         CargoObject co = null;
         if ( ! cargo.hasCargo( DataStreamType.OriginalData ) )
         {
@@ -183,26 +200,11 @@ public class OwnerRelation implements IPluggable
     {
         return pluginType;
     }
-
-
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-        /**
-         * \Todo: why is this not in the constructor? bug 10494
-         */
-        jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
-        jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
-        jsWrapper.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
-    }
-
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {
-        script = argsMap.get( "script" );
-    }
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
+    
+    /**
+     * Method to validate that the plugin has the right arguments
+     */
+    private boolean validateArgs( Map<String, String> argsMap )
     {
         if( argsMap.get( "script" ) == null ||  argsMap.get( "script" ).equals( "" ) )
         {

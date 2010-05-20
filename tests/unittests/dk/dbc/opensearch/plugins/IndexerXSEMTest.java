@@ -25,6 +25,7 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -43,6 +44,8 @@ import org.compass.core.CompassException;
 import org.compass.core.CompassTransaction;
 import org.compass.core.transaction.AbstractTransaction;
 import org.compass.core.transaction.TransactionFactory;
+
+import java.util.Map;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -70,8 +73,10 @@ public class IndexerXSEMTest {
     String indexAlias = "danmarcxchange";
     String indexAliasNotValid = "None";
 
+    @Mocked IObjectRepository mockIObjectRepository;
+
     CargoContainer cargo = new CargoContainer();
-    IndexerXSEM indexPlugin = new IndexerXSEM();
+    IndexerXSEM indexPlugin = new IndexerXSEM( mockIObjectRepository);
 
     CompassSession compassSession;
     CompassFactory compassFactory;

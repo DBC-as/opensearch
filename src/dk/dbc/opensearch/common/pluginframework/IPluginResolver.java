@@ -20,11 +20,12 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
-
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+                                   
 import java.io.FileNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -55,7 +56,7 @@ public interface IPluginResolver
      * @throws IllegalAccessException 
      * @throws ParserConfigurationException 
      */
-    IPluggable getPlugin ( String classname ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException, ParserConfigurationException;
+    IPluggable getPlugin ( String classname ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException, ParserConfigurationException, InvocationTargetException, PluginException;
 
     
     /**

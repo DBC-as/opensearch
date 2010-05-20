@@ -60,8 +60,9 @@ public class DocbookMerger implements IPluggable
     private NamespaceContext nsc;
     private IObjectRepository objectRepository;
 
-    public DocbookMerger()
+    public DocbookMerger( IObjectRepository repository )
     {
+        this.objectRepository = repository;
         log.debug( "Entered DocbookMerger()" );
         nsc = new OpensearchNamespaceContext();
     }
@@ -78,7 +79,7 @@ public class DocbookMerger implements IPluggable
      * @throws PluginException with a nested exception explaining the error
      */
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( String.format( "Entered getCargoContainer, streams in container: %s", cargo.getCargoObjectCount() ) );
 
@@ -217,21 +218,5 @@ public class DocbookMerger implements IPluggable
     public PluginType getPluginType()
     {
         return this.pluginType;
-    }
-
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-         this.objectRepository = objectRepository;
-    }
-
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
     }
 }

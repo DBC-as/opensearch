@@ -111,12 +111,12 @@ public class FlowMapCreatorTest
         {
             return false;
         }
-        if(! ( flowMap.get( format1 + submitter1 ).size() == 2 ) )
+        if(! ( flowMap.get( submitter1 + format1).size() == 2 ) )
         {
             return false;
         }
 
-        PluginTask task0 = flowMap.get( format1 + submitter1 ).get( 0 );
+        PluginTask task0 = flowMap.get( submitter1 + format1 ).get( 0 );
 
         String value1 = task0.getArgsMap().get( argName1 );
 

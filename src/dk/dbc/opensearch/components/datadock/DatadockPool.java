@@ -27,8 +27,8 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
@@ -41,6 +41,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -73,8 +74,8 @@ public class DatadockPool
     private final ThreadPoolExecutor threadpool;
     private IProcessqueue processqueue;
     private PluginResolver pluginResolver;
-    private IObjectRepository objectRepository;
     private IHarvest harvester;
+    private Map<String, List<PluginTask>> flowMap;
 
 
     /**
@@ -116,14 +117,13 @@ public class DatadockPool
      * @param threadpool The threadpool to submit jobs to
      * @param processqueue the processqueue handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IObjectRepository fedoraObjectRepository, IHarvest harvester, PluginResolver pluginResolver ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
-
+        this.flowMap = flowMap;
         this.harvester = harvester;
         this.threadpool = threadpool;
         this.processqueue = processqueue;
-        this.objectRepository = fedoraObjectRepository;
         this.pluginResolver = pluginResolver;
 
         jobs = new HashMap< IIdentifier, FutureTask< Boolean > >();
@@ -152,7 +152,7 @@ public class DatadockPool
         }
         log.debug( String.format( "Submitting job '%s'", datadockJob.getIdentifier() ) );
 
-        FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( datadockJob, processqueue, objectRepository, harvester, pluginResolver ) );
+        FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( datadockJob, processqueue, harvester, pluginResolver, flowMap ) );
         
         if ( future == null )/** \todo: I don't see this happening; even if DatadockThread returns null, FutureTask will still be non-null */
         {

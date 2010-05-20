@@ -33,10 +33,13 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,7 +68,12 @@ public class PTIThread implements Callable< Boolean >
     private ArrayList< String > list;
     private IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
-
+    /*    
+     *dummy map to satisfy the IPluggable interface with regards 
+     *to the getCargoContainer method
+     */      
+    private  Map <String, String> argsMap = new HashMap<String, String>();
+    
     /**
      * \brief Constructs the PTI instance with the given parameters
      *
@@ -106,7 +114,7 @@ public class PTIThread implements Callable< Boolean >
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Boolean call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException
+    public Boolean call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException, InvocationTargetException
     {
         log.trace( String.format( "Entering with handle: '%s'", fedoraPid ) );
         CargoContainer cc = null;
@@ -168,14 +176,14 @@ public class PTIThread implements Callable< Boolean >
                     case PROCESS:
                         log.debug( "calling processerplugin" );
 
-                        cc = plugin.getCargoContainer( cc );
+                        cc = plugin.getCargoContainer( cc, argsMap );
                         log.debug( "PTIThread PROCESS plugin done" );
                         break;
                     case RELATION:
                         log.trace( "calling relation plugin" );
 
-                        plugin.setObjectRepository( objectRepository );
-                        plugin.getCargoContainer( cc );
+                        //plugin.setObjectRepository( objectRepository );
+                        plugin.getCargoContainer( cc, argsMap );
                         log.trace( "PTIThread RELATION plugin done" );
                         break;
                     case INDEX:

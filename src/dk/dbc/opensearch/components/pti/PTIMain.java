@@ -183,7 +183,7 @@ public class PTIMain
             PhraseMap phraseMap = PhraseMap.instance(CompassConfig.getXSEMPath(), CompassConfig.getModifiedXSEMPath());
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();
-            pluginResolver = new PluginResolver();
+            pluginResolver = new PluginResolver( repository );
 
             log.debug( "Starting PTIPool" );
             LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );

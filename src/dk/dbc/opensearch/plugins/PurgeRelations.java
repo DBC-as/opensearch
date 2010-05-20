@@ -69,9 +69,10 @@ public class PurgeRelations implements IPluggable
     /**
      * Constructor for the MarcxchangeWorlkRelation plugin.
      */
-    public PurgeRelations() throws PluginException
+    public PurgeRelations( IObjectRepository repository ) throws PluginException
     {
         log.trace( "PurgeRelations constructor called" );
+        this.objectRepository = repository;
     }
 
 
@@ -87,7 +88,7 @@ public class PurgeRelations implements IPluggable
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
 
@@ -242,19 +243,7 @@ public class PurgeRelations implements IPluggable
         return pluginType;
     }
 
-
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-        this.objectRepository = objectRepository;
-    }
-
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
+    private boolean validateArgs( Map<String, String> argsMap )
     {
         return true;
     }

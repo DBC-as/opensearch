@@ -25,11 +25,13 @@ package dk.dbc.opensearch.plugins;
  * \brief The AnnotateTest class
  * \package tests;
  */
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
 import org.junit.*;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mockit;
+import mockit.Mocked;
 
 /**
  *
@@ -37,6 +39,7 @@ import mockit.Mockit;
 public class AnnotateTest 
 {
     DocbookAnnotate dbAnnotate;
+    @Mocked IObjectRepository mockIObjectRepository;
     //OpensearchNamespaceContext osnsc;
     /**
      *
@@ -51,6 +54,6 @@ public class AnnotateTest
     @Test 
     public void testConstructor() throws Exception 
     {        
-        dbAnnotate = new DocbookAnnotate();
+        dbAnnotate = new DocbookAnnotate( mockIObjectRepository );
     }
 }

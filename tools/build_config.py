@@ -144,6 +144,8 @@ def build_config( path ):
     keepalive = ET.SubElement( dd, "keepalivetime" )
     joblimit  = ET.SubElement( dd, "joblimit" )
     datadock  = ET.SubElement( dd, "path" )
+    pluginflowxmlpath = ET.SubElement( dd, "pluginflowxmlpath" )
+    pluginflowxsdpath = ET.SubElement( dd, "pluginflowxsdpath" )
     datadock_section = "datadock" 
     poll.text      = config_txt.get( datadock_section, "main_poll_time" )
     reject.text    = config_txt.get( datadock_section, "rejected_sleep_time" )
@@ -154,6 +156,8 @@ def build_config( path ):
     keepalive.text = config_txt.get( datadock_section, "keep_alive_time" )
     joblimit.text  = config_txt.get( datadock_section, "job_limit" )
     datadock.text  = path + "/" + config_txt.get( datadock_section, "path" )
+    pluginflowxmlpath.text = path + "/" + config_txt.get( datadock_section, "pluginflowxmlpath" )
+    pluginflowxsdpath.text = path + "/" + config_txt.get( datadock_section, "pluginflowxsdpath" )
 
     #fedora settings
     host   = ET.SubElement( fedora, "host" )

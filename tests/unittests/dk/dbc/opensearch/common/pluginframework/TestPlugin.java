@@ -38,7 +38,7 @@ public class TestPlugin implements IPluggable
 {
     private PluginID pluginID;;
 
-    public TestPlugin(){}
+    public TestPlugin( IObjectRepository repository ){}
 
     public void init(PluginID pluginId, InputStream data) 
     {
@@ -57,22 +57,10 @@ public class TestPlugin implements IPluggable
         return PluginType.ANNOTATE;
     }
 
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {}
-
-    public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         return null;
     }
 
-   @Override
-    public void setArgs( Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
-    }
 
 }

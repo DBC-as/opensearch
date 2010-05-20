@@ -70,6 +70,10 @@ public class IndexerXSEM implements IPluggable
 
     PluginType pluginType = PluginType.INDEX;
 
+    public IndexerXSEM( IObjectRepository repository )
+    {
+    }
+
     /**
      * The main method of the IndexerXSEM plugin
      */
@@ -302,25 +306,8 @@ public class IndexerXSEM implements IPluggable
      * \Todo: bug 10479
      */
     @Override
-    public synchronized CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+    public synchronized CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         return null;
-    }
-
-    /**
-     * The method for setting an objectrepository, will not be needed here
-     */
-    @Override
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {}
-
-    @Override
-    public void setArgs( Map<String, String>argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
     }
 }

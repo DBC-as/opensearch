@@ -19,9 +19,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.common.pluginframework;
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +40,7 @@ import org.apache.log4j.Logger;
 public class PluginResolver implements IPluginResolver
 {
     static Logger log = Logger.getLogger( PluginResolver.class );
-
+    private IObjectRepository repository;
     static ClassLoader pluginClassLoader = new PluginClassLoader();    
     static PluginLoader PLoader = new PluginLoader( pluginClassLoader );
     static boolean constructed = false;
@@ -50,10 +52,11 @@ public class PluginResolver implements IPluginResolver
      * The constructor sets up the class loader for the plugins and initiates
      * the plugin loader
      */
-    public PluginResolver()
-    {      
-        pluginClassLoader = new PluginClassLoader();
-        PLoader = new PluginLoader( pluginClassLoader );
+    public PluginResolver( IObjectRepository repository )
+    {     
+        this.repository = repository;
+        //pluginClassLoader = new PluginClassLoader();
+        //PLoader = new PluginLoader( pluginClassLoader, repository );
 
         log.trace( "PluginResolver constructed" );
     }
@@ -69,11 +72,11 @@ public class PluginResolver implements IPluginResolver
      * @throws IllegalAccessException if the plugin file cant be accessed by the PluginLoader
      * @throws ClassNotFoundException if the class of the plugin cannot be found
      */
-    public IPluggable getPlugin( String className ) throws InstantiationException, IllegalAccessException, ClassNotFoundException
+    public IPluggable getPlugin( String className ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
     {  
         if (!pluginInstanceCache.containsKey( className ))
         {
-            IPluggable plugin = PLoader.getPlugin( className );
+            IPluggable plugin = PLoader.getPlugin( className, repository );
             pluginInstanceCache.put( className, plugin );
             log.info( String.format("Plugin %s created", className ) );
         }

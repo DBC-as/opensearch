@@ -44,17 +44,18 @@ public class Store implements IPluggable
 
     private PluginType pluginType = PluginType.STORE;
     private IObjectRepository objectRepository = null;
+    private Map<String, String> argsMap;
 
-    
+    public Store( IObjectRepository repository )
+    {
+        this.objectRepository = repository;
+    }    
 
-    synchronized public CargoContainer getCargoContainer( CargoContainer cargo ) throws PluginException
+
+
+    synchronized public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
     	log.trace( "Entering storeCargoContainer( CargoContainer )" );
-
-        if( null == this.objectRepository )
-        {
-            throw new IllegalStateException( "IObjectRepository has not been set" );
-        }
 
         String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
         try
@@ -90,18 +91,7 @@ public class Store implements IPluggable
         return pluginType;
     }
 
-
-    public void setObjectRepository( IObjectRepository objectRepository )
-    {
-        this.objectRepository = objectRepository;
-    }
-
-    @Override
-    public void setArgs( Map<String, String> argsMap )
-    {}
-
-    @Override
-    public boolean validateArgs( Map<String, String>argsMap )
+    private boolean validateArgs( Map<String, String>argsMap )
     {
         return true;
     }

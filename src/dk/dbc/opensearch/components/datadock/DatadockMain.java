@@ -39,6 +39,8 @@ import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.HarvestType;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.pluginframework.FlowMapCreator;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvestLight;
@@ -50,6 +52,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.Properties;
+import java.util.Map;
+import java.util.List;
 
 import oracle.jdbc.pool.OracleDataSource;
 
@@ -76,11 +80,14 @@ public class DatadockMain
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
     static PluginResolver pluginResolver;
+    static FlowMapCreator flowMapCreator = null;
     static int queueSize;
     static int corePoolSize;
     static int maxPoolSize;
     static long keepAliveTime;
     static int pollTime;
+    static String pluginFlowXmlPath;
+    static String pluginFlowXsdPath;
     static IHarvest harvester;
     private static HarvestType harvestType;
     private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
@@ -99,6 +106,8 @@ public class DatadockMain
         corePoolSize = DatadockConfig.getCorePoolSize();
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
+        pluginFlowXmlPath = DatadockConfig.getPluginFlowXmlPath();
+        pluginFlowXmlPath = DatadockConfig.getPluginFlowXsdPath();
     }
 
 
@@ -248,11 +257,25 @@ public class DatadockMain
 
             log.trace( "initializing resources" );
 
+            //the flowMap
+            try
+            {
+                flowMapCreator = new FlowMapCreator( pluginFlowXmlPath, pluginFlowXsdPath );
+            }
+            catch( IllegalStateException ise )
+            {
+                String error = "could not construct the FlowMapCreator";
+                log.fatal( error, ise );
+            }
+           
+            Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap();
+
+
             // DB access
             IDBConnection dbConnection = new PostgresqlDBConnection();
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IObjectRepository repository = new FedoraObjectRepository();
-            pluginResolver = new PluginResolver(); 
+            pluginResolver = new PluginResolver( repository ); 
             OracleDataSource ods;
 
             log.trace( "Starting datadockPool" );
@@ -351,7 +374,7 @@ public class DatadockMain
                     harvester = new FileHarvest();
             }
 
-            datadockPool = new DatadockPool( threadpool, processqueue, repository, harvester, pluginResolver );
+            datadockPool = new DatadockPool( threadpool, processqueue,  harvester, pluginResolver, flowMap );
 
             log.trace( "Starting the manager" );
             // Starting the manager

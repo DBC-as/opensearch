@@ -25,6 +25,7 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -32,7 +33,10 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
+
 import java.io.IOException;
+
+import java.util.Map;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -64,6 +68,8 @@ public class XMLHarvesterTest
     XMLHarvester harvestPlugin;
     CargoContainer cargoContainer;
 
+    @Mocked IObjectRepository mockRepository;
+    @Mocked Map<String, String> mockArgsMap;
     @Mocked IIdentifier mockIdentifier;
     
     @MockClass( realClass = CargoContainer.class )
@@ -98,7 +104,7 @@ public class XMLHarvesterTest
     @Test
     public void getCargoContainerTest()throws Exception
  {
-     harvestPlugin = new XMLHarvester();
+     harvestPlugin = new XMLHarvester( mockRepository );
      cargoContainer = harvestPlugin.getCargoContainer(datadockJob, databytes, alias );
 
      //There is data in the returned CargoContainer
@@ -114,7 +120,7 @@ public class XMLHarvesterTest
     public void cargoContainerCantAddDataTest() throws Exception
     {
         setUpMocks(MockCargoContainer.class);
-        harvestPlugin = new XMLHarvester();
+        harvestPlugin = new XMLHarvester( mockRepository );
         try
         {
             cargoContainer = harvestPlugin.getCargoContainer( datadockJob, databytes, alias );
@@ -128,7 +134,7 @@ public class XMLHarvesterTest
     @Test
     public void getPluginType()
     {
-        harvestPlugin = new XMLHarvester();
+        harvestPlugin = new XMLHarvester( mockRepository );
         if ( PluginType.HARVEST != harvestPlugin.getPluginType() )
         {
             fail("HarvestPlugin returned wrong type");

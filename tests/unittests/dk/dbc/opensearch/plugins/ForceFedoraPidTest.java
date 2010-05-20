@@ -27,10 +27,13 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import org.junit.*;
@@ -43,7 +46,10 @@ import static mockit.Mockit.tearDownMocks;
 
 public class ForceFedoraPidTest {
 
-    ForceFedoraPid forcePlugin = new ForceFedoraPid();
+    @Mocked IObjectRepository mockIObjectRepository;
+    @Mocked Map<String, String> mockArgsMap;
+
+    ForceFedoraPid forcePlugin = new ForceFedoraPid( mockIObjectRepository );
     CargoContainer cargo;
     CargoContainer returnCargo;
     //static final String testPid1 = "test:1";
@@ -95,7 +101,7 @@ public class ForceFedoraPidTest {
                    databytes );
 
      
-        returnCargo = forcePlugin.getCargoContainer( cargo );
+        returnCargo = forcePlugin.getCargoContainer( cargo, mockArgsMap );
      
         
         assertEquals( returnCargo.getIdentifierAsString(), constructedID );
@@ -119,7 +125,7 @@ public class ForceFedoraPidTest {
                    indexAlias,
                    databytes );
 
-        forcePlugin.getCargoContainer( cargo );
+        forcePlugin.getCargoContainer( cargo, mockArgsMap );
     }
 
     /**

@@ -26,6 +26,7 @@ package dk.dbc.opensearch.plugins;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
@@ -34,6 +35,8 @@ import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+
+import java.util.Map;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -56,7 +59,8 @@ public class StoreTest
     String testString = "testStringUsedToGenerateBytes";
     byte[] dataBytes = testString.getBytes();
     ObjectIdentifier objectIdentifier;
-
+    @Mocked IObjectRepository mockedRepository;
+    @Mocked Map<String, String> mockArgsMap; 
 
     @MockClass( realClass = FedoraObjectRepository.class )
     public static class MockFedoraObjectRepository
@@ -147,7 +151,7 @@ public class StoreTest
     @Test
     public void getPluginTypeTest() throws Exception
     {
-        storePlugin = new Store();
+        storePlugin = new Store( mockedRepository );
         assertTrue( PT == storePlugin.getPluginType() );
     }
  
@@ -163,10 +167,9 @@ public class StoreTest
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
-        storePlugin = new Store();
+        storePlugin = new Store( fedObjRep );
 
-        storePlugin.setObjectRepository( fedObjRep );
-        returnCargo = storePlugin.getCargoContainer( cargo );
+        returnCargo = storePlugin.getCargoContainer( cargo, mockArgsMap );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
     }
@@ -182,10 +185,9 @@ public class StoreTest
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
-        storePlugin = new Store();
+        storePlugin = new Store( fedObjRep );
 
-        storePlugin.setObjectRepository( fedObjRep );
-        returnCargo = storePlugin.getCargoContainer( cargo );
+        returnCargo = storePlugin.getCargoContainer( cargo, mockArgsMap );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
     }
@@ -200,10 +202,9 @@ public class StoreTest
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         //cargo.setIdentifier( null );        
         CargoContainer returnCargo;
-        storePlugin = new Store();
+        storePlugin = new Store( fedObjRep );
 
-        storePlugin.setObjectRepository( fedObjRep );
-        returnCargo = storePlugin.getCargoContainer( cargo );
+        returnCargo = storePlugin.getCargoContainer( cargo, mockArgsMap );
        
         assertEquals( returnCargo.getIdentifierAsString(), "" );
         
@@ -218,29 +219,16 @@ public class StoreTest
         setUpMocks( MockFedoraObjectRepositoryException.class );
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         CargoContainer returnCargo;
-        storePlugin = new Store();
-        storePlugin.setObjectRepository( fedObjRep );
+        storePlugin = new Store( fedObjRep );
 
         try
         {
-            returnCargo = storePlugin.getCargoContainer( cargo );
+            returnCargo = storePlugin.getCargoContainer( cargo, mockArgsMap );
         }
         catch( PluginException pe )
         {
             throw pe.getException();
         }
-    }
-
-    /**
-     * tests the behaviour when no repository has been set
-     */
-    @Test( expected = IllegalStateException.class )
-    public void noObjectRepositorySetTest() throws Exception
-    {
-        CargoContainer returnCargo;
-        storePlugin = new Store();
-
-        returnCargo = storePlugin.getCargoContainer( cargo );
     }
 
 }
