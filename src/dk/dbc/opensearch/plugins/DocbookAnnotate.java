@@ -88,7 +88,7 @@ public class DocbookAnnotate implements IPluggable
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String,String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String,String> argsMap ) throws PluginException
     {
         log.trace( "DocbookAnnotate getCargoContainer() called" );
 

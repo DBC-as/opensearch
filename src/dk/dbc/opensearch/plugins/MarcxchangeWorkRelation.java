@@ -86,7 +86,7 @@ public class MarcxchangeWorkRelation implements IPluggable
 
 
     @Override
-    synchronized public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    synchronized public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {   
         //creating the javascript environment
         String jsFileName = new String( "workmatch_relation_functions.js" );

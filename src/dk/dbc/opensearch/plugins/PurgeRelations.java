@@ -88,7 +88,7 @@ public class PurgeRelations implements IPluggable
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( "getCargoContainer() called" );
 

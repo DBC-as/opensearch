@@ -75,7 +75,7 @@ public class XMLDCHarvester implements IPluggable
     }
 
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( "Constructing DC datastream" );
 

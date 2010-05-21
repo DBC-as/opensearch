@@ -72,7 +72,7 @@ public interface IPluggable
      * work on it and return it again.
      * @return CargoContainer, the transformed data
      */
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException;
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException;
 
     /**
      * getPluginType returns the - at compile time given - type of the

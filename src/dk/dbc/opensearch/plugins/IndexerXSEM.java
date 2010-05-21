@@ -306,7 +306,7 @@ public class IndexerXSEM implements IPluggable
      * \Todo: bug 10479
      */
     @Override
-    public synchronized CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public synchronized CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         return null;
     }

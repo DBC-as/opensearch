@@ -144,7 +144,7 @@ public class ForceFedoraPid implements IPluggable
 
 
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
 	
 	String s = getDCIdentifierFromOriginal( cargo, "/ting:container/oso:object/oso:identifier" );

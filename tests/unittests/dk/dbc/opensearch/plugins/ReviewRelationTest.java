@@ -75,12 +75,12 @@ public class ReviewRelationTest
     }
 
     /**
-     * Tests the ReviewRelation getCargoContianer when the data in the 
+     * Tests the ReviewRelation runPlugin method when the data in the 
      * CargoContainer is valid and the objectRepository is set correctly
      */
 
     @Test
-    public void getCargoContainerTestHappy() throws Exception
+    public void runPluginHestHappy() throws Exception
     {
  
     }

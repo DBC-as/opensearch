@@ -161,7 +161,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap )
+        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
         {
             return mockCC;
         }
@@ -177,7 +177,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap )
+        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
         {
             return mockCC;
         }
@@ -193,7 +193,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap )
+        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
         {
             return mockCC;
         }
@@ -209,7 +209,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap )
+        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
         {
             return null;
         }

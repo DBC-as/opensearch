@@ -53,7 +53,7 @@ public class Store implements IPluggable
 
 
 
-    synchronized public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    synchronized public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
     	log.trace( "Entering storeCargoContainer( CargoContainer )" );
 

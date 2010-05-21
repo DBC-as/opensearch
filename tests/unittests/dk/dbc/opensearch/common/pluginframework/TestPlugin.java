@@ -57,7 +57,7 @@ public class TestPlugin implements IPluggable
         return PluginType.ANNOTATE;
     }
 
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         return null;
     }

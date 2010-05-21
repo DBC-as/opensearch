@@ -76,10 +76,10 @@ public class DocbookMergerTest {
      * Test of getCargoContainer method, happy path
      */
     @Test
-    public void testGetCargoContainer() throws Exception
+    public void testRunPlugin() throws Exception
     {
         DocbookMerger instance = new DocbookMerger( mockIObjectRepository );
-        CargoContainer result = instance.getCargoContainer( cargo, mockArgsMap );
+        CargoContainer result = instance.runPlugin( cargo, mockArgsMap );
         XMLUnit.compareXML( happyPathData, new String( result.getCargoObject( DataStreamType.OriginalData ).getBytes() ) );
     }
 

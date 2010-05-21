@@ -83,7 +83,7 @@ public class ForceFedoraPidTest {
      * strings
      */
     @Test 
-    public void getCargoContainerTest() throws Exception 
+    public void runPluginTest() throws Exception 
     {
         String IDLeft = "84813133";
         String IDRight = "870971";
@@ -101,7 +101,7 @@ public class ForceFedoraPidTest {
                    databytes );
 
      
-        returnCargo = forcePlugin.getCargoContainer( cargo, mockArgsMap );
+        returnCargo = forcePlugin.runPlugin( cargo, mockArgsMap );
      
         
         assertEquals( returnCargo.getIdentifierAsString(), constructedID );
@@ -112,7 +112,7 @@ public class ForceFedoraPidTest {
      */
 
     @Test( expected = PluginException.class )
-    public void getCargoContainerNoIdentifierTest() throws Exception
+    public void runPluginNoIdentifierTest() throws Exception
     {
         String data = createDataString( "" );
         byte[] databytes = data.getBytes();
@@ -125,7 +125,7 @@ public class ForceFedoraPidTest {
                    indexAlias,
                    databytes );
 
-        forcePlugin.getCargoContainer( cargo, mockArgsMap );
+        forcePlugin.runPlugin( cargo, mockArgsMap );
     }
 
     /**

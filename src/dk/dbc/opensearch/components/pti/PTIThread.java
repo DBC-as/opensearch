@@ -176,14 +176,14 @@ public class PTIThread implements Callable< Boolean >
                     case PROCESS:
                         log.debug( "calling processerplugin" );
 
-                        cc = plugin.getCargoContainer( cc, argsMap );
+                        cc = plugin.runPlugin( cc, argsMap );
                         log.debug( "PTIThread PROCESS plugin done" );
                         break;
                     case RELATION:
                         log.trace( "calling relation plugin" );
 
                         //plugin.setObjectRepository( objectRepository );
-                        plugin.getCargoContainer( cc, argsMap );
+                        plugin.runPlugin( cc, argsMap );
                         log.trace( "PTIThread RELATION plugin done" );
                         break;
                     case INDEX:

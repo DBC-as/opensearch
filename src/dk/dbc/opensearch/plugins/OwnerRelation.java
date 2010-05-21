@@ -115,7 +115,7 @@ public class OwnerRelation implements IPluggable
      * originating exception.
      */
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     { 
         log.trace( "getCargoContainer() called" );
         // if( validateArgs( argsMap) )

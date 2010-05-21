@@ -79,7 +79,7 @@ public class DocbookMerger implements IPluggable
      * @throws PluginException with a nested exception explaining the error
      */
     @Override
-    public CargoContainer getCargoContainer( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         log.trace( String.format( "Entered getCargoContainer, streams in container: %s", cargo.getCargoObjectCount() ) );
 
