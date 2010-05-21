@@ -38,7 +38,7 @@ public class TestPlugin implements IPluggable
 {
     private PluginID pluginID;;
 
-    public TestPlugin( IObjectRepository repository ){}
+    public TestPlugin( String script, IObjectRepository repository ){}
 
     public void init(PluginID pluginId, InputStream data) 
     {

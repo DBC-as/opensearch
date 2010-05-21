@@ -31,7 +31,6 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -245,7 +244,7 @@ public class DatadockThreadTest
      * Happy path for the constructor
      */
 
-    @Test public void testConstructor() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, PluginResolverException, ParserConfigurationException, SAXException, ServiceException
+    @Test public void testConstructor() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, ParserConfigurationException, SAXException, ServiceException
     {
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
         ddThread = new DatadockThread( job, mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );

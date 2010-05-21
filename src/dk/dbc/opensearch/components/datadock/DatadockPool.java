@@ -29,7 +29,6 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
@@ -139,10 +138,9 @@ public class DatadockPool
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      * @throws ParserConfigurationException 
-     * @throws PluginResolverException 
      * @throws SAXException 
      */
-    public void submit( IJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException
+    public void submit( IJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, ParserConfigurationException, SAXException
     {
         if ( null == datadockJob )
         {

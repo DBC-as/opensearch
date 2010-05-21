@@ -116,8 +116,8 @@ public class PluginLoaderTest
     public void getPluginTest() throws InstantiationException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException 
     {
         Method method;
-        Class[] argClasses = new Class[]{ String.class, IObjectRepository.class };
-        Object[] args = new Object[]{ testClassString, mockRepository };
+        Class[] argClasses = new Class[]{ String.class, String.class, IObjectRepository.class };
+        Object[] args = new Object[]{ testClassString, "scriptString", mockRepository };
 
         pl = new PluginLoader( pcl );
         method = pl.getClass().getDeclaredMethod( "getPlugin", argClasses );
@@ -137,8 +137,8 @@ public class PluginLoaderTest
     public void invalidClassNameTest() throws NoSuchMethodException, IllegalAccessException
     {
         Method method;
-        Class[] argClasses = new Class[]{ String.class, IObjectRepository.class };
-        Object[] args = new Object[]{ invalidClassString, mockRepository };
+        Class[] argClasses = new Class[]{ String.class, String.class, IObjectRepository.class };
+        Object[] args = new Object[]{ invalidClassString, "script", mockRepository };
     
         try
         {

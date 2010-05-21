@@ -104,7 +104,7 @@ public class XMLHarvesterTest
     @Test
     public void getCargoContainerTest()throws Exception
  {
-     harvestPlugin = new XMLHarvester( mockRepository );
+     harvestPlugin = new XMLHarvester( "", mockRepository );
      cargoContainer = harvestPlugin.getCargoContainer(datadockJob, databytes, alias );
 
      //There is data in the returned CargoContainer
@@ -120,7 +120,7 @@ public class XMLHarvesterTest
     public void cargoContainerCantAddDataTest() throws Exception
     {
         setUpMocks(MockCargoContainer.class);
-        harvestPlugin = new XMLHarvester( mockRepository );
+        harvestPlugin = new XMLHarvester( "", mockRepository );
         try
         {
             cargoContainer = harvestPlugin.getCargoContainer( datadockJob, databytes, alias );
@@ -134,7 +134,7 @@ public class XMLHarvesterTest
     @Test
     public void getPluginType()
     {
-        harvestPlugin = new XMLHarvester( mockRepository );
+        harvestPlugin = new XMLHarvester( "", mockRepository );
         if ( PluginType.HARVEST != harvestPlugin.getPluginType() )
         {
             fail("HarvestPlugin returned wrong type");

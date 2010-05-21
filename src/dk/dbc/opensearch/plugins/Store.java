@@ -46,7 +46,7 @@ public class Store implements IPluggable
     private IObjectRepository objectRepository = null;
     private Map<String, String> argsMap;
 
-    public Store( IObjectRepository repository )
+    public Store( String script, IObjectRepository repository )
     {
         this.objectRepository = repository;
     }    

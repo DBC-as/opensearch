@@ -56,7 +56,7 @@ public interface IPluginResolver
      * @throws IllegalAccessException 
      * @throws ParserConfigurationException 
      */
-    IPluggable getPlugin ( String classname ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, PluginResolverException, ParserConfigurationException, InvocationTargetException, PluginException;
+    IPluggable getPlugin ( String classname, String script ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, ParserConfigurationException, InvocationTargetException, PluginException;
 
     
     /**

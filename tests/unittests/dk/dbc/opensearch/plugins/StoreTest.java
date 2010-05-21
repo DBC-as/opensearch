@@ -151,7 +151,7 @@ public class StoreTest
     @Test
     public void getPluginTypeTest() throws Exception
     {
-        storePlugin = new Store( mockedRepository );
+        storePlugin = new Store( "", mockedRepository );
         assertTrue( PT == storePlugin.getPluginType() );
     }
  
@@ -167,7 +167,7 @@ public class StoreTest
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store( "", fedObjRep );
 
         returnCargo = storePlugin.runPlugin( cargo, mockArgsMap );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
@@ -185,7 +185,7 @@ public class StoreTest
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store( "", fedObjRep );
 
         returnCargo = storePlugin.runPlugin( cargo, mockArgsMap );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
@@ -202,7 +202,7 @@ public class StoreTest
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         //cargo.setIdentifier( null );        
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store( "", fedObjRep );
 
         returnCargo = storePlugin.runPlugin( cargo, mockArgsMap );
        
@@ -219,7 +219,7 @@ public class StoreTest
         setUpMocks( MockFedoraObjectRepositoryException.class );
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
         CargoContainer returnCargo;
-        storePlugin = new Store( fedObjRep );
+        storePlugin = new Store( "", fedObjRep );
 
         try
         {

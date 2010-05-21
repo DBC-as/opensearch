@@ -26,7 +26,6 @@ import dk.dbc.opensearch.plugins.IndexerXSEM;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -114,13 +113,14 @@ public class PTIThread implements Callable< Boolean >
      * @throws ParserConfigurationException when the PluginResolver has problems parsing files
      * @throws IllegalAccessException when the PluginiResolver cant access a plugin that should be loaded
      * */
-    public Boolean call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, PluginResolverException, SAXException, ServiceException, SQLException, InvocationTargetException
+    public Boolean call() throws ClassNotFoundException, CompassException, ConfigurationException, IllegalAccessException, InstantiationException, InterruptedException, IOException, ParserConfigurationException, PluginException, SAXException, ServiceException, SQLException, InvocationTargetException
     {
         log.trace( String.format( "Entering with handle: '%s'", fedoraPid ) );
         CargoContainer cc = null;
         CargoObject co = null;
         String submitter =  null;
         String format = null;
+        String script = ""; //not used in the ptithread
 
         try
         {
@@ -157,7 +157,7 @@ public class PTIThread implements Callable< Boolean >
             for ( String classname : list )
             {
                 log.trace( "PTIThread running through plugins list" );
-                plugin = pluginResolver.getPlugin( classname );
+                plugin = pluginResolver.getPlugin( classname, script );
                 log.trace( "PTIThread plugin resolved" );
 
                 if( plugin == null )

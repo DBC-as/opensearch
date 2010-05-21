@@ -54,6 +54,6 @@ public class AnnotateTest
     @Test 
     public void testConstructor() throws Exception 
     {        
-        dbAnnotate = new DocbookAnnotate( mockIObjectRepository );
+        dbAnnotate = new DocbookAnnotate( "", mockIObjectRepository );
     }
 }

@@ -70,7 +70,7 @@ public class DocbookAnnotate implements IPluggable
     /**
      * Constructor for the DocbookAnnotate plugin.
      */
-    public DocbookAnnotate( IObjectRepository repository )
+    public DocbookAnnotate( String script, IObjectRepository repository )
     {
         log.trace( "DocbookAnnotate Constructor() called" );
         nsc = new OpensearchNamespaceContext();

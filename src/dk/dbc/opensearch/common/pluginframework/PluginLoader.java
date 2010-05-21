@@ -63,20 +63,18 @@ public class PluginLoader
      * @throws IllegalAccessException if the wanted plugin cant be accessed
      * @throws ClassNotFoundException if the specified class cannot found  
      */
-    IPluggable getPlugin( String pluginClassName, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, PluginException, InvocationTargetException
+    IPluggable getPlugin( String pluginClassName, String script, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, PluginException, InvocationTargetException
     {
         try
         {
             Class loadedClass = null;
-            //Class repoClass = repository.getClass();        
-            Class[] parameterTypes = new Class[] { IObjectRepository.class };
+            Class[] parameterTypes = new Class[] { String.class, IObjectRepository.class };
             Constructor pluginConstructor;
 
-            log.debug( String.format( "PluginLoader loading plugin class name '%s'", pluginClassName) );       
+            log.debug( String.format( "PluginLoader loading plugin class name '%s', with script '%s'", pluginClassName, script ) );       
             loadedClass = cl.loadClass( pluginClassName );
             pluginConstructor = loadedClass.getConstructor( parameterTypes );
-            IPluggable thePlugin = (IPluggable)pluginConstructor.newInstance( new Object[]{ repository });
-            //IPluggable thePlugin = ( IPluggable )loadedClass.newInstance();
+            IPluggable thePlugin = (IPluggable)pluginConstructor.newInstance( new Object[]{ script, repository });
 
             return thePlugin;
         }
@@ -88,13 +86,13 @@ public class PluginLoader
         }
         catch( NoSuchMethodException nsme )
         {
-            String error = String.format( "the class: %s lacks a constructor with IObjectRepository as argument", pluginClassName );
+            String error = String.format( "the class: '%s' lacks a constructor with IObjectRepository and/or script as argument", pluginClassName );
             log.error( error, nsme );
             throw new PluginException( error, nsme );
         }
         catch( InvocationTargetException ite )
         {
-            String error = String.format( "couldnt invoke class: %s ", pluginClassName );
+            String error = String.format( "couldnt invoke class: '%s'", pluginClassName );
             log.error( error, ite );
             throw new InvocationTargetException( ite, error );
         }

@@ -72,15 +72,15 @@ public class PluginResolver implements IPluginResolver
      * @throws IllegalAccessException if the plugin file cant be accessed by the PluginLoader
      * @throws ClassNotFoundException if the class of the plugin cannot be found
      */
-    public IPluggable getPlugin( String className ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
+    public IPluggable getPlugin( String className, String script ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
     {  
-        if (!pluginInstanceCache.containsKey( className ))
+        if (!pluginInstanceCache.containsKey( className + script ))
         {
-            IPluggable plugin = PLoader.getPlugin( className, repository );
-            pluginInstanceCache.put( className, plugin );
-            log.info( String.format("Plugin %s created", className ) );
+            IPluggable plugin = PLoader.getPlugin( className, script, repository );
+            pluginInstanceCache.put( className + script, plugin );
+            log.info( String.format("Plugin: '%s' created with script: '%s'", className, script ) );
         }
-        return pluginInstanceCache.get( className );
+        return pluginInstanceCache.get( className + script );
     }
 
     

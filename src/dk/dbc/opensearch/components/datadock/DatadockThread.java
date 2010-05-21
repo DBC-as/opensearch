@@ -30,7 +30,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -45,7 +44,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.List;
-//import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -85,8 +83,6 @@ public class DatadockThread implements Callable<Boolean>
     private String                  submitter;
     private String                  format;
     private Map<String, List<PluginTask>> flowMap;
-    //    private ArrayList<String>       pluginListForThread;
-    //private final IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
 
 
@@ -103,7 +99,6 @@ public class DatadockThread implements Callable<Boolean>
      * @throws ConfigurationException if no ObjectRepository could be reached
      *
      * @throws ParserConfigurationException
-     * @throws PluginResolverException
      * @throws SAXException
      */
     public DatadockThread( IJob datadockJob, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
@@ -117,7 +112,6 @@ public class DatadockThread implements Callable<Boolean>
 
         this.datadockJob = (DatadockJob)datadockJob;
         this.harvester = harvester;
-        //this.objectRepository = objectRepository;
         this.pluginResolver = pluginResolver;
         this.flowMap = flowMap;
         this.queue = processqueue;
@@ -155,8 +149,7 @@ public class DatadockThread implements Callable<Boolean>
         // Method is to be extended when we connect to 'Posthuset'
         log.trace( "DatadockThread call method called" );
 
-        // Validate plugins
-        //        log.debug( String.format( "pluginList classname %s", pluginListForThread.toString() ) );
+        String script = "";
         Boolean success = Boolean.FALSE;
         long timer = 0;
         IIdentifier tmpid = datadockJob.getIdentifier();
@@ -183,11 +176,11 @@ public class DatadockThread implements Callable<Boolean>
             String classname = pluginTask.getPluginName();
             Map<String, String> argsMap = pluginTask.getArgsMap();
             log.trace( "the argsMap: " + argsMap.toString() ); 
-            log.trace( "DatadockThread getPlugin 'classname' " + classname );   
-            IPluggable plugin = pluginResolver.getPlugin( classname );
+            script = (String)argsMap.get( "script" );
+            log.trace( String.format("DatadockThread getPlugin classname: '%s' script: '%s' ",classname, script ) );   
+            IPluggable plugin = pluginResolver.getPlugin( classname, script );
             
             timer = System.currentTimeMillis();
-            //plugin.setObjectRepository( this.objectRepository );
             cargo = plugin.runPlugin( cargo, argsMap );
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: %s time: ", classname, timer ) );  

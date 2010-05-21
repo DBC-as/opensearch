@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -105,11 +104,10 @@ public class DatadockManager
      * @throws IOException
      * @throws InterruptedException
      * @throws ParserConfigurationException
-     * @throws PluginResolverException
      * @throws SAXException
      * @throws TransformerException
      */
-    public int update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, PluginResolverException, ParserConfigurationException, SAXException, TransformerException, HarvesterIOException, HarvesterInvalidStatusChangeException
+    public int update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, ParserConfigurationException, SAXException, TransformerException, HarvesterIOException, HarvesterInvalidStatusChangeException
     {
         log.trace( "DatadockManager update called" );
 

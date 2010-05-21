@@ -31,7 +31,6 @@ import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginID;
 import dk.dbc.opensearch.common.pluginframework.PluginLoader;
-import dk.dbc.opensearch.common.pluginframework.PluginResolverException;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.ThrownInfo;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
@@ -78,7 +77,7 @@ public class PluginResolverTest
     @MockClass(realClass = PluginLoader.class)
     public static class ReplacePluginLoader
     {        
-        @Mock public static IPluggable getPlugin( String className, IObjectRepository repository )
+        @Mock public static IPluggable getPlugin( String className, String script, IObjectRepository repository )
         {
             return (IPluggable)mockPlugin;
         } 
@@ -102,7 +101,7 @@ public class PluginResolverTest
      * tests the construction of the PluginResolver
      */
     @Test 
-    public void pluginResolverConstructorTest() throws NullPointerException, FileNotFoundException, PluginResolverException, ParserConfigurationException, IOException, ConfigurationException
+    public void pluginResolverConstructorTest() throws NullPointerException, FileNotFoundException, ParserConfigurationException, IOException, ConfigurationException
     {
         PR = new PluginResolver( repository );
         PluginResolver PR2 = new PluginResolver( repository );
@@ -112,11 +111,11 @@ public class PluginResolverTest
     /**
      * tests the getPlugin method, not a lot to test... 
      */
-    @Test public void getPluginTest() throws NullPointerException, IOException, FileNotFoundException, PluginResolverException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, ConfigurationException, InvocationTargetException, PluginException 
+    @Test public void getPluginTest() throws NullPointerException, IOException, FileNotFoundException, ParserConfigurationException, InstantiationException, IllegalAccessException, ClassNotFoundException, ConfigurationException, InvocationTargetException, PluginException 
     {
         PR = new PluginResolver( repository );
 
-        IPluggable test = PR.getPlugin( "task" );
+        IPluggable test = PR.getPlugin( "task", "script" );
         
         assertTrue( test.getClass() == mockPlugin.getClass() );
     } 

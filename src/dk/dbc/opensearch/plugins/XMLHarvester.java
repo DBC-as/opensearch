@@ -54,7 +54,7 @@ public class XMLHarvester implements IPluggable
     private String alias;
     //private IObjectRepository repository; 
 
-    public XMLHarvester( IObjectRepository repository )
+    public XMLHarvester( String script, IObjectRepository repository )
     {
         //this.repository = repository;
     }
