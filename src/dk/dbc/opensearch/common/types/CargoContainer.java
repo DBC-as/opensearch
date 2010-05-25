@@ -193,11 +193,11 @@ public class CargoContainer
             log.fatal( "format must be specified" );
             throw new IllegalArgumentException( "format must be specified" );
         }
-        else if( alias == null )
-        {
-            log.fatal( "alias must be specified" );
-            throw new IllegalArgumentException( "alias must be specified" );
-        }
+        // else if( alias == null )
+        // {
+        //     log.fatal( "alias must be specified" );
+        //     throw new IllegalArgumentException( "alias must be specified" );
+        // }
         else if( (data == null) || (data.length <= 0) )
         {
             log.fatal( "data must be present " );
@@ -491,6 +491,26 @@ public class CargoContainer
         }
 
         return ret_ia;
+    }
+
+    /**
+     * This method sets the IndexingAlias on a DataStream
+     * The method assumes that there are only 1 of each DataStreamType 
+     * 
+     * @param 
+     * @return false if the type of DataStreamType wasnt found, otherwise true
+     */
+    public boolean setIndexingAlias( String indexingAlias, DataStreamType dataStreamType )
+    {
+        for( CargoObject co : data )
+        {
+            if( dataStreamType == co.getDataStreamType() )
+            {
+                co.setIndexingAlias( indexingAlias );
+                return true;
+            }
+        }
+        return false;
     }
 
 

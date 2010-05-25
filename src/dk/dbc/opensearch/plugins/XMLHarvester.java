@@ -62,6 +62,16 @@ public class XMLHarvester implements IPluggable
     @Override
     public synchronized CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
+        log.trace( "validating arguments" );
+      
+        if( ! validateArgs( argsMap ) )
+        {
+            String error = String.format( "error while validating XMLHarvester with args: '%s'", argsMap.toString() ) ;
+            log.error( error );  
+            throw new PluginException( error );
+        } 
+        
+        cargo.setIndexingAlias( argsMap.get( "alias" ), DataStreamType.OriginalData );
         return cargo;
     }
 

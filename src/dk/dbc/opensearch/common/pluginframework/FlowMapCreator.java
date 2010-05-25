@@ -62,6 +62,7 @@ public class FlowMapCreator
     //initiates the object with the path to the workflow xml file and creates an InputStream
     public FlowMapCreator( String path, String xsdPath ) throws IllegalStateException//, SAXException, IOException, ConfigurationException
     {
+        log.trace( String.format("path: %s, xsdPath: %s", path, xsdPath ) );
         //validate the file
         try
         {

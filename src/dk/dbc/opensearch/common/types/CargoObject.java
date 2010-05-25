@@ -171,6 +171,15 @@ public class CargoObject
         return coi.getIndexingAlias();
     }
 
+    /**
+     * sets the IndexingAlias for the CargoObject
+     * @param the alias to set
+     */
+    public void setIndexingAlias( String indexingAlias )
+    {
+        coi.setIndexingAlias( indexingAlias );
+    }
+
 
     /**
      * Gets the size of the underlying byte[].

@@ -173,12 +173,12 @@ public class CargoContainerTest
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIllegalArgumentExceptionWithNullAlias() throws IOException
-    {
-        cargo.add( dsn, format, submitter, language, mimetype, null, data );
+    // @Test(expected = IllegalArgumentException.class)
+    // public void testIllegalArgumentExceptionWithNullAlias() throws IOException
+    // {
+    //     cargo.add( dsn, format, submitter, language, mimetype, null, data );
 
-    }
+    // }
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgumentExceptionWithNoData() throws IOException

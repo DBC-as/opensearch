@@ -60,6 +60,7 @@ public class XMLDCHarvesterTest
     String submitter = "dbc";
     String format = "marcxchange";
     String language = "da";
+    String scriptString = "script"; 
 
     DatadockJob ddjob;
 
@@ -128,7 +129,7 @@ public class XMLDCHarvesterTest
     @Test
     public void getCargoContainerTest() throws Exception
     {
-        harvestPlugin = new XMLDCHarvester( mockRepository );
+        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
         cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias");
         //There is data in the returned CargoContainer
         assertEquals( 1, cc.getCargoObjectCount() );
@@ -152,7 +153,7 @@ public class XMLDCHarvesterTest
     @Test( expected = XPathExpressionException.class )
     public void getCargoContainerWithInvalidData() throws Exception
     {       
-        harvestPlugin = new XMLDCHarvester( mockRepository );
+        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
         try{
             cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes, "fakeAlias" );
         }
@@ -168,7 +169,7 @@ public class XMLDCHarvesterTest
     @Test
     public void testPluginType() throws Exception
     {        
-        harvestPlugin = new XMLDCHarvester( mockRepository );
+        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
         assertEquals( PluginType.HARVEST, harvestPlugin.getPluginType() );
 
     }
@@ -181,7 +182,7 @@ public class XMLDCHarvesterTest
     @Test( expected = IllegalArgumentException.class )
     public void noDataGivenTest() throws Exception
     {      
-        harvestPlugin = new XMLDCHarvester( mockRepository );
+        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
         try
         {
             cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes, "fakealias" );
@@ -200,7 +201,7 @@ public class XMLDCHarvesterTest
     public void cargoContainerCantAddDataTest() throws Exception
     {
         setUpMocks( MockCargoContainer.class );
-      harvestPlugin = new XMLDCHarvester( mockRepository );
+        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
         try
         {
             cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias" );

@@ -588,31 +588,31 @@ public class ESHarvest implements IHarvest
 
         // Retriving alias:
         String alias = null;
-        String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
-        try
-        {
-            alias = DatadockJobsMap.getIndexingAlias( job.getSubmitter(), job.getFormat() );
-        }
-            catch( ConfigurationException ce)
-        {
-            log.error( errMsg, ce );
-            throw new HarvesterIOException( errMsg, ce );
-        }
-        catch( IOException ioe )
-        {
-            log.error( errMsg, ioe );
-            throw new HarvesterIOException( errMsg, ioe );
-        }
-        catch( ParserConfigurationException pce )
-        {
-            log.error( errMsg, pce );
-            throw new HarvesterIOException( errMsg, pce );
-        }
-        catch( SAXException saxe )
-        {
-            log.error( errMsg, saxe );
-            throw new HarvesterIOException( errMsg, saxe );
-        }
+        // String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
+        // try
+        // {
+        //     alias = DatadockJobsMap.getIndexingAlias( job.getSubmitter(), job.getFormat() );
+        // }
+        //     catch( ConfigurationException ce)
+        // {
+        //     log.error( errMsg, ce );
+        //     throw new HarvesterIOException( errMsg, ce );
+        // }
+        // catch( IOException ioe )
+        // {
+        //     log.error( errMsg, ioe );
+        //     throw new HarvesterIOException( errMsg, ioe );
+        // }
+        // catch( ParserConfigurationException pce )
+        // {
+        //     log.error( errMsg, pce );
+        //     throw new HarvesterIOException( errMsg, pce );
+        // }
+        // catch( SAXException saxe )
+        // {
+        //     log.error( errMsg, saxe );
+        //     throw new HarvesterIOException( errMsg, saxe );
+        // }
 
         log.debug( "Creating CargoContainer" );
             CargoContainer cargo = new CargoContainer();

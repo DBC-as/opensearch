@@ -107,7 +107,7 @@ public class DatadockMain
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
         pluginFlowXmlPath = DatadockConfig.getPluginFlowXmlPath();
-        pluginFlowXmlPath = DatadockConfig.getPluginFlowXsdPath();
+        pluginFlowXsdPath = DatadockConfig.getPluginFlowXsdPath();
     }
 
 

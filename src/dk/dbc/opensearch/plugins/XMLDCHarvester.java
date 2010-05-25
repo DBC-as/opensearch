@@ -69,7 +69,7 @@ public class XMLDCHarvester implements IPluggable
     private PluginType pluginType = PluginType.HARVEST;
     private IObjectRepository repository;
 
-    public XMLDCHarvester( IObjectRepository repository ) throws PluginException
+    public XMLDCHarvester( String script, IObjectRepository repository ) throws PluginException
     {
         this.repository = repository;
     }
@@ -77,6 +77,17 @@ public class XMLDCHarvester implements IPluggable
     @Override
     public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
+        log.trace( "validating arguments" );
+      
+        if( ! validateArgs( argsMap ) )
+        {
+            String error = String.format( "error while validating XMLDCHarvester with args: '%s'", argsMap.toString() ) ;
+            log.error( error );  
+            throw new PluginException( error );
+        }
+
+        cargo.setIndexingAlias( argsMap.get( "alias" ), DataStreamType.OriginalData );
+        
         log.trace( "Constructing DC datastream" );
 
         DublinCore dcStream = createDublinCore( cargo );
@@ -245,6 +256,10 @@ public class XMLDCHarvester implements IPluggable
     
     private boolean validateArgs( Map<String, String> argsMap )
     {
+        if( argsMap.get( "alias" ) == null || argsMap.get( "alias").equals( "") )
+        {
+            return false;
+        }
         return true;
     }
 }

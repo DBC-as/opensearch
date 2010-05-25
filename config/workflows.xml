@@ -86,7 +86,6 @@
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-      <script name=""/>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
@@ -138,9 +137,6 @@
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ReviewRelation">
-      <args>
-        <arg name="script" value="review_relation.js"/>
-      </args>
       <args>
         <arg name="script" value="review_relation.js"/>
       </args>
