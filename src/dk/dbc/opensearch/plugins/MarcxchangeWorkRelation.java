@@ -92,7 +92,7 @@ public class MarcxchangeWorkRelation implements IPluggable
         String jsFileName = new String( "workmatch_relation_functions.js" );
         try
         {
-            rhinoWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+            rhinoWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName );
         }
         catch( FileNotFoundException fnfe )
         {

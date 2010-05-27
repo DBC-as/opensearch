@@ -81,7 +81,8 @@ public class OwnerRelation implements IPluggable
         String jsFileName = new String( "owner_relation.js" );
         try
         {
-            jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+            // jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName );
         }
         catch( FileNotFoundException fnfe )
         {

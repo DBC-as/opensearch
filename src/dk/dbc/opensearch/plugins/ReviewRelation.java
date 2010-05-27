@@ -86,7 +86,7 @@ public class ReviewRelation implements IPluggable
 
         try 
 	{
-	    jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
+	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName );
 	}
 	catch( FileNotFoundException fnfe )
 	{
