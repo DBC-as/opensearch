@@ -1,5 +1,5 @@
 
-//my_func();
+my_func();
 
 function my_func() {
 
@@ -8,8 +8,8 @@ function my_func() {
 
 }
 
-function other_func() {
+// function other_func() {
 
-    print( "More testing\n" );
-    throw("My very own error");
-}
+//     print( "More testing\n" );
+//     throw("My very own error");
+// }

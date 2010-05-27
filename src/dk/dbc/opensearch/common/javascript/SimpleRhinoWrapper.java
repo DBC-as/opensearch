@@ -79,7 +79,6 @@ public class SimpleRhinoWrapper
         scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
         // Evaluate the javascript
-	//	String jsFileName = "script name is unknown"; // We dont know the name of the script! :(
         try
         {
             Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
@@ -90,41 +89,11 @@ public class SimpleRhinoWrapper
             log.error( errorMsg, ioe );
             throw new IllegalStateException( errorMsg, ioe );
         }
-	catch ( EcmaError ee )
-	{
-	    log.error( String.format( "An EcmaError was caught (details): %s", ee.details() ) );
-	    log.error( String.format( "An EcmaError was caught (typename): %s", ee.getName() ) );
-	    log.error( String.format( "An EcmaError was caught (message): %s", ee.getMessage() ) );
-	    
-	    log.error( String.format( "RhinoException (source_name) %s", ee.sourceName() ) );
-	    log.error( String.format( "RhinoException (line_number) %s", ee.lineNumber() ) );
-	    log.error( String.format( "RhinoException (column_number) %s", ee.columnNumber() ) );
-	    log.error( String.format( "RhinoException (line_source) %s", ee.lineSource() != null ? ee.lineSource() : "null" ) );
-	    log.error( String.format( "RhinoException (scriptStackTrace) %s", ee.getScriptStackTrace() ) );
-
-	    throw ee;
-	}
-	catch ( JavaScriptException jse )
-	{
-	    log.error( String.format( "JavaScriptException (details): %s", jse.details() ) );
-	    log.error( String.format( "JavaScriptException (value): %s", jse.getValue() ) );
-
-	    log.error( String.format( "RhinoException (source_name) %s", jse.sourceName() ) );
-	    log.error( String.format( "RhinoException (line_number) %s", jse.lineNumber() ) );
-	    log.error( String.format( "RhinoException (column_number) %s", jse.columnNumber() ) );
-	    log.error( String.format( "RhinoException (line_source) %s", jse.lineSource() != null ? jse.lineSource() : "null" ) );
-	    log.error( String.format( "RhinoException (scriptStackTrace) %s", jse.getScriptStackTrace() ) );
-
-	    throw jse;
-	}
 	catch ( RhinoException re )
 	{
-	    // Catch all other rhino/js exceptions:
-	    log.error( String.format( "RhinoException (source_name) %s", re.sourceName() ) );
-	    log.error( String.format( "RhinoException (line_number) %s", re.lineNumber() ) );
-	    log.error( String.format( "RhinoException (column_number) %s", re.columnNumber() ) );
-	    log.error( String.format( "RhinoException (line_source) %s", re.lineSource() != null ? re.lineSource() : "null" ) );
-	    log.error( String.format( "RhinoException (scriptStackTrace) %s", re.getScriptStackTrace() ) );
+	    System.err.println( "Evaluate" );
+
+	    logRhinoException( re );
 
 	    throw re;
 	}
@@ -163,42 +132,11 @@ public class SimpleRhinoWrapper
 	    {
 		result = f.call(cx, scope, scope, args);
 	    }
-	    catch ( EcmaError ee )
-	    {
-		log.error( String.format( "An EcmaError was caught (details): %s", ee.details() ) );
-		log.error( String.format( "An EcmaError was caught (typename): %s", ee.getName() ) );
-		log.error( String.format( "An EcmaError was caught (message): %s", ee.getMessage() ) );
-
-		RhinoException re = (RhinoException)ee;
-		log.error( String.format( "RhinoException (source_name) %s", re.sourceName() ) );
-		log.error( String.format( "RhinoException (line_number) %s", re.lineNumber() ) );
-		log.error( String.format( "RhinoException (column_number) %s", re.columnNumber() ) );
-		log.error( String.format( "RhinoException (line_source) %s", re.lineSource() != null ? re.lineSource() : "null" ) );
-		log.error( String.format( "RhinoException (scriptStackTrace) %s", re.getScriptStackTrace() ) );
-
-		throw ee;
-	    }
-	    catch ( JavaScriptException jse )
-	    {
-		log.error( String.format( "JavaScriptException (details): %s", jse.details() ) );
-		log.error( String.format( "JavaScriptException (value): %s", jse.getValue() ) );
-		
-		log.error( String.format( "RhinoException (source_name) %s", jse.sourceName() ) );
-		log.error( String.format( "RhinoException (line_number) %s", jse.lineNumber() ) );
-		log.error( String.format( "RhinoException (column_number) %s", jse.columnNumber() ) );
-		log.error( String.format( "RhinoException (line_source) %s", jse.lineSource() != null ? jse.lineSource() : "null" ) );
-		log.error( String.format( "RhinoException (scriptStackTrace) %s", jse.getScriptStackTrace() ) );
-		
-		throw jse;
-	    }
 	    catch ( RhinoException re )
 	    {
-		// Catch all other rhino/js exceptions:
-		log.error( String.format( "RhinoException (source_name) %s", re.sourceName() ) );
-		log.error( String.format( "RhinoException (line_number) %s", re.lineNumber() ) );
-		log.error( String.format( "RhinoException (column_number) %s", re.columnNumber() ) );
-		log.error( String.format( "RhinoException (line_source) %s", re.lineSource() != null ? re.lineSource() : "null" ) );
-		log.error( String.format( "RhinoException (scriptStackTrace) %s", re.getScriptStackTrace() ) );
+		System.err.println( "Call" );
+
+		logRhinoException( re );
 
 		throw re;
 	    }
@@ -207,4 +145,39 @@ public class SimpleRhinoWrapper
 
         return result;
     }
+
+    /**
+     * This is a private function for logging a RhinoException.
+     * It is seldom a good idea to call a function inside a catch-statement,
+     * but in this case it is assumed to be in order.
+     * The purpose is to have unified logging and only to have one place to 
+     * maintain the logging even though the exception is caught severeal places in
+     * the code.
+     */
+    private void logRhinoException( RhinoException re )
+    {
+
+	if ( re instanceof EcmaError )
+        {
+	    EcmaError ee = (EcmaError)re;
+	    log.error( String.format( "An EcmaError was caught (details): %s", ee.details() ) );
+	    log.error( String.format( "An EcmaError was caught (typename): %s", ee.getName() ) );
+	    log.error( String.format( "An EcmaError was caught (message): %s", ee.getMessage() ) );
+	}
+	else if ( re instanceof JavaScriptException )
+	{
+	    JavaScriptException jse = (JavaScriptException)re;
+	    log.error( String.format( "JavaScriptException (details): %s", jse.details() ) );
+	    log.error( String.format( "JavaScriptException (value): %s", jse.getValue() ) );
+	}
+
+	// print for all exceptions:
+	log.error( String.format( "RhinoException (source_name) %s", re.sourceName() ) );
+	log.error( String.format( "RhinoException (line_number) %s", re.lineNumber() ) );
+	log.error( String.format( "RhinoException (column_number) %s", re.columnNumber() ) );
+	log.error( String.format( "RhinoException (line_source) %s", 
+				  re.lineSource() != null ? re.lineSource() : "null" ) );
+	log.error( String.format( "RhinoException (scriptStackTrace) %s", re.getScriptStackTrace() ) );
+    }
+
 }
