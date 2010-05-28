@@ -21,14 +21,22 @@ function generateSearchPairs( dcXML, originalXML, resultArray )
     //put values in the pairArray that the calling java method looks in 
     //for searchpairs. Even indexes are fieldnames, uneven are values. Yes its hack'ish
     //but it works for now
-    resultArray[0] = "title";
-    resultArray[1] = XML_dc.dc::title;
-    resultArray[2] = "title";
-    resultArray[3] = XML_dc.dc::source;
-    resultArray[4] = "source";
-    resultArray[5] = XML_dc.dc::title;
-    resultArray[6] = "source";
-    resultArray[7] = XML_dc.dc::source;
+    if (String(XML_dc.dc::title) !== "") {
+      resultArray[0] = "title";
+      resultArray[1] = XML_dc.dc::title;
+    }
+    if (String(XML_dc.dc::source) !== "") {
+      resultArray[2] = "title";
+      resultArray[3] = XML_dc.dc::source;
+    }
+    if (String(XML_dc.dc::title) !== "") {
+      resultArray[4] = "source";
+      resultArray[5] = XML_dc.dc::title;
+    }
+    if (String(XML_dc.dc::source) !== "") {
+      resultArray[6] = "source";
+      resultArray[7] = XML_dc.dc::source;
+    }
 } 
 
 
@@ -47,6 +55,7 @@ function checkmatch( newObject, workObject )
     var newSource = String(newObjectXml.dc::source);
     var workSource = String(workObjectXml.dc::source);
     var newCreator = String(newObjectXml.dc::creator);
+    var workCreator = String(workObjectXml.dc::creator);
     var workType = String(workObjectXml.dc::creator);
     var newType = String(newObjectXml.dc::type);
     var workType = String(workObjectXml.dc::type);
@@ -60,7 +69,7 @@ function checkmatch( newObject, workObject )
         break;
       case "Artikel":
         Log.debug( "RLO: Artikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel") {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel")) {
           result = true;
         } else {
           result = false;
@@ -76,7 +85,7 @@ function checkmatch( newObject, workObject )
         break;
       case "Avisartikel":
         Log.debug( "RLO: Avisartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Avisartikel") {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel")) {
           result = true;
         } else {
           result = false;
@@ -92,7 +101,23 @@ function checkmatch( newObject, workObject )
         break;
       case "Tidsskriftsartikel":
         Log.debug( "RLO: Tidsskriftsartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType === "Artikel|Tidsskriftsartikel") {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel|Tidsskriftsartikel")) {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "CD": case "Grammofonplade": case "netmusik (album)":
+        Log.debug( "RLO: CD\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|netmusik (album)")) {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "netmusik (track)": 
+        Log.debug( "RLO: netmusik (track)\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("netmusik (track)")) {
           result = true;
         } else {
           result = false;
@@ -100,13 +125,13 @@ function checkmatch( newObject, workObject )
         break;
       default:
         Log.debug( "RLO: default\n");
-        if (newSource !== "" && workSource !== "" && newSource === workSource && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)| netmusik (track)")) {
           result = true;
-        } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)|netmusik (track)")) {
           result = true;
-        } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)| netmusik (track)")) {
           result = true;
-        } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && workType !== "Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel") {
+        } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|netmusik (album)|netmusik (track)")) {
           result = true;
         } else {
           result = false;
@@ -120,6 +145,11 @@ function checkmatch( newObject, workObject )
     }
 }
 
+
+// Function that builds the originaldata and DC of a new workobject
+// It gets a string representation of the content of the object it must
+// be the workobject for and returns a string rep. of the content of the 
+// workobject. The DC is given to the function and filled in as a sideeffect
 
 // Function that builds the originaldata and DC of a new workobject
 // It gets a string representation of the content of the object it must
