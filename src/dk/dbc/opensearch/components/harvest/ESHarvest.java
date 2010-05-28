@@ -587,7 +587,10 @@ public class ESHarvest implements IHarvest
         byte[] data = getDataDBCall( id , conn );
 
         // Retriving alias:
-        String alias = null;
+	//        String alias = null;
+	String alias = "alias";
+
+
         // String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
         // try
         // {
@@ -615,7 +618,7 @@ public class ESHarvest implements IHarvest
         // }
 
         log.debug( "Creating CargoContainer" );
-            CargoContainer cargo = new CargoContainer();
+	CargoContainer cargo = new CargoContainer();
 
         try
         {
@@ -625,8 +628,16 @@ public class ESHarvest implements IHarvest
         {
             String errorMsg = new String( "Could not add OriginalData to CargoContainer" );
             log.fatal( errorMsg, ioe );
+	    releaseConnection( conn );
             throw new HarvesterIOException( errorMsg, ioe );
         }
+	catch ( RuntimeException e )
+	{
+            log.fatal( "Unknown Exception caught", e );
+	    releaseConnection( conn );
+	    throw e;
+	}
+
         releaseConnection( conn );
         return cargo;
     }

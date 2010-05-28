@@ -193,11 +193,11 @@ public class CargoContainer
             log.fatal( "format must be specified" );
             throw new IllegalArgumentException( "format must be specified" );
         }
-        // else if( alias == null )
-        // {
-        //     log.fatal( "alias must be specified" );
-        //     throw new IllegalArgumentException( "alias must be specified" );
-        // }
+        else if( alias == null )
+        {
+            log.fatal( "alias must be specified" );
+            throw new IllegalArgumentException( "alias must be specified" );
+        }
         else if( (data == null) || (data.length <= 0) )
         {
             log.fatal( "data must be present " );
