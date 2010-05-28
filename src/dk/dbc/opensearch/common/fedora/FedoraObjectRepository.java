@@ -45,6 +45,7 @@ import fedora.server.types.gen.ComparisonOperator;
 import fedora.server.types.gen.Datastream;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
+import fedora.server.types.gen.ListSession;
 import fedora.server.types.gen.ObjectFields;
 import fedora.server.types.gen.RelationshipTuple;
 
@@ -59,6 +60,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
@@ -244,7 +246,7 @@ public class FedoraObjectRepository implements IObjectRepository
         String returnedobjectIdentifier = null;
         try
         {
-            returnedobjectIdentifier = this.fedoraHandle.ingest( foxml, Constants.FOXML1_1.toString(), logmessage );
+            returnedobjectIdentifier = this.fedoraHandle.ingest( foxml, Constants.FOXML1_1.uri, logmessage );
         }
         catch( ConfigurationException ex )
         {
@@ -1200,11 +1202,40 @@ public class FedoraObjectRepository implements IObjectRepository
 
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = null;
+
+	// A list to contain arrays of ObjectFields.
+	// Whenever a new array of ObjectFields are found, either from findObjects or 
+	// resumeFindObjects, it is added to the list.
+	// The Arrays are later collected into a single array.
+	LinkedList< ObjectFields[] > objFieldsList = new LinkedList< ObjectFields[] >();
+	int numberOfResults = 0;
         try
         {
             NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );
             fsr = this.fedoraHandle.findObjects( resultFields, maxResults, fsq );
-            log.debug( String.format( "Result length of resultlist: %s", fsr.getResultList().length ) );
+
+	    numberOfResults += fsr.getResultList().length;
+	    objFieldsList.push( fsr.getResultList() ); 
+		
+	    ListSession listSession = fsr.getListSession();
+	    while ( listSession != null )
+	    {
+		String token = listSession.getToken();
+		fsr = this.fedoraHandle.resumeFindObjects( token );
+		if ( fsr != null )
+		{    
+		    numberOfResults += fsr.getResultList().length;
+		    objFieldsList.push( fsr.getResultList() );
+		    listSession = fsr.getListSession();
+		}
+		else
+		{
+		    listSession = null;
+		}
+	    }
+
+            log.debug( String.format( "Result length of resultlist: %s", numberOfResults ) );
+
         }
         catch( ConfigurationException ex )
         {
@@ -1233,7 +1264,15 @@ public class FedoraObjectRepository implements IObjectRepository
             return new ObjectFields[]{ };
         }
 
-        ObjectFields[] objectFields = fsr.getResultList();
+	ObjectFields[] objectFields = new ObjectFields[ numberOfResults ];
+
+	// Collecting ObjectFields arrays into a single array:
+	int destPos = 0; // destination position
+	for ( ObjectFields[] of : objFieldsList )
+	{
+	    System.arraycopy( of, 0, objectFields, destPos, of.length );
+	    destPos += of.length;
+	}
 
         return objectFields;
     }

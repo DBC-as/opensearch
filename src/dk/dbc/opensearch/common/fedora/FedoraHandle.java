@@ -140,7 +140,7 @@ public class FedoraHandle
     }
 
 
-    String ingest( byte[] data, String datatype, String logmessage ) throws ConfigurationException, ServiceException, ServiceException, IOException
+    synchronized String ingest( byte[] data, String datatype, String logmessage ) throws ConfigurationException, ServiceException, ServiceException, IOException
     {
         long timer = 0;
         if( log.isDebugEnabled() )
@@ -160,7 +160,12 @@ public class FedoraHandle
     }
 
 
-    String uploadFile( File fileToUpload ) throws IOException
+    /* Jeg er lidt usikker på om denne funktion skal være synkroniseret,
+       Men for en god ordens skyld har jeg valgt at gøre det. 
+       Hvis der er nogle der er uenige må de ændre det igen.
+       (jda 2010-05-03)
+     */
+    synchronized String uploadFile( File fileToUpload ) throws IOException
     {
         long timer = 0;
 
@@ -181,7 +186,7 @@ public class FedoraHandle
     }
 
 
-    String modifyDatastreamByReference( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, String MIMEType, String formatURI, String dsLocation, String checksumType, String checksum, String logMessage, boolean force ) throws RemoteException
+    synchronized String modifyDatastreamByReference( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, String MIMEType, String formatURI, String dsLocation, String checksumType, String checksum, String logMessage, boolean force ) throws RemoteException
     {
         long timer = 0;
 
@@ -201,7 +206,7 @@ public class FedoraHandle
         return timestamp;
     }
 
-    String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    synchronized String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -330,7 +335,7 @@ public class FedoraHandle
     }
 
 
-    boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    synchronized boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -351,7 +356,7 @@ public class FedoraHandle
     }
 
     
-    boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    synchronized boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -392,6 +397,27 @@ public class FedoraHandle
         return fsr;
     }
 
+    FieldSearchResult resumeFindObjects( String token ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
+    {
+        long timer = 0;
+
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis();
+        }
+
+        FieldSearchResult fsr = this.getAPIA().resumeFindObjects( token );
+
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+        }
+
+        return fsr;
+    }
+
+
 
     RelationshipTuple[] getRelationships( String subject, String predicate ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
@@ -415,7 +441,7 @@ public class FedoraHandle
     }
 
 
-    String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
+    synchronized String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
         long timer = 0;
 
@@ -436,7 +462,7 @@ public class FedoraHandle
     }
 
 
-    String purgeObject( String identifier, String logmessage, boolean force ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, RemoteException
+    synchronized String purgeObject( String identifier, String logmessage, boolean force ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, RemoteException
     {
         long timer = 0;
 
