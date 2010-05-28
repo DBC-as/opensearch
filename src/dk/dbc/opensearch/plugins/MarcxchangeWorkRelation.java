@@ -79,6 +79,12 @@ public class MarcxchangeWorkRelation implements IPluggable
     //private DocumentBuilder builder;
     //private Document doc;
 
+    public MarcxchangeWorkRelation( String script, IObjectRepository repository )
+    {
+	this( repository );
+	log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
+    }
+
     public MarcxchangeWorkRelation( IObjectRepository repository )
     {
         this.objectRepository = repository;

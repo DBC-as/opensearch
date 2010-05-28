@@ -60,6 +60,12 @@ public class DocbookMerger implements IPluggable
     private NamespaceContext nsc;
     private IObjectRepository objectRepository;
 
+    public DocbookMerger( String script, IObjectRepository repository )
+    {
+	this( repository );
+	log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
+    }
+
     public DocbookMerger( IObjectRepository repository )
     {
         this.objectRepository = repository;

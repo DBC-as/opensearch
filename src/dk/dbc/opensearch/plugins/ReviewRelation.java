@@ -66,6 +66,13 @@ public class ReviewRelation implements IPluggable
     private String script;
 
 
+    public ReviewRelation( String script, IObjectRepository repository ) throws PluginException
+    {
+	this( repository );
+	log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
+    }
+
+
     /**
      * Constructor for the ReviewRelation plugin.
      */
