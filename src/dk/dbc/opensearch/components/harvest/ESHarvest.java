@@ -195,7 +195,6 @@ public class ESHarvest implements IHarvest
 
             while ( rs2.next() )
             {
-                // ComparablePair pair = new ComparablePair( targetRef, rs2.getInt(1) );
                 ESIdentifier id = new ESIdentifier( targetRef, rs2.getInt(1) );
                 // Add pair to backend of queue
                 jobCandidatesQueue.add( id );
@@ -316,7 +315,6 @@ public class ESHarvest implements IHarvest
 
         // get a connection from the connectionpool:
         Connection conn;
-
         try
         {
             conn = connectionPool.getConnection();
