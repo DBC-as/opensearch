@@ -30,6 +30,7 @@ import java.io.*;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 
+import java.lang.ThreadLocal;
 
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple
@@ -48,9 +49,6 @@ import org.mozilla.javascript.*;
 public class SimpleRhinoWrapper
 {
     private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
-
-
-    private Context cx = Context.enter();
     private ScriptableObject scope = null;
 
 
@@ -63,10 +61,12 @@ public class SimpleRhinoWrapper
     {
 	FileReader inFile = new FileReader( jsFileName ); // can throw FileNotFindExcpetion
 
+	Context cx = getThreadLocalContext();
+
         // Initialize the standard objects (Object, Function, etc.)
         // This must be done before scripts can be executed. Returns
         // a scope object that we use in later calls.
-        scope = cx.initStandardObjects();
+        scope = cx.initStandardObjects( null, true ); // true => sealed standard objects
         if ( scope == null )
         {
             // This should never happen!
@@ -98,6 +98,9 @@ public class SimpleRhinoWrapper
 	    throw re;
 	}
 
+	// Seal scope:
+	// scope.sealObject();
+
     }							  
 
 
@@ -127,6 +130,7 @@ public class SimpleRhinoWrapper
         else
         {
             log.debug( String.format( "%s is defined or is a function", functionEntryPoint ) );
+	    Context cx = getThreadLocalContext();
             Function f = (Function)fObj;
 	    try 
 	    {
@@ -142,9 +146,28 @@ public class SimpleRhinoWrapper
 	    }
 
         }
-
         return result;
     }
+
+
+    private Context getThreadLocalContext() 
+    {
+	log.trace( "Entering getThreadLocalContext" );
+	Context cx = Context.getCurrentContext();
+	if ( cx == null )
+	{
+	    cx = Context.enter();
+	    
+	    if ( cx == null ) 
+	    {
+		throw new NullPointerException( "The retrieved Context is null" );
+	    }
+	}
+
+	log.trace( "Leaving getThreadLocalContext" );
+	return cx;
+    }
+
 
     /**
      * This is a private function for logging a RhinoException.
@@ -179,5 +202,6 @@ public class SimpleRhinoWrapper
 				  re.lineSource() != null ? re.lineSource() : "null" ) );
 	log.error( String.format( "RhinoException (scriptStackTrace) %s", re.getScriptStackTrace() ) );
     }
+
 
 }
