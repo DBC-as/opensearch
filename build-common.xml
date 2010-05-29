@@ -210,7 +210,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
            printsummary="withOutAndErr"
            haltonerror="false"
            haltonfailure="true">
-      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
+      <jvmarg value="-javaagent:${lib.dir}/jmockit-0.996.jar" />
       
       <classpath location="${classes.dir}" />
 
@@ -236,7 +236,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
            printsummary="on"
            haltonerror="false"
            haltonfailure="false">
-      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
+      <jvmarg value="-javaagent:${lib.dir}/jmockit-0.996.jar" />
       <classpath location="${classes.dir}" />
 
       <formatter type="plain" usefile="no"/>
@@ -368,7 +368,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
            haltonfailure="false"
            dir="${instrumented.dir}">
 
-      <jvmarg value="-javaagent:${lib.dir}/jmockit.jar" />
+      <jvmarg value="-javaagent:${lib.dir}/jmockit-0.996.jar" />
 
       <!-- Setting up the classpath -->
       <classpath location="${instrumented.dir}" />
