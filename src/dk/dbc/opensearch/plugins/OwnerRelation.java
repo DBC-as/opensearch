@@ -65,7 +65,7 @@ public class OwnerRelation implements IPluggable
     private PluginType pluginType = PluginType.RELATION;
     private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
 
-    private SimpleRhinoWrapper jsWrapper = null;
+    private static SimpleRhinoWrapper jsWrapper = null;
     private IObjectRepository repository;
 
 
@@ -77,11 +77,13 @@ public class OwnerRelation implements IPluggable
     public OwnerRelation( String script, IObjectRepository repository ) throws PluginException
     {
         this.repository = repository;
-        
-        String jsFileName = new String( "owner_relation.js" );
+
+	log.trace( "Entering OwnerRelation" );
+	
+	String jsFileName = new String( "owner_relation.js" );
+
         try
         {
-            // jsWrapper = new SimpleRhinoWrapper( new FileReader( FileSystemConfig.getScriptPath() + jsFileName ) );
 	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName );
         }
         catch( FileNotFoundException fnfe )
@@ -97,11 +99,12 @@ public class OwnerRelation implements IPluggable
             throw new PluginException( errorMsg, ce );
         }
 
-        jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
-        jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
+	jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
+	jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
         jsWrapper.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
 
         log.trace( "OwnerRelation plugin constructed" );
+
     }
 
 
@@ -135,7 +138,7 @@ public class OwnerRelation implements IPluggable
         return cargo;
     }
 
-    synchronized public CargoContainer setOwnerRelations( CargoContainer cargo ) throws PluginException
+    public CargoContainer setOwnerRelations( CargoContainer cargo ) throws PluginException
     {
         CargoObject co = null;
         if ( ! cargo.hasCargo( DataStreamType.OriginalData ) )
@@ -179,13 +182,14 @@ public class OwnerRelation implements IPluggable
             }
         }
 
+
         log.debug( String.format( "Trying to add owner relation for rels '%s'; submitter '%s'; format '%s'", rels.toString(), submitter, format ) );
 
-        String entryPointFunc = "addOwnerRelation";
-        rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
-                                                rels,
-                                                submitter,
-                                                format );
+	String entryPointFunc = "addOwnerRelation";
+	rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
+						rels,
+						submitter,
+						format );        
 
         log.debug( String.format( "rels: '%s'", rels.toString() ) );
 

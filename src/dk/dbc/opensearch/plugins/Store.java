@@ -50,7 +50,11 @@ public class Store implements IPluggable
     {
         this.objectRepository = repository;
     }    
-
+    /*
+     * This funtion is synchronized in the case the rare event happens that two records with identical ID's,
+     * eg. two updates of the record, are stored by two different threads simultaniously.
+     * See bug#10534.
+     */
 
 
     synchronized public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
