@@ -119,27 +119,32 @@ public class MarcxchangeWorkRelation implements IPluggable
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
         //System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
 
-        List< PID > pidList = getWorkList( searchPairs );
-        //System.out.println( String.format( "the pidList: %s", pidList.toString() ) );
-        log.debug( String.format( "length of pidList: %s", pidList.size() ) );
+	PID workPid = null;
+	synchronized (this) 
+	{
 
-        PID workPid = null;
-        workPid = checkMatch( cargo, pidList );
+	    List< PID > pidList = getWorkList( searchPairs );
 
-        if( workPid == null )
-        {
-            log.info( "no matching work found creating and storing one" );
-            workPid = createAndStoreWorkobject( cargo );
-        }
+	    log.debug( String.format( "length of pidList: %s", pidList.size() ) );
+
+	    workPid = checkMatch( cargo, pidList );
+	    
+	    if( workPid == null )
+	    {
+		log.info( "no matching work found creating and storing one" );
+		workPid = createAndStoreWorkobject( cargo );
+	    }
+
+	    log.debug( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
+	    //System.out.println( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
+	    log.debug( "work pid: "+ workPid.getIdentifier() );
+	    //System.out.println( "work pid: "+ workPid.getIdentifier() );
+	    log.debug( "Relating object and work");
+	    //System.out.println( "Relating object and work");
+	    relatePostAndWork( (PID)cargo.getIdentifier(), workPid );
+
+	} // end synchronized
         
-        log.debug( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
-        //System.out.println( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
-        log.debug( "work pid: "+ workPid.getIdentifier() );
-        //System.out.println( "work pid: "+ workPid.getIdentifier() );
-        log.debug( "Relating object and work");
-        //System.out.println( "Relating object and work");
-        relatePostAndWork( (PID)cargo.getIdentifier(), workPid );
-
         return cargo;
     }
 
@@ -159,9 +164,10 @@ public class MarcxchangeWorkRelation implements IPluggable
 
         // get the DC-Stream
         DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
-        //create outputstream
 
+        //create outputstream
         String dcString = getDCStreamAsString( theDC );
+
         //System.out.println( String.format( "the dc-string: %s", dcString ) );
         log.debug( String.format( "the dc-string: %s", dcString ) );
         byte[] strippedOrgData = E4XXMLHeaderStripper.strip( cargo.getCargoObject( DataStreamType.OriginalData ).getBytes() );
@@ -184,6 +190,8 @@ public class MarcxchangeWorkRelation implements IPluggable
                 searchList.add( new InputPair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
             }
         }
+
+        log.debug( String.format( "length of search list: %s", searchList.size() ) );
         return searchList;
     }
 
@@ -212,7 +220,16 @@ public class MarcxchangeWorkRelation implements IPluggable
             searchResultList = objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ); 
             //pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) );
             log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
-            pidStringList.addAll( searchResultList ); 
+
+            //loop to not add duplets
+            for( String result : searchResultList )
+            {
+                if( !(pidStringList.contains( result) ) )
+                {
+                    pidStringList.add( result );
+                }
+            }
+            //pidStringList.addAll( searchResultList ); 
         }
 
         log.debug( String.format( "pidStringList: %s", pidStringList ) );
