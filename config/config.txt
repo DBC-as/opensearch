@@ -59,9 +59,9 @@ shutdown_poll_time:  1000
 # size of the threadpool job queue, see http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html#ThreadPoolExecutor(int,%20int,%20long,%20java.util.concurrent.TimeUnit,%20java.util.concurrent.BlockingQueue)
 queue_size:          20
 # number of threads to keep alive in the thread pool
-core_poll_size:      1 
+core_poll_size:      1
 # maximum number of threads in thread pool
-max_poll_size:       1 
+max_poll_size:       1
 # time (in seconds) to keep idle threads alive in the thread pool
 keep_alive_time:     10
 # job_limit is not used anymore, will be deleted in future releases
