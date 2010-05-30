@@ -106,7 +106,7 @@ public class DatadockThreadTest
     {
         /**
         BasicConfigurator.configure();
-        LogManager.getRootLogger().setLevel( Level.TRACE );
+        LogManager.getRootLogger().setLevel( Level.OFF );
         */
         referenceData = XMLUtils.documentFromString( refdata );
         mockCC = new CargoContainer();

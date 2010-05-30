@@ -51,7 +51,6 @@ import org.apache.log4j.LogManager;
 import org.junit.*;
 import org.w3c.dom.Document;
 
-
 import static mockit.Mockit.setUpMocks;
 import static mockit.Mockit.tearDownMocks;
 import static org.junit.Assert.*;
