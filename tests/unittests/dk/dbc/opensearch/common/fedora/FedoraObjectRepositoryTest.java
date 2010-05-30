@@ -28,21 +28,28 @@ import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
 import fedora.server.types.gen.ObjectFields;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.HashMap;
+
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import static mockit.Mockit.setUpMocks;
-import static mockit.Mockit.tearDownMocks;
+
 import mockit.Mock;
 import mockit.MockClass;
+
 import org.apache.axis.types.NonNegativeInteger;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
@@ -53,6 +60,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.InputSource;
+
+import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
 import static org.junit.Assert.*;
 
 /**
@@ -236,6 +246,9 @@ public class FedoraObjectRepositoryTest {
     @BeforeClass
     public static void generalSetup()
     {
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel( Level.OFF );
+
         HashMap<String, String> m = new HashMap<String, String>();
         m.put( "x", "info:fedora/fedora-system:def/foxml#" );
         SimpleNamespaceContext ctx = new SimpleNamespaceContext(m);
