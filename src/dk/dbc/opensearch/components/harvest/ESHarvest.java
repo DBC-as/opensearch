@@ -1395,8 +1395,9 @@ public class ESHarvest implements IHarvest
             String diagSetId = new String("'10.100.1.1'");
             int condition = 100;
 
-            pstmt2 = conn.prepareStatement( "INSERT INTO " + "diagnostics (id, lbnr, diagnosticSetId, condition, addInfo) " +
-                            "VALUES ( ?, ?, '?', ?, '?' )" );
+            pstmt2 = conn.prepareStatement( "INSERT INTO " + 
+					    "diagnostics (id, lbnr, diagnosticSetId, condition, addInfo) " +
+					    "VALUES ( ?, ?, ?, ?, ? )" );
             pstmt2.setInt( 1, diagnosticId );
             pstmt2.setInt( 2, lbnr );
             pstmt2.setString( 3, diagSetId );
@@ -1440,9 +1441,9 @@ public class ESHarvest implements IHarvest
 
             // Updating recordOrSurDiag2 in row:
             pstmt3 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-                                            "SET recordOrSurDiag2 = %s " +
-                                            "WHERE targetreference = %s " +
-                                            "AND lbnr = %s" );
+                                            "SET recordOrSurDiag2 = ? " +
+                                            "WHERE targetreference = ? " +
+                                            "AND lbnr = ?" );
             pstmt3.setInt( 1, diagnosticId );
             pstmt3.setInt( 2, Id.getTargetRef() );
             pstmt3.setInt( 3, Id.getLbNr() );
