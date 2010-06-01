@@ -30,7 +30,9 @@ import java.io.*;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 
-import java.lang.ThreadLocal;
+import java.util.List;
+import java.util.ArrayList;
+import dk.dbc.opensearch.common.types.Pair;
 
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple
@@ -51,13 +53,18 @@ public class SimpleRhinoWrapper
     private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
     private ScriptableObject scope = null;
 
+    public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
+    {
+	//	List< Pair< String, Object > > emptyList = new ArrayList< Pair< String, Object > >();
+	this( jsFileName, new ArrayList< Pair< String, Object > >() );
+    }
 
     /**
      * Constructs an instance of a javascript environment, containing the given javascript.
      *
      * @param jsFileName A string containing the name and path of the javascript file to be read
      */
-    public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
+    public SimpleRhinoWrapper( String jsFileName, List< Pair< String, Object> > objectList ) throws FileNotFoundException
     {
 	FileReader inFile = new FileReader( jsFileName ); // can throw FileNotFindExcpetion
 
@@ -91,34 +98,38 @@ public class SimpleRhinoWrapper
         }
 	catch ( RhinoException re )
 	{
-	    System.err.println( "Evaluate" );
+	    log.debug( "Evaluate" );
 
 	    logRhinoException( re );
 
 	    throw re;
 	}
 
+	// Add objects to scope:
+	for ( Pair< String, Object > objectPair : objectList )
+	{
+	    log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
+	    scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );
+	}
+
 	// Seal scope:
-	// scope.sealObject();
+	scope.sealObject();
 
     }							  
-
-
-    /**
-     * Sets an instans of an object in the Javascript environment making it accesible for the script
-     *
-     * @param key   The name by which the object should be associated in the javascript 
-     * @param value The object
-     */
-    public void put( String key, Object value )
-    {
-        scope.defineProperty( key, value, ScriptableObject.DONTENUM );
-    }
 
     
     public Object run( String functionEntryPoint, Object... args )
     {
         log.trace( String.format( "Entering run function with %s", functionEntryPoint ) );
+
+	// synchronized(this) 
+	// {
+	//     if ( ! scope.isSealed() )
+	//     {
+	// 	scope.sealObject();
+	//     }
+	// }
+
         Object fObj = scope.get( functionEntryPoint, scope );
         Object result = null;
         if ( !( fObj instanceof Function ) )
@@ -138,7 +149,7 @@ public class SimpleRhinoWrapper
 	    }
 	    catch ( RhinoException re )
 	    {
-		System.err.println( "Call" );
+		log.debug( "Call" );
 
 		logRhinoException( re );
 

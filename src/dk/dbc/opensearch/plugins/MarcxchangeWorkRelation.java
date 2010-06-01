@@ -38,18 +38,19 @@ import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-import dk.dbc.opensearch.common.types.InputPair;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.OpenSearchTransformException;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -79,26 +80,27 @@ public class MarcxchangeWorkRelation implements IPluggable
     //private DocumentBuilder builder;
     //private Document doc;
 
-    public MarcxchangeWorkRelation( String script, IObjectRepository repository )
+    public MarcxchangeWorkRelation( String script, IObjectRepository repository ) throws PluginException
     {
 	this( repository );
 	log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
     }
 
-    public MarcxchangeWorkRelation( IObjectRepository repository )
+
+    public MarcxchangeWorkRelation( IObjectRepository repository ) throws PluginException
     {
         this.objectRepository = repository;
-    }
 
-
-    @Override
-    synchronized public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
-    {   
         //creating the javascript environment
         String jsFileName = new String( "workmatch_relation_functions.js" );
+
+	// Creates a list of objects to be used in the js-scope
+	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	objectList.add( new InputPair< String, Object >( "Log", log ) );
+
         try
         {
-            rhinoWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName );
+            rhinoWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
         }
         catch( FileNotFoundException fnfe )
         {
@@ -112,12 +114,17 @@ public class MarcxchangeWorkRelation implements IPluggable
             log.fatal( errorMsg, ce );
             throw new PluginException( errorMsg, ce );
         }
-        rhinoWrapper.put( "Log", log );//SOI prefers it with capital "L"
         //done creating javascript environment        
+
+    }
+
+
+    @Override
+    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    {   
 
         List< InputPair< TargetFields, String > > searchPairs = getSearchPairs( cargo );
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
-        //System.out.println( String.format( "the searchList: %s", searchPairs.toString() ) );
 
 	PID workPid = null;
 	synchronized (this) 
@@ -136,11 +143,8 @@ public class MarcxchangeWorkRelation implements IPluggable
 	    }
 
 	    log.debug( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
-	    //System.out.println( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
 	    log.debug( "work pid: "+ workPid.getIdentifier() );
-	    //System.out.println( "work pid: "+ workPid.getIdentifier() );
 	    log.debug( "Relating object and work");
-	    //System.out.println( "Relating object and work");
 	    relatePostAndWork( (PID)cargo.getIdentifier(), workPid );
 
 	} // end synchronized
@@ -168,7 +172,6 @@ public class MarcxchangeWorkRelation implements IPluggable
         //create outputstream
         String dcString = getDCStreamAsString( theDC );
 
-        //System.out.println( String.format( "the dc-string: %s", dcString ) );
         log.debug( String.format( "the dc-string: %s", dcString ) );
         byte[] strippedOrgData = E4XXMLHeaderStripper.strip( cargo.getCargoObject( DataStreamType.OriginalData ).getBytes() );
         String orgData = new String ( strippedOrgData );

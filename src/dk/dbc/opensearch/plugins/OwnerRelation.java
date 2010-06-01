@@ -37,12 +37,16 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.script.Invocable;
@@ -82,9 +86,15 @@ public class OwnerRelation implements IPluggable
 	
 	String jsFileName = new String( "owner_relation.js" );
 
+	// Creates a list of objects to be used in the js-scope
+	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	objectList.add( new InputPair< String, Object >( "Log", log ) );
+	objectList.add( new InputPair< String, Object >( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY ) );
+	objectList.add( new InputPair< String, Object >( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH ) );
+
         try
         {
-	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName );
+	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
         }
         catch( FileNotFoundException fnfe )
         {
@@ -98,10 +108,6 @@ public class OwnerRelation implements IPluggable
             log.fatal( errorMsg, ce );
             throw new PluginException( errorMsg, ce );
         }
-
-	jsWrapper.put( "Log", log ); // SOI prefers Log with capital L!
-	jsWrapper.put( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY );
-        jsWrapper.put( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH );
 
         log.trace( "OwnerRelation plugin constructed" );
 

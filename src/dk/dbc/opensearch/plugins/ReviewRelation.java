@@ -38,10 +38,14 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -91,9 +95,14 @@ public class ReviewRelation implements IPluggable
             jsFileName = new String( script );
         }
 
+        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	objectList.add( new InputPair< String, Object >( "Log", log ) );
+	objectList.add( new InputPair< String, Object >( "scriptClass", scriptClass ) );
+
         try 
 	{
-	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName );
+	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
 	}
 	catch( FileNotFoundException fnfe )
 	{
@@ -107,10 +116,6 @@ public class ReviewRelation implements IPluggable
 	    log.fatal( errorMsg, ce );
 	    throw new PluginException( errorMsg, ce );
 	}
-
-        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
-        jsWrapper.put( "scriptClass", scriptClass );
-        jsWrapper.put( "Log", log ); //SOI likes it with capital "L"
 
     }
 
