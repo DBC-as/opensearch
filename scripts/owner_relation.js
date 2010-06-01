@@ -89,7 +89,7 @@ function doit_folkebib_getsubject( prefix,  format )
 
 function addFolkebibRelation( rels_ext, submitter, format )
 {
-    ownerpid = doit_folkebib_getsubject( lookup_folkebib( submitter ) , format );
+    var ownerpid = doit_folkebib_getsubject( lookup_folkebib( submitter ) , format );
     
     rels_ext.addRelationship( IS_OWNED_BY, ownerpid );
     
@@ -98,7 +98,7 @@ function addFolkebibRelation( rels_ext, submitter, format )
 
 function addDbcRelation( rels_ext, submitter, format )
 {
-    ownerpid = lookup_dbcmap( format );
+    var ownerpid = lookup_dbcmap( format );
 
     rels_ext.addRelationship( IS_OWNED_BY, ownerpid );
     
@@ -114,7 +114,7 @@ function addDbcRelation( rels_ext, submitter, format )
 
 function add150014Relation( rels_ext, submitter, format )
 {
-    owner_pid = lookup_150014( format );
+    var owner_pid = lookup_150014( format );
 
     rels_ext.addRelationship( IS_OWNED_BY, owner_pid );
 
@@ -134,17 +134,17 @@ function addOwnerRelation( rels_ext, submitter, format )
 {
     if( submitter.charAt(0) == "7") 
     {
-        rels_ext = addFolkebibRelation( rels_ext, submitter, format );
+        var rels_ext = addFolkebibRelation( rels_ext, submitter, format );
         return rels_ext;
     } 
     else if( submitter == "dbc" ) 
     {
-        rels_ext = addDbcRelation( rels_ext, submitter, format );
+        var rels_ext = addDbcRelation( rels_ext, submitter, format );
         return rels_ext;
     }
     else if ( submitter == "150014" )
     {
-        rels_ext = add150014Relation( rels_ext, submitter, format );
+        var rels_ext = add150014Relation( rels_ext, submitter, format );
         return rels_ext;
     }
     else 

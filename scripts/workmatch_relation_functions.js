@@ -162,9 +162,9 @@ function checkmatch( newObject, workObject )
 function makeworkobject( cargoXML, workDC )
 {
     var XML_cargo = new XML( cargoXML );
-    ting = new Namespace ( "ting", "http://www.dbc.dk/ting" );
-    dkabm = new Namespace ( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" );
-    dc = new Namespace ( "dc", "http://purl.org/dc/elements/1.1/" );
+    var ting = new Namespace ( "ting", "http://www.dbc.dk/ting" );
+    var dkabm = new Namespace ( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" );
+    var dc = new Namespace ( "dc", "http://purl.org/dc/elements/1.1/" );
 
     var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
     //select the elements in the dc-xml that constitutes the work
@@ -189,9 +189,9 @@ function makeworkobject( cargoXML, workDC )
 
     print (xml + "\n");
 
-    res = String(xml);
+    var res = String(xml);
 
-   workDC.setTitle( XML_cargo.dc::title );
+    workDC.setTitle( XML_cargo.dc::title );
     workDC.setCreator( XML_cargo.dc::creator );
     workDC.setType( XML_cargo.dc::type );
     workDC.setSource( XML_cargo.dc::source );
