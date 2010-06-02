@@ -149,13 +149,9 @@ public class DatadockThread implements Callable<Boolean>
         // Method is to be extended when we connect to 'Posthuset'
         log.trace( "DatadockThread call method called" );
 
-        String script = "";
-        Boolean success = Boolean.FALSE;
-        long timer = 0;
-        IIdentifier tmpid = datadockJob.getIdentifier();
         try
         {
-            cargo = harvester.getCargoContainer( tmpid );
+            cargo = harvester.getCargoContainer( datadockJob.getIdentifier() );
         }
         catch( HarvesterUnknownIdentifierException huie )
         {
@@ -176,14 +172,14 @@ public class DatadockThread implements Callable<Boolean>
             String classname = pluginTask.getPluginName();
             Map<String, String> argsMap = pluginTask.getArgsMap();
             log.trace( "the argsMap: " + argsMap.toString() ); 
-            script = (String)argsMap.get( "script" );
+            String script = (String)argsMap.get( "script" );
             log.trace( String.format("DatadockThread getPlugin classname: '%s' script: '%s' ",classname, script ) );   
             IPluggable plugin = pluginResolver.getPlugin( classname, script );
             
-            timer = System.currentTimeMillis();
+            long timer = System.currentTimeMillis();
             cargo = plugin.runPlugin( cargo, argsMap );
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: %s time: ", classname, timer ) );  
+            log.trace( String.format( "Timing: %s time: %s", classname, timer ) );  
             
             if( null == cargo || cargo.getCargoObjectCount() < 1 )
             {
@@ -202,13 +198,13 @@ public class DatadockThread implements Callable<Boolean>
         try
         {
             harvester.setStatusSuccess( datadockJob.getIdentifier(), identifierAsString );
-            success = Boolean.TRUE;
         }
         catch ( HarvesterInvalidStatusChangeException hisce )
         {
             log.error( hisce.getMessage() , hisce);
-            return false;
+            return Boolean.FALSE;
         }
-        return success;
+
+	return Boolean.TRUE;
     }
 }
