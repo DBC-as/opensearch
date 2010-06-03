@@ -59,19 +59,6 @@ public interface IHarvest
     List<IJob> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException; 
 
 
-    /**
-     * Given an {@link IIdentifier} the requestor can obtain the data
-     * associated with the {@code jobId}. {@code jobId} is usually
-     * obtained from a {@link IJob}, which in turn can be obtained
-     * from {@link #getJobs(int)}.
-     * 
-     * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvest}
-     * @return a byte[] containing the data identified by the {@code jobId}
-     * 
-     * @throws UnknownIdentifierException if the {@link IIdentifier} is not known to the {@link IHarvest}. I.e. if the jobId can not be found
-     */
-    byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException;
-
     /** 
      * Given an {@link IIdentifier} the requestor can obtain the CargoContainer
      * associated with the {@code jobId}. {@code jobId} is usually

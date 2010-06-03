@@ -32,6 +32,7 @@ import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import java.sql.SQLException;
 
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
 import java.util.List;
@@ -39,7 +40,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-
 
 
 import oracle.jdbc.pool.OracleDataSource;
@@ -193,7 +193,8 @@ public class HarvestFunc
 
     private static void getJobsNDataTest() throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
-        byte[] data = null;
+	//        byte[] data = null;
+	CargoContainer data = null;
 
         List<IJob> jobL = esh.getJobs( 2 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
@@ -207,7 +208,8 @@ public class HarvestFunc
             log.info( String.format( "job ID: %s", theJob.getIdentifier() ) );
             try
             {
-                data = esh.getData( theJob.getIdentifier() );
+                // data = esh.getData( theJob.getIdentifier() );
+		data = esh.getCargoContainer( theJob.getIdentifier() );
 
                 System.out.println(  String.format( "data gotten: %s", data.toString() ) );
             }

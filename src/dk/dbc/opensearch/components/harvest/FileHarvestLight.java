@@ -222,34 +222,6 @@ public class FileHarvestLight implements IHarvest
 
     }
 
-    /**
-     *  @deprecated This function is replaced with {@link #getCargoContainer}.
-     */
-    @Deprecated
-    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
-    {
-        FileIdentifier theJobId = (FileIdentifier)jobId;
-        byte[] data;
-        InputStream ISdata;
-
-        try
-        {
-            ISdata = FileHandler.readFile( theJobId.getURI().getRawPath() );
-        }
-        catch( FileNotFoundException fnfe )
-        {
-            throw new HarvesterUnknownIdentifierException( String.format( "File for path: %s couldnt be read", theJobId.getURI().getRawPath() ) );
-        }
-        try
-        {
-            data = StreamHandler.bytesFromInputStream( ISdata, 0 );
-        }
-        catch( IOException ioe )
-        {
-            throw new HarvesterUnknownIdentifierException( String.format( "Could not construct byte[] from InputStream for file %s ", theJobId.getURI().getRawPath() ) );
-        }
-        return data;
-    }
 
     /**
      *

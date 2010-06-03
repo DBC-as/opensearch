@@ -60,7 +60,7 @@ import org.xml.sax.SAXException;
 
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
- * to a frontend, i.e. the DataDock, delivers data through {@link #getData} and maintains the state of 
+ * to a frontend, i.e. the DataDock, delivers data through {@link #getCargoContainer} and maintains the state of 
  * the jobs in the ES-base through {@link #setStatusSuccess}, {@link #setStatusFailure}.
  */
 public class ESHarvest implements IHarvest
@@ -480,84 +480,6 @@ public class ESHarvest implements IHarvest
         return returnData;
     }
 
-    
-    /**
-     *  Retrieves data from the ES-base associated with the jobId.
-     * 
-     *  @deprecated This function is replaced with {@link #getCargoContainer}.
-     */
-    @Deprecated
-    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
-    {
-        log.info( String.format( "ESHarvest.getData( identifier %s ) ", jobId ) );
-
-        // get a connection from the connectionpool:
-        Connection conn;
-
-        try
-        {
-            conn = connectionPool.getConnection();
-        }
-        catch( SQLException sqle )
-        {
-            String errorMsg = new String("Could not get a db-connection from the connection pool");
-            log.fatal( errorMsg, sqle );
-            throw new HarvesterIOException( errorMsg, sqle );
-        }
-
-        //get the data associated with the identifier from the record field
-        byte[] returnData = null;
-        ESIdentifier ESJobId = (ESIdentifier)jobId;
-
-        returnData = getDataDBCall( ESJobId, conn ); // the deleted function below is moved into a method of its own
-
-        // try
-        // {
-	//     PreparedStatement pstmt = conn.prepareStatement( "SELECT record " +
-	// 						     "FROM suppliedrecords " +
-	// 						     "WHERE targetreference = ? " +
-	// 						     "AND lbnr = ?" );
-	//     pstmt.setInt( 1, ESJobId.getTargetRef() );
-	//     pstmt.setInt( 2, ESJobId.getLbNr() );
-        //     ResultSet rs = pstmt.executeQuery( );
-        //     if ( ! rs.next() )
-        //     {
-        //         // The ID does not exist
-        //         String errorMsg = String.format( "the Identifier %s is unknown in the base", ESJobId );
-        //         log.error( errorMsg );
-        //         throw new HarvesterUnknownIdentifierException( errorMsg );
-        //     }
-        //     else
-        //     {
-        //         // The ID exist
-        //         Blob data = rs.getBlob( 1 );
-        //         long blobLength = data.length();
-        //         if ( blobLength > 0 )
-        //         {
-        //             // Return data
-        //             returnData = data.getBytes( 1L, (int)blobLength );
-        //         }
-        //         else
-        //         {
-        //             // For some unknown reason, there is no data associated with the ID.
-        //             String errorMsg = String.format( "No data associated with id %s", ESJobId );
-        //             log.error( errorMsg );
-        //             throw new HarvesterIOException( errorMsg );
-        //         }
-        //     }
-        // }
-        // catch( SQLException sqle )
-        // {
-        //     String errorMsg = new String( "A database error occured " );
-        //     log.fatal(  errorMsg, sqle );
-        //     throw new HarvesterIOException( errorMsg, sqle );
-        // }
-
-        releaseConnection( conn );
-
-        return returnData;
-    }
-
 
 
     public CargoContainer getCargoContainer( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterIOException
@@ -587,33 +509,6 @@ public class ESHarvest implements IHarvest
         // Retriving alias:
 	//        String alias = null;
 	String alias = "alias";
-
-
-        // String errMsg = new String( "Could not retrieve indexingAlias" ); // preemptive string
-        // try
-        // {
-        //     alias = DatadockJobsMap.getIndexingAlias( job.getSubmitter(), job.getFormat() );
-        // }
-        //     catch( ConfigurationException ce)
-        // {
-        //     log.error( errMsg, ce );
-        //     throw new HarvesterIOException( errMsg, ce );
-        // }
-        // catch( IOException ioe )
-        // {
-        //     log.error( errMsg, ioe );
-        //     throw new HarvesterIOException( errMsg, ioe );
-        // }
-        // catch( ParserConfigurationException pce )
-        // {
-        //     log.error( errMsg, pce );
-        //     throw new HarvesterIOException( errMsg, pce );
-        // }
-        // catch( SAXException saxe )
-        // {
-        //     log.error( errMsg, saxe );
-        //     throw new HarvesterIOException( errMsg, saxe );
-        // }
 
         log.debug( "Creating CargoContainer" );
 	CargoContainer cargo = new CargoContainer();

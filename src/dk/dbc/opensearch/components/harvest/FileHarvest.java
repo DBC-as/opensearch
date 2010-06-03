@@ -419,9 +419,7 @@ public class FileHarvest implements IHarvest
      *
      *  @deprecated This function is replaced with {@link #getCargoContainer}.
      */
-    @Override
-    @Deprecated
-    public byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
+    private byte[] getData( IIdentifier jobId ) throws HarvesterUnknownIdentifierException
     {
         FileIdentifier theJobId = (FileIdentifier) jobId;
         byte[] data;

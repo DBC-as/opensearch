@@ -21,6 +21,7 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class LightHarvestFunc {
 
     private static void getJobsNDataTest()
     {
-        byte[] data = null;
+        // byte[] data = null;
+	CargoContainer data = null;
         //        esh = new ESHarvest();
         //        esh.start();
         //startESHarvestTest();
@@ -76,7 +78,8 @@ public class LightHarvestFunc {
             System.out.println( String.format( "job: %s", theJob.toString() ) );
             try
             {
-                data = harvester.getData( theJob.getIdentifier() );
+                // data = harvester.getData( theJob.getIdentifier() );
+		data = harvester.getCargoContainer( theJob.getIdentifier() );
 
                 System.out.println(  String.format( "data gotten: %s", data.toString() ) );
 
@@ -84,6 +87,10 @@ public class LightHarvestFunc {
             catch( HarvesterUnknownIdentifierException huie )
             {
                 huie.printStackTrace();
+            }
+            catch( HarvesterIOException hioe )
+            {
+                hioe.printStackTrace();
             }
             setStatusTest( theJob.getIdentifier() );
         }
