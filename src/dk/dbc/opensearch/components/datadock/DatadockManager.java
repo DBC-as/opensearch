@@ -142,7 +142,7 @@ public class DatadockManager
 
             if( isJobIsPossible( job ) )
             {
-                pool.submit( job );
+                pool.submit( job.getIdentifier() );
                 registeredJobs.remove( 0 );
                 ++jobs_submitted;
 

@@ -30,7 +30,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
+//import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
@@ -134,31 +134,31 @@ public class DatadockPool
     /**
      * submits a job to the threadpool for execution by a datadockThread.
      *
-     * @param datadockJob The job to start.
+     * @param identifier Identifier for the job to start.
      *
      * @throws RejectedExecutionException Thrown if the threadpools jobqueue is full.
      * @throws ParserConfigurationException 
      * @throws SAXException 
      */
-    public void submit( IJob datadockJob ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, ParserConfigurationException, SAXException
+    public void submit( IIdentifier identifier ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, ParserConfigurationException, SAXException
     {
-        if ( null == datadockJob )
+        if ( identifier == null )
         {
-            String error = "The submitted job was null, aborting task";
+            String error = "The submitted identifier was null, aborting task";
             log.error( error );
             throw new IllegalArgumentException( error );
         }
-        log.debug( String.format( "Submitting job '%s'", datadockJob.getIdentifier() ) );
+        log.debug( String.format( "Submitting job '%s'", identifier ) );
 
-        FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( datadockJob, processqueue, harvester, pluginResolver, flowMap ) );
+	FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( identifier, processqueue, harvester, pluginResolver, flowMap ) );
         
         if ( future == null )/** \todo: I don't see this happening; even if DatadockThread returns null, FutureTask will still be non-null */
         {
-        	log.error( "DatadockPool submit 'future' is null" );
-        	throw new IllegalStateException( "DatadockPool submit 'future' is null" );
+	    log.error( "DatadockPool submit 'future' is null" );
+	    throw new IllegalStateException( "DatadockPool submit 'future' is null" );
         }
         threadpool.submit( future );
-        jobs.put( datadockJob.getIdentifier(), future );
+        jobs.put( identifier, future );
     }
 
 

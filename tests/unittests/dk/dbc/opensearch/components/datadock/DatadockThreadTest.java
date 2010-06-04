@@ -247,7 +247,7 @@ public class DatadockThreadTest
     @Test public void testConstructor() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, ParserConfigurationException, SAXException, ServiceException
     {
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job, mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
     }
 
 
@@ -271,7 +271,7 @@ public class DatadockThreadTest
        pluginTaskList.add( pluginTask3 );
 
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job, mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
         Boolean result = ddThread.call();
 
         assertTrue( result.booleanValue() == true );
@@ -286,7 +286,7 @@ public class DatadockThreadTest
         }};
 
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job, mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
         Boolean result = ddThread.call();
     } 
 
@@ -308,7 +308,7 @@ public class DatadockThreadTest
         pluginTaskList.add( pluginTask1 );
 
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job, mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
         ddThread.call();
 
     }   
@@ -323,7 +323,7 @@ public class DatadockThreadTest
         testArrayList.add( "dk.dbc.opensearch.plugins.XMLHarvester" );
 
         DatadockJob job = new DatadockJob( new UnknownIdentifier(), referenceData );
-        ddThread = new DatadockThread( job, mockProcessqueue, new ExceptionHarvester(), mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, new ExceptionHarvester(), mockPluginResolver, mockFlowmap );
         ddThread.call();
     }
 
@@ -346,7 +346,7 @@ public class DatadockThreadTest
 
         mockHarvester.setStatusSuccess( job.getIdentifier(), "" );
 
-        ddThread = new DatadockThread( job, mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
         ddThread.call();
     }
 }

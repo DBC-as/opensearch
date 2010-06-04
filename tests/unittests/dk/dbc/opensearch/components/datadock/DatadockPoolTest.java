@@ -95,7 +95,7 @@ public class DatadockPoolTest
     public static class MockDatadockThread implements Callable<Boolean>
     {
         @Mock
-            public void $init( IJob datadockJob, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
+            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
         { 
         }
 
@@ -110,7 +110,7 @@ public class DatadockPoolTest
     public static class MockNullDatadockThread implements Callable<Boolean>
     {
         @Mock
-            public void $init( IJob datadockJob, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
+            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
         {
         }
 
@@ -176,10 +176,9 @@ public class DatadockPoolTest
      @Test
      public void submitTest() throws Exception
      {
-         IJob job = new DatadockJob(null, null);
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
          DatadockPool pool = new DatadockPool( tpe, null, null, null, null );
-         pool.submit( job );
+	 pool.submit( new MockIdentifier() );
      }
 
      @Test( expected=IllegalArgumentException.class)
@@ -196,10 +195,11 @@ public class DatadockPoolTest
          final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" lang=\"dk\"/></referencedata>";
          Document referenceData = XMLUtils.documentFromString( refdata );
 
-         IJob job = new DatadockJob( new MockIdentifier(), referenceData );
+	 //         IJob job = new DatadockJob( new MockIdentifier(), referenceData );
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
          DatadockPool pool = new DatadockPool( tpe, null, mockHarvester, null, null );
-         pool.submit( job );
+	 //         pool.submit( job.getIdentifier() );
+         pool.submit( new MockIdentifier() );
          pool.checkJobs();
      }
 

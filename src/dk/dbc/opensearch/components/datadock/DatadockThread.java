@@ -32,6 +32,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
@@ -79,7 +80,7 @@ public class DatadockThread implements Callable<Boolean>
     private IHarvest                harvester;
     private CargoContainer          cargo;
     private IProcessqueue           queue;
-    private DatadockJob             datadockJob;
+    private IIdentifier             identifier;
     private String                  submitter;
     private String                  format;
     private Map<String, List<PluginTask>> flowMap;
@@ -92,7 +93,7 @@ public class DatadockThread implements Callable<Boolean>
      * DataDock is initialized with a DatadockJob containing information about
      * the data to be 'docked' into to system
      *
-     * @param datadockJob
+     * @param identifier
      *            the information about the data to be docked
      * @param processqueue
      *            the processqueue handler
@@ -101,7 +102,7 @@ public class DatadockThread implements Callable<Boolean>
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    public DatadockThread( IJob datadockJob, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
+    public DatadockThread( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
@@ -110,7 +111,7 @@ public class DatadockThread implements Callable<Boolean>
          * the cargoContainer, so all that is needed is the identifier
          */
 
-        this.datadockJob = (DatadockJob)datadockJob;
+	this.identifier = identifier;
         this.harvester = harvester;
         this.pluginResolver = pluginResolver;
         this.flowMap = flowMap;
@@ -151,7 +152,7 @@ public class DatadockThread implements Callable<Boolean>
 
         try
         {
-            cargo = harvester.getCargoContainer( datadockJob.getIdentifier() );
+            cargo = harvester.getCargoContainer( identifier );
         }
         catch( HarvesterUnknownIdentifierException huie )
         {
@@ -166,7 +167,6 @@ public class DatadockThread implements Callable<Boolean>
         List<PluginTask> pluginTaskList = flowMap.get( submitter + format);
 
         for( PluginTask pluginTask : pluginTaskList )
-            //      for( String classname : pluginListForThread )
         {
             
             String classname = pluginTask.getPluginName();
@@ -197,7 +197,7 @@ public class DatadockThread implements Callable<Boolean>
         //inform the harvester that it was a success
         try
         {
-            harvester.setStatusSuccess( datadockJob.getIdentifier(), identifierAsString );
+            harvester.setStatusSuccess( identifier, identifierAsString );
         }
         catch ( HarvesterInvalidStatusChangeException hisce )
         {
