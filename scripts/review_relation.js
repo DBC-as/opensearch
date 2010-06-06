@@ -32,7 +32,7 @@ function main( submitter, format, language, xml_review, pid )
     var results = scriptClass.getPID( identifier );
 
     for ( var i = 0; i < results.length; ++i ) {
-	result = results[i];
+	var result = results[i];
 
 	Log.info( "result: " + result );
 
