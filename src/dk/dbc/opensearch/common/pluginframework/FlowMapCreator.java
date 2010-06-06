@@ -53,6 +53,17 @@ import org.xml.sax.SAXException;
 
 import org.apache.log4j.Logger;
 
+/**
+ * The FlowMapCreator is a class for creating specific flowmaps from an XML-file.
+ * The layout of the XML-file is given in an XSD.
+ * 
+ * Currently the flowmap supports different flows based on a unique pair of submitter/format.
+ * Each flow consist of a series of plugins, and each plugin can have a set of arguments.
+ * 
+ * It should be noted, that the flowmaps are to be executed in the order they are specified in the XML-file.
+ * It should furthermore be noted, that XML 1.0 does not guarentee the ordering of the elements, but 
+ * as far as I am aware no parsers parse in any other order but document order.
+ */
 public class FlowMapCreator
 {
     static Logger log = Logger.getLogger( FlowMapCreator.class );
