@@ -67,37 +67,18 @@ public class ScriptMethodsForReviewRelation {
      */
     public boolean createRelation( String subject, String relation, String object)
     {
-        //convert the relation String to an IPredicate/DBCBIB
-        //check that the relation param is valid, should be either isReviewOf, hasReview
-        // or hasFullText
-        IPredicate predicate;
-        
-        //convert the object String to an ObjectIdentifier
+
         ObjectIdentifier subjectPID = new PID( subject );
-        
-        //\Todo: Find another way to make the enums, bug 9993
-        if( relation.equals( "isReviewOf" ) )
-        {
-            //must be put on the rels-ext stream of the object
-            predicate = (IPredicate)DBCBIB.IS_REVIEW_OF;
-            setRelationInFedora( subjectPID, predicate, object );
-            log.info( String.format( "relation created with subject: %s predicate: %s object: %s", subjectPID.getIdentifier(), predicate, object ) );
+	try
+	{
+	    repository.addUncheckedObjectRelation( subjectPID, relation, object );
         }
-        else
+        catch( ObjectRepositoryException ore )
         {
-            if( relation.equals( "hasReview" ) )
-            {
-                //must be set on the object in the fedora base
-                predicate = (IPredicate)DBCBIB.HAS_REVIEW;
-                setRelationInFedora( subjectPID, predicate, object );
-                log.info( String.format( "relation created with subject: %s predicate: %s object: %s", subjectPID.getIdentifier(), predicate, object ) );
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
-        return true;
+	return true;
+
     }
 
     /**
@@ -112,7 +93,7 @@ public class ScriptMethodsForReviewRelation {
         //convert field to the TargetFields type
         //create a List<InputPair<TargetFields, String>> with the converted field and
         //the value
-        TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
+	TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
         String searchValue = "*:" + value;
         //call the IObjectRepository.getIdentifiers method with the above values,
         //no cutIdentifier and the number of submitters in the maximumResults 
@@ -134,16 +115,4 @@ public class ScriptMethodsForReviewRelation {
 	
     }
 
-    private boolean setRelationInFedora( ObjectIdentifier subjectPID, IPredicate predicate, String object)
-    {
-    try
-        {
-            repository.addObjectRelation( subjectPID, predicate, object );
-        }
-        catch( ObjectRepositoryException ore )
-        {
-            return false;
-        }
-    return true;
-    }
 }

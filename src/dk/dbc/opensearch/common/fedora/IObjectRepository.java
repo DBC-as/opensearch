@@ -344,6 +344,15 @@ public interface IObjectRepository
      public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
 
 
+    /**
+     * @param ObjectIdentifier objectIdentifier 
+     * @param String relation
+     * @param String subject
+     * @throws ObjectRepositoryException
+     */     
+     public void addUncheckedObjectRelation( ObjectIdentifier objectIdentifier, String relation, String subject ) throws ObjectRepositoryException;
+
+
      /**
       * 
       * @param objectIdentifier i

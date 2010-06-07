@@ -36,8 +36,15 @@ function main( submitter, format, language, xml_review, pid )
 
 	Log.info( "result: " + result );
 
-	scriptClass.createRelation( pid, "isReviewOf", result);
-	scriptClass.createRelation( result, "hasReview", pid);
+	// NOTE:
+	// NS is not supposed to be in this javascript.
+	// It is supposed to be part of the function called when 
+	// adding a relation through the auto-generated RDF-relation-javascript.
+	// Until the auto-generated JS is done, the NS will be present here.
+	var NS = "http://oss.dbc.dk/rdf/dkbib#";
+
+	scriptClass.createRelation( pid, NS + "isReviewOf", result);
+	scriptClass.createRelation( result, NS + "hasReview", pid);
     }
 
 

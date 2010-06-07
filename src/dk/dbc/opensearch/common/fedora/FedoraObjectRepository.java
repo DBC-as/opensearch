@@ -1867,10 +1867,16 @@ public class FedoraObjectRepository implements IObjectRepository
     @Override
     public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
+	String relationString = relation.getPredicateString();
+	this.addUncheckedObjectRelation( objectIdentifier, relationString, subject );
+    }    
+
+    @Override
+    public void addUncheckedObjectRelation( ObjectIdentifier objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException
+    {
         try
         {
-            String relationString = relation.getPredicateString();
-            log.debug( String.format( "trying to add %s - %s -> %s", objectIdentifier.getIdentifier(), relationString, subject ) );
+            log.info( String.format( "trying to add %s - %s -> %s", objectIdentifier.getIdentifier(), relationString, subject ) );
             this.fedoraHandle.addRelationship( objectIdentifier.getIdentifier(), relationString, subject, true, null );
         }
         catch( IOException ex )
