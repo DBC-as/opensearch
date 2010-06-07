@@ -93,7 +93,8 @@ public class ScriptMethodsForReviewRelation {
         //convert field to the TargetFields type
         //create a List<InputPair<TargetFields, String>> with the converted field and
         //the value
-	TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
+        // TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
+        TargetFields targetField = (TargetFields)FedoraObjectFields.PID;
         String searchValue = "*:" + value;
         //call the IObjectRepository.getIdentifiers method with the above values,
         //no cutIdentifier and the number of submitters in the maximumResults 
@@ -111,6 +112,7 @@ public class ScriptMethodsForReviewRelation {
 	    log.info( String.format( "returning pid: %s", str ) );
 	    sa[counter++] = str;
 	}
+        log.info( String.format( "getPID returned %s results", counter ) );
 	return sa;
 	
     }

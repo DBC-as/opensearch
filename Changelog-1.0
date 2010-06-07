@@ -1,4 +1,5 @@
 1.0.0
+   - bug [10825] "Potentielt problem i brug af globale variable i JavaScripts"
    - bug [10559] "Låsning af FedoraHandle"
    - bug [10538] "To tråde prøver at sætte relation på samme work-objekt samtidig"
    - bug [10502] "Hvis man kører med flere tråde får man fejlen "No Context associated with current Thread" fra javascript i OwnerRelation"
