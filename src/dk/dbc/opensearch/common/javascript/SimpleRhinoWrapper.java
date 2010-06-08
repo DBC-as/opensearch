@@ -30,9 +30,12 @@ import java.io.*;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.ArrayList;
 import dk.dbc.opensearch.common.types.Pair;
+
+import dk.dbc.opensearch.common.javascript.FedoraSearchJS;
 
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple
@@ -85,10 +88,30 @@ public class SimpleRhinoWrapper
         String[] names = { "print" };
         scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
+	// try 
+	// {
+	//     ScriptableObject.defineClass( (Scriptable)scope, FedoraSearchJS.class );
+	// } 
+	// catch( IllegalAccessException iae )
+	// {
+	// }
+	// catch( InstantiationException ie )
+	// {
+	// }
+	// catch( InvocationTargetException ite )
+	// {
+	// }
+
+
         // Evaluate the javascript
         try
         {
             Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
+
+	    // // TEST:
+	    // String loadMe = "RegExp; getClass; java; Packages; JavaAdapter;";
+	    // o = cx.evaluateString((Scriptable)scope, loadMe, "lazyLoad", 1, null);
+
         } 
         catch ( IOException ioe )
         {

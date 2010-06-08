@@ -5,6 +5,10 @@ function main( submitter, format, language, xml_review, pid )
 
     Log.info( "Entering javascript" );
 
+    // var fedora_search = new scriptClass.FedoraSearchJS();
+    // var tmp = new dk.dbc.opensearch.common.javascript.FedoraSearchJS();
+    //    var tmp = new FedoraSearch();
+
     // Writing out the parameters:
     Log.info( "submitter: " + submitter );
     Log.info( "format:    " + format );
@@ -29,7 +33,7 @@ function main( submitter, format, language, xml_review, pid )
     Log.info( "Identifier: " + identifier );    
     Log.info( "pid: " + pid );
 
-    var results = scriptClass.getPID( identifier );
+    var results = FedoraPIDSearch.pid( "*:" + identifier ); // wildcardsearch (only possible in PID).
 
     for ( var i = 0; i < results.length; ++i ) {
 	var result = results[i];

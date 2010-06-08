@@ -49,14 +49,9 @@ public class ScriptMethodsForReviewRelation {
     private Logger log = Logger.getLogger( ScriptMethodsForReviewRelation.class );
 
     private IObjectRepository repository;
-    private CargoContainer cc;
-    private String DCRelation;
-
     public ScriptMethodsForReviewRelation( IObjectRepository repository ) 
     {
         this.repository = repository;
-        this.cc = cc;
-        DCRelation = "";
     }
 
     /**

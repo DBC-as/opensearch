@@ -29,6 +29,7 @@ import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
+import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
 import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
@@ -95,10 +96,12 @@ public class ReviewRelation implements IPluggable
             jsFileName = new String( script );
         }
 
+        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
         scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
 	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
 	objectList.add( new InputPair< String, Object >( "Log", log ) );
 	objectList.add( new InputPair< String, Object >( "scriptClass", scriptClass ) );
+	objectList.add( new InputPair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
 
         try 
 	{
