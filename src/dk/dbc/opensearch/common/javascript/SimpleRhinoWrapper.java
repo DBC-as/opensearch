@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.ArrayList;
 import dk.dbc.opensearch.common.types.Pair;
 
-import dk.dbc.opensearch.common.javascript.FedoraSearchJS;
 
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple
