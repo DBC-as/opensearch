@@ -506,16 +506,12 @@ public class ESHarvest implements IHarvest
         // Retrieve the data.
         byte[] data = getDataDBCall( id , conn );
 
-        // Retriving alias:
-	//        String alias = null;
-	String alias = "alias";
-
         log.debug( "Creating CargoContainer" );
 	CargoContainer cargo = new CargoContainer();
 
         try
         {
-            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", alias, data );
+            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml",  data );
         }
         catch ( IOException ioe )
         {

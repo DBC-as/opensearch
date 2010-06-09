@@ -64,7 +64,6 @@ public class CargoObject
      * @param language the language of the data
      * @param submitter the submitter of the data
      * @param format the format of the data
-     * @param alias the IndeingAlias that should be used when indexing the data
      * @param data the data to be stored in the CargoContainer
      * @throws IOException
      */
@@ -73,7 +72,6 @@ public class CargoObject
                  String language, 
                  String submitter,
                  String format,
-                 String alias,
                  byte[] data ) throws IOException
     {
         CargoMimeType cmt = CargoMimeType.getMimeFrom( mimetype );
@@ -84,13 +82,12 @@ public class CargoObject
         id += language.hashCode(); 
         id += submitter.hashCode(); 
         id += format.hashCode(); 
-        id += alias.hashCode(); 
         id += data.hashCode(); 
         
         log.debug( String.format( "id for CargoObject = %s", id ) );
         assert( id != 0L );
         
-        coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format, alias, id );
+        coi = new CargoObjectInfo( dataStreamName, cmt, language, submitter, format, id );
         
         this.data = data;
         log.debug( String.format( "length of data: %s", this.data.length ) );

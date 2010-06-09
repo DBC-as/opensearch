@@ -83,29 +83,29 @@ public class XMLHarvester implements IPluggable
      * @return a CargoContainer representing the data
      * @throws PluginException
      */
-    @Deprecated
-    public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
-    {
-        CargoContainer cargo = new CargoContainer();
+    // @Deprecated
+    // public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
+    // {
+    //     CargoContainer cargo = new CargoContainer();
 
-        /** \todo: hardcoded values for mimetype, langugage and data type */
-        String mimetype = "text/xml";
-        DataStreamType dataStreamName = DataStreamType.OriginalData;
+    //     /** \todo: hardcoded values for mimetype, langugage and data type */
+    //     String mimetype = "text/xml";
+    //     DataStreamType dataStreamName = DataStreamType.OriginalData;
 
-        try
-        {
-            cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), job.getLanguage(), mimetype, alias, data );
-        }
-        catch (IOException ioe)
-        {
-            String error = String.format( "Failed to add data to CargoContainer", ioe.getMessage() );
-            log.error( error );
-            throw new PluginException( error, ioe );
-        }
+    //     try
+    //     {
+    //         cargo.add( dataStreamName, job.getFormat(), job.getSubmitter(), job.getLanguage(), mimetype, alias, data );
+    //     }
+    //     catch (IOException ioe)
+    //     {
+    //         String error = String.format( "Failed to add data to CargoContainer", ioe.getMessage() );
+    //         log.error( error );
+    //         throw new PluginException( error, ioe );
+    //     }
 
-        log.debug(String.format("num of objects in cargo: %s", cargo.getCargoObjectCount()) );
-        return cargo;
-    }
+    //     log.debug(String.format("num of objects in cargo: %s", cargo.getCargoObjectCount()) );
+    //     return cargo;
+    // }
 
     /**
      * Returns PluginType

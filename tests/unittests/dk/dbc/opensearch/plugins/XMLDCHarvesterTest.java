@@ -84,7 +84,6 @@ public class XMLDCHarvesterTest
                      String submitter,
                      String language,
                      String mimetype,
-                     String alias,
                      byte[] data ) throws IOException
         {
             throw new IOException( "test" );

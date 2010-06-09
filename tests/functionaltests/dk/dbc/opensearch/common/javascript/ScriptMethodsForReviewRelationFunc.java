@@ -122,7 +122,8 @@ public class ScriptMethodsForReviewRelationFunc
 	String alias = "fakeAlias";
         try 
 	{
-	    cc.add( dataStreamName, format, submitter, language, mimetype, alias, data.getBytes( "UTF-8" ) );
+	    cc.add( dataStreamName, format, submitter, language, mimetype, data.getBytes( "UTF-8" ) );
+            cc.setIndexingAlias( alias, dataStreamName );
 	}
 	catch( UnsupportedEncodingException uee )
 	{

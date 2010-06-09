@@ -326,7 +326,7 @@ public class MarcxchangeWorkRelation implements IPluggable
         //use the xml to create the work object
         try
         {
-            workCargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml", "fakeAlias", workXml.getBytes() );
+            workCargo.add( DataStreamType.OriginalData, "format", "internal", "da", "text/xml",  workXml.getBytes() );
         }
         catch( IOException ioe )
         {
@@ -334,6 +334,7 @@ public class MarcxchangeWorkRelation implements IPluggable
             log.error( errorMsg );
             throw new PluginException( errorMsg, ioe);
         }
+        workCargo.setIndexingAlias( "fakeAlias", DataStreamType.OriginalData );
         workCargo.addMetaData( workDC );
 
         //store it in the objectrepository

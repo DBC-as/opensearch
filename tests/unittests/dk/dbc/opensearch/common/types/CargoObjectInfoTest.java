@@ -66,7 +66,8 @@ public class CargoObjectInfoTest
         teststring = "æøå";
         data = teststring.getBytes( "UTF-8" );
     	DataStreamType dataStreamName = DataStreamType.OriginalData;
-        id = cc.add( dataStreamName, test_format, test_submitter, test_lang, cmt.getMimeType(), "dockbook", data );
+        id = cc.add( dataStreamName, test_format, test_submitter, test_lang, cmt.getMimeType(), data );
+        cc.setIndexingAlias( "dockbook", dataStreamName);
     }
     
     
@@ -80,25 +81,17 @@ public class CargoObjectInfoTest
     }
     
     @Test
-    public void testIndexingAliasGetFromId() throws IOException
+    public void testIndexingAliasGetFromDataStreamType() throws IOException
     {
         CargoContainer cc = new CargoContainer();
         String ia = "docbook";
-        /* \todo: re bug #8719 uncomment when finished refatoring*/
-        long id = cc.add( DataStreamType.OriginalData, test_format, test_submitter, test_lang, cmt.getMimeType(), ia, data );
-
-        log.debug( String.format( "cc.getIndexingAlias( id )==%s",cc.getIndexingAlias( DataStreamType.OriginalData ) ) );
-        log.debug( String.format( "ia==%s", ia ) );
+        long id = cc.add( DataStreamType.OriginalData, test_format, test_submitter, test_lang, cmt.getMimeType(), data );
+        cc.setIndexingAlias( ia, DataStreamType.OriginalData );
 
         assertTrue( ia == cc.getIndexingAlias( DataStreamType.OriginalData ) );
     }
 
-    @Test
-    public void testGetDataStreamTypeFromId()
-    {
-        
-    }
-    
+
     @Test 
     public void testCorrectnessOfgetFormat() 
     {

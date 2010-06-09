@@ -97,10 +97,9 @@ public class ForceFedoraPidTest {
                    submitter,
                    "dk",
                    "text/xml",
-                   indexAlias,
                    databytes );
 
-     
+        cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
         returnCargo = forcePlugin.runPlugin( cargo, mockArgsMap );
      
         
@@ -122,8 +121,8 @@ public class ForceFedoraPidTest {
                    "dbc",
                    "dk",
                    "text/xml",
-                   indexAlias,
                    databytes );
+        cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
 
         forcePlugin.runPlugin( cargo, mockArgsMap );
     }

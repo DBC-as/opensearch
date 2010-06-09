@@ -63,7 +63,6 @@ public class CargoObjectTest {
                               language, 
                               submitter,
                               format,
-                              "docbook",
                               data );
     }
 
@@ -92,7 +91,7 @@ public class CargoObjectTest {
      */
     @Test public void testGetByteArrayLength() throws IOException
     {
-        co = new CargoObject( dst, mimetype, language, submitter, format, "docbook", data );
+        co = new CargoObject( dst, mimetype, language, submitter, format, data );
         assertTrue( data.length == co.getContentLength() );
     }
 }

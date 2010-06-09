@@ -295,7 +295,8 @@ public class FedoraObjectRepositoryTest {
     {
         CargoContainer cargo = new CargoContainer( );
         cargo.setIdentifier( new PID("test:1") );
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "docbook", " ".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
+        cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
         DublinCore dc = new DublinCore( "test:1" );
         cargo.addMetaData( dc );
         String logmessage = "log";
@@ -317,7 +318,8 @@ public class FedoraObjectRepositoryTest {
     public void testStoreObjectWithEmptyIdentifierFails() throws Exception
     {
         CargoContainer cargo = new CargoContainer();        
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "docbook", " ".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
+        cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
         String logmessage = "log";
         String storeObject = instance.storeObject( cargo, logmessage, "test");
         assertEquals( "test:1", storeObject ); 
@@ -332,7 +334,8 @@ public class FedoraObjectRepositoryTest {
     {
         CargoContainer cargo = new CargoContainer( );
         cargo.setIdentifier( new PID( testPid ));
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "docbook", " ".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
+        cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
 
         instance.replaceObject( "test:1", cargo );
     }
@@ -346,7 +349,8 @@ public class FedoraObjectRepositoryTest {
     {
         CargoContainer cargo = new CargoContainer( );
         cargo.setIdentifier( new PID( "test:3" ));
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "docbook", " ".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
+        cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
 
         instance.replaceObject( "test:2", cargo );
         
@@ -366,7 +370,8 @@ public class FedoraObjectRepositoryTest {
         CargoContainer cargo = new CargoContainer( );
         cargo.setIdentifier( new PID( testPid ));
         
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "docbook", " ".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
+        cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
 
         instance.replaceObject( "test:1", cargo);
         // \todo needs functionality to check internal in the middle of the replace-process
@@ -397,59 +402,6 @@ public class FedoraObjectRepositoryTest {
     }
     
 
-    /*@Test
-    public void testGetIdentifiers_Pattern_int() throws Exception
-    {
-        Pattern searchExpression = Pattern.compile( "test:1" );
-        int maximumResults = 10;
-        List<String> expResult = new ArrayList<String>();
-        expResult.add( "test:1" );
-        List<String> result = instance.getIdentifiers( searchExpression, maximumResults );
-        assertEquals( expResult, result );
-    }*/
-
-
-    /*@Test
-    public void testGetIdentifiers_Pattern_int2() throws Exception
-    {
-        Pattern searchExpression = Pattern.compile( "test.+" );
-        int maximumResults = 10;
-        List<String> expResult = new ArrayList<String>();
-        expResult.add( "test:1" );
-        expResult.add( "test:2" );
-        List<String> result = instance.getIdentifiers( searchExpression, maximumResults );
-        assertEquals( expResult, result );
-    }*/
-
-
-    /*@Test
-    public void testGetIdentifiers_String_int() throws Exception
-    {
-        String verbatimSearch = "test";
-        int maximumResults = 10;
-        List<String> expResult = new ArrayList<String>();
-        expResult.add( "test:1" );
-        expResult.add( "test:2" );
-        List<String> result = instance.getIdentifiers( verbatimSearch, maximumResults );
-        assertEquals( expResult, result );
-    }*/
-
-
-//    @Test
-//    public void testStoreDataInObject() throws Exception
-//    {
-//        String identifier = "test:1";
-//        CargoContainer cargo = new CargoContainer( );
-//        cargo.setIdentifier( new PID(identifier ));
-//        cargo.add( DataStreamType.OriginalData, "artikel", "testSubmitter", "da", "text/xml", "docbook", "<root><child/></root>".getBytes() );
-//        CargoObject object = cargo.getCargoObject( DataStreamType.OriginalData );
-//        boolean versionable = false;
-//        boolean overwrite = false;
-//
-//        instance.storeDataInObject( identifier, object, versionable, overwrite );
-//    }
-
-
     @Test
     public void testDeleteDataFromObject() throws Exception
     {
@@ -469,7 +421,8 @@ public class FedoraObjectRepositoryTest {
 
         CargoContainer expResult = new CargoContainer( ); 
         expResult.setIdentifier( new PID(pid));
-        expResult.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "docbook", "original data".getBytes() );
+        expResult.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "original data".getBytes() );
+        expResult.setIndexingAlias( "docbook", DataStreamType.OriginalData );
         CargoContainer result = instance.getDataFromObject( pid, streamtype );
         assertEquals( expResult.getIdentifier(), result.getIdentifier() );
     }
@@ -484,7 +437,8 @@ public class FedoraObjectRepositoryTest {
         CargoContainer expResult = new CargoContainer( );
         expResult.setIdentifier( new PID( objectIdentifier ) );
         
-        expResult.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "docbook", "original data".getBytes() );
+        expResult.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "original data".getBytes() );
+        expResult.setIndexingAlias( "docbook", DataStreamType.OriginalData );
         CargoContainer result = instance.getDataFromObject( objectIdentifier, dataIdentifier );
         assertEquals( expResult.getCargoObjectCount(), result.getCargoObjectCount() );
         String resultXML =  new String( FedoraUtils.CargoContainerToFoxml( result ) );

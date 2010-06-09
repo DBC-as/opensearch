@@ -149,9 +149,6 @@ public class CargoContainer
      * @param mimetype
      *            specifies the MIME (really the Internet Media Type) of the
      *            datastream (see http://tools.ietf.org/html/rfc2388)
-     * @param alias
-     *            specifies which alias should be used when indexing the
-     *            datastream
      * @param data
      *            contains the datastream to be added to the cargocontainer. The
      *            data is submitted as a byte[] and throughout the lifetime of
@@ -165,7 +162,6 @@ public class CargoContainer
                      String submitter,
                      String language,
                      String mimetype,
-                     String alias,
                      byte[] data ) throws IOException
     {
         if( dataStreamName == null )
@@ -193,11 +189,6 @@ public class CargoContainer
             log.fatal( "format must be specified" );
             throw new IllegalArgumentException( "format must be specified" );
         }
-        else if( alias == null )
-        {
-            log.fatal( "alias must be specified" );
-            throw new IllegalArgumentException( "alias must be specified" );
-        }
         else if( (data == null) || (data.length <= 0) )
         {
             log.fatal( "data must be present " );
@@ -209,7 +200,6 @@ public class CargoContainer
                 language,
                 submitter,
                 format,
-                alias,
                 data );
 
         this.data.add( co );
@@ -497,7 +487,9 @@ public class CargoContainer
      * This method sets the IndexingAlias on a DataStream
      * The method assumes that there are only 1 of each DataStreamType 
      * 
-     * @param 
+     * @param indexingAlias, the value to set on a specific dataStreamType  
+     * @param dataStreamType, the specification of which DataStreamType 
+     * to set the alias on
      * @return false if the type of DataStreamType wasnt found, otherwise true
      */
     public boolean setIndexingAlias( String indexingAlias, DataStreamType dataStreamType )

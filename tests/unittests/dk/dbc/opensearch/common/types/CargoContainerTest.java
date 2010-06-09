@@ -84,7 +84,8 @@ public class CargoContainerTest
     {
         //CargoContainer cargo = new CargoContainer();
         assertEquals( 0, cargo.getCargoObjectCount() );
-        long id = cargo.add( dsn, format, submitter, language, mimetype, "dockbook", data );
+        long id = cargo.add( dsn, format, submitter, language, mimetype, data );
+        cargo.setIndexingAlias( "dockbook", dsn );
         assertTrue( !( id == 0 ) );
         assertEquals( 1, cargo.getCargoObjectCount() );
     }
@@ -104,8 +105,8 @@ public class CargoContainerTest
     public void testStreamSizeInContainer() throws IOException
     {
 
-        cargo.add( dsn, format, submitter, language, mimetype, "dockbook", data );
-
+        cargo.add( dsn, format, submitter, language, mimetype, data );
+        cargo.setIndexingAlias( "dockbook", dsn );
         //UTF-8 uses two bytes per Danish letter
         int expectedLength = teststring.getBytes().length;
 
@@ -132,8 +133,8 @@ public class CargoContainerTest
         CargoContainer cc = new CargoContainer();
 
         //the add method of the CargoContainer should throw a NullPointerException on this call:
-        cc.add( dsn, format, submitter, language, mimetype, "dockbook", is );
-
+        cc.add( dsn, format, submitter, language, mimetype, is );
+        cargo.setIndexingAlias( "dockbook", dsn );
         // CargoObject co = cc.getCargoObjects().get( 0 );
         // byte[] list = co.getBytes();
 
@@ -145,45 +146,38 @@ public class CargoContainerTest
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgumentExceptionWithNullDataStreamType() throws IOException
     {
-        cargo.add( null, format, submitter, language, mimetype, "NONE", data );
+        cargo.add( null, format, submitter, language, mimetype, data );
 
     }
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgumentExceptionWithNullFormat() throws IOException
     {
-        cargo.add( dsn, null, submitter, language, mimetype, "NONE", data );
+        cargo.add( dsn, null, submitter, language, mimetype, data );
 
     }
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgumentExceptionWithNullSubmitter() throws IOException
     {
-        cargo.add( dsn, format, null, language, mimetype, "NONE", data );
+        cargo.add( dsn, format, null, language, mimetype, data );
 
     }
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgumentExceptionWithNullLanguage() throws IOException
     {
-        cargo.add( dsn, format, submitter, null, mimetype, "NONE", data );
+        cargo.add( dsn, format, submitter, null, mimetype, data );
 
     }
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgumentExceptionWithNullMimetype() throws IOException
     {
-        cargo.add( dsn, format, submitter, language, null, "NONE", data );
+        cargo.add( dsn, format, submitter, language, null, data );
 
     }
-
-    // @Test(expected = IllegalArgumentException.class)
-    // public void testIllegalArgumentExceptionWithNullAlias() throws IOException
-    // {
-    //     cargo.add( dsn, format, submitter, language, mimetype, null, data );
-
-    // }
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgumentExceptionWithNoData() throws IOException
     {
-        cargo.add( dsn, format, submitter, language, mimetype, "NONE", "".getBytes() );
+        cargo.add( dsn, format, submitter, language, mimetype, "".getBytes() );
 
     }
 
@@ -196,8 +190,8 @@ public class CargoContainerTest
     @Test 
     public void testGetByteArrayPreservesUTF8() throws IOException, UnsupportedEncodingException
     {
-        cargo.add( dsn, format, submitter, language, mimetype, "dockbook", data );
-
+        cargo.add( dsn, format, submitter, language, mimetype, data );
+        cargo.setIndexingAlias( "dockbook", dsn );
         List< CargoObject > aList = cargo.getCargoObjects();
         byte[] listB = aList.get( 0 ).getBytes();
         byte[] sixBytes = new byte[6];
@@ -226,10 +220,10 @@ public class CargoContainerTest
         String str4 = "abc";
         byte[] data4 = str4.getBytes();
 
-        cc.add( dsn, format, submitter, language, mimetype, "dockbook", data1);
-        cc.add( dsn, format, submitter, language, mimetype, "dockbook", data2);
-        cc.add( dsn, format, submitter, language, mimetype, "dockbook", data3);
-        cc.add( dsn, format, submitter, language, mimetype, "dockbook", data4);
+        cc.add( dsn, format, submitter, language, mimetype, data1);
+        cc.add( dsn, format, submitter, language, mimetype, data2);
+        cc.add( dsn, format, submitter, language, mimetype, data3);
+        cc.add( dsn, format, submitter, language, mimetype, data4);
 
         int expectedCount = 4;
         int actualCount = cc.getCargoObjectCount();
@@ -255,11 +249,11 @@ public class CargoContainerTest
         String str4 = "abc";
         byte[] data4 = str4.getBytes();
 
-        long id1 = cargo.add( dsn, format, submitter, language, mimetype, "dockbook", data1);
-        long id2 = cargo.add( dsn, format, submitter, language, mimetype, "dockbook", data3);
-        long id3 = cargo.add( dsn, format, submitter, language, mimetype, "dockbook", data4);
-        long id4 = cargo.add( dsn, format, submitter, language, mimetype, "dockbook", data1);
-
+        long id1 = cargo.add( dsn, format, submitter, language, mimetype, data1);
+        long id2 = cargo.add( dsn, format, submitter, language, mimetype, data3);
+        long id3 = cargo.add( dsn, format, submitter, language, mimetype, data4);
+        long id4 = cargo.add( dsn, format, submitter, language, mimetype, data1);
+       
 
         log.debug( String.format( "ids: %s, %s, %s, %s",id1, id2, id3, id4 ) );
         
@@ -278,6 +272,11 @@ public class CargoContainerTest
      * into the same CargoContainer, the getCargoObject will get the
      * correct one based on the DataStreamType.
      */
+
+    /**
+     * \Todo: whats the point of testing whether u get the right or the wrong data when 
+     * the right and wrong data are identical? bug: 10900
+     */
     @Test
     public void testLookupCargoObjectWithDataStreamType() throws IOException
     { 
@@ -289,8 +288,8 @@ public class CargoContainerTest
 
         byte[] data1 = "abc".getBytes();
 
-        cargo.add( dst1, format, submitter, language, mimetype, "dockbook", data1);
-        cargo.add( dst2, format, submitter, language, mimetype, "dockbook", data1);
+        cargo.add( dst1, format, submitter, language, mimetype, data1);
+        cargo.add( dst2, format, submitter, language, mimetype, data1);
 
         co1 = cargo.getCargoObject( dst2 );
         co2 = cargo.getCargoObject( dst2 );
@@ -327,8 +326,8 @@ public class CargoContainerTest
         String str2 = "abc";
         byte[] data2 = str2.getBytes();
 
-        long id1 = cargo.add( dst1, format, submitter, language, mimetype, "dockbook", data1);
-        long id2 = cargo.add( dst2, format, submitter, language, mimetype, "dockbook", data2);
+        long id1 = cargo.add( dst1, format, submitter, language, mimetype, data1);
+        long id2 = cargo.add( dst2, format, submitter, language, mimetype, data2);
 
         co = cargo.getCargoObject( dst2 );
 
@@ -342,8 +341,8 @@ public class CargoContainerTest
     @Test 
     public void testUniqueIdOfCargoObjects() throws IOException
     {
-        long id1 = cargo.add( DataStreamType.OriginalData, format, submitter, language, mimetype, "dockbook", "abc".getBytes() );
-        long id2 = cargo.add( DataStreamType.OriginalData, format, submitter, language, mimetype, "dockbook", "abc".getBytes() );
+        long id1 = cargo.add( DataStreamType.OriginalData, format, submitter, language, mimetype, "abc".getBytes() );
+        long id2 = cargo.add( DataStreamType.OriginalData, format, submitter, language, mimetype, "abc".getBytes() );
 
         assertTrue( !( id1 == id2 ) );
     }
@@ -356,7 +355,6 @@ public class CargoContainerTest
                               submitter, 
                               language, 
                               mimetype, 
-                              "dockbook",
                               "abc".getBytes() );
         
         assertTrue( cargo.remove( id ) );
@@ -370,7 +368,6 @@ public class CargoContainerTest
                               submitter, 
                               language, 
                               mimetype, 
-                              "dockbook",
                               "abc".getBytes() );
         id++;
         assertTrue( ! cargo.remove( id ) );
@@ -384,7 +381,6 @@ public class CargoContainerTest
                               submitter, 
                               language, 
                               mimetype, 
-                              "dockbook",
                               "abc".getBytes() );
         
         assertTrue( cargo.remove( id ) );

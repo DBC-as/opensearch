@@ -205,7 +205,6 @@ public class DocbookMerger implements IPluggable
                     orig.getSubmitter(),
                     orig.getLang(),
                     orig.getMimeType(),
-                    orig.getIndexingAlias(),
                     new_original_data.getBytes() );
         }
         catch( IOException ioe )
@@ -214,6 +213,8 @@ public class DocbookMerger implements IPluggable
             log.error( error, ioe );
             throw new PluginException( error, ioe );
         }
+
+        cargo.setIndexingAlias( orig.getIndexingAlias(), orig.getDataStreamType() );
 
         log.trace( String.format( "New xml data: %s", new String( cargo.getCargoObject( orig.getDataStreamType() ).getBytes() ) ) );
         return cargo;

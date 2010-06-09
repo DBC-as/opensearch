@@ -100,36 +100,38 @@ public class XMLHarvesterTest
         tearDownMocks();
         datadockJob = null;
     }
+ //    @Ignore
+ //    @Test
+ //    public void getCargoContainerTest()throws Exception
+ // {
+ //     harvestPlugin = new XMLHarvester( "", mockRepository );
+ //     cargoContainer = harvestPlugin.getCargoContainer(datadockJob, databytes, alias );
 
-    @Test
-    public void getCargoContainerTest()throws Exception
- {
-     harvestPlugin = new XMLHarvester( "", mockRepository );
-     cargoContainer = harvestPlugin.getCargoContainer(datadockJob, databytes, alias );
+ //     //There is data in the returned CargoContainer
+ //     assertEquals( 1, cargoContainer.getCargoObjectCount() );
+ //     //The added data has been given the correct DataStreamType
+ //     assertEquals( true, cargoContainer.hasCargo( DataStreamType.OriginalData) );
+ //     //the pid given by the mocked fedoraHandle
+ //     assertEquals( null, cargoContainer.getIdentifier() );
 
-     //There is data in the returned CargoContainer
-     assertEquals( 1, cargoContainer.getCargoObjectCount() );
-     //The added data has been given the correct DataStreamType
-     assertEquals( true, cargoContainer.hasCargo( DataStreamType.OriginalData) );
-     //the pid given by the mocked fedoraHandle
-     assertEquals( null, cargoContainer.getIdentifier() );
+ //     assertEquals( alias, cargoContainer.getIndexingAlias( DataStreamType.OriginalData ) );
+ //    }
 
-     assertEquals( alias, cargoContainer.getIndexingAlias( DataStreamType.OriginalData ) );
-    }
-        @Test( expected = IOException.class )
-    public void cargoContainerCantAddDataTest() throws Exception
-    {
-        setUpMocks(MockCargoContainer.class);
-        harvestPlugin = new XMLHarvester( "", mockRepository );
-        try
-        {
-            cargoContainer = harvestPlugin.getCargoContainer( datadockJob, databytes, alias );
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }
-    }
+ //    @Ignore
+ //        @Test( expected = IOException.class )
+ //    public void cargoContainerCantAddDataTest() throws Exception
+ //    {
+ //        setUpMocks(MockCargoContainer.class);
+ //        harvestPlugin = new XMLHarvester( "", mockRepository );
+ //        try
+ //        {
+ //            cargoContainer = harvestPlugin.getCargoContainer( datadockJob, databytes, alias );
+ //        }
+ //        catch( PluginException pe )
+ //        {
+ //            throw pe.getException();
+ //        }
+ //    }
 
     @Test
     public void getPluginType()

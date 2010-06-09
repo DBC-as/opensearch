@@ -84,13 +84,13 @@ public class RUBHarvester implements IPluggable
 
         try
         {
-            cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, alias, data );
+            cargoContainer.add( DataStreamType.OriginalData, format, submitter, lang, mimetype, data );
         }
         catch (IOException ioe)
         {
             throw new PluginException( "Could not construct CargoContainer", ioe );
         }
-
+        cargoContainer.setIndexingAlias( alias, DataStreamType.OriginalData );
         return cargoContainer;
     }
 

@@ -251,7 +251,6 @@ public class NormalizeDocument implements IPluggable
                                     co.getSubmitter(),
                                     co.getLang(),
                                     co.getMimeType(),
-                                    co.getIndexingAlias(),
                                     XMLUtils.getByteArray( doc.getDocumentElement() ) );
             }
             catch( IOException ioe )
@@ -267,6 +266,7 @@ public class NormalizeDocument implements IPluggable
                 throw new PluginException( error, te );
             }
         }
+        cargoContainer.setIndexingAlias( co.getIndexingAlias(), DataStreamType.OriginalData );
         return cargoContainer;
     }
 

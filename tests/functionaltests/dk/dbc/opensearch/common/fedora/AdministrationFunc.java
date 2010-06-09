@@ -679,7 +679,8 @@ public class AdministrationFunc
         byte[] cargoBytes = testStr.getBytes( "UTF-8" );
 
         CargoContainer cc = new CargoContainer();
-        cc.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", "article", cargoBytes );
+        cc.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", cargoBytes );
+        cc.setIndexingAlias( "article", DataStreamType.getDataStreamTypeFrom( "originalData" ) );
 
         return cc.getCargoObject( DataStreamType.OriginalData );
     }
@@ -692,7 +693,8 @@ public class AdministrationFunc
         byte[] cargoBytes = testStr.getBytes( "UTF-8" );
 
         CargoContainer ret = new CargoContainer();
-        ret.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", "article", cargoBytes );
+        ret.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "eng", "text/xml", cargoBytes );
+        ret.setIndexingAlias( "article", DataStreamType.getDataStreamTypeFrom( "originalData" ) );
 
         return ret;
     }

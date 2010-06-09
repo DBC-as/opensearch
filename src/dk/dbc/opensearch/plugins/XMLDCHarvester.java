@@ -137,7 +137,7 @@ public class XMLDCHarvester implements IPluggable
         try
         {
             /** \todo: hardcoded values for mimetype, language*/
-            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", alias, data );
+            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", data );
 
             log.trace( "Constructing DC datastream" );
 
@@ -158,7 +158,7 @@ public class XMLDCHarvester implements IPluggable
             log.error( msg );
             throw new PluginException( msg, iae );
         }
-
+        cargo.setIndexingAlias( alias, DataStreamType.OriginalData );
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
 
         log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );

@@ -241,8 +241,8 @@ public class AdministrationStream implements MetaData
                     set.getValue().get( AdministrationStreamElement.SUBMITTER ),
                     set.getValue().get( AdministrationStreamElement.LANG ),
                     set.getValue().get( AdministrationStreamElement.MIMETYPE ),
-                    indexingAlias,
                     "ihatefakedata".getBytes() );
+            cargo.setIndexingAlias( indexingAlias, DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ));
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
             InputPair< String, CargoObject > indexvalue = new InputPair< String, CargoObject >(
                     set.getValue().get( AdministrationStreamElement.ID ),

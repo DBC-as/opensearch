@@ -513,7 +513,15 @@ public class FedoraObjectRepository implements IObjectRepository
                 }
                 else
                 {
-                    cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(), co.getIndexingAlias(), datastream );
+                    cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(),  datastream );
+                    
+                    /**
+                     * \todo: this is not good if we start to index other straems than the original data, bug 10889 
+                     */
+                    if( co.getDataStreamType() == DataStreamType.OriginalData )
+                    {
+                        cargo.setIndexingAlias( co.getIndexingAlias(), DataStreamType.OriginalData );
+                    }
                 }
             }
             catch( IOException ex )
@@ -1470,7 +1478,7 @@ public class FedoraObjectRepository implements IObjectRepository
                         throw new ObjectRepositoryException( error, ex );
                     }
 
-                    cargo.add( datastreamtype, co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(), co.getIndexingAlias(), data );
+                    cargo.add( datastreamtype, co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(), data );
                 }
             }
         }
@@ -1525,7 +1533,7 @@ public class FedoraObjectRepository implements IObjectRepository
                         log.error( error );
                         throw new ObjectRepositoryException( error, ex );
                     }
-                    cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(), co.getIndexingAlias(), data );
+                    cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(),  data );
                 }
             }
         }

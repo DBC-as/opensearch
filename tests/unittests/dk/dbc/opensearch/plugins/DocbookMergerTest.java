@@ -67,7 +67,8 @@ public class DocbookMergerTest {
     public void setUp() throws Exception
     {
         cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", "710100", originalData.getBytes() );
+        cargo.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", originalData.getBytes() );
+        cargo.setIndexingAlias( "710100", DataStreamType.OriginalData );
         MetaData dc = new DublinCore( new ByteArrayInputStream( dublinCore.getBytes() ) );
         cargo.addMetaData( dc );
     }

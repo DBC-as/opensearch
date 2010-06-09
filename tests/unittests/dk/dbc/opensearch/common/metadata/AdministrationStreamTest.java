@@ -59,7 +59,8 @@ public class AdministrationStreamTest
         AdministrationStream instance = new AdministrationStream( indexingAlias );
 
         CargoContainer cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", "dockbook", "test".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", "test".getBytes() );
+        cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
 
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         boolean added = instance.addStream( co, co.getDataStreamType().getName()+".0" );
@@ -117,7 +118,8 @@ public class AdministrationStreamTest
         AdministrationStream instance = new AdministrationStream( id );
 
         CargoContainer cargo = new CargoContainer();
-        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", "dockbook", "test".getBytes() );
+        cargo.add( DataStreamType.OriginalData, "artikel", "dbc", "da", "text/xml", "test".getBytes() );
+        cargo.setIndexingAlias( "dockbook", DataStreamType.OriginalData );
 
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         boolean added = instance.addStream( co, id );

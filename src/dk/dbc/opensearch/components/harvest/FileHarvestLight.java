@@ -437,8 +437,6 @@ public class FileHarvestLight implements IHarvest
         }
         */
 
-
-        String alias = null;
         //String errMsg = "Could not retrive indexingAlias from map";
         
         //retrieving indexingAlias from DatadockJobsmap
@@ -472,11 +470,11 @@ public class FileHarvestLight implements IHarvest
         //     log.error( String.format( "got null back when asked for alias with values submitter: %s format: %s ", submitter, format ) );
         // } 
 
-        log.debug( String.format("constructing datadock with values: format = %s submitter = %s alias = %s", format, submitter, alias ) );
+        log.debug( String.format("constructing datadock with values: format = %s submitter = %s", format, submitter) );
         
         try
         {
-            returnCargo.add( DataStreamType.OriginalData, format, submitter, language, "text/xml", alias, data );
+            returnCargo.add( DataStreamType.OriginalData, format, submitter, language, "text/xml", data );
         }
         catch ( IOException ioe )
         {

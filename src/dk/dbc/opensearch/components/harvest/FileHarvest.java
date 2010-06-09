@@ -459,7 +459,6 @@ public class FileHarvest implements IHarvest
         String noFormatString = theRawPath.substring( 0, formatSlash );
         int submitterSlash = noFormatString.lastIndexOf( "/" );
         String submitter = noFormatString.substring( submitterSlash + 1 );
-        String alias = null;
         //String errMsg = "Could not retrive indexingAlias from map";
         
         // try
@@ -493,11 +492,11 @@ public class FileHarvest implements IHarvest
         // }
         
  
-        log.debug( String.format("constructing datadock with values: format = %s submitter = %s alias = %s", format, submitter, alias ) );
+        log.debug( String.format("constructing datadock with values: format = %s submitter = %s ", format, submitter ) );
         
         try
         {
-            returnCargo.add( DataStreamType.OriginalData, format, submitter, "DA", "text/xml", alias, data );
+            returnCargo.add( DataStreamType.OriginalData, format, submitter, "DA", "text/xml", data );
         }
         catch ( IOException ioe )
         {

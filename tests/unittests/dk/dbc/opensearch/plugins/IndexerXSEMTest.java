@@ -184,9 +184,8 @@ public class IndexerXSEMTest {
                    "dbc",
                    "dk",
                    "text/xml",
-                   indexAlias,
                    databytes );
-
+        cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
         assertTrue( indexPlugin.index( cargo, compassSession, fedoraHandle ) );
     }  
     
@@ -205,9 +204,8 @@ public class IndexerXSEMTest {
                    "dbc",
                    "dk",
                    "text/xml",
-                   indexAlias,
                    databytes );
-
+        cargo.setIndexingAlias( indexAlias, streamTypeNotOriginal );
         assertFalse( indexPlugin.index( cargo, compassSession, fedoraHandle ) );
     }
 
@@ -227,8 +225,8 @@ public class IndexerXSEMTest {
                    "dbc",
                    "dk",
                    "text/xml",
-                   indexAliasNotValid,
                    databytes );
+        cargo.setIndexingAlias( indexAliasNotValid, streamTypeOriginal );
         indexPlugin.index( cargo, compassSession, fedoraHandle );
     }
 
