@@ -125,43 +125,43 @@ public class XMLDCHarvesterTest
         ddjob = null;
     }
 
-    @Test
-    public void getCargoContainerTest() throws Exception
-    {
-        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-        cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias");
-        //There is data in the returned CargoContainer
-        assertEquals( 1, cc.getCargoObjectCount() );
-        //The added data has been given the correct DataStreamType
-        assertEquals( true, cc.hasCargo( DataStreamType.OriginalData ) );
-        //the pid given by the mocked fedoraHandle
-        assertEquals( null, cc.getIdentifier() );
-        //the metadata is of type dublincore and has the correct title
-        assertEquals( "Testtitel" , cc.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
+   // @Ignore @Test
+   //  public void getCargoContainerTest() throws Exception
+   //  {
+   //      harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
+   //      cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias");
+   //      //There is data in the returned CargoContainer
+   //      assertEquals( 1, cc.getCargoObjectCount() );
+   //      //The added data has been given the correct DataStreamType
+   //      assertEquals( true, cc.hasCargo( DataStreamType.OriginalData ) );
+   //      //the pid given by the mocked fedoraHandle
+   //      assertEquals( null, cc.getIdentifier() );
+   //      //the metadata is of type dublincore and has the correct title
+   //      assertEquals( "Testtitel" , cc.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
 
-        //assertEquals( 1, cc.getMetaData().size() );
+   //      //assertEquals( 1, cc.getMetaData().size() );
 
 
-    }
+   //  }
 
     /**
      * The MarcxchangeHarvester plugin will recieve invalid data and
      * try to evaluate an xpath expression. This should throw a PluginException
      * with a nested XPathExpressionException
      */
-    @Test( expected = XPathExpressionException.class )
-    public void getCargoContainerWithInvalidData() throws Exception
-    {       
-        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-        try{
-            cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes, "fakeAlias" );
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-            //            assertEquals( "Expecting the nested exception to be XPathExpressionException", XPathExpressionException.class, pe.getException().getClass() );
-        }
-    }
+    // @Ignore @Test( expected = XPathExpressionException.class )
+    // public void getCargoContainerWithInvalidData() throws Exception
+    // {       
+    //     harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
+    //     try{
+    //         cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes, "fakeAlias" );
+    //     }
+    //     catch( PluginException pe )
+    //     {
+    //         throw pe.getException();
+    //         //            assertEquals( "Expecting the nested exception to be XPathExpressionException", XPathExpressionException.class, pe.getException().getClass() );
+    //     }
+    // }
     /**
      * test that the plugin has the right type
      */
@@ -178,36 +178,36 @@ public class XMLDCHarvesterTest
      * An IllegalArgumentException should be thrown by the CargoContainer.add
      * method and be caught and wrapped in a PluginException
      */
-    @Test( expected = IllegalArgumentException.class )
-    public void noDataGivenTest() throws Exception
-    {      
-        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes, "fakealias" );
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }
+    // @Ignore @Test( expected = IllegalArgumentException.class )
+    // public void noDataGivenTest() throws Exception
+    // {      
+    //     harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
+    //     try
+    //     {
+    //         cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes, "fakealias" );
+    //     }
+    //     catch( PluginException pe )
+    //     {
+    //         throw pe.getException();
+    //     }
 
-    }
+    // }
 
     /**
      * tests the behavoiour when the cargoContainers add method fails with a IOException
      */
-    @Test( expected = IOException.class )
-    public void cargoContainerCantAddDataTest() throws Exception
-    {
-        setUpMocks( MockCargoContainer.class );
-        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-        try
-        {
-            cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias" );
-        }
-        catch( PluginException pe )
-        {
-            throw pe.getException();
-        }  
-    }
+    // @Test( expected = IOException.class )
+    // public void cargoContainerCantAddDataTest() throws Exception
+    // {
+    //     setUpMocks( MockCargoContainer.class );
+    //     harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
+    //     try
+    //     {
+    //         cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias" );
+    //     }
+    //     catch( PluginException pe )
+    //     {
+    //         throw pe.getException();
+    //     }  
+    // }
 }

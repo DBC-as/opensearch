@@ -514,14 +514,6 @@ public class FedoraObjectRepository implements IObjectRepository
                 else
                 {
                     cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(),  datastream );
-                    
-                    /**
-                     * \todo: this is not good if we start to index other straems than the original data, bug 10889 
-                     */
-                    if( co.getDataStreamType() == DataStreamType.OriginalData )
-                    {
-                        cargo.setIndexingAlias( co.getIndexingAlias(), DataStreamType.OriginalData );
-                    }
                 }
             }
             catch( IOException ex )
@@ -1568,13 +1560,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
     {
-        String indexingAlias = cargo.getIndexingAlias( DataStreamType.OriginalData );
-        if( indexingAlias == null )
-        {
-            log.warn( String.format( "Supplied CargoContainer (format %s) has no Original Data, I find it hard to construct an indexing alias given the circumstances. Instead, it'll be IndexingAlias.None", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() ) );
-            indexingAlias = "NULL - no alias found";
-        }
-        AdministrationStream adminStream = new AdministrationStream( indexingAlias );
+        // String indexingAlias = cargo.getIndexingAlias( DataStreamType.OriginalData );
+        // if( indexingAlias == null )
+        // {
+        //     log.warn( String.format( "Supplied CargoContainer (format %s) has no Original Data, I find it hard to construct an indexing alias given the circumstances. Instead, it'll be IndexingAlias.None", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() ) );
+        //     indexingAlias = "NULL - no alias found";
+        // }
+        AdministrationStream adminStream = new AdministrationStream(/* indexingAlias*/ );
 
         if( 0 == cargo.getCargoObjectCount() )
         {

@@ -70,8 +70,8 @@ public class IndexerXSEMTest {
 
     DataStreamType streamTypeOriginal = DataStreamType.OriginalData;
     DataStreamType streamTypeNotOriginal = DataStreamType.AdminData;
-    String indexAlias = "danmarcxchange";
-    String indexAliasNotValid = "None";
+    // String indexAlias = "danmarcxchange";
+    // String indexAliasNotValid = "None";
 
     @Mocked IObjectRepository mockIObjectRepository;
 
@@ -185,7 +185,7 @@ public class IndexerXSEMTest {
                    "dk",
                    "text/xml",
                    databytes );
-        cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
+        //      cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
         assertTrue( indexPlugin.index( cargo, compassSession, fedoraHandle ) );
     }  
     
@@ -205,7 +205,7 @@ public class IndexerXSEMTest {
                    "dk",
                    "text/xml",
                    databytes );
-        cargo.setIndexingAlias( indexAlias, streamTypeNotOriginal );
+        //     cargo.setIndexingAlias( indexAlias, streamTypeNotOriginal );
         assertFalse( indexPlugin.index( cargo, compassSession, fedoraHandle ) );
     }
 

@@ -334,7 +334,7 @@ public class MarcxchangeWorkRelation implements IPluggable
             log.error( errorMsg );
             throw new PluginException( errorMsg, ioe);
         }
-        workCargo.setIndexingAlias( "fakeAlias", DataStreamType.OriginalData );
+        //  workCargo.setIndexingAlias( "fakeAlias", DataStreamType.OriginalData );
         workCargo.addMetaData( workDC );
 
         //store it in the objectrepository

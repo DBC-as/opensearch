@@ -85,7 +85,7 @@ public class CargoContainerTest
         //CargoContainer cargo = new CargoContainer();
         assertEquals( 0, cargo.getCargoObjectCount() );
         long id = cargo.add( dsn, format, submitter, language, mimetype, data );
-        cargo.setIndexingAlias( "dockbook", dsn );
+        //    cargo.setIndexingAlias( "dockbook", dsn );
         assertTrue( !( id == 0 ) );
         assertEquals( 1, cargo.getCargoObjectCount() );
     }
@@ -106,7 +106,7 @@ public class CargoContainerTest
     {
 
         cargo.add( dsn, format, submitter, language, mimetype, data );
-        cargo.setIndexingAlias( "dockbook", dsn );
+        //cargo.setIndexingAlias( "dockbook", dsn );
         //UTF-8 uses two bytes per Danish letter
         int expectedLength = teststring.getBytes().length;
 
@@ -134,7 +134,7 @@ public class CargoContainerTest
 
         //the add method of the CargoContainer should throw a NullPointerException on this call:
         cc.add( dsn, format, submitter, language, mimetype, is );
-        cargo.setIndexingAlias( "dockbook", dsn );
+        //cargo.setIndexingAlias( "dockbook", dsn );
         // CargoObject co = cc.getCargoObjects().get( 0 );
         // byte[] list = co.getBytes();
 
@@ -191,7 +191,7 @@ public class CargoContainerTest
     public void testGetByteArrayPreservesUTF8() throws IOException, UnsupportedEncodingException
     {
         cargo.add( dsn, format, submitter, language, mimetype, data );
-        cargo.setIndexingAlias( "dockbook", dsn );
+        //cargo.setIndexingAlias( "dockbook", dsn );
         List< CargoObject > aList = cargo.getCargoObjects();
         byte[] listB = aList.get( 0 ).getBytes();
         byte[] sixBytes = new byte[6];

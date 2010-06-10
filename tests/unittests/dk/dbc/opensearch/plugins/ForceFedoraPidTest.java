@@ -64,8 +64,8 @@ public class ForceFedoraPidTest {
 
     DataStreamType streamTypeOriginal = DataStreamType.OriginalData;
     DataStreamType streamTypeNotOriginal = DataStreamType.AdminData;
-    String indexAlias = "danmarcxchange";
-    String indexAliasNotValid = "None";
+    // String indexAlias = "danmarcxchange";
+    // String indexAliasNotValid = "None";
    
     @Before public void SetUp() 
     {
@@ -99,7 +99,7 @@ public class ForceFedoraPidTest {
                    "text/xml",
                    databytes );
 
-        cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
+        //      cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
         returnCargo = forcePlugin.runPlugin( cargo, mockArgsMap );
      
         
@@ -122,7 +122,7 @@ public class ForceFedoraPidTest {
                    "dk",
                    "text/xml",
                    databytes );
-        cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
+        //   cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
 
         forcePlugin.runPlugin( cargo, mockArgsMap );
     }

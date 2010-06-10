@@ -119,11 +119,10 @@ public class ScriptMethodsForReviewRelationFunc
 
         DataStreamType dataStreamName = DataStreamType.OriginalData;
 	String mimetype = "text/xml";
-	String alias = "fakeAlias";
+
         try 
 	{
-	    cc.add( dataStreamName, format, submitter, language, mimetype, data.getBytes( "UTF-8" ) );
-            cc.setIndexingAlias( alias, dataStreamName );
+	    cc.add( dataStreamName, format, submitter, language, mimetype, data.getBytes( "UTF-8" ) );   
 	}
 	catch( UnsupportedEncodingException uee )
 	{

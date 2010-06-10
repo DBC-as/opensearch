@@ -77,8 +77,8 @@ public class FedoraUtilsTest// extends XMLTestCase
         cargo.setIdentifier( new PID("dbc:1") );
         
         cargo.add( DataStreamType.getDataStreamTypeFrom( "originalData" ), "test", "dbc", "da", "text/xml", cargoBytes );
-        cargo.setIndexingAlias( "docbook", DataStreamType.getDataStreamTypeFrom( "originalData" ) );
-        String adminXml = "<admin-stream><indexingalias name=\"docbook\"/><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
+        //    cargo.setIndexingAlias( "docbook", DataStreamType.getDataStreamTypeFrom( "originalData" ) );
+        String adminXml = "<admin-stream><streams><stream format=\"test\" id=\"originalData.0\" index=\"0\" lang=\"da\" mimetype=\"text/xml\" streamNameType=\"originalData\" submitter=\"dbc\"/></streams></admin-stream>";
         AdministrationStream adminstream = new AdministrationStream( new ByteArrayInputStream( adminXml.getBytes() ), true );
         cargo.addMetaData( adminstream );
         byte[] b = FedoraUtils.CargoContainerToFoxml( cargo );

@@ -71,7 +71,6 @@ public class XMLHarvester implements IPluggable
             throw new PluginException( error );
         } 
         
-        cargo.setIndexingAlias( argsMap.get( "alias" ), DataStreamType.OriginalData );
         return cargo;
     }
 
@@ -118,10 +117,6 @@ public class XMLHarvester implements IPluggable
 
     private boolean validateArgs( Map<String, String> argsMap )
     {
-        if( argsMap.get( "alias" ) == null || argsMap.get( "alias" ).equals( "" ) )
-        {
-            return false;
-        }
         return true;
     }
 

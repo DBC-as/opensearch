@@ -135,7 +135,7 @@ public class StoreTest
                    "da",
                    "text/xml",
                    dataBytes );
-        cargo.setIndexingAlias( "danmarcxchange", DataStreamType.OriginalData );
+        //     cargo.setIndexingAlias( "danmarcxchange", DataStreamType.OriginalData );
     }
 
     @After

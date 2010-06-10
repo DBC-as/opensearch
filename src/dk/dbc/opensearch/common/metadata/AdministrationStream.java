@@ -69,7 +69,9 @@ import org.xml.sax.SAXException;
  */
 public class AdministrationStream implements MetaData
 {
-    private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"indexingalias\"><xsd:complexType><xsd:attribute ref=\"name\" use=\"required\"/></xsd:complexType></xsd:element><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
+    //    private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"indexingalias\"><xsd:complexType><xsd:attribute ref=\"name\" use=\"required\"/></xsd:complexType></xsd:element><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
+
+    private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
 
     private Map< Integer, HashMap< AdministrationStreamElement, String > > admvalues;
     private static final String identifier = DataStreamType.AdminData.getName();
@@ -80,7 +82,7 @@ public class AdministrationStream implements MetaData
     public static final DataStreamType type = DataStreamType.AdminData;
 
     private static Logger log = Logger.getLogger( AdministrationStream.class );
-    private String indexingAlias;
+    // private String indexingAlias;
 
 
     /**
@@ -88,9 +90,9 @@ public class AdministrationStream implements MetaData
      * {@link #addStream(CargoObject, String)} to add information about
      * data into the AdministrationStream.
      */
-    public AdministrationStream( String indexingAlias )
+    public AdministrationStream(/*String indexingAlias*/ )
     {
-        this.indexingAlias = indexingAlias;
+        //this.indexingAlias = indexingAlias;
         admvalues = new HashMap<Integer, HashMap<AdministrationStreamElement, String>>();
     }
 
@@ -140,12 +142,12 @@ public class AdministrationStream implements MetaData
             if( XMLStreamConstants.START_ELEMENT == event.getEventType() )
             {
                 element = event.asStartElement();
-                if( element.getName().getLocalPart().equals( "indexingalias" ) )
+                /*if( element.getName().getLocalPart().equals( "indexingalias" ) )
                 {
                     Attribute name = (Attribute) element.getAttributes().next(); //we assume only one attribute here.
                     this.indexingAlias = name.getValue();
                 }
-                else if( element.getName().getLocalPart().equals( "stream" ) )
+                else */if( element.getName().getLocalPart().equals( "stream" ) )
                 {
                     admvalues.put( counter, new HashMap<AdministrationStreamElement, String>() );
                     HashMap<AdministrationStreamElement, String> stream = admvalues.get( counter++ );
@@ -161,7 +163,7 @@ public class AdministrationStream implements MetaData
         }
 
         assert ( admvalues.size() == counter );
-        assert ( this.indexingAlias != null );
+        //  assert ( this.indexingAlias != null );
     }
 
     
@@ -242,7 +244,7 @@ public class AdministrationStream implements MetaData
                     set.getValue().get( AdministrationStreamElement.LANG ),
                     set.getValue().get( AdministrationStreamElement.MIMETYPE ),
                     "ihatefakedata".getBytes() );
-            cargo.setIndexingAlias( indexingAlias, DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ));
+            //   cargo.setIndexingAlias( indexingAlias, DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ));
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
             InputPair< String, CargoObject > indexvalue = new InputPair< String, CargoObject >(
                     set.getValue().get( AdministrationStreamElement.ID ),
@@ -338,12 +340,12 @@ public class AdministrationStream implements MetaData
     @Override
     public void serialize( OutputStream out, String identifier ) throws OpenSearchTransformException
     {
-        if ( this.indexingAlias == null )
-        {
-            String error = "Refusing to serialize AdministrationStream with no content";
-            log.error( error );
-            throw new IllegalStateException( error );
-        }
+        // if ( this.indexingAlias == null )
+        // {
+        //     String error = "Refusing to serialize AdministrationStream with no content";
+        //     log.error( error );
+        //     throw new IllegalStateException( error );
+        // }
 
         // Create an output factory
         XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
@@ -355,9 +357,9 @@ public class AdministrationStream implements MetaData
 
             xmlw.writeStartDocument();
             xmlw.writeStartElement( "admin-stream" );
-            xmlw.writeStartElement( "indexingalias" );
-            xmlw.writeAttribute( "name", this.indexingAlias );
-            xmlw.writeEndElement();//closes "indexingalias" element
+            // xmlw.writeStartElement( "indexingalias" );
+            // xmlw.writeAttribute( "name", this.indexingAlias );
+            // xmlw.writeEndElement();//closes "indexingalias" element
 
             xmlw.writeStartElement( "streams" );
             for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )

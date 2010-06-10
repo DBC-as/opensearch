@@ -86,8 +86,6 @@ public class XMLDCHarvester implements IPluggable
             throw new PluginException( error );
         }
 
-        cargo.setIndexingAlias( argsMap.get( "alias" ), DataStreamType.OriginalData );
-        
         log.trace( "Constructing DC datastream" );
 
         DublinCore dcStream = createDublinCore( cargo );
@@ -115,56 +113,56 @@ public class XMLDCHarvester implements IPluggable
         return cargo;
     }
 
-    @Deprecated
-    public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
-    {
-        return createCargoContainerFromFile( job, data, alias );
-    }
+    // @Deprecated
+    // public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
+    // {
+    //     return createCargoContainerFromFile( job, data, alias );
+    // }
 
 
-    /**
-     *
-     * @return the CargoContainer from
-     * @throws TransformerException
-     * @throws ParserConfigurationException
-     * @throws XPathExpressionException
-     * @throws IOException if the data cannot be read
-     */
-    private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data, String alias ) throws PluginException
-    {
-        CargoContainer cargo = new CargoContainer( );
+    // /**
+    //  *
+    //  * @return the CargoContainer from
+    //  * @throws TransformerException
+    //  * @throws ParserConfigurationException
+    //  * @throws XPathExpressionException
+    //  * @throws IOException if the data cannot be read
+    //  */
+    // private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data, String alias ) throws PluginException
+    // {
+    //     CargoContainer cargo = new CargoContainer( );
 
-        try
-        {
-            /** \todo: hardcoded values for mimetype, language*/
-            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", data );
+    //     try
+    //     {
+    //         /** \todo: hardcoded values for mimetype, language*/
+    //         cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", data );
 
-            log.trace( "Constructing DC datastream" );
+    //         log.trace( "Constructing DC datastream" );
 
-            DublinCore dcStream = createDublinCore( cargo );
+    //         DublinCore dcStream = createDublinCore( cargo );
 
-            log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-            cargo.addMetaData( dcStream );
-        }
-        catch ( IOException ioe )
-        {
-            String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
-            log.error( msg );
-            throw new PluginException( msg, ioe );
-        }
-        catch( IllegalArgumentException iae )
-        {
-            String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
-            log.error( msg );
-            throw new PluginException( msg, iae );
-        }
-        cargo.setIndexingAlias( alias, DataStreamType.OriginalData );
-        log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
+    //         log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
+    //         cargo.addMetaData( dcStream );
+    //     }
+    //     catch ( IOException ioe )
+    //     {
+    //         String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
+    //         log.error( msg );
+    //         throw new PluginException( msg, ioe );
+    //     }
+    //     catch( IllegalArgumentException iae )
+    //     {
+    //         String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
+    //         log.error( msg );
+    //         throw new PluginException( msg, iae );
+    //     }
+    //     cargo.setIndexingAlias( alias, DataStreamType.OriginalData );
+    //     log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
 
-        log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
+    //     log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
 
-        return cargo;
-    }
+    //     return cargo;
+    // }
 
 
     private String getDCVariable( byte[] bytes, String xPathStr ) throws PluginException
@@ -256,10 +254,6 @@ public class XMLDCHarvester implements IPluggable
     
     private boolean validateArgs( Map<String, String> argsMap )
     {
-        if( argsMap.get( "alias" ) == null || argsMap.get( "alias").equals( "") )
-        {
-            return false;
-        }
         return true;
     }
 }

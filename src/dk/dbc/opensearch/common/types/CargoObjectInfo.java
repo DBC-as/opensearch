@@ -65,16 +65,6 @@ public class CargoObjectInfo
 
     /** unique identifier of the CargoObject*/
     private long id;
-    
-    /**
-     *\Todo: throw the PTI away and use Solr so we can get rid of the
-     *       bastard indexingAlias
-     *
-     * the indexing alias, should really be an argument for the 
-     * IndexerXSEM plugin in the PTI.     
-    */
-    private String alias;
-
 
     /**
      * Constructs a CargoObjectInfo instance that acts as a container
@@ -90,7 +80,7 @@ public class CargoObjectInfo
                      long id )
     {
         log.debug( String.format( "Entering CargoObjectInfo" ) );
-        assert( dataStreamName != null && format != null && lang != null && mimeType != null && submitter != null && alias != null && id != 0 );
+        assert( dataStreamName != null && format != null && lang != null && mimeType != null && submitter != null  && id != 0 );
         this.dataStreamName = dataStreamName;
         this.format = format;
         this.language = lang;
@@ -150,22 +140,6 @@ public class CargoObjectInfo
     String getFormat()
     {
         return format;
-    }
-
-
-    void setIndexingAlias( String indexingAlias )
-    {
-        alias = indexingAlias;
-    }
-
-
-    String getIndexingAlias()
-    {
-        if( alias == null )
-        {
-            throw new IllegalStateException( "The indexingAlias has not been set on this CargoObjectInfo. So dont try to get it before you have set it" );
-        }
-        return alias;
     }
 
 

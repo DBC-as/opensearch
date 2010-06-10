@@ -457,55 +457,6 @@ public class CargoContainer
     }
 
 
-    /**
-     * Given a DataStreamType of a CargoObject, this method returns the IndexingAlias
-     * for the data in the CargoObject
-     *
-     * @param dataStreamType the DataStreamType to match the CargoObject with
-     * @return the alias that is used to index the data in the CargoObject with
-     */
-    public String getIndexingAlias( DataStreamType dataStreamType )
-    {
-        String ret_ia = null;
-        for( CargoObject co : data )
-        {
-            if( dataStreamType == co.getDataStreamType() )
-            {
-                ret_ia = co.getIndexingAlias();
-            }
-        }
-        if( null == ret_ia )
-        {
-            log.warn( String.format( "Could not retrieve IndexingAlias with DataStreamType %s", dataStreamType ) );
-            //we'll let the client deal with null.
-        }
-
-        return ret_ia;
-    }
-
-    /**
-     * This method sets the IndexingAlias on a DataStream
-     * The method assumes that there are only 1 of each DataStreamType 
-     * 
-     * @param indexingAlias, the value to set on a specific dataStreamType  
-     * @param dataStreamType, the specification of which DataStreamType 
-     * to set the alias on
-     * @return false if the type of DataStreamType wasnt found, otherwise true
-     */
-    public boolean setIndexingAlias( String indexingAlias, DataStreamType dataStreamType )
-    {
-        for( CargoObject co : data )
-        {
-            if( dataStreamType == co.getDataStreamType() )
-            {
-                co.setIndexingAlias( indexingAlias );
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public boolean hasMetadata( DataStreamType type )
     {
         for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )

@@ -112,7 +112,7 @@ public class DatadockThreadTest
         mockCC = new CargoContainer();
         mockCC.setIdentifier( new PID( "710100:1" ) );
         mockCC.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", "<orig><child></orig>".getBytes() );
-        mockCC.setIndexingAlias( "dockbook", DataStreamType.OriginalData );
+        //    mockCC.setIndexingAlias( "dockbook", DataStreamType.OriginalData );
  }
 
     private class MockIdentifier implements IIdentifier{}

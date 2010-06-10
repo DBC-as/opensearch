@@ -190,7 +190,7 @@ public class DocbookMerger implements IPluggable
 
         log.trace( String.format( "Original xml: %s", new String( orig.getBytes() ) ) );
         log.trace( String.format( "New xml: %s", new_original_data ) );
-        log.debug( String.format( "Adding annotated data to CargoContainer with alias '%s', overwriting original data", orig.getIndexingAlias() ) );
+        //   log.debug( String.format( "Adding annotated data to CargoContainer with alias '%s', overwriting original data", orig.getIndexingAlias() ) );
 
         log.debug( String.format( "Removing data with id %s", orig.getId() ) );
         if( !cargo.remove( orig.getId() ) )
@@ -214,7 +214,7 @@ public class DocbookMerger implements IPluggable
             throw new PluginException( error, ioe );
         }
 
-        cargo.setIndexingAlias( orig.getIndexingAlias(), orig.getDataStreamType() );
+        //  cargo.setIndexingAlias( orig.getIndexingAlias(), orig.getDataStreamType() );
 
         log.trace( String.format( "New xml data: %s", new String( cargo.getCargoObject( orig.getDataStreamType() ).getBytes() ) ) );
         return cargo;

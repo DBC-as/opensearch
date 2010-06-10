@@ -90,7 +90,7 @@ public class RUBHarvester implements IPluggable
         {
             throw new PluginException( "Could not construct CargoContainer", ioe );
         }
-        cargoContainer.setIndexingAlias( alias, DataStreamType.OriginalData );
+
         return cargoContainer;
     }
 

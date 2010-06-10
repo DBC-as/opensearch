@@ -22,6 +22,7 @@
  */
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.components.pti.PTIJobsMap;
 import dk.dbc.opensearch.common.compass.PhraseMap;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
@@ -43,12 +44,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.log4j.Logger;
+import org.apache.commons.configuration.ConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 
 
 /**
@@ -63,8 +66,8 @@ public class NormalizeDocument implements IPluggable
 
     public NormalizeDocument( String script, IObjectRepository repository )
     {
-	this( repository );
-	log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
+        this( repository );
+        log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
     }
 
     public NormalizeDocument( IObjectRepository repository )
@@ -130,7 +133,37 @@ public class NormalizeDocument implements IPluggable
         if( StringUtils.contains( doc.getDocumentElement().getTextContent(), replaceMap ) )
         {
             log.trace( "document contains characters that need normalization" );
-            HashMap<XPathExpression, String> map = PhraseMap.getPhraseMap( co.getIndexingAlias() );
+            String indexingAlias = "";
+            try
+            {
+                indexingAlias = PTIJobsMap.getAlias( co.getSubmitter(), co.getFormat() );
+            }
+            catch( IOException ioe )
+            {
+                String error = String.format( "Could not get the alias: %s", ioe.getMessage() );
+                log.error( error, ioe );
+                throw new PluginException( error, ioe );
+            }
+            catch( SAXException se )
+            {
+                String error = String.format( "Could not get the alias: %s", se.getMessage() );
+                log.error( error, se );
+                throw new PluginException( error, se );
+            }
+            catch( ParserConfigurationException pce )
+            {
+                String error = String.format( "Could not get the alias: %s", pce.getMessage() );
+                log.error( error, pce );
+                throw new PluginException( error, pce );
+            }
+            catch( ConfigurationException ce )
+            {
+               String error = String.format( "Could not get the alias: %s", ce.getMessage() );
+                log.error( error, ce );
+                throw new PluginException( error,ce );
+            }
+
+            HashMap<XPathExpression, String> map = PhraseMap.getPhraseMap( indexingAlias );
             InputSource is = new InputSource( bis );
 
             for( XPathExpression orgPath : map.keySet() )
@@ -201,7 +234,7 @@ public class NormalizeDocument implements IPluggable
 
                             // if the path part contains * it is substituted with phraseCopy
                             // should also see if an attribute is present and add that
-                            
+
                             String innerAttributeName= "";
                             String innerAttributeValue= "";
                             if( elementName.contains( "[@" ) && elementName.contains( "]" ) )
@@ -266,7 +299,7 @@ public class NormalizeDocument implements IPluggable
                 throw new PluginException( error, te );
             }
         }
-        cargoContainer.setIndexingAlias( co.getIndexingAlias(), DataStreamType.OriginalData );
+      
         return cargoContainer;
     }
 
