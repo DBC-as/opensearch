@@ -34,6 +34,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.opensearch.components.pti.PTIJobsMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -136,7 +137,31 @@ public class IndexerXSEM implements IPluggable
             }
             else {
 
-                String indexingAlias = co.getIndexingAlias();
+                //String indexingAlias = co.getIndexingAlias(); 
+             
+                String indexingAlias = ""; 
+                try
+                {
+                    indexingAlias = PTIJobsMap.getAlias( co.getSubmitter(), co.getFormat() );               
+                }
+                catch( IOException ioe )
+                { 
+                    String error = String.format( "Could not get the alias: %s", ioe.getMessage() );
+                    log.error( error, ioe );
+                    throw new PluginException( error, ioe );   
+                }
+                catch( SAXException se )
+                { 
+                    String error = String.format( "Could not get the alias: %s", se.getMessage() );
+                    log.error( error, se );
+                    throw new PluginException( error, se );   
+                }
+                catch( ParserConfigurationException pce )
+                { 
+                    String error = String.format( "Could not get the alias: %s", pce.getMessage() );
+                    log.error( error, pce );
+                    throw new PluginException( error, pce );   
+                }
                 boolean isValidAlias = false;
                 try 
                 {

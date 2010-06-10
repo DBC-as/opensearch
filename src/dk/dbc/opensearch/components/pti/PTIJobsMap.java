@@ -24,6 +24,7 @@ public class PTIJobsMap extends JobMapCreator
     private static boolean initiated = false;
     private static ArrayList< String > ptiPluginsList = new ArrayList< String >();
     private static HashMap< InputPair< String, String >, ArrayList< String > > ptiJobMap;
+    private static HashMap< String, String> ptiAliasMap; 
 
     public PTIJobsMap() {}
 
@@ -31,17 +32,42 @@ public class PTIJobsMap extends JobMapCreator
     {
         if( !initiated || ptiJobMap.isEmpty() )
         {
-            String XMLPath = PtiConfig.getPath();
-            String XSDPath = FileSystemConfig.getPTIJobsXsdPath();
-
-            JobMapCreator.validateXsdJobXmlFile( XMLPath, XSDPath );
-            JobMapCreator.init( XMLPath );
-
-            ptiJobMap = jobMap;
-            initiated = true;
+            initiate();
         }
 
         ptiPluginsList = ptiJobMap.get( new InputPair< String, String >( submitter, format ) );
         return ptiPluginsList;
+    }
+
+    public static String getAlias( String submitter, String format ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
+    {
+        if( !initiated || ptiAliasMap.isEmpty() )
+        {
+            initiate();
+        }  
+
+        String alias = ptiAliasMap.get( submitter + format );
+
+        if( alias == null )
+        {
+            String error = String.format( "submitter: '%s' and format: '%s' returned no alias", submitter, format );
+            log.error( error );
+            throw new IllegalStateException( error );
+        }
+
+        return alias;
+    }
+
+    private static void initiate() throws ConfigurationException, IOException, SAXException, ParserConfigurationException
+    {
+        String XMLPath = PtiConfig.getPath();
+        String XSDPath = FileSystemConfig.getPTIJobsXsdPath();
+        
+        JobMapCreator.validateXsdJobXmlFile( XMLPath, XSDPath );
+        JobMapCreator.init( XMLPath );
+        
+        ptiJobMap = jobMap;
+        ptiAliasMap = aliasMap;
+        initiated = true; 
     }
 }

@@ -59,7 +59,7 @@ public class JobMapCreator
 
 
     protected static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
-    protected static HashMap< InputPair< String, String >, String > aliasMap = new HashMap< InputPair< String, String >, String >();
+    protected static HashMap< String, String > aliasMap = new HashMap< String, String >();
 
     
     /**
@@ -116,7 +116,7 @@ public class JobMapCreator
                 log.warn( String.format( "alias '%s' in job submitter='%s', format='%s' is not Valid, ie. not found in the xml.cpm.xml file. If this job is used, expect incexing failures", alias, submitter, format ) );
             }
             
-            aliasMap.put( new InputPair< String, String >( submitter, format ), alias );
+            aliasMap.put( submitter + format , alias );
 
             NodeList pluginList = jobElement.getElementsByTagName( "plugin" );
             int pluginListLength = pluginList.getLength();

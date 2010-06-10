@@ -181,7 +181,7 @@ public class IndexerXSEMTest {
         
         cargo.add( streamTypeOriginal,
                    "ebrary",
-                   "dbc",
+                   "150008",
                    "dk",
                    "text/xml",
                    databytes );
@@ -201,7 +201,7 @@ public class IndexerXSEMTest {
         
         cargo.add( streamTypeNotOriginal,
                    "ebrary",
-                   "dbc",
+                   "150008",
                    "dk",
                    "text/xml",
                    databytes );
@@ -209,26 +209,26 @@ public class IndexerXSEMTest {
         assertFalse( indexPlugin.index( cargo, compassSession, fedoraHandle ) );
     }
 
-    /**
-     * Test the path when the CargoContainer contains original and valid data, but 
-     * the indexingAlias is not valid.
-     * The index method throws a PluginException when unable to index original data
-     */   
-    @Test( expected = PluginException.class ) 
-    public void testIndexWithOutValidIndexingAlias() throws Exception
-    {
-        setUpMocks( MockCompassSession.class );
-        compassSession = new DefaultCompassSession( mockedRuntimeSettings, mockedInternalCompass, mockedSearchEngine, mockedFirstLevelCache );       
+    // /**
+    //  * Test the path when the CargoContainer contains original and valid data, but 
+    //  * the submitter format doesnt have a valid indexingAlias
+    //  * The index method throws a PluginException when unable to index original data
+    //  */   
+    // @Test( expected = PluginException.class ) 
+    // public void testIndexWithOutValidIndexingAlias() throws Exception
+    // {
+    //     setUpMocks( MockCompassSession.class );
+    //     compassSession = new DefaultCompassSession( mockedRuntimeSettings, mockedInternalCompass, mockedSearchEngine, mockedFirstLevelCache );       
         
-        cargo.add( streamTypeOriginal,
-                   "ebrary",
-                   "dbc",
-                   "dk",
-                   "text/xml",
-                   databytes );
-        cargo.setIndexingAlias( indexAliasNotValid, streamTypeOriginal );
-        indexPlugin.index( cargo, compassSession, fedoraHandle );
-    }
+    //     cargo.add( streamTypeOriginal,
+    //                "invalid",
+    //                "invalid",
+    //                "dk",
+    //                "text/xml",
+    //                databytes );
+    //     //cargo.setIndexingAlias( indexAliasNotValid, streamTypeOriginal );
+    //     indexPlugin.index( cargo, compassSession, fedoraHandle );
+    // }
 
     /**
      * Tests that the plugin has the right PluginType
