@@ -27,11 +27,12 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+//import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -67,7 +68,7 @@ public class OwnerRelation implements IPluggable
     private static Logger log = Logger.getLogger( OwnerRelation.class );
 
     private PluginType pluginType = PluginType.RELATION;
-    private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
+    //    private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
 
     private static SimpleRhinoWrapper jsWrapper = null;
     private IObjectRepository repository;
@@ -104,7 +105,7 @@ public class OwnerRelation implements IPluggable
         }
         catch( ConfigurationException ce )
         {
-            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+            String errorMsg = String.format( "A ConfigurationExcpetion was caught while trying to construct the path+filename for javascriptfile: %s", jsFileName );
             log.fatal( errorMsg, ce );
             throw new PluginException( errorMsg, ce );
         }
@@ -128,16 +129,6 @@ public class OwnerRelation implements IPluggable
     public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     { 
         log.trace( "getCargoContainer() called" );
-        // if( validateArgs( argsMap) )
-        // {
-        //     script = argsMap.get( "script" );
-        // }
-        // else
-        // {
-        //     String error = String.format( "these: %s invalid args given to getCargoContainer method ", argsMap.toString() );
-        //     log.error( error );
-        //     throw new PluginException( new IllegalStateException( error ) );
-        // }
 
         cargo = setOwnerRelations( cargo );
 
@@ -223,5 +214,12 @@ public class OwnerRelation implements IPluggable
         }
         return true;
     }
+
+
+    // public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    // {
+    // 	return new OwnerRelationEnvironment( repository, args );
+    // }
+
 
 }
