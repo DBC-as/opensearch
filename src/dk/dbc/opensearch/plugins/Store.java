@@ -46,10 +46,11 @@ public class Store implements IPluggable
     private IObjectRepository objectRepository = null;
     private Map<String, String> argsMap;
 
-    public Store( String script, IObjectRepository repository )
+    public Store( IObjectRepository repository )
     {
         this.objectRepository = repository;
     }    
+
     /*
      * This funtion is synchronized in the case the rare event happens that two records with identical ID's,
      * eg. two updates of the record, are stored by two different threads simultaniously.

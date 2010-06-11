@@ -114,7 +114,7 @@ public class PluginResolverTest
     {
         PR = new PluginResolver( repository );
 
-        IPluggable test = PR.getPlugin( "task", "script" );
+        IPluggable test = PR.getPlugin( "task" );
         
         assertTrue( test.getClass() == mockPlugin.getClass() );
     } 

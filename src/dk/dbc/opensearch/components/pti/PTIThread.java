@@ -157,7 +157,7 @@ public class PTIThread implements Callable< Boolean >
             for ( String classname : list )
             {
                 log.trace( "PTIThread running through plugins list" );
-                plugin = pluginResolver.getPlugin( classname, script );
+                plugin = pluginResolver.getPlugin( classname );
                 log.trace( "PTIThread plugin resolved" );
 
                 if( plugin == null )

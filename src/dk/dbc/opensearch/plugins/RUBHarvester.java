@@ -51,7 +51,7 @@ public class RUBHarvester implements IPluggable
     private PluginType pluginType = PluginType.HARVEST;
     private IObjectRepository repository; 
 
-    public RUBHarvester( String script, IObjectRepository repository )
+    public RUBHarvester( IObjectRepository repository )
     {
         this.repository = repository;
     }

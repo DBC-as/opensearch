@@ -54,12 +54,6 @@ public class ForceFedoraPid implements IPluggable
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
     private IObjectRepository repository;
 
-    public ForceFedoraPid( String script, IObjectRepository repository )
-    {
-	this( repository );
-	log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
-    }
-
     public ForceFedoraPid( IObjectRepository repository )
     {
         this.repository = repository;

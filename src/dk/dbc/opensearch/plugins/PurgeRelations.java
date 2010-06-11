@@ -66,12 +66,6 @@ public class PurgeRelations implements IPluggable
     private final IPredicate hasReview = DBCBIB.HAS_REVIEW;
 
 
-    public PurgeRelations( String script, IObjectRepository repository ) throws PluginException
-    {
-	this( repository );
-	log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
-    }
-
     /**
      * Constructor for the PurgeRelation plugin.
      */

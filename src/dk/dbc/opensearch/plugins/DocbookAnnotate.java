@@ -65,12 +65,12 @@ public class DocbookAnnotate implements IPluggable
     static Logger log = Logger.getLogger( DocbookAnnotate.class );
     private PluginType pluginType = PluginType.ANNOTATE;
     private NamespaceContext nsc;
-    private IObjectRepository objectRepository;
+
 
     /**
      * Constructor for the DocbookAnnotate plugin.
      */
-    public DocbookAnnotate( String script, IObjectRepository repository )
+    public DocbookAnnotate( IObjectRepository repository )
     {
         log.trace( "DocbookAnnotate Constructor() called" );
         nsc = new OpensearchNamespaceContext();

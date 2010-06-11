@@ -174,7 +174,7 @@ public class DatadockThread implements Callable<Boolean>
             log.trace( "the argsMap: " + argsMap.toString() ); 
             String script = (String)argsMap.get( "script" );
             log.trace( String.format("DatadockThread getPlugin classname: '%s' script: '%s' ",classname, script ) );   
-            IPluggable plugin = pluginResolver.getPlugin( classname, script );
+            IPluggable plugin = pluginResolver.getPlugin( classname );
             
             long timer = System.currentTimeMillis();
             cargo = plugin.runPlugin( cargo, argsMap );

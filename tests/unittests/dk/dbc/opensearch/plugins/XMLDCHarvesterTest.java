@@ -60,7 +60,6 @@ public class XMLDCHarvesterTest
     String submitter = "dbc";
     String format = "marcxchange";
     String language = "da";
-    String scriptString = "script"; 
 
     DatadockJob ddjob;
 
@@ -168,7 +167,7 @@ public class XMLDCHarvesterTest
     @Test
     public void testPluginType() throws Exception
     {        
-        harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
+        harvestPlugin = new XMLDCHarvester( mockRepository );
         assertEquals( PluginType.HARVEST, harvestPlugin.getPluginType() );
 
     }

@@ -70,15 +70,15 @@ public class PluginResolver implements IPluginResolver
      * @throws IllegalAccessException if the plugin file cant be accessed by the PluginLoader
      * @throws ClassNotFoundException if the class of the plugin cannot be found
      */
-    public synchronized IPluggable getPlugin( String className, String script ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
+    public synchronized IPluggable getPlugin( String className ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
     {  
-        if (!pluginInstanceCache.containsKey( className + script ))
+        if (!pluginInstanceCache.containsKey( className ))
         {
-            IPluggable plugin = pLoader.getPlugin( className, script, repository );
-            this.pluginInstanceCache.put( className + script, plugin );
-            log.info( String.format("Plugin: '%s' created with script: '%s'", className, script ) );
+            IPluggable plugin = pLoader.getPlugin( className, repository );
+            this.pluginInstanceCache.put( className, plugin );
+            log.info( String.format("Plugin: '%s' created", className ) );
         }
-        return this.pluginInstanceCache.get( className + script );
+        return this.pluginInstanceCache.get( className );
     }
 
     /**
@@ -112,18 +112,18 @@ public class PluginResolver implements IPluginResolver
          * @throws IllegalAccessException if the wanted plugin cant be accessed
          * @throws ClassNotFoundException if the specified class cannot found
          */
-        public IPluggable getPlugin( String pluginClassName, String script, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, PluginException, InvocationTargetException
+        public IPluggable getPlugin( String pluginClassName, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, PluginException, InvocationTargetException
         {
             try
             {
                 Class loadedClass = null;
-		Class[] parameterTypes = new Class[] { String.class, IObjectRepository.class };
+		Class[] parameterTypes = new Class[] { IObjectRepository.class };
 		Constructor pluginConstructor;
 
-		log.debug( String.format( "PluginLoader loading plugin class name '%s', with script '%s'", pluginClassName, script ) );       
+		log.debug( String.format( "PluginLoader loading plugin class name '%s'", pluginClassName ) );       
                 loadedClass = cl.loadClass( pluginClassName );
 		pluginConstructor = loadedClass.getConstructor( parameterTypes );
-		IPluggable thePlugin = ( IPluggable )pluginConstructor.newInstance( new Object[]{ script, repository });
+		IPluggable thePlugin = ( IPluggable )pluginConstructor.newInstance( new Object[]{ repository });
 
                 return thePlugin;
             }
@@ -135,7 +135,7 @@ public class PluginResolver implements IPluginResolver
             }
 	    catch( NoSuchMethodException nsme )
 	    {
-		String error = String.format( "the class: '%s' lacks a constructor with IObjectRepository and/or script as argument", pluginClassName );
+		String error = String.format( "the class: '%s' lacks a constructor with IObjectRepository", pluginClassName );
 		log.error( error, nsme );
 		throw new PluginException( error, nsme );
 	    }

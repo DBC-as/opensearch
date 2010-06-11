@@ -52,11 +52,9 @@ public class XMLHarvester implements IPluggable
     private Document referenceData;
     private PluginType pluginType = PluginType.HARVEST;
     private String alias;
-    //private IObjectRepository repository; 
 
-    public XMLHarvester( String script, IObjectRepository repository )
+    public XMLHarvester( IObjectRepository repository )
     {
-        //this.repository = repository;
     }
 
     @Override

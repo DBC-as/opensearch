@@ -136,7 +136,7 @@ public class XMLHarvesterTest
     @Test
     public void getPluginType()
     {
-        harvestPlugin = new XMLHarvester( "", mockRepository );
+        harvestPlugin = new XMLHarvester( mockRepository );
         if ( PluginType.HARVEST != harvestPlugin.getPluginType() )
         {
             fail("HarvestPlugin returned wrong type");

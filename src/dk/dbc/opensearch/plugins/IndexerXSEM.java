@@ -71,7 +71,7 @@ public class IndexerXSEM implements IPluggable
 
     PluginType pluginType = PluginType.INDEX;
 
-    public IndexerXSEM( String script, IObjectRepository repository )
+    public IndexerXSEM( IObjectRepository repository )
     {
     }
 

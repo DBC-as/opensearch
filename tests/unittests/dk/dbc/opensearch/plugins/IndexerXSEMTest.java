@@ -76,7 +76,7 @@ public class IndexerXSEMTest {
     @Mocked IObjectRepository mockIObjectRepository;
 
     CargoContainer cargo = new CargoContainer();
-    IndexerXSEM indexPlugin = new IndexerXSEM( "",  mockIObjectRepository);
+    IndexerXSEM indexPlugin = new IndexerXSEM( mockIObjectRepository);
 
     CompassSession compassSession;
     CompassFactory compassFactory;

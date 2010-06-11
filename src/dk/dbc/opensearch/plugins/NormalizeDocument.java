@@ -64,12 +64,6 @@ public class NormalizeDocument implements IPluggable
     private PluginType pluginType = PluginType.PROCESS;
     private IObjectRepository objectRepository;
 
-    public NormalizeDocument( String script, IObjectRepository repository )
-    {
-        this( repository );
-        log.info( String.format( "2-arguments constructor called with script=\"%s\"", script ) );
-    }
-
     public NormalizeDocument( IObjectRepository repository )
     {
         this.objectRepository = repository;

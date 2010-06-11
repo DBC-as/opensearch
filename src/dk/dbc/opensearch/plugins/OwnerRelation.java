@@ -79,7 +79,7 @@ public class OwnerRelation implements IPluggable
      * @param repository is the {@link IObjectRepository} to access if needed by the plugin
      * @throws PluginException
      */
-    public OwnerRelation( String script, IObjectRepository repository ) throws PluginException
+    public OwnerRelation( IObjectRepository repository ) throws PluginException
     {
         this.repository = repository;
 

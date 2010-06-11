@@ -69,7 +69,7 @@ public class XMLDCHarvester implements IPluggable
     private PluginType pluginType = PluginType.HARVEST;
     private IObjectRepository repository;
 
-    public XMLDCHarvester( String script, IObjectRepository repository ) throws PluginException
+    public XMLDCHarvester( IObjectRepository repository ) throws PluginException
     {
         this.repository = repository;
     }

@@ -264,11 +264,11 @@ public class DatadockThreadTest
         }};
         
         pluginTask1 = new PluginTask( "dk.dbc.opensearch.plugins.XMLHarvester", mockArgsMap ); 
-       pluginTask2 = new PluginTask( "dk.dbc.opensearch.plugins.OwnerRelation", mockArgsMap );
-       pluginTask3 = new PluginTask( "dk.dbc.opensearch.plugins.Store", mockArgsMap );
-       pluginTaskList.add( pluginTask1 );
-       pluginTaskList.add( pluginTask2 );
-       pluginTaskList.add( pluginTask3 );
+	pluginTask2 = new PluginTask( "dk.dbc.opensearch.plugins.OwnerRelation", mockArgsMap );
+	pluginTask3 = new PluginTask( "dk.dbc.opensearch.plugins.Store", mockArgsMap );
+	pluginTaskList.add( pluginTask1 );
+	pluginTaskList.add( pluginTask2 );
+	pluginTaskList.add( pluginTask3 );
 
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
         ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
