@@ -3,9 +3,6 @@
 <workflows xmlns="info:opensearch.dbc.dk#">
   <workflow format="faktalink" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-      <args>
-        <arg name="alias" value="docbook"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.forceFedoraPid">
     </plugin>
@@ -21,9 +18,6 @@
   </workflow>
   <workflow format="forfatterw" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-      <args>
-        <arg name="alias" value="docbook"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -39,9 +33,6 @@
   </workflow>
   <workflow format="katalog" submitter="775100">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -60,9 +51,6 @@
   </workflow>
   <workflow format="ebsco" submitter="775100">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -81,9 +69,6 @@
   </workflow>
   <workflow format="ebrary" submitter="775100">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -102,9 +87,6 @@
   </workflow>
   <workflow format="katalog" submitter="710100">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -123,9 +105,6 @@
   </workflow>
   <workflow format="matvurd" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-      <args>
-        <arg name="alias" value="docbook"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -149,9 +128,6 @@
   </workflow>
   <workflow format="dr_atlas" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -170,9 +146,6 @@
   </workflow>
   <workflow format="anmeld" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -196,9 +169,6 @@
   </workflow>
   <workflow format="artikler" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -217,9 +187,6 @@
   </workflow>
   <workflow format="dr_bonanza" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-      <args>
-        <arg name="alias" value="dkabm"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
@@ -231,9 +198,6 @@
   </workflow>
   <workflow format="louisiana" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-      <args>
-        <arg name="alias" value="dkabm"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
@@ -245,9 +209,6 @@
   </workflow>
   <workflow format="dsd" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-      <args>
-        <arg name="alias" value="dkabm"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
@@ -259,9 +220,6 @@
   </workflow>
   <workflow format="dbc" submitter="150013">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="danmarcxchange"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -280,9 +238,6 @@
   </workflow>
   <workflow format="pg" submitter="150013">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="dkabm"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -301,9 +256,6 @@
   </workflow>
   <workflow format="nmalbum" submitter="150014">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="dkabm"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
@@ -322,9 +274,6 @@
   </workflow>
   <workflow format="nmtrack" submitter="150014">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="dkabm"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
@@ -336,9 +285,6 @@
   </workflow>
   <workflow format="nmcover" submitter="150014">
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="alias" value="dkabm"/>
-      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
