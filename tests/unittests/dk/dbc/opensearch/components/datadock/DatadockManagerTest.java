@@ -65,6 +65,7 @@ public class DatadockManagerTest
     @Mocked IHarvest mockHarvester;
     @Mocked static IIdentifier mockIdentifier;
     @Mocked DatadockJobsMap jobMapHandler;
+    @Mocked Map< String, List< PluginTask > > mockFlowMap;
 
     DatadockPool mockDatadockPool;
     static Vector<IJob> mockJobs = new Vector<IJob>();
@@ -163,7 +164,7 @@ public class DatadockManagerTest
     {
         mockHarvester = new ESHarvest( null, null );
         mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
-        DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
+        DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
         datadockManager.shutdown();
 
     }
@@ -181,10 +182,11 @@ public class DatadockManagerTest
         mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
         mockDatadockPool.submit( job.getIdentifier() );
 
-        DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester );
+        DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
 
         new NonStrictExpectations()
         {{
+            mockFlowMap.get( anyString );returns( true );
             DatadockJobsMap.hasPluginList( anyString, anyString );returns( true );
         }};
 
@@ -200,7 +202,7 @@ public class DatadockManagerTest
     {
         mockHarvester = new ESHarvest( null, null );
         mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
-        DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester );
+        DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
         datadockmanager.shutdown();
     }
 }

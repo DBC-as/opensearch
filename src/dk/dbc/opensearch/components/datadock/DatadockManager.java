@@ -19,7 +19,7 @@
 
 /**
  * \file DatadockManager.java
- * \brief manages thr responsebilities of the datadock.
+ * \brief manages the responsebilities of the datadock.
  */
 
 
@@ -32,6 +32,7 @@ import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
 
 
 import java.io.FileNotFoundException;
@@ -64,6 +65,7 @@ public class DatadockManager
     private IHarvest harvester = null;
     XMLConfiguration config = null;
     List<IJob> registeredJobs = null;
+    private Map<String, List< PluginTask > > flowMap;
 
     private final Map< Pair< String,String >, Boolean > jobExecutionCheckSet = 
         Collections.synchronizedMap( new HashMap< Pair< String,String >, Boolean >() );
@@ -73,6 +75,8 @@ public class DatadockManager
      *
      * @param pool the threadpool used for executing datadock jobs
      * @param harvester the harvester to supply the datadock with jobs
+     * @param flowMap the map used for checking which 
+     * submitter format pairs are valid
      * @throws ConfigurationException
      * @throws HarvesterIOException
      * @throws IOException
@@ -80,7 +84,7 @@ public class DatadockManager
      * @throws SAXException
      * 
      */
-    public DatadockManager( DatadockPool pool, IHarvest harvester ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, HarvesterIOException
+    public DatadockManager( DatadockPool pool, IHarvest harvester, Map< String, List< PluginTask > > flowMap ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, HarvesterIOException
     {
         log.trace( "DatadockManager( pool, harvester ) called" );
 
@@ -88,6 +92,7 @@ public class DatadockManager
         this.harvester = harvester;
         harvester.start();
         registeredJobs = new ArrayList<IJob>();
+        this.flowMap = flowMap;
     }
 
 
@@ -175,7 +180,9 @@ public class DatadockManager
 
         if( ! this.jobExecutionCheckSet.containsKey( entry ) )
         {
-            if ( DatadockJobsMap.hasPluginList( job.getSubmitter(), job.getFormat() ) )
+            List< PluginTask > checkList = flowMap.get( job.getSubmitter() + job.getFormat() );
+            //            if ( DatadockJobsMap.hasPluginList( job.getSubmitter(), job.getFormat() ) )
+            if( ! ( checkList == null ) )
             {
                 exists = Boolean.TRUE;
             }else

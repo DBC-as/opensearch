@@ -378,7 +378,7 @@ public class DatadockMain
 
             log.trace( "Starting the manager" );
             // Starting the manager
-            datadockManager = new DatadockManager( datadockPool, harvester );
+            datadockManager = new DatadockManager( datadockPool, harvester, flowMap );
 
             /** --------------- setup and startup of the datadockmanager done ---------------- **/
             log.info( "Daemonizing" );
