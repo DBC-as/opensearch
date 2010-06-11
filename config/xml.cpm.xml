@@ -146,6 +146,18 @@
         value-converter="phrase"
         />
     <xml-property
+        name="facet.acSource"
+        xpath="/ting:container/dkabm:record/ac:source"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="facet.category"
+        xpath="/ting:container/dkabm:record/dcterms:audience"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
         name="facet.creator"
         xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
         index="un_tokenized"
@@ -406,7 +418,7 @@
         />
     <xml-property
         name="ac.source"
-        xpath=" ting:container/format"
+        xpath="/ting:container/dkabm:record/ac:source | ting:container/format"
         value-converter="default"
         />
     <xml-property
@@ -474,6 +486,18 @@
         xpath="/ting:container/dkabm:record/dc:publisher"
         index="un_tokenized"
         value-converter="phrase"        
+        />
+    <xml-property
+        name="facet.acSource"
+        xpath="/ting:container/dkabm:record/ac:source"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="facet.category"
+        xpath="/ting:container/dkabm:record/dcterms:audience"
+        index="un_tokenized"
+        value-converter="facet"
         />
     <xml-property
         name="facet.creator"
@@ -955,6 +979,18 @@
     <xml-property
         name="rights"
         xpath="/ting:container/dkabm:record/dc:rights"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="facet.acSource"
+        xpath="/ting:container/dkabm:record/ac:source"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="facet.category"
+        xpath="/ting:container/dkabm:record/dcterms:audience"
         index="un_tokenized"
         value-converter="facet"
         />
