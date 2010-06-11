@@ -2,8 +2,6 @@
 
 <workflows xmlns="info:opensearch.dbc.dk#">
   <workflow format="faktalink" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.forceFedoraPid">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.DocBookAnnotate">
@@ -17,8 +15,6 @@
     </plugin>
   </workflow>
   <workflow format="forfatterw" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.DocbookAnnotate">
@@ -104,8 +100,6 @@
     </plugin>
   </workflow>
   <workflow format="matvurd" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
@@ -186,8 +180,6 @@
     </plugin>
   </workflow>
   <workflow format="dr_bonanza" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
         <arg name="script" value="owner_relation.js"/>
@@ -197,8 +189,6 @@
     </plugin>
   </workflow>
   <workflow format="louisiana" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
         <arg name="script" value="owner_relation.js"/>
@@ -208,8 +198,6 @@
     </plugin>
   </workflow>
   <workflow format="dsd" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">   
       <args>
         <arg name="script" value="owner_relation.js"/>

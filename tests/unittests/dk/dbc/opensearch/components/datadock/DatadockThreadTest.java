@@ -46,7 +46,7 @@ import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
 import dk.dbc.opensearch.plugins.OwnerRelation;
 import dk.dbc.opensearch.plugins.Store;
-import dk.dbc.opensearch.plugins.XMLHarvester;
+import dk.dbc.opensearch.plugins.XMLDCHarvester;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -150,7 +150,7 @@ public class DatadockThreadTest
         public void setStatusRetry( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
     }
 
-    @MockClass( realClass = XMLHarvester.class )
+    @MockClass( realClass = XMLDCHarvester.class )
     public static class MockDBHarvest
     {
         @Mock
@@ -263,7 +263,7 @@ public class DatadockThreadTest
             mockFlowmap.get( anyString );returns( pluginTaskList );
         }};
         
-        pluginTask1 = new PluginTask( "dk.dbc.opensearch.plugins.XMLHarvester", mockArgsMap ); 
+        pluginTask1 = new PluginTask( "dk.dbc.opensearch.plugins.XMLDCHarvester", mockArgsMap ); 
 	pluginTask2 = new PluginTask( "dk.dbc.opensearch.plugins.OwnerRelation", mockArgsMap );
 	pluginTask3 = new PluginTask( "dk.dbc.opensearch.plugins.Store", mockArgsMap );
 	pluginTaskList.add( pluginTask1 );
@@ -320,7 +320,7 @@ public class DatadockThreadTest
     @Test( expected = HarvesterUnknownIdentifierException.class )
 	public void testUnknownIdentifier() throws Exception
     {
-        testArrayList.add( "dk.dbc.opensearch.plugins.XMLHarvester" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.XMLDCHarvester" );
 
         DatadockJob job = new DatadockJob( new UnknownIdentifier(), referenceData );
         ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, new ExceptionHarvester(), mockPluginResolver, mockFlowmap );
@@ -338,7 +338,7 @@ public class DatadockThreadTest
 	public void testHarvesterInvalidStatusChangeException() throws Exception
     {
 
-        testArrayList.add( "dk.dbc.opensearch.plugins.XMLHarvester" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.XMLDCHarvester" );
         testArrayList.add( "dk.dbc.opensearch.plugins.OwnerRelation" );
         testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
 
