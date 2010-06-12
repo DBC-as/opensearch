@@ -38,6 +38,7 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.HarvestType;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.FlowMapCreator;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
@@ -257,6 +258,15 @@ public class DatadockMain
 
             log.trace( "initializing resources" );
 
+
+            // DB access
+            IDBConnection dbConnection = new PostgresqlDBConnection();
+            IProcessqueue processqueue = new Processqueue( dbConnection );
+            IObjectRepository repository = new FedoraObjectRepository();
+            pluginResolver = new PluginResolver( repository ); 
+            OracleDataSource ods;
+
+
             //the flowMap
             try
             {
@@ -266,17 +276,10 @@ public class DatadockMain
             {
                 String error = "could not construct the FlowMapCreator";
                 log.fatal( error, ise );
+		throw ise;
             }
-           
-            Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap();
 
-
-            // DB access
-            IDBConnection dbConnection = new PostgresqlDBConnection();
-            IProcessqueue processqueue = new Processqueue( dbConnection );
-            IObjectRepository repository = new FedoraObjectRepository();
-            pluginResolver = new PluginResolver( repository ); 
-            OracleDataSource ods;
+	    Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver );
 
             log.trace( "Starting datadockPool" );
 
@@ -374,7 +377,7 @@ public class DatadockMain
                     harvester = new FileHarvest();
             }
 
-            datadockPool = new DatadockPool( threadpool, processqueue,  harvester, pluginResolver, flowMap );
+	    datadockPool = new DatadockPool( threadpool, processqueue,  harvester, flowMap );
 
             log.trace( "Starting the manager" );
             // Starting the manager

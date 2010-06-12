@@ -247,7 +247,7 @@ public class DatadockThreadTest
     @Test public void testConstructor() throws ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, NullPointerException, ParserConfigurationException, SAXException, ServiceException
     {
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockFlowmap );
     }
 
 
@@ -263,15 +263,15 @@ public class DatadockThreadTest
             mockFlowmap.get( anyString );returns( pluginTaskList );
         }};
         
-        pluginTask1 = new PluginTask( "dk.dbc.opensearch.plugins.XMLDCHarvester", mockArgsMap ); 
-	pluginTask2 = new PluginTask( "dk.dbc.opensearch.plugins.OwnerRelation", mockArgsMap );
-	pluginTask3 = new PluginTask( "dk.dbc.opensearch.plugins.Store", mockArgsMap );
+        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.XMLDCHarvester"), mockArgsMap ); 
+	pluginTask2 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.OwnerRelation"), mockArgsMap );
+	pluginTask3 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.Store"), mockArgsMap );
 	pluginTaskList.add( pluginTask1 );
 	pluginTaskList.add( pluginTask2 );
 	pluginTaskList.add( pluginTask3 );
 
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockFlowmap );
         Boolean result = ddThread.call();
 
         assertTrue( result.booleanValue() == true );
@@ -286,7 +286,7 @@ public class DatadockThreadTest
         }};
 
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockFlowmap );
         Boolean result = ddThread.call();
     } 
 
@@ -303,12 +303,12 @@ public class DatadockThreadTest
             mockFlowmap.get( anyString );returns( pluginTaskList );
         }};
         
-        pluginTask1 = new PluginTask( "dk.dbc.opensearch.plugins.DocbookAnnotate", mockArgsMap ); 
+        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.DocbookAnnotate"), mockArgsMap ); 
       
         pluginTaskList.add( pluginTask1 );
 
         DatadockJob job = new DatadockJob( mockIdentifier, referenceData );
-        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockFlowmap );
         ddThread.call();
 
     }   
@@ -323,7 +323,7 @@ public class DatadockThreadTest
         testArrayList.add( "dk.dbc.opensearch.plugins.XMLDCHarvester" );
 
         DatadockJob job = new DatadockJob( new UnknownIdentifier(), referenceData );
-        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, new ExceptionHarvester(), mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, new ExceptionHarvester(), mockFlowmap );
         ddThread.call();
     }
 
@@ -346,7 +346,7 @@ public class DatadockThreadTest
 
         mockHarvester.setStatusSuccess( job.getIdentifier(), "" );
 
-        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockPluginResolver, mockFlowmap );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockFlowmap );
         ddThread.call();
     }
 }

@@ -21,11 +21,16 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
@@ -108,7 +113,7 @@ public class FlowMapCreator
     }
 
     //creates the flowmap from the file specified in the path
-    public Map<String, List<PluginTask>> createMap()
+    public Map<String, List<PluginTask>> createMap( PluginResolver pluginResolver ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
     {
         XMLInputFactory infac = XMLInputFactory.newInstance(); 
        //read the stream into the xmlEventReader
@@ -128,6 +133,7 @@ public class FlowMapCreator
             EndElement endElement; 
             List<PluginTask> taskList = new ArrayList<PluginTask>();
             Map<String, String> argsMap = new HashMap<String, String>();
+
 
             while( eventReader.hasNext() )
             {
@@ -154,7 +160,6 @@ public class FlowMapCreator
                         submitter = startElement.getAttributeByName( new QName( "submitter" )).getValue();
                                   
                         key = submitter + format;
-                        //System.out.println( "key generated:" + key );
                         break;
                     }
 
@@ -185,14 +190,46 @@ public class FlowMapCreator
                     
                     if( endElement.getName().getLocalPart().equals( "plugin" ) )
                     {
-                        taskList.add( new PluginTask( pluginclass, new HashMap<String, String>( argsMap ) ) );
+			try 
+			{	
+			    log.trace( String.format( "Trying to add plugin: %s", pluginclass ) );
+			    IPluggable plugin = pluginResolver.getPlugin( pluginclass );
+			    taskList.add( new PluginTask( plugin, new HashMap<String, String>( argsMap ) ) );
+			}
+			catch( InstantiationException ie )
+			{
+			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+			    throw ie;
+			}
+			catch( IllegalAccessException iae )
+		        {
+			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+			    throw iae;
+			}
+			catch( ClassNotFoundException cnfe )
+	                {
+			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+			    throw cnfe;
+			}
+			catch( InvocationTargetException ite )
+			{
+			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+			    throw ite;
+			}
+			catch( PluginException pe )
+		        {
+			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+			    throw pe;
+			}
+
+
                         break;
                     }
 
                     if( endElement.getName().getLocalPart().equals( "workflow" ) )
                     {
                         flowMap.put( key, new ArrayList<PluginTask>( taskList ) );
-                        //System.out.println( String.format( "putting element on map, size is: %s", flowMap.size()) );
+			
                         break;            
                     }
                     break;

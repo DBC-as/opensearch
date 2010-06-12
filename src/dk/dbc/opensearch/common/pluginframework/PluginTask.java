@@ -18,7 +18,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+
 */
+
+import dk.dbc.opensearch.common.pluginframework.IPluggable;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -27,18 +30,19 @@ import org.apache.log4j.Logger;
 
 public class PluginTask
 {
-    private String pluginName;
+
+    private IPluggable plugin;
     private Map<String, String> argsMap;
 
-    public PluginTask( String pluginName,  Map<String, String> argsMap )
+    public PluginTask( IPluggable plugin,  Map<String, String> argsMap )
     {
-        this.pluginName = pluginName;
+        this.plugin = plugin;
         this.argsMap = argsMap;
     }
 
-    public String getPluginName()
+    public IPluggable getPlugin()
     {
-        return pluginName;
+        return plugin;
     }
 
     public Map<String, String> getArgsMap()
@@ -46,3 +50,4 @@ public class PluginTask
         return argsMap;
     }
 }
+

@@ -26,7 +26,6 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
@@ -111,7 +110,7 @@ public class DatadockManagerTest
     {
 
         @Mock
-        public void $init( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
+        public void $init( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
         { // mock default constructor.
         }
 
@@ -163,7 +162,7 @@ public class DatadockManagerTest
     public void testConstructor() throws Exception
     {
         mockHarvester = new ESHarvest( null, null );
-        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
+        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
         datadockManager.shutdown();
 
@@ -179,7 +178,7 @@ public class DatadockManagerTest
 	//        jobs.add( mockJob );
         mockHarvester = new ESHarvest( null, null );
 
-        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
+        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
         mockDatadockPool.submit( job.getIdentifier() );
 
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
@@ -201,7 +200,7 @@ public class DatadockManagerTest
     public void testShutdown() throws Exception
     {
         mockHarvester = new ESHarvest( null, null );
-        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null, null );
+        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
         DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
         datadockmanager.shutdown();
     }

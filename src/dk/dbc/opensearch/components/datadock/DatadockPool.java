@@ -27,10 +27,8 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
-//import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
@@ -72,7 +70,6 @@ public class DatadockPool
     private Map< IIdentifier, FutureTask< Boolean > > jobs;
     private final ThreadPoolExecutor threadpool;
     private IProcessqueue processqueue;
-    private PluginResolver pluginResolver;
     private IHarvest harvester;
     private Map<String, List<PluginTask>> flowMap;
 
@@ -116,14 +113,13 @@ public class DatadockPool
      * @param threadpool The threadpool to submit jobs to
      * @param processqueue the processqueue handler
      */
-    public DatadockPool( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException
+    public DatadockPool( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException
     {
         log.debug( "DatadockPool constructor called" );
         this.flowMap = flowMap;
         this.harvester = harvester;
         this.threadpool = threadpool;
         this.processqueue = processqueue;
-        this.pluginResolver = pluginResolver;
 
         jobs = new HashMap< IIdentifier, FutureTask< Boolean > >();
         
@@ -150,7 +146,7 @@ public class DatadockPool
         }
         log.debug( String.format( "Submitting job '%s'", identifier ) );
 
-	FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( identifier, processqueue, harvester, pluginResolver, flowMap ) );
+	FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( identifier, processqueue, harvester, flowMap ) );
         
         if ( future == null )/** \todo: I don't see this happening; even if DatadockThread returns null, FutureTask will still be non-null */
         {

@@ -29,7 +29,6 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
@@ -84,7 +83,6 @@ public class DatadockThread implements Callable<Boolean>
     private String                  submitter;
     private String                  format;
     private Map<String, List<PluginTask>> flowMap;
-    private PluginResolver pluginResolver;
 
 
     /**
@@ -102,7 +100,7 @@ public class DatadockThread implements Callable<Boolean>
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    public DatadockThread( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
+    public DatadockThread( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
@@ -113,7 +111,6 @@ public class DatadockThread implements Callable<Boolean>
 
 	this.identifier = identifier;
         this.harvester = harvester;
-        this.pluginResolver = pluginResolver;
         this.flowMap = flowMap;
         this.queue = processqueue;
 
@@ -144,7 +141,7 @@ public class DatadockThread implements Callable<Boolean>
      * @throws SQLException
      */
     @Override
-        public Boolean call() throws ConfigurationException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException, InvocationTargetException
+        public Boolean call() throws ConfigurationException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException, InvocationTargetException
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
@@ -168,14 +165,14 @@ public class DatadockThread implements Callable<Boolean>
 
         for( PluginTask pluginTask : pluginTaskList )
         {
+
+	    IPluggable plugin = pluginTask.getPlugin();
+	    String classname = plugin.getClass().getName();
             
-            String classname = pluginTask.getPluginName();
             Map<String, String> argsMap = pluginTask.getArgsMap();
             log.trace( "the argsMap: " + argsMap.toString() ); 
-            String script = (String)argsMap.get( "script" );
-            log.trace( String.format("DatadockThread getPlugin classname: '%s' script: '%s' ",classname, script ) );   
-            IPluggable plugin = pluginResolver.getPlugin( classname );
-            
+            log.trace( String.format("DatadockThread getPlugin classname: '%s'",classname) );   
+	    
             long timer = System.currentTimeMillis();
             cargo = plugin.runPlugin( cargo, argsMap );
             timer = System.currentTimeMillis() - timer;

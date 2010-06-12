@@ -1,5 +1,7 @@
 package dk.dbc.opensearch.common.pluginframework;
- 
+
+import dk.dbc.opensearch.common.fedora.IObjectRepository; 
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.InputPair;
 
@@ -24,7 +26,7 @@ import org.junit.*;
 
 import mockit.Mock;
 import mockit.MockClass;
-//import mockit.Mocked;
+import mockit.Mocked;
 import mockit.Mockit;
 
 public class FlowMapCreatorTest
@@ -39,13 +41,15 @@ public class FlowMapCreatorTest
     String format2 = "format2";
     String submitter1 = "submitter1";
     String submitter2 = "submitter2";
-    String pluginClassName1 = "pluginClassName1";
-    String pluginClassName2 = "pluginClassName2";
-    String pluginClassName3 = "pluginClassName3";
+    String pluginClassName1 = "dk.dbc.opensearch.plugins.XMLDCHarvester";
+    String pluginClassName2 = "dk.dbc.opensearch.plugins.ForceFedoraPid";
+    String pluginClassName3 = "dk.dbc.opensearch.plugins.OwnerRelation";
     String argName1 = "argName1";
     String argName2 = "argName2";
     String argValue1 = "argValue1";
     String argValue2 = "argValue2";
+
+    @Mocked IObjectRepository repository;
 
     @MockClass( realClass = FlowMapCreator.class )
     public static class MockFlowMapCreator
@@ -88,7 +92,7 @@ public class FlowMapCreatorTest
     @Test public void createMapTest() throws Exception
     {
         fmc = new FlowMapCreator( path, xsdPath );
-        flowMap = fmc.createMap();
+        flowMap = fmc.createMap( new PluginResolver( repository ) );
         assertTrue( validateMap1( flowMap ) );
     }
 

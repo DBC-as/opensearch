@@ -2,9 +2,9 @@
 
 <workflows xmlns="info:opensearch.dbc.dk#">
   <workflow format="faktalink" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.forceFedoraPid">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.DocBookAnnotate">
+    <plugin class="dk.dbc.opensearch.plugins.DocbookAnnotate">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.OwnerRelation">
       <args>

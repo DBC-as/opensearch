@@ -24,7 +24,6 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
@@ -95,7 +94,7 @@ public class DatadockPoolTest
     public static class MockDatadockThread implements Callable<Boolean>
     {
         @Mock
-            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
+            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
         { 
         }
 
@@ -110,7 +109,7 @@ public class DatadockPoolTest
     public static class MockNullDatadockThread implements Callable<Boolean>
     {
         @Mock
-            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, PluginResolver pluginResolver, Map<String, List<PluginTask>> flowMap )
+            public void $init( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
         {
         }
 
@@ -177,7 +176,7 @@ public class DatadockPoolTest
      public void submitTest() throws Exception
      {
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
-         DatadockPool pool = new DatadockPool( tpe, null, null, null, null );
+         DatadockPool pool = new DatadockPool( tpe, null, null, null );
 	 pool.submit( new MockIdentifier() );
      }
 
@@ -185,7 +184,7 @@ public class DatadockPoolTest
      public void submitWithNullJobFails() throws Exception
      {
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
-         DatadockPool pool = new DatadockPool( tpe, null, null, null, null );
+         DatadockPool pool = new DatadockPool( tpe, null, null, null );
          pool.submit( null );
      }
 
@@ -197,7 +196,7 @@ public class DatadockPoolTest
 
 	 //         IJob job = new DatadockJob( new MockIdentifier(), referenceData );
          ThreadPoolExecutor tpe = new ThreadPoolExecutor( 1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1) );
-         DatadockPool pool = new DatadockPool( tpe, null, mockHarvester, null, null );
+         DatadockPool pool = new DatadockPool( tpe, null, mockHarvester, null );
 	 //         pool.submit( job.getIdentifier() );
          pool.submit( new MockIdentifier() );
          pool.checkJobs();
