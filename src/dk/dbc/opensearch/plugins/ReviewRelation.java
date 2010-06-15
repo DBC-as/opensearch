@@ -34,6 +34,7 @@ import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -47,6 +48,7 @@ import java.io.FileReader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -70,6 +72,7 @@ public class ReviewRelation implements IPluggable
     private ScriptMethodsForReviewRelation scriptClass;
     private String script = null;
 
+    private ReviewRelationEnvironment env = null;
 
     /**
      * Constructor for the ReviewRelation plugin.
@@ -77,41 +80,45 @@ public class ReviewRelation implements IPluggable
     public ReviewRelation( IObjectRepository repository ) throws PluginException
     {
         log.trace( "Constructor called" );
-        this.objectRepository = repository;
-        String jsFileName;
-	// Creating the javascript:
-        if( script == null )
-        {
-            jsFileName = new String( "review_relation.js" );
-	}
-        else
-        {
-            jsFileName = new String( script );
-        }
 
-        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
-        scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
-	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	objectList.add( new InputPair< String, Object >( "Log", log ) );
-	objectList.add( new InputPair< String, Object >( "scriptClass", scriptClass ) );
-	objectList.add( new InputPair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
+	Map< String, String > tmpMap = new HashMap< String, String>();
+	env = (ReviewRelationEnvironment)this.createEnvironment( repository, tmpMap );
+	
+        // this.objectRepository = repository;
+        // String jsFileName;
+	// // Creating the javascript:
+        // if( script == null )
+        // {
+        //     jsFileName = new String( "review_relation.js" );
+	// }
+        // else
+        // {
+        //     jsFileName = new String( script );
+        // }
 
-        try 
-	{
-	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
-	}
-	catch( FileNotFoundException fnfe )
-	{
-	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-	    log.error( errorMsg, fnfe );
-	    throw new PluginException( errorMsg, fnfe );
-	}
-	catch( ConfigurationException ce )
-	{
-	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-	    log.fatal( errorMsg, ce );
-	    throw new PluginException( errorMsg, ce );
-	}
+        // JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
+        // scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+	// List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	// objectList.add( new InputPair< String, Object >( "Log", log ) );
+	// objectList.add( new InputPair< String, Object >( "scriptClass", scriptClass ) );
+	// objectList.add( new InputPair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
+
+        // try 
+	// {
+	//     jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
+	// }
+	// catch( FileNotFoundException fnfe )
+	// {
+	//     String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+	//     log.error( errorMsg, fnfe );
+	//     throw new PluginException( errorMsg, fnfe );
+	// }
+	// catch( ConfigurationException ce )
+	// {
+	//     String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+	//     log.fatal( errorMsg, ce );
+	//     throw new PluginException( errorMsg, ce );
+	// }
 
     }
 
@@ -131,7 +138,8 @@ public class ReviewRelation implements IPluggable
         log.trace( "getCargoContainer() called" );
   
         boolean ok = false;
-        ok = addReviewRelation( cargo );
+	//        ok = addReviewRelation( cargo );
+	ok = env.addReviewRelation( cargo );
 
         if ( ! ok )
         {
@@ -142,25 +150,25 @@ public class ReviewRelation implements IPluggable
     }
 
 
-    private boolean addReviewRelation( CargoContainer cargo )
-    {
-        //This mehtod should call a script with the cargocontainer as parameter
-        //and expose a getPID and a makeRelation method that enables the script to
-        //find the PID of the target of the review and create the hasReview
-        //and reviewOf relations
-        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-	String submitter = co.getSubmitter();
-	String format    = co.getFormat();
-       	String language  = co.getLang();
-	String XML       = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
+    // private boolean addReviewRelation( CargoContainer cargo )
+    // {
+    //     //This mehtod should call a script with the cargocontainer as parameter
+    //     //and expose a getPID and a makeRelation method that enables the script to
+    //     //find the PID of the target of the review and create the hasReview
+    //     //and reviewOf relations
+    //     CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+    // 	String submitter = co.getSubmitter();
+    // 	String format    = co.getFormat();
+    //    	String language  = co.getLang();
+    // 	String XML       = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
 
 
-	String entryPointFunc = "main";
-        String pid = cargo.getIdentifierAsString(); // get the pid of the cargocontainer
-	jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
+    // 	String entryPointFunc = "main";
+    //     String pid = cargo.getIdentifierAsString(); // get the pid of the cargocontainer
+    // 	jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
 
-        return true;
-    }
+    //     return true;
+    // }
 
 
     public PluginType getPluginType()
@@ -176,4 +184,10 @@ public class ReviewRelation implements IPluggable
         }
         return true;
     }
+
+    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    {
+    	return new ReviewRelationEnvironment( repository, args );
+    }
+
 }

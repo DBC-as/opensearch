@@ -24,6 +24,7 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -38,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
@@ -50,6 +52,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -64,16 +67,23 @@ public class DocbookAnnotate implements IPluggable
 
     static Logger log = Logger.getLogger( DocbookAnnotate.class );
     private PluginType pluginType = PluginType.ANNOTATE;
-    private NamespaceContext nsc;
 
+    DocbookAnnotateEnvironment env = null;
 
     /**
      * Constructor for the DocbookAnnotate plugin.
      */
-    public DocbookAnnotate( IObjectRepository repository )
+    // public DocbookAnnotate( IObjectRepository repository )
+    // {
+    //     log.trace( "DocbookAnnotate Constructor() called" );
+    //     nsc = new OpensearchNamespaceContext();
+    // }
+
+    public DocbookAnnotate( IObjectRepository repository ) throws PluginException
     {
         log.trace( "DocbookAnnotate Constructor() called" );
-        nsc = new OpensearchNamespaceContext();
+	Map< String, String > tmpMap = new HashMap< String, String >();
+        env = (DocbookAnnotateEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -98,327 +108,203 @@ public class DocbookAnnotate implements IPluggable
             throw new PluginException( new IllegalStateException( "CargoContainer was null. Cannot operate without a CargoContainer instance" ) );
         }
 
-        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+	return env.run( cargo );
 
-        if( co == null )
-        {
-            String error = "Could not retrieve CargoObject with original data from CargoContainer";
-            log.error( error );
-            throw new PluginException( String.format( error ) );
-        }
+        // CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
 
-        byte[] b = co.getBytes();
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression;
-        XPathExpression xPathExpression_numOfRec;
+        // if( co == null )
+        // {
+        //     String error = "Could not retrieve CargoObject with original data from CargoContainer";
+        //     log.error( error );
+        //     throw new PluginException( String.format( error ) );
+        // }
 
-        try
-        {
-            xPathExpression = xpath.compile( "/docbook:article/docbook:title" );
-        }
-        catch( XPathExpressionException e )
-        {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'", "/docbook:article/docbook:title" ), e );
-        }
+        // byte[] b = co.getBytes();
+        // XPath xpath = XPathFactory.newInstance().newXPath();
+        // xpath.setNamespaceContext( nsc );
+        // XPathExpression xPathExpression;
+        // XPathExpression xPathExpression_numOfRec;
 
-        InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
+        // try
+        // {
+        //     xPathExpression = xpath.compile( "/docbook:article/docbook:title" );
+        // }
+        // catch( XPathExpressionException e )
+        // {
+        //     throw new PluginException( String.format( "Could not compile xpath expression '%s'", "/docbook:article/docbook:title" ), e );
+        // }
 
-        // Find title of the docbook document
-        String title;
-        try
-        {
-            title = xPathExpression.evaluate( docbookSource ).replaceAll( "\\s", "+" );
-        }
-        catch( XPathExpressionException xpe )
-        {
-            throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
-        }
+        // InputSource docbookSource = new InputSource( new ByteArrayInputStream( b ) );
 
-        // isolate format
-        String serverChoice = co.getFormat();
+        // // Find title of the docbook document
+        // String title;
+        // try
+        // {
+        //     title = xPathExpression.evaluate( docbookSource ).replaceAll( "\\s", "+" );
+        // }
+        // catch( XPathExpressionException xpe )
+        // {
+        //     throw new PluginException( "Could not evaluate xpath expression to find title", xpe );
+        // }
 
-        // Querying webservice
-        log.debug( String.format( "querying the webservice with title='%s', serverChoice(format)='%s'", title, serverChoice ) );
+        // // isolate format
+        // String serverChoice = co.getFormat();
 
-        String xmlString = null;
-        String queryURL = null;
+        // // Querying webservice
+        // log.debug( String.format( "querying the webservice with title='%s', serverChoice(format)='%s'", title, serverChoice ) );
 
-        try
-        {
-            queryURL = formURL( title, serverChoice );
-            xmlString = httpGet( queryURL );
-        }
-        catch( IOException ioe )
-        {
-            throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe );
-        }
-        log.debug( String.format( "data: title='%s', serverChoice(format)='%s', queryURL='%s', xml retrieved='%s'", title, serverChoice, queryURL, xmlString ) );
+        // String xmlString = null;
+        // String queryURL = null;
+
+        // try
+        // {
+        //     queryURL = formURL( title, serverChoice );
+        //     xmlString = httpGet( queryURL );
+        // }
+        // catch( IOException ioe )
+        // {
+        //     throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe );
+        // }
+        // log.debug( String.format( "data: title='%s', serverChoice(format)='%s', queryURL='%s', xml retrieved='%s'", title, serverChoice, queryURL, xmlString ) );
 
 
-        // put retrieved answer into inputsource object
-        log.debug( "Got answer from the webservice" );
-        ByteArrayInputStream bis;
-        try
-        {
-            bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
-        }
-        catch( UnsupportedEncodingException uee )
-        {
-            throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
-        }
-        InputSource annotateSource = new InputSource( bis );
+        // // put retrieved answer into inputsource object
+        // log.debug( "Got answer from the webservice" );
+        // ByteArrayInputStream bis;
+        // try
+        // {
+        //     bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
+        // }
+        // catch( UnsupportedEncodingException uee )
+        // {
+        //     throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
+        // }
+        // InputSource annotateSource = new InputSource( bis );
 
-        // Get number of records...
-        // create xpath exp
-        xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
+        // // Get number of records...
+        // // create xpath exp
+        // xpath = XPathFactory.newInstance().newXPath();
+        // xpath.setNamespaceContext( nsc );
 
-        //String xpathString = "/docbook:article/docbook:title";
-        // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
-        String xpathString = "/*/*[2]";
-        try
-        {
-            xPathExpression_numOfRec = xpath.compile( xpathString );
-        }
-        catch( XPathExpressionException e )
-        {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'", xmlString ), e );
-        }
+        // //String xpathString = "/docbook:article/docbook:title";
+        // // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
+        // String xpathString = "/*/*[2]";
+        // try
+        // {
+        //     xPathExpression_numOfRec = xpath.compile( xpathString );
+        // }
+        // catch( XPathExpressionException e )
+        // {
+        //     throw new PluginException( String.format( "Could not compile xpath expression '%s'", xmlString ), e );
+        // }
 
-        int numOfRec = 0;
+        // int numOfRec = 0;
 
-        try
-        {
-            numOfRec = Integer.parseInt( xPathExpression_numOfRec.evaluate( annotateSource ) );
-        }
-        catch( NumberFormatException nfe )
-        {
-            log.error( String.format( "Could not format number of records returned by the webservice" ) );
-            throw new PluginException( "Could not format number of records returned by the webservice", nfe );
-        }
-        catch( XPathExpressionException xpee )
-        {
-            log.error( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
-            throw new PluginException( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ), xpee );
-        }
+        // try
+        // {
+        //     numOfRec = Integer.parseInt( xPathExpression_numOfRec.evaluate( annotateSource ) );
+        // }
+        // catch( NumberFormatException nfe )
+        // {
+        //     log.error( String.format( "Could not format number of records returned by the webservice" ) );
+        //     throw new PluginException( "Could not format number of records returned by the webservice", nfe );
+        // }
+        // catch( XPathExpressionException xpee )
+        // {
+        //     log.error( String.format( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ) ) );
+        //     throw new PluginException( String.format( "The xpath %s failed with reason %s", xpathString, xpee.getMessage() ), xpee );
+        // }
 
-        log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
+        // log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
 
-        if( numOfRec == 0 ) // no hits. Make another search without serverchoice
-        {
-            @SuppressWarnings( "unused" )
-            String xmlStr = null;
-            queryURL = null;
-            try
-            {
-                //uhm, per instructions above, this is not a query with_out_ serverchoice, is it?
-                queryURL = formURL( title, "" );
-                xmlStr = httpGet( queryURL );
-            }
-            catch( IOException ioe )
-            {
-                log.error( String.format( "Caugth IOException: Could not get result from webservice = %s.", queryURL ) );
-                throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe );
-            }
-            log.debug( String.format( "data: title='%s', serverChose(format)=\"\"\nxml retrieved\n%s", title, xmlString ) );
-        }
+        // if( numOfRec == 0 ) // no hits. Make another search without serverchoice
+        // {
+        //     @SuppressWarnings( "unused" )
+        //     String xmlStr = null;
+        //     queryURL = null;
+        //     try
+        //     {
+        //         //uhm, per instructions above, this is not a query with_out_ serverchoice, is it?
+        //         queryURL = formURL( title, "" );
+        //         xmlStr = httpGet( queryURL );
+        //     }
+        //     catch( IOException ioe )
+        //     {
+        //         log.error( String.format( "Caugth IOException: Could not get result from webservice = %s.", queryURL ) );
+        //         throw new PluginException( String.format( "could not get result from webservice = %s", queryURL ), ioe );
+        //     }
+        //     log.debug( String.format( "data: title='%s', serverChose(format)=\"\"\nxml retrieved\n%s", title, xmlString ) );
+        // }
 
-        // put retrieved answer into inputsource object
-        try
-        {
-            bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
-        }
-        catch( UnsupportedEncodingException uee )
-        {
-            log.error( String.format( "Could not convert string to UTF-8 ByteArrayInputStream" ) );
-            throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
-        }
-        annotateSource = new InputSource( bis );
+        // // put retrieved answer into inputsource object
+        // try
+        // {
+        //     bis = new ByteArrayInputStream( xmlString.getBytes( "UTF-8" ) );
+        // }
+        // catch( UnsupportedEncodingException uee )
+        // {
+        //     log.error( String.format( "Could not convert string to UTF-8 ByteArrayInputStream" ) );
+        //     throw new PluginException( "Could not convert string to UTF-8 ByteArrayInputStream", uee );
+        // }
+        // annotateSource = new InputSource( bis );
 
-        // Get annotation if one is returned 
+        // // Get annotation if one is returned 
 
-        String xpath_evaluation = null;
-        try
-        {
-            xpath_evaluation = xPathExpression_numOfRec.evaluate( annotateSource );
-            numOfRec = Integer.parseInt( xpath_evaluation );
-        }
-        catch( NumberFormatException nfe )
-        {
-            log.error( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
-            throw new PluginException( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int",
-                    xpath_evaluation ), nfe );
-        }
-        catch( XPathExpressionException xpe )
-        {
-            log.error( String.format( "Could not evaluate xpath expression to find number of returned records" ) );
-            throw new PluginException( "Could not evaluate xpath expression to find number of returned records", xpe );
-        }
+        // String xpath_evaluation = null;
+        // try
+        // {
+        //     xpath_evaluation = xPathExpression_numOfRec.evaluate( annotateSource );
+        //     numOfRec = Integer.parseInt( xpath_evaluation );
+        // }
+        // catch( NumberFormatException nfe )
+        // {
+        //     log.error( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int", xpath_evaluation ) );
+        //     throw new PluginException( String.format( "Caught NumberFormatException: could not convert xpath evaluation '%s' to int",
+        //             xpath_evaluation ), nfe );
+        // }
+        // catch( XPathExpressionException xpe )
+        // {
+        //     log.error( String.format( "Could not evaluate xpath expression to find number of returned records" ) );
+        //     throw new PluginException( "Could not evaluate xpath expression to find number of returned records", xpe );
+        // }
 
-        log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
+        // log.debug( String.format( "Number of record hits='%s', with format='%s'", numOfRec, serverChoice ) );
 
-        if( numOfRec == 1 )
-        {
-            log.trace( "Adding annotation to CargoContainer" );
-            String isolatedDCData = isolateDCData( xmlString );
+        // if( numOfRec == 1 )
+        // {
+        //     log.trace( "Adding annotation to CargoContainer" );
+        //     String isolatedDCData = isolateDCData( xmlString );
 
-            ByteArrayInputStream bais = new ByteArrayInputStream( isolatedDCData.getBytes() );
-            DublinCore dc;
-            try
-            {
-                dc = new DublinCore( bais );
-            }
-            catch( XMLStreamException ex )
-            {
-                String error = String.format( "Failed to construct DublinCore stream from xml string: %s", ex.getMessage() );
-                log.error( error );
-                throw new PluginException( error );
-            }
+        //     ByteArrayInputStream bais = new ByteArrayInputStream( isolatedDCData.getBytes() );
+        //     DublinCore dc;
+        //     try
+        //     {
+        //         dc = new DublinCore( bais );
+        //     }
+        //     catch( XMLStreamException ex )
+        //     {
+        //         String error = String.format( "Failed to construct DublinCore stream from xml string: %s", ex.getMessage() );
+        //         log.error( error );
+        //         throw new PluginException( error );
+        //     }
 
-            cargo.addMetaData( dc );
-        }
+        //     cargo.addMetaData( dc );
+        // }
 
-        return cargo;
+        // return cargo;
     }
 
 
-    /**
-     * Isolates the Dublin Core data from the data retrieved from the
-     * webservice.
-     *
-     *
-     * @param The xml String retrieved from the webservice
-     * 
-     * @throws PluginException Thrown if something goes wrong during xml parsing
-     */
-    private String isolateDCData( String recordXmlString ) throws PluginException
-    {
-        log.trace( "isolateDCData( recordXMLString ) called" );
-
-        // building document 
-        Document annotationDocument = null;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try
-        {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            annotationDocument = builder.parse( new InputSource( new ByteArrayInputStream( recordXmlString.getBytes() ) ) );
-        }
-        catch( ParserConfigurationException pce )
-        {
-            log.error( String.format( "Caught error while trying to instanciate documentbuilder '%s'", pce ) );
-            throw new PluginException( "Caught error while trying to instanciate documentbuilder", pce );
-        }
-        catch( SAXException se )
-        {
-            log.error( String.format( "Could not parse annotation data: '%s'", se ) );
-            throw new PluginException( "Could not parse annotation data ", se );
-        }
-        catch( IOException ioe )
-        {
-            log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe ) );
-            throw new PluginException( "Could not cast the bytearrayinputstream to a inputsource", ioe );
-        }
-
-        log.debug( String.format( "Isolate Dublin Core from annotation data." ) );
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression_record;
-        String recordString = null;
-
-        try
-        {
-            // \todo: Remove wildcards in xpath expression (something to do with default namespace-shite)
-            xPathExpression_record = xpath.compile( "/*/*[3]/*/*[3]" );
-            recordString = xPathExpression_record.evaluate( annotationDocument );
-        }
-        catch( XPathExpressionException e )
-        {
-            throw new PluginException( String.format( "Could not compile xpath expression '%s'", "/*/*[3]/*/*[3]" ), e );
-        }
-        log.trace( String.format( "IsolateDC returns xml: %s", recordString ) );
-
-        return recordString;
-    }
-
-
-    /**
-     * Forms the URL to use for annotate query.
-     *
-     *
-     * @param title the title to query.
-     * @param serverChoice This correspond to submitter field (eg. faktalink). Can be empty.
-     */
-    private String formURL( String title, String serverChoice )
-    {
-
-        int maxRecords = 1;
-
-        String baseURL = "http://koncept.dbc.dk/~fvs/webservice.bibliotek.dk/";
-
-        String preTitle = "?version=1.1&operation=searchRetrieve&query=dc.title+%3D+%28%22";
-        String postTitle = "%22%29";
-
-        //using docbook forfatterweb, the following lines will cause the webservice to (wrongly) return 0 results
-        String preServerChoice = "+and+cql.serverChoice+%3D+%28";
-        String postServerChoice = "%29";
-
-        String preRecords = "&startRecord=1&maximumRecords=";
-        String postRecords = "&recordSchema=dc&stylesheet=default.xsl&recordPacking=string";
-
-        String queryURL;
-        if( serverChoice.equals( "" ) )
-        {
-            queryURL = baseURL + preTitle + title + postTitle +
-                    preRecords + maxRecords + postRecords;
-        }
-        else
-        {
-            queryURL = baseURL + preTitle + title + postTitle +
-                    preServerChoice + serverChoice + postServerChoice + preRecords + maxRecords + postRecords;
-        }
-        return queryURL;
-    }
-
-
-    /**
-     *  Performs a http call and returns the answer.
-     *
-     *  @param URLstr The URL to use for hhtp call.
-     *
-     *  @returns String containing the response.
-     *
-     *  @throws IOException if we got a connection error.
-     */
-    private String httpGet( String URLstr ) throws IOException
-    {
-        URL url = new URL( URLstr );
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-        if( conn.getResponseCode() != 200 )
-        {
-            throw new IOException( conn.getResponseMessage() );
-        }
-
-        // Buffer the result into a string
-        BufferedReader rd = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while( (line = rd.readLine()) != null )
-        {
-            sb.append( line );
-        }
-
-        rd.close();
-
-        conn.disconnect();
-        return sb.toString();
-    }
 
     @Override
     public PluginType getPluginType()
     {
         return pluginType;
+    }
+
+    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    {
+    	return new DocbookAnnotateEnvironment( repository, args );
     }
 
 }

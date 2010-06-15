@@ -28,9 +28,9 @@ postgresql_driver:   org.postgresql.Driver
 # the url used by the jdbc to connect to the postgresql database through
 postgresql_url:      jdbc:postgresql://localhost:5432/
 # As with postgresql_user, but for Oracle databases
-oracle_user:         lvh
+oracle_user:         damkjaer
 # As with postgresql_password, but for Oracle databases
-oracle_password:     lvh    
+oracle_password:     damkjaer
 # As with postgresql_driver, but for Oracle databases
 oracle_driver:   oracle.jdbc.driver.OracleDriver
 # As with postgresql_url, but for Oracle databases
@@ -61,7 +61,7 @@ queue_size:          20
 # number of threads to keep alive in the thread pool
 core_poll_size:      1
 # maximum number of threads in thread pool
-max_poll_size:       1
+max_poll_size:       10
 # time (in seconds) to keep idle threads alive in the thread pool
 keep_alive_time:     10
 # job_limit is not used anymore, will be deleted in future releases
