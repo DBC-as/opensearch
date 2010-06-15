@@ -26,37 +26,16 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.Pair;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -68,12 +47,8 @@ public class OwnerRelation implements IPluggable
     private static Logger log = Logger.getLogger( OwnerRelation.class );
 
     private PluginType pluginType = PluginType.RELATION;
-    //    private final Map<String, Invocable> scriptCache = Collections.synchronizedMap( new HashMap<String, Invocable>() );
 
-    private static SimpleRhinoWrapper jsWrapper = null;
-    private IObjectRepository repository;
-
-    private OwnerRelationEnvironment ore = null;
+    private OwnerRelationEnvironment env = null;
 
     /**
      * Constructor for the OwnerRelation plugin.
@@ -85,7 +60,7 @@ public class OwnerRelation implements IPluggable
 	log.trace( "Entering OwnerRelation" );
 
 	Map< String, String > tmpMap = new HashMap< String, String >();
-	ore = (OwnerRelationEnvironment)this.createEnvironment( repository, tmpMap );
+	env = (OwnerRelationEnvironment)this.createEnvironment( repository, tmpMap );
 
         log.trace( "OwnerRelation plugin constructed" );
 
@@ -108,7 +83,7 @@ public class OwnerRelation implements IPluggable
         log.trace( "getCargoContainer() called" );
 
         // cargo = setOwnerRelations( cargo );
-	cargo = ore.setOwnerRelations( cargo );
+	cargo = env.setOwnerRelations( cargo );
 
         return cargo;
     }

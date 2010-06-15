@@ -26,29 +26,16 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.PID;
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-
-import java.io.ByteArrayInputStream;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
 
 
 public class ForceFedoraPid implements IPluggable

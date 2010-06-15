@@ -26,34 +26,16 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
 
 
 /**

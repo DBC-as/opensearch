@@ -25,33 +25,16 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
-import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
-import dk.dbc.opensearch.common.javascript.NaiveJavaScriptWrapper;
-import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.Pair;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -62,16 +45,7 @@ public class ReviewRelation implements IPluggable
 {
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
-    private SimpleRhinoWrapper jsWrapper = null;
     private PluginType pluginType = PluginType.RELATION;
-
-    private final String marterialevurderinger = "Materialevurdering:?";
-    private final String anmeldelse = "Anmeldelse";
-    private final String namespace = "review";
-    private IObjectRepository objectRepository;
-    private ScriptMethodsForReviewRelation scriptClass;
-    private String script = null;
-
     private ReviewRelationEnvironment env = null;
 
     /**
@@ -84,41 +58,6 @@ public class ReviewRelation implements IPluggable
 	Map< String, String > tmpMap = new HashMap< String, String>();
 	env = (ReviewRelationEnvironment)this.createEnvironment( repository, tmpMap );
 	
-        // this.objectRepository = repository;
-        // String jsFileName;
-	// // Creating the javascript:
-        // if( script == null )
-        // {
-        //     jsFileName = new String( "review_relation.js" );
-	// }
-        // else
-        // {
-        //     jsFileName = new String( script );
-        // }
-
-        // JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
-        // scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
-	// List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	// objectList.add( new InputPair< String, Object >( "Log", log ) );
-	// objectList.add( new InputPair< String, Object >( "scriptClass", scriptClass ) );
-	// objectList.add( new InputPair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
-
-        // try 
-	// {
-	//     jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
-	// }
-	// catch( FileNotFoundException fnfe )
-	// {
-	//     String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-	//     log.error( errorMsg, fnfe );
-	//     throw new PluginException( errorMsg, fnfe );
-	// }
-	// catch( ConfigurationException ce )
-	// {
-	//     String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-	//     log.fatal( errorMsg, ce );
-	//     throw new PluginException( errorMsg, ce );
-	// }
 
     }
 
@@ -138,7 +77,6 @@ public class ReviewRelation implements IPluggable
         log.trace( "getCargoContainer() called" );
   
         boolean ok = false;
-	//        ok = addReviewRelation( cargo );
 	ok = env.addReviewRelation( cargo );
 
         if ( ! ok )
@@ -149,26 +87,6 @@ public class ReviewRelation implements IPluggable
         return cargo;
     }
 
-
-    // private boolean addReviewRelation( CargoContainer cargo )
-    // {
-    //     //This mehtod should call a script with the cargocontainer as parameter
-    //     //and expose a getPID and a makeRelation method that enables the script to
-    //     //find the PID of the target of the review and create the hasReview
-    //     //and reviewOf relations
-    //     CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-    // 	String submitter = co.getSubmitter();
-    // 	String format    = co.getFormat();
-    //    	String language  = co.getLang();
-    // 	String XML       = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
-
-
-    // 	String entryPointFunc = "main";
-    //     String pid = cargo.getIdentifierAsString(); // get the pid of the cargocontainer
-    // 	jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
-
-    //     return true;
-    // }
 
 
     public PluginType getPluginType()
