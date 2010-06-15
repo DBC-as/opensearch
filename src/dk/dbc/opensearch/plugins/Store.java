@@ -22,13 +22,13 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -43,12 +43,16 @@ public class Store implements IPluggable
 
 
     private PluginType pluginType = PluginType.STORE;
-    private IObjectRepository objectRepository = null;
+    //    private IObjectRepository objectRepository = null;
     private Map<String, String> argsMap;
 
-    public Store( IObjectRepository repository )
+    StoreEnvironment env = null;
+
+    public Store( IObjectRepository repository ) throws PluginException
     {
-        this.objectRepository = repository;
+	//        this.objectRepository = repository;
+	Map< String, String > tmpMap = new HashMap< String, String >();
+	env = (StoreEnvironment)this.createEnvironment( repository, tmpMap );
     }    
 
     /*
@@ -56,38 +60,38 @@ public class Store implements IPluggable
      * eg. two updates of the record, are stored by two different threads simultaniously.
      * See bug#10534.
      */
-
-
     synchronized public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
     	log.trace( "Entering storeCargoContainer( CargoContainer )" );
 
-        String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
-        try
-        {
-            if ( cargo.getIdentifier() != null )
-            {
-                String new_pid = cargo.getIdentifierAsString();
+	return env.run( cargo );
+
+        // String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
+        // try
+        // {
+        //     if ( cargo.getIdentifier() != null )
+        //     {
+        //         String new_pid = cargo.getIdentifierAsString();
                                 
-                boolean hasObject = objectRepository.hasObject( cargo.getIdentifier() );
-                log.debug( String.format( "hasObject( %s ) returned %b",new_pid, hasObject ) );
-                if ( hasObject )
-                {
-                    log.trace( String.format( "will try to delete pid %s", new_pid ) );
-                    objectRepository.deleteObject( new_pid, "delte before store hack" );
-                }
-            }
+        //         boolean hasObject = objectRepository.hasObject( cargo.getIdentifier() );
+        //         log.debug( String.format( "hasObject( %s ) returned %b",new_pid, hasObject ) );
+        //         if ( hasObject )
+        //         {
+        //             log.trace( String.format( "will try to delete pid %s", new_pid ) );
+        //             objectRepository.deleteObject( new_pid, "delte before store hack" );
+        //         }
+        //     }
             
-            objectRepository.storeObject( cargo, logm, "auto" );
-        }
-        catch( ObjectRepositoryException ex )
-        {
-            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifierAsString(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-            log.error( error, ex);
-            throw new PluginException( error, ex );
-        }
+        //     objectRepository.storeObject( cargo, logm, "auto" );
+        // }
+        // catch( ObjectRepositoryException ex )
+        // {
+        //     String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifierAsString(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
+        //     log.error( error, ex);
+        //     throw new PluginException( error, ex );
+        // }
         
-        return cargo;
+        // return cargo;
     }
 
 
@@ -100,4 +104,10 @@ public class Store implements IPluggable
     {
         return true;
     }
+
+    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    {
+    	return new StoreEnvironment( repository, args );
+    }
+
 }
