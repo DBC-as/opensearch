@@ -21,6 +21,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.MetaData;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -89,7 +90,7 @@ public class DocbookMergerTest {
      * Test of getPluginType method, of class DocbookMerger.
      */
     @Test
-    public void testGetPluginType()
+    public void testGetPluginType() throws PluginException
     {
         DocbookMerger instance = new DocbookMerger( mockIObjectRepository );
         PluginType expResult = PluginType.PROCESS;

@@ -28,19 +28,15 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
-import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.IPredicate;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.InputPair;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
-
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import javax.xml.rpc.ServiceException;
 
@@ -59,11 +55,8 @@ public class PurgeRelations implements IPluggable
     private PluginType pluginType = PluginType.RELATION;
 
     private IObjectRepository objectRepository;
+    private PurgeRelationsEnvironment env = null;
     
-    private final IPredicate isMemberOfWork = DBCBIB.IS_MEMBER_OF_WORK;
-    private final IPredicate hasManifestation = DBCBIB.HAS_MANIFESTATION;
-    private final IPredicate reviewOf = DBCBIB.IS_REVIEW_OF;
-    private final IPredicate hasReview = DBCBIB.HAS_REVIEW;
 
 
     /**
@@ -72,7 +65,9 @@ public class PurgeRelations implements IPluggable
     public PurgeRelations( IObjectRepository repository ) throws PluginException
     {
         log.trace( "PurgeRelations constructor called" );
-        this.objectRepository = repository;
+
+	Map< String, String> tmpMap = new HashMap< String, String >();
+	env = (PurgeRelationsEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -102,13 +97,19 @@ public class PurgeRelations implements IPluggable
         try
         {
             log.debug( String.format( "purging work relations", "" ) );
-            ok = purgeWorkRelationForMaterial( cargo );
+	    synchronized(this) 
+	    {
+		ok = env.purgeWorkRelationForMaterial( cargo );
+	    }
             log.debug( String.format( "work relations purged: %s", ok ) );
 
             if ( ok )
             {
                 log.debug( String.format( "purging anmeldelses relations", "" ) );
-                ok = purgeAnmeldelsesRelationForMaterial( cargo );
+		synchronized(this) 
+		{
+		    ok = env.purgeAnmeldelsesRelationForMaterial( cargo );
+		}
                 log.debug( String.format( "anmeldelses relations purged: %s", ok ) );
             }
         }
@@ -152,90 +153,6 @@ public class PurgeRelations implements IPluggable
     }
 
 
-    synchronized private boolean purgeAnmeldelsesRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
-    {
-        DublinCore dc = cargo.getDublinCoreMetaData();
-
-        if ( dc == null )
-        {
-            String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
-            log.error( error );
-            throw new PluginException( error );
-        }
-
-        ObjectIdentifier identifier = cargo.getIdentifier();
-
-        if ( objectRepository.hasObject( identifier ) )
-        {
-            log.debug( String.format( "Getting object relations for '%s' with relation '%s'", identifier, hasReview.getPredicateString() ) );
-            String subject = identifier.getIdentifier();
-            List< InputPair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, hasReview.getPredicateString() );
-            
-            if ( relations != null )
-            {
-                for ( InputPair pair : relations )
-                {
-                    String anmeldelse = pair.getSecond().toString();
-                    log.debug( String.format( "Getting object relations for '%s' with relation '%s'", anmeldelse, reviewOf.getPredicateString() ) );
-                    List< InputPair< IPredicate, String > > anmeldelsesRelations = objectRepository.getObjectRelations( anmeldelse, reviewOf.getPredicateString() );
-                    if ( anmeldelsesRelations != null && anmeldelsesRelations.size() > 0 )
-                    {
-                        log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", anmeldelse, reviewOf.getPredicateString(), subject ) );
-                        ObjectIdentifier anmeldelsesIdentifier = new dk.dbc.opensearch.common.fedora.PID( anmeldelse );
-                        objectRepository.removeObjectRelation( anmeldelsesIdentifier, reviewOf, subject );
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-
-    synchronized private boolean purgeWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
-    {
-        DublinCore dc = cargo.getDublinCoreMetaData();
-
-        if ( dc == null )
-        {
-            String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
-            log.error( error );
-            throw new PluginException( error );
-        }
-
-        ObjectIdentifier identifier = cargo.getIdentifier();
-        
-        if ( objectRepository.hasObject( identifier ) )
-        {
-            String subject = identifier.getIdentifier();
-            log.debug( String.format( "Getting work relations for post '%s' with relation '%s'", subject, isMemberOfWork.getPredicateString() ) );
-            List< InputPair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, isMemberOfWork.getPredicateString() );
-            
-            if ( relations != null )
-            {
-                for ( InputPair pair : relations )
-                {
-                    String work = pair.getSecond().toString();
-                    log.debug( String.format( "Getting relations for work '%s' with relation '%s'", work, hasManifestation.getPredicateString() ) );
-                    List< InputPair< IPredicate, String > > workRelations = objectRepository.getObjectRelations( work, hasManifestation.getPredicateString() );
-            
-                    if ( workRelations != null && workRelations.size() > 0 )
-                    {
-                        log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", work, hasManifestation.getPredicateString(), subject ) );
-                        ObjectIdentifier workIdentifier = new dk.dbc.opensearch.common.fedora.PID( work );
-                        objectRepository.removeObjectRelation( workIdentifier, hasManifestation, subject );
-                    }
-                    else
-                    {
-                        log.debug( "no relations to purge" );
-                    }
-                }
-            }
-        }
-        
-        return true;
-    }
-
 
     @Override
     public PluginType getPluginType()
@@ -247,4 +164,11 @@ public class PurgeRelations implements IPluggable
     {
         return true;
     }
+
+
+    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    {
+    	return new PurgeRelationsEnvironment( repository, args );
+    }
+
 }
