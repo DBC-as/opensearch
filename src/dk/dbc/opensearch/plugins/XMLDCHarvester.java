@@ -30,6 +30,7 @@ import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -40,6 +41,7 @@ import dk.dbc.opensearch.components.datadock.DatadockJob;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.NamespaceContext;
@@ -67,11 +69,14 @@ public class XMLDCHarvester implements IPluggable
     private static Logger log = Logger.getLogger( XMLDCHarvester.class );
 
     private PluginType pluginType = PluginType.HARVEST;
-    private IObjectRepository repository;
+
+    private XMLDCHarvesterEnvironment env = null;
+
 
     public XMLDCHarvester( IObjectRepository repository ) throws PluginException
     {
-        this.repository = repository;
+	Map< String, String > tmpMap = new HashMap< String, String >();
+        env = (XMLDCHarvesterEnvironment)createEnvironment( repository, tmpMap );
     }
 
     @Override
@@ -86,122 +91,8 @@ public class XMLDCHarvester implements IPluggable
             throw new PluginException( error );
         }
 
-        log.trace( "Constructing DC datastream" );
+	return env.run( cargo );
 
-        DublinCore dcStream = createDublinCore( cargo );
-
-        log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-        cargo.addMetaData( dcStream );
-
-        /*catch ( IOException ioe )
-          {
-          String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
-          log.error( msg );
-          throw new PluginException( msg, ioe );
-          }
-          catch( IllegalArgumentException iae )
-          {
-          String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
-          log.error( msg );
-          throw new PluginException( msg, iae );
-          }*/
-
-        log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
-
-        log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
-
-        return cargo;
-    }
-
-    // @Deprecated
-    // public CargoContainer getCargoContainer( DatadockJob job, byte[] data, String alias ) throws PluginException
-    // {
-    //     return createCargoContainerFromFile( job, data, alias );
-    // }
-
-
-    // /**
-    //  *
-    //  * @return the CargoContainer from
-    //  * @throws TransformerException
-    //  * @throws ParserConfigurationException
-    //  * @throws XPathExpressionException
-    //  * @throws IOException if the data cannot be read
-    //  */
-    // private CargoContainer createCargoContainerFromFile( DatadockJob job, byte[] data, String alias ) throws PluginException
-    // {
-    //     CargoContainer cargo = new CargoContainer( );
-
-    //     try
-    //     {
-    //         /** \todo: hardcoded values for mimetype, language*/
-    //         cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", data );
-
-    //         log.trace( "Constructing DC datastream" );
-
-    //         DublinCore dcStream = createDublinCore( cargo );
-
-    //         log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-    //         cargo.addMetaData( dcStream );
-    //     }
-    //     catch ( IOException ioe )
-    //     {
-    //         String msg = String.format( "Could not construct CargoContainer %s", ioe.getMessage() );
-    //         log.error( msg );
-    //         throw new PluginException( msg, ioe );
-    //     }
-    //     catch( IllegalArgumentException iae )
-    //     {
-    //         String msg = String.format( "Invalid data given to the cargocontainer.add method %s", iae.getMessage() );
-    //         log.error( msg );
-    //         throw new PluginException( msg, iae );
-    //     }
-    //     cargo.setIndexingAlias( alias, DataStreamType.OriginalData );
-    //     log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
-
-    //     log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
-
-    //     return cargo;
-    // }
-
-
-    private String getDCVariable( byte[] bytes, String xPathStr ) throws PluginException
-    {
-        NamespaceContext nsc = new OpensearchNamespaceContext();
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext( nsc );
-        XPathExpression xPathExpression = null;
-
-        InputSource workRelationSource = new InputSource( new ByteArrayInputStream( bytes ) );
-        String dcVariable = null;
-
-        log.debug( String.format( "xpathStr = '%s'", xPathStr ) );
-        try
-        {
-            xPathExpression = xpath.compile( xPathStr );
-        }
-        catch ( XPathExpressionException xpee )
-        {
-            String msg = String.format( "Could not compile xpath expression '%s'", xPathStr );
-            log.error( msg, xpee );
-            throw new PluginException( msg, xpee );
-        }
-
-        try
-        {
-            //This line writes a fatal error when given an '&' as the only content in the xml
-            dcVariable = xPathExpression.evaluate( workRelationSource );
-        }
-        catch ( XPathExpressionException xpee )
-        {
-            String msg = String.format( "Could not evaluate with xpath expression '%s'", xPathStr );
-            log.error( msg, xpee );
-            throw new PluginException( msg, xpee );
-        }
-
-        log.debug( String.format( "Found dcVariable: '%s'", dcVariable ) );
-
-        return dcVariable;
     }
 
 
@@ -210,50 +101,15 @@ public class XMLDCHarvester implements IPluggable
         return pluginType;
     }
 
-    private DublinCore createDublinCore( CargoContainer cargo ) throws PluginException
-    {
-        DublinCore dc = new DublinCore( );
-        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-
-        byte[] b = co.getBytes();
-
-        String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
-        log.trace( String.format( "finding dcTitle using xpath: '%s'", titleXpathStr ) );
-        String dcTitle = getDCVariable( b, titleXpathStr );
-        log.trace( String.format( "cargo setting dcTitle with value '%s'", dcTitle ) );
-        dc.setTitle( dcTitle );
-
-        String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1]";
-        log.trace( String.format( "finding dcCreator using xpath: '%s'", creatorXpathStr ) );
-        String dcCreator = getDCVariable( b, creatorXpathStr );
-        log.trace( String.format( "cargo setting dcCreator with value '%s'", dcCreator ) );
-        dc.setCreator( dcCreator );
-
-        String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
-        log.trace( String.format( "finding dcType using xpath: '%s'", typeXpathStr ) );
-        String dcType = getDCVariable( b, typeXpathStr );
-        log.trace( String.format( "cargo setting dcType with value '%s'", dcType ) );
-        dc.setType( dcType );
-
-        String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
-        log.trace( String.format( "finding dcSource using xpath: '%s'", sourceXpathStr ) );
-        String dcSource = getDCVariable( b, sourceXpathStr );
-        log.trace( String.format( "cargo setting dcSource with value '%s'", dcSource ) );
-        dc.setSource( dcSource );
-
-        String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a']";
-        log.trace( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
-        String dcRelation = getDCVariable( b, relationXpathStr );
-        log.trace( String.format( "cargo setting dcRelation with value '%s'", dcRelation ) );
-        dc.setRelation( dcRelation );
-
-        log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
-
-        return dc;
-    }
-    
     private boolean validateArgs( Map<String, String> argsMap )
     {
         return true;
     }
+
+
+    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    {
+    	return new XMLDCHarvesterEnvironment( repository, args );
+    }
+
 }

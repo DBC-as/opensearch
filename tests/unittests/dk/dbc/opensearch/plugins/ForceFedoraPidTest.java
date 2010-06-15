@@ -49,7 +49,7 @@ public class ForceFedoraPidTest {
     @Mocked IObjectRepository mockIObjectRepository;
     @Mocked Map<String, String> mockArgsMap;
 
-    ForceFedoraPid forcePlugin = new ForceFedoraPid( mockIObjectRepository );
+    ForceFedoraPid forcePlugin = null;
     CargoContainer cargo;
     CargoContainer returnCargo;
     //static final String testPid1 = "test:1";
@@ -67,8 +67,9 @@ public class ForceFedoraPidTest {
     // String indexAlias = "danmarcxchange";
     // String indexAliasNotValid = "None";
    
-    @Before public void SetUp() 
+    @Before public void SetUp() throws PluginException 
     {
+	forcePlugin = new ForceFedoraPid( mockIObjectRepository );
     }
 
   

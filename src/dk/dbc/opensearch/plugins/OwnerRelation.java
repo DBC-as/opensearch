@@ -32,7 +32,7 @@ import dk.dbc.opensearch.common.fedora.FedoraRelsExt;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
-//import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -73,6 +73,7 @@ public class OwnerRelation implements IPluggable
     private static SimpleRhinoWrapper jsWrapper = null;
     private IObjectRepository repository;
 
+    private OwnerRelationEnvironment ore = null;
 
     /**
      * Constructor for the OwnerRelation plugin.
@@ -81,34 +82,10 @@ public class OwnerRelation implements IPluggable
      */
     public OwnerRelation( IObjectRepository repository ) throws PluginException
     {
-        this.repository = repository;
-
 	log.trace( "Entering OwnerRelation" );
-	
-	String jsFileName = new String( "owner_relation.js" );
 
-	// Creates a list of objects to be used in the js-scope
-	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	objectList.add( new InputPair< String, Object >( "Log", log ) );
-	objectList.add( new InputPair< String, Object >( "IS_OWNED_BY", DBCBIB.IS_OWNED_BY ) );
-	objectList.add( new InputPair< String, Object >( "IS_AFFILIATED_WITH", DBCBIB.IS_AFFILIATED_WITH ) );
-
-        try
-        {
-	    jsWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
-        }
-        catch( FileNotFoundException fnfe )
-        {
-            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-            log.error( errorMsg, fnfe );
-            throw new PluginException( errorMsg, fnfe );
-        }
-        catch( ConfigurationException ce )
-        {
-            String errorMsg = String.format( "A ConfigurationExcpetion was caught while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-            log.fatal( errorMsg, ce );
-            throw new PluginException( errorMsg, ce );
-        }
+	Map< String, String > tmpMap = new HashMap< String, String >();
+	ore = (OwnerRelationEnvironment)this.createEnvironment( repository, tmpMap );
 
         log.trace( "OwnerRelation plugin constructed" );
 
@@ -130,70 +107,10 @@ public class OwnerRelation implements IPluggable
     { 
         log.trace( "getCargoContainer() called" );
 
-        cargo = setOwnerRelations( cargo );
+        // cargo = setOwnerRelations( cargo );
+	cargo = ore.setOwnerRelations( cargo );
 
         return cargo;
-    }
-
-    public CargoContainer setOwnerRelations( CargoContainer cargo ) throws PluginException
-    {
-        CargoObject co = null;
-        if ( ! cargo.hasCargo( DataStreamType.OriginalData ) )
-        {
-            String error = String.format( "CargoContainer with id '%s' has no OriginalData to contruct relations from, aborting", cargo.getIdentifier() );
-            log.error( error );
-            throw new PluginException( new IllegalStateException( error ) );
-        }
-        else
-        {
-            co = cargo.getCargoObject( DataStreamType.OriginalData );
-        }
-
-        String submitter = co.getSubmitter();
-        String format = co.getFormat();
-
-        if ( null == submitter || submitter.isEmpty() || null == format || format.isEmpty() )
-        {
-            String error = String.format( "CargoContainer with id '%s' has no information on submitter or format", cargo.getIdentifier() );
-            log.error( error );
-            throw new PluginException( new IllegalStateException( error ) );
-        }
-
-        FedoraRelsExt rels = (FedoraRelsExt) cargo.getMetaData( DataStreamType.RelsExtData );
-        if ( null == cargo.getIdentifier() )
-        {
-            log.warn( String.format( "CargoContainer has no identifier, this will be a problem in the RELS-EXT generation/validation" ) );
-        }
-
-        if ( null == rels )
-        {
-            try
-            {
-                rels = new FedoraRelsExt();
-            }
-            catch ( ParserConfigurationException pce )
-            {
-                String errorMsg = new String( "Could not create a new FedoraRelsExt.");
-                log.error( errorMsg, pce );
-                throw new PluginException( errorMsg, pce );
-            }
-        }
-
-
-        log.debug( String.format( "Trying to add owner relation for rels '%s'; submitter '%s'; format '%s'", rels.toString(), submitter, format ) );
-
-	String entryPointFunc = "addOwnerRelation";
-	rels = ( FedoraRelsExt ) jsWrapper.run( entryPointFunc,
-						rels,
-						submitter,
-						format );        
-
-        log.debug( String.format( "rels: '%s'", rels.toString() ) );
-
-        cargo.addMetaData( rels );
-
-        return cargo;
-
     }
 
 
@@ -216,10 +133,10 @@ public class OwnerRelation implements IPluggable
     }
 
 
-    // public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
-    // {
-    // 	return new OwnerRelationEnvironment( repository, args );
-    // }
+    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    {
+    	return new OwnerRelationEnvironment( repository, args );
+    }
 
 
 }
