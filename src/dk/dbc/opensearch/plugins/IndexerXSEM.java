@@ -27,6 +27,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.compass.CPMAlias;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -73,7 +74,7 @@ public class IndexerXSEM implements IPluggable
 
     private IndexerXSEMEnvironment env = null;
 
-    public IndexerXSEM( IObjectRepository repository )
+    public IndexerXSEM( IObjectRepository repository ) throws PluginException
     {
 	Map< String, String> tmpMap = new HashMap< String, String >();
 	env = (IndexerXSEMEnvironment)this.createEnvironment( repository, tmpMap );
