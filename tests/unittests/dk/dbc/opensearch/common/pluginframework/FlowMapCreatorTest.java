@@ -1,9 +1,11 @@
 package dk.dbc.opensearch.common.pluginframework;
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository; 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper; 
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,25 +43,45 @@ public class FlowMapCreatorTest
     String format2 = "format2";
     String submitter1 = "submitter1";
     String submitter2 = "submitter2";
-    String pluginClassName1 = "dk.dbc.opensearch.plugins.XMLDCHarvester";
-    String pluginClassName2 = "dk.dbc.opensearch.plugins.ForceFedoraPid";
-    String pluginClassName3 = "dk.dbc.opensearch.plugins.OwnerRelation";
+    String pluginClassName1 = "plugin1";
+    String pluginClassName2 = "plugin2";
+    String pluginClassName3 = "plugin3";
     String argName1 = "argName1";
     String argName2 = "argName2";
     String argValue1 = "argValue1";
     String argValue2 = "argValue2";
 
-    @Mocked IObjectRepository repository;
+    @Mocked IObjectRepository repository; 
+    @Mocked static IPluggable mockIPluggable;
 
     @MockClass( realClass = FlowMapCreator.class )
     public static class MockFlowMapCreator
     {
-        @Mock public void validateWorkflowsXMLFile( String xmlPath, String sxdPath )
+        @Mock public void validateWorkflowsXMLFile( String xmlPath, String xsdPath )
         {
             System.out.println( "validates fine, tx mate" );
         }
 
     }
+
+    /**
+     * Mocking the pluginresolver class so that we dont have to care
+     * about the plugin names etc
+     */
+    @MockClass( realClass = PluginResolver.class )
+    public static class MockPluginResolver
+    {
+        @Mock
+        public void $init ( IObjectRepository repository )
+        {}
+        
+        @Mock
+        public IPluggable getPlugin( String className )
+        {
+            return mockIPluggable;
+        }
+    }
+
 
     @Before public void setUp() throws Exception
     {
@@ -89,8 +111,14 @@ public class FlowMapCreatorTest
         fmc = new FlowMapCreator( path, xsdPath );
     }
 
+    /**
+     * creates the flowmapcreator and have it create a map of lists 
+     * of PluginTasks
+     */
     @Test public void createMapTest() throws Exception
     {
+        Mockit.setUpMocks( MockPluginResolver.class );
+
         fmc = new FlowMapCreator( path, xsdPath );
         flowMap = fmc.createMap( new PluginResolver( repository ) );
         assertTrue( validateMap1( flowMap ) );
