@@ -71,8 +71,12 @@ public class IndexerXSEM implements IPluggable
 
     PluginType pluginType = PluginType.INDEX;
 
+    private IndexerXSEMEnvironment env = null;
+
     public IndexerXSEM( IObjectRepository repository )
     {
+	Map< String, String> tmpMap = new HashMap< String, String >();
+	env = (IndexerXSEMEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
     /**
@@ -334,5 +338,11 @@ public class IndexerXSEM implements IPluggable
     public synchronized CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {
         return null;
+    }
+
+
+    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    {
+    	return new IndexerXSEMEnvironment( repository, args );
     }
 }
