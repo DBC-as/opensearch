@@ -27,24 +27,12 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-// import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-// import dk.dbc.opensearch.common.metadata.DBCBIB;
-// import dk.dbc.opensearch.common.metadata.DublinCore;
-// import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
-// import dk.dbc.opensearch.common.types.InputPair;
-// import dk.dbc.opensearch.common.types.ObjectIdentifier;
 
-// import java.io.IOException;
-// import java.net.MalformedURLException;
-// import java.util.HashMap;
-// import java.util.List;
 import java.util.Map;
-// import javax.xml.rpc.ServiceException;
 
-// import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 

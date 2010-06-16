@@ -26,18 +26,12 @@ package dk.dbc.opensearch.common.javascript;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.common.fedora.FedoraObjectRelations;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.TargetFields;
-import dk.dbc.opensearch.common.metadata.IPredicate;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.fedora.PID;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.ArrayList;
 import java.util.List;
