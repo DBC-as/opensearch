@@ -24,7 +24,7 @@ package dk.dbc.opensearch.common.db;
 import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -98,7 +98,7 @@ public class Processqueue implements IProcessqueue
      *
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public Vector<InputPair<String, Integer>> popAll() throws SQLException
+    public Vector<ImmutablePair<String, Integer>> popAll() throws SQLException
     {
         log.debug( "Entering Processqueue.popAll()" );
 
@@ -106,7 +106,7 @@ public class Processqueue implements IProcessqueue
         Statement stmt = null;
         ResultSet rs = null;
 
-        Vector<InputPair<String, Integer>> jobs = new Vector<InputPair<String, Integer>>();
+        Vector<ImmutablePair<String, Integer>> jobs = new Vector<ImmutablePair<String, Integer>>();
 
         try
         {
@@ -120,7 +120,7 @@ public class Processqueue implements IProcessqueue
 
                 log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
+                ImmutablePair<String, Integer> pair = new ImmutablePair<String, Integer>( fedoraHandle, queueID );
                 jobs.add( pair );
             }
 
@@ -145,7 +145,7 @@ public class Processqueue implements IProcessqueue
      *
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public Vector<InputPair<String, Integer>> pop( int maxSize ) throws SQLException
+    public Vector<ImmutablePair<String, Integer>> pop( int maxSize ) throws SQLException
     {
         log.debug( "Entering Processqueue.pop()" );
 
@@ -153,7 +153,7 @@ public class Processqueue implements IProcessqueue
         Statement stmt = null;
         ResultSet rs = null;
 
-        Vector<InputPair<String, Integer>> jobs = new Vector<InputPair<String, Integer>>();
+        Vector<ImmutablePair<String, Integer>> jobs = new Vector<ImmutablePair<String, Integer>>();
 
         try
         {
@@ -167,7 +167,7 @@ public class Processqueue implements IProcessqueue
 
                 log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                InputPair<String, Integer> pair = new InputPair<String, Integer>( fedoraHandle, queueID );
+                ImmutablePair<String, Integer> pair = new ImmutablePair<String, Integer>( fedoraHandle, queueID );
                 jobs.add( pair );
             }
 

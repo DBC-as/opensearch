@@ -24,7 +24,6 @@ import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.InputPair;
 
 import java.io.File;
 import java.io.InputStream;

@@ -29,7 +29,7 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.server.types.gen.Condition;
@@ -650,12 +650,12 @@ public class FedoraMain
 
         System.out.println( "*** kalder deleteSubmitter ***" );
         String[] labels = { "pg" }; //, "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
-        List< InputPair< TargetFields, String > > resultSearchFields = new ArrayList< InputPair< TargetFields, String > >();
+        List< ImmutablePair< TargetFields, String > > resultSearchFields = new ArrayList< ImmutablePair< TargetFields, String > >();
         int maximumResult = 100;
         //for ( int i = 0; i < 10; i++ )
         //{
             TargetFields targetLabel = FedoraObjectFields.LABEL;
-            InputPair< TargetFields, String > pair = new InputPair< TargetFields, String >( targetLabel, labels[0] );
+            ImmutablePair< TargetFields, String > pair = new ImmutablePair< TargetFields, String >( targetLabel, labels[0] );
             resultSearchFields.add( pair );
             List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
             //System.out.println( "pids.length: " + pids.size() );

@@ -4,7 +4,7 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.config.PtiConfig;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class PTIJobsMap extends JobMapCreator
 
     private static boolean initiated = false;
     private static ArrayList< String > ptiPluginsList = new ArrayList< String >();
-    private static HashMap< InputPair< String, String >, ArrayList< String > > ptiJobMap;
+    private static HashMap< ImmutablePair< String, String >, ArrayList< String > > ptiJobMap;
     private static HashMap< String, String> ptiAliasMap; 
 
     public PTIJobsMap() {}
@@ -35,7 +35,7 @@ public class PTIJobsMap extends JobMapCreator
             initiate();
         }
 
-        ptiPluginsList = ptiJobMap.get( new InputPair< String, String >( submitter, format ) );
+        ptiPluginsList = ptiJobMap.get( new ImmutablePair< String, String >( submitter, format ) );
         return ptiPluginsList;
     }
 

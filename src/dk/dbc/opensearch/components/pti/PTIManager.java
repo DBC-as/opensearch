@@ -27,7 +27,7 @@ package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
@@ -122,7 +122,7 @@ public class PTIManager
     private int startNewJobs( int maxNumberOfJobs )throws SQLException, ConfigurationException, ClassNotFoundException, ServiceException, MalformedURLException, IOException
     {
         // checking for new jobs
-        Vector< InputPair< String, Integer > > newJobs = processqueue.pop( maxNumberOfJobs );
+        Vector< ImmutablePair< String, Integer > > newJobs = processqueue.pop( maxNumberOfJobs );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
@@ -147,7 +147,7 @@ public class PTIManager
     {
 
         // Checking jobs and commiting jobs
-        //Vector< CompletedTask<InputPair< Boolean, Integer > > > finishedJobs =
+        //Vector< CompletedTask<ImmutablePair< Boolean, Integer > > > finishedJobs =
         Map< Integer, Boolean > finishedJobs = pool.checkJobs();
         // log.debug( "size of finishedJobs: " + finishedJobs.size() );
         for ( Entry< Integer, Boolean> task : finishedJobs.entrySet() )

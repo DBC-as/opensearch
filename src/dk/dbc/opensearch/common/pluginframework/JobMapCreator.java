@@ -29,7 +29,7 @@ package dk.dbc.opensearch.common.pluginframework;
 import dk.dbc.opensearch.common.compass.CPMAlias;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class JobMapCreator
     static Logger log = Logger.getLogger( JobMapCreator.class );
 
 
-    protected static HashMap< InputPair< String, String >, ArrayList< String > > jobMap;
+    protected static HashMap< ImmutablePair< String, String >, ArrayList< String > > jobMap;
     protected static HashMap< String, String > aliasMap = new HashMap< String, String >();
 
     
@@ -74,7 +74,7 @@ public class JobMapCreator
 
         CPMAlias cpmAlias = new CPMAlias();
 
-    	jobMap = new HashMap<InputPair<String, String>, ArrayList<String>>();
+    	jobMap = new HashMap<ImmutablePair<String, String>, ArrayList<String>>();
 
         File jobFile = FileHandler.getFile( path );
 
@@ -139,7 +139,7 @@ public class JobMapCreator
             }
 
             // Put it into the map with  <submitter, format> as key and List as value
-            jobMap.put( new InputPair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
+            jobMap.put( new ImmutablePair< String, String >( submitter, format ), new ArrayList< String >( sortedPluginList) );
         }
     }
    

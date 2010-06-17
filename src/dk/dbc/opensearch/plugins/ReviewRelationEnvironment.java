@@ -36,7 +36,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;
@@ -81,9 +81,9 @@ public class ReviewRelationEnvironment implements IPluginEnvironment
         JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
         scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
 	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	objectList.add( new InputPair< String, Object >( "Log", log ) );
-	objectList.add( new InputPair< String, Object >( "scriptClass", scriptClass ) );
-	objectList.add( new InputPair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
+	objectList.add( new ImmutablePair< String, Object >( "Log", log ) );
+	objectList.add( new ImmutablePair< String, Object >( "scriptClass", scriptClass ) );
+	objectList.add( new ImmutablePair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
 
         try 
 	{

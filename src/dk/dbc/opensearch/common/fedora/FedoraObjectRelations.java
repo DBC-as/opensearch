@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.common.Constants;
@@ -59,7 +59,7 @@ public class FedoraObjectRelations
     private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
 
 
-    private static String p = "p"; // used to extract value from InputPair. Depends on itql statement!!!
+    private static String p = "p"; // used to extract value from ImmutablePair. Depends on itql statement!!!
     private final IObjectRepository objectRepository;
     private final FedoraHandle fedoraHandle;
 
@@ -93,7 +93,7 @@ public class FedoraObjectRelations
      * @param predicate_2 Null value accepted
      * @param object_2 Null value accepted
      * @param relation Name of relation Fedora object must have
-     * @return InputPair of
+     * @return ImmutablePair of
      * @throws ConfigurationException
      * @throws ServiceException
      * @throws MalformedURLException
@@ -123,7 +123,7 @@ public class FedoraObjectRelations
         String limit = "limit 1";
 
         query = select + where + relsNS + limit;
-        List<InputPair<String, String>> tuples = executeGetTuples( query );
+        List<ImmutablePair<String, String>> tuples = executeGetTuples( query );
 
         if( !tuples.isEmpty() )
         {
@@ -137,9 +137,9 @@ public class FedoraObjectRelations
 
 
     /**
-     * returns an {@link List< InputPair< String,String > >} where
-     * {@link InputPair.getFirst()} represents the {@code subject} tuple
-     * variable and {@link InputPair.getSecond()} represents the {@code object}
+     * returns an {@link List< ImmutablePair< String,String > >} where
+     * {@link ImmutablePair.getFirst()} represents the {@code subject} tuple
+     * variable and {@link ImmutablePair.getSecond()} represents the {@code object}
      * tuple variable. If the variable is not named, e.g. by using null as
      * parameter, the getters will display the sparql variable substitute.
      *
@@ -152,7 +152,7 @@ public class FedoraObjectRelations
      * @throws MalformedURLException
      * @throws IOException
      */
-    private List<InputPair<String, String>> executeGetTuples( String query ) throws ConfigurationException, ServiceException, IOException
+    private List<ImmutablePair<String, String>> executeGetTuples( String query ) throws ConfigurationException, ServiceException, IOException
     {
         log.debug( String.format( "using query %s", query ) );
 
@@ -194,7 +194,7 @@ public class FedoraObjectRelations
         qparams.put( "flush", "true" );
         qparams.put( "query", query );
         TupleIterator tuples = this.fedoraHandle.getTuples( qparams );
-        ArrayList<InputPair<String, String>> tupleList = new ArrayList<InputPair<String, String>>();
+        ArrayList<ImmutablePair<String, String>> tupleList = new ArrayList<ImmutablePair<String, String>>();
         if( tuples != null )
         {
             try
@@ -208,7 +208,7 @@ public class FedoraObjectRelations
                         {
                             String workRelation = row.get( key ).toString();
                             log.debug( "returning tupleList" );
-                            tupleList.add( new InputPair<String, String>( key, workRelation ) );
+                            tupleList.add( new ImmutablePair<String, String>( key, workRelation ) );
                         }
                     }
                 }
@@ -558,10 +558,10 @@ public class FedoraObjectRelations
         String[] resultFields = { property_1.fieldname(), property_2.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        List< InputPair< TargetFields, String > > propertiesAndValues = new ArrayList< InputPair< TargetFields, String > >();
+        List< ImmutablePair< TargetFields, String > > propertiesAndValues = new ArrayList< ImmutablePair< TargetFields, String > >();
 
-        propertiesAndValues.add( new InputPair< TargetFields, String >( property_1, value_1 ) );
-        propertiesAndValues.add( new InputPair< TargetFields, String >( property_2, value_2 ) );
+        propertiesAndValues.add( new ImmutablePair< TargetFields, String >( property_1, value_1 ) );
+        propertiesAndValues.add( new ImmutablePair< TargetFields, String >( property_2, value_2 ) );
 
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000, null );
         String retVal = null;
@@ -589,9 +589,9 @@ public class FedoraObjectRelations
         String[] resultFields = { property.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;        
-        List< InputPair< TargetFields, String > > propertiesAndValues = new ArrayList< InputPair< TargetFields, String > >();
+        List< ImmutablePair< TargetFields, String > > propertiesAndValues = new ArrayList< ImmutablePair< TargetFields, String > >();
 
-        propertiesAndValues.add( new InputPair< TargetFields, String >( property, value ) );
+        propertiesAndValues.add( new ImmutablePair< TargetFields, String >( property, value ) );
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000, null );
 
         String retval = null;

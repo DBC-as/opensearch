@@ -31,7 +31,7 @@ import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeExceptio
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 
 
@@ -176,7 +176,7 @@ public class DatadockManager
     private synchronized Boolean isJobIsPossible( DatadockJob job )
     {
         Boolean exists = Boolean.FALSE;
-        final Pair<String, String> entry = new InputPair<String,String>( job.getSubmitter(), job.getFormat() );
+        final Pair<String, String> entry = new ImmutablePair<String,String>( job.getSubmitter(), job.getFormat() );
 
         if( ! this.jobExecutionCheckSet.containsKey( entry ) )
         {

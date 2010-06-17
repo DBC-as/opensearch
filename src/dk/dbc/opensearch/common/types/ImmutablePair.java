@@ -22,12 +22,12 @@ package dk.dbc.opensearch.common.types;
 
 
 /**
- * InputPair
+ * ImmutablePair
  * 
- * If you would like to have sorting done on the InputPair type, please use
+ * If you would like to have sorting done on the ImmutablePair type, please use
  * dk.dbc.opensearch.common.types.ComparablePair type instead
  */
-public class InputPair< E, V > implements Pair< E, V >
+public class ImmutablePair< E, V > implements Pair< E, V >
 {
     /**
      *
@@ -36,7 +36,7 @@ public class InputPair< E, V > implements Pair< E, V >
     private E first;
     private V second;
 
-    public InputPair( E first, V second ) 
+    public ImmutablePair( E first, V second ) 
     {
         this.first = first;
         this.second = second;
@@ -73,15 +73,15 @@ public class InputPair< E, V > implements Pair< E, V >
     @Override
     public boolean equals( Object obj )
     {
-        if(!( obj instanceof InputPair<?,?> ) )
+        if(!( obj instanceof ImmutablePair<?,?> ) )
         {
             return false;
         }
-        else if(!( first.equals( ( (InputPair<?, ?>)obj ).getFirst() ) ) )
+        else if(!( first.equals( ( (ImmutablePair<?, ?>)obj ).getFirst() ) ) )
         {
             return false;
         }
-        else if(!( second.equals( ( (InputPair<?, ?>)obj ).getSecond() ) ) )
+        else if(!( second.equals( ( (ImmutablePair<?, ?>)obj ).getSecond() ) ) )
         {
             return false;
         }

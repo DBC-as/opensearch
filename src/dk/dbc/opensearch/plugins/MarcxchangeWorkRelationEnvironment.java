@@ -39,7 +39,7 @@ import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TargetFields;
@@ -73,7 +73,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
 	// Creates a list of objects to be used in the js-scope
 	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	objectList.add( new InputPair< String, Object >( "Log", log ) );
+	objectList.add( new ImmutablePair< String, Object >( "Log", log ) );
 
         try
         {
@@ -95,7 +95,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     }
 
 
-    public CargoContainer run( CargoContainer cargo, List< InputPair< TargetFields, String > > searchPairs ) throws PluginException
+    public CargoContainer run( CargoContainer cargo, List< ImmutablePair< TargetFields, String > > searchPairs ) throws PluginException
     {
 
 	List< PID > pidList = getWorkList( searchPairs );
@@ -124,11 +124,11 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * method that generates the list containing the fields to look in and the
      * corresponding values to match with
      * @param cargo, the CargoContianer to generate searchpairs for
-     * @return a list of InputPairs containing a serachfield and the value to match
+     * @return a list of ImmutablePairs containing a serachfield and the value to match
      */
-    public List< InputPair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
+    public List< ImmutablePair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
     {
-        List< InputPair< TargetFields, String > > searchList = new ArrayList< InputPair< TargetFields, String > >();
+        List< ImmutablePair< TargetFields, String > > searchList = new ArrayList< ImmutablePair< TargetFields, String > >();
         //calls a javascript, with the dc-stream and original data of the 
         //cargo as argument, that returns an xml with the pairs to generate
         //start with dummy xml on the javascript-side
@@ -157,7 +157,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         {
             if ( pairArray[ i ] != null )
             {
-                searchList.add( new InputPair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
+                searchList.add( new ImmutablePair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
             }
         }
 
@@ -170,7 +170,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * method that finds the workobjects that match the cirterias specified in
      * the searchList
      */
-    private List< PID > getWorkList( List< InputPair< TargetFields, String > > searchList )
+    private List< PID > getWorkList( List< ImmutablePair< TargetFields, String > > searchList )
     {
         //for each pair in the searchList, search the repository 
         //and add the results together in pidList
@@ -180,9 +180,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         List<PID> pidList = new ArrayList<PID>();
         List<String> pidStringList = new ArrayList<String>();
         List<String> searchResultList = new ArrayList<String>();
-        List<InputPair< TargetFields, String > > tempList = new ArrayList< InputPair< TargetFields, String > >();
+        List<ImmutablePair< TargetFields, String > > tempList = new ArrayList< ImmutablePair< TargetFields, String > >();
 
-        for ( InputPair< TargetFields, String > pair : searchList )
+        for ( ImmutablePair< TargetFields, String > pair : searchList )
         {
             num++;
             tempList.clear();

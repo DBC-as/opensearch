@@ -32,7 +32,7 @@ import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.metadata.MetaData;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class FedoraRelsExt implements MetaData
     private Set<String> relations;
 
     // note that the first element (the object) is always `pid` for fedora rels-ext statements
-    private Collection< InputPair<QName, QName> > triples;
+    private Collection< ImmutablePair<QName, QName> > triples;
     public static final DataStreamType type = DataStreamType.RelsExtData;
 
     private static FedoraNamespace rdf = new FedoraNamespaceContext().getNamespace( "rdf" );
@@ -78,7 +78,7 @@ public class FedoraRelsExt implements MetaData
     public FedoraRelsExt( ) throws ParserConfigurationException
     {        
         relations = new HashSet<String>();
-        triples = new ArrayList< InputPair< QName, QName >>();
+        triples = new ArrayList< ImmutablePair< QName, QName >>();
     }
 
 
@@ -126,7 +126,7 @@ public class FedoraRelsExt implements MetaData
         boolean added = relations.add( new Integer( predicate.hashCode() ).toString()+new Integer( object.hashCode() ).toString() );
         if( added )
         {
-            triples.add( new InputPair<QName, QName>(predicate, object) );
+            triples.add( new ImmutablePair<QName, QName>(predicate, object) );
         }
         return added;
     }
@@ -187,7 +187,7 @@ public class FedoraRelsExt implements MetaData
             }
 
             xmlw.writeAttribute( rdf.getPrefix(), rdf.getURI(), "about", String.format( "info:fedora/%s", identifier ) );
-            for( InputPair<QName, QName> set : triples )
+            for( ImmutablePair<QName, QName> set : triples )
             {
                 QName key = set.getFirst();
                 QName val = set.getSecond();

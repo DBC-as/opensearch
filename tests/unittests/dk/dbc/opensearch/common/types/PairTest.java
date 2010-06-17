@@ -23,7 +23,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import java.util.HashMap;
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -34,13 +34,13 @@ import static org.junit.Assert.*;
  */
 public class PairTest {
 
-    InputPair<String, String> p;
+    ImmutablePair<String, String> p;
 
     /**
      *
      */
     @Before public void SetUp() {
-        p = new InputPair<String, String>( "a", "b");
+        p = new ImmutablePair<String, String>( "a", "b");
     }
 
     /**
@@ -61,8 +61,8 @@ public class PairTest {
 
     @Test 
     public void testHashCode(){
-        InputPair<String, String> p2 = 
-            new InputPair<String, String>( "a", "b" );
+        ImmutablePair<String, String> p2 = 
+            new ImmutablePair<String, String>( "a", "b" );
 
         assertEquals( p.hashCode(), p2.hashCode() );
 
@@ -72,8 +72,8 @@ public class PairTest {
      */
 
     @Test public void testEquals(){
-        InputPair<String, String> p3 = 
-            new InputPair<String, String>( "a", "b" );
+        ImmutablePair<String, String> p3 = 
+            new ImmutablePair<String, String>( "a", "b" );
 
         assertTrue( p3.equals( p ) );
     }
@@ -83,8 +83,8 @@ public class PairTest {
 
     @Test public void testEqualsDifferent()
     {
-        InputPair<String, String> p3 = 
-            new InputPair<String, String>( "a", "a" );
+        ImmutablePair<String, String> p3 = 
+            new ImmutablePair<String, String>( "a", "a" );
 
         assertFalse( p3.equals( p ) ); 
     
@@ -101,12 +101,12 @@ public class PairTest {
     }
 
     @Test public void testPairInHashMaps(){
-        HashMap< InputPair< String, String >, String > hm =
-            new HashMap< InputPair< String, String >, String >();
+        HashMap< ImmutablePair< String, String >, String > hm =
+            new HashMap< ImmutablePair< String, String >, String >();
 
-        hm.put( new InputPair<String, String>( "a", "b" ), "c" );
-        hm.put( new InputPair<String, String>( "d", "e" ), "f" );
+        hm.put( new ImmutablePair<String, String>( "a", "b" ), "c" );
+        hm.put( new ImmutablePair<String, String>( "d", "e" ), "f" );
 
-        assertNotNull( hm.get( new InputPair<String, String>( "a", "b" ) ) );
+        assertNotNull( hm.get( new ImmutablePair<String, String>( "a", "b" ) ) );
     }
 }

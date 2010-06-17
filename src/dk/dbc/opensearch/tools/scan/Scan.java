@@ -31,7 +31,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import org.apache.log4j.Logger;
 
-import dk.dbc.opensearch.common.types.InputPair;
+import dk.dbc.opensearch.common.types.ImmutablePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,12 +57,12 @@ public class Scan {
      * 
      * @return A List of pairs of strings and integers
      */
-    public static synchronized List< InputPair< String, Integer> > termScan( String index, 
+    public static synchronized List< ImmutablePair< String, Integer> > termScan( String index, 
                                                                              String field, 
                                                                              String term, 
                                                                              String prefix ) throws IOException
     {
-    	List< InputPair< String, Integer > > scanResult = new ArrayList< InputPair< String, Integer > >(); 
+    	List< ImmutablePair< String, Integer > > scanResult = new ArrayList< ImmutablePair< String, Integer > >(); 
         IndexReader r = IndexReader.open( index );
 
         log.debug( String.format( " Looking for field '%s', term '%s'", field, term ) );
@@ -90,7 +90,7 @@ public class Scan {
 
             Integer tf = te.docFreq();
             
-            scanResult.add( new InputPair< String, Integer>( t.text(), tf ) );
+            scanResult.add( new ImmutablePair< String, Integer>( t.text(), tf ) );
       
         } while ( te.next() );
 
