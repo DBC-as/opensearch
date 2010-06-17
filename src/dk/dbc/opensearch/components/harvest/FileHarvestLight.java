@@ -158,15 +158,11 @@ public class FileHarvestLight implements IHarvest
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
         String file = id.getURI().getRawPath();
-
-        // Create name of ref file form the name of the datafile
-        String refFileStr = file.substring( 0, file.lastIndexOf( "." ) ) + ".ref";
-	log.debug( String.format( "Reading reference file: %s", refFileStr ) );
-        File refFile = FileHandler.getFile( refFileStr );
+	File refFile = createRefFile( new File( file ) );
 
 	if ( !refFile.exists() )
         {
-	    log.error( String.format( "The reference-file '%s' does not exists", refFileStr ) );
+	    log.error( String.format( "The reference-file '%s' does not exists", refFile.getName() ) );
 	    return null;
 	}
 
