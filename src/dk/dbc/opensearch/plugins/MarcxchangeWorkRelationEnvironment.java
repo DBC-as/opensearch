@@ -187,14 +187,16 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             num++;
             tempList.clear();
             tempList.add( pair );
-            searchResultList = objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ); 
-            //pidStringList.addAll( objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ) );
+
+            searchResultList = objectRepository.getIdentifiers( tempList, null, 10000 ); 
+            //searchResultList = objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" ); 
+          
             log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
 
             //loop to not add duplets
             for( String result : searchResultList )
             {
-                if( !(pidStringList.contains( result) ) )
+                if( !(pidStringList.contains( result) ) && result.startsWith( "work:" ) ) 
                 {
                     pidStringList.add( result );
                 }
