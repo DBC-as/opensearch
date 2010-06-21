@@ -18,9 +18,9 @@
     </plugin>
   </workflow>
   <workflow format="katalog" submitter="775100">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -31,9 +31,9 @@
     </plugin>
   </workflow>
   <workflow format="ebsco" submitter="775100">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -44,9 +44,9 @@
     </plugin>
   </workflow>
   <workflow format="ebrary" submitter="775100">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -57,9 +57,9 @@
     </plugin>
   </workflow>
   <workflow format="katalog" submitter="710100">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -86,9 +86,9 @@
     </plugin>
   </workflow>
   <workflow format="dr_atlas" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -99,9 +99,9 @@
     </plugin>
   </workflow>
   <workflow format="anmeld" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -117,9 +117,9 @@
     </plugin>
   </workflow>
   <workflow format="artikler" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -142,9 +142,9 @@
     </plugin>
   </workflow>
   <workflow format="dbc" submitter="150013">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -155,9 +155,9 @@
     </plugin>
   </workflow>
   <workflow format="pg" submitter="150013">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
@@ -168,9 +168,9 @@
     </plugin>
   </workflow>
   <workflow format="nmalbum" submitter="150014">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store">
     </plugin>
