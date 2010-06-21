@@ -4,7 +4,7 @@ package dk.dbc.opensearch.common.javascript;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.types.TargetFields;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,8 +140,8 @@ public class JSFedoraPIDSearch {
 
         //call the IObjectRepository.getIdentifiers method with the above values,
         //no cutIdentifier and the number of submitters in the maximumResults 
-        List<ImmutablePair<TargetFields, String>> searchFields = new ArrayList<ImmutablePair<TargetFields, String>>();
-        searchFields.add( new ImmutablePair<TargetFields, String>( targetField, searchValue ) );
+        List<SimplePair<TargetFields, String>> searchFields = new ArrayList<SimplePair<TargetFields, String>>();
+        searchFields.add( new SimplePair<TargetFields, String>( targetField, searchValue ) );
 
 	// \note: 10000 below is a hardcodet estimate on max amount of results:
         List<String> resultList = repository.getIdentifiers( searchFields, null, 10000 );

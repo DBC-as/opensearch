@@ -23,7 +23,7 @@ package dk.dbc.opensearch.common.metadata;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
 import java.io.ByteArrayInputStream;
@@ -225,15 +225,15 @@ public class AdministrationStream implements MetaData
 
 
     /**
-     * Returns a {@link List} containing an {@link ImmutablePair}
+     * Returns a {@link List} containing an {@link SimplePair}
      * containing an {@link Integer} denoting the index position of
-     * the data element and another {@link ImmutablePair} containing a
+     * the data element and another {@link SimplePair} containing a
      * {@link CargoObject} and its identifier (which by convention is
      * the DataStreamId).
      */
-    public List< ImmutablePair< Integer, ImmutablePair< String, CargoObject > > > getStreams() throws IOException
+    public List< SimplePair< Integer, SimplePair< String, CargoObject > > > getStreams() throws IOException
     {
-        List< ImmutablePair< Integer, ImmutablePair< String, CargoObject > > > retlist = new ArrayList< ImmutablePair< Integer, ImmutablePair< String,CargoObject > > >( admvalues.size() );
+        List< SimplePair< Integer, SimplePair< String, CargoObject > > > retlist = new ArrayList< SimplePair< Integer, SimplePair< String,CargoObject > > >( admvalues.size() );
         CargoContainer cargo = new CargoContainer();
         for( Entry< Integer, HashMap< AdministrationStreamElement, String> > set : admvalues.entrySet() )
         {
@@ -246,10 +246,10 @@ public class AdministrationStream implements MetaData
                     "ihatefakedata".getBytes() );
             //   cargo.setIndexingAlias( indexingAlias, DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ));
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
-            ImmutablePair< String, CargoObject > indexvalue = new ImmutablePair< String, CargoObject >(
+            SimplePair< String, CargoObject > indexvalue = new SimplePair< String, CargoObject >(
                     set.getValue().get( AdministrationStreamElement.ID ),
                     cargo.getCargoObject( DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ) ) );
-            retlist.add( new ImmutablePair<Integer, ImmutablePair<String,CargoObject>>( set.getKey(), indexvalue ) );
+            retlist.add( new SimplePair<Integer, SimplePair<String,CargoObject>>( set.getKey(), indexvalue ) );
         }
 
         return retlist;

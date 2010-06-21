@@ -29,7 +29,7 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class DatadockJobsMap extends JobMapCreator
 
     private static boolean initiated = false;
     private static ArrayList< String > datadockPluginList = new ArrayList< String >();
-    private static HashMap< ImmutablePair< String, String >, ArrayList< String > > datadockJobMap;
+    private static HashMap< SimplePair< String, String >, ArrayList< String > > datadockJobMap;
 
     public DatadockJobsMap() {}
 
@@ -107,7 +107,7 @@ public class DatadockJobsMap extends JobMapCreator
     {
         init( submitter, format );
 
-        if( null ==  datadockJobMap.get( new ImmutablePair< String, String >( submitter, format ) ) )
+        if( null ==  datadockJobMap.get( new SimplePair< String, String >( submitter, format ) ) )
         {
             return false;
         }
@@ -119,7 +119,7 @@ public class DatadockJobsMap extends JobMapCreator
     {
         init( submitter, format );
 
-        datadockPluginList = datadockJobMap.get( new ImmutablePair< String, String >( submitter, format ) );
+        datadockPluginList = datadockJobMap.get( new SimplePair< String, String >( submitter, format ) );
 
         if ( datadockPluginList == null )
         {
@@ -139,6 +139,6 @@ public class DatadockJobsMap extends JobMapCreator
     {
         init( submitter, format );
 
-        return aliasMap.get(new ImmutablePair< String, String >( submitter, format ) );
+        return aliasMap.get(new SimplePair< String, String >( submitter, format ) );
     }
 }

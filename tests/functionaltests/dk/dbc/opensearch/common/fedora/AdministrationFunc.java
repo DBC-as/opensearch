@@ -32,7 +32,7 @@ import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.TargetFields;
 
@@ -190,14 +190,14 @@ public class AdministrationFunc
         ObjectIdentifier identifier = new dk.dbc.opensearch.common.fedora.PID( subject );
         if ( objectRepository.hasObject( identifier ) )
         {
-            List< ImmutablePair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, predicate );
+            List< SimplePair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, predicate );
 
             if ( relations != null )
             {
-                for ( ImmutablePair pair : relations )
+                for ( SimplePair pair : relations )
                 {
                     String work = pair.getSecond().toString();                    
-                    List< ImmutablePair< IPredicate, String > > workRelations = objectRepository.getObjectRelations( work, workPredicate.getPredicateString() );
+                    List< SimplePair< IPredicate, String > > workRelations = objectRepository.getObjectRelations( work, workPredicate.getPredicateString() );
                     if ( workRelations.size() > 0 )
                     {
                         ObjectIdentifier workIdentifier = new dk.dbc.opensearch.common.fedora.PID( work );

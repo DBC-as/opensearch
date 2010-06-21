@@ -23,7 +23,7 @@ package dk.dbc.opensearch.common.metadata;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -200,7 +200,7 @@ public class AdministrationStreamTest
     {
         ByteArrayInputStream bais = new ByteArrayInputStream( expectedAdminStreamXML2.getBytes() );
         AdministrationStream admstream = new AdministrationStream( bais, true );
-        List<ImmutablePair<Integer, ImmutablePair<String, CargoObject>>> streams = admstream.getStreams();
+        List<SimplePair<Integer, SimplePair<String, CargoObject>>> streams = admstream.getStreams();
         assertTrue( streams.size() == 2 );
     }
 }

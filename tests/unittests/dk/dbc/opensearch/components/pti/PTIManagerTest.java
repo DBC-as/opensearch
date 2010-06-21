@@ -25,7 +25,7 @@ import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +64,7 @@ public class PTIManagerTest
     IObjectRepository objectRepository = createMock( IObjectRepository.class );
 
     static FutureTask mockFuture = createMock( FutureTask.class );
-    static CompletedTask dummyTask = new CompletedTask( mockFuture, new ImmutablePair< Boolean, Integer >( true, 1 ) );
+    static CompletedTask dummyTask = new CompletedTask( mockFuture, new SimplePair< Boolean, Integer >( true, 1 ) );
     static Vector< CompletedTask > checkJobsVector =  new Vector< CompletedTask >();
 
 
@@ -90,13 +90,13 @@ public class PTIManagerTest
 
     ThreadPoolExecutor mockExecutor = createMock( ThreadPoolExecutor.class );
     Compass mockCompass = createMock( Compass.class );
-    ImmutablePair< String, Integer > mockImmutablePair = createMock( ImmutablePair.class );
+    SimplePair< String, Integer > mockSimplePair = createMock( SimplePair.class );
 
 
     @MockClass( realClass =  PTIPool.class )
     public static class MockPTIPool
     {
-        @Mock public void $init( ThreadPoolExecutor threadpool, Compass compass, HashMap< ImmutablePair < String, String >, ArrayList< String > > jobMap ) 
+        @Mock public void $init( ThreadPoolExecutor threadpool, Compass compass, HashMap< SimplePair < String, String >, ArrayList< String > > jobMap ) 
         {
         
         }
@@ -137,7 +137,7 @@ public class PTIManagerTest
         reset( mockPQ );
         reset( mockPTIPool );
         reset( mockCompletedTask );
-        reset( mockImmutablePair );
+        reset( mockSimplePair );
         reset( mockCompass );
         reset( mockFuture );
         reset( mockExecutor );
@@ -190,12 +190,12 @@ public class PTIManagerTest
          * setup
          */
         Mockit.setUpMocks( MockPTIManagerConfig.class );
-        Vector< ImmutablePair< String, Integer > > newJobs = new Vector< ImmutablePair< String, Integer > >();
-        newJobs.add( new ImmutablePair< String, Integer >( "test1", 1 ) );
-        newJobs.add( new ImmutablePair< String, Integer >( "test2", 2 ) );
+        Vector< SimplePair< String, Integer > > newJobs = new Vector< SimplePair< String, Integer > >();
+        newJobs.add( new SimplePair< String, Integer >( "test1", 1 ) );
+        newJobs.add( new SimplePair< String, Integer >( "test2", 2 ) );
        
 
-        Vector< CompletedTask<ImmutablePair<Boolean, Integer>> > finishedJobs =  new Vector< CompletedTask<ImmutablePair<Boolean, Integer>> >();
+        Vector< CompletedTask<SimplePair<Boolean, Integer>> > finishedJobs =  new Vector< CompletedTask<SimplePair<Boolean, Integer>> >();
         finishedJobs.add( mockCompletedTask );
 
         /**
@@ -211,7 +211,7 @@ public class PTIManagerTest
 
         //out of while loop
 //        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
-//        expect( mockCompletedTask.getResult() ).andReturn( new ImmutablePair< Boolean, Integer >( true, 1 ) );
+//        expect( mockCompletedTask.getResult() ).andReturn( new SimplePair< Boolean, Integer >( true, 1 ) );
 //        mockPQ.commit( 1 );
         
         /**

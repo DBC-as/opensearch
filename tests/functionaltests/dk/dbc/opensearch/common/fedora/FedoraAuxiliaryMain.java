@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.io.IOException;
@@ -123,12 +123,12 @@ public class FedoraAuxiliaryMain
 
         System.out.println( "*** kalder testDeleteObjects ***" );
         String[] labels = { "nmalbum, anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
-        List< ImmutablePair< TargetFields, String > > resultSearchFields = new ArrayList< ImmutablePair< TargetFields, String > >();
+        List< SimplePair< TargetFields, String > > resultSearchFields = new ArrayList< SimplePair< TargetFields, String > >();
         int maximumResult = 10000;
         for ( int i = 0; i < labels.length; i++ )
         {
             TargetFields targetLabel = FedoraObjectFields.LABEL;
-            ImmutablePair< TargetFields, String > pair = new ImmutablePair< TargetFields, String >( targetLabel, labels[i] );
+            SimplePair< TargetFields, String > pair = new SimplePair< TargetFields, String >( targetLabel, labels[i] );
             resultSearchFields.add( pair );
             List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
             System.out.println( "pids.length: " + pids.size() );
@@ -149,12 +149,12 @@ public class FedoraAuxiliaryMain
 
         System.out.println( "*** kalder deleteSubmitter ***" );
         String[] labels = { "anmeldelser", "anmeld", "forfatterw", "matvurd", "katalog", "danmarcxchange", "ebrary", "ebsco", "artikler", "dr_forfatteratlas", "dr_atlas", "dr_bonanza", "materialevurderinger", "docbook_forfatterweb", "docbook_faktalink", "format" };
-        List< ImmutablePair< TargetFields, String > > resultSearchFields = new ArrayList< ImmutablePair< TargetFields, String > >();
+        List< SimplePair< TargetFields, String > > resultSearchFields = new ArrayList< SimplePair< TargetFields, String > >();
         int maximumResult = 10000000;
         for ( int i = 0; i < labels.length; i++ )
         {
             TargetFields targetLabel = FedoraObjectFields.LABEL;
-            ImmutablePair< TargetFields, String > pair = new ImmutablePair< TargetFields, String >( targetLabel, labels[i] );
+            SimplePair< TargetFields, String > pair = new SimplePair< TargetFields, String >( targetLabel, labels[i] );
             resultSearchFields.add( pair );
             List< String > pids = objectRepository.getIdentifiersUnqualified( resultSearchFields, maximumResult );
             System.out.println( "pids.length: " + pids.size() );

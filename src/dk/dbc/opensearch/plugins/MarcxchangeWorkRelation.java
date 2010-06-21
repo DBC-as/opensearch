@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public class MarcxchangeWorkRelation implements IPluggable
     public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
     {   
 
-	List< ImmutablePair< TargetFields, String > > searchPairs = env.getSearchPairs( cargo );
+	List< SimplePair< TargetFields, String > > searchPairs = env.getSearchPairs( cargo );
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
 
 	CargoContainer returnCargo = null;

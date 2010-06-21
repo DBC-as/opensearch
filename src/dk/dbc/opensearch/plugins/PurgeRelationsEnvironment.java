@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 
 import java.io.IOException;
@@ -83,15 +83,15 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
         {
             log.debug( String.format( "Getting object relations for '%s' with relation '%s'", identifier, hasReview.getPredicateString() ) );
             String subject = identifier.getIdentifier();
-            List< ImmutablePair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, hasReview.getPredicateString() );
+            List< SimplePair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, hasReview.getPredicateString() );
             
             if ( relations != null )
             {
-                for ( ImmutablePair pair : relations )
+                for ( SimplePair pair : relations )
                 {
                     String anmeldelse = pair.getSecond().toString();
                     log.debug( String.format( "Getting object relations for '%s' with relation '%s'", anmeldelse, reviewOf.getPredicateString() ) );
-                    List< ImmutablePair< IPredicate, String > > anmeldelsesRelations = objectRepository.getObjectRelations( anmeldelse, reviewOf.getPredicateString() );
+                    List< SimplePair< IPredicate, String > > anmeldelsesRelations = objectRepository.getObjectRelations( anmeldelse, reviewOf.getPredicateString() );
                     if ( anmeldelsesRelations != null && anmeldelsesRelations.size() > 0 )
                     {
                         log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", anmeldelse, reviewOf.getPredicateString(), subject ) );
@@ -124,15 +124,15 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
         {
             String subject = identifier.getIdentifier();
             log.debug( String.format( "Getting work relations for post '%s' with relation '%s'", subject, isMemberOfWork.getPredicateString() ) );
-            List< ImmutablePair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, isMemberOfWork.getPredicateString() );
+            List< SimplePair< IPredicate, String > > relations = objectRepository.getObjectRelations( subject, isMemberOfWork.getPredicateString() );
             
             if ( relations != null )
             {
-                for ( ImmutablePair pair : relations )
+                for ( SimplePair pair : relations )
                 {
                     String work = pair.getSecond().toString();
                     log.debug( String.format( "Getting relations for work '%s' with relation '%s'", work, hasManifestation.getPredicateString() ) );
-                    List< ImmutablePair< IPredicate, String > > workRelations = objectRepository.getObjectRelations( work, hasManifestation.getPredicateString() );
+                    List< SimplePair< IPredicate, String > > workRelations = objectRepository.getObjectRelations( work, hasManifestation.getPredicateString() );
             
                     if ( workRelations != null && workRelations.size() > 0 )
                     {

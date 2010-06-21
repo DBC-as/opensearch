@@ -23,7 +23,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import java.util.HashMap;
-import dk.dbc.opensearch.common.types.ImmutablePair;
+import dk.dbc.opensearch.common.types.SimplePair;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -34,13 +34,13 @@ import static org.junit.Assert.*;
  */
 public class PairTest {
 
-    ImmutablePair<String, String> p;
+    SimplePair<String, String> p;
 
     /**
      *
      */
     @Before public void SetUp() {
-        p = new ImmutablePair<String, String>( "a", "b");
+        p = new SimplePair<String, String>( "a", "b");
     }
 
     /**
@@ -61,8 +61,8 @@ public class PairTest {
 
     @Test 
     public void testHashCode(){
-        ImmutablePair<String, String> p2 = 
-            new ImmutablePair<String, String>( "a", "b" );
+        SimplePair<String, String> p2 = 
+            new SimplePair<String, String>( "a", "b" );
 
         assertEquals( p.hashCode(), p2.hashCode() );
 
@@ -72,8 +72,8 @@ public class PairTest {
      */
 
     @Test public void testEquals(){
-        ImmutablePair<String, String> p3 = 
-            new ImmutablePair<String, String>( "a", "b" );
+        SimplePair<String, String> p3 = 
+            new SimplePair<String, String>( "a", "b" );
 
         assertTrue( p3.equals( p ) );
     }
@@ -83,8 +83,8 @@ public class PairTest {
 
     @Test public void testEqualsDifferent()
     {
-        ImmutablePair<String, String> p3 = 
-            new ImmutablePair<String, String>( "a", "a" );
+        SimplePair<String, String> p3 = 
+            new SimplePair<String, String>( "a", "a" );
 
         assertFalse( p3.equals( p ) ); 
     
@@ -101,12 +101,12 @@ public class PairTest {
     }
 
     @Test public void testPairInHashMaps(){
-        HashMap< ImmutablePair< String, String >, String > hm =
-            new HashMap< ImmutablePair< String, String >, String >();
+        HashMap< SimplePair< String, String >, String > hm =
+            new HashMap< SimplePair< String, String >, String >();
 
-        hm.put( new ImmutablePair<String, String>( "a", "b" ), "c" );
-        hm.put( new ImmutablePair<String, String>( "d", "e" ), "f" );
+        hm.put( new SimplePair<String, String>( "a", "b" ), "c" );
+        hm.put( new SimplePair<String, String>( "d", "e" ), "f" );
 
-        assertNotNull( hm.get( new ImmutablePair<String, String>( "a", "b" ) ) );
+        assertNotNull( hm.get( new SimplePair<String, String>( "a", "b" ) ) );
     }
 }
