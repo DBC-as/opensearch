@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!-- The XMLDCHarvester relies on that there is a pid 
+generated right now by the ForceFedoraPid plugin so ForceFedoraPid 
+must be run before XMLDCHarvester -->
 <workflows xmlns="info:opensearch.dbc.dk#">
   <workflow format="faktalink" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
