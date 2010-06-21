@@ -90,7 +90,6 @@ public class PTIManagerTest
 
     ThreadPoolExecutor mockExecutor = createMock( ThreadPoolExecutor.class );
     Compass mockCompass = createMock( Compass.class );
-    SimplePair< String, Integer > mockSimplePair = createMock( SimplePair.class );
 
 
     @MockClass( realClass =  PTIPool.class )
@@ -137,7 +136,6 @@ public class PTIManagerTest
         reset( mockPQ );
         reset( mockPTIPool );
         reset( mockCompletedTask );
-        reset( mockSimplePair );
         reset( mockCompass );
         reset( mockFuture );
         reset( mockExecutor );
