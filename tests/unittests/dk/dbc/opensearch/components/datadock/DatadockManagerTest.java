@@ -169,7 +169,8 @@ public class DatadockManagerTest
     }
 
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testUpdate() throws Exception
     {
 	//        ArrayList<IJob> jobs = new ArrayList<IJob>();

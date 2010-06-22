@@ -51,7 +51,7 @@ public class DatadockMainTest
     @Test public void testConstructor() throws Exception 
     {
     	DatadockMain datadockmain = new DatadockMain();
-    	datadockmain.init();
+    	datadockmain.readServerConfiguration();
     	
     	// Get jobMap listing jobs to be executed using plugins 
     	//HashMap< InputPair< String, String >, ArrayList< String > > jobMap = DatadockMain.jobMap;

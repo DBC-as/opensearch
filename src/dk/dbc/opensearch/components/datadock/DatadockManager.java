@@ -47,7 +47,6 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -59,13 +58,12 @@ import org.xml.sax.SAXException;
  */
 public class DatadockManager
 {
-    static Logger log = Logger.getLogger( DatadockManager.class );
+    private static Logger log = Logger.getLogger( DatadockManager.class );
 
-    private DatadockPool pool= null;
-    private IHarvest harvester = null;
-    XMLConfiguration config = null;
-    List<IJob> registeredJobs = null;
-    private Map<String, List< PluginTask > > flowMap;
+    private final DatadockPool pool;
+    private final IHarvest harvester;
+    private List<IJob> registeredJobs;
+    private final Map<String, List< PluginTask > > flowMap;
 
     private final Map< Pair< String,String >, Boolean > jobExecutionCheckSet = 
         Collections.synchronizedMap( new HashMap< Pair< String,String >, Boolean >() );
@@ -75,8 +73,7 @@ public class DatadockManager
      *
      * @param pool the threadpool used for executing datadock jobs
      * @param harvester the harvester to supply the datadock with jobs
-     * @param flowMap the map used for checking which 
-     * submitter format pairs are valid
+     * @param flowMap the map used for checking which submitter format pairs are valid
      * @throws ConfigurationException
      * @throws HarvesterIOException
      * @throws IOException
@@ -86,7 +83,7 @@ public class DatadockManager
      */
     public DatadockManager( DatadockPool pool, IHarvest harvester, Map< String, List< PluginTask > > flowMap ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, HarvesterIOException
     {
-        log.trace( "DatadockManager( pool, harvester ) called" );
+        log.trace( "entering DatadockManager" );
 
         this.pool = pool;
         this.harvester = harvester;

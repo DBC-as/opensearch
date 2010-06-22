@@ -108,10 +108,12 @@ public class DatadockPool
 
     
     /**
-     * Constructs the the datadockPool instance
-     *
-     * @param threadpool The threadpool to submit jobs to
-     * @param processqueue the processqueue handler
+     * 
+     * @param threadpool
+     * @param processqueue
+     * @param harvester
+     * @param flowMap
+     * @throws ConfigurationException
      */
     public DatadockPool( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException
     {
@@ -146,7 +148,7 @@ public class DatadockPool
         }
         log.debug( String.format( "Submitting job '%s'", identifier ) );
 
-	FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( identifier, processqueue, harvester, flowMap ) );
+        FutureTask<Boolean> future = new FutureTask<Boolean>( new DatadockThread( identifier, processqueue, harvester, flowMap ) );
         
         if ( future == null )/** \todo: I don't see this happening; even if DatadockThread returns null, FutureTask will still be non-null */
         {
@@ -180,7 +182,7 @@ public class DatadockPool
             System.out.println( String.format( "job is done: %s", job.isDone() ) );
             if( job.isDone() )
             {
-                Boolean success = null;
+                Boolean success = Boolean.FALSE;
                                 
                 try
                 {
@@ -196,7 +198,7 @@ public class DatadockPool
                     log.info( String.format( "Setting status to FAILURE for identifier: %s with message: '%s'", id, cause.getMessage() ) );
                     try
                     {
-			String msg = cause.getMessage() == null ? "" : cause.getMessage(); // avoid giving null to setStatusFailure
+                        String msg = cause.getMessage() == null ? "" : cause.getMessage(); // avoid giving null to setStatusFailure
                         harvester.setStatusFailure( id, msg );
                     }
                     catch( HarvesterUnknownIdentifierException ex )
@@ -214,12 +216,6 @@ public class DatadockPool
                         String error = String.format( "Failed to set failure status for identifier: %s . Message: %s", id, ex.getMessage() );
                         log.error( error, ex );
                     }
-
-//                    StackTraceElement[] trace = cause.getStackTrace();
-//                    for( int j = 0; j < trace.length; j++ )
-//                    {
-//                    	log.error( "DatadockPool StackTrace element " + j + " " + trace[j].toString() );
-//                    }
                 }
                 
                 log.debug( "DatadockPool adding to finished jobs" );

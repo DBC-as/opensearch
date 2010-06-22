@@ -28,17 +28,14 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.config.DataBaseConfig;
 import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.db.IDBConnection;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.HarvestType;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.FlowMapCreator;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
@@ -47,6 +44,7 @@ import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvestLight;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
+import java.io.IOException;
 
 import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -62,6 +60,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -74,34 +73,31 @@ import org.apache.log4j.SimpleLayout;
  */
 public class DatadockMain
 {
-    static Logger log = Logger.getLogger( DatadockMain.class );
+    private final static Logger log = Logger.getLogger( DatadockMain.class );
+    private final static ConsoleAppender startupAppender = new ConsoleAppender( new SimpleLayout() );
 
-
-    static protected boolean shutdownRequested = false;
+    private static final String logConfiguration = "log4j_datadock.xml";
+    protected boolean shutdownRequested = false;
     static DatadockPool datadockPool = null;
     static DatadockManager datadockManager = null;
     static PluginResolver pluginResolver;
     static FlowMapCreator flowMapCreator = null;
-    static int queueSize;
-    static int corePoolSize;
-    static int maxPoolSize;
-    static long keepAliveTime;
-    static int pollTime;
-    static String pluginFlowXmlPath;
-    static String pluginFlowXsdPath;
-    static IHarvest harvester;
-    private static HarvestType harvestType;
+
+
+    private final int queueSize;
+    private final int corePoolSize;
+    private final int maxPoolSize;
+    private final long keepAliveTime;
+    private final int pollTime;
+    private final String pluginFlowXmlPath;
+    private final String pluginFlowXsdPath;
+    private HarvestType harvestType;
     private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
     static java.util.Date startTime = null;
+    private boolean terminateOnZeroSubmitted = false;
 
-
-    public DatadockMain() {}
-
-
-    public static void init() throws ConfigurationException
+    public DatadockMain()  throws ConfigurationException
     {
-        log.trace( "DatadockMain init called" );
-
         pollTime = DatadockConfig.getMainPollTime();
         queueSize = DatadockConfig.getQueueSize();
         corePoolSize = DatadockConfig.getCorePoolSize();
@@ -112,22 +108,107 @@ public class DatadockMain
     }
 
 
-    /**
-     * Helper method to avoid static problems in init
-     */
-    @SuppressWarnings( "unchecked" )
-    public Class getClassType()
+    public void readServerConfiguration() throws ConfigurationException
     {
-        return this.getClass();
     }
 
+    /**
+     *  Initializes a
+     * {@link dk.dbc.opensearch.components.harvest.IHarvest Harvester} from a
+     * command line parameter or, if that fails, a default harvester type
+     * specified in the class
+     */
+    private void initializeHarvester()
+    {
+        log.trace( "Trying to get harvester type from commandline" );
+        this.harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
+        
+        if( null == this.harvestType )
+        {
+            this.harvestType = defaultHarvestType;
+        }
+        log.debug( String.format( "initialized harvester with type: %s", this.harvestType ) );
+    }
 
     /**
-     * The shutdown hook. This method is called when the program catches the kill signal.
+     * Reads command line arguments and initializes relevant variables on the
+     * object
+     * @param args arguments recieved from the command line
      */
-    static public void shutdown()
+    private void readCommandLineArguments( String[] args )
     {
-        shutdownRequested = true;
+        for( String a : args )
+        {
+            log.warn( String.format( "argument: '%s'", a ) );
+            if( a.equals( "--shutDownOnJobsDone" ) )
+            {
+                this.terminateOnZeroSubmitted = true;
+            }
+            else
+            {
+                log.warn( String.format( "Unknown argument '%s', ignoring it", a ) );
+            }
+        }
+    }
+
+    private int runServer( int mainJobsSubmitted, DatadockMain serverInstance )
+    {
+        while( !isShutdownRequested() )
+        {
+            try
+            {
+                log.trace( "DatadockMain calling datadockManager update" );
+                long timer = System.currentTimeMillis();
+                int jobsSubmitted = datadockManager.update();
+                timer = System.currentTimeMillis() - timer;
+                mainJobsSubmitted += jobsSubmitted;
+                if( jobsSubmitted > 0 )
+                {
+                    log.info( String.format( "%1$d Jobs submitted in %2$d ms - %3$f jobs/s", jobsSubmitted, timer, jobsSubmitted / (timer / 1000.0) ) );
+                }
+                else
+                {
+                    log.info( String.format( "%1$d Jobs submitted in %2$d ms - ", jobsSubmitted, timer ) );
+                    if( terminateOnZeroSubmitted )
+                    {
+                        serverInstance.shutdown();
+                    }
+                    else
+                    {
+                        Thread.currentThread();
+                        Thread.sleep( serverInstance.pollTime );
+                    }
+                }
+            }
+            catch( HarvesterIOException hioe )
+            {
+                String fatal = String.format( "A fatal error occured in the communication with the database: %s", hioe.getMessage() );
+                log.fatal( fatal, hioe );
+                serverInstance.shutdown();
+            }
+            catch( InterruptedException ie )
+            {
+                log.error( String.format( "InterruptedException caught in mainloop: %s", ie.getMessage(), ie ) );
+            }
+            catch( RuntimeException re )
+            {
+                log.error( String.format( "RuntimeException caught in mainloop: %s", re.getMessage(), re ) );
+            }
+            catch( Exception e )
+            {
+                log.error( "Exception caught in mainloop: " + e.getMessage(), e );
+            }
+        }
+        return mainJobsSubmitted;
+    }
+
+    /**
+     * The shutdown hook. This method is called when the program catches a
+     * kill signal.
+     */
+    private void shutdown()
+    {
+        this.shutdownRequested = true;
 
         try
         {
@@ -150,9 +231,9 @@ public class DatadockMain
     /**
      * Getter method for shutdown signal.
      */
-    static public boolean isShutdownRequested()
+    public boolean isShutdownRequested()
     {
-        return shutdownRequested;
+        return this.shutdownRequested;
     }
 
 
@@ -160,7 +241,7 @@ public class DatadockMain
      * Daemonizes the program, ie. disconnects from the console and
      * creates a pidfile.
      */
-    static public void daemonize()
+    private void daemonize()
     {
         String pidFile = System.getProperty( "daemon.pidfile" );
         FileHandler.getFile( pidFile ).deleteOnExit();
@@ -172,7 +253,7 @@ public class DatadockMain
     /**
      * Adds the shutdownhook.
      */
-    static protected void addDaemonShutdownHook()
+    protected void addDaemonShutdownHook()
     {
         Runtime.getRuntime().addShutdownHook( new Thread() {
                 @Override
@@ -184,285 +265,174 @@ public class DatadockMain
     }
 
 
+    private void collectStatistics( long mainTimer, int mainJobsSubmitted )
+    {
+        mainTimer = System.currentTimeMillis() - mainTimer;
+        if( mainJobsSubmitted > 0 )
+        {
+            log.info( String.format( "Total: %1$d Jobs submitted in %2$d ms - %3$f jobs/s", mainJobsSubmitted, mainTimer, mainJobsSubmitted / (mainTimer / 1000.0) ) );
+        }
+        else
+        {
+            log.info( String.format( "Total: %1$d Jobs submitted in %2$d ms - ", mainJobsSubmitted, mainTimer ) );
+        }
+    }
+
+   private IHarvest selectHarvester() throws SQLException, IllegalArgumentException, ConfigurationException, SAXException, HarvesterIOException, IOException
+    {
+        IHarvest harvester;
+        switch( this.harvestType )
+        {
+            case ESHarvest:
+                harvester = this.selectESHarvester();
+                break;
+            case FileHarvest:
+                log.trace( "selecting FileHarvest" );
+                harvester = new FileHarvest();
+                break;
+            case FileHarvestLight:
+                log.trace( "selecting FileHarvestLight" );
+                harvester = new FileHarvestLight();
+                break;
+            default:
+                log.warn( "no harvester explicitly selected, and default type failed. This should not happen, but I'll default to FileHarvester" );
+                harvester = new FileHarvest();
+        }
+        return harvester;
+    }
+
+    private IHarvest selectESHarvester() throws ConfigurationException, SQLException, HarvesterIOException
+    {
+        String dataBaseName = DataBaseConfig.getOracleDataBaseName();
+        String oracleCacheName = DataBaseConfig.getOracleCacheName();
+        String oracleUrl = DataBaseConfig.getOracleUrl();
+        String oracleUser = DataBaseConfig.getOracleUserID();
+        String oraclePassWd = DataBaseConfig.getOraclePassWd();
+        String minLimit = DataBaseConfig.getOracleMinLimit();
+        String maxLimit = DataBaseConfig.getOracleMaxLimit();
+        String initialLimit = DataBaseConfig.getOracleInitialLimit();
+        String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
+
+        log.info( String.format( "DB Url : %s ", oracleUrl ) );
+        log.info( String.format( "DB User: %s ", oracleUser ) );
+        OracleDataSource ods;
+        try
+        {
+            ods = new OracleDataSource();
+
+            // set db-params:
+            ods.setURL( oracleUrl );
+            ods.setUser( oracleUser );
+            ods.setPassword( oraclePassWd );
+
+            // set db-cache-params:
+            ods.setConnectionCachingEnabled( true ); // connection pool
+
+            // set the cache name
+            ods.setConnectionCacheName( oracleCacheName );
+
+            // set cache properties:
+            Properties cacheProperties = new Properties();
+
+            cacheProperties.setProperty( "MinLimit", minLimit );
+            cacheProperties.setProperty( "MaxLimit", maxLimit );
+            cacheProperties.setProperty( "InitialLimit", initialLimit );
+            cacheProperties.setProperty( "ConnectionWaitTimeout", connectionWaitTimeout );
+            cacheProperties.setProperty( "ValidateConnection", "true" );
+
+            ods.setConnectionCacheProperties( cacheProperties );
+
+        }
+        catch( SQLException sqle )
+        {
+            String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
+            log.fatal( errorMsg, sqle );
+            throw sqle;
+        }
+
+        OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
+
+        return new ESHarvest( connectionPool, dataBaseName );
+
+    }
+
+    private static void configureLogger() throws ConfigurationException
+    {
+        Log4jConfiguration.configure( logConfiguration );
+        log.trace( "DatadockMain main called" );
+
+    }
+
+
     /**
      * The datadocks main method.
      * Starts the datadock and starts the datadockManager.
      */
-    static public void main(String[] args) throws Throwable
+    public static void main(String[] args) throws Exception
     {
-        /** \todo: the value of the configuration file is hardcoded */
-        Log4jConfiguration.configure( "log4j_datadock.xml" );
-        log.trace( "DatadockMain main called" );
+        configureLogger();
+        DatadockMain serverInstance = new DatadockMain();
 
-        ConsoleAppender startupAppender = new ConsoleAppender(new SimpleLayout());
+        log.trace( "Initializing harvester" );
+        serverInstance.initializeHarvester();
 
-        boolean terminateOnZeroSubmitted = false;
-        boolean ESHarvesterCleanup = false;
-        
-        try
-        {
-	    log.debug( String.format( "Harvester type from commandline: %s", System.getProperty( "harvester" ) ) );
-            harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
-        }
-        catch( NullPointerException npe )
-        {
-            harvestType = defaultHarvestType;
-        }
-        
-        if ( harvestType == null )
-        {
-            harvestType = defaultHarvestType;
-            log.debug( String.format( "getting harvestertype: %s form property", harvestType  ) );
-        }        
+        log.trace( "Reading command line arguments, if any" );
+        serverInstance.readCommandLineArguments( args );
 
-        for( String a : args )
-        {
-            log.warn( String.format( "argument: '%s'", a ) );
-            if ( a.equals( "--shutDownOnJobsDone" ) )
-            {
-                terminateOnZeroSubmitted = true;
-            }
-            else
-            {
-                log.warn( String.format( "Unknown argument '%s', ignoring it", a ) );
-            }
-        }
+        log.trace( "Checking if harvester needs cleanup" );
 
         try
         {
-            if ( System.getProperty( "esharvester_cleanup" ) != null )
-            {
-                ESHarvesterCleanup = true;
-            }
-        }
-        catch( NullPointerException npe)
-        {
-            log.info( "Test 1: catch" );
-            ESHarvesterCleanup = false;
-        }
-
-        if ( ESHarvesterCleanup )
-        {
-            log.info( " ESHARVESTER CLEANUP! " );
-        }
-
-        try
-        {
-            init();
+            serverInstance.readServerConfiguration();
 
             log.removeAppender( "RootConsoleAppender" );
             log.addAppender( startupAppender );
 
-            /** -------------------- setup and start the datadockmanager -------------------- **/
-            log.info( "Starting the datadock" );
+            log.trace( "Initializing process queue" );
+            IProcessqueue processqueue = new Processqueue( new PostgresqlDBConnection() );
 
-            log.trace( "initializing resources" );
-
-
-            // DB access
-            IDBConnection dbConnection = new PostgresqlDBConnection();
-            IProcessqueue processqueue = new Processqueue( dbConnection );
-            IObjectRepository repository = new FedoraObjectRepository();
-            pluginResolver = new PluginResolver( repository ); 
-            OracleDataSource ods;
+            log.trace( "Initializing plugin resolver" );
+            pluginResolver = new PluginResolver( new FedoraObjectRepository() );
 
 
-            //the flowMap
-            try
-            {
-                flowMapCreator = new FlowMapCreator( pluginFlowXmlPath, pluginFlowXsdPath );
-            }
-            catch( IllegalStateException ise )
-            {
-                String error = "could not construct the FlowMapCreator";
-                log.fatal( error, ise );
-		throw ise;
-            }
+            flowMapCreator = new FlowMapCreator( serverInstance.pluginFlowXmlPath, serverInstance.pluginFlowXsdPath );
+            
+            Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver );
 
-	    Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver );
-
-            log.trace( "Starting datadockPool" );
-
-            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( queueSize );
-            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS , queue );
-            threadpool.purge();
 
             log.trace( "Starting harvester" );
             // harvester;
-            switch( harvestType )
-            {
-                case ESHarvest:
-                    log.trace( "selecting ES" );
-                    String dataBaseName = DataBaseConfig.getOracleDataBaseName();
-		    String oracleCacheName = DataBaseConfig.getOracleCacheName();
-                    String oracleUrl = DataBaseConfig.getOracleUrl();
-                    String oracleUser = DataBaseConfig.getOracleUserID();
-                    String oraclePassWd = DataBaseConfig.getOraclePassWd();
-                    String minLimit = DataBaseConfig.getOracleMinLimit();
-                    String maxLimit = DataBaseConfig.getOracleMaxLimit();
-                    String initialLimit = DataBaseConfig.getOracleInitialLimit();
-                    String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
-                    
-                    log.info( String.format( "DB Url : %s ", oracleUrl ) );
-                    log.info( String.format( "DB User: %s ", oracleUser ) );
+            IHarvest harvester = serverInstance.selectHarvester();
 
-                    try
-                    {
-                        ods = new OracleDataSource();
+            log.trace( "Initializing the DatadockPool" );
 
-                        // set db-params:
-                        ods.setURL( oracleUrl );
-                        ods.setUser( oracleUser );
-                        ods.setPassword( oraclePassWd );
+            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( serverInstance.queueSize );
+            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( serverInstance.corePoolSize, serverInstance.maxPoolSize, serverInstance.keepAliveTime, TimeUnit.SECONDS , queue );
 
-                        // set db-cache-params:
-                        ods.setConnectionCachingEnabled( true ); // connection pool
+            datadockPool = new DatadockPool( threadpool, processqueue, harvester, flowMap );
 
-                        // set the cache name
-                        ods.setConnectionCacheName( oracleCacheName );
-
-                        // set cache properties:
-                        Properties cacheProperties = new Properties();
-
-                        cacheProperties.setProperty( "MinLimit", minLimit );
-                        cacheProperties.setProperty( "MaxLimit", maxLimit );
-                        cacheProperties.setProperty( "InitialLimit", initialLimit );
-                        cacheProperties.setProperty( "ConnectionWaitTimeout", connectionWaitTimeout );
-                        cacheProperties.setProperty( "ValidateConnection", "true" );
-
-                        ods.setConnectionCacheProperties( cacheProperties );
-
-                    }
-                    catch( SQLException sqle )
-                    {
-                        String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
-                        log.fatal( errorMsg, sqle );
-                        throw sqle;
-                    }
-                    
-                    OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
-
-                    harvester = new ESHarvest( connectionPool, dataBaseName );                    
-
-                    if ( ESHarvesterCleanup )
-                    {
-                        // casting to ESHarvest in order to use non-interface method:
-                        ESHarvest esharvester = (ESHarvest)harvester;
-                        try
-                        {
-                            esharvester.changeRecordstatusFromInProgressToQueued();
-                        }
-                        catch( HarvesterIOException hioe )
-                        {
-                            String errorMsg = new String( "An exception occured while performing 'changeRecordstatusFromInProgressToQueued'." );
-                            log.fatal( errorMsg, hioe );
-                            throw hioe;
-                        }
-                    }
-
-                    break;
-
-                case FileHarvest:
-                    log.trace( "selecting FileHarvest" );
-                    harvester = new FileHarvest();
-                    break;
-
-                case FileHarvestLight:
-                    log.trace( "selecting FileHarvestLight" );
-                    harvester = new FileHarvestLight();
-                    break;
-                    
-                default:
-                    log.warn( "no harvester explicitly selected, running with FileHarvest" );
-                    harvester = new FileHarvest();
-            }
-
-	    datadockPool = new DatadockPool( threadpool, processqueue,  harvester, flowMap );
-
-            log.trace( "Starting the manager" );
-            // Starting the manager
+            log.trace( "Initializing the DatadockManager" );
             datadockManager = new DatadockManager( datadockPool, harvester, flowMap );
 
-            /** --------------- setup and startup of the datadockmanager done ---------------- **/
-            log.info( "Daemonizing" );
+            log.info( "Daemonizing Datadock server" );
 
-            daemonize();
-            addDaemonShutdownHook();
+            serverInstance.daemonize();
+            serverInstance.addDaemonShutdownHook();
         }
         catch ( Exception e )
         {
-            System.out.println( "Startup failed." + e );
-            log.fatal( "Startup failed.", e);
-            throw e;
+            System.out.println( "Startup failed." + e.getMessage() );
+            log.fatal( String.format( "Startup failed: %s", e.getMessage() ) );
         }
         finally
         {
+            serverInstance.shutdown();
             log.removeAppender( startupAppender );
         }
 
         long mainTimer = System.currentTimeMillis();
         int mainJobsSubmitted = 0;
-
-        while( ! isShutdownRequested() )
-        {
-            try
-            {
-                log.trace( "DatadockMain calling datadockManager update" );
-
-                long timer = System.currentTimeMillis();
-                int jobsSubmitted = datadockManager.update();
-                timer = System.currentTimeMillis() - timer;
-
-                mainJobsSubmitted += jobsSubmitted;
-
-                if ( jobsSubmitted > 0 )
-                {
-                    log.info(String.format( "%1$d Jobs submitted in %2$d ms - %3$f jobs/s", jobsSubmitted, timer, jobsSubmitted/ (timer / 1000.0 ) ) );
-                }
-                else
-                {
-                    log.info( String.format( "%1$d Jobs submitted in %2$d ms - ", jobsSubmitted, timer ) );
-                    if ( terminateOnZeroSubmitted )
-                    {
-                        DatadockMain.shutdown();
-                    }
-                    else
-                    {
-                        Thread.currentThread();
-                        Thread.sleep( pollTime );
-                    }
-                }
-
-            }
-            catch( HarvesterIOException hioe )
-            {
-                String fatal =  String.format( "A fatal error occured in the communication with the database: %s", hioe.getMessage() );
-                log.fatal( fatal, hioe );
-                DatadockMain.shutdown();
-            }           
-            catch( InterruptedException ie )
-            {
-                log.error( String.format( "InterruptedException caught in mainloop: %s", ie.getMessage(), ie ) );
-            }
-            catch( RuntimeException re )
-            {
-                log.error( String.format( "RuntimeException caught in mainloop: %s", re.getMessage(), re ) );
-            }
-            catch( Exception e )
-            {
-                log.error( "Exception caught in mainloop: " + e.getMessage(), e );
-            }
-        }
-
-        mainTimer = System.currentTimeMillis() - mainTimer;
-
-        if ( mainJobsSubmitted > 0 )
-        {
-            log.info(String.format("Total: %1$d Jobs submitted in %2$d ms - %3$f jobs/s", mainJobsSubmitted, mainTimer, mainJobsSubmitted/ (mainTimer / 1000.0)));
-        }
-        else
-        {
-            log.info(String.format("Total: %1$d Jobs submitted in %2$d ms - ", mainJobsSubmitted, mainTimer));
-        }
+        mainJobsSubmitted = serverInstance.runServer( mainJobsSubmitted, serverInstance );
+        serverInstance.collectStatistics( mainTimer, mainJobsSubmitted );
     }
 }
