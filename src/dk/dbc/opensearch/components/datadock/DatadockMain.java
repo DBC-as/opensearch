@@ -426,7 +426,6 @@ public class DatadockMain
         }
         finally
         {
-            serverInstance.shutdown();
             log.removeAppender( startupAppender );
         }
 
