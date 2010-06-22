@@ -331,9 +331,10 @@ public class IndexerXSEM implements IPluggable
     }
 
     /**
-     * A dummy method to satisfy the interface until we refactor this 
-     * class that is bound to e obsolete soon 
-     * \Todo: bug 10479
+     * A dummy method to satisfy the IPluggable interface.
+     * We will have to live with this until we refactor this 
+     * class that is bound to be obsolete soon (hopefully)
+     * This is also descibed in bug 10479
      */
     @Override
     public synchronized CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
