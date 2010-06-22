@@ -758,7 +758,7 @@ public class ESHarvest implements IHarvest
                                           "AND targetreference " +
                                           "IN (SELECT targetreference " +
                                           "FROM taskspecificupdate " +
-                                          "WHERE databasename = '?')" );
+                                          "WHERE databasename = ?)" );
                 pstmt2.setInt( 1, 2 );
                 pstmt2.setInt( 2, 3 );
                 pstmt2.setString( 3, databasename );
@@ -778,7 +778,7 @@ public class ESHarvest implements IHarvest
                                        "AND targetreference " +
                                        "IN (SELECT targetreference " +
                                        "FROM taskspecificupdate " +
-                                       "WHERE databasename = '?') " +
+                                       "WHERE databasename = ?) " +
                                        "FOR UPDATE OF taskstatus, substatus " );
             pTpStmt.setInt( 1, 1 );
             pTpStmt.setString( 2, databasename );
@@ -858,7 +858,7 @@ public class ESHarvest implements IHarvest
                                      "FROM taskpackagerecordstructure " +
                                      "WHERE recordstatus = ? " +
                                      "AND targetreference IN " +
-                                     "(SELECT targetreference FROM taskspecificupdate WHERE databasename = '?') " +
+                                     "(SELECT targetreference FROM taskspecificupdate WHERE databasename = ?) " +
                                      "FOR UPDATE OF recordstatus" );
             pstmt.setInt( 1, 3 );
             pstmt.setString( 2, databasename );
@@ -887,7 +887,7 @@ public class ESHarvest implements IHarvest
                                           "AND targetreference " +
                                           "IN (SELECT targetreference " +
                                           "FROM taskspecificupdate " +
-                                          "WHERE databasename = '?')" );
+                                          "WHERE databasename = ?)" );
                 pstmt2.setInt( 1, 2 );
                 pstmt2.setInt( 2, 3 );
                 pstmt2.setString( 3, databasename );
@@ -1395,7 +1395,7 @@ public class ESHarvest implements IHarvest
             pstmt.close();
 	   
             PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
-                                                              "SET record_id = '?' " +
+                                                              "SET record_id = ? " +
                                                               "WHERE     targetreference = ? " +
                                                               "      AND lbnr = ?" );
             pstmt2.setString( 1, PID );
@@ -1423,7 +1423,7 @@ public class ESHarvest implements IHarvest
             // Note: When the record_id is set to >= 64 in the ES-base, this method
             // _should_ not set a warning.
             String errorMsg = String.format( "Could not set the PID: [%s] for the identifier: %s.", PID, Id);
-            log.warn( errorMsg );
+            log.warn( errorMsg, sqle );
         }
     }
 
