@@ -125,7 +125,7 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
 
     if do_bench :
         print "starting process"
-        args = "--shutDownOnJobsDone"
+        args = "-DshutDownOnJobsDone=true"
         
         proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, args )
         print "Waiting for process to stop pid=%s "%(pid)
@@ -160,9 +160,6 @@ def start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup,
 
     if harvester:
         properties.append( "-Dharvester=%s" % harvester )
-
-    if esharvester_cleanup:
-        properties.append( "-Desharvester_cleanup" )
 
     cmd = [ 'java' ]
     for p in properties:

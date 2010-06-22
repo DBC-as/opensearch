@@ -33,8 +33,10 @@ import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.HarvestType;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.FlowMapCreator;
@@ -45,6 +47,7 @@ import dk.dbc.opensearch.components.harvest.FileHarvestLight;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -53,6 +56,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.Properties;
 import java.util.Map;
 import java.util.List;
+import java.util.logging.Level;
+import javax.xml.parsers.ParserConfigurationException;
 
 import oracle.jdbc.pool.OracleDataSource;
 
@@ -77,9 +82,10 @@ public class DatadockMain
     private final static ConsoleAppender startupAppender = new ConsoleAppender( new SimpleLayout() );
 
     private static final String logConfiguration = "log4j_datadock.xml";
+
     protected boolean shutdownRequested = false;
     static DatadockPool datadockPool = null;
-    static DatadockManager datadockManager = null;
+    static DatadockManager datadockManager;
     static PluginResolver pluginResolver;
     static FlowMapCreator flowMapCreator = null;
 
@@ -98,6 +104,7 @@ public class DatadockMain
 
     public DatadockMain()  throws ConfigurationException
     {
+        /** \REVIEW:Should we operate with default values?*/
         pollTime = DatadockConfig.getMainPollTime();
         queueSize = DatadockConfig.getQueueSize();
         corePoolSize = DatadockConfig.getCorePoolSize();
@@ -107,10 +114,6 @@ public class DatadockMain
         pluginFlowXsdPath = DatadockConfig.getPluginFlowXsdPath();
     }
 
-
-    public void readServerConfiguration() throws ConfigurationException
-    {
-    }
 
     /**
      *  Initializes a
@@ -131,28 +134,27 @@ public class DatadockMain
     }
 
     /**
-     * Reads command line arguments and initializes relevant variables on the
-     * object
-     * @param args arguments recieved from the command line
+     * Reads command line arguments and initializes the server mode
      */
-    private void readCommandLineArguments( String[] args )
+    private void setServerMode()
     {
-        for( String a : args )
+        String mode = System.getProperty( "shutDownOnJobsDone" );
+        if( null != mode && mode.equals( "true" ) )
         {
-            log.warn( String.format( "argument: '%s'", a ) );
-            if( a.equals( "--shutDownOnJobsDone" ) )
-            {
-                this.terminateOnZeroSubmitted = true;
-            }
-            else
-            {
-                log.warn( String.format( "Unknown argument '%s', ignoring it", a ) );
-            }
+            this.terminateOnZeroSubmitted = true;
         }
     }
 
-    private int runServer( int mainJobsSubmitted, DatadockMain serverInstance )
+    /**
+     * This method does the actual work of nudging the datadockmanager to get
+     * on with processing data from the harvester. If any exceptions are thrown
+     * from the manager, this method will issue a shutdown, and exit.
+     *
+     * @return the number of jobs that have been submitted for processing up until a shutdown request
+     */
+    private int runServer()
     {
+        int mainJobsSubmitted = 0;
         while( !isShutdownRequested() )
         {
             try
@@ -171,12 +173,12 @@ public class DatadockMain
                     log.info( String.format( "%1$d Jobs submitted in %2$d ms - ", jobsSubmitted, timer ) );
                     if( terminateOnZeroSubmitted )
                     {
-                        serverInstance.shutdown();
+                        this.shutdown();
                     }
                     else
                     {
                         Thread.currentThread();
-                        Thread.sleep( serverInstance.pollTime );
+                        Thread.sleep( this.pollTime );
                     }
                 }
             }
@@ -184,8 +186,8 @@ public class DatadockMain
             {
                 String fatal = String.format( "A fatal error occured in the communication with the database: %s", hioe.getMessage() );
                 log.fatal( fatal, hioe );
-                serverInstance.shutdown();
             }
+            /** \REVIEW: the following exceptions are logged as errors, but I have issued a shutdown nevertheless. Could there be any hidden intentions that the server should be kept running?*/
             catch( InterruptedException ie )
             {
                 log.error( String.format( "InterruptedException caught in mainloop: %s", ie.getMessage(), ie ) );
@@ -197,6 +199,10 @@ public class DatadockMain
             catch( Exception e )
             {
                 log.error( "Exception caught in mainloop: " + e.getMessage(), e );
+            }
+            finally
+            {
+                this.shutdown();
             }
         }
         return mainJobsSubmitted;
@@ -217,14 +223,23 @@ public class DatadockMain
         }
         catch( InterruptedException e )
         {
-            log.error( "Interrupted while waiting on main daemon thread to complete." );
+            log.error( String.format(  "Interrupted while waiting on main daemon thread to complete: %s", e.getMessage() ) );
+            System.exit( -1 );
         }
         catch( HarvesterIOException hioe )
         {
-            log.fatal( "Some error occured while shutting down the harvester", hioe );
+            log.fatal( String.format( "Some error occured while shutting down the harvester: %s", hioe.getMessage() ) );
+            System.exit( -1 );
+        }
+        catch( NullPointerException npe )
+        {
+            log.fatal( "DatadockManager does not seem to have been started or it crashed. Shutting down with the risk of inconsistencies" );
+            System.exit( -1 );
         }
         
-        log.info( "Exiting." );
+        log.info( "Exiting normally." );
+        System.exit( 0 );
+
     }
 
 
@@ -355,12 +370,29 @@ public class DatadockMain
         return new ESHarvest( connectionPool, dataBaseName );
 
     }
-
-    private static void configureLogger() throws ConfigurationException
+    private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
-        Log4jConfiguration.configure( logConfiguration );
-        log.trace( "DatadockMain main called" );
+        log.trace( "Initializing harvester" );
+        this.initializeHarvester();
 
+        log.trace( "Initializing process queue" );
+        IProcessqueue processqueue = new Processqueue( new PostgresqlDBConnection() );
+
+        log.trace( "Initializing plugin resolver" );
+        pluginResolver = new PluginResolver( new FedoraObjectRepository() );
+        flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
+        Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver );
+
+        log.trace( "Starting harvester" );
+        IHarvest harvester = this.selectHarvester();
+
+        log.trace( "Initializing the DatadockPool" );
+        LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( this.queueSize );
+        ThreadPoolExecutor threadpool = new ThreadPoolExecutor( this.corePoolSize, this.maxPoolSize, this.keepAliveTime, TimeUnit.SECONDS, queue );
+        datadockPool = new DatadockPool( threadpool, processqueue, harvester, flowMap );
+
+        log.trace( "Initializing the DatadockManager" );
+        datadockManager = new DatadockManager( datadockPool, harvester, flowMap );
     }
 
 
@@ -368,70 +400,60 @@ public class DatadockMain
      * The datadocks main method.
      * Starts the datadock and starts the datadockManager.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
-        configureLogger();
-        DatadockMain serverInstance = new DatadockMain();
+        try
+        {
+            Log4jConfiguration.configure( logConfiguration );
+        }
+        catch( ConfigurationException ex )
+        {
+            System.out.println( String.format( "Logger could not be configured, will continue without logging: %s", ex.getMessage() ) );
+        }
 
-        log.trace( "Initializing harvester" );
-        serverInstance.initializeHarvester();
+        DatadockMain serverInstance = null;
+        try
+        {
+            serverInstance = new DatadockMain();
+            serverInstance.setServerMode();
+        }
+        catch( ConfigurationException ex )
+        {
+            String error = String.format( "Could not get configure DatadockMain object: %s", ex.getMessage() );
+            log.fatal( error, ex );
+            //we cannot guarantee a serverInstance to call shutdown on:
+            System.exit( -1 );
+        }
 
-        log.trace( "Reading command line arguments, if any" );
-        serverInstance.readCommandLineArguments( args );
+        log.removeAppender( "RootConsoleAppender" );
+        log.addAppender( startupAppender );
 
-        log.trace( "Checking if harvester needs cleanup" );
 
         try
         {
-            serverInstance.readServerConfiguration();
-
-            log.removeAppender( "RootConsoleAppender" );
-            log.addAppender( startupAppender );
-
-            log.trace( "Initializing process queue" );
-            IProcessqueue processqueue = new Processqueue( new PostgresqlDBConnection() );
-
-            log.trace( "Initializing plugin resolver" );
-            pluginResolver = new PluginResolver( new FedoraObjectRepository() );
-
-
-            flowMapCreator = new FlowMapCreator( serverInstance.pluginFlowXmlPath, serverInstance.pluginFlowXsdPath );
-            
-            Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver );
-
-
-            log.trace( "Starting harvester" );
-            // harvester;
-            IHarvest harvester = serverInstance.selectHarvester();
-
-            log.trace( "Initializing the DatadockPool" );
-
-            LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( serverInstance.queueSize );
-            ThreadPoolExecutor threadpool = new ThreadPoolExecutor( serverInstance.corePoolSize, serverInstance.maxPoolSize, serverInstance.keepAliveTime, TimeUnit.SECONDS , queue );
-
-            datadockPool = new DatadockPool( threadpool, processqueue, harvester, flowMap );
-
-            log.trace( "Initializing the DatadockManager" );
-            datadockManager = new DatadockManager( datadockPool, harvester, flowMap );
-
-            log.info( "Daemonizing Datadock server" );
-
-            serverInstance.daemonize();
-            serverInstance.addDaemonShutdownHook();
+            serverInstance.initializeServices();
         }
         catch ( Exception e )
         {
             System.out.println( "Startup failed." + e.getMessage() );
             log.fatal( String.format( "Startup failed: %s", e.getMessage() ) );
+            serverInstance.shutdown();
+
         }
         finally
         {
             log.removeAppender( startupAppender );
         }
 
+        log.info( "Daemonizing Datadock server" );
+        serverInstance.daemonize();
+        serverInstance.addDaemonShutdownHook();
+
+        log.info( "Starting processing of data" );
         long mainTimer = System.currentTimeMillis();
-        int mainJobsSubmitted = 0;
-        mainJobsSubmitted = serverInstance.runServer( mainJobsSubmitted, serverInstance );
+        int mainJobsSubmitted = serverInstance.runServer();
+
+        log.info( "Collecting and printing processing statistics" );
         serverInstance.collectStatistics( mainTimer, mainJobsSubmitted );
     }
 }
