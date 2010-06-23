@@ -24,6 +24,7 @@ package dk.dbc.opensearch.common.config;
 */
 
 
+import java.io.File;
 import org.apache.commons.configuration.ConfigurationException;
 
 
@@ -150,27 +151,35 @@ public class DatadockConfig extends Config
         return ddc.getDatadockPath();
     }
 
-    /* Plugin flow xml path */
-    private String getDatadockPluginFlowXmlPath()
+    private File getDatadockPluginFlowXmlPath() throws ConfigurationException
     {
         String ret = config.getString( "datadock.pluginflowxmlpath" );
-        return ret;
+        if( null == ret )
+        {
+            throw new ConfigurationException( "Could not retrieve configuration value for 'datadock.pluginflowxmlpath'" );
+        }
+        File returnFile = new File( ret );
+        return returnFile;
     }
 
-    public static String getPluginFlowXmlPath() throws ConfigurationException
+    public static File getPluginFlowXmlPath() throws ConfigurationException
     {
         DatadockConfig ddc = new DatadockConfig();
         return ddc.getDatadockPluginFlowXmlPath();
     }
 
-    /* Plugin flow xsd path */
-    private String getDatadockPluginFlowXsdPath()
+    private File getDatadockPluginFlowXsdPath() throws ConfigurationException
     {
         String ret = config.getString( "datadock.pluginflowxsdpath" );
-        return ret;
+        if( null == ret )
+        {
+            throw new ConfigurationException( "Could not retrieve configuration value for 'datadock.pluginflowxsdpath'" );
+        }
+        File returnFile = new File( ret );
+        return returnFile;
     }
 
-    public static String getPluginFlowXsdPath() throws ConfigurationException
+    public static File getPluginFlowXsdPath() throws ConfigurationException
     {
         DatadockConfig ddc = new DatadockConfig();
         return ddc.getDatadockPluginFlowXsdPath();

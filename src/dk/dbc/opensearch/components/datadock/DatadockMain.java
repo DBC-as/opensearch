@@ -46,6 +46,7 @@ import dk.dbc.opensearch.components.harvest.FileHarvest;
 import dk.dbc.opensearch.components.harvest.FileHarvestLight;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -79,6 +80,7 @@ import org.xml.sax.SAXException;
 public class DatadockMain
 {
     private final static Logger log = Logger.getLogger( DatadockMain.class );
+    /** TODO: what is the purpose of rootAppender and startupAppender wrt the startup in this class*/
     private final static ConsoleAppender startupAppender = new ConsoleAppender( new SimpleLayout() );
 
     private static final String logConfiguration = "log4j_datadock.xml";
@@ -95,8 +97,8 @@ public class DatadockMain
     private final int maxPoolSize;
     private final long keepAliveTime;
     private final int pollTime;
-    private final String pluginFlowXmlPath;
-    private final String pluginFlowXsdPath;
+    private final File pluginFlowXmlPath;
+    private final File pluginFlowXsdPath;
     private HarvestType harvestType;
     private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
     static java.util.Date startTime = null;
@@ -104,24 +106,28 @@ public class DatadockMain
 
     public DatadockMain()  throws ConfigurationException
     {
-        /** \REVIEW:Should we operate with default values?*/
         pollTime = DatadockConfig.getMainPollTime();
         queueSize = DatadockConfig.getQueueSize();
         corePoolSize = DatadockConfig.getCorePoolSize();
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
+
         pluginFlowXmlPath = DatadockConfig.getPluginFlowXmlPath();
         pluginFlowXsdPath = DatadockConfig.getPluginFlowXsdPath();
+        if( null == pluginFlowXmlPath || null == pluginFlowXsdPath )
+        {
+            throw new ConfigurationException( "Failed to initialize configuration values for File objects properly (pluginFlowXmlPath or pluginFlowXsdPath)" );
+        }
     }
 
 
     /**
-     *  Initializes a
+     *  Gets the type of a
      * {@link dk.dbc.opensearch.components.harvest.IHarvest Harvester} from a
-     * command line parameter or, if that fails, a default harvester type
+     * command line parameter or, if that fails, the type of a default harvester
      * specified in the class
      */
-    private void initializeHarvester()
+    private void getHarvesterType()
     {
         log.trace( "Trying to get harvester type from commandline" );
         this.harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
@@ -155,9 +161,9 @@ public class DatadockMain
     private int runServer()
     {
         int mainJobsSubmitted = 0;
-        while( !isShutdownRequested() )
+        try
         {
-            try
+            while( !isShutdownRequested() )
             {
                 log.trace( "DatadockMain calling datadockManager update" );
                 long timer = System.currentTimeMillis();
@@ -182,28 +188,28 @@ public class DatadockMain
                     }
                 }
             }
-            catch( HarvesterIOException hioe )
-            {
-                String fatal = String.format( "A fatal error occured in the communication with the database: %s", hioe.getMessage() );
-                log.fatal( fatal, hioe );
-            }
-            /** \REVIEW: the following exceptions are logged as errors, but I have issued a shutdown nevertheless. Could there be any hidden intentions that the server should be kept running?*/
-            catch( InterruptedException ie )
-            {
-                log.error( String.format( "InterruptedException caught in mainloop: %s", ie.getMessage(), ie ) );
-            }
-            catch( RuntimeException re )
-            {
-                log.error( String.format( "RuntimeException caught in mainloop: %s", re.getMessage(), re ) );
-            }
-            catch( Exception e )
-            {
-                log.error( "Exception caught in mainloop: " + e.getMessage(), e );
-            }
-            finally
-            {
-                this.shutdown();
-            }
+        }
+        catch( HarvesterIOException hioe )
+        {
+            String fatal = String.format( "A fatal error occured in the communication with the database: %s", hioe.getMessage() );
+            log.fatal( fatal, hioe );
+        }
+        /** \REVIEW: the following exceptions are logged as errors, but I have issued a shutdown nevertheless. Could there be any hidden intentions that the server should be kept running?*/
+        catch( InterruptedException ie )
+        {
+            log.error( String.format( "InterruptedException caught in mainloop: %s", ie.getMessage(), ie ) );
+        }
+        catch( RuntimeException re )
+        {
+            log.error( String.format( "RuntimeException caught in mainloop: %s", re.getMessage(), re ) );
+        }
+        catch( Exception e )
+        {
+            log.error( "Exception caught in mainloop: " + e.getMessage(), e );
+        }
+        finally
+        {
+            this.shutdown();
         }
         return mainJobsSubmitted;
     }
@@ -373,7 +379,7 @@ public class DatadockMain
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
         log.trace( "Initializing harvester" );
-        this.initializeHarvester();
+        this.getHarvesterType();
 
         log.trace( "Initializing process queue" );
         IProcessqueue processqueue = new Processqueue( new PostgresqlDBConnection() );

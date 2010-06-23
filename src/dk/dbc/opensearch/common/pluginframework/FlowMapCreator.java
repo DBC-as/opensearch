@@ -1,7 +1,4 @@
-package dk.dbc.opensearch.common.pluginframework;
-
 /*
-   
 This file is part of opensearch.
 Copyright © 2009, Dansk Bibliotekscenter a/s, 
 Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -20,17 +17,15 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.types.Pair;
+package dk.dbc.opensearch.common.pluginframework;
+
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -42,11 +37,9 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.XMLEvent;
-import javax.xml.stream.events.Attribute;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -75,7 +68,7 @@ public class FlowMapCreator
     private InputStream workflowStream;
 
     //initiates the object with the path to the workflow xml file and creates an InputStream
-    public FlowMapCreator( String path, String xsdPath ) throws IllegalStateException//, SAXException, IOException, ConfigurationException
+    public FlowMapCreator( File path, File xsdPath ) throws IllegalStateException//, SAXException, IOException, ConfigurationException
     {
         log.trace( String.format("path: %s, xsdPath: %s", path, xsdPath ) );
         //validate the file
@@ -99,7 +92,7 @@ public class FlowMapCreator
         
         try
         {
-            workflowStream = (InputStream)FileHandler.readFile( path );
+            workflowStream = new FileInputStream( path );
         }
         catch( FileNotFoundException fnfe )
         {
@@ -245,13 +238,13 @@ public class FlowMapCreator
         return flowMap;
     }
 
-    private static void validateWorkflowsXMLFile( String xmlPath, String xsdPath ) throws IOException,/* ConfigurationException, */SAXException
+    private static void validateWorkflowsXMLFile( File xmlPath, File xsdPath ) throws IOException,/* ConfigurationException, */SAXException
     {
         SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
-        File schemaLocation = FileHandler.getFile( xsdPath );
-        Schema schema = factory.newSchema( schemaLocation );
+        //File schemaLocation = FileHandler.getFile( xsdPath );
+        Schema schema = factory.newSchema( xsdPath );
         Validator validator = schema.newValidator();
-        Source source = new StreamSource( xmlPath);
+        Source source = new StreamSource( xmlPath );
 
         try
         {

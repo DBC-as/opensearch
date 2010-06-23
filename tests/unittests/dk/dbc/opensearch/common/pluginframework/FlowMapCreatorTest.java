@@ -56,9 +56,8 @@ public class FlowMapCreatorTest
     @MockClass( realClass = FlowMapCreator.class )
     public static class MockFlowMapCreator
     {
-        @Mock public void validateWorkflowsXMLFile( String xmlPath, String xsdPath )
+        @Mock public void validateWorkflowsXMLFile( File xmlPath, File xsdPath )
         {
-            System.out.println( "validates fine, tx mate" );
         }
 
     }
@@ -107,7 +106,7 @@ public class FlowMapCreatorTest
      */
     @Test public void constructorTest() throws Exception
     {
-        fmc = new FlowMapCreator( path, xsdPath );
+        fmc = new FlowMapCreator( new File( path ), new File( xsdPath ) );
     }
 
     /**
@@ -118,7 +117,7 @@ public class FlowMapCreatorTest
     {
         Mockit.setUpMocks( MockPluginResolver.class );
 
-        fmc = new FlowMapCreator( path, xsdPath );
+        fmc = new FlowMapCreator( new File( path ), new File( xsdPath ) );
         flowMap = fmc.createMap( new PluginResolver( repository ) );
         assertTrue( validateMap1( flowMap ) );
     }
