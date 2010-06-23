@@ -1,3 +1,12 @@
+/*
+ *
+ * NOTE TO DEVELOPERS: 
+ * The two plugins IndexerXSEM and NormalizeDocument are _strongly_ dependend on this class. 
+ * It is therefore currently not trivial to split the plugins from the PTI.
+ * Nothing will be done about it presently, since the PTI supposedly is dying a slow death!
+ *
+ */
+
 package dk.dbc.opensearch.components.pti;
 
 
