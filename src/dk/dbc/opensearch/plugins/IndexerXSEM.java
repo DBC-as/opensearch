@@ -72,12 +72,8 @@ public class IndexerXSEM implements IPluggable
 
     PluginType pluginType = PluginType.INDEX;
 
-    private IndexerXSEMEnvironment env = null;
-
     public IndexerXSEM( IObjectRepository repository ) throws PluginException
     {
-	Map< String, String> tmpMap = new HashMap< String, String >();
-	env = (IndexerXSEMEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
     /**
@@ -337,13 +333,14 @@ public class IndexerXSEM implements IPluggable
      * This is also descibed in bug 10479
      */
     @Override
-    public synchronized CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo ) throws PluginException
     {
-        return null;
+	throw new PluginException( "This method is not meant to be called!" );
     }
 
 
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new IndexerXSEMEnvironment( repository, args );
     }

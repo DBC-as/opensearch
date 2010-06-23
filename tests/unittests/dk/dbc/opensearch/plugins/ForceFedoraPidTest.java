@@ -28,8 +28,9 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
@@ -101,7 +102,8 @@ public class ForceFedoraPidTest {
                    databytes );
 
         //      cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
-        returnCargo = forcePlugin.runPlugin( cargo, mockArgsMap );
+	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap );
+        returnCargo = forcePlugin.runPlugin( env, cargo );
      
         
         assertEquals( returnCargo.getIdentifierAsString(), constructedID );
@@ -125,7 +127,8 @@ public class ForceFedoraPidTest {
                    databytes );
         //   cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
 
-        forcePlugin.runPlugin( cargo, mockArgsMap );
+	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap );
+        forcePlugin.runPlugin( env, cargo );
     }
 
     /**

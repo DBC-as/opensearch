@@ -33,6 +33,7 @@ import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
@@ -385,9 +386,10 @@ public class DatadockMain
         IProcessqueue processqueue = new Processqueue( new PostgresqlDBConnection() );
 
         log.trace( "Initializing plugin resolver" );
-        pluginResolver = new PluginResolver( new FedoraObjectRepository() );
+	IObjectRepository repository = new FedoraObjectRepository();
+        pluginResolver = new PluginResolver( repository );
         flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
-        Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver );
+        Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, repository );
 
         log.trace( "Starting harvester" );
         IHarvest harvester = this.selectHarvester();

@@ -29,6 +29,7 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
@@ -160,7 +161,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
+	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
             return mockCC;
         }
@@ -176,7 +177,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
+	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
             return mockCC;
         }
@@ -192,7 +193,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
+	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
             return mockCC;
         }
@@ -208,7 +209,7 @@ public class DatadockThreadTest
         }
 
         @Mock
-        public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap )
+	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
             return null;
         }
@@ -263,9 +264,9 @@ public class DatadockThreadTest
             mockFlowmap.get( anyString );returns( pluginTaskList );
         }};
         
-        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.XMLDCHarvester"), mockArgsMap ); 
-	pluginTask2 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.ReviewRelation"), mockArgsMap );
-	pluginTask3 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.Store"), mockArgsMap );
+        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.XMLDCHarvester"), null ); 
+	pluginTask2 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.ReviewRelation"), null );
+	pluginTask3 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.Store"), null );
 	pluginTaskList.add( pluginTask1 );
 	pluginTaskList.add( pluginTask2 );
 	pluginTaskList.add( pluginTask3 );
@@ -303,7 +304,7 @@ public class DatadockThreadTest
             mockFlowmap.get( anyString );returns( pluginTaskList );
         }};
         
-        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.DocbookAnnotate"), mockArgsMap ); 
+        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.DocbookAnnotate"), null ); 
       
         pluginTaskList.add( pluginTask1 );
 

@@ -26,9 +26,10 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.pluginframework.PluginTask;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
@@ -169,12 +170,11 @@ public class DatadockThread implements Callable<Boolean>
 	    IPluggable plugin = pluginTask.getPlugin();
 	    String classname = plugin.getClass().getName();
             
-            Map<String, String> argsMap = pluginTask.getArgsMap();
-            log.trace( "the argsMap: " + argsMap.toString() ); 
+	    IPluginEnvironment env = pluginTask.getEnvironment();
             log.trace( String.format("DatadockThread getPlugin classname: '%s'",classname) );   
 	    
             long timer = System.currentTimeMillis();
-            cargo = plugin.runPlugin( cargo, argsMap );
+	    cargo = plugin.runPlugin( env, cargo );
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: %s time: %s", classname, timer ) );  
             

@@ -55,21 +55,30 @@ public class MarcxchangeWorkRelation implements IPluggable
 
     private PluginType pluginType = PluginType.RELATION;
 
-    private MarcxchangeWorkRelationEnvironment env = null;
+    //private MarcxchangeWorkRelationEnvironment env = null;
 
 
     public MarcxchangeWorkRelation( IObjectRepository repository ) throws PluginException
     {
 
-	Map< String, String > tmpMap = new HashMap< String, String >();
-	env = (MarcxchangeWorkRelationEnvironment)this.createEnvironment( repository, tmpMap );
+	// Map< String, String > tmpMap = new HashMap< String, String >();
+	// env = (MarcxchangeWorkRelationEnvironment)this.createEnvironment( repository, tmpMap );
 
     }
 
 
     @Override
-    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {   
+
+	if ( !( ienv instanceof MarcxchangeWorkRelationEnvironment) )
+	{
+	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "MarcxchangeWorkRelationEnvironment", ienv.getClass().getName() );
+	    log.error( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	MarcxchangeWorkRelationEnvironment env = (MarcxchangeWorkRelationEnvironment)ienv;
 
 	List< SimplePair< TargetFields, String > > searchPairs = env.getSearchPairs( cargo );
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
@@ -91,8 +100,8 @@ public class MarcxchangeWorkRelation implements IPluggable
         return pluginType;
     }
 
-
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new MarcxchangeWorkRelationEnvironment( repository, args );
     }

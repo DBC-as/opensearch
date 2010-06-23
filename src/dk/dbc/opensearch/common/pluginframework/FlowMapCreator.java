@@ -19,6 +19,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.common.pluginframework;
 
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,7 +107,7 @@ public class FlowMapCreator
     }
 
     //creates the flowmap from the file specified in the path
-    public Map<String, List<PluginTask>> createMap( PluginResolver pluginResolver ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
+    public Map<String, List<PluginTask>> createMap( PluginResolver pluginResolver, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
     {
         XMLInputFactory infac = XMLInputFactory.newInstance(); 
        //read the stream into the xmlEventReader
@@ -186,7 +188,8 @@ public class FlowMapCreator
 			{	
 			    log.trace( String.format( "Trying to add plugin: %s", pluginclass ) );
 			    IPluggable plugin = pluginResolver.getPlugin( pluginclass );
-			    taskList.add( new PluginTask( plugin, new HashMap<String, String>( argsMap ) ) );
+			    IPluginEnvironment env = plugin.createEnvironment( repository, argsMap );
+			    taskList.add( new PluginTask( plugin, env ) );
 			}
 			catch( InstantiationException ie )
 			{

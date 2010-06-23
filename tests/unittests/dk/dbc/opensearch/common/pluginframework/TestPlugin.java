@@ -36,31 +36,37 @@ import java.util.Map;
 
 public class TestPlugin implements IPluggable
 {
-    private PluginID pluginID;;
+    //    private PluginID pluginID;;
 
     public TestPlugin( String script, IObjectRepository repository ){}
 
-    public void init(PluginID pluginId, InputStream data) 
-    {
-        // TODO Auto-generated method stub		
-    }
+    // public void init(PluginID pluginId, InputStream data) 
+    // {
+    //     // TODO Auto-generated method stub		
+    // }
     
+    // @Override
+    // public PluginID getPluginID()
+    // {
+    //     return pluginID;
+    // }
     
-    public PluginID getPluginID()
-    {
-        return pluginID;
-    }
-    
-    
+    @Override
     public PluginType getPluginType()
     {
         return PluginType.ANNOTATE;
     }
 
-    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    @Override
+    public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo ) throws PluginException
     {
         return null;
     }
 
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repos, Map<String, String> argsMap ) throws PluginException
+    {
+	return null;
+    }
 
 }

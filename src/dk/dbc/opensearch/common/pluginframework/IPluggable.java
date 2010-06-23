@@ -59,8 +59,9 @@ package dk.dbc.opensearch.common.pluginframework;
  * 
  */
 
-import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.util.Map;
 
@@ -72,7 +73,8 @@ public interface IPluggable
      * work on it and return it again.
      * @return CargoContainer, the transformed data
      */
-    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException;
+    // public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException;
+    public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo ) throws PluginException;
 
     /**
      * getPluginType returns the - at compile time given - type of the
@@ -83,4 +85,22 @@ public interface IPluggable
      * @return a PluginType defining containing the plugin
      */
     public PluginType getPluginType();
+
+
+    /**
+     * Creates an environment for the plugin.
+     * The same plugin-instance can have several different environments.
+     * The environments are given to the plugin-instance at runtime.
+     * It is thereby possible to add synchronization to the plugin-instance running different
+     * environements.
+     * 
+     * Notice, that an environment created by one plugin is not guaranteed to be used by another plugin.
+     *
+     * @param repository Used by the plugin to communicate with the Object Repository.
+     *
+     * @return a IPluginEnviroment specific for this plugin.
+     */
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > argsMap ) throws PluginException;
+
+
 }

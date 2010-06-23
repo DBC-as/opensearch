@@ -41,15 +41,15 @@ import org.apache.log4j.Logger;
 public class ForceFedoraPid implements IPluggable
 {
     static Logger log = Logger.getLogger( ForceFedoraPid.class );
-    private IObjectRepository repository;
+    // private IObjectRepository repository;
 
-    private ForceFedoraPidEnvironment env = null;
+    // private ForceFedoraPidEnvironment env = null;
 
 
     public ForceFedoraPid( IObjectRepository repository ) throws PluginException
     {
-	Map< String, String > tmpMap = new HashMap< String, String >();
-	env = (ForceFedoraPidEnvironment)this.createEnvironment( repository, tmpMap );
+	// Map< String, String > tmpMap = new HashMap< String, String >();
+	// env = (ForceFedoraPidEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -61,15 +61,24 @@ public class ForceFedoraPid implements IPluggable
 
 
     @Override
-    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
+	if ( !( ienv instanceof ForceFedoraPidEnvironment) )
+	{
+	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "ForceFedoraPidEnvironment", ienv.getClass().getName() );
+	    log.error( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	ForceFedoraPidEnvironment env = (ForceFedoraPidEnvironment)ienv;
+
         return env.run( cargo ) ;
     }
 
 
 
-
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new ForceFedoraPidEnvironment( repository, args );
     }

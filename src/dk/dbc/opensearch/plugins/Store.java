@@ -41,18 +41,12 @@ public class Store implements IPluggable
 {
     private static Logger log = Logger.getLogger( Store.class );
 
-
     private PluginType pluginType = PluginType.STORE;
-    //    private IObjectRepository objectRepository = null;
-    private Map<String, String> argsMap;
 
     StoreEnvironment env = null;
 
     public Store( IObjectRepository repository ) throws PluginException
     {
-	//        this.objectRepository = repository;
-	Map< String, String > tmpMap = new HashMap< String, String >();
-	env = (StoreEnvironment)this.createEnvironment( repository, tmpMap );
     }    
 
     /*
@@ -60,52 +54,31 @@ public class Store implements IPluggable
      * eg. two updates of the record, are stored by two different threads simultaniously.
      * See bug#10534.
      */
-    synchronized public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    @Override
+    synchronized public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
+	if ( !( ienv instanceof StoreEnvironment) )
+	{
+	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "StoreEnvironment", ienv.getClass().getName() );
+	    log.error( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	StoreEnvironment env = (StoreEnvironment)ienv;
+
     	log.trace( "Entering storeCargoContainer( CargoContainer )" );
 
 	return env.run( cargo );
-
-        // String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
-        // try
-        // {
-        //     if ( cargo.getIdentifier() != null )
-        //     {
-        //         String new_pid = cargo.getIdentifierAsString();
-                                
-        //         boolean hasObject = objectRepository.hasObject( cargo.getIdentifier() );
-        //         log.debug( String.format( "hasObject( %s ) returned %b",new_pid, hasObject ) );
-        //         if ( hasObject )
-        //         {
-        //             log.trace( String.format( "will try to delete pid %s", new_pid ) );
-        //             objectRepository.deleteObject( new_pid, "delte before store hack" );
-        //         }
-        //     }
-            
-        //     objectRepository.storeObject( cargo, logm, "auto" );
-        // }
-        // catch( ObjectRepositoryException ex )
-        // {
-        //     String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifierAsString(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-        //     log.error( error, ex);
-        //     throw new PluginException( error, ex );
-        // }
-        
-        // return cargo;
     }
 
-
+    @Override
     public PluginType getPluginType()
     {
         return pluginType;
     }
 
-    private boolean validateArgs( Map<String, String>argsMap )
-    {
-        return true;
-    }
-
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new StoreEnvironment( repository, args );
     }

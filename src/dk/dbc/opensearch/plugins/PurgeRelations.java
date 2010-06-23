@@ -54,8 +54,8 @@ public class PurgeRelations implements IPluggable
 
     private PluginType pluginType = PluginType.RELATION;
 
-    private IObjectRepository objectRepository;
-    private PurgeRelationsEnvironment env = null;
+    //    private IObjectRepository objectRepository;
+    //    private PurgeRelationsEnvironment env = null;
     
 
 
@@ -64,10 +64,10 @@ public class PurgeRelations implements IPluggable
      */
     public PurgeRelations( IObjectRepository repository ) throws PluginException
     {
-        log.trace( "PurgeRelations constructor called" );
+        // log.trace( "PurgeRelations constructor called" );
 
-	Map< String, String> tmpMap = new HashMap< String, String >();
-	env = (PurgeRelationsEnvironment)this.createEnvironment( repository, tmpMap );
+	// Map< String, String> tmpMap = new HashMap< String, String >();
+	// env = (PurgeRelationsEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -83,14 +83,23 @@ public class PurgeRelations implements IPluggable
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
     @Override
-    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
-        log.trace( "getCargoContainer() called" );
+        log.trace( "runPlugin() called" );
+
+	if ( !( ienv instanceof PurgeRelationsEnvironment) )
+	{
+	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "PurgeRelationsEnvironment", ienv.getClass().getName() );
+	    log.error( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	PurgeRelationsEnvironment env = (PurgeRelationsEnvironment)ienv;
 
         if ( cargo == null )
         {
-            log.error( "MarcxchangeWorkRelation getCargoContainer cargo is null" );
-            throw new PluginException( new NullPointerException( "MarcxchangeWorkRelation getCargoContainer throws NullPointerException" ) );
+            log.error( "cargo is null" );
+            throw new PluginException( new NullPointerException( "PurgeRelation runPlugin throws NullPointerException" ) );
         }
 
         boolean ok = false;
@@ -165,8 +174,8 @@ public class PurgeRelations implements IPluggable
         return true;
     }
 
-
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new PurgeRelationsEnvironment( repository, args );
     }

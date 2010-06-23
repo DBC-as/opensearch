@@ -21,6 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 
 import java.util.Map;
@@ -28,16 +29,22 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+/**
+ * The PluginTask is a container for objects which needs to be grouped together
+ * in relation to a plugin.
+ *
+ * \note: I am not sure that PluginTask is an appropiate name for this class.
+ */
 public class PluginTask
 {
 
     private IPluggable plugin;
-    private Map<String, String> argsMap;
+    private IPluginEnvironment env;
 
-    public PluginTask( IPluggable plugin,  Map<String, String> argsMap )
+    public PluginTask( IPluggable plugin,  IPluginEnvironment env )
     {
-        this.plugin = plugin;
-        this.argsMap = argsMap;
+        this.plugin  = plugin;
+	this.env     = env;
     }
 
     public IPluggable getPlugin()
@@ -45,9 +52,9 @@ public class PluginTask
         return plugin;
     }
 
-    public Map<String, String> getArgsMap()
+    public IPluginEnvironment getEnvironment()
     {
-        return argsMap;
+	return env;
     }
 }
 

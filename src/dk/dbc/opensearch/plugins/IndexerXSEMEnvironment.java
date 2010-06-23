@@ -38,14 +38,9 @@ import org.apache.log4j.Logger;
 
 public class IndexerXSEMEnvironment implements IPluginEnvironment
 {
-
     private static Logger log = Logger.getLogger( IndexerXSEMEnvironment.class );
-
-    //    private IObjectRepository objectRepository;
 
     public IndexerXSEMEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
     {
-	//        this.objectRepository = repository;
     }
-
 }

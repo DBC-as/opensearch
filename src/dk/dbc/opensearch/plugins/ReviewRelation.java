@@ -46,19 +46,12 @@ public class ReviewRelation implements IPluggable
     private static Logger log = Logger.getLogger( ReviewRelation.class );
 
     private PluginType pluginType = PluginType.RELATION;
-    private ReviewRelationEnvironment env = null;
 
     /**
      * Constructor for the ReviewRelation plugin.
      */
     public ReviewRelation( IObjectRepository repository ) throws PluginException
     {
-        log.trace( "Constructor called" );
-
-	Map< String, String > tmpMap = new HashMap< String, String>();
-	env = (ReviewRelationEnvironment)this.createEnvironment( repository, tmpMap );
-	
-
     }
 
 
@@ -72,9 +65,19 @@ public class ReviewRelation implements IPluggable
      *
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    synchronized public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    @Override
+    synchronized public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
-        log.trace( "getCargoContainer() called" );
+	if ( !( ienv instanceof ReviewRelationEnvironment) )
+	{
+	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "ReviewRelationEnvironment", ienv.getClass().getName() );
+	    log.error( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	ReviewRelationEnvironment env = (ReviewRelationEnvironment)ienv;
+
+        log.trace( "runPlugin() called" );
   
         boolean ok = false;
 	ok = env.addReviewRelation( cargo );
@@ -87,23 +90,23 @@ public class ReviewRelation implements IPluggable
         return cargo;
     }
 
-
-
+    @Override
     public PluginType getPluginType()
     {
         return pluginType;
     }
 
-    private boolean validateArgs( Map<String, String> argsMap )
-    {
-        if( argsMap.get( "script" ) == null ||  argsMap.get( "script" ).equals( "" ) )
-        {
-            return false;
-        }
-        return true;
-    }
+    // private boolean validateArgs( Map<String, String> argsMap )
+    // {
+    //     if( argsMap.get( "script" ) == null ||  argsMap.get( "script" ).equals( "" ) )
+    //     {
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new ReviewRelationEnvironment( repository, args );
     }

@@ -41,16 +41,16 @@ public class DocbookAnnotate implements IPluggable
     static Logger log = Logger.getLogger( DocbookAnnotate.class );
     private PluginType pluginType = PluginType.ANNOTATE;
 
-    DocbookAnnotateEnvironment env = null;
+    // DocbookAnnotateEnvironment env = null;
 
     /**
      * Constructor for the DocbookAnnotate plugin.
      */
     public DocbookAnnotate( IObjectRepository repository ) throws PluginException
     {
-        log.trace( "DocbookAnnotate Constructor() called" );
-	Map< String, String > tmpMap = new HashMap< String, String >();
-        env = (DocbookAnnotateEnvironment)this.createEnvironment( repository, tmpMap );
+        // log.trace( "DocbookAnnotate Constructor() called" );
+	// Map< String, String > tmpMap = new HashMap< String, String >();
+        // env = (DocbookAnnotateEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -65,9 +65,19 @@ public class DocbookAnnotate implements IPluggable
      * 
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
-    public CargoContainer runPlugin( CargoContainer cargo, Map<String,String> argsMap ) throws PluginException
+    @Override
+    public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
-        log.trace( "DocbookAnnotate getCargoContainer() called" );
+        log.trace( "DocbookAnnotate runPlugin() called" );
+
+	if ( !( ienv instanceof DocbookAnnotateEnvironment) )
+	{
+	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "DocbookAnnotateEnvironment", ienv.getClass().getName() );
+	    log.error( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	DocbookAnnotateEnvironment env = (DocbookAnnotateEnvironment)ienv;
 
         if( cargo == null )
         {
@@ -87,7 +97,8 @@ public class DocbookAnnotate implements IPluggable
         return pluginType;
     }
 
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new DocbookAnnotateEnvironment( repository, args );
     }

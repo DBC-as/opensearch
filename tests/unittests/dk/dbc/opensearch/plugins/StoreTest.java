@@ -30,11 +30,12 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.pluginframework.PluginType;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
 
 import java.util.Map;
 
@@ -168,7 +169,8 @@ public class StoreTest
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
 
-        returnCargo = storePlugin.runPlugin( cargo, mockArgsMap );
+	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
     }
@@ -186,7 +188,8 @@ public class StoreTest
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
 
-        returnCargo = storePlugin.runPlugin( cargo, mockArgsMap );
+	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
     }
@@ -203,7 +206,8 @@ public class StoreTest
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
 
-        returnCargo = storePlugin.runPlugin( cargo, mockArgsMap );
+	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	returnCargo = storePlugin.runPlugin( env, cargo );
        
         assertEquals( returnCargo.getIdentifierAsString(), "" );
         
@@ -222,7 +226,8 @@ public class StoreTest
 
         try
         {
-            returnCargo = storePlugin.runPlugin( cargo, mockArgsMap );
+	    IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	    returnCargo = storePlugin.runPlugin( env, cargo );
         }
         catch( PluginException pe )
         {

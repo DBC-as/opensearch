@@ -52,44 +52,35 @@ public class XMLDCHarvester implements IPluggable
 
     private PluginType pluginType = PluginType.HARVEST;
 
-    private XMLDCHarvesterEnvironment env = null;
-
 
     public XMLDCHarvester( IObjectRepository repository ) throws PluginException
     {
-	Map< String, String > tmpMap = new HashMap< String, String >();
-        env = (XMLDCHarvesterEnvironment)createEnvironment( repository, tmpMap );
     }
 
     @Override
-    public CargoContainer runPlugin( CargoContainer cargo, Map<String, String> argsMap ) throws PluginException
+    public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
-        log.trace( "validating arguments" );
-      
-        if( ! validateArgs( argsMap ) )
-        {
-            String error = String.format( "error while validating XMLDCHarvester with args: '%s'", argsMap.toString() ) ;
-            log.error( error );  
-            throw new PluginException( error );
-        }
+	if ( !( ienv instanceof XMLDCHarvesterEnvironment) )
+	{
+	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "XMLDCHarvesterEnvironment", ienv.getClass().getName() );
+	    log.error( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	XMLDCHarvesterEnvironment env = (XMLDCHarvesterEnvironment)ienv;
 
 	return env.run( cargo );
 
     }
 
-
+    @Override
     public PluginType getPluginType()
     {
         return pluginType;
     }
 
-    private boolean validateArgs( Map<String, String> argsMap )
-    {
-        return true;
-    }
-
-
-    public static IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    @Override
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new XMLDCHarvesterEnvironment( repository, args );
     }

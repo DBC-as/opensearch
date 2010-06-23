@@ -22,7 +22,9 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.plugins.DocbookMerger;
 import dk.dbc.opensearch.plugins.IndexerXSEM;
+import dk.dbc.opensearch.plugins.NormalizeDocument;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
@@ -64,7 +66,6 @@ public class PTIThread implements Callable< Boolean >
 
     private CompassSession session;
     private String fedoraPid;
-    private ArrayList< String > list;
     private IObjectRepository objectRepository;
     private PluginResolver pluginResolver;
     /*    
@@ -142,7 +143,7 @@ public class PTIThread implements Callable< Boolean >
         boolean success = false;
 
         // Get the job from the jobMap
-        list = PTIJobsMap.getPtiPluginsList( submitter, format );
+	ArrayList< String > list = PTIJobsMap.getPtiPluginsList( submitter, format );
         if ( list == null )
         {
             log.error( String.format( "no jobs for submitter: %s format: %s", submitter, format ) );
@@ -175,23 +176,50 @@ public class PTIThread implements Callable< Boolean >
                 {
                     case PROCESS:
                         log.debug( "calling processerplugin" );
+			
+			// This is a HACK:
+			// This cripples the pluginsystem - big time!
+			// I am only doing this cause it is widely assumed that the
+			// PTI will not gain any new plugins in its hopefully short 
+			// remaining lifespan! (jda 20100623)
+			// BEGIN HACK
+			if ( plugin instanceof DocbookMerger ) 
+			{
+			    DocbookMerger docbookMergerPlugin = (DocbookMerger)plugin;
+			    cc = docbookMergerPlugin.run( cc ); // run(...) is not part of the interface
+			}
+			else if ( plugin instanceof NormalizeDocument ) 
+			{
+			    NormalizeDocument normalizeDocumentPlugin = (NormalizeDocument)plugin;
+			    cc = normalizeDocumentPlugin.run( cc ); // run(...) is not part of the interface
+			}
+			else
+			{
+			    String errMsg = String.format( "Unknown plugin '%s' cannot be run in this HACK", plugin.getClass().getName() );
+			    log.error( errMsg );
+			    throw new PluginException( errMsg );
+			}
 
-                        cc = plugin.runPlugin( cc, argsMap );
+			// END HACK
                         log.debug( "PTIThread PROCESS plugin done" );
                         break;
-                    case RELATION:
-                        log.trace( "calling relation plugin" );
+                    // case RELATION:
+                    //     log.trace( "calling relation plugin" );
 
-                        //plugin.setObjectRepository( objectRepository );
-                        plugin.runPlugin( cc, argsMap );
-                        log.trace( "PTIThread RELATION plugin done" );
-                        break;
+                    //     //plugin.setObjectRepository( objectRepository );
+                    //     plugin.runPlugin( cc, argsMap );
+                    //     log.trace( "PTIThread RELATION plugin done" );
+                    //     break;
                     case INDEX:
                         log.debug( "calling indexerplugin" );
                         IndexerXSEM indexPlugin = (IndexerXSEM) plugin;
                         success = indexPlugin.index( cc, session, fedoraPid );
                         log.debug( "PTIThread INDEX plugin done" );
                         break;
+		    default:
+			String errMsg = String.format( "Unknown taskname: %s", taskName );
+			log.error( errMsg );
+			throw new PluginException( errMsg );
                 }
             }
         }
