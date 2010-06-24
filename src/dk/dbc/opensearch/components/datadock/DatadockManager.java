@@ -142,7 +142,7 @@ public class DatadockManager
             DatadockJob job = buildDatadockJob( theJob );
             log.trace( String.format( "submitting job %s as datadockJob %s", theJob.toString(), job.toString() ) );
 
-            if( isJobIsPossible( job ) )
+            if( hasWorkflow( job ) )
             {
                 pool.submit( job.getIdentifier() );
                 registeredJobs.remove( 0 );
@@ -170,7 +170,7 @@ public class DatadockManager
     }
 
 
-    private synchronized Boolean isJobIsPossible( DatadockJob job )
+    private synchronized Boolean hasWorkflow( DatadockJob job )
     {
         Boolean exists = Boolean.FALSE;
         final Pair<String, String> entry = new SimplePair<String,String>( job.getSubmitter(), job.getFormat() );
