@@ -72,13 +72,12 @@ must be run before XMLDCHarvester -->
     </plugin>
   </workflow>
   <workflow format="matvurd" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.ReviewRelation">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="script" value="review_relation.js"/>
+        <arg name="javascript" value="review_relation.js"/>
+	<arg name="entryfunction" value="main"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
@@ -101,15 +100,13 @@ must be run before XMLDCHarvester -->
     </plugin>
   </workflow>
   <workflow format="anmeld" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.ReviewRelation">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="script" value="review_relation.js"/>
+        <arg name="javascript" value="review_relation.js"/>
+	<arg name="entryfunction" value="main"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
