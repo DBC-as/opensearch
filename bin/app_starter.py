@@ -94,7 +94,7 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
     elif action == "restart":
         print "No running process"
         do_start = True
-    elif action == "bench":
+    if action == "bench":
         do_bench = True
     else:
         sys.exit( "Cannot stop nonrunning process" )
