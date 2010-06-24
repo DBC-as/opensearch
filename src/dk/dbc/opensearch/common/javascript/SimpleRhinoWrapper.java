@@ -57,7 +57,6 @@ public class SimpleRhinoWrapper
 
     public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
     {
-	//	List< Pair< String, Object > > emptyList = new ArrayList< Pair< String, Object > >();
 	this( jsFileName, new ArrayList< Pair< String, Object > >() );
     }
 
@@ -87,30 +86,10 @@ public class SimpleRhinoWrapper
         String[] names = { "print" };
         scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
-	// try 
-	// {
-	//     ScriptableObject.defineClass( (Scriptable)scope, FedoraSearchJS.class );
-	// } 
-	// catch( IllegalAccessException iae )
-	// {
-	// }
-	// catch( InstantiationException ie )
-	// {
-	// }
-	// catch( InvocationTargetException ite )
-	// {
-	// }
-
-
         // Evaluate the javascript
         try
         {
             Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
-
-	    // // TEST:
-	    // String loadMe = "RegExp; getClass; java; Packages; JavaAdapter;";
-	    // o = cx.evaluateString((Scriptable)scope, loadMe, "lazyLoad", 1, null);
-
         } 
         catch ( IOException ioe )
         {
@@ -143,14 +122,6 @@ public class SimpleRhinoWrapper
     public Object run( String functionEntryPoint, Object... args )
     {
         log.trace( String.format( "Entering run function with %s", functionEntryPoint ) );
-
-	// synchronized(this) 
-	// {
-	//     if ( ! scope.isSealed() )
-	//     {
-	// 	scope.sealObject();
-	//     }
-	// }
 
         Object fObj = scope.get( functionEntryPoint, scope );
         Object result = null;
