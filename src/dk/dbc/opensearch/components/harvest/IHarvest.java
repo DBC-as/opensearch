@@ -89,7 +89,4 @@ public interface IHarvest
     void setStatusFailure( IIdentifier jobId, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
 
     void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
-
-    // There are no current scenarios for using setStatusRetry. If this comment is read after february 28th, delete this comment and the commented method below
-    // void setStatusRetry( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
 }
