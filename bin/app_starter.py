@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+26#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 
@@ -28,7 +28,7 @@ import logging as log
 import fedora_conn
 import glob
 
-def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_allocation ):
+def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_allocation, force ):
     log_filename = 'app_starter.log'
     log_path = os.path.abspath( 'log-files' )
 
@@ -69,7 +69,7 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
 
         log.debug( "read pid=%s"%pid )
         
-        if action == "restart":
+        if action == "restart" or ( force and ( action == "start" or action == "bench" ) ):
             log.debug( "Restarting. Killing process with pid=%s"%( pid ) )
             print "stopping process with pid %s"%( pid )
             stop_daemon( pid )
@@ -87,18 +87,20 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
                 os.unlink( pid_filename )
 
         elif action == "start":
-            print "Only one %s instance is allowed to run at a time"% ( app )
+            print "Only one %s instance is allowed to run at a time (check for pidfile)"% ( app )
+        elif action == "bench":
+            print "Only one %s instance is allowed to run at a time (check for pidfile)"% ( app )
 
     elif action == "start":
         do_start = True
     elif action == "restart":
         print "No running process"
         do_start = True
-    if action == "bench":
+    elif action == "bench":
         do_bench = True
     else:
         sys.exit( "Cannot stop nonrunning process" )
-    
+
     if do_start:
 
         if fedora_arg:
@@ -263,7 +265,8 @@ if __name__ == '__main__':
                        help="The portnumber of the Fedora Repository. ignored without -c (default value: %s)" % fedora_arg['port']  )
     parser.add_option( "--harvester", type="string", action="store", dest="harvester",
                        help="Selects which harvester type to use. Available options: %s" % ", ".join( map( lambda x: x[0], harvester_list ) ) )
-    
+    parser.add_option( "--force", action="store_true", dest="force",
+                       help="forces a run, ignoring warnings of already running processes" )
     parser.add_option( "--Xms", type="string", action="store", dest="Xms",
                        help="The initial heap size (default 2mb)" )
     
@@ -320,4 +323,4 @@ if __name__ == '__main__':
         main( 'pti', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup )
         main( 'datadock', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup )
     else:
-        main( options.app, args[0], options.monitor, fedora_arg, harvester, options.esharvester_cleanup, mem_allocation )
+        main( options.app, args[0], options.monitor, fedora_arg, harvester, options.esharvester_cleanup, mem_allocation, options.force )
