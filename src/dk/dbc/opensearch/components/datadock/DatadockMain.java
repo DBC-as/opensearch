@@ -58,7 +58,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.Properties;
 import java.util.Map;
 import java.util.List;
-import java.util.logging.Level;
 import javax.xml.parsers.ParserConfigurationException;
 
 import oracle.jdbc.pool.OracleDataSource;
@@ -100,7 +99,6 @@ public class DatadockMain
     private final int pollTime;
     private final File pluginFlowXmlPath;
     private final File pluginFlowXsdPath;
-    private HarvestType harvestType;
     private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
     static java.util.Date startTime = null;
     private boolean terminateOnZeroSubmitted = false;
@@ -113,12 +111,20 @@ public class DatadockMain
         maxPoolSize = DatadockConfig.getMaxPoolSize();
         keepAliveTime = DatadockConfig.getKeepAliveTime();
 
+        log.debug(  String.format( "Starting Datadock with pollTime = %s", pollTime ) );
+        log.debug(  String.format( "Starting Datadock with queueSize = %s", queueSize ) );
+        log.debug(  String.format( "Starting Datadock with corePoolSize = %s", corePoolSize ) );
+        log.debug(  String.format( "Starting Datadock with maxPoolSize = %s", maxPoolSize ) );
+        log.debug(  String.format( "Starting Datadock with keepAliveTime = %s", keepAliveTime ) );
+
         pluginFlowXmlPath = DatadockConfig.getPluginFlowXmlPath();
         pluginFlowXsdPath = DatadockConfig.getPluginFlowXsdPath();
         if( null == pluginFlowXmlPath || null == pluginFlowXsdPath )
         {
             throw new ConfigurationException( "Failed to initialize configuration values for File objects properly (pluginFlowXmlPath or pluginFlowXsdPath)" );
         }
+        log.debug(  String.format( "Starting Datadock with pluginFlowXmlPath = %s", pluginFlowXmlPath ) );
+        log.debug(  String.format( "Starting Datadock with pluginFlowXsdPath = %s", pluginFlowXsdPath) );
     }
 
 
@@ -128,16 +134,18 @@ public class DatadockMain
      * command line parameter or, if that fails, the type of a default harvester
      * specified in the class
      */
-    private void getHarvesterType()
+    private HarvestType getHarvesterType()
     {
         log.trace( "Trying to get harvester type from commandline" );
-        this.harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
+        HarvestType harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
         
-        if( null == this.harvestType )
+        if( null == harvestType )
         {
-            this.harvestType = defaultHarvestType;
+            harvestType = defaultHarvestType;
         }
-        log.debug( String.format( "initialized harvester with type: %s", this.harvestType ) );
+        log.debug( String.format( "initialized harvester with type: %s", harvestType ) );
+        return harvestType;
+
     }
 
     /**
@@ -195,18 +203,17 @@ public class DatadockMain
             String fatal = String.format( "A fatal error occured in the communication with the database: %s", hioe.getMessage() );
             log.fatal( fatal, hioe );
         }
-        /** \REVIEW: the following exceptions are logged as errors, but I have issued a shutdown nevertheless. Could there be any hidden intentions that the server should be kept running?*/
         catch( InterruptedException ie )
         {
-            log.error( String.format( "InterruptedException caught in mainloop: %s", ie.getMessage(), ie ) );
+            log.fatal( String.format( "InterruptedException caught in Main.runServer: %s", ie.getMessage() ), ie  );
         }
         catch( RuntimeException re )
         {
-            log.error( String.format( "RuntimeException caught in mainloop: %s", re.getMessage(), re ) );
+            log.fatal( String.format( "RuntimeException caught in Main.runServer: %s", re.getMessage() ), re );
         }
         catch( Exception e )
         {
-            log.error( "Exception caught in mainloop: " + e.getMessage(), e );
+            log.fatal( String.format( "Exception caught in Main.runServer: %s", e.getMessage() ), e );
         }
         finally
         {
@@ -300,10 +307,13 @@ public class DatadockMain
         }
     }
 
-   private IHarvest selectHarvester() throws SQLException, IllegalArgumentException, ConfigurationException, SAXException, HarvesterIOException, IOException
+   private IHarvest initializeHarvester() throws SQLException, IllegalArgumentException, ConfigurationException, SAXException, HarvesterIOException, IOException
     {
+        log.trace( "Getting harvester type" );
+        HarvestType harvestType = this.getHarvesterType();
+
         IHarvest harvester;
-        switch( this.harvestType )
+        switch( harvestType )
         {
             case ESHarvest:
                 harvester = this.selectESHarvester();
@@ -379,20 +389,17 @@ public class DatadockMain
     }
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
-        log.trace( "Initializing harvester" );
-        this.getHarvesterType();
-
         log.trace( "Initializing process queue" );
         IProcessqueue processqueue = new Processqueue( new PostgresqlDBConnection() );
 
         log.trace( "Initializing plugin resolver" );
-	IObjectRepository repository = new FedoraObjectRepository();
+        IObjectRepository repository = new FedoraObjectRepository();
         pluginResolver = new PluginResolver( repository );
         flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
         Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, repository );
 
-        log.trace( "Starting harvester" );
-        IHarvest harvester = this.selectHarvester();
+        log.trace( "Initializing harvester" );
+        IHarvest harvester = this.initializeHarvester();
 
         log.trace( "Initializing the DatadockPool" );
         LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( this.queueSize );
