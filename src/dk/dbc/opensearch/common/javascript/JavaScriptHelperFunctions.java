@@ -25,10 +25,20 @@
 
 package dk.dbc.opensearch.common.javascript;
 
+import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
+
+import dk.dbc.opensearch.common.config.FileSystemConfig; // Testing
+import org.apache.commons.configuration.ConfigurationException; // Testing
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.FileReader;
 
 public class JavaScriptHelperFunctions // extends ScriptableObject
 {
+
+    private static Logger log = Logger.getLogger( JavaScriptHelperFunctions.class );
 
     // This function is taken from rhinos examplecode,
     // from the function Shell.java
@@ -46,8 +56,57 @@ public class JavaScriptHelperFunctions // extends ScriptableObject
 	    String s = Context.toString(args[i]);
 
 	    System.out.print(s);
+	    log.debug( "Text: " + s );
 	}
 	// System.out.print();
     }
+
+
+    public static void use(Context cx, Scriptable thisObj, 
+			   Object[] args, Function funObj) throws FileNotFoundException, ConfigurationException
+    {
+	if ( args.length < 1 ) {
+	    log.debug( "No arguments given" );
+	} else {
+	    String jsFileName = Context.toString( args[0] );
+	    log.debug( String.format( "The following script was given: %s. Trying to load it", jsFileName ) );
+
+	    FileReader inFile = new FileReader( FileSystemConfig.getScriptPath() + jsFileName ); // can throw FileNotFindExcpetion
+	    try
+	    {
+		//Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
+		Object o = cx.evaluateReader((Scriptable)thisObj, inFile, jsFileName, 1, null);
+	    } 
+	    catch ( IOException ioe )
+	    {
+		String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
+		log.error( errorMsg, ioe );
+		throw new IllegalStateException( errorMsg, ioe );
+	    }
+	    catch ( RhinoException re )
+	    {
+		log.debug( "Evaluate" );
+		SimpleRhinoWrapper.logRhinoException( re );
+		throw re;
+	    }
+	    
+
+	}
+	
+    }
+
+
+
+    // private static void Use(Context cx, Scriptable thisObj,
+    // 			    Object[] args, Function funObj)
+    // {
+    // 	if ( args.length < 1 ) {
+    // 	    log.debug( "No arguments given" );
+    // 	} else {
+    // 	    String s = Context.toString( args[0] );
+    // 	    log.debug( String.format( "The following script was given: %s", s ) );
+    // 	}
+	
+    // }
 
 }

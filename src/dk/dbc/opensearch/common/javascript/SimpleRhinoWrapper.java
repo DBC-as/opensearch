@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import dk.dbc.opensearch.common.types.Pair;
 
 
+
 /**
  * The purpose of the SimpleRhinoWrapper is to make a very simple
  * wrapper for javascript based on Rhino. The class has a very few
@@ -54,6 +55,7 @@ public class SimpleRhinoWrapper
 {
     private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
     private ScriptableObject scope = null;
+
 
     public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
     {
@@ -83,9 +85,12 @@ public class SimpleRhinoWrapper
             throw new IllegalStateException( errorMsg );
         }
 
-        String[] names = { "print" };
-        scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
+        // String[] names1 = { "Use" };
+        // scope.defineFunctionProperties(names1, SimpleRhinoWrapper.class, ScriptableObject.DONTENUM);
 
+        String[] names = { "print", "use" };
+        scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
+	
         // Evaluate the javascript
         try
         {
@@ -181,7 +186,8 @@ public class SimpleRhinoWrapper
      * maintain the logging even though the exception is caught severeal places in
      * the code.
      */
-    private void logRhinoException( RhinoException re )
+    //    private static void logRhinoException( RhinoException re )
+    public static void logRhinoException( RhinoException re )
     {
 
 	if ( re instanceof EcmaError )
@@ -209,3 +215,8 @@ public class SimpleRhinoWrapper
 
 
 }
+
+
+
+
+
