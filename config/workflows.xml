@@ -4,41 +4,42 @@ generated right now by the ForceFedoraPid plugin so ForceFedoraPid
 must be run before XMLDCHarvester -->
 <workflows xmlns="info:opensearch.dbc.dk#">
   <workflow format="faktalink" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.DocbookAnnotate">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
   </workflow>
   <workflow format="forfatterw" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.DocbookAnnotate">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin class="dk.dbc.opensearch.plugins.Store">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="isAuthorDescriptionOf"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="katalog" submitter="775100">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="ebsco" submitter="775100">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
@@ -46,12 +47,9 @@ must be run before XMLDCHarvester -->
     </plugin>
   </workflow>
   <workflow format="ebrary" submitter="775100">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
@@ -59,40 +57,41 @@ must be run before XMLDCHarvester -->
     </plugin>
   </workflow>
   <workflow format="katalog" submitter="710100">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="hasReview"/>
       </args>
     </plugin>
   </workflow>
   <workflow format="matvurd" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="review_relation.js"/>
-	<arg name="entryfunction" value="main"/>
-      </args>
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="isReviewOf"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="dr_atlas" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
@@ -105,8 +104,8 @@ must be run before XMLDCHarvester -->
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="review_relation.js"/>
-	<arg name="entryfunction" value="main"/>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="isReviewOf"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
@@ -116,12 +115,9 @@ must be run before XMLDCHarvester -->
     </plugin>
   </workflow>
   <workflow format="artikler" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_function.js"/>
@@ -129,67 +125,89 @@ must be run before XMLDCHarvester -->
     </plugin>
   </workflow>
   <workflow format="dr_bonanza" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
   </workflow>
   <workflow format="louisiana" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
   </workflow>
   <workflow format="dsd" submitter="dbc">
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
   </workflow>
   <workflow format="dbc" submitter="150013">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="hasReview"/>
       </args>
     </plugin>
   </workflow>
   <workflow format="pg" submitter="150013">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_functions.js"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="nmalbum" submitter="150014">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
         <arg name="script" value="workmatch_relation_funtions.js"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="hasTrack"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="nmtrack" submitter="150014">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="isPartOfAlbum"/>
+      </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="Relations.use.js"/>
+	<arg name="entryfunction" value="hasSoundClip"/>
+      </args>
     </plugin>
   </workflow>
   <workflow format="nmcover" submitter="150014">
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store">
-    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester"/>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
   </workflow>
 
 </workflows>
