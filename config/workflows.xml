@@ -15,7 +15,7 @@ must be run before XMLDCHarvester -->
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="isAuthorDescriptionOf"/>
       </args>
     </plugin>
@@ -31,7 +31,7 @@ must be run before XMLDCHarvester -->
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="hasReview"/>
       </args>
     </plugin>
@@ -67,7 +67,7 @@ must be run before XMLDCHarvester -->
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="hasReview"/>
       </args>
     </plugin>
@@ -83,7 +83,7 @@ must be run before XMLDCHarvester -->
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="isReviewOf"/>
       </args>
     </plugin>
@@ -104,7 +104,7 @@ must be run before XMLDCHarvester -->
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="isReviewOf"/>
       </args>
     </plugin>
@@ -150,7 +150,7 @@ must be run before XMLDCHarvester -->
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="hasReview"/>
       </args>
     </plugin>
@@ -166,7 +166,7 @@ must be run before XMLDCHarvester -->
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="hasReview"/>
       </args>
     </plugin>
@@ -182,7 +182,7 @@ must be run before XMLDCHarvester -->
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="hasTrack"/>
       </args>
     </plugin>
@@ -193,13 +193,13 @@ must be run before XMLDCHarvester -->
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="isPartOfAlbum"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="Relations.use.js"/>
+        <arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="hasSoundClip"/>
       </args>
     </plugin>
