@@ -1,37 +1,16 @@
-function isReviewOf ( submitter, format, language, xml, pid ) {
-  Relations.isReviewOf ( xml, pid );
-}
-
-function hasReview ( submitter, format, language, xml, pid ) {
-  Relations.hasReview ( xml, pid );
-}
-
-function hasTrack ( submitter, format, language, xml, pid ) {
-  Relations.hasTrack ( xml, pid );
-}
-
-function isPartOfAlbum ( submitter, format, language, xml, pid ) {
-  Relations.isPartOfAlbum ( xml, pid );
-}
-
-function hasSoundClip ( submitter, format, language, xml, pid ) {
-  Relations.hasSoundClip ( xml, pid );
-}
-
-function isAuthorDescriptionOf ( submitter, format, language, xml, pid ) {
-  Relations.isAuthorDescriptionOf ( xml, pid );
-}
+use ( "XmlUtil.use.js" );
+use ( "XmlNamespaces.use.js" );
 
 EXPORTED_SYMBOLS = ['Relations'];
 
 const Relations = function() {
 
-  var dkabm = new Namespace( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" );
-  var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
-  var ac = new Namespace( "ac", "http://biblstandard.dk/ac/namespace/" );
-  var dcterms = new Namespace( "dcterms", "http://purl.org/dc/terms/" );
-  var xsi = new Namespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-  var ting = new Namespace( "ting", "http://www.dbc.dk/ting" );
+  var dkabm = XmlNamespaces.dkabm;
+  var dc = XmlNamespaces.dc;
+  var ac = XmlNamespaces.ac;
+  var dcterms = XmlNamespaces.dcterms;
+  var xsi = XmlNamespaces.xsi;
+  var ting = XmlNamespaces.ting;
 
   var that = {};
 
@@ -40,7 +19,7 @@ const Relations = function() {
     Log.info ("Start isReviewOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var reviewXML = new XML( xml );
+    var reviewXML = XmlUtil.fromString( xml );
 
     var identifier = reviewXML.*.*.*.(@tag=='014').*.(@code=='a');
    
@@ -69,7 +48,7 @@ const Relations = function() {
     Log.info ("Start hasReview" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var katalogXML = new XML( xml );
+    var katalogXML = XmlUtil.fromString( xml );
 
     var identifier = String(katalogXML.*.*.*.(@tag=='001').*.(@code=='a'));
    
@@ -98,7 +77,7 @@ const Relations = function() {
     Log.info ("Start isPartOfAlbum" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var trackXML = new XML( xml );
+    var trackXML = XmlUtil.fromString( xml );
 
     var child;
 
@@ -135,7 +114,7 @@ const Relations = function() {
     Log.info ("Start hasTrack" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var albumXML = new XML( xml );
+    var albumXML = XmlUtil.fromString( xml );
 
     var identifier = String(albumXML.dkabm::record.ac::identifier);
    
@@ -164,7 +143,7 @@ const Relations = function() {
     Log.info ("Start isAuthorDescriptionOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var authorXML = new XML( xml );
+    var authorXML = XmlUtil.fromString( xml );
 
     var creator = String(authorXML.dkabm::record.dc::title);
    
@@ -193,7 +172,7 @@ const Relations = function() {
     Log.info ("Start hasSoundClip" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var trackXML = new XML( xml );
+    var trackXML = XmlUtil.fromString( xml );
 
     var url = String( "http://netmusik.shop2download.com/samples/" + trackXML.*.*.soundClip);
    
