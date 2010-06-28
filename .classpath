@@ -30,7 +30,6 @@
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxrpc-api.jar"/>
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
-	<classpathentry kind="lib" path="lib/jmockit.jar"/>
 	<classpathentry kind="lib" path="lib/jrdf-0.3.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
@@ -50,5 +49,6 @@
 	<classpathentry kind="lib" path="lib/compass-2.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/jmockit-0.996.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
