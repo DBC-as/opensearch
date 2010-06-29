@@ -56,11 +56,11 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     private SimpleRhinoWrapper jsWrapper = null;
     private IObjectRepository objectRepository;
 
+    private final String entryPointFunc;
 
+    // For validation:
     private static final String javascript_str = "javascript";
     private static final String entryFunc_str  = "entryfunction";
-    private final String javascript;
-    private final String entryPointFunc;
 
     /**
      */
@@ -69,10 +69,9 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         this.objectRepository = repository;
 
 	this.validateArguments( args );
-	this.javascript = args.get( javascript_str );
-	this.entryPointFunc  = args.get( entryFunc_str );
+	this.entryPointFunc  = args.get( this.entryFunc_str );
 
-	this.jsWrapper = this.initializeWrapper( this.javascript );
+	this.jsWrapper = this.initializeWrapper( args.get( this.javascript_str ) );
 
 	log.trace( "Checking wrapper (outer)" );
 	if (jsWrapper == null) {
@@ -144,6 +143,9 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     }
 
     /**
+     * This function will validate the following arguments: "javascript" and "entryfunction".
+     * All other arguments will be silently ignored.
+     * Currently the "entryfunction" is not tested for validity.
      */
     private void validateArguments( Map< String, String > args ) throws PluginException
     {

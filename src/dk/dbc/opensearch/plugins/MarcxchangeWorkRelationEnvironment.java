@@ -60,39 +60,33 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelationEnvironment.class );
 
     private IObjectRepository objectRepository;
-
     private SimpleRhinoWrapper rhinoWrapper;
+
+    private final String searchFunc;
+    private final String matchFunc;
+    private final String createObjectFunc;
+
+    // For validation:
+    private final static String javascriptStr       = "javascript";
+    private final static String searchFuncStr       = "searchfunction";
+    private final static String matchFuncStr        = "matchfunction";
+    private final static String createObjectFuncStr = "createobjectfunction";
+
 
 
     public MarcxchangeWorkRelationEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
     {
         this.objectRepository = repository;
+	this.validateArguments( args ); // throws PluginException in case of trouble!
+	
+	this.searchFunc       = args.get( this.searchFuncStr );
+	this.matchFunc        = args.get( this.matchFuncStr );
+	this.createObjectFunc = args.get( this.createObjectFuncStr );
 
-        //creating the javascript environment
-        String jsFileName = new String( "workmatch_relation_functions.js" );
-
-        // Creates a list of objects to be used in the js-scope
-        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-        objectList.add( new SimplePair< String, Object >( "Log", log ) );
-
-        try
-        {
-            rhinoWrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
-        }
-        catch( FileNotFoundException fnfe )
-        {
-            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-            log.error( errorMsg, fnfe );
-            throw new PluginException( errorMsg, fnfe );
-        }
-        catch( ConfigurationException ce )
-        {
-            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-            log.fatal( errorMsg, ce );
-            throw new PluginException( errorMsg, ce );
-        }
-        //done creating javascript environment
+	this.rhinoWrapper = this.initializeWrapper( "workmatch_relation_functions.js" );
     }
+
+
 
     /**
      * The main method of the plugin. first it creates a list of work candidates, 
@@ -105,8 +99,6 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * in the repository, used to generate the list of candidate works 
      * @return the unmodified CargoContainer.
      */
-
-
     public CargoContainer run( CargoContainer cargo, List< SimplePair< TargetFields, String > > searchPairs ) throws PluginException
     {
 
@@ -160,7 +152,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         String[] pairArray = new String[ 100 ];
 
         //execute the script that fills the pairsList
-        rhinoWrapper.run( "generateSearchPairs", dcString, orgData, pairArray );
+        rhinoWrapper.run( searchFunc, dcString, orgData, pairArray );
 
         //go through the pairArray
         //create the TargetFields for the searchList
@@ -279,7 +271,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             String replacedTempDCString = tempDCString.replace( "\n", "" );
             log.debug( String.format( " matching postdc: %s with workdc: %s", dcString, replacedTempDCString ) ); 
             //call the match test with the xmls until a match occurs
-            match = (Boolean)rhinoWrapper.run( "checkmatch", dcString, replacedTempDCString );
+            match = (Boolean)rhinoWrapper.run( matchFunc, dcString, replacedTempDCString );
             log.debug( String.format( "result of match on post: %s on work: %s is %s ", cargo.getIdentifier().getIdentifier(), pid.getIdentifier(), match ) );
 
             if( match )
@@ -320,7 +312,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         log.info( "calling makeworkobject" );
 
         //be warned there are sideeffects on the workDC
-        String workXml = (String)rhinoWrapper.run( "makeworkobject", tempDCString, workDC );
+        String workXml = (String)rhinoWrapper.run( createObjectFunc, tempDCString, workDC );
 
         log.debug( "workXml :" + workXml );
 
@@ -415,4 +407,82 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         log.info( String.format( "post: %s related to work: %s", cargoPid.getIdentifier(), workPid.getIdentifier() ) );
     }
 
+
+    private SimpleRhinoWrapper initializeWrapper( String jsFileName ) throws PluginException
+    {
+
+        // Creates a list of objects to be used in the js-scope
+        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+        objectList.add( new SimplePair< String, Object >( "Log", log ) );
+
+	SimpleRhinoWrapper wrapper = null; 
+        try
+        {
+            wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+            log.error( errorMsg, fnfe );
+            throw new PluginException( errorMsg, fnfe );
+        }
+        catch( ConfigurationException ce )
+        {
+            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+            log.fatal( errorMsg, ce );
+            throw new PluginException( errorMsg, ce );
+        }
+	//done creating javascript environment
+	
+	return wrapper;
+    }
+
+
+
+    /**
+     * This function will validate the following arguments:
+     * "javascript", "searchfunction", "matchfunction" and "createobjectfunction".
+     */
+    private void validateArguments( Map< String, String > args ) throws PluginException
+    {
+	log.info("Validating Arguments - Begin");
+
+	// Validating Entry: "javascript".
+	String jsName = null;
+	if ( args.containsKey( javascriptStr ) ) 
+	{
+	    jsName = args.get( javascriptStr ); 
+	}
+	else
+	{
+	    // This is Fatal! We cannot create the environment.
+	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", javascriptStr );
+	    log.fatal( errMsg );
+	    throw new PluginException( errMsg );
+	}
+	SimpleRhinoWrapper tmpWrapper =  initializeWrapper( jsName );
+	
+	// Validate function entries:
+	validateScriptFunction( args, searchFuncStr, tmpWrapper );
+	validateScriptFunction( args, matchFuncStr, tmpWrapper );
+	validateScriptFunction( args, createObjectFuncStr, tmpWrapper );
+
+	log.info("Validating Arguments - End");
+    }
+
+    private void validateScriptFunction( Map< String, String > args, String funcNameStr, SimpleRhinoWrapper wrappper ) throws PluginException
+    {
+	String funcName = null;
+	if ( args.containsKey( funcNameStr ) ) 
+	{
+	    funcName = args.get( funcNameStr ); 
+	}
+	else
+	{
+	    // This is Fatal! We cannot create the environment.
+	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", funcNameStr );
+	    log.fatal( errMsg );
+	    throw new PluginException( errMsg );
+	}
+    }
 }

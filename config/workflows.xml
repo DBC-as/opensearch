@@ -41,7 +41,10 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_functions.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
@@ -62,7 +65,10 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_functions.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
   </workflow>
@@ -77,7 +83,10 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_functions.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
   </workflow>
@@ -92,7 +101,10 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_functions.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
@@ -113,7 +125,10 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_functions.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
@@ -134,7 +149,10 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_functions.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
   </workflow>
@@ -155,7 +173,10 @@
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_function.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
   </workflow>
@@ -170,7 +191,10 @@
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
-        <arg name="script" value="workmatch_relation_function.js"/>
+        <arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
   </workflow>
@@ -178,126 +202,135 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-      <arg name="script" value="xmldcharvester_beta.js"/>
-      <arg name="entryfunction" value="buildxml_beta"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.Store"/>
-</workflow>
-<workflow format="louisiana" submitter="dbc">
-  <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-  <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    <args>
-      <arg name="script" value="xmldcharvester_beta.js"/>
-      <arg name="entryfunction" value="buildxml_beta"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.Store"/>
-</workflow>
-<workflow format="dsd" submitter="dbc">
-  <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-  <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    <args>
-    <arg name="script" value="xmldcharvester_beta.js"/>
-    <arg name="entryfunction" value="buildxml_beta"/>
-  </args>
-</plugin>
-<plugin class="dk.dbc.opensearch.plugins.Store"/>
-</workflow>
-<workflow format="dbc" submitter="150013">
-  <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-  <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    <args>
-      <arg name="script" value="xmldcharvester_beta.js"/>
-      <arg name="entryfunction" value="buildxml_beta"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.Store"/>
-  <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
-    <args>
-      <arg name="script" value="workmatch_relation_functions.js"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-    <args>
-      <arg name="javascript" value="simple_relation.js"/>
-      <arg name="entryfunction" value="hasReview"/>
-    </args>
-  </plugin>
-</workflow>
-<workflow format="pg" submitter="150013">
-  <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-  <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    <args>
-      <arg name="script" value="xmldcharvester_beta.js"/>
-      <arg name="entryfunction" value="buildxml_beta"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.Store"/>
-  <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
-    <args>
-      <arg name="script" value="workmatch_relation_functions.js"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-    <args>
-      <arg name="javascript" value="simple_relation.js"/>
-      <arg name="entryfunction" value="hasReview"/>
-    </args>
-  </plugin>
-</workflow>
-<workflow format="nmalbum" submitter="150014">
-  <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-  <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    <args>
-      <arg name="script" value="xmldcharvester_beta.js"/>
-      <arg name="entryfunction" value="buildxml_beta"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.Store"/>
-  <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
-    <args>
-      <arg name="script" value="workmatch_relation_funtions.js"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-    <args>
-      <arg name="javascript" value="simple_relation.js"/>
-      <arg name="entryfunction" value="hasTrack"/>
-    </args>
-  </plugin>
-</workflow>
-<workflow format="nmtrack" submitter="150014">
-  <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-  <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    <args>
-      <arg name="script" value="xmldcharvester_beta.js"/>
-      <arg name="entryfunction" value="buildxml_beta"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.Store"/>
-  <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-    <args>
-      <arg name="javascript" value="simple_relation.js"/>
-      <arg name="entryfunction" value="isPartOfAlbum"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-    <args>
-      <arg name="javascript" value="simple_relation.js"/>
-      <arg name="entryfunction" value="hasSoundClip"/>
-    </args>
-  </plugin>
-</workflow>
-<workflow format="nmcover" submitter="150014">
-  <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-  <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-    <args>
-      <arg name="script" value="xmldcharvester_beta.js"/>
-      <arg name="entryfunction" value="buildxml_beta"/>
-    </args>
-  </plugin>
-  <plugin class="dk.dbc.opensearch.plugins.Store"/>
-</workflow>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+  </workflow>
+  <workflow format="louisiana" submitter="dbc">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+  </workflow>
+  <workflow format="dsd" submitter="dbc">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+  </workflow>
+  <workflow format="dbc" submitter="150013">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+	<arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	<arg name="javascript" value="simple_relation.js"/>
+	<arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
+  </workflow>
+  <workflow format="pg" submitter="150013">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+	<arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	<arg name="javascript" value="simple_relation.js"/>
+	<arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
+  </workflow>
+  <workflow format="nmalbum" submitter="150014">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+	<arg name="javascript" value="workmatch_relation_functions.js"/>
+	<arg name="searchfunction" value="generateSearchPairs"/>
+	<arg name="matchfunction" value="checkmatch"/>
+	<arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	<arg name="javascript" value="simple_relation.js"/>
+	<arg name="entryfunction" value="hasTrack"/>
+      </args>
+    </plugin>
+  </workflow>
+  <workflow format="nmtrack" submitter="150014">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	<arg name="javascript" value="simple_relation.js"/>
+	<arg name="entryfunction" value="isPartOfAlbum"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+	<arg name="javascript" value="simple_relation.js"/>
+	<arg name="entryfunction" value="hasSoundClip"/>
+      </args>
+    </plugin>
+  </workflow>
+  <workflow format="nmcover" submitter="150014">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="entryfunction" value="buildxml_beta"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+  </workflow>
 
 </workflows>
