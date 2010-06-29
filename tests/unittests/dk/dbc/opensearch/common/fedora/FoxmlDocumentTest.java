@@ -169,7 +169,7 @@ public class FoxmlDocumentTest
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         f.serialize( baos, null );
         String xml = new String( baos.toByteArray() );
-
+ 
         assertEquals( expectedDublinCore, xml );
     }
 

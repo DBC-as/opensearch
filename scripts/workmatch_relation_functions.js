@@ -44,24 +44,40 @@ function generateSearchPairs( dcXML, originalXML, resultArray )
 // in string representations.
 function checkmatch( newObject, workObject )
 {
+
+Log.debug("RLO: workXML = " + workObject + ", end\n");
+Log.debug("RLO: newXML = " + newObject + ", end\n");
     var newObjectXml = new XML( newObject );
     var workObjectXml = new XML( workObject );
     var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
+    //var oai_dc = new Namespace( "oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/" );
 
     var result = false;
-
     var newTitle = String(newObjectXml.dc::title);
     var workTitle = String(workObjectXml.dc::title);
     var newSource = String(newObjectXml.dc::source);
     var workSource = String(workObjectXml.dc::source);
     var newCreator = String(newObjectXml.dc::creator);
     var workCreator = String(workObjectXml.dc::creator);
-    var workType = String(workObjectXml.dc::creator);
+    //var workType = String(workObjectXml.dc::creator);
     var newType = String(newObjectXml.dc::type);
     var workType = String(workObjectXml.dc::type);
 
+
+    // var newTitle = String(newObjectXml.dc::title);
+    // var workTitle = String(workObjectXml.dc::title);
+    // var newSource = String(newObjectXml.dc::source);
+    // var workSource = String(workObjectXml.dc::source);
+    // var newCreator = String(newObjectXml.dc::creator);
+    // var workCreator = String(workObjectXml.dc::creator);
+    // var newType = String(newObjectXml.dc::type);
+    // var workType = String(workObjectXml.dc::type);
+
     Log.debug( "RLO: start match\n");
     //check for a match. Return true if there is, false if not ;-)
+    Log.debug( "RLO: newType = " + newType + "\n" );
+    Log.debug( "RLO: worktype = " + workType + "\n");
+    Log.debug( "RLO: workcreator = " + workCreator + "\n" );
     switch (newType) {
       case "Anmeldelse":
         Log.debug( "RLO: Anmeldelse\n");
@@ -126,6 +142,7 @@ function checkmatch( newObject, workObject )
       default:
         Log.debug( "RLO: default\n");
         if (newCreator === workCreator) {
+Log.debug("RLO: newcreator = workcreator \n");
           if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)| netmusik (track)")) {
             result = true;
           } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)|netmusik (track)")) {

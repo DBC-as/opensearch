@@ -69,7 +69,7 @@ public class CargoContainer
     {
         data = new ArrayList<CargoObject>();
         metadata = new HashMap<DataStreamType, MetaData>();
-        this.addMetaData( new DublinCore() );
+        //this.addMetaData( new DublinCore() );
         log.trace( String.format( "Constructing new CargoContainer" ) );
     }
 
@@ -98,7 +98,7 @@ public class CargoContainer
     {
         this.identifier  = new_identifier; 
         
-        this.getDublinCoreMetaData().setIdentifier( identifier.getIdentifier() );
+        //this.getDublinCoreMetaData().setIdentifier( identifier.getIdentifier() );
     }
 
     
@@ -506,22 +506,22 @@ public class CargoContainer
     }
 
 
-    public DublinCore getDublinCoreMetaData()
-    {
-        DublinCore retval = null;
-        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
-        {
-            if( meta.getKey() == DataStreamType.DublinCoreData )
-            {
-                retval = (DublinCore) meta.getValue();
-            }
-        }
-        if( retval == null )
-        {
-            log.warn( "No DublinCore element found in CargoContainer" );
-        }
-        return retval;
-    }
+    // public DublinCore getDublinCoreMetaData()
+    // {
+    //     DublinCore retval = null;
+    //     for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
+    //     {
+    //         if( meta.getKey() == DataStreamType.DublinCoreData )
+    //         {
+    //             retval = (DublinCore) meta.getValue();
+    //         }
+    //     }
+    //     if( retval == null )
+    //     {
+    //         log.warn( "No DublinCore element found in CargoContainer" );
+    //     }
+    //     return retval;
+    // }
 
  
 }

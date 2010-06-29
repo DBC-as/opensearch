@@ -90,9 +90,8 @@ public class AdministrationStream implements MetaData
      * {@link #addStream(CargoObject, String)} to add information about
      * data into the AdministrationStream.
      */
-    public AdministrationStream(/*String indexingAlias*/ )
+    public AdministrationStream()
     {
-        //this.indexingAlias = indexingAlias;
         admvalues = new HashMap<Integer, HashMap<AdministrationStreamElement, String>>();
     }
 
@@ -103,6 +102,8 @@ public class AdministrationStream implements MetaData
      * but it is then the responsibility of the client to ensure that
      * the input xml is valid and parsable according to the
      * administration stream xml Schema.
+     * @param InputStream: in, the administration xml
+     * @param boolean: validating, validate the InputStream if true  
      */
     public AdministrationStream( InputStream in, boolean validating ) throws XMLStreamException, SAXException, IOException
     {
@@ -142,12 +143,7 @@ public class AdministrationStream implements MetaData
             if( XMLStreamConstants.START_ELEMENT == event.getEventType() )
             {
                 element = event.asStartElement();
-                /*if( element.getName().getLocalPart().equals( "indexingalias" ) )
-                {
-                    Attribute name = (Attribute) element.getAttributes().next(); //we assume only one attribute here.
-                    this.indexingAlias = name.getValue();
-                }
-                else */if( element.getName().getLocalPart().equals( "stream" ) )
+                if( element.getName().getLocalPart().equals( "stream" ) )
                 {
                     admvalues.put( counter, new HashMap<AdministrationStreamElement, String>() );
                     HashMap<AdministrationStreamElement, String> stream = admvalues.get( counter++ );
@@ -163,7 +159,7 @@ public class AdministrationStream implements MetaData
         }
 
         assert ( admvalues.size() == counter );
-        //  assert ( this.indexingAlias != null );
+       
     }
 
     
@@ -171,9 +167,18 @@ public class AdministrationStream implements MetaData
      * Adds information about a data object as a stream in the
      * administrationstream. {@code id} by convention is the
      * DataStreamId.
+     * @param CargoObject: obj, the CargoObject to add data about into 
+     * the administration stream
+     * @param String: id, the id of the CargoObject
      */
     public boolean addStream( CargoObject obj, String id )
     {
+
+        if( obj.getDataStreamType() == DataStreamType.DublinCoreData )
+        {
+            log.trace( "Object added is DC" );
+        }
+        
         int pos = admvalues.size();
         boolean added = false;
         HashMap<AdministrationStreamElement, String> map = new HashMap<AdministrationStreamElement, String>( 6 );
@@ -201,25 +206,25 @@ public class AdministrationStream implements MetaData
             log.warn( "Refusing to add adminstream data information to admin stream" );
             added = false;
         }
-        else if( obj.getType() == DataStreamType.DublinCoreData )
-        {
-            DublinCore dc = (DublinCore) obj;
+        // else if( obj.getType() == DataStreamType.DublinCoreData )
+        // {
+        //     DublinCore dc = (DublinCore) obj;
 
-            int pos = admvalues.size();
-            HashMap<AdministrationStreamElement, String> map = new HashMap<AdministrationStreamElement, String>( 6 );
-            map.put( AdministrationStreamElement.FORMAT, dc.getType().getName() );
-            map.put( AdministrationStreamElement.INDEX, Integer.toString( pos ) );
-            map.put( AdministrationStreamElement.LANG, "dc" );
-            map.put( AdministrationStreamElement.MIMETYPE, "text/xml" );
-            map.put( AdministrationStreamElement.STREAMNAMETYPE, dc.getType().getName() );
-            map.put( AdministrationStreamElement.SUBMITTER, "dbc" );
-            map.put( AdministrationStreamElement.ID, id );
-            admvalues.put( new Integer( pos ), map );
-            if( pos + 1 == admvalues.size() )
-            {
-                added = true;
-            }
-        }
+        //     int pos = admvalues.size();
+        //     HashMap<AdministrationStreamElement, String> map = new HashMap<AdministrationStreamElement, String>( 6 );
+        //     map.put( AdministrationStreamElement.FORMAT, dc.getType().getName() );
+        //     map.put( AdministrationStreamElement.INDEX, Integer.toString( pos ) );
+        //     map.put( AdministrationStreamElement.LANG, "dc" );
+        //     map.put( AdministrationStreamElement.MIMETYPE, "text/xml" );
+        //     map.put( AdministrationStreamElement.STREAMNAMETYPE, dc.getType().getName() );
+        //     map.put( AdministrationStreamElement.SUBMITTER, "dbc" );
+        //     map.put( AdministrationStreamElement.ID, id );
+        //     admvalues.put( new Integer( pos ), map );
+        //     if( pos + 1 == admvalues.size() )
+        //     {
+        //         added = true;
+        //     }
+        // }
         return added;
     }
 
@@ -244,7 +249,7 @@ public class AdministrationStream implements MetaData
                     set.getValue().get( AdministrationStreamElement.LANG ),
                     set.getValue().get( AdministrationStreamElement.MIMETYPE ),
                     "ihatefakedata".getBytes() );
-            //   cargo.setIndexingAlias( indexingAlias, DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ));
+        
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
             SimplePair< String, CargoObject > indexvalue = new SimplePair< String, CargoObject >(
                     set.getValue().get( AdministrationStreamElement.ID ),
@@ -340,12 +345,6 @@ public class AdministrationStream implements MetaData
     @Override
     public void serialize( OutputStream out, String identifier ) throws OpenSearchTransformException
     {
-        // if ( this.indexingAlias == null )
-        // {
-        //     String error = "Refusing to serialize AdministrationStream with no content";
-        //     log.error( error );
-        //     throw new IllegalStateException( error );
-        // }
 
         // Create an output factory
         XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
@@ -357,10 +356,7 @@ public class AdministrationStream implements MetaData
 
             xmlw.writeStartDocument();
             xmlw.writeStartElement( "admin-stream" );
-            // xmlw.writeStartElement( "indexingalias" );
-            // xmlw.writeAttribute( "name", this.indexingAlias );
-            // xmlw.writeEndElement();//closes "indexingalias" element
-
+     
             xmlw.writeStartElement( "streams" );
             for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )
             {

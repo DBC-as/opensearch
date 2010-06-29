@@ -293,9 +293,8 @@ public class DublinCore implements MetaData
         return retval;
     }
 
-
     /* Example of output:
-    <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/"
+    <dc xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/
@@ -306,7 +305,7 @@ public class DublinCore implements MetaData
     <dc:identifier>710100:25082427</dc:identifier>
     <dc:source>Harry Potter and the Order of the Phoenix</dc:source>
     <dc:relation/>
-    </oai_dc:dc>
+    </dc>
      */
     @Override
     public void serialize( OutputStream out, String identifier )throws OpenSearchTransformException

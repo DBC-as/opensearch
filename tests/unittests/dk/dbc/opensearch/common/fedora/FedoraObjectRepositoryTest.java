@@ -390,7 +390,7 @@ public class FedoraObjectRepositoryTest {
     {
         String identifier = "test:1";
         CargoContainer result = instance.getObject( identifier );
-        assertTrue( null != result.getMetaData( DataStreamType.DublinCoreData ) );
+        assertTrue( null != result.getCargoObject( DataStreamType.DublinCoreData ) );
     }
 
     @Test( expected=IllegalStateException.class )

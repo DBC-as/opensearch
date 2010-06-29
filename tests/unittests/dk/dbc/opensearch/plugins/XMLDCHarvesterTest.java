@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -33,6 +34,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 
 import javax.xml.xpath.XPath;
@@ -42,6 +44,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
+
+import java.util.List;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -107,11 +111,21 @@ public class XMLDCHarvesterTest
         }
     }
 
+    /**
+     * mocks the constructor called in the environment
+     */
+    @MockClass( realClass = SimpleRhinoWrapper.class )
+    public static class MockSimpleRhinoWrapper
+    {
+        @Mock
+        public void $init( String jsFileName, List< Pair< String, Object > > objectList )
+        {}
+    }
 
     @Before
     public void setUp() throws Exception
     {
-
+        setUpMocks( MockSimpleRhinoWrapper.class );
         Document xmldata = XMLUtils.documentFromString( referenceData );
 
         ddjob = new DatadockJob( mockIdentifier, xmldata );

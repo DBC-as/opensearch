@@ -37,6 +37,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+/**
+ * \Todo: There are hardcoded values in the constructor
+ */
+
 
 /**
  * The MarcxchangeHarvester plugin creates a {@link CargoContainer} with

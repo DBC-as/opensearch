@@ -27,8 +27,8 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
-import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
+//import dk.dbc.opensearch.common.metadata.DublinCore;
+//import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -482,39 +482,40 @@ public class FedoraObjectRepository implements IObjectRepository
 
             try
             {
-                if ( co.getDataStreamType() == DataStreamType.DublinCoreData )
-                {
-                    DublinCore dc;
-                    log.trace( String.format( "Trying to contruct DublinCore element from string: %s", new String( datastream ) ) );
-                    try
-                    {
-                        dc = new DublinCore( new ByteArrayInputStream( datastream ) );
-                    }
-                    catch( XMLStreamException ex )
-                    {
-                        String error = String.format( "Failed to construct Dublin Core object from datastream %s from pid '%s': %s", new String( datastream ), identifier, ex.getMessage() );
-                        log.error( error );
-                        throw new ObjectRepositoryException( error, ex );
-                    }
+                // if ( co.getDataStreamType() == DataStreamType.DublinCoreData )
+                // {
+                // DublinCore dc;
+                // log.trace( String.format( "Trying to contruct DublinCore element from string: %s", new String( datastream ) ) );
+                // try
+                // {
+                //     dc = new DublinCore( new ByteArrayInputStream( datastream ) );
+                // }
+                // catch( XMLStreamException ex )
+                // {
+                //     String error = String.format( "Failed to construct Dublin Core object from datastream %s from pid '%s': %s", new String( datastream ), identifier, ex.getMessage() );
+                //     log.error( error );
+                //     throw new ObjectRepositoryException( error, ex );
+                // }
 
-                    String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
-                    log.trace( String.format( "Got dc:identifier '%s' from datastream", dcid ) );
-                    if( null == dcid )
-                    {
-                        log.warn( String.format( "Dublin Core data has no identifier, will use '%s' one from the CargoContainer", identifier ) );
-                        dc.setIdentifier( identifier );
-                    }
-                    else
-                    {
-                        log.info( String.format( "Adding DublinCore data with id '%s' to CargoContainer", dcid ) );
-                    }
+                // String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
+                // log.trace( String.format( "Got dc:identifier '%s' from datastream", dcid ) );
+                // if( null == dcid )
+                // {
+                //     log.warn( String.format( "Dublin Core data has no identifier, will use '%s' one from the CargoContainer", identifier ) );
+                //     dc.setIdentifier( identifier );
+                // }
+                // else
+                // {
+                //     log.info( String.format( "Adding DublinCore data with id '%s' to CargoContainer", dcid ) );
+                // }
 
-                    cargo.addMetaData( dc );
-                }
-                else
-                {
-                    cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(),  datastream );
-                }
+                // cargo.addMetaData( dc );
+
+                // }
+                // else
+                // {
+                cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(),  datastream );
+                //}
             }
             catch( IOException ex )
             {
@@ -529,13 +530,13 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( "CargoContainer is empty, even though adminstream says it gave data" );
         }
 
-        if ( cargo.getDublinCoreMetaData() == null )
-        {
-            DublinCore dc = new DublinCore( identifier );
-            dc.setCreator( cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter() );
-            dc.setFormat( cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-            dc.setLanguage( cargo.getCargoObject( DataStreamType.OriginalData ).getLang() );
-        }
+        // if ( cargo.getDublinCoreMetaData() == null )
+        // {
+        //     DublinCore dc = new DublinCore( identifier );
+        //     dc.setCreator( cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter() );
+        //     dc.setFormat( cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
+        //     dc.setLanguage( cargo.getCargoObject( DataStreamType.OriginalData ).getLang() );
+        // }
 
         return cargo;
     }
@@ -660,7 +661,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
     /**
      * This method only returns exact matches, because of the reality with the
-     * work matching right now (12th feb. 2010) 
+     * work matching right now (12th feb. 2010)
      * Remove this method after 1st of July, it shouldnt be used.
      */
 
@@ -920,8 +921,8 @@ public class FedoraObjectRepository implements IObjectRepository
      * Method for getting pids from the fedora that has fields that matches
      * the match depends on the searchstring. If there are no '*' in the
      * beginning or the end, the searchstring is matched with the equals method
-     * otherwise it is accepted. The switch is different then in the addPidValue 
-     * method in the way that it returns false if the strings arent equal. 
+     * otherwise it is accepted. The switch is different then in the addPidValue
+     * method in the way that it returns false if the strings arent equal.
      */
     private boolean addPidValueExpanded( List< SimplePair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
     {
@@ -1203,36 +1204,36 @@ public class FedoraObjectRepository implements IObjectRepository
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = null;
 
-	// A list to contain arrays of ObjectFields.
-	// Whenever a new array of ObjectFields are found, either from findObjects or 
-	// resumeFindObjects, it is added to the list.
-	// The Arrays are later collected into a single array.
-	LinkedList< ObjectFields[] > objFieldsList = new LinkedList< ObjectFields[] >();
-	int numberOfResults = 0;
+        // A list to contain arrays of ObjectFields.
+        // Whenever a new array of ObjectFields are found, either from findObjects or
+        // resumeFindObjects, it is added to the list.
+        // The Arrays are later collected into a single array.
+        LinkedList< ObjectFields[] > objFieldsList = new LinkedList< ObjectFields[] >();
+        int numberOfResults = 0;
         try
         {
             NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );
             fsr = this.fedoraHandle.findObjects( resultFields, maxResults, fsq );
 
-	    numberOfResults += fsr.getResultList().length;
-	    objFieldsList.push( fsr.getResultList() ); 
-		
-	    ListSession listSession = fsr.getListSession();
-	    while ( listSession != null )
-	    {
-		String token = listSession.getToken();
-		fsr = this.fedoraHandle.resumeFindObjects( token );
-		if ( fsr != null )
-		{    
-		    numberOfResults += fsr.getResultList().length;
-		    objFieldsList.push( fsr.getResultList() );
-		    listSession = fsr.getListSession();
-		}
-		else
-		{
-		    listSession = null;
-		}
-	    }
+            numberOfResults += fsr.getResultList().length;
+            objFieldsList.push( fsr.getResultList() );
+
+            ListSession listSession = fsr.getListSession();
+            while ( listSession != null )
+            {
+                String token = listSession.getToken();
+                fsr = this.fedoraHandle.resumeFindObjects( token );
+                if ( fsr != null )
+                {
+                    numberOfResults += fsr.getResultList().length;
+                    objFieldsList.push( fsr.getResultList() );
+                    listSession = fsr.getListSession();
+                }
+                else
+                {
+                    listSession = null;
+                }
+            }
 
             log.debug( String.format( "Result length of resultlist: %s", numberOfResults ) );
 
@@ -1264,15 +1265,15 @@ public class FedoraObjectRepository implements IObjectRepository
             return new ObjectFields[]{ };
         }
 
-	ObjectFields[] objectFields = new ObjectFields[ numberOfResults ];
+        ObjectFields[] objectFields = new ObjectFields[ numberOfResults ];
 
-	// Collecting ObjectFields arrays into a single array:
-	int destPos = 0; // destination position
-	for ( ObjectFields[] of : objFieldsList )
-	{
-	    System.arraycopy( of, 0, objectFields, destPos, of.length );
-	    destPos += of.length;
-	}
+        // Collecting ObjectFields arrays into a single array:
+        int destPos = 0; // destination position
+        for ( ObjectFields[] of : objFieldsList )
+        {
+            System.arraycopy( of, 0, objectFields, destPos, of.length );
+            destPos += of.length;
+        }
 
         return objectFields;
     }
@@ -1867,9 +1868,9 @@ public class FedoraObjectRepository implements IObjectRepository
     @Override
     public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
-	String relationString = relation.getPredicateString();
-	this.addUncheckedObjectRelation( objectIdentifier, relationString, subject );
-    }    
+        String relationString = relation.getPredicateString();
+        this.addUncheckedObjectRelation( objectIdentifier, relationString, subject );
+    }
 
     @Override
     public void addUncheckedObjectRelation( ObjectIdentifier objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException

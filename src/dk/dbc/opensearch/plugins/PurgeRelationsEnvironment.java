@@ -29,7 +29,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
-import dk.dbc.opensearch.common.metadata.DublinCore;
+//import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -68,14 +68,14 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
 
     public boolean purgeAnmeldelsesRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
     {
-        DublinCore dc = cargo.getDublinCoreMetaData();
+        // DublinCore dc = cargo.getDublinCoreMetaData();
 
-        if ( dc == null )
-        {
-            String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
-            log.error( error );
-            throw new PluginException( error );
-        }
+        // if ( dc == null )
+        // {
+        //     String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
+        //     log.error( error );
+        //     throw new PluginException( error );
+        // }
 
         ObjectIdentifier identifier = cargo.getIdentifier();
 
@@ -109,14 +109,14 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
 
     public boolean purgeWorkRelationForMaterial( CargoContainer cargo ) throws PluginException, ObjectRepositoryException, ConfigurationException, MalformedURLException, IOException, ServiceException
     {
-        DublinCore dc = cargo.getDublinCoreMetaData();
+        // DublinCore dc = cargo.getDublinCoreMetaData();
 
-        if ( dc == null )
-        {
-            String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
-            log.error( error );
-            throw new PluginException( error );
-        }
+        // if ( dc == null )
+        // {
+        //     String error = String.format( "CargoContainer with identifier %s contains no DublinCore data", cargo.getIdentifier() );
+        //     log.error( error );
+        //     throw new PluginException( error );
+        // }
 
         ObjectIdentifier identifier = cargo.getIdentifier();
         

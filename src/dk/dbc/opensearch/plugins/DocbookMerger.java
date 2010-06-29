@@ -87,12 +87,14 @@ public class DocbookMerger implements IPluggable
     // Non-standard funktion - used by a hack in the PTIThread
     public CargoContainer run( CargoContainer cargo ) throws PluginException
     {
-	DublinCore dc = null;
+	// DublinCore dc = null;
 
-        if( cargo.hasMetadata( DataStreamType.DublinCoreData ) )
-        {
-            dc = cargo.getDublinCoreMetaData();
-        }
+        // if( cargo.hasMetadata( DataStreamType.DublinCoreData ) )
+        // {
+        //     dc = cargo.getDublinCoreMetaData();
+        // }
+
+
 
         CargoObject orig = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -125,18 +127,22 @@ public class DocbookMerger implements IPluggable
 
         Element origRoot = doc.getDocumentElement();
 
-        ByteArrayOutputStream dc_out = new ByteArrayOutputStream();
-        try
-        {
-            dc.serialize( dc_out, null );
-        }
-        catch( OpenSearchTransformException ex )
-        {
-            String error = String.format( "Failed to retrieve Dublin Core metadata from id '%s'", cargo.getIdentifierAsString() );
-            log.warn( error, ex );
-            log.info( "This plugin will now not merge the OriginalData with the DublinCore metadata" );
-        }
-        ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_out.toByteArray() );
+        // ByteArrayOutputStream dc_out = new ByteArrayOutputStream();
+        // try
+        // {
+        //     dc.serialize( dc_out, null );
+        // }
+        // catch( OpenSearchTransformException ex )
+        // {
+        //     String error = String.format( "Failed to retrieve Dublin Core metadata from id '%s'", cargo.getIdentifierAsString() );
+        //     log.warn( error, ex );
+        //     log.info( "This plugin will now not merge the OriginalData with the DublinCore metadata" );
+        // }
+        // ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_out.toByteArray() );
+
+        byte [] dcByteArray = cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes();
+
+        ByteArrayInputStream dc_is = new ByteArrayInputStream( dcByteArray );
 
         String new_original_data = null;
 
