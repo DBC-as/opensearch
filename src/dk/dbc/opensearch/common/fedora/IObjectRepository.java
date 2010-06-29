@@ -189,8 +189,7 @@ public interface IObjectRepository
      * after 1st of July it should be commented out and after the 1st of 
      * september it should be deleted if no problems have arised.  
      */
-    public List< String > getIdentifiers( List< SimplePair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
-
+    //  public List< String > getIdentifiers( List< SimplePair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
 
     /** 
      * Searches the object repository using the a {@link List} of
