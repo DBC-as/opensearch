@@ -94,6 +94,18 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         //done creating javascript environment
     }
 
+    /**
+     * The main method of the plugin. first it creates a list of work candidates, 
+     * based upon a list of searchpairs then it checks if any candidates are an actual
+     * match. If there are a match the post and the work are related. If not a new 
+     * work is created based on the post, stored in the repository and then the post 
+     * and the new work are related.
+     * @param cargo, a CargoContianer representing the post that are checked for a match
+     * @param searchPairs, a list of values and fields corresponding to searchable fields 
+     * in the repository, used to generate the list of candidate works 
+     * @return the unmodified CargoContainer.
+     */
+
 
     public CargoContainer run( CargoContainer cargo, List< SimplePair< TargetFields, String > > searchPairs ) throws PluginException
     {
@@ -103,8 +115,6 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         log.debug( String.format( "length of pidList: %s", pidList.size() ) );
 
         PID workPid = checkMatch( cargo, pidList );
-
-        log.trace(String.format("is found work pid null: '%s'", workPid == null ) );
 
         if( workPid == null )
         {
@@ -136,10 +146,10 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         //start with dummy xml on the javascript-side
 
         // get the DC-Stream
-        //DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
+
         byte[] theStrippedDC = E4XXMLHeaderStripper.strip( cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes() );
         //create dc in string format
-        //String dcString = getDCStreamAsString( theDC );
+
         String dcString = new String( theStrippedDC );
 
         log.debug( String.format( "the dc-string: %s", dcString ) );
@@ -172,6 +182,10 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     /**
      * method that finds the workobjects that match the cirterias specified in
      * the searchList
+     * @param searchList, a list of targetfields and there names corresponding to
+     * searchable fields in the repository. These are used for finding the the candidate 
+     * works to check for a match
+     * @return List<PID> a list of the work objects that should be checked for a match.
      */
     private List< PID > getWorkList( List< SimplePair< TargetFields, String > > searchList )
     {
@@ -191,7 +205,6 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             tempList.clear();
             tempList.add( pair );
 
-            //searchResultList = objectRepository.getIdentifiers( tempList, null, 10000 );
             searchResultList = objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" );
 
             log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
@@ -204,7 +217,6 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
                     pidStringList.add( result );
                 }
             }
-            //pidStringList.addAll( searchResultList );
         }
 
         log.debug( String.format( "pidStringList: %s", pidStringList ) );
@@ -212,7 +224,6 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         //make PIDs out of the String representations
         for( String pidString : pidStringList )
         {
-            //System.out.println( String.format( "pidString: %s", pidString ) );
             log.debug( String.format( "pidString: %s", pidString ) );
             pidList.add( new PID( pidString ) );
         }
@@ -234,14 +245,11 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         log.trace( "calling checkMatch" );
         boolean match = false;
         //get the xml for the cargo
-        //DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
         byte[] theStrippedDC = E4XXMLHeaderStripper.strip( cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes() );
-        //String dcString = getDCStreamAsString( theDC );
         String dcString = new String( theStrippedDC );
         log.trace( String.format( "the dcstring: '%s'", dcString ) );
 
         CargoContainer tempCargo = null;
-        //DublinCore tempDC = null;
         byte[] strippedTempDC = null;
         String tempDCString = "";
 
@@ -264,15 +272,12 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
                 log.fatal( errorMsg );
                 throw new PluginException( errorMsg, ore );
             }
-            //tempDC = (DublinCore)tempCargo.getMetaData( DataStreamType.DublinCoreData );
             strippedTempDC =  E4XXMLHeaderStripper.strip( tempCargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes() );
-            //tempDCString = getDCStreamAsString( tempDC );
             tempDCString = new String( strippedTempDC );
-            // log.debug( String.format( " matching postdc: %s with workdc: %s", dcString, tempDCString ) );
-            //    log.debug( String.format( "RLO:(from java...) the tempDCString: '%s'", tempDCString ) );
-            log.debug( "RLO:(from java...) the tempDCString: " +  tempDCString );
+
+            //Remove end-lines in the string.
             String replacedTempDCString = tempDCString.replace( "\n", "" );
-            log.debug( "RLO:(from java...) the replaced tempDCString: " +  replacedTempDCString );
+            log.debug( String.format( " matching postdc: %s with workdc: %s", dcString, replacedTempDCString ) ); 
             //call the match test with the xmls until a match occurs
             match = (Boolean)rhinoWrapper.run( "checkmatch", dcString, replacedTempDCString );
             log.debug( String.format( "result of match on post: %s on work: %s is %s ", cargo.getIdentifier().getIdentifier(), pid.getIdentifier(), match ) );
@@ -281,7 +286,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             {
                 return pid;
             }
-            log.debug( String.format( "dcString:%s, didnt match this: %s", dcString, tempDCString  ) );
+            log.debug( String.format( "dcString:%s, didnt match this: %s", dcString, replacedTempDCString  ) );
 
         }
 
@@ -291,8 +296,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
 
     /**
-     * method that creates a workobject from a CargoContainer based upon
-     * the fields in the searchList. Thje workobject is stored in the objectrepository
+     * method that creates a workobject from a CargoContainer. The javascript that gets 
+     * the DC of the cargocontainer defines what data to use. The workobject is stored 
+     * in the objectrepository.
      * @param cargo, the post to creare a workobject from
      * @return the pid of the new workobject
      */
@@ -306,8 +312,6 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         DublinCore workDC = new DublinCore();
         CargoContainer workCargo = new CargoContainer();
         //get the cargos xml
-        //DublinCore theDC = (DublinCore)cargo.getMetaData( DataStreamType.DublinCoreData );
-        //String tempDCString = getDCStreamAsString( theDC );
         byte[] theDC = cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes();
         String tempDCString = new String ( E4XXMLHeaderStripper.strip( theDC ) );
 
@@ -331,8 +335,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             log.error( errorMsg, ioe );
             throw new PluginException( errorMsg, ioe);
         }
-        //  workCargo.setIndexingAlias( "fakeAlias", DataStreamType.OriginalData );
-        //workCargo.addMetaData( workDC );
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         byte[] workDCBytes = null;
@@ -409,35 +412,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             throw new PluginException( errorMsg, ore );
         }
 
-        //System.out.println( "objects related" );
         log.info( String.format( "post: %s related to work: %s", cargoPid.getIdentifier(), workPid.getIdentifier() ) );
     }
-
-    /**
-     * helper method for getting the DC-stream of a DublinCore into a
-     * String format acceptable for the javascripts. It strips the xml header
-     */
-    // private String getDCStreamAsString( DublinCore theDC ) throws PluginException
-    // {
-    //     ByteArrayOutputStream dcOutputStream = new ByteArrayOutputStream();
-
-    //     // serialize the DC into an outputStream
-    //     try
-    //     {
-    //         theDC.serialize( dcOutputStream, null);
-    //     }
-    //     catch( OpenSearchTransformException oste )
-    //     {
-    //         String msg = "Exception occured while trying to serialize the dc-stream";
-    //         log.error( msg, oste );
-    //         throw new PluginException(  msg, oste );
-    //     }
-
-    //     byte[] strippedDC = E4XXMLHeaderStripper.strip( dcOutputStream.toByteArray() );
-    //     String dcString = new String ( strippedDC );
-
-    //     return dcString;
-    // }
-
 
 }
