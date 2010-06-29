@@ -45,7 +45,7 @@ import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeExceptio
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.plugins.DocbookAnnotate;
-import dk.dbc.opensearch.plugins.ReviewRelation;
+import dk.dbc.opensearch.plugins.SimpleGenericRelation;
 import dk.dbc.opensearch.plugins.Store;
 import dk.dbc.opensearch.plugins.XMLDCHarvester;
 
@@ -183,7 +183,7 @@ public class DatadockThreadTest
         }
     } 
     
-    @MockClass( realClass = ReviewRelation.class )
+    @MockClass( realClass = SimpleGenericRelation.class )
     public static class MockRelation
     {
         @Mock
@@ -265,7 +265,7 @@ public class DatadockThreadTest
         }};
         
         pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.XMLDCHarvester"), null ); 
-	pluginTask2 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.ReviewRelation"), null );
+	pluginTask2 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.SimpleGenericRelation"), null );
 	pluginTask3 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.Store"), null );
 	pluginTaskList.add( pluginTask1 );
 	pluginTaskList.add( pluginTask2 );
@@ -340,7 +340,7 @@ public class DatadockThreadTest
     {
 
         testArrayList.add( "dk.dbc.opensearch.plugins.XMLDCHarvester" );
-        testArrayList.add( "dk.dbc.opensearch.plugins.ReviewRelation" );
+        testArrayList.add( "dk.dbc.opensearch.plugins.SimpleGenericRelation" );
         testArrayList.add( "dk.dbc.opensearch.plugins.Store" );
 
         DatadockJob job = new DatadockJob( new MockIdentifier(), referenceData );
