@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.metadata.DublinCore;
+//import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -112,57 +112,63 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
 
     }
 
+    /**
+     * Temporary naming until the script is ready. Look at bug 10936 for more info
+     */
+
     public CargoContainer myRun( CargoContainer cargo ) throws PluginException
     {
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         String XML = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
-        //DublinCore DC = new DublinCore();
 
-        String DCXMLString = (String)jsWrapper.run( args.get( "function" ), XML );
-        /**
-         * Find a way to add the DCXMLString to the CargoContainer
-         */
-        //cargo.addMetaData( DC );
+        String DCXMLString = (String)jsWrapper.run( args.get( "entyrfunction" ), XML );
+
+        try
+        {
+            cargo.add( DataStreamType.DublinCoreData,
+                       "dublinCoreData",
+                       "dbc",
+                       "da",
+                       "text/xml",
+                       DCXMLString.getBytes() );
+        }
+        catch( IOException ioe )
+        {
+            String error = String.format( "could not add dublincore data: '%s'to the cargocontainer with id: '%s'", DCXMLString, cargo.getIdentifier().getIdentifier() );
+            log.error( error, ioe );
+            throw new PluginException( error, ioe );
+        }
 
         return cargo;
 
     }
+
+    /**
+     * Main method that constructs dc data and adds it to the cargocontainer 
+     * The dc is created from data in the originaldata.
+     * The dc:identifier is taken directly from the cargocontainers identifier, 
+     * so this method is dependant on that such a identifier previously have 
+     * been added to the cargocontainer
+     * @param cargo, a CargoContainer with the originaldata
+     * @return a cargocontainer with a dc stream added.
+     */
 
     public CargoContainer run( CargoContainer cargo ) throws PluginException
     {
 
         log.trace( "Constructing DC datastream" );
 
-        DublinCore dcStream = createDublinCore( cargo );
-        dcStream.setIdentifier( cargo.getIdentifier().getIdentifier() );
         ByteArrayOutputStream newStream = createDCStream( cargo );
         log.trace( String.format( "the new stream: '%s'", newStream ) );
-        OutputStream oldDCStream = new ByteArrayOutputStream();
 
         try
         {
-            dcStream.serialize( oldDCStream, "hat" );
-        }
-        catch( OpenSearchTransformException ote )
-        {
-            String error = String.format( "Error while serializing the dublincorestream of id: '%s'", cargo.getIdentifier().getIdentifier() );
-            log.error( error, ote );
-            throw new PluginException( error, ote );
-        }
-        
-        log.trace( String.format( "the old stream: '%s' ", oldDCStream ) );
-
-        //log.debug( String.format( "MH cargo dcTitle '%s'", dcStream.getDCValue( DublinCoreElement.ELEMENT_TITLE ) ) );
-        //cargo.addMetaData( dcStream );
-        
-        try
-        {
-        cargo.add( DataStreamType.DublinCoreData,
-                   "dublinCoreData",
-                   "dbc",
-                   "da",
-                   "text/xml",
-                   newStream.toByteArray() );
+            cargo.add( DataStreamType.DublinCoreData,
+                       "dublinCoreData",
+                       "dbc",
+                       "da",
+                       "text/xml",
+                       newStream.toByteArray() );
         }
         catch( IOException ioe )
         {
@@ -172,8 +178,6 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
         }
 
         log.trace(String.format( "num of objects in cargo: %s", cargo.getCargoObjectCount() ) );
-
-        //log.trace(String.format( "CargoContainer has DublinCore element == %s", cargo.getDublinCoreMetaData().elementCount() != 0 ) );
 
         return cargo;
     }
@@ -317,50 +321,6 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
         }
 
         return out;
-    }
-
-    //we shouldnt use this anymore, work in progress...
-    private DublinCore createDublinCore( CargoContainer cargo ) throws PluginException
-    {
-
-        DublinCore dc = new DublinCore( );
-        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-
-        byte[] b = co.getBytes();
-
-        String titleXpathStr = "/ting:container/dkabm:record/dc:title[1]";
-        log.trace( String.format( "finding dcTitle using xpath: '%s'", titleXpathStr ) );
-        String dcTitle = getDCVariable( b, titleXpathStr );
-        log.trace( String.format( "cargo setting dcTitle with value '%s'", dcTitle ) );
-        dc.setTitle( dcTitle );
-
-        String creatorXpathStr = "/ting:container/dkabm:record/dc:creator[1]";
-        log.trace( String.format( "finding dcCreator using xpath: '%s'", creatorXpathStr ) );
-        String dcCreator = getDCVariable( b, creatorXpathStr );
-        log.trace( String.format( "cargo setting dcCreator with value '%s'", dcCreator ) );
-        dc.setCreator( dcCreator );
-
-        String typeXpathStr = "/ting:container/dkabm:record/dc:type[@xsi:type]";
-        log.trace( String.format( "finding dcType using xpath: '%s'", typeXpathStr ) );
-        String dcType = getDCVariable( b, typeXpathStr );
-        log.trace( String.format( "cargo setting dcType with value '%s'", dcType ) );
-        dc.setType( dcType );
-
-        String sourceXpathStr = "/ting:container/dkabm:record/dc:source[1]";
-        log.trace( String.format( "finding dcSource using xpath: '%s'", sourceXpathStr ) );
-        String dcSource = getDCVariable( b, sourceXpathStr );
-        log.trace( String.format( "cargo setting dcSource with value '%s'", dcSource ) );
-        dc.setSource( dcSource );
-
-        String relationXpathStr = "/*/*/*/*[@tag='014']/*[@code='a']";
-        log.trace( String.format( "finding dcRelation using xpath: '%s'", relationXpathStr ) );
-        String dcRelation = getDCVariable( b, relationXpathStr );
-        log.trace( String.format( "cargo setting dcRelation with value '%s'", dcRelation ) );
-        dc.setRelation( dcRelation );
-
-        log.debug( String.format( "setting variables in cargo container: dcTitle '%s'; dcCreator '%s'; dcType '%s'; dcSource '%s'", dcTitle, dcCreator, dcType, dcSource ) );
-
-        return dc;
     }
 
 }
