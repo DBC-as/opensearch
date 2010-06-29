@@ -7,7 +7,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -17,7 +17,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -34,7 +34,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -58,7 +58,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -76,7 +76,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -94,7 +94,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -118,7 +118,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -142,7 +142,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -160,7 +160,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -184,7 +184,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-        <arg name="script" value="xmldcharvester_beta.js"/>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
         <arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -202,7 +202,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -212,7 +212,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -222,7 +222,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -232,7 +232,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -256,7 +256,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -280,7 +280,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -304,7 +304,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>
@@ -326,7 +326,7 @@
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
-	<arg name="script" value="xmldcharvester_beta.js"/>
+	<arg name="javascript" value="xmldcharvester_beta.js"/>
 	<arg name="entryfunction" value="buildxml_beta"/>
       </args>
     </plugin>

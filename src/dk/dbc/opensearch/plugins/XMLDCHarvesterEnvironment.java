@@ -74,18 +74,22 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
 
     private IObjectRepository repository;
     private SimpleRhinoWrapper jsWrapper = null;
-    private Map<String, String> args;
-    private String script = null;
+
+    private static final String javascriptStr = "javascript";
+    private static final String entryFuncStr  = "entryfunction";
+    private final String entryFunc;
 
     public XMLDCHarvesterEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
     {
         log.trace( "Constructor called" );
         this.repository = repository;
-        this.args = args;
 
-        log.trace( "Validating args");
-        //validate method call
+	this.validateArguments( args ); // throws PluginException in case of trouble!
+       
+	this.jsWrapper = this.initializeWrapper( args.get( this.javascriptStr ) );
+	this.entryFunc = args.get( this.entryFuncStr );
 
+	/*
         this.script = args.get( "script" );
 
         String jsFileName = this.script;
@@ -108,7 +112,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
             log.fatal( errorMsg, ce );
             throw new PluginException( errorMsg, ce );
         }
-
+	*/
 
     }
 
@@ -121,7 +125,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
         String XML = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
 
-        String DCXMLString = (String)jsWrapper.run( args.get( "entyrfunction" ), XML );
+        String DCXMLString = (String)jsWrapper.run( entryFunc, XML );
 
         try
         {
@@ -321,6 +325,81 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
         }
 
         return out;
+    }
+
+
+
+    /**
+     */
+    private SimpleRhinoWrapper initializeWrapper( String jsFileName ) throws PluginException
+    {
+	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	objectList.add( new SimplePair< String, Object >( "Log", log ) );
+
+	SimpleRhinoWrapper wrapper = null;
+        try 
+	{
+	    wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
+	}
+	catch( FileNotFoundException fnfe )
+	{
+	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+	    log.error( errorMsg, fnfe );
+	    throw new PluginException( errorMsg, fnfe );
+	}
+	catch( ConfigurationException ce )
+	{
+	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+	    log.fatal( errorMsg, ce );
+	    throw new PluginException( errorMsg, ce );
+	}
+
+	log.trace( "Checking wrapper (inner)" );
+	if (wrapper == null) {
+	    log.trace("Wrapper is null");
+	} else {
+	    log.trace("Wrapper is initialized");
+	}
+
+	return wrapper;
+
+    }
+
+
+    private void validateArguments( Map< String, String > args ) throws PluginException
+    {
+	log.info("Validating Arguments - Begin");
+
+	// Validating Entry: "javascript".
+	String jsName = null;
+	if ( args.containsKey( javascriptStr ) ) 
+	{
+	    jsName = args.get( javascriptStr ); 
+	}
+	else
+	{
+	    // This is Fatal! We cannot create the environment.
+	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", javascriptStr );
+	    log.fatal( errMsg );
+	    throw new PluginException( errMsg );
+	}
+	SimpleRhinoWrapper tmpWrapper =  initializeWrapper( jsName );
+	
+	// Validating Entry: "entryfunction":
+	String entry = null;
+	if ( args.containsKey( entryFuncStr ) ) 
+	{
+	    entry = args.get( entryFuncStr ); 
+	}
+	else
+	{
+	    // This is Fatal! We cannot create the environment.
+	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", entryFuncStr );
+	    log.fatal( errMsg );
+	    throw new PluginException( errMsg );
+	}
+
+	log.info("Validating Arguments - End");
     }
 
 }
