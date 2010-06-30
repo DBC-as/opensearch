@@ -286,14 +286,16 @@ public class CargoContainerTest
         DataStreamType dst1 = DataStreamType.getDataStreamTypeFrom( "originalData" );
         DataStreamType dst2 = DataStreamType.getDataStreamTypeFrom( "indexableData" );
 
-        byte[] data1 = "abc".getBytes();
+        byte[] data1 = "æøå".getBytes();
+        byte[] data2 = "üïöß".getBytes();
 
         cargo.add( dst1, format, submitter, language, mimetype, data1);
-        cargo.add( dst2, format, submitter, language, mimetype, data1);
+        cargo.add( dst2, format, submitter, language, mimetype, data2);
 
-        co1 = cargo.getCargoObject( dst2 );
+        co1 = cargo.getCargoObject( dst1 );
         co2 = cargo.getCargoObject( dst2 );
-        assertTrue( Arrays.equals( co1.getBytes(), co2.getBytes() ) );
+        assertTrue( Arrays.equals( co1.getBytes(), data1 ) );
+        assertTrue( Arrays.equals( co2.getBytes(), data2 ));
     }
 
 
