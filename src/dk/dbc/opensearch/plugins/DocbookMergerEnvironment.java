@@ -57,16 +57,17 @@ public class DocbookMergerEnvironment implements IPluginEnvironment
     public DocbookMergerEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
     {
     }
-
+    /**
+     * main method of the plugin. Takes the original data and dc data from a 
+     * Cargocontainer, merge them and overwrites the orignal data in the 
+     * cargo container.
+     * @param cargo, the cargocontainer containing the data to be merged
+     * @return a CargoContainer with the merged (original and dc of the 
+     * cargocontainer given as parameter) data in the original data stream 
+     */
     public CargoContainer run( CargoContainer cargo ) throws PluginException
     {
-	//DublinCore dc = null;
-
-        //if( cargo.hasMetadata( DataStreamType.DublinCoreData ) )
-        //{
-            //dc = cargo.getDublinCoreMetaData();
         byte[] dc = cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes();
-            //}
 
         CargoObject orig = cargo.getCargoObject( DataStreamType.OriginalData );
 
@@ -99,18 +100,6 @@ public class DocbookMergerEnvironment implements IPluginEnvironment
 
         Element origRoot = doc.getDocumentElement();
 
-        // ByteArrayOutputStream dc_out = new ByteArrayOutputStream();
-        // try
-        // {
-        //     dc.serialize( dc_out, null );
-        // }
-        // catch( OpenSearchTransformException ex )
-        // {
-        //     String error = String.format( "Failed to retrieve Dublin Core metadata from id '%s'", cargo.getIdentifierAsString() );
-        //     log.warn( error, ex );
-        //     log.info( "This plugin will now not merge the OriginalData with the DublinCore metadata" );
-        // }
-        //ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_out.toByteArray() );
         ByteArrayInputStream dc_is = new ByteArrayInputStream( dc );
 
         String new_original_data = null;
@@ -135,6 +124,7 @@ public class DocbookMergerEnvironment implements IPluginEnvironment
             tingDoc.adoptNode( origRoot );
 
             new_original_data = XMLUtils.xmlToString( tingDoc );
+
         }
         catch( ParserConfigurationException ex )
         {
@@ -163,7 +153,6 @@ public class DocbookMergerEnvironment implements IPluginEnvironment
 
         log.trace( String.format( "Original xml: %s", new String( orig.getBytes() ) ) );
         log.trace( String.format( "New xml: %s", new_original_data ) );
-        //   log.debug( String.format( "Adding annotated data to CargoContainer with alias '%s', overwriting original data", orig.getIndexingAlias() ) );
 
         log.debug( String.format( "Removing data with id %s", orig.getId() ) );
         if( !cargo.remove( orig.getId() ) )
@@ -186,8 +175,6 @@ public class DocbookMergerEnvironment implements IPluginEnvironment
             log.error( error, ioe );
             throw new PluginException( error, ioe );
         }
-
-        //  cargo.setIndexingAlias( orig.getIndexingAlias(), orig.getDataStreamType() );
 
         log.trace( String.format( "New xml data: %s", new String( cargo.getCargoObject( orig.getDataStreamType() ).getBytes() ) ) );
         return cargo;
