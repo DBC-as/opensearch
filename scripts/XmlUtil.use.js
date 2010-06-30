@@ -13,8 +13,8 @@ const XmlUtil = function() {
 	// Log.debug( "XmlUtil.fromString: xmlString is:\n", xmlString );
         var foo = XML.ignoreProcessingInstructions;
 //        XML.ignoreProcessingInstructions = true;
-	xmlString = xmlString.replace( /^<\?xml.*\?>/, "" ); // string <?xml...> from head
-	xmlString = xmlString.replace( /^\<\!DOCTYPE.*?\>/, "" ); // strip <!DOCTYPE...> from head
+//	xmlString = xmlString.replace( /^<\?xml.*\?>/, "" ); // string <?xml...> from head
+//	xmlString = xmlString.replace( /^\<\!DOCTYPE.*?\>/, "" ); // strip <!DOCTYPE...> from head
 	// Log.debug( "XmlUtil.fromString: xmlString after replace:\n", xmlString );
         var res = new XML ( xmlString ); // This is needed for reasosn that are not totally clear to me );
 // 	Log.debug( "XmlUtil.fromString: resulting xml:\n", res );

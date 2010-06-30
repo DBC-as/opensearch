@@ -32,6 +32,8 @@ const DcCreator = function(){
       }
     }
 
+    var child;
+
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
@@ -59,7 +61,7 @@ const DcCreator = function(){
   that.createDcObject = function () {
 
     var dcXml = XmlUtil.fromString( <dc/> );
-    dcXml.setNamespace( oai_dc );
+    dcXml.addNamespace( oai_dc );
     dcXml.addNamespace( dc );
     dcXml.addNamespace( xsi );
 
@@ -70,7 +72,7 @@ const DcCreator = function(){
   that.createElement = function ( elementValue, elementName, namespace ) {
     var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
     if (namespace !== undefined) {
-      element.setNamespace( namespace );
+      element.addNamespace( namespace );
     }
 
     return element;
