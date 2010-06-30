@@ -1,10 +1,14 @@
-function buildxml_beta( XML )
+use ( "DcCreator" );
+
+function buildxml_beta( xml )
 {
 
-    Log.info( "Entering jacascript" );
+    Log.info( "Entering javascript" );
 
-    Log.info( "Doing nothing in this jacascript" );
+    var dc = DcCreator.createDcFromMarc ( xml ); 
 
-    Log.info( "Leaving jacascript" );
+    Log.info( "Leaving javascript" );
+
+    return dc;
 
 }
