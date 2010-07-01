@@ -81,7 +81,7 @@ import org.xml.sax.SAXException;
  * contains referencedata about the other files so that xyz.ref descripes
  * the file xyz.someformat. Files without an associated .ref file will not be read.
  */
-public class FileHarvestLight implements IHarvest
+public final class FileHarvestLight implements IHarvest
 {
     static Logger log = Logger.getLogger( FileHarvestLight.class );
 

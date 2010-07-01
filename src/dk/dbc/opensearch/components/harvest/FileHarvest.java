@@ -88,7 +88,7 @@ import org.xml.sax.SAXException;
  * The harvester only returns a job after the second consecutive time
  * it has been found and its filesize is unchanged.
  */
-public class FileHarvest implements IHarvest
+public final class FileHarvest implements IHarvest
 {
     static Logger log = Logger.getLogger( FileHarvest.class );
 

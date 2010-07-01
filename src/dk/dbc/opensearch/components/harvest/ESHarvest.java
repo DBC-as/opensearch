@@ -63,7 +63,7 @@ import org.xml.sax.SAXException;
  * to a frontend, i.e. the DataDock, delivers data through {@link #getCargoContainer} and maintains the state of 
  * the jobs in the ES-base through {@link #setStatusSuccess}, {@link #setStatusFailure}.
  */
-public class ESHarvest implements IHarvest
+public final class ESHarvest implements IHarvest
 {
     Logger log = Logger.getLogger( ESHarvest.class );
 
