@@ -35,8 +35,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+
 public class JavaScriptHelperFunctions // extends ScriptableObject
 {
+
+    private static Map< Scriptable, Set< String > > loadedScripts = new HashMap< Scriptable, Set< String > >();
 
     private static Logger log = Logger.getLogger( JavaScriptHelperFunctions.class );
 
@@ -65,48 +72,63 @@ public class JavaScriptHelperFunctions // extends ScriptableObject
     public static void use(Context cx, Scriptable thisObj, 
 			   Object[] args, Function funObj) throws FileNotFoundException, ConfigurationException
     {
-	if ( args.length < 1 ) {
-	    log.debug( "No arguments given" );
-	} else {
-	    String jsFileName = Context.toString( args[0] );
-	    log.debug( String.format( "The following script was given: %s. Trying to load it", jsFileName ) );
+	if ( args.length < 1 ) 
+	{
+	    // "silently" return
+	    log.warn( "No arguments given" );
+	    return;
+	} 
 
-	    FileReader inFile = new FileReader( FileSystemConfig.getScriptPath() + jsFileName ); // can throw FileNotFindExcpetion
-	    try
-	    {
-		//Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
-		Object o = cx.evaluateReader((Scriptable)thisObj, inFile, jsFileName, 1, null);
-	    } 
-	    catch ( IOException ioe )
-	    {
-		String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
-		log.error( errorMsg, ioe );
-		throw new IllegalStateException( errorMsg, ioe );
-	    }
-	    catch ( RhinoException re )
-	    {
-		log.debug( "Evaluate" );
-		SimpleRhinoWrapper.logRhinoException( re );
-		throw re;
-	    }
+	String jsFileName = Context.toString( args[0] );
+	log.debug( String.format( "The following script was given: %s. Trying to load it", jsFileName ) );
+	
+	if ( ! loadedScripts.containsKey( thisObj ) ) 
+	{
+	    // Create new entry in Map:
+	    log.trace( String.format( "Adding the Object: %s", thisObj.hashCode() ) );
 	    
-
+	    // Adding the Scope and a new Set:
+	    Set< String > scriptSet = new HashSet< String >();
+	    scriptSet.add( jsFileName );
+	    log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
+	    loadedScripts.put( thisObj, scriptSet );
+	}
+	else
+	{
+	    // Entry already in Map:
+	    Set< String > scriptSet = loadedScripts.get( thisObj );
+	    if ( scriptSet.add( jsFileName ) )
+	    {
+		// Script is new:
+		log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
+	    }
+	    else 
+	    {
+		// Script is already loaded - do nothing!
+		log.trace( String.format( "The script: %s seems to already be associated with Object: %s", jsFileName, thisObj.hashCode() ) );
+		return;
+	    }
 	}
 	
+	// Load script into Scope
+	FileReader inFile = new FileReader( FileSystemConfig.getScriptPath() + jsFileName ); // can throw FileNotFoundExcpetion
+	try
+	{
+	    Object o = cx.evaluateReader((Scriptable)thisObj, inFile, jsFileName, 1, null);
+	} 
+	catch ( IOException ioe )
+	{
+	    String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
+	    log.error( errorMsg, ioe );
+	    throw new IllegalStateException( errorMsg, ioe );
+	}
+	catch ( RhinoException re )
+	{
+	    log.debug( "Evaluate" );
+	    SimpleRhinoWrapper.logRhinoException( re );
+	    throw re;
+	}
+
     }
-
-
-
-    // private static void Use(Context cx, Scriptable thisObj,
-    // 			    Object[] args, Function funObj)
-    // {
-    // 	if ( args.length < 1 ) {
-    // 	    log.debug( "No arguments given" );
-    // 	} else {
-    // 	    String s = Context.toString( args[0] );
-    // 	    log.debug( String.format( "The following script was given: %s", s ) );
-    // 	}
-	
-    // }
 
 }
