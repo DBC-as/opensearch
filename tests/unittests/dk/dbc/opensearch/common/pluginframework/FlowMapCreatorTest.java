@@ -4,6 +4,7 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper; 
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.File;
@@ -51,7 +52,8 @@ public class FlowMapCreatorTest
     String argValue2 = "argValue2";
 
     @Mocked IObjectRepository repository; 
-    @Mocked static IPluggable mockIPluggable;
+    @Mocked static IPluginEnvironment mockIPluginEnvironment;
+    @Mocked static CargoContainer mockCargoContainer;
 
     @MockClass( realClass = FlowMapCreator.class )
     public static class MockFlowMapCreator
@@ -62,6 +64,30 @@ public class FlowMapCreatorTest
 
     }
 
+    /**
+     * Dummy implementation of the IPluggable interface.
+     * This implementation is made since we cannot count on a specific plugin-implementation
+     * will continue to exist.
+     */
+    private static class DummyPlugin implements IPluggable
+    {
+	@Override
+	public PluginType getPluginType() { return PluginType.ANNOTATE; }
+
+	@Override 
+	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
+	{
+	    return mockCargoContainer;
+	}
+
+	@Override
+        public IPluginEnvironment createEnvironment( IObjectRepository repos , Map< String, String > args )
+	{
+	    return mockIPluginEnvironment;
+	}
+    }
+
+    
     /**
      * Mocking the pluginresolver class so that we dont have to care
      * about the plugin names etc
@@ -76,7 +102,7 @@ public class FlowMapCreatorTest
         @Mock
         public IPluggable getPlugin( String className )
         {
-            return mockIPluggable;
+            return new DummyPlugin();
         }
 
     }
@@ -114,7 +140,6 @@ public class FlowMapCreatorTest
      * creates the flowmapcreator and have it create a map of lists 
      * of PluginTasks
      */
-    @Ignore
     @Test public void createMapTest() throws Exception
     {
         Mockit.setUpMocks( MockPluginResolver.class );
