@@ -1,4 +1,4 @@
-use ( "DcCreator" );
+use ( "DcCreator.use.js" );
 
 function buildxml_beta( xml )
 {

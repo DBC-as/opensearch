@@ -1,6 +1,6 @@
 EXPORTED_SYMBOLS = ['DcCreator'];
 
-use ( "XmlUtil" );
+use ( "XmlUtil.use.js" );
 
 const DcCreator = function(){
 
