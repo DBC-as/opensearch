@@ -54,7 +54,7 @@ public class PluginResolver implements IPluginResolver
     public PluginResolver( IObjectRepository repository )
     {     
         this.repository = repository;
-        this.pLoader = new PluginLoader( new PluginClassLoader() );
+        this.pLoader = new PluginLoader();
 
         log.trace( "PluginResolver constructed" );
     }
@@ -91,16 +91,6 @@ public class PluginResolver implements IPluginResolver
     {
         private Logger log = Logger.getLogger( PluginLoader.class );
 
-        ClassLoader cl;
-
-        /**
-         *
-         */
-        public PluginLoader( ClassLoader cl )
-        {
-            this.cl = cl;
-        }
-
 
         /**
          * Given a qualified class name of the plugin, this method locates the
@@ -116,13 +106,11 @@ public class PluginResolver implements IPluginResolver
         {
             try
             {
-                Class loadedClass = null;
 		Class[] parameterTypes = new Class[] { IObjectRepository.class };
-		Constructor pluginConstructor;
 
 		log.debug( String.format( "PluginLoader loading plugin class name '%s'", pluginClassName ) );       
-                loadedClass = cl.loadClass( pluginClassName );
-		pluginConstructor = loadedClass.getConstructor( parameterTypes );
+		Class loadedClass = Class.forName( pluginClassName );
+		Constructor pluginConstructor = loadedClass.getConstructor( parameterTypes );
 		IPluggable thePlugin = ( IPluggable )pluginConstructor.newInstance( new Object[]{ repository });
 
                 return thePlugin;
