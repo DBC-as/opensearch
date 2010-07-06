@@ -36,6 +36,7 @@ import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -77,13 +78,18 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     public MarcxchangeWorkRelationEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
     {
         this.objectRepository = repository;
-	this.validateArguments( args ); // throws PluginException in case of trouble!
+
+        // Creates a list of objects to be used in the js-scope
+        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+        objectList.add( new SimplePair< String, Object >( "Log", log ) );
+
+	this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
 	
 	this.searchFunc       = args.get( this.searchFuncStr );
 	this.matchFunc        = args.get( this.matchFuncStr );
 	this.createObjectFunc = args.get( this.createObjectFuncStr );
 
-	this.rhinoWrapper = this.initializeWrapper( "workmatch_relation_functions.js" );
+	this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
     }
 
 
@@ -408,61 +414,29 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     }
 
 
-    private SimpleRhinoWrapper initializeWrapper( String jsFileName ) throws PluginException
-    {
-
-        // Creates a list of objects to be used in the js-scope
-        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-        objectList.add( new SimplePair< String, Object >( "Log", log ) );
-
-	SimpleRhinoWrapper wrapper = null; 
-        try
-        {
-            wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
-        }
-        catch( FileNotFoundException fnfe )
-        {
-            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-            log.error( errorMsg, fnfe );
-            throw new PluginException( errorMsg, fnfe );
-        }
-        catch( ConfigurationException ce )
-        {
-            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-            log.fatal( errorMsg, ce );
-            throw new PluginException( errorMsg, ce );
-        }
-	//done creating javascript environment
-	
-	return wrapper;
-    }
-
-
 
     /**
      * This function will validate the following arguments:
      * "javascript", "searchfunction", "matchfunction" and "createobjectfunction".
      */
-    private void validateArguments( Map< String, String > args ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
     {
 	log.info("Validating Arguments - Begin");
 
-	// Validating Entry: "javascript".
-	String jsName = null;
-	if ( args.containsKey( javascriptStr ) ) 
-	{
-	    jsName = args.get( javascriptStr ); 
-	}
-	else
-	{
-	    // This is Fatal! We cannot create the environment.
-	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", javascriptStr );
-	    log.fatal( errMsg );
-	    throw new PluginException( errMsg );
-	}
-	SimpleRhinoWrapper tmpWrapper =  initializeWrapper( jsName );
+	// Validating entrys:
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( javascriptStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", javascriptStr ) );
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( searchFuncStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", searchFuncStr ) );
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( matchFuncStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", matchFuncStr ) );
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( createObjectFuncStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", createObjectFuncStr ) );
+
+	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
 	
 	// Validate function entries:
+	// \todo: update validateScriptFunction to actually work!
 	validateScriptFunction( args, searchFuncStr, tmpWrapper );
 	validateScriptFunction( args, matchFuncStr, tmpWrapper );
 	validateScriptFunction( args, createObjectFuncStr, tmpWrapper );
@@ -470,6 +444,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 	log.info("Validating Arguments - End");
     }
 
+
+
+    // This function is currently non-working.
     private void validateScriptFunction( Map< String, String > args, String funcNameStr, SimpleRhinoWrapper wrappper ) throws PluginException
     {
 	String funcName = null;

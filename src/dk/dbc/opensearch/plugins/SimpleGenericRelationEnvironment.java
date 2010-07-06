@@ -32,6 +32,7 @@ import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
 import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -59,8 +60,9 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     private final String entryPointFunc;
 
     // For validation:
-    private static final String javascript_str = "javascript";
-    private static final String entryFunc_str  = "entryfunction";
+    private static final String javascriptStr = "javascript";
+    private static final String entryFuncStr  = "entryfunction";
+
 
     /**
      */
@@ -68,10 +70,20 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     {
         this.objectRepository = repository;
 
-	this.validateArguments( args );
-	this.entryPointFunc  = args.get( this.entryFunc_str );
+	// Setting the objectlist.
+        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
+	ScriptMethodsForReviewRelation scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
 
-	this.jsWrapper = this.initializeWrapper( args.get( this.javascript_str ) );
+	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	objectList.add( new SimplePair< String, Object >( "Log", log ) );
+	objectList.add( new SimplePair< String, Object >( "scriptClass", scriptClass ) );
+	objectList.add( new SimplePair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
+
+	this.validateArguments( args, objectList );
+
+	this.entryPointFunc  = args.get( this.entryFuncStr );
+
+	this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
 
 	log.trace( "Checking wrapper (outer)" );
 	if (jsWrapper == null) {
@@ -81,6 +93,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 	}
 
     }
+
 
     /**
      */
@@ -101,86 +114,36 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 
     }
 
-    /**
-     */
-    private SimpleRhinoWrapper initializeWrapper( String jsFileName ) throws PluginException
-    {
-        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
-	ScriptMethodsForReviewRelation scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
 
-	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	objectList.add( new SimplePair< String, Object >( "Log", log ) );
-	objectList.add( new SimplePair< String, Object >( "scriptClass", scriptClass ) );
-	objectList.add( new SimplePair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
-
-	SimpleRhinoWrapper wrapper = null;
-        try 
-	{
-	    wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
-	}
-	catch( FileNotFoundException fnfe )
-	{
-	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-	    log.error( errorMsg, fnfe );
-	    throw new PluginException( errorMsg, fnfe );
-	}
-	catch( ConfigurationException ce )
-	{
-	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-	    log.fatal( errorMsg, ce );
-	    throw new PluginException( errorMsg, ce );
-	}
-
-	log.trace( "Checking wrapper (inner)" );
-	if (wrapper == null) {
-	    log.trace("Wrapper is null");
-	} else {
-	    log.trace("Wrapper is initialized");
-	}
-
-	return wrapper;
-
-    }
 
     /**
-     * This function will validate the following arguments: "javascript" and "entryfunction".
-     * All other arguments will be silently ignored.
+     * This function will validate the following argumentnames: "javascript" and "entryfunction".
+     * All other argumentnames will be silently ignored.
      * Currently the "entryfunction" is not tested for validity.
+     * 
+     * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
+     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     *
+     * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private void validateArguments( Map< String, String > args ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
     {
 	log.info("Validating Arguments - Begin");
 
-	// Validating Entry: "javascript".
-	String jsName = null;
-	if ( args.containsKey( javascript_str ) ) 
-	{
-	    jsName = args.get( javascript_str ); 
-	}
-	else
-	{
-	    // This is Fatal! We cannot create the environment.
-	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", javascript_str );
-	    log.fatal( errMsg );
-	    throw new PluginException( errMsg );
-	}
-	SimpleRhinoWrapper tmpWrapper =  initializeWrapper( jsName );
-	
-	// Validating Entry: "entryfunction":
-	String entry = null;
-	if ( args.containsKey( entryFunc_str ) ) 
-	{
-	    entry = args.get( entryFunc_str ); 
-	}
-	else
-	{
-	    // This is Fatal! We cannot create the environment.
-	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", entryFunc_str );
-	    log.fatal( errMsg );
-	    throw new PluginException( errMsg );
-	}
+	// Validating existence of mandatory entrys:
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( this.javascriptStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", this.javascriptStr ) );
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( this.entryFuncStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", this.entryFuncStr ) );
+
+	// Validating that javascript can be used in the SimpleRhinoWrapper:
+	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
+
+	// Validating function entries:
+	// \todo: create this validation
 
 	log.info("Validating Arguments - End");
     }
+
 
 }

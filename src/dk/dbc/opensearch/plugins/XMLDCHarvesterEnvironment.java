@@ -37,6 +37,7 @@ import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 //import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -84,9 +85,12 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
         log.trace( "Constructor called" );
         this.repository = repository;
 
-	this.validateArguments( args ); // throws PluginException in case of trouble!
+	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	objectList.add( new SimplePair< String, Object >( "Log", log ) );
+
+	this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
        
-	this.jsWrapper = this.initializeWrapper( args.get( this.javascriptStr ) );
+	this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
 	this.entryFunc = args.get( this.entryFuncStr );
 
 	/*
@@ -328,76 +332,31 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
     }
 
 
-
     /**
+     * This function will validate the following argumentnames: "javascript" and "entryfunction".
+     * All other argumentnames will be silently ignored.
+     * Currently the "entryfunction" is not tested for validity.
+     * 
+     * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
+     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     *
+     * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private SimpleRhinoWrapper initializeWrapper( String jsFileName ) throws PluginException
-    {
-	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	objectList.add( new SimplePair< String, Object >( "Log", log ) );
-
-	SimpleRhinoWrapper wrapper = null;
-        try 
-	{
-	    wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
-	}
-	catch( FileNotFoundException fnfe )
-	{
-	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-	    log.error( errorMsg, fnfe );
-	    throw new PluginException( errorMsg, fnfe );
-	}
-	catch( ConfigurationException ce )
-	{
-	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-	    log.fatal( errorMsg, ce );
-	    throw new PluginException( errorMsg, ce );
-	}
-
-	log.trace( "Checking wrapper (inner)" );
-	if (wrapper == null) {
-	    log.trace("Wrapper is null");
-	} else {
-	    log.trace("Wrapper is initialized");
-	}
-
-	return wrapper;
-
-    }
-
-
-    private void validateArguments( Map< String, String > args ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
     {
 	log.info("Validating Arguments - Begin");
 
-	// Validating Entry: "javascript".
-	String jsName = null;
-	if ( args.containsKey( javascriptStr ) ) 
-	{
-	    jsName = args.get( javascriptStr ); 
-	}
-	else
-	{
-	    // This is Fatal! We cannot create the environment.
-	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", javascriptStr );
-	    log.fatal( errMsg );
-	    throw new PluginException( errMsg );
-	}
-	SimpleRhinoWrapper tmpWrapper =  initializeWrapper( jsName );
-	
-	// Validating Entry: "entryfunction":
-	String entry = null;
-	if ( args.containsKey( entryFuncStr ) ) 
-	{
-	    entry = args.get( entryFuncStr ); 
-	}
-	else
-	{
-	    // This is Fatal! We cannot create the environment.
-	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", entryFuncStr );
-	    log.fatal( errMsg );
-	    throw new PluginException( errMsg );
-	}
+	// Validating existence of mandatory entrys:
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( javascriptStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", javascriptStr ) );
+	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( entryFuncStr, args ) )
+	    throw new PluginException( String.format( "Could not find argument: %s", entryFuncStr ) );
+
+	// Validating that javascript can be used in the SimpleRhinoWrapper:
+	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
+
+	// Validating function entries:
+	// \todo: create this validation
 
 	log.info("Validating Arguments - End");
     }
