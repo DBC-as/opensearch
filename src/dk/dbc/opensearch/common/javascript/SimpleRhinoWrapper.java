@@ -123,6 +123,18 @@ public class SimpleRhinoWrapper
 
     }							  
 
+    public boolean validateJavascriptFunction( String functionEntryPoint )
+    {
+        Object fObj = scope.get( functionEntryPoint, scope );
+        if ( !( fObj instanceof Function ) )
+        {
+            String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
+            log.error( errorMsg );
+	    return false;
+        }
+	return true;
+    }
+
     
     public Object run( String functionEntryPoint, Object... args )
     {

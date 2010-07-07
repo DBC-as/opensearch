@@ -356,7 +356,8 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
 	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
 
 	// Validating function entries:
-	// \todo: create this validation
+	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.entryFuncStr) ) )
+	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.entryFuncStr) ) );
 
 	log.info("Validating Arguments - End");
     }

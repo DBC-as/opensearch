@@ -436,30 +436,16 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
 	
 	// Validate function entries:
-	// \todo: update validateScriptFunction to actually work!
-	validateScriptFunction( args, searchFuncStr, tmpWrapper );
-	validateScriptFunction( args, matchFuncStr, tmpWrapper );
-	validateScriptFunction( args, createObjectFuncStr, tmpWrapper );
+	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.searchFuncStr) ) )
+	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.searchFuncStr) ) );
+	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.matchFuncStr) ) )
+	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.matchFuncStr) ) );
+	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.createObjectFuncStr) ) )
+	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.createObjectFuncStr) ) );
 
 	log.info("Validating Arguments - End");
     }
 
 
 
-    // This function is currently non-working.
-    private void validateScriptFunction( Map< String, String > args, String funcNameStr, SimpleRhinoWrapper wrappper ) throws PluginException
-    {
-	String funcName = null;
-	if ( args.containsKey( funcNameStr ) ) 
-	{
-	    funcName = args.get( funcNameStr ); 
-	}
-	else
-	{
-	    // This is Fatal! We cannot create the environment.
-	    String errMsg = String.format( "Could not find mandatory argument: \"%s\"", funcNameStr );
-	    log.fatal( errMsg );
-	    throw new PluginException( errMsg );
-	}
-    }
 }
