@@ -33,7 +33,8 @@ import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.lang.IllegalArgumentException; 
 import java.lang.NullPointerException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -73,7 +74,7 @@ public class FileHandler
      * @return A string vector, with the matching filenames
      * @throws IllegalArgumentException if the path does not exist.
      */
-    public static Vector<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ) throws IllegalArgumentException
+    public static List<String> getFileList( String path, FilenameFilter[] fileFilters, boolean descend ) throws IllegalArgumentException
     {
         /** \todo: what happens if the fileFilters is null? Or the path?**/
         log.debug( String.format( "getFileList( path=%s, filefilters[%s], descend=%s ) called", path, fileFilters.length, descend ) );
@@ -84,7 +85,7 @@ public class FileHandler
             throw new IllegalArgumentException( String.format( "Path: '%s' does not exist, or is not a directory", path ) );    
         }
         
-        Vector<String> fileNames = new Vector<String>();
+        List<String> fileNames = new ArrayList<String>();
         
         File dir = new File ( path );
         File[] files = dir.listFiles();

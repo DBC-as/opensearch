@@ -44,7 +44,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -69,7 +70,7 @@ public class FileHandlerTest
 
 
     String testdirName = "";
-    Vector<String> testCase;
+    List<String> testCase;
     /**
      *
      */
@@ -136,7 +137,7 @@ public class FileHandlerTest
         fnf2[0] = mockFileNameFilter1;
         fnf2[1] = mockFileNameFilter2;
 
-        testCase = new Vector();
+        testCase = new ArrayList();
     }
 
     public void tearDownGetFileList() throws IOException {}

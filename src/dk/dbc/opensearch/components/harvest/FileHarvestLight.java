@@ -47,7 +47,6 @@ import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.NoSuchElementException;
@@ -86,7 +85,7 @@ public final class FileHarvestLight implements IHarvest
     static Logger log = Logger.getLogger( FileHarvestLight.class );
 
     
-    private Vector<String> FileVector;
+    private List<String> FileList;
     private Iterator iter;
     private final FilenameFilter[] filterArray;
     // Some default values:
@@ -143,8 +142,8 @@ public final class FileHarvestLight implements IHarvest
     public void start()
     {
         //get the files in the dir
-        FileVector = FileHandler.getFileList( harvesterDirName , filterArray, false );
-        iter = FileVector.iterator();
+        FileList = FileHandler.getFileList( harvesterDirName , filterArray, false );
+        iter = FileList.iterator();
     }
 
 
