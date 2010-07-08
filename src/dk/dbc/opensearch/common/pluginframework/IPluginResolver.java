@@ -26,8 +26,6 @@ import java.io.FileNotFoundException;
 import java.lang.IllegalAccessException;
 import java.lang.InstantiationException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -58,26 +56,4 @@ public interface IPluginResolver
      */
     IPluggable getPlugin ( String classname ) throws FileNotFoundException, InstantiationException, ClassNotFoundException, IllegalAccessException, ParserConfigurationException, InvocationTargetException, PluginException;
 
-    
-    /**
-     * validates whether plugins for the tasks specified for the submitter and 
-     * format exists.
-     * @param submitter, the submitter to search for plugins for
-     * @param format, the format to search for plugins for
-     * @param taskList the tasks to find plugins for
-     * @return Vector<String> with the names of tasks that could not be validated. 
-     * If the Vector == null, plugins were found for all the tasks 
-     * @throws PluginResolverException, when there are exceptions from the 
-     * framework concerning the registrations of plugins
-     * @throws ParserConfigurationException 
-     */
-    /*Vector<String> validateArgs( String submitter, String format, ArrayList< String > taskList )throws PluginResolverException, ParserConfigurationException;
-     */
-    
-    
-    /**
-     * clears the registrations of plugins and forces an update next time 
-     * plugin information is needed
-     */    
-    //void clearPluginRegistration();
 }
