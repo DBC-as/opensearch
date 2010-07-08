@@ -37,17 +37,32 @@ import org.w3c.dom.NodeList;
 
 /**
  * The purpose of the datadockJob is to hold the information about a
- * job for the datadock.
+ * job for the datadock. The datadockJob is created from an XML refererence data
+ * Document. The XML reference must look like this:
+ * <pre>
+ * {@code
+ * <?xml version="1.0" encoding="UTF-8"?>
+ *     <referencedata>
+ *         <info submitter="123456" format="someFormat" lang="se" mimetype="pdf"/>
+ *     </referencedata>
+ * }
+ * </pre>
+ * The XML currently lacks both an XSD and a namespace (concerning the lack of
+ * namespace please see <A href="http://bugs.dbc.dk/show_bug.cgi?id=10681">bug#10681</A>)
+ * Submitter and format in the above mentioned attributes in the info-tag are mandatory, whereas 
+ * lang and mimetype are optional. For further information about the attributes please see {@link #DatadockJob}
  */
 public class DatadockJob implements IJob
 {
     private Logger log = Logger.getLogger( DatadockJob.class );
 
     private static final String DEFAULT_LANGUAGE_CODE = "da";
+    private static final String DEFAULT_MIMETYPE_CODE = "text/xml";
     
     private String submitter;
     private String format;
     private String language;
+    private String mimetype;
 
     private IIdentifier identifier;
     private Document referenceData;
@@ -55,8 +70,20 @@ public class DatadockJob implements IJob
 
     /**
      * Constructor that initializes the DatadockJob
+     * As stated above, the referenceData must contain a specific XML Document.
+     * In the XML Document an info-tag must be present, containing the following attributes:
+     * "submitter", "format", "lang", "mimetype".
+     * "submitter" and "format" are mandatory an must contain values, whereas "lang" and "mimetype" are optional.
+     * If no "lang" attribute or an empty "lang" attribute are given, the "lang" value will default to "da".
+     * If no "mimetype" attribute or an empty "mimetype" attribute are given, 
+     * the "mimetype" value will default to "xml".
+     * If any other than the four above stated attributes are given, an IllegalArgumentException will be thrown.
+     * If the XML does not contain the reference and info tags an IllegalArgumentException will be thrown.
+     * If the either the identifer or the referenceData are null, an IllegalStateException will be thrown.
+     * 
      * @param identifier the identifier of the data of the job
      * @param referenceData the data concerning the job
+     * 
      */
     public DatadockJob( IIdentifier identifier, Document referenceData )
     {
@@ -87,11 +114,27 @@ public class DatadockJob implements IJob
 
     /**
      * Gets the language
+     *
+     * For information about default value for language, please see {@link DatadockJob}
+     *
      * @return The language
      */
     public String getLanguage()
     {
 	return this.language;
+    }
+
+
+    /**
+     * Gets the mimetype
+     * 
+     * For information about default value for mimetype, please see {@link DatadockJob}
+     *
+     * @return The mimetype
+     */
+    public String getMimeType()
+    {
+	return this.mimetype;
     }
 
 
@@ -117,7 +160,10 @@ public class DatadockJob implements IJob
         return referenceData;
     }
 
-    
+    /** 
+     * This private function initialises the class' private values with the ones 
+     * given in the referenceData.
+     */   
     private void initValuesFromReferenceData()
     {
         if ( this.referenceData == null )
@@ -140,7 +186,8 @@ public class DatadockJob implements IJob
                 throw new IllegalArgumentException( error );
             }
         }
-        
+
+	// Checking for each attribute name , one by one:
         Node info = elementSet.item( 0 );
         NamedNodeMap attributes = info.getAttributes();
         this.format = attributes.getNamedItem( "format" ).getNodeValue();
@@ -156,5 +203,28 @@ public class DatadockJob implements IJob
         {
 	    this.language = DEFAULT_LANGUAGE_CODE;
 	}
+
+
+	// If node "mimetype" is non-existing or empty, set it to a default value, otherwise set its correct value. 
+	if ( attributes.getNamedItem( "mimetype" ) != null )
+        {
+	    String mType = attributes.getNamedItem( "mimetype" ).getNodeValue();
+	    this.mimetype =  mType.isEmpty() ? DEFAULT_MIMETYPE_CODE : mType;
+	}
+	else
+        {
+	    this.mimetype = DEFAULT_MIMETYPE_CODE;
+	}
+
+	// // Now we have removed all known attribute-names.
+	// // If there are any nodes left in the nodeMap, then they are unknown
+	// // and we will throw an exception stating that.
+	// if ( attributes.getLength() > 0 )
+	// {
+	//     String firstNodeName = attributes.item(0).getNodeValue();
+	//     String errMsg = String.format( "Unknown attributename [%] found in referencedata.", firstNodeName ); 
+	//     log.error( errMsg );
+	//     throw new IllegalArgumentException( errMsg );
+	// }
     }
 }

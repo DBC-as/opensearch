@@ -279,7 +279,7 @@ public final class FileHarvestLight implements IHarvest
         try
         {
             // returnCargo.add( DataStreamType.OriginalData, format, submitter, language, "text/xml", data );
-	    cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml", data );
+	    cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), job.getMimeType(), data );
         }
         catch ( IOException ioe )
         {

@@ -94,7 +94,7 @@ public class DatadockThreadTest
     @Mocked IObjectRepository mockObjectRepository;
     @Mocked Map<String, String> mockArgsMap;
     PluginResolver mockPluginResolver;
-    static final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" lang=\"dk\"/></referencedata>";
+    static final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" lang=\"da\"/></referencedata>";
     static Document referenceData;
     static boolean isset;
     PluginTask pluginTask1;
@@ -102,6 +102,14 @@ public class DatadockThreadTest
     PluginTask pluginTask3;
     static List<PluginTask> pluginTaskList = new ArrayList<PluginTask>();
     
+
+    @Before
+    public void setup() throws Exception
+    {
+	// must be initialized before every test since nodes are removed from document
+        referenceData = XMLUtils.documentFromString( refdata );
+    }
+
     @BeforeClass
     public static void classSetup() throws Exception
     {
@@ -109,7 +117,6 @@ public class DatadockThreadTest
         BasicConfigurator.configure();
         LogManager.getRootLogger().setLevel( Level.OFF );
         */
-        referenceData = XMLUtils.documentFromString( refdata );
         mockCC = new CargoContainer();
         mockCC.setIdentifier( new PID( "710100:1" ) );
         mockCC.add( DataStreamType.OriginalData, "katalog", "710100", "da", "text/xml", "<orig><child></orig>".getBytes() );

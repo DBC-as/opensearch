@@ -33,20 +33,29 @@ import org.w3c.dom.Document;
 
 public class DatadockJobTest {
 
-    static final String referenceDataComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"se\"/></referencedata>";
-    static final String referenceDataNoLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\"/></referencedata>";
-    static final String referenceDataEmptyLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"\"/></referencedata>";
+    static final String referenceDataComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"123456\" format=\"someFormat\" lang=\"se\" mimetype=\"pdf\"/></referencedata>";
+    static final String referenceDataNoLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" mimetype=\"pdf\"/></referencedata>";
+    static final String referenceDataEmptyLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"\" mimetype=\"pdf\"/></referencedata>";
+    static final String referenceDataNoMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"se\"/></referencedata>";
+    static final String referenceDataEmptyMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"se\" mimetype=\"\"/></referencedata>";
+    static final String referenceDataIllegalAttribute = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\" illegalattribute=\"illegal\"/></referencedata>";
     @Mocked IIdentifier mockIdentifier;
-    private Document xmldata;
+    private Document xmldataComplete;
     private Document xmldataNoLang;
     private Document xmldataEmptyLang;
+    private Document xmldataNoMimeType;
+    private Document xmldataEmptyMimeType;
+    private Document xmldataIllegalAttribute;
 
     @Before
     public void setUp() throws Exception
     {
-        xmldata = XMLUtils.documentFromString( referenceDataComplete );
+        xmldataComplete = XMLUtils.documentFromString( referenceDataComplete );
         xmldataNoLang = XMLUtils.documentFromString( referenceDataNoLang );
-        xmldataEmptyLang = XMLUtils.documentFromString( referenceDataNoLang );
+        xmldataEmptyLang = XMLUtils.documentFromString( referenceDataEmptyLang );
+        xmldataNoMimeType = XMLUtils.documentFromString( referenceDataNoMimeType );
+        xmldataEmptyMimeType = XMLUtils.documentFromString( referenceDataEmptyMimeType );
+        xmldataIllegalAttribute = XMLUtils.documentFromString( referenceDataIllegalAttribute );
 
 	// Closing output to screen from expected errors
 	System.out.close();
@@ -55,43 +64,79 @@ public class DatadockJobTest {
     @Test
     public void DatadockJobTest()
     {
-        DatadockJob job = new DatadockJob( mockIdentifier, xmldata );
+        DatadockJob job = new DatadockJob( mockIdentifier, xmldataComplete );
         assertEquals( mockIdentifier, job.getIdentifier() );
-        assertEquals( "775100", job.getSubmitter() );
-        assertEquals( "ebrary", job.getFormat() );
+        assertEquals( "123456", job.getSubmitter() );
+        assertEquals( "someFormat", job.getFormat() );
 	assertEquals( "se", job.getLanguage() );
+	assertEquals( "pdf", job.getMimeType() );
     }
 
     @Test
     public void DatadockJobTestNoLang()
     {
         DatadockJob job = new DatadockJob( mockIdentifier, xmldataNoLang );
-        assertEquals( mockIdentifier, job.getIdentifier() );
         assertEquals( "775100", job.getSubmitter() );
         assertEquals( "ebrary", job.getFormat() );
 	assertEquals( "da", job.getLanguage() );
+	assertEquals( "pdf", job.getMimeType() );
     }
 
     @Test
     public void DatadockJobTestEmptyLang()
     {
         DatadockJob job = new DatadockJob( mockIdentifier, xmldataEmptyLang );
-        assertEquals( mockIdentifier, job.getIdentifier() );
-        assertEquals( "775100", job.getSubmitter() );
-        assertEquals( "ebrary", job.getFormat() );
 	assertEquals( "da", job.getLanguage() );
     }
 
+    @Test
+    public void DatadockJobTestNoMimeType()
+    {
+        DatadockJob job = new DatadockJob( mockIdentifier, xmldataNoMimeType );
+	assertEquals( "text/xml", job.getMimeType() );
+    }
+
+    @Test
+    public void DatadockJobTestEmptyMimeType()
+    {
+        DatadockJob job = new DatadockJob( mockIdentifier, xmldataEmptyMimeType );
+	assertEquals( "text/xml", job.getMimeType() );
+    }
+
+    @Ignore
+    @Test(expected=IllegalArgumentException.class)
+    public void DatadockJobIllegalAttributeTest() throws Exception
+    {
+        DatadockJob job = new DatadockJob( mockIdentifier, xmldataIllegalAttribute );
+    }
+
     @Test( expected=IllegalStateException.class )
-    public void illegalStateForEmptyReferenceDataTest() throws Exception
+    public void IllegalStateForEmptyReferenceDataTest() throws Exception
     {
         DatadockJob job = new DatadockJob( mockIdentifier, null );
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void illegalArgumentForWrongReferenceDataTest() throws Exception
+    public void IllegalArgumentForWrongReferenceDataTest() throws Exception
     {
         Document reference = XMLUtils.documentFromString( "<?xml version=\"1.0\"?><error/>" );
         DatadockJob job = new DatadockJob( mockIdentifier, reference );
     }
+
+
+    // Test the retrived referenceData XML-ducument against the Document given to the constructor.
+    // We want to make sure we do not corrupt the XML inside DatadockJob.
+    // \todo: I do not know how to test two XML Documents for equality.
+    
+    // @Test
+    // public void DatadockJobGetDocumentTest() throws Exception
+    // {
+    //     Document xmldataTmp = XMLUtils.documentFromString( referenceDataComplete );
+    //     DatadockJob job = new DatadockJob( mockIdentifier, xmldataComplete );
+    // 	// System.err.println( String.format( "xmldataTmp = [%s]", XMLUtils.xmlToString( xmldataTmp ) ) );
+    // 	// System.err.println( String.format( "xmldataTmp = [%s]", XMLUtils.xmlToString( xmldataComplete ) ) );
+    //     assertEquals( xmldataTmp, job.getReferenceData() );
+    // }
+
+
 }

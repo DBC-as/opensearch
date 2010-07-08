@@ -511,7 +511,7 @@ public final class ESHarvest implements IHarvest
 
         try
         {
-            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), "text/xml",  data );
+            cargo.add( DataStreamType.OriginalData, job.getFormat(), job.getSubmitter(), job.getLanguage(), job.getMimeType(),  data );
         }
         catch ( IOException ioe )
         {
