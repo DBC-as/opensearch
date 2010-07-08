@@ -36,7 +36,6 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Vector;
 import java.util.Iterator;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;

@@ -36,7 +36,6 @@ import dk.dbc.opensearch.components.harvest.IHarvest;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import mockit.Mock;
@@ -67,8 +66,8 @@ public class DatadockManagerTest
     @Mocked Map< String, List< PluginTask > > mockFlowMap;
 
     DatadockPool mockDatadockPool;
-    static Vector<IJob> mockJobs = new Vector<IJob>();
-    static Vector<IIdentifier> mockIdentifiers = new Vector<IIdentifier>();
+    static List<IJob> mockJobs = new ArrayList<IJob>();
+    static List<IIdentifier> mockIdentifiers = new ArrayList<IIdentifier>();
 
     DatadockJob mockDatadockJob;
     IJob mockJob;
