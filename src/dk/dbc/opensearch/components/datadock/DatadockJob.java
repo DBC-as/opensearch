@@ -43,6 +43,7 @@ public class DatadockJob implements IJob
 {
     private Logger log = Logger.getLogger( DatadockJob.class );
 
+    private static final String DEFAULT_LANGUAGE_CODE = "da";
     
     private String submitter;
     private String format;
@@ -50,6 +51,7 @@ public class DatadockJob implements IJob
 
     private IIdentifier identifier;
     private Document referenceData;
+
 
     /**
      * Constructor that initializes the DatadockJob
@@ -143,21 +145,16 @@ public class DatadockJob implements IJob
         NamedNodeMap attributes = info.getAttributes();
         this.format = attributes.getNamedItem( "format" ).getNodeValue();
         this.submitter = attributes.getNamedItem( "submitter" ).getNodeValue();
-        try
+
+	// If node "lang" is non-existing or empty, set it to a default value, otherwise set its correct value. 
+	if ( attributes.getNamedItem( "lang" ) != null )
         {
-            String lang = attributes.getNamedItem( "lang" ).getNodeValue();
-            if ( !lang.isEmpty() || lang == null)
-            {
-                this.language = lang;
-            }
-            else
-            {
-                this.language = "DA";
-            }
-        }
-        catch ( NullPointerException npe )
+	    String lang = attributes.getNamedItem( "lang" ).getNodeValue();
+	    this.language =  lang.isEmpty() ? DEFAULT_LANGUAGE_CODE : lang;
+	}
+	else
         {
-            this.language = "DA";
-        }
+	    this.language = DEFAULT_LANGUAGE_CODE;
+	}
     }
 }

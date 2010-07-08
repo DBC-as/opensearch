@@ -33,20 +33,49 @@ import org.w3c.dom.Document;
 
 public class DatadockJobTest {
 
-    static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"da\"/></referencedata>";
+    static final String referenceDataComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"se\"/></referencedata>";
+    static final String referenceDataNoLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\"/></referencedata>";
+    static final String referenceDataEmptyLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"\"/></referencedata>";
     @Mocked IIdentifier mockIdentifier;
     private Document xmldata;
+    private Document xmldataNoLang;
+    private Document xmldataEmptyLang;
 
     @Before
     public void setUp() throws Exception
     {
-        xmldata = XMLUtils.documentFromString( referenceData );
+        xmldata = XMLUtils.documentFromString( referenceDataComplete );
+        xmldataNoLang = XMLUtils.documentFromString( referenceDataNoLang );
+        xmldataEmptyLang = XMLUtils.documentFromString( referenceDataNoLang );
+
+	// Closing output to screen from expected errors
+	System.out.close();
     }
 
     @Test
     public void DatadockJobTest()
     {
         DatadockJob job = new DatadockJob( mockIdentifier, xmldata );
+        assertEquals( mockIdentifier, job.getIdentifier() );
+        assertEquals( "775100", job.getSubmitter() );
+        assertEquals( "ebrary", job.getFormat() );
+	assertEquals( "se", job.getLanguage() );
+    }
+
+    @Test
+    public void DatadockJobTestNoLang()
+    {
+        DatadockJob job = new DatadockJob( mockIdentifier, xmldataNoLang );
+        assertEquals( mockIdentifier, job.getIdentifier() );
+        assertEquals( "775100", job.getSubmitter() );
+        assertEquals( "ebrary", job.getFormat() );
+	assertEquals( "da", job.getLanguage() );
+    }
+
+    @Test
+    public void DatadockJobTestEmptyLang()
+    {
+        DatadockJob job = new DatadockJob( mockIdentifier, xmldataEmptyLang );
         assertEquals( mockIdentifier, job.getIdentifier() );
         assertEquals( "775100", job.getSubmitter() );
         assertEquals( "ebrary", job.getFormat() );
