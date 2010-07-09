@@ -23,9 +23,9 @@ package dk.dbc.opensearch.common.db;
 
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
-import java.util.Vector;
 
 import dk.dbc.opensearch.common.types.SimplePair;
+import java.util.List;
 
 /**
  * The IProcessqueue handles communication with the processqueue
@@ -49,7 +49,7 @@ public interface IProcessqueue
      *
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public Vector< SimplePair< String, Integer > > popAll() throws SQLException;
+    public List< SimplePair< String, Integer > > popAll() throws SQLException;
 
 
     /**
@@ -59,7 +59,7 @@ public interface IProcessqueue
      *
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public Vector< SimplePair< String, Integer > > pop( int maxSize ) throws SQLException;
+    public List< SimplePair< String, Integer > > pop( int maxSize ) throws SQLException;
 
 
     /**

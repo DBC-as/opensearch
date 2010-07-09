@@ -33,9 +33,9 @@ import dk.dbc.opensearch.common.types.Pair;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import javax.xml.rpc.ServiceException;
 
@@ -122,7 +122,7 @@ public class PTIManager
     private int startNewJobs( int maxNumberOfJobs )throws SQLException, ConfigurationException, ClassNotFoundException, ServiceException, MalformedURLException, IOException
     {
         // checking for new jobs
-        Vector< SimplePair< String, Integer > > newJobs = processqueue.pop( maxNumberOfJobs );
+        List< SimplePair< String, Integer > > newJobs = processqueue.pop( maxNumberOfJobs );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
