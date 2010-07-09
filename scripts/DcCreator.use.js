@@ -61,7 +61,7 @@ const DcCreator = function(){
   that.createDcObject = function () {
 
     var dcXml = XmlUtil.fromString( <dc/> );
-    dcXml.addNamespace( oai_dc );
+    dcXml.setNamespace( oai_dc );
     dcXml.addNamespace( dc );
     dcXml.addNamespace( xsi );
 
@@ -72,8 +72,9 @@ const DcCreator = function(){
   that.createElement = function ( elementValue, elementName, namespace ) {
     var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
     if (namespace !== undefined) {
-      element.addNamespace( namespace );
+      element.setNamespace( namespace );
     }
+      
 
     return element;
 

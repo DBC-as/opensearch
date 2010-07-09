@@ -73,7 +73,7 @@ public class XMLDCHarvester implements IPluggable
 
 	XMLDCHarvesterEnvironment env = (XMLDCHarvesterEnvironment)ienv;
 
-	return env.run( cargo );
+	return env.myRun( cargo );
 
     }
 

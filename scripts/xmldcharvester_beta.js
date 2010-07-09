@@ -3,11 +3,11 @@ use ( "DcCreator.use.js" );
 function buildxml_beta( xml )
 {
 
-    Log.info( "Entering javascript" );
+    Log.info( "RLO: Entering javascript" );
 
     var dc = DcCreator.createDcFromMarc ( xml ); 
 
-    Log.info( "Leaving javascript" );
+    Log.info( "RLO: Leaving javascript" );
 
     return dc;
 
