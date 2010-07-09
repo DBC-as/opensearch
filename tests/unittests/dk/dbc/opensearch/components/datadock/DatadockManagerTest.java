@@ -23,9 +23,13 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.components.datadock;
 
+import dk.dbc.opensearch.components.harvest.HarvesterIOException;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.BasicConfigurator;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
@@ -43,9 +47,6 @@ import mockit.MockClass;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.junit.*;
 import org.w3c.dom.Document;
 
@@ -74,81 +75,23 @@ public class DatadockManagerTest
     static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\"/></referencedata>";
     private static Document xmldata;
 
-    @MockClass( realClass = ESHarvest.class )
-    public static class MockHarvester
-    {
-
-        static List<IJob> list;
-
-        @Mock
-        public void $init( OracleDBPooledConnection connectionPool, String databasename )
-        { // mock default constructor.
-            list = new ArrayList<IJob>();
-        }
-
-
-        @Mock( invocations = 1 )
-        public void start(){}
-        @Mock( invocations = 1 )
-        public void shutdown(){}
-
-
-        @Mock
-        public List<IJob> getJobs( int number )
-        {
-            for( IJob job : mockJobs )
-            {
-                list.add( job );//new Job( mockIdentifier, xmldata ) );
-            }
-            return list;
-        }
-    }
-
-    @MockClass( realClass = DatadockPool.class )
-    public static class MockDatadockPool
-    {
-
-        @Mock
-        public void $init( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
-        { // mock default constructor.
-        }
-
-
-        @Mock
-	public void submit( IIdentifier identifier )
-        {
-            mockIdentifiers.add( identifier );
-        }
-
-
-        @Mock
-        public void checkJobs(){}
-
-        @Mock( invocations = 1 )
-        public void shutdown(){}
-    }
-
-
     @BeforeClass
     public static void classSetup() throws Exception
     {
-        /**
-         * BasicConfigurator.configure();
-         * LogManager.getRootLogger().setLevel( Level.TRACE );
-         */
-
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel( Level.TRACE );
         xmldata = XMLUtils.documentFromString( referenceData );
     }
 
-
     @Before
-    public void Setup()
+    public void Setup() throws ConfigurationException, HarvesterIOException
     {
         mockJobs.clear();
         setUpMocks( MockHarvester.class );
         setUpMocks( MockDatadockPool.class );
+        mockHarvester = new ESHarvest( null, null );
+        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
     }
-
 
     @After
     public void tearDown()
@@ -160,8 +103,6 @@ public class DatadockManagerTest
     @Test
     public void testConstructor() throws Exception
     {
-        mockHarvester = new ESHarvest( null, null );
-        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
         datadockManager.shutdown();
 
@@ -172,13 +113,9 @@ public class DatadockManagerTest
     @Test
     public void testUpdate() throws Exception
     {
-	//        ArrayList<IJob> jobs = new ArrayList<IJob>();
 
         IJob job = new DatadockJob( mockIdentifier, xmldata );
-	//        jobs.add( mockJob );
-        mockHarvester = new ESHarvest( null, null );
 
-        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
         mockDatadockPool.submit( job.getIdentifier() );
 
         DatadockManager datadockManager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
@@ -199,9 +136,59 @@ public class DatadockManagerTest
     @Test
     public void testShutdown() throws Exception
     {
-        mockHarvester = new ESHarvest( null, null );
-        mockDatadockPool = new DatadockPool( null, null, mockHarvester, null );
         DatadockManager datadockmanager = new DatadockManager( mockDatadockPool, mockHarvester, mockFlowMap );
         datadockmanager.shutdown();
     }
+
+    ///////////////////////////////////////////
+    // Mock Class implementations follow below
+
+    @MockClass( realClass = ESHarvest.class )
+    public static class MockHarvester
+    {
+        static List<IJob> list;
+
+        @Mock
+        public void $init( OracleDBPooledConnection connectionPool, String databasename )
+        {
+            list = new ArrayList<IJob>();
+        }
+
+        @Mock( invocations = 1 )
+        public void start(){}
+
+        @Mock( invocations = 1 )
+        public void shutdown(){}
+
+        @Mock
+        public List<IJob> getJobs( int number )
+        {
+            for( IJob job : mockJobs )
+            {
+                list.add( job );//new Job( mockIdentifier, xmldata ) );
+            }
+            return list;
+        }
+    }
+
+    @MockClass( realClass = DatadockPool.class )
+    public static class MockDatadockPool
+    {
+        @Mock
+        public void $init( ThreadPoolExecutor threadpool, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap ){}
+
+        @Mock
+        public void submit( IIdentifier identifier )
+        {
+            mockIdentifiers.add( identifier );
+        }
+
+        @Mock
+        public void checkJobs(){}
+
+        @Mock( invocations = 1 )
+        public void shutdown(){}
+    }
+
+
 }

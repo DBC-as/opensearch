@@ -86,9 +86,9 @@ public class DatadockMain
     private static final String logConfiguration = "log4j_datadock.xml";
 
     protected boolean shutdownRequested = false;
-    static DatadockPool datadockPool = null;
+    
     static DatadockManager datadockManager;
-    static PluginResolver pluginResolver;
+    
     static FlowMapCreator flowMapCreator = null;
 
 
@@ -137,8 +137,13 @@ public class DatadockMain
     private HarvestType getHarvesterType()
     {
         log.trace( "Trying to get harvester type from commandline" );
-        HarvestType harvestType = HarvestType.getHarvestType( System.getProperty( "harvester" ) );
-        
+        String harvestTypeFromCmdLine = System.getProperty( "harvester" );
+
+        HarvestType harvestType = null;
+        if( null != harvestTypeFromCmdLine )
+        {
+            harvestType = HarvestType.getHarvestType( harvestTypeFromCmdLine );
+        }
         if( null == harvestType )
         {
             harvestType = defaultHarvestType;
@@ -394,7 +399,7 @@ public class DatadockMain
 
         log.trace( "Initializing plugin resolver" );
         IObjectRepository repository = new FedoraObjectRepository();
-        pluginResolver = new PluginResolver( repository );
+        PluginResolver pluginResolver = new PluginResolver( repository );
         flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
         Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, repository );
 
@@ -404,7 +409,7 @@ public class DatadockMain
         log.trace( "Initializing the DatadockPool" );
         LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( this.queueSize );
         ThreadPoolExecutor threadpool = new ThreadPoolExecutor( this.corePoolSize, this.maxPoolSize, this.keepAliveTime, TimeUnit.SECONDS, queue );
-        datadockPool = new DatadockPool( threadpool, processqueue, harvester, flowMap );
+        DatadockPool datadockPool = new DatadockPool( threadpool, processqueue, harvester, flowMap );
 
         log.trace( "Initializing the DatadockManager" );
         datadockManager = new DatadockManager( datadockPool, harvester, flowMap );

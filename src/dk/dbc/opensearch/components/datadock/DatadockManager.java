@@ -35,7 +35,6 @@ import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -43,8 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Collections;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -87,6 +84,7 @@ public class DatadockManager
 
         this.pool = pool;
         this.harvester = harvester;
+        /** TODO: Should it really be part of the object initialization to start the harvester?*/
         harvester.start();
         registeredJobs = new ArrayList<IJob>();
         this.flowMap = flowMap;
@@ -94,31 +92,27 @@ public class DatadockManager
 
 
     /**
-     * The update method asks for new jobs, put them on the execution
-     * queue, cleans up the pool, and return the number of submitted
-     * jobs.
+     * The update method constitutes the main workflow of the DatadockManager:
+     * upon being called, it will:
+     * 
+     * 1) check if there are any jobs waiting for execution and
+     *  a) continue on to 2), or
+     *  b) request the harvester for another 100 jobs
+     * 2) loop while there are still jobs to execute, and
+     * 3) check if the job has a workflow (i.e. there exists plugins to process it), and
+     *  a) submit it for execution with the {@link DatadockPool}, or
+     *  b) log a warning that the job could not be processed
+     * 4) remove the job from the jobs waiting for execution, and
+     * 5) call the {@link DatadockPool#checkJobs()} which will block until all jobs have finished and
+     * 6) return the number of submitted jobs
      *
-     * @throws ClassNotFoundException
-     * @throws ConfigurationException
-     * @throws FileNotFoundException
      * @throws HarvesterIOException
      * @throws HarvesterInvalidStatusChangeException
-     * @throws IOException
      * @throws InterruptedException
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws TransformerException
      */
-    public int update() throws InterruptedException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, ParserConfigurationException, SAXException, TransformerException, HarvesterIOException, HarvesterInvalidStatusChangeException
+    public int update()throws HarvesterIOException, HarvesterInvalidStatusChangeException, InterruptedException
     {
         log.trace( "DatadockManager update called" );
-
-        if( null == registeredJobs )
-        {
-            String error = "Internal job list was null, much to my surprise. Cannot continue";
-            log.error( error );
-            throw new IllegalStateException( error );
-        }
 
         // Check if there are any registered jobs ready for docking
         // if not... new jobs are requested from the harvester
@@ -153,7 +147,7 @@ public class DatadockManager
             }
             else
             {
-                log.warn( String.format( "Jobs for submitter, format \"%s,%s\" has no joblist from plugins and will henceforth be rejected.", job.getSubmitter(), job.getFormat() ) );
+                log.warn( String.format( "Jobs for submitter, format \"%s,%s\" has no workflow from plugins and will henceforth be rejected.", job.getSubmitter(), job.getFormat() ) );
                 registeredJobs.remove( 0 );
             }
             }
@@ -227,8 +221,9 @@ public class DatadockManager
 
         if( null == referenceData.getDocumentElement() )
         {
-            log.error( String.format( "Could not retrieve data from referencedata" ) );
-            throw new IllegalArgumentException( "Could not retrieve data from referencedata" );
+            String error = String.format( "Could not retrieve data from referencedata. Id'ed by %s", theJob.getIdentifier() );
+            log.error( error );
+            throw new IllegalArgumentException( error );
         }
 
         return new DatadockJob( theJob.getIdentifier(), referenceData );

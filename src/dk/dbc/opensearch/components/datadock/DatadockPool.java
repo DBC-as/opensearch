@@ -34,8 +34,6 @@ import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +47,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -138,7 +135,7 @@ public class DatadockPool
      * @throws ParserConfigurationException 
      * @throws SAXException 
      */
-    public void submit( IIdentifier identifier ) throws RejectedExecutionException, ConfigurationException, ClassNotFoundException, FileNotFoundException, IOException, ServiceException, ParserConfigurationException, SAXException
+    public void submit( IIdentifier identifier ) throws RejectedExecutionException
     {
         if ( identifier == null )
         {
@@ -161,9 +158,8 @@ public class DatadockPool
 
 
     /**
-     * Checks the jobs submitted for execution, and returns a map containing
-     * identifiers for the jobs that are not running anymore
-     *
+     * Checks the jobs submitted for execution
+     * 
      * if a Job throws an exception it is written to the log and the
      * datadock continues.
      *
@@ -173,13 +169,13 @@ public class DatadockPool
     {
         log.debug( "DatadockPool method checkJobs called" );
     
-        System.out.println( String.format( "job size = %s", jobs.size() ) );
+        log.debug( String.format( "job size = %s", jobs.size() ) );
 
         Set< IIdentifier > finishedJobs = new HashSet< IIdentifier >();
         for( IIdentifier id : jobs.keySet() )
         {
             FutureTask<Boolean> job = jobs.get( id );
-            System.out.println( String.format( "job is done: %s", job.isDone() ) );
+            log.debug( String.format( "job is done: %s", job.isDone() ) );
             if( job.isDone() )
             {
                 Boolean success = Boolean.FALSE;

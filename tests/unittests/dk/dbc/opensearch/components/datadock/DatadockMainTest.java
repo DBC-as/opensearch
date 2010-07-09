@@ -27,12 +27,40 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.components.datadock.DatadockMain;
 
+import dk.dbc.opensearch.components.harvest.IHarvest;
+import dk.dbc.opensearch.components.harvest.FileHarvest;
+import dk.dbc.opensearch.common.pluginframework.PluginTask;
+import java.util.List;
+import mockit.Mock;
+import mockit.MockClass;
+import dk.dbc.opensearch.common.db.Processqueue;
+import mockit.Mockit;
+import dk.dbc.opensearch.common.db.IDBConnection;
+import java.util.HashMap;
+import mockit.Expectations;
+import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
+import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.pluginframework.FlowMapCreator;
+import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import java.io.File;
+import java.util.Map;
+import mockit.Deencapsulation;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Ignore;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -40,71 +68,110 @@ import org.junit.Ignore;
  */
 public class DatadockMainTest 
 {
-    @Before 
-    public void Setup() {}
 
+    @Mocked DatadockConfig configClass;
+    @Mocked IDBConnection dbConn;
     
-    @After 
-    public void tearDown() {}
+//    @BeforeClass
+//    public static void setUpClass() throws Exception
+//    {
+//        BasicConfigurator.configure();
+//        LogManager.getRootLogger().setLevel( Level.TRACE );
+//    }
 
-    //@Ignore( "This method tries to actually connect to the fedora server. No good, should be mocked" )   
-    @Test public void testConstructor() throws Exception 
+    private Expectations setConfigExpectations() throws Exception
     {
-    	DatadockMain datadockmain = new DatadockMain();
-    	
-    	// Get jobMap listing jobs to be executed using plugins 
-    	//HashMap< InputPair< String, String >, ArrayList< String > > jobMap = DatadockMain.jobMap;
-    	
-    	// Get set of jobs specified by submitter and format
-    	//Set< InputPair< String, String > > keysSet = jobMap.keySet();
-    	
-    	// Loop through jobs
-//    	for( InputPair< String, String > pair : keysSet )
-//    	{
-//            String submitter = pair.getFirst().toString();
-//            String format = pair.getSecond().toString();    		
-//            URI uri = new URI( DatadockConfig.getPath() ); 
-//            DatadockJob job = new DatadockJob( uri, submitter, format );
-//    		
-//            if( jobMap.containsKey( pair ) )
-//    	    {	
-//                // Get list of plugins
-//                ArrayList< String > list = jobMap.get( pair );
-//                    
-//                // Validate plugins
-//                PluginResolver pluginResolver = new PluginResolver();
-//                Vector< String > missingPlugins = pluginResolver.validateArgs( submitter, format, list );
-//                    
-//                if( ! missingPlugins.isEmpty() )
-//                {		
-//                    log.debug( " kill thread" );
-//                    throw new Exception( "plugins not found in test" );
-//                    // kill thread/throw meaningful exception/log message
-//	    	    }
-//                else
-//                {
-//                    CargoContainer cc = null;
-//				
-//                    for( String task : list)
-//                    {	
-//                        IPluggable plugin = (IPluggable)pluginResolver.getPlugin( submitter, format, task );
-//                        switch ( plugin.getPluginType() )
-//                        {	
-//                            case HARVEST:
-//                                IHarvestable harvestPlugin = (IHarvestable)plugin; 
-//                                cc = harvestPlugin.getCargoContainer( job );
-//                                break;
-//                            case ANNOTATE:
-//                                IAnnotate annotatePlugin = (IAnnotate)plugin;
-//                                cc = annotatePlugin.getCargoContainer( cc );
-//                                break;
-//                            case STORE:
-//                                IRepositoryStore repositoryStore = (IRepositoryStore)plugin;
-//                                //repositoryStore.storeCargoContainer( cc, job );
-//                        }
-//                    }
-//                }
-//            }
-//    	}
+        return new NonStrictExpectations()
+        {{
+                DatadockConfig.getPluginFlowXmlPath();returns( new File( "." ) );
+                DatadockConfig.getPluginFlowXsdPath();returns( new File( "." ) );
+        }};
     }
+
+    @Test( expected = ConfigurationException.class )
+    public void testConstructorNullChecks() throws Exception
+    {
+        new DatadockMain();
+    }
+
+    @Test
+    public void testConstructorCorrectlyInitialized() throws Exception
+    {
+        Expectations a = setConfigExpectations();
+        new DatadockMain();
+    }
+
+    @Test
+    public void testSetServerMode() throws Exception
+    {
+        setConfigExpectations();
+
+        DatadockMain datadock = new DatadockMain();
+        Deencapsulation.invoke( datadock, "setServerMode" );
+        Boolean field = (Boolean)Deencapsulation.getField( datadock, "terminateOnZeroSubmitted" );
+        assertFalse( field.booleanValue() );
+    }
+
+    @Ignore( "Until I figure out how to get to the method-private field 'mode'")
+    @Test
+    public void testSetServerModeTerminateOnZeroSubmitted() throws Exception
+    {
+        setConfigExpectations();
+
+        DatadockMain datadock = new DatadockMain();
+        Deencapsulation.invoke( datadock, "setServerMode" );
+        Deencapsulation.setField( datadock, "mode", "true" );
+        Boolean field = (Boolean)Deencapsulation.getField( datadock, "terminateOnZeroSubmitted" );
+        System.out.println( String.format( "%s", field.booleanValue() ) );
+        assertTrue( field.booleanValue() );
+    }
+
+    @Test
+    public void testInitializeServices() throws Exception
+    {
+        setConfigExpectations();
+        DatadockMain datadock = new DatadockMain();
+        Mockit.setUpMock( PostgresqlDBConnection.class, MockDBConnection.class );
+        Mockit.setUpMock( FedoraObjectRepository.class, MockRepository.class );
+        Mockit.setUpMock( FlowMapCreator.class, MockMapCreator.class );
+        Mockit.setUpMock( FileHarvest.class, MockHarvest.class );
+        Mockit.setUpMock( DatadockManager.class, MockManager.class );
+        Deencapsulation.setField( datadock, "queueSize", 1 );
+        Deencapsulation.setField( datadock, "corePoolSize", 1 );
+        Deencapsulation.setField( datadock, "maxPoolSize", 1);
+        Deencapsulation.setField( datadock, "keepAliveTime", 1);
+        Deencapsulation.invoke( datadock, "initializeServices" );
+    }
+
+    @MockClass( realClass=PostgresqlDBConnection.class)
+    public static class MockDBConnection{
+        @Mock public void $init(){}
+    }
+
+    @MockClass( realClass=FedoraObjectRepository.class )
+    public static class MockRepository{
+        @Mock public void $init(){}
+    }
+
+    @MockClass( realClass=FlowMapCreator.class )
+    public static class MockMapCreator{
+        @Mock public void $init( File a, File b ){}
+        @Mock
+        public Map<String, List<PluginTask>> createMap( PluginResolver a, IObjectRepository b )
+        {
+            return new HashMap<String,List<PluginTask>>();
+        }
+    }
+
+    @MockClass( realClass=FileHarvest.class )
+    public static class MockHarvest{
+        @Mock public void $init(){}
+    }
+
+    @MockClass( realClass=DatadockManager.class )
+    public static class MockManager
+    {
+        @Mock public void $init( DatadockPool a, IHarvest b, Map< String, List< PluginTask > > c){}
+    }
+
 }

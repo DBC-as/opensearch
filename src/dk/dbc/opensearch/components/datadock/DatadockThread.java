@@ -32,14 +32,12 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -96,12 +94,8 @@ public class DatadockThread implements Callable<Boolean>
      *            the information about the data to be docked
      * @param processqueue
      *            the processqueue handler
-     * @throws ConfigurationException if no ObjectRepository could be reached
-     *
-     * @throws ParserConfigurationException
-     * @throws SAXException
      */
-    public DatadockThread( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap ) throws ConfigurationException, IOException, SAXException, ParserConfigurationException
+    public DatadockThread( IIdentifier identifier, IProcessqueue processqueue, IHarvest harvester, Map<String, List<PluginTask>> flowMap )
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
@@ -110,7 +104,7 @@ public class DatadockThread implements Callable<Boolean>
          * the cargoContainer, so all that is needed is the identifier
          */
 
-	this.identifier = identifier;
+        this.identifier = identifier;
         this.harvester = harvester;
         this.flowMap = flowMap;
         this.queue = processqueue;
