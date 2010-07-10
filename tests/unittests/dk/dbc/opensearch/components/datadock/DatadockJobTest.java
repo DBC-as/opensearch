@@ -31,6 +31,9 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import org.w3c.dom.Document;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.Diff;
+
 public class DatadockJobTest {
 
     static final String referenceDataComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"123456\" format=\"someFormat\" lang=\"se\" mimetype=\"pdf\"/></referencedata>";
@@ -103,7 +106,6 @@ public class DatadockJobTest {
 	assertEquals( "text/xml", job.getMimeType() );
     }
 
-    @Ignore
     @Test(expected=IllegalArgumentException.class)
     public void DatadockJobIllegalAttributeTest() throws Exception
     {
@@ -126,17 +128,14 @@ public class DatadockJobTest {
 
     // Test the retrived referenceData XML-ducument against the Document given to the constructor.
     // We want to make sure we do not corrupt the XML inside DatadockJob.
-    // \todo: I do not know how to test two XML Documents for equality.
-    
-    // @Test
-    // public void DatadockJobGetDocumentTest() throws Exception
-    // {
-    //     Document xmldataTmp = XMLUtils.documentFromString( referenceDataComplete );
-    //     DatadockJob job = new DatadockJob( mockIdentifier, xmldataComplete );
-    // 	// System.err.println( String.format( "xmldataTmp = [%s]", XMLUtils.xmlToString( xmldataTmp ) ) );
-    // 	// System.err.println( String.format( "xmldataTmp = [%s]", XMLUtils.xmlToString( xmldataComplete ) ) );
-    //     assertEquals( xmldataTmp, job.getReferenceData() );
-    // }
+    @Test
+    public void DatadockJobGetDocumentTest() throws Exception
+    {
+	Document xmldataTmp = XMLUtils.documentFromString( referenceDataComplete );
+    	DatadockJob job = new DatadockJob( mockIdentifier, xmldataComplete );
+    	Diff diff = XMLUnit.compareXML( xmldataTmp, job.getReferenceData() );
+        assertEquals( true, diff.identical() );
+    }
 
 
 }

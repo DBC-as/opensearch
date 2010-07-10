@@ -25,11 +25,14 @@
 
 package dk.dbc.opensearch.components.datadock;
 
-
-import org.w3c.dom.Document;
-import org.apache.log4j.Logger;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -204,7 +207,6 @@ public class DatadockJob implements IJob
 	    this.language = DEFAULT_LANGUAGE_CODE;
 	}
 
-
 	// If node "mimetype" is non-existing or empty, set it to a default value, otherwise set its correct value. 
 	if ( attributes.getNamedItem( "mimetype" ) != null )
         {
@@ -216,15 +218,22 @@ public class DatadockJob implements IJob
 	    this.mimetype = DEFAULT_MIMETYPE_CODE;
 	}
 
-	// // Now we have removed all known attribute-names.
-	// // If there are any nodes left in the nodeMap, then they are unknown
-	// // and we will throw an exception stating that.
-	// if ( attributes.getLength() > 0 )
-	// {
-	//     String firstNodeName = attributes.item(0).getNodeValue();
-	//     String errMsg = String.format( "Unknown attributename [%] found in referencedata.", firstNodeName ); 
-	//     log.error( errMsg );
-	//     throw new IllegalArgumentException( errMsg );
-	// }
+	// Here we test that only known attributenames are in the info-tag:
+	// \todo: When we get an XSD this ought to be obsolete.
+	Set< String > legalAttributeValues = new HashSet< String >(4);
+	legalAttributeValues.add("submitter");
+	legalAttributeValues.add("format");
+	legalAttributeValues.add("lang");
+	legalAttributeValues.add("mimetype");
+	for ( int i = 0; i < attributes.getLength(); i++)
+	{
+	    if ( !legalAttributeValues.contains( attributes.item( i ).getNodeName() ) )
+	    {
+	    	String errMsg = String.format( "Unknown attributename [%s] found in referencedata.", attributes.item(i).getNodeName() ); 
+	    	log.error( errMsg );
+	    	throw new IllegalArgumentException( errMsg );
+	    }
+	}
+	
     }
 }
