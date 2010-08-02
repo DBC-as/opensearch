@@ -32,9 +32,9 @@ import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.xml.XMLUtils;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 
 import javax.xml.xpath.XPath;
@@ -65,7 +65,7 @@ public class XMLDCHarvesterTest
     String format = "marcxchange";
     String language = "da";
 
-    DatadockJob ddjob;
+    TaskInfo ddjob;
 
     static final String testPid1 = "test:1";
     static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"dk\"/></referencedata>";
@@ -128,7 +128,7 @@ public class XMLDCHarvesterTest
         setUpMocks( MockSimpleRhinoWrapper.class );
         Document xmldata = XMLUtils.documentFromString( referenceData );
 
-        ddjob = new DatadockJob( mockIdentifier, xmldata );
+        ddjob = new TaskInfo( mockIdentifier, xmldata );
     }
 
     @After

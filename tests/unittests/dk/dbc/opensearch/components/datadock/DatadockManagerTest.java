@@ -33,6 +33,7 @@ import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -70,7 +71,7 @@ public class DatadockManagerTest
     static List<IJob> mockJobs = new ArrayList<IJob>();
     static List<IIdentifier> mockIdentifiers = new ArrayList<IIdentifier>();
 
-    DatadockJob mockDatadockJob;
+    TaskInfo mockTaskInfo;
     IJob mockJob;
     static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\"/></referencedata>";
     private static Document xmldata;
@@ -114,7 +115,7 @@ public class DatadockManagerTest
     public void testUpdate() throws Exception
     {
 
-        IJob job = new DatadockJob( mockIdentifier, xmldata );
+        IJob job = new TaskInfo( mockIdentifier, xmldata );
 
         mockDatadockPool.submit( job.getIdentifier() );
 

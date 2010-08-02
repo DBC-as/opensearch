@@ -28,14 +28,13 @@ package dk.dbc.opensearch.components.harvest;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.common.os.NoRefFileFilter;
 import dk.dbc.opensearch.common.xml.XMLUtils;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -249,7 +248,7 @@ public final class FileHarvestLight implements IHarvest
 	log.trace( String.format( "Called with FileIdentifier: %s", jobId.getURI() ) );
 
 	Document doc = createReferenceDataDocument( jobId );
-	DatadockJob job = new DatadockJob( jobId, doc );
+	TaskInfo job = new TaskInfo( jobId, doc );
 
 
 	// Open and read the data-file:

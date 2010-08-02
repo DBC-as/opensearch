@@ -31,9 +31,8 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
-import dk.dbc.opensearch.components.datadock.DatadockJob;
-import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -501,7 +500,7 @@ public final class ESHarvest implements IHarvest
 	
         String referenceData = retrieveReferenceData( id, conn );
         Document doc = createReferenceDataDocument( referenceData, id );
-        DatadockJob job = new DatadockJob( id, doc );
+        TaskInfo job = new TaskInfo( id, doc );
 
         // Retrieve the data.
         byte[] data = getDataDBCall( id , conn );

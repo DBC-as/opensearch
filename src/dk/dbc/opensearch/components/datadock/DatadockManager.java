@@ -32,6 +32,7 @@ import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 
 
@@ -131,10 +132,10 @@ public class DatadockManager
 
             try
             {
-            //build the DatadockJob
+            //build the TaskInfo
             IJob theJob = registeredJobs.get( 0 );
-            DatadockJob job = buildDatadockJob( theJob );
-            log.trace( String.format( "submitting job %s as datadockJob %s", theJob.toString(), job.toString() ) );
+            TaskInfo job = buildTaskInfo( theJob );
+            log.trace( String.format( "submitting job %s as TaskInfo %s", theJob.toString(), job.toString() ) );
 
             if( hasWorkflow( job ) )
             {
@@ -164,7 +165,7 @@ public class DatadockManager
     }
 
 
-    private synchronized Boolean hasWorkflow( DatadockJob job )
+    private synchronized Boolean hasWorkflow( TaskInfo job )
     {
         Boolean exists = Boolean.FALSE;
         final Pair<String, String> entry = new SimplePair<String,String>( job.getSubmitter(), job.getFormat() );
@@ -210,13 +211,13 @@ public class DatadockManager
 
 
     /**
-     * method for building a Datadockjob from the information in a
+     * method for building a TaskInfo from the information in a
      * IJob.
-     * @param theJob the Ijob to build DatadockJob from
+     * @param theJob the Ijob to build TaskInfo from
      */
-    private DatadockJob buildDatadockJob( IJob theJob )
+    private TaskInfo buildTaskInfo( IJob theJob )
     {
-        log.trace( "building datadock job " + theJob.getIdentifier() );        
+        log.trace( "building TaskInfo " + theJob.getIdentifier() );        
         Document referenceData = theJob.getReferenceData();
 
         if( null == referenceData.getDocumentElement() )
@@ -226,6 +227,6 @@ public class DatadockManager
             throw new IllegalArgumentException( error );
         }
 
-        return new DatadockJob( theJob.getIdentifier(), referenceData );
+        return new TaskInfo( theJob.getIdentifier(), referenceData );
     }
 }

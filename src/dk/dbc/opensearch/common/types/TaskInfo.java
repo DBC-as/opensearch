@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.common.types;
 
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.IJob;
@@ -39,25 +39,25 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * The purpose of the datadockJob is to hold the information about a
- * job for the datadock. The datadockJob is created from an XML refererence data
+ * The purpose of the TaskInfo is to hold information about a
+ * job for the datadock. The TaskInfo is created from an XML refererence data
  * Document. The XML reference must look like this:
  * <pre>
  * {@code
  * <?xml version="1.0" encoding="UTF-8"?>
  *     <referencedata>
- *         <info submitter="123456" format="someFormat" lang="se" mimetype="pdf"/>
+ *         <info submitter="123456" format="someFormat" language="se" mimetype="pdf"/>
  *     </referencedata>
  * }
  * </pre>
  * The XML currently lacks both an XSD and a namespace (concerning the lack of
  * namespace please see <A href="http://bugs.dbc.dk/show_bug.cgi?id=10681">bug#10681</A>)
  * Submitter and format in the above mentioned attributes in the info-tag are mandatory, whereas 
- * lang and mimetype are optional. For further information about the attributes please see {@link #DatadockJob}
+ * language and mimetype are optional. For further information about the attributes please see {@link #TaskInfo}
  */
-public class DatadockJob implements IJob
+public final class TaskInfo implements IJob
 {
-    private Logger log = Logger.getLogger( DatadockJob.class );
+    private Logger log = Logger.getLogger( TaskInfo.class );
 
     private static final String DEFAULT_LANGUAGE_CODE = "da";
     private static final String DEFAULT_MIMETYPE_CODE = "text/xml";
@@ -67,28 +67,28 @@ public class DatadockJob implements IJob
     private String language;
     private String mimetype;
 
-    private IIdentifier identifier;
-    private Document referenceData;
+    private final IIdentifier identifier;
+    private final Document referenceData;
 
 
     /**
-     * Constructor that initializes the DatadockJob
+     * Constructor that initializes the TaskInfo
      * As stated above, the referenceData must contain a specific XML Document.
      * In the XML Document an info-tag must be present, containing the following attributes:
      * "submitter", "format", "language", "mimetype".
-     * "submitter" and "format" are mandatory an must contain values, whereas "language" and "mimetype" are optional.
+     * "submitter" and "format" are mandatory and must contain values, whereas "language" and "mimetype" are optional.
      * If no "language" attribute or an empty "language" attribute are given, the "language" value will default to "da".
      * If no "mimetype" attribute or an empty "mimetype" attribute are given, 
      * the "mimetype" value will default to "xml".
      * If any other than the four above stated attributes are given, an IllegalArgumentException will be thrown.
-     * If the XML does not contain the reference and info tags an IllegalArgumentException will be thrown.
+     * If the XML does not contain reference and info tags an IllegalArgumentException will be thrown.
      * If the either the identifer or the referenceData are null, an IllegalStateException will be thrown.
      * 
      * @param identifier the identifier of the data of the job
      * @param referenceData the data concerning the job
      * 
      */
-    public DatadockJob( IIdentifier identifier, Document referenceData )
+    public TaskInfo( IIdentifier identifier, Document referenceData )
     {
         this.identifier = identifier;
         this.referenceData = referenceData;
@@ -118,7 +118,7 @@ public class DatadockJob implements IJob
     /**
      * Gets the language
      *
-     * For information about default value for language, please see {@link DatadockJob}
+     * For information about default value for language, please see {@link TaskInfo}
      *
      * @return The language
      */
@@ -131,7 +131,7 @@ public class DatadockJob implements IJob
     /**
      * Gets the mimetype
      * 
-     * For information about default value for mimetype, please see {@link DatadockJob}
+     * For information about default value for mimetype, please see {@link TaskInfo}
      *
      * @return The mimetype
      */

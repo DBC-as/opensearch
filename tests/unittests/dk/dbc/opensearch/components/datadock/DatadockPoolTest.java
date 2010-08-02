@@ -26,6 +26,7 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -63,7 +64,7 @@ public class DatadockPoolTest
     CargoContainer mockCargoContainer;
     FutureTask mockFutureTask;
     ThreadPoolExecutor mockThreadPool;
-    DatadockJob mockDatadockJob;
+    TaskInfo mockTaskInfo;
     DatadockPool datadockPool;
     DatadockThread datadockThread;
     //FedoraAdministration mockFedoraAdministration;
@@ -116,8 +117,8 @@ public class DatadockPoolTest
         }
     }
 
-    @MockClass( realClass=DatadockJob.class )
-    public static class MockDatadockJob
+    @MockClass( realClass=TaskInfo.class )
+    public static class MockTaskInfo
     {
         @Mock
         public void $init( IIdentifier id, Document ref ){}
@@ -155,7 +156,7 @@ public class DatadockPoolTest
         setUpMocks( MockDatadockThread.class );
         setUpMocks( MockThreadPool.class );
         setUpMocks( MockDatadockPool.class );
-        setUpMocks( MockDatadockJob.class );
+        setUpMocks( MockTaskInfo.class );
         //setUpMocks( MockHarvester.class );
     }
 
