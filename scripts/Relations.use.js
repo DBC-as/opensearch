@@ -177,11 +177,11 @@ const Relations = function() {
     var type = String(manifestationXML.dkabm::record.dc::type);
     Log.info( "Type: " + type );
 
-    var types = {"Artikel", "Avisartikel", "Billedbog", "Bog", "CD (musik)", "Kassettelydbånd", "Lydbog (bånd)", "Lydbog (cd)", "Lydbog (mp3)", "Lydbånd (bog)", "Netdokument", "Tegneserie", "Tidsskriftsartikel" }
+    var types = ["Artikel", "Avisartikel", "Billedbog", "Bog", "CD (musik)", "Kassettelydbånd", "Lydbog (bånd)", "Lydbog (cd)", "Lydbog (mp3)", "Lydbånd (bog)", "Netdokument", "Tegneserie", "Tidsskriftsartikel"];
 
     for (var a in types) {
       if (type === types[a]) {
-        var creator = String(manifestationXML.dkabm::record.dc::creator);
+        var creator = String(manifestationXML.dkabm::record.dc::creator[0]);
 
         Log.info( "Creator: " + creator );
         Log.info( "pid: " + pid );
@@ -202,6 +202,71 @@ const Relations = function() {
     }
 
     Log.info ("End hasAuthorDescription" );
+
+  };
+
+  that.isSubjectDescriptionOf = function ( xml, pid ) {
+
+    Log.info ("Start isSubjectDescriptionOf" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var authorXML = XmlUtil.fromString( xml );
+
+    var creator = String(authorXML.dkabm::record.dc::title);
+
+    Log.info( "Creator: " + creator );    
+    Log.info( "pid: " + pid );
+
+    var results = FedoraPIDSearch.creator( creator );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
+
+      scriptClass.createRelation( pid, NS + "isSubjectDescriptionOf", result);
+      scriptClass.createRelation( result, NS + "hasSubjectDescription", pid);
+    }
+
+    Log.info ("End isSubjectDescriptionOf" );
+
+  };
+
+  that.hasSubjectDescription = function ( xml, pid ) {
+
+    Log.info ("Start hasSubjectDescription" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    var type = String(manifestationXML.dkabm::record.dc::type);
+    Log.info( "Type: " + type );
+
+    for (var a in types) {
+      if (type === types[a]) {
+        var creator = String(manifestationXML.dkabm::record.dc::creator);
+
+        Log.info( "Creator: " + creator );
+        Log.info( "pid: " + pid );
+
+        var results = FedoraPIDSearch.creator( creator );
+
+        for ( var i = 0; i < results.length; ++i ) {
+          var result = results[i];
+
+          Log.info( "result: " + result );
+
+          var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
+
+          scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
+          scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
+        }
+      }
+    }
+
+    Log.info ("End hasSubjectDescription" );
 
   };
 

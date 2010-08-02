@@ -31,7 +31,7 @@ function dcFromDkabm( xml )
 
     Log.info( "RLO: Entering javascript dcFromDkabm" );
 
-    var dc = DcCreator.createDcFromDKabm ( xml ); 
+    var dc = DcCreator.createDcFromDkabm ( xml ); 
 
     Log.info( "RLO: Leaving javascript" );
 
