@@ -38,7 +38,6 @@ import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.types.HarvestType;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 import dk.dbc.opensearch.common.pluginframework.FlowMapCreator;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
@@ -79,6 +78,16 @@ import org.xml.sax.SAXException;
  */
 public class DatadockMain
 {
+    /**
+     *  Private enum used to differentiate between various harvester types
+     */
+    private enum HarvestType
+    {
+	ESHarvest,
+	FileHarvest,
+	FileHarvestLight;
+    }
+
     private final static Logger log = Logger.getLogger( DatadockMain.class );
     /** TODO: what is the purpose of rootAppender and startupAppender wrt the startup in this class*/
     private final static ConsoleAppender startupAppender = new ConsoleAppender( new SimpleLayout() );
@@ -138,16 +147,26 @@ public class DatadockMain
     {
         log.trace( "Trying to get harvester type from commandline" );
         String harvestTypeFromCmdLine = System.getProperty( "harvester" );
+	log.debug( String.format( "Found this harvester: %s", harvestTypeFromCmdLine ) );
 
         HarvestType harvestType = null;
-        if( null != harvestTypeFromCmdLine )
-        {
-            harvestType = HarvestType.getHarvestType( harvestTypeFromCmdLine );
-        }
-        if( null == harvestType )
-        {
-            harvestType = defaultHarvestType;
-        }
+	if ( harvestTypeFromCmdLine == null || harvestTypeFromCmdLine.isEmpty() )
+	{
+	    // Only set to default harvester if none is given on commandline
+	    harvestType = defaultHarvestType;
+	} 
+	else 
+	{
+	    harvestType = harvestTypeFromCmdLine.equals( "ESHarvest" ) ? HarvestType.ESHarvest : harvestType;
+	    harvestType = harvestTypeFromCmdLine.equals( "FileHarvest" ) ? HarvestType.FileHarvest : harvestType;
+	    harvestType = harvestTypeFromCmdLine.equals( "FileHarvestLight" ) ? HarvestType.FileHarvestLight : harvestType;
+
+	    if ( harvestType == null ) 
+	    {
+		throw new IllegalArgumentException( String.format( "Unknown harvestType: %s", harvestTypeFromCmdLine ) );
+	    }
+	}
+	
         log.debug( String.format( "initialized harvester with type: %s", harvestType ) );
         return harvestType;
 
