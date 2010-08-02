@@ -186,7 +186,7 @@ const Relations = function() {
         Log.info( "Creator: " + creator );
         Log.info( "pid: " + pid );
 
-        var results = FedoraPIDSearch.creator( creator );
+        var results = FedoraPIDSearch.title( creator );
 
         for ( var i = 0; i < results.length; ++i ) {
           var result = results[i];
