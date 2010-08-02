@@ -212,12 +212,12 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var authorXML = XmlUtil.fromString( xml );
 
-    var creator = String(authorXML.dkabm::record.dc::title);
+    var title = String(authorXML.dkabm::record.dc::title);
 
-    Log.info( "Creator: " + creator );    
+    Log.info( "Title: " + title );    
     Log.info( "pid: " + pid );
 
-    var results = FedoraPIDSearch.creator( creator );
+    var results = FedoraPIDSearch.subject( title );
 
     for ( var i = 0; i < results.length; ++i ) {
       var result = results[i];
@@ -241,29 +241,26 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
 
-    var type = String(manifestationXML.dkabm::record.dc::type);
-    Log.info( "Type: " + type );
+    for each(child in manifestationXML.dkabm::record.dc::subject) {
 
-    for (var a in types) {
-      if (type === types[a]) {
-        var creator = String(manifestationXML.dkabm::record.dc::creator);
+      var subject = String(child);
 
-        Log.info( "Creator: " + creator );
-        Log.info( "pid: " + pid );
+      Log.info( "Subject: " + subject );
+      Log.info( "pid: " + pid );
 
-        var results = FedoraPIDSearch.creator( creator );
+      var results = FedoraPIDSearch.title( subject );
 
-        for ( var i = 0; i < results.length; ++i ) {
-          var result = results[i];
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
 
-          Log.info( "result: " + result );
+        Log.info( "result: " + result );
 
-          var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
+        var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-          scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
-          scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
-        }
+        scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
+        scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
       }
+
     }
 
     Log.info ("End hasSubjectDescription" );
