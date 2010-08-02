@@ -146,7 +146,7 @@ const Relations = function() {
     var authorXML = XmlUtil.fromString( xml );
 
     var creator = String(authorXML.dkabm::record.dc::title);
-   
+
     Log.info( "Creator: " + creator );    
     Log.info( "pid: " + pid );
 
@@ -167,7 +167,45 @@ const Relations = function() {
 
   };
 
-  that.hasSoundClip = function( xml, pid) {
+  that.hasAuthorDescription = function ( xml, pid ) {
+
+    Log.info ("Start hasAuthorDescription" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    var type = String(manifestationXML.dkabm::record.dc::type);
+    Log.info( "Type: " + type );
+
+    var types = {"Artikel", "Avisartikel", "Billedbog", "Bog", "CD (musik)", "Kassettelydbånd", "Lydbog (bånd)", "Lydbog (cd)", "Lydbog (mp3)", "Lydbånd (bog)", "Netdokument", "Tegneserie", "Tidsskriftsartikel" }
+
+    for (var a in types) {
+      if (type === types[a]) {
+        var creator = String(manifestationXML.dkabm::record.dc::creator);
+
+        Log.info( "Creator: " + creator );
+        Log.info( "pid: " + pid );
+
+        var results = FedoraPIDSearch.creator( creator );
+
+        for ( var i = 0; i < results.length; ++i ) {
+          var result = results[i];
+
+          Log.info( "result: " + result );
+
+          var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
+
+          scriptClass.createRelation( pid, NS + "hasAuthorDescription", result);
+          scriptClass.createRelation( result, NS + "isAuthorDescriptionOf", pid);
+        }
+      }
+    }
+
+    Log.info ("End hasAuthorDescription" );
+
+  };
+
+  that.hasSoundClip = function( xml, pid ) {
 
     Log.info ("Start hasSoundClip" );
 
@@ -175,7 +213,7 @@ const Relations = function() {
     var trackXML = XmlUtil.fromString( xml );
 
     var url = String( "http://netmusik.shop2download.com/samples/" + trackXML.*.*.soundClip);
-   
+
     var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
     scriptClass.createRelation( pid, NS + "hasSoundClip", url);

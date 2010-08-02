@@ -24,3 +24,7 @@ function isAuthorDescriptionOf ( submitter, format, language, xml, pid ) {
   Relations.isAuthorDescriptionOf ( xml, pid );
 }
 
+function hasAuthorDescription ( submitter, format, language, xml, pid ) {
+  Relations.hasAuthorDescription ( xml, pid );
+}
+
