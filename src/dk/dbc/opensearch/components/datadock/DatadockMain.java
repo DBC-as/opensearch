@@ -257,8 +257,6 @@ public class DatadockMain
         }
         
         log.info( "Exiting normally." );
-        System.exit( 0 );
-
     }
 
 
