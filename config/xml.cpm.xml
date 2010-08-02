@@ -16,12 +16,12 @@
         />
     <xml-property
         name="dc.title"
-        xpath="/ting:container/docbook:article/docbook:title | /ting:container/dkabm:record/dcterms:alternative"
+        xpath="/ting:container/docbook:article/docbook:title"
         value-converter="default"
         />
     <xml-property
         name="dc.creator"
-        xpath="/ting:container/docbook:article/docbook:info/docbook:author/docbook:personname/* | /ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
+        xpath="/ting:container/docbook:article/docbook:info/docbook:author/docbook:personname/* | /ting:container/dkabm:record/dc:creator"
         value-converter="default"
         />
     <xml-property
@@ -36,7 +36,7 @@
         />
     <xml-property
         name="dc.subject"
-        xpath="/ting:container/docbook:article/docbook:info/docbook:subjectset/docbook:subject/docbook:subjectterm | /ting:container/dkabm:record/dc:subject"
+        xpath="/ting:container/docbook:article/docbook:info/docbook:subjectset/docbook:subject/docbook:subjectterm "
         value-converter="default"
         />
     <xml-property
