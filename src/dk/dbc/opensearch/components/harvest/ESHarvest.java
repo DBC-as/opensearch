@@ -280,8 +280,6 @@ public final class ESHarvest implements IHarvest
 
         if ( DocOK )
         {
-            //IJob theJob = new Job( id, doc );
-            //theJobList.add( theJob );
             return doc;
         }
         else
@@ -367,54 +365,9 @@ public final class ESHarvest implements IHarvest
             String referenceData = retrieveReferenceData( id, conn );
 
             Document doc = createReferenceDataDocument( referenceData, id );
-            IJob theJob = new Job( id, doc );
+            IJob theJob = new TaskInfo( id, doc );
             theJobList.add( theJob );
 
-            // Document doc = null;
-            // DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-            // boolean DocOK = true; // The Doc structure has no problems
-            // try
-            // {
-            //     DocumentBuilder builder = factory.newDocumentBuilder();
-            //     doc = builder.parse( new InputSource( new ByteArrayInputStream( referenceData.getBytes() ) ) );
-            // }
-            // catch( ParserConfigurationException pce )
-            // {
-            //     log.error( String.format( "Caught error while trying to instantiate documentbuilder '%s'", pce.getMessage() ) );
-            //     DocOK = false;
-            // }
-            // catch( SAXException se )
-            // {
-            //     log.error( String.format( "Could not parse data: '%s'", se.getMessage() ) );
-            //     DocOK = false;
-            // }
-            // catch( IOException ioe )
-            // {
-            //     log.error( String.format( "Could not cast the bytearrayinputstream to a inputsource: '%s'", ioe.getMessage() ) );
-            //     DocOK = false;
-            // }
-
-            // if ( DocOK )
-            // {
-            //     IJob theJob = new Job( id, doc );
-            //     theJobList.add( theJob );
-            // }
-            // else
-            // {
-            //     try
-            //     {
-            //         setStatusFailure( id, "The referencedata contains malformed XML" );
-            //     }
-            //     catch ( HarvesterUnknownIdentifierException huie )
-            //     {
-            //         log.error( String.format( "Error when changing JobStatus (unknown identifier) ID: %s Msg: %s", id, huie.getMessage() ), huie );
-            //     }
-            //     catch ( HarvesterInvalidStatusChangeException hisce )
-            //     {
-            //         log.error( String.format( "Error when changing JobStatus (invalid status) ID: %s Msg: %s ", id, hisce.getMessage() ), hisce );
-            //     }
-            // }
         }
 
         log.info( String.format( "Found %s available Jobs", theJobList.size() ) );

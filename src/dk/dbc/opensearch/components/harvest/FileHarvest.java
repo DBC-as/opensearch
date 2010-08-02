@@ -29,6 +29,7 @@ package dk.dbc.opensearch.components.harvest;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
@@ -627,7 +628,7 @@ public final class FileHarvest implements IHarvest
             log.error( ex.getMessage() );
         }
 
-        IJob theJob = new Job( identifier, refStream );
+        IJob theJob = new TaskInfo( identifier, refStream );
 
         return theJob;
     }

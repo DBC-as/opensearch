@@ -224,7 +224,7 @@ public final class FileHarvestLight implements IHarvest
 	    
 	    if ( doc != null )
 	    {
-                list.add( (IJob) new Job( fid, doc ) );
+                list.add( (IJob) new TaskInfo( fid, doc ) );
 	    }
 	    else
 	    {
