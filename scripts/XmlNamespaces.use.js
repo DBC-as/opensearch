@@ -21,6 +21,7 @@ const XmlNamespaces = function(){
     that.xsi = new Namespace ( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
     that.marcx = new Namespace ( "marcx", "http://www.bs.dk/standards/MarcXchange" );
     that.docbook = new Namespace ( "docbook", "http://docbook.org/ns/docbook" );
+    that.oai_dc = new Namespace( "oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/" );
 
     const const_that = that;
     return const_that;
