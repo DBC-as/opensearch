@@ -75,9 +75,9 @@ public class DatadockJob implements IJob
      * Constructor that initializes the DatadockJob
      * As stated above, the referenceData must contain a specific XML Document.
      * In the XML Document an info-tag must be present, containing the following attributes:
-     * "submitter", "format", "lang", "mimetype".
-     * "submitter" and "format" are mandatory an must contain values, whereas "lang" and "mimetype" are optional.
-     * If no "lang" attribute or an empty "lang" attribute are given, the "lang" value will default to "da".
+     * "submitter", "format", "language", "mimetype".
+     * "submitter" and "format" are mandatory an must contain values, whereas "language" and "mimetype" are optional.
+     * If no "language" attribute or an empty "language" attribute are given, the "language" value will default to "da".
      * If no "mimetype" attribute or an empty "mimetype" attribute are given, 
      * the "mimetype" value will default to "xml".
      * If any other than the four above stated attributes are given, an IllegalArgumentException will be thrown.
@@ -196,10 +196,10 @@ public class DatadockJob implements IJob
         this.format = attributes.getNamedItem( "format" ).getNodeValue();
         this.submitter = attributes.getNamedItem( "submitter" ).getNodeValue();
 
-	// If node "lang" is non-existing or empty, set it to a default value, otherwise set its correct value. 
-	if ( attributes.getNamedItem( "lang" ) != null )
+	// If node "language" is non-existing or empty, set it to a default value, otherwise set its correct value. 
+	if ( attributes.getNamedItem( "language" ) != null )
         {
-	    String lang = attributes.getNamedItem( "lang" ).getNodeValue();
+	    String lang = attributes.getNamedItem( "language" ).getNodeValue();
 	    this.language =  lang.isEmpty() ? DEFAULT_LANGUAGE_CODE : lang;
 	}
 	else
@@ -223,7 +223,7 @@ public class DatadockJob implements IJob
 	Set< String > legalAttributeValues = new HashSet< String >(4);
 	legalAttributeValues.add("submitter");
 	legalAttributeValues.add("format");
-	legalAttributeValues.add("lang");
+	legalAttributeValues.add("language");
 	legalAttributeValues.add("mimetype");
 	for ( int i = 0; i < attributes.getLength(); i++)
 	{

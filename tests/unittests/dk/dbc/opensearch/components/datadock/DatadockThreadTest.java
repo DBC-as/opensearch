@@ -94,7 +94,7 @@ public class DatadockThreadTest
     @Mocked IObjectRepository mockObjectRepository;
     @Mocked Map<String, String> mockArgsMap;
     PluginResolver mockPluginResolver;
-    static final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" lang=\"da\"/></referencedata>";
+    static final String refdata = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"710100\" format=\"katalog\" language=\"da\"/></referencedata>";
     static Document referenceData;
     static boolean isset;
     PluginTask pluginTask1;

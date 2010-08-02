@@ -36,12 +36,12 @@ import org.custommonkey.xmlunit.Diff;
 
 public class DatadockJobTest {
 
-    static final String referenceDataComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"123456\" format=\"someFormat\" lang=\"se\" mimetype=\"pdf\"/></referencedata>";
+    static final String referenceDataComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"123456\" format=\"someFormat\" language=\"se\" mimetype=\"pdf\"/></referencedata>";
     static final String referenceDataNoLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" mimetype=\"pdf\"/></referencedata>";
-    static final String referenceDataEmptyLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"\" mimetype=\"pdf\"/></referencedata>";
-    static final String referenceDataNoMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"se\"/></referencedata>";
-    static final String referenceDataEmptyMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"se\" mimetype=\"\"/></referencedata>";
-    static final String referenceDataIllegalAttribute = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\" illegalattribute=\"illegal\"/></referencedata>";
+    static final String referenceDataEmptyLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"\" mimetype=\"pdf\"/></referencedata>";
+    static final String referenceDataNoMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"se\"/></referencedata>";
+    static final String referenceDataEmptyMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"se\" mimetype=\"\"/></referencedata>";
+    static final String referenceDataIllegalAttribute = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"dk\" illegalattribute=\"illegal\"/></referencedata>";
     @Mocked IIdentifier mockIdentifier;
     private Document xmldataComplete;
     private Document xmldataNoLang;
