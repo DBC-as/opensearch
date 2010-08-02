@@ -71,7 +71,7 @@ const DcCreator = function(){
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
 
     for each (child in originalXml.dkabm::record.dc::language) {
-      if (!String(child.@type).match("dcterms:ISO639-2")) {
+      if (String(child.@xsi::type).match("dcterms:ISO639-2")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
@@ -79,19 +79,19 @@ const DcCreator = function(){
     var child;
 
     for each (child in originalXml.dkabm::record.dc::subject) {
-      if (!String(child.@type).match("dkdcplus:DK5")) {
+      if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@type).match("dkdcplus:ISBN")) {
+      if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@type).match("dkdcplus:ISSN")) {
+      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
