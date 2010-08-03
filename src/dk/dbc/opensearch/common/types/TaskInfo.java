@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.common.types;
 
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -55,7 +54,7 @@ import org.w3c.dom.NodeList;
  * Submitter and format in the above mentioned attributes in the info-tag are mandatory, whereas 
  * language and mimetype are optional. For further information about the attributes please see {@link #TaskInfo}
  */
-public final class TaskInfo implements IJob
+public final class TaskInfo
 {
     private Logger log = Logger.getLogger( TaskInfo.class );
 
@@ -145,23 +144,11 @@ public final class TaskInfo implements IJob
      * Gets the identifier from the job
      * @return the identifier of the job
      */
-    @Override
     public IIdentifier getIdentifier()
     {
         return identifier;
     }
 
-
-    /**
-     * gets the reference data (typically metadata) from the job. When we start
-     * using JavaScript for business logic, this is to be used instead of the
-     * field accessors
-     */
-    @Override
-    public Document getReferenceData()
-    {
-        return referenceData;
-    }
 
     /** 
      * This private function initialises the class' private values with the ones 

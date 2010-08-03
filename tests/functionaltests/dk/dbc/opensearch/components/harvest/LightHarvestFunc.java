@@ -23,7 +23,7 @@ package dk.dbc.opensearch.components.harvest;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 /**
@@ -67,14 +67,14 @@ public class LightHarvestFunc {
         //        esh.start();
         //startESHarvestTest();
 
-        ArrayList<IJob> jobL = (ArrayList<IJob>)harvester.getJobs( 30 );
+        ArrayList<TaskInfo> jobL = (ArrayList<TaskInfo>)harvester.getJobs( 30 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
         Iterator iter = jobL.iterator();
         System.out.println( "got jobs:" );
         while( iter.hasNext() )
         {
             System.out.println("");
-            IJob theJob = (IJob)iter.next();
+            TaskInfo theJob = (TaskInfo)iter.next();
             System.out.println( String.format( "job: %s", theJob.toString() ) );
             try
             {

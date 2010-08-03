@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import java.util.List;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
@@ -196,14 +196,14 @@ public class HarvestFunc
 	//        byte[] data = null;
 	CargoContainer data = null;
 
-        List<IJob> jobL = esh.getJobs( 2 );
+        List<TaskInfo> jobL = esh.getJobs( 2 );
         System.out.println( String.format( " the joblist contained %s jobs", jobL.size() ) );
         Iterator iter = jobL.iterator();
         System.out.println( "got jobs:" );
         while( iter.hasNext() )
         {
             System.out.println("");
-            IJob theJob = (IJob)iter.next();
+            TaskInfo theJob = (TaskInfo)iter.next();
             System.out.println( String.format( "job: %s", theJob.toString() ) );
             log.info( String.format( "job ID: %s", theJob.getIdentifier() ) );
             try

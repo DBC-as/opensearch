@@ -126,14 +126,14 @@ public class TaskInfoTest {
     }
 
 
-    // Test the retrived referenceData XML-ducument against the Document given to the constructor.
+    // Test that we dont change the XML-document as a sideeffect.
     // We want to make sure we do not corrupt the XML inside TaskInfo.
     @Test
     public void TaskInfoGetDocumentTest() throws Exception
     {
 	Document xmldataTmp = XMLUtils.documentFromString( referenceDataComplete );
     	TaskInfo job = new TaskInfo( mockIdentifier, xmldataComplete );
-    	Diff diff = XMLUnit.compareXML( xmldataTmp, job.getReferenceData() );
+    	Diff diff = XMLUnit.compareXML( xmldataTmp, xmldataComplete );
         assertEquals( true, diff.identical() );
     }
 

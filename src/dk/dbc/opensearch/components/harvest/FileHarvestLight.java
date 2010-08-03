@@ -29,7 +29,6 @@ import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
@@ -211,9 +210,9 @@ public final class FileHarvestLight implements IHarvest
 
 
 
-    public List< IJob > getJobs( int maxAmount )
+    public List< TaskInfo > getJobs( int maxAmount )
     {
-        List<IJob> list = new ArrayList<IJob>();
+        List< TaskInfo > list = new ArrayList< TaskInfo >();
         for( int i = 0; i < maxAmount && iter.hasNext() ; i++ )
         {
             String fileName = (String)iter.next();
@@ -224,7 +223,7 @@ public final class FileHarvestLight implements IHarvest
 	    
 	    if ( doc != null )
 	    {
-                list.add( (IJob) new TaskInfo( fid, doc ) );
+                list.add( new TaskInfo( fid, doc ) );
 	    }
 	    else
 	    {

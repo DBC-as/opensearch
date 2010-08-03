@@ -37,7 +37,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
@@ -153,7 +153,7 @@ public class DatadockThreadTest
         }
         public void start() throws HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
         public void shutdown() throws HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
-        public List<IJob> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException{throw new UnsupportedOperationException( "Mock method" );}
+        public List<TaskInfo> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException{throw new UnsupportedOperationException( "Mock method" );}
         public void setStatusFailure( IIdentifier jobId, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{ throw new UnsupportedOperationException( "Mock method" );}
         public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
         public void setStatusRetry( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}

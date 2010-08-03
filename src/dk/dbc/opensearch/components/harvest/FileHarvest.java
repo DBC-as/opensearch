@@ -27,7 +27,6 @@ package dk.dbc.opensearch.components.harvest;
 
 
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.config.DatadockConfig;
@@ -296,7 +295,7 @@ public final class FileHarvest implements IHarvest
 
 
     /**
-     * getJobs. Creates an array of IJob from the info gained from getNewJobs method. 
+     * getJobs. Creates an array of TaskInfo from the info gained from getNewJobs method. 
      * The max amount of files returned from getNewJobs is the maxAmount argument
      * vector, and generate a new snapshot of the harvest directory.
      * @throws ConfigurationException
@@ -304,10 +303,10 @@ public final class FileHarvest implements IHarvest
      * @return A vector of Datadockjobs containing the necessary information to process the jobs.
      */
     @Override
-    public List< IJob > getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
+    public List< TaskInfo > getJobs( int maxAmount ) //throws FileNotFoundException, IOException, ConfigurationException
     {
         max = maxAmount;
-        List< IJob > jobs = new ArrayList< IJob >();
+        List< TaskInfo > jobs = new ArrayList< TaskInfo >();
         List< File > newJobs = new ArrayList< File >();
         try
         {
@@ -332,7 +331,7 @@ public final class FileHarvest implements IHarvest
             String submitter = job.getParentFile().getParentFile().getName();
             String format = job.getParentFile().getName();
             FileIdentifier identifier = new FileIdentifier( uri );
-            IJob theJob = buildTheJob( identifier, submitter, format );
+            TaskInfo theJob = buildTheJob( identifier, submitter, format );
             log.debug( String.format( "found new job: path=%s, submitter=%s, format=%s ", theJob.getIdentifier(), submitter, format ) );
             jobs.add( theJob );
         }
@@ -598,7 +597,7 @@ public final class FileHarvest implements IHarvest
     }
 
 
-    private IJob buildTheJob( FileIdentifier identifier, String submitter, String format )
+    private TaskInfo buildTheJob( FileIdentifier identifier, String submitter, String format )
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = null;
@@ -628,7 +627,7 @@ public final class FileHarvest implements IHarvest
             log.error( ex.getMessage() );
         }
 
-        IJob theJob = new TaskInfo( identifier, refStream );
+        TaskInfo theJob = new TaskInfo( identifier, refStream );
 
         return theJob;
     }

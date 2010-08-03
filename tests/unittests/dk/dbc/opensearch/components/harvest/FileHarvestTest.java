@@ -29,7 +29,7 @@ package dk.dbc.opensearch.components.harvest;
 
 import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
-import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 
@@ -194,11 +194,11 @@ public class FileHarvestTest
         IHarvest fileHarvest = new FileHarvest();
         fileHarvest.start();
 
-        List<IJob> result1 = fileHarvest.getJobs( 1 );
+        List<TaskInfo> result1 = fileHarvest.getJobs( 1 );
 
         assertTrue( result1.size() == 1 );
 
-        List<IJob> result2 = fileHarvest.getJobs( 1 );
+        List<TaskInfo> result2 = fileHarvest.getJobs( 1 );
 
         assertTrue( result2.size() == 0 );
 
@@ -243,7 +243,7 @@ public class FileHarvestTest
         IHarvest fileHarvest = new FileHarvest();
         fileHarvest.start();
         //System.out.println( "calling getjobs 1" );
-        List<IJob> result1 = fileHarvest.getJobs( 2 );
+        List<TaskInfo> result1 = fileHarvest.getJobs( 2 );
         assertTrue( result1.size() == 2 );
         //System.out.println( "calling getjobs 2" );
         result1 = fileHarvest.getJobs( 30 );
@@ -282,7 +282,7 @@ public class FileHarvestTest
         IHarvest fileHarvest = new FileHarvest();
         fileHarvest.start();
 
-        List<IJob> result1 = fileHarvest.getJobs( 100 );
+        List<TaskInfo> result1 = fileHarvest.getJobs( 100 );
 
         fileHarvest.shutdown();
     }
@@ -299,7 +299,7 @@ public class FileHarvestTest
         IHarvest fileHarvest = new FileHarvest();
         fileHarvest.start();
 
-        List<IJob> result1 = fileHarvest.getJobs( 30 );
+        List<TaskInfo> result1 = fileHarvest.getJobs( 30 );
 
         fileHarvest.shutdown();
     }

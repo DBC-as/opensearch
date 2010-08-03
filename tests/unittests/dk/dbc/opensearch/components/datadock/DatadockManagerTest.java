@@ -32,7 +32,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
@@ -68,11 +68,11 @@ public class DatadockManagerTest
     @Mocked Map< String, List< PluginTask > > mockFlowMap;
 
     DatadockPool mockDatadockPool;
-    static List<IJob> mockJobs = new ArrayList<IJob>();
+    static List<TaskInfo> mockJobs = new ArrayList<TaskInfo>();
     static List<IIdentifier> mockIdentifiers = new ArrayList<IIdentifier>();
 
     TaskInfo mockTaskInfo;
-    IJob mockJob;
+    TaskInfo mockJob;
     static final String referenceData = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" lang=\"dk\"/></referencedata>";
     private static Document xmldata;
 
@@ -115,7 +115,7 @@ public class DatadockManagerTest
     public void testUpdate() throws Exception
     {
 
-        IJob job = new TaskInfo( mockIdentifier, xmldata );
+        TaskInfo job = new TaskInfo( mockIdentifier, xmldata );
 
         mockDatadockPool.submit( job.getIdentifier() );
 
@@ -147,12 +147,12 @@ public class DatadockManagerTest
     @MockClass( realClass = ESHarvest.class )
     public static class MockHarvester
     {
-        static List<IJob> list;
+        static List<TaskInfo> list;
 
         @Mock
         public void $init( OracleDBPooledConnection connectionPool, String databasename )
         {
-            list = new ArrayList<IJob>();
+            list = new ArrayList<TaskInfo>();
         }
 
         @Mock( invocations = 1 )
@@ -162,9 +162,9 @@ public class DatadockManagerTest
         public void shutdown(){}
 
         @Mock
-        public List<IJob> getJobs( int number )
+        public List<TaskInfo> getJobs( int number )
         {
-            for( IJob job : mockJobs )
+            for( TaskInfo job : mockJobs )
             {
                 list.add( job );//new Job( mockIdentifier, xmldata ) );
             }

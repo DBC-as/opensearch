@@ -29,7 +29,6 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.TaskInfo;
@@ -60,7 +59,7 @@ public class DatadockManager
 
     private final DatadockPool pool;
     private final IHarvest harvester;
-    private List<IJob> registeredJobs;
+    private List<TaskInfo> registeredJobs;
     private final Map<String, List< PluginTask > > flowMap;
 
     private final Map< Pair< String,String >, Boolean > jobExecutionCheckSet = 
@@ -87,7 +86,7 @@ public class DatadockManager
         this.harvester = harvester;
         /** TODO: Should it really be part of the object initialization to start the harvester?*/
         harvester.start();
-        registeredJobs = new ArrayList<IJob>();
+        registeredJobs = new ArrayList<TaskInfo>();
         this.flowMap = flowMap;
     }
 
@@ -132,10 +131,7 @@ public class DatadockManager
 
             try
             {
-            //build the TaskInfo
-            IJob theJob = registeredJobs.get( 0 );
-            TaskInfo job = buildTaskInfo( theJob );
-            log.trace( String.format( "submitting job %s as TaskInfo %s", theJob.toString(), job.toString() ) );
+            TaskInfo job = registeredJobs.get( 0 );
 
             if( hasWorkflow( job ) )
             {
@@ -209,24 +205,4 @@ public class DatadockManager
         log.debug( "The harvester is stopped" );
     }
 
-
-    /**
-     * method for building a TaskInfo from the information in a
-     * IJob.
-     * @param theJob the Ijob to build TaskInfo from
-     */
-    private TaskInfo buildTaskInfo( IJob theJob )
-    {
-        log.trace( "building TaskInfo " + theJob.getIdentifier() );        
-        Document referenceData = theJob.getReferenceData();
-
-        if( null == referenceData.getDocumentElement() )
-        {
-            String error = String.format( "Could not retrieve data from referencedata. Id'ed by %s", theJob.getIdentifier() );
-            log.error( error );
-            throw new IllegalArgumentException( error );
-        }
-
-        return new TaskInfo( theJob.getIdentifier(), referenceData );
-    }
 }

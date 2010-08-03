@@ -21,8 +21,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.components.harvest;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.common.types.TaskInfo;
 import java.util.List;
 
 /**
@@ -49,20 +49,20 @@ public interface IHarvest
 
     /**
      * This method delivers information about which jobs the requestor
-     * can recieve. A {@link IJob} should contain
+     * can recieve. A {@link TaskInfo} should contain
      * information on how the requestor can or must obtain data from
      * the harvester.
      * 
      * @param maxAmount specifies the maximum amount of jobs to be written to the {@link List}
-     * @return an {@link IJob} containing information about jobs that the requestor can obtain.
+     * @return A list of {@link TaskInfo} containing information about jobs that the requestor can obtain.
      */
-    List<IJob> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException; 
+    List<TaskInfo> getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException; 
 
 
     /** 
      * Given an {@link IIdentifier} the requestor can obtain the CargoContainer
      * associated with the {@code jobId}. {@code jobId} is usually
-     * obtained from a {@link IJob}, which in turn can be obtained
+     * obtained from a {@link TaskInfo}, which in turn can be obtained
      * from {@link #getJobs(int)}.
      * 
      * @param jobId an {@link IIdentifier} that uniquely identifies a job with in the {@link IHarvest}

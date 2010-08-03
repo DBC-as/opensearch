@@ -30,7 +30,6 @@ package dk.dbc.opensearch.components.harvest ;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IJob;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 
@@ -306,7 +305,7 @@ public final class ESHarvest implements IHarvest
     }
     
 
-    public List< IJob > getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
+    public List< TaskInfo > getJobs( int maxAmount ) throws HarvesterIOException, HarvesterInvalidStatusChangeException
     {
         log.info( String.format( "The ES-Harvester was requested for %s jobs", maxAmount ) );
 
@@ -323,7 +322,7 @@ public final class ESHarvest implements IHarvest
             throw new HarvesterIOException( errorMsg, sqle );
         }
 
-        List< IJob > theJobList = new ArrayList< IJob >();
+        List< TaskInfo > theJobList = new ArrayList< TaskInfo >();
 
         log.info( String.format( "Queue size is %s", jobCandidatesQueue.size() ) );
         int retrievedAmount = jobCandidatesQueue.size();
@@ -365,7 +364,7 @@ public final class ESHarvest implements IHarvest
             String referenceData = retrieveReferenceData( id, conn );
 
             Document doc = createReferenceDataDocument( referenceData, id );
-            IJob theJob = new TaskInfo( id, doc );
+            TaskInfo theJob = new TaskInfo( id, doc );
             theJobList.add( theJob );
 
         }
