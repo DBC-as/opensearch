@@ -39,47 +39,78 @@ package dk.dbc.opensearch.common.types;
  */
 public final class SimplePair< E, V > implements Pair< E, V >
 {
-    /**
-     *
-     */
-
     private final E first;
     private final V second;
 
+    /**
+     *  
+     */
     public SimplePair( E first, V second ) 
     {
         this.first = first;
         this.second = second;
     }
 
-    
+    /**
+     *  Retrieves the first element of the pair.
+     *  
+     *  @return The first element of the pair.
+     */
     @Override
     public E getFirst()
     {
         return first;
     }
 
-    
+    /**
+     *  Retrieves the second element of the pair.
+     *  
+     *  @return The second element of the pair.
+     */
     @Override
     public V getSecond()
     {
         return second;
     }
     
-       
+    /**
+     *  A string representation of the pair in the following format:
+     *  <pre>
+     *  {@code
+     *     Pair< String-representation-of-first-element, String-representaion-of-second-element >
+     *  }
+     *  </pre>
+     *  If the SimplePair as the first element contains a String with value "FancyPants", 
+     *  and as its second element the integer value 42, then the toString will return:
+     *  <pre>
+     *  {@code
+     *     Pair< FancyPants, 42 >
+     *  }
+     *  </pre>
+     */
+    @Override
     public String toString()
     {
         return String.format( "Pair< %s, %s >", first.toString(), second.toString() );
     }
     
-    
+    /**
+     *  Returns a unique hashcode for the specific combination of elements in this SimplePair.
+     *  Notice, if you use the same two objects in the same order in two different SimplePairs, 
+     *  then the two SimplePairs will return the same hashcode.
+     */    
     @Override
     public int hashCode()
     {
         return first.hashCode() ^ second.hashCode();
     }
 
-
+    /**
+     *  Asserts equality of the SimplePair object and another SimplePair object, 
+     *  based on equality of the contained elements. The elements are testeted against each other 
+     *  in the same order they appear in the SimplePair. That is, Pair< E, V > and Pair < V, E >
+     *  are not equal even though it is the same objects (E and V) that are contained in the SimplePair
+     */
     @Override
     public boolean equals( Object obj )
     {
