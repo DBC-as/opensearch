@@ -27,15 +27,16 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
+//import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.common.xml.XMLUtils;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
@@ -52,6 +53,7 @@ import static org.junit.Assert.*;
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import org.w3c.dom.Document;
 import static mockit.Mockit.setUpMocks;
 import static mockit.Mockit.tearDownMocks;
@@ -59,7 +61,7 @@ import static mockit.Mockit.tearDownMocks;
 
 public class XMLDCHarvesterTest
 {
-    private XMLDCHarvester harvestPlugin;
+    private XMLDCHarvester dcPlugin;
     private CargoContainer cc;
     String submitter = "dbc";
     String format = "marcxchange";
@@ -78,6 +80,9 @@ public class XMLDCHarvesterTest
 
     @Mocked IIdentifier mockIdentifier;
     @Mocked IObjectRepository mockRepository;
+    @Mocked XMLDCHarvesterEnvironment mockEnv;
+    @Mocked IPluginEnvironment wrongEnvInstance;
+    @Mocked CargoContainer mockCargo;
 
     @MockClass( realClass = CargoContainer.class )
     public static class MockCargoContainer
@@ -138,89 +143,54 @@ public class XMLDCHarvesterTest
         ddjob = null;
     }
 
-   // @Ignore @Test
-   //  public void getCargoContainerTest() throws Exception
-   //  {
-   //      harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-   //      cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias");
-   //      //There is data in the returned CargoContainer
-   //      assertEquals( 1, cc.getCargoObjectCount() );
-   //      //The added data has been given the correct DataStreamType
-   //      assertEquals( true, cc.hasCargo( DataStreamType.OriginalData ) );
-   //      //the pid given by the mocked fedoraHandle
-   //      assertEquals( null, cc.getIdentifier() );
-   //      //the metadata is of type dublincore and has the correct title
-   //      assertEquals( "Testtitel" , cc.getDublinCoreMetaData().getDCValue( DublinCoreElement.ELEMENT_TITLE ) );
-
-   //      //assertEquals( 1, cc.getMetaData().size() );
-
-
-   //  }
+    /**
+     * tests the constructor
+     */
+    @Test
+    public void testConstructor() throws Exception
+    {
+        dcPlugin = new XMLDCHarvester( mockRepository );
+    }
 
     /**
-     * The MarcxchangeHarvester plugin will recieve invalid data and
-     * try to evaluate an xpath expression. This should throw a PluginException
-     * with a nested XPathExpressionException
+     * Tests the happy path of the main method runPlugin
      */
-    // @Ignore @Test( expected = XPathExpressionException.class )
-    // public void getCargoContainerWithInvalidData() throws Exception
-    // {       
-    //     harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-    //     try{
-    //         cc = harvestPlugin.getCargoContainer( ddjob, invaliddatabytes, "fakeAlias" );
-    //     }
-    //     catch( PluginException pe )
-    //     {
-    //         throw pe.getException();
-    //         //            assertEquals( "Expecting the nested exception to be XPathExpressionException", XPathExpressionException.class, pe.getException().getClass() );
-    //     }
-    // }
+    @Test
+    public void testRunPluginHappyPath() throws Exception
+    {
+        //expectations
+        new NonStrictExpectations()
+        {{
+            mockEnv.myRun( mockCargo );returns( mockCargo );
+        }};
+
+        dcPlugin = new XMLDCHarvester( mockRepository );
+        dcPlugin.runPlugin( mockEnv, mockCargo );
+    }
+ 
+    /**
+     * Tests that the runPlugin method throws the right exception if it 
+     * gets an environment of another type than XMLDCHarvesterEnvironment
+     */
+    @Test( expected = PluginException.class )
+    public void testRunPlugin() throws Exception
+    {
+        dcPlugin = new XMLDCHarvester( mockRepository );
+        dcPlugin.runPlugin( wrongEnvInstance, mockCargo );
+    }
+
     /**
      * test that the plugin has the right type
      */
     @Test
     public void testPluginType() throws Exception
     {        
-        harvestPlugin = new XMLDCHarvester( mockRepository );
-        assertEquals( PluginType.HARVEST, harvestPlugin.getPluginType() );
+        dcPlugin = new XMLDCHarvester( mockRepository );
+        assertEquals( PluginType.HARVEST, dcPlugin.getPluginType() );
 
     }
     
-    /**
-     * tests the behaviour when no bytes are given to the plugin
-     * An IllegalArgumentException should be thrown by the CargoContainer.add
-     * method and be caught and wrapped in a PluginException
-     */
-    // @Ignore @Test( expected = IllegalArgumentException.class )
-    // public void noDataGivenTest() throws Exception
-    // {      
-    //     harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-    //     try
-    //     {
-    //         cc = harvestPlugin.getCargoContainer( ddjob, noDataBytes, "fakealias" );
-    //     }
-    //     catch( PluginException pe )
-    //     {
-    //         throw pe.getException();
-    //     }
+ 
 
-    // }
-
-    /**
-     * tests the behavoiour when the cargoContainers add method fails with a IOException
-     */
-    // @Test( expected = IOException.class )
-    // public void cargoContainerCantAddDataTest() throws Exception
-    // {
-    //     setUpMocks( MockCargoContainer.class );
-    //     harvestPlugin = new XMLDCHarvester( scriptString, mockRepository );
-    //     try
-    //     {
-    //         cc = harvestPlugin.getCargoContainer( ddjob, databytes, "fakeAlias" );
-    //     }
-    //     catch( PluginException pe )
-    //     {
-    //         throw pe.getException();
-    //     }  
-    // }
+  
 }
