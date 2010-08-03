@@ -226,8 +226,10 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-      scriptClass.createRelation( pid, NS + "isSubjectDescriptionOf", result);
-      scriptClass.createRelation( result, NS + "hasSubjectDescription", pid);
+      if (result !== pid) {
+        scriptClass.createRelation( pid, NS + "isSubjectDescriptionOf", result);
+        scriptClass.createRelation( result, NS + "hasSubjectDescription", pid);
+      }
     }
 
     Log.info ("End isSubjectDescriptionOf" );
@@ -257,8 +259,10 @@ const Relations = function() {
 
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-        scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
-        scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
+        if (result !== pid) {
+          scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
+          scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
+        }
       }
 
     }

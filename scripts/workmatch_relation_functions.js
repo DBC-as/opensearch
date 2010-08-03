@@ -218,7 +218,9 @@ function makeworkobject( cargoXML )
 
     Log.info( "RLO: Entering javascript makeworkobject" );
 
-    var dc = DcCreator.createWorkDc ( cargoXML ); 
+    var dc = DcCreator.createWorkDc ( cargoXML );
+
+    Log.info( "RLO, DC: " + dc );
 
     Log.info( "RLO: Leaving javascript" );
 

@@ -130,6 +130,9 @@ const DcCreator = function(){
     var dcXml = DcCreator.createDcObject();
 
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")), "title", dc );
+    if (String(dcXml.oai_dc::dc) === "") {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
+    }
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::type), "type", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
@@ -170,7 +173,11 @@ const DcCreator = function(){
       }
     }
 
+    Log.debug( "RLO, DCXML: " + dcXml);
+
     var dcString = String(dcXml);
+
+    Log.debug( "RLO, DCSTRING: " + dcString);
 
     return dcString;
 
