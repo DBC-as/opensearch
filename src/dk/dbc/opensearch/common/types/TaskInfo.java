@@ -67,7 +67,6 @@ public final class TaskInfo
     private String mimetype;
 
     private final IIdentifier identifier;
-    private final Document referenceData;
 
 
     /**
@@ -90,9 +89,8 @@ public final class TaskInfo
     public TaskInfo( IIdentifier identifier, Document referenceData )
     {
         this.identifier = identifier;
-        this.referenceData = referenceData;
 
-        initValuesFromReferenceData();
+        initValuesFromReferenceData( referenceData );
     }
 
     /**
@@ -154,20 +152,20 @@ public final class TaskInfo
      * This private function initialises the class' private values with the ones 
      * given in the referenceData.
      */   
-    private void initValuesFromReferenceData()
+    private void initValuesFromReferenceData( Document referenceData )
     {
-        if ( this.referenceData == null )
+        if ( referenceData == null )
         {
             String error = "ReferenceData is empty or null. Aborting";
             log.error( error );
             throw new IllegalStateException( error );
         }
 
-        NodeList elementSet = this.referenceData.getElementsByTagName( "es:info" );
+        NodeList elementSet = referenceData.getElementsByTagName( "es:info" );
 
         if ( elementSet.getLength() == 0 )
         {
-            elementSet = this.referenceData.getElementsByTagName( "info" );
+            elementSet = referenceData.getElementsByTagName( "info" );
             if ( elementSet.getLength() == 0 )
             {
 
