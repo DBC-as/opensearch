@@ -1,5 +1,3 @@
-package dk.dbc.opensearch.common.types;
-
 /**
  *   
  *This file is part of opensearch.
@@ -21,11 +19,23 @@ package dk.dbc.opensearch.common.types;
 */
 
 
+package dk.dbc.opensearch.common.types;
+
+
 /**
- * SimplePair
- * 
- * If you would like to have sorting done on the SimplePair type, please use
- * dk.dbc.opensearch.common.types.ComparablePair type instead
+ * SimplePair is, as the name suggest, a very simple version of a Pair container.
+ * You can add two (different) objects to SimplePair and retrieve them again.
+ * After you have added the objects to SimplePair you can no longer modify them,
+ * i.e. SimplePair is immutable, even though the objects inside SimplePair may be mutable (see below).
+ * <p>
+ * Please notice, SimplePair do not use defensive copying of its two elements. 
+ * As a consequence if you modify the original objects after adding them to the SimplePair,
+ * the objects inside SimplePair will also be changed. It is the responibility of the user of SimplePair
+ * to ensure the correct behavior of the objects after adding them to SimplePair. This is of course only 
+ * possible if you use mutable objects.
+ * <p>
+ * If you would like to have sorting done on a Pair type, please use
+ * {@link ComparablePair} instead
  */
 public final class SimplePair< E, V > implements Pair< E, V >
 {
