@@ -71,7 +71,6 @@ const DcCreator = function(){
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::type), "type", dc );
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dcterms::isPartOf), "relation", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
 
     for each (child in originalXml.dkabm::record.dc::language) {
@@ -101,6 +100,14 @@ const DcCreator = function(){
     for each (child in originalXml.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dcterms::isPartOf) {
+      if (String(child.@xsi::type).match("oss:albumId")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( "albumId:" + String(child), "relation", dc );
+      } else {
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "relation", dc );
       }
     }
 

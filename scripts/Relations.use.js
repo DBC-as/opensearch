@@ -88,7 +88,7 @@ const Relations = function() {
         var identifier = child;
       }
     }
-   
+
     Log.info( "Identifier: " + identifier );    
     Log.info( "pid: " + pid );
 
@@ -116,8 +116,8 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var albumXML = XmlUtil.fromString( xml );
 
-    var identifier = String(albumXML.dkabm::record.ac::identifier);
-   
+    var identifier = "albumId:" + String(albumXML.dkabm::record.ac::identifier).replace(/\|150014/, "");
+
     Log.info( "Identifier: " + identifier );    
     Log.info( "pid: " + pid );
 
