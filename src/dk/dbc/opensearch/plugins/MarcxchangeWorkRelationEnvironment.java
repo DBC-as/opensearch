@@ -100,8 +100,8 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * match. If there are a match the post and the work are related. If not a new 
      * work is created based on the post, stored in the repository and then the post 
      * and the new work are related.
-     * @param cargo, a CargoContianer representing the post that are checked for a match
-     * @param searchPairs, a list of values and fields corresponding to searchable fields 
+     * @param cargo a CargoContianer representing the post that are checked for a match
+     * @param searchPairs a list of values and fields corresponding to searchable fields 
      * in the repository, used to generate the list of candidate works 
      * @return the unmodified CargoContainer.
      */
@@ -133,7 +133,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     /**
      * method that generates the list containing the fields to look in and the
      * corresponding values to match with
-     * @param cargo, the CargoContianer to generate searchpairs for
+     * @param cargo the CargoContianer to generate searchpairs for
      * @return a list of SimplePairs containing a serachfield and the value to match
      */
     public List< SimplePair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException

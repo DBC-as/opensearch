@@ -74,7 +74,7 @@ public interface IHarvest
     /**
      * This method lets the requestor/client set the status of a job
      * identified by {@code jobId}. A status can only be set once for
-     * a given job; a {@link Job} that has not had its status set,
+     * a given job; a job that has not had its status set,
      * will be unset. Trying to set a status more than once will
      * result in an error condition (signalled by an 
      * {@link HarvesterInvalidStatusChangeException}).

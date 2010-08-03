@@ -45,10 +45,10 @@ import dk.dbc.opensearch.common.types.Pair;
  * In order to use the SimpleRhinoWrapper you call the constructor
  * {@link SimpleRhinoWrapper#SimpleRhinoWrapper}.  This takes a
  * javascript filename as argument. The javascriptfile is then loaded,
- * and the javascript is evaluated, ready for being run.  You can add
+ * and the javascript is evaluated, ready for being run.  You can also add
  * instantiated objects to the javascript-environment, which will then
- * be accessible to the javascript.  This is done by using the function
- * {@link SimpleRhinoWrapper#put put}.  When you are ready to run your
+ * be accessible to the javascript.  This is also done in the constructor.
+ * When you are ready to run your
  * javascript, call {@link SimpleRhinoWrapper#run run}
  */
 public class SimpleRhinoWrapper

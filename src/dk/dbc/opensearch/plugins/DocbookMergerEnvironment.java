@@ -61,7 +61,7 @@ public class DocbookMergerEnvironment implements IPluginEnvironment
      * main method of the plugin. Takes the original data and dc data from a 
      * Cargocontainer, merge them and overwrites the orignal data in the 
      * cargo container.
-     * @param cargo, the cargocontainer containing the data to be merged
+     * @param cargo the cargocontainer containing the data to be merged
      * @return a CargoContainer with the merged (original and dc of the 
      * cargocontainer given as parameter) data in the original data stream 
      */

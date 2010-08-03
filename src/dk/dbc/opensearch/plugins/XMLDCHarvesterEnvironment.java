@@ -100,7 +100,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
      * The dc:identifier is taken directly from the cargocontainers identifier, 
      * so this method is dependant on that such a identifier previously have 
      * been added to the cargocontainer
-     * @param cargo, a CargoContainer with the originaldata
+     * @param cargo a CargoContainer with the originaldata
      * @return a cargocontainer with a dc stream added.
      */
 

@@ -86,10 +86,10 @@ public final class PluginEnvironmentUtils
      * This is mostly a wrapper in order to not write the same log-lines 
      * each time you want to validate an argumentname.
      * 
-     * @param String argument to look for.
-     * @param Map< String, String> map in which to look.
+     * @param argumentName argument to look for.
+     * @param args map in which to look.
      *
-     * @returns true if argument is found in the map. False otherwise.
+     * @return true if argument is found in the map. False otherwise.
      */
     public static boolean validateMandatoryArgumentName( String argumentName, Map< String, String > args )
     {

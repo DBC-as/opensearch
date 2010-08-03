@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 
 /**
  * The MarcxchangeHarvester plugin creates a {@link CargoContainer} with
- * {@link DublinCore} metadata from a marcxchange XML formatted inputdata.
+ * DublinCore metadata from a marcxchange XML formatted inputdata using a javascript.
  * The plugin does no explicit validation on the incoming material, and only
  * tries to construct dublin core metadata elements from the input data. If
  * this fails, an empty metadata element will be added to the CargoContainer,

@@ -203,8 +203,6 @@ public interface IObjectRepository
      * @param resultSearchFields {@link List} of {@link SimplePair}s
      * that contains pairwise search Strings and the fields to search
      * for that String in
-     * @param cutIdentifier stops the search and returns result if it
-     * encounters this identifier
      * @param maximumResults integer limiting the returned {@link List}
      * of identifiers
      * @param namespace {@link String} is the namespace to search in 
@@ -344,9 +342,9 @@ public interface IObjectRepository
 
 
     /**
-     * @param ObjectIdentifier objectIdentifier 
-     * @param String relation
-     * @param String subject
+     * @param objectIdentifier 
+     * @param relation
+     * @param subject
      * @throws ObjectRepositoryException
      */     
      public void addUncheckedObjectRelation( ObjectIdentifier objectIdentifier, String relation, String subject ) throws ObjectRepositoryException;

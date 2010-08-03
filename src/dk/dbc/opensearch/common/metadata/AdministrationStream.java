@@ -102,8 +102,8 @@ public class AdministrationStream implements MetaData
      * but it is then the responsibility of the client to ensure that
      * the input xml is valid and parsable according to the
      * administration stream xml Schema.
-     * @param InputStream: in, the administration xml
-     * @param boolean: validating, validate the InputStream if true  
+     * @param in the administration xml
+     * @param validating validate the InputStream if true  
      */
     public AdministrationStream( InputStream in, boolean validating ) throws XMLStreamException, SAXException, IOException
     {
@@ -167,9 +167,9 @@ public class AdministrationStream implements MetaData
      * Adds information about a data object as a stream in the
      * administrationstream. {@code id} by convention is the
      * DataStreamId.
-     * @param CargoObject: obj, the CargoObject to add data about into 
+     * @param obj the CargoObject to add data about into 
      * the administration stream
-     * @param String: id, the id of the CargoObject
+     * @param id the id of the CargoObject
      */
     public boolean addStream( CargoObject obj, String id )
     {
