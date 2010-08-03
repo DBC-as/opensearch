@@ -38,6 +38,7 @@ public interface Pair<E, V>
      * @param obj the {@link Pair} to compare this object with
      * @return true if the {@link Pair} is equal to this object
      */
+    @Override
     boolean equals( Object obj );
 
 
