@@ -127,6 +127,9 @@ const DcCreator = function(){
   that.createWorkDc = function ( xml ) {
 
     var originalXml = XmlUtil.fromString ( xml );
+
+    Log.debug( "RLO, ORIGINALXML: " + originalXml);
+
     var dcXml = DcCreator.createDcObject();
 
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")), "title", dc );
