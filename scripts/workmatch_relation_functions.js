@@ -176,7 +176,7 @@ Log.debug("RLO: newcreator = workcreator \n");
 // It gets a string representation of the content of the object it must
 // be the workobject for and returns a string rep. of the content of the 
 // workobject. The DC is given to the function and filled in as a sideeffect
-function makeworkobject( cargoXML, workDC )
+function makeworkobject( cargoXML )
 {
 //     var XML_cargo = new XML( cargoXML );
 //     var ting = new Namespace ( "ting", "http://www.dbc.dk/ting" );
@@ -218,7 +218,7 @@ function makeworkobject( cargoXML, workDC )
 
     Log.info( "RLO: Entering javascript makeworkobject" );
 
-    var dc = DcCreator.createWorkDc ( cargoXml ); 
+    var dc = DcCreator.createWorkDc ( cargoXML ); 
 
     Log.info( "RLO: Leaving javascript" );
 

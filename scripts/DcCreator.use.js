@@ -143,7 +143,7 @@ const DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dc::subject) {
-      if (String(child.match("computerspil") || String(child.match("soundtracks")) {
+      if (String(child.match("computerspil")) || String(child.match("soundtracks"))) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }

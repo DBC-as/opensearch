@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
-import dk.dbc.opensearch.common.metadata.DublinCore;
+//import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -307,7 +307,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
          * \todo: Remove the DublinCore object and get a string back from the script instead
          * please see bug 11027
          */
-        DublinCore workDC = new DublinCore();
+        //DublinCore workDC = new DublinCore();
         CargoContainer workCargo = new CargoContainer();
         //get the cargos xml
         byte[] theDC = cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes();
@@ -318,7 +318,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         log.info( "calling makeworkobject" );
 
         //be warned there are sideeffects on the workDC
-        String workXml = (String)rhinoWrapper.run( createObjectFunc, tempDCString, workDC );
+        String workXml = (String)rhinoWrapper.run( createObjectFunc, tempDCString/*, workDC */);
 
         log.debug( "workXml :" + workXml );
 
@@ -334,30 +334,30 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             throw new PluginException( errorMsg, ioe);
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        byte[] workDCBytes = null;
+        // byte[] workDCBytes = null;
+        // try
+        // {
+        //     workDC.serialize( baos, "not needed identifier" );
+        // }
+        // catch( OpenSearchTransformException oste )
+        // {
+        //     String error = String.format( "Error while serialising the DublinCore data created for a workobject to suit the material with identifier; '%s'",
+        //                                   cargo.getIdentifier().getIdentifier() );
+        //     log.error( error, oste );
+        //     throw new PluginException( error, oste );
+        // }
+        // workDCBytes= baos.toByteArray();
+
         try
         {
-            workDC.serialize( baos, "not needed identifier" );
-        }
-        catch( OpenSearchTransformException oste )
-        {
-            String error = String.format( "Error while serialising the DublinCore data created for a workobject to suit the material with identifier; '%s'",
-                                          cargo.getIdentifier().getIdentifier() );
-            log.error( error, oste );
-            throw new PluginException( error, oste );
-        }
-        workDCBytes= baos.toByteArray();
-
-        try
-        {
-            log.trace( String.format( "Trying to add workdc: '%s'", new String( workDCBytes ) ) );
-            workCargo.add( DataStreamType.DublinCoreData, "format", "internal","da", "text/xml", workDCBytes );
+            log.trace( String.format( "Trying to add workdcstream: '%s'", workXml ) );
+            workCargo.add( DataStreamType.DublinCoreData, "format", "internal","da", "text/xml", workXml.getBytes() );
         }
         catch( IOException ioe )
         {
-            String error = String.format( "Error when to CargoContainer.add with the bytes:'%s'", workDCBytes );
+            String error = String.format( "Error when to CargoContainer.add with the bytes:'%s'", workXml );
             log.error( error, ioe );
             throw new PluginException( error, ioe );
         }
