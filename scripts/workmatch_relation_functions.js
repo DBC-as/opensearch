@@ -1,6 +1,6 @@
+use ( "DcCreator.use.js" );
 
 //importClass(Packages.dk.dbc.opensearch.common.metadata.DublinCoreElement);
-
 
 // Takes a string representation of a marcxchange posts dc-stream
 // and makes into an xml object where values are selected from. 
@@ -178,40 +178,50 @@ Log.debug("RLO: newcreator = workcreator \n");
 // workobject. The DC is given to the function and filled in as a sideeffect
 function makeworkobject( cargoXML, workDC )
 {
-    var XML_cargo = new XML( cargoXML );
-    var ting = new Namespace ( "ting", "http://www.dbc.dk/ting" );
-    var dkabm = new Namespace ( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" );
-    var dc = new Namespace ( "dc", "http://purl.org/dc/elements/1.1/" );
-
-    var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
+//     var XML_cargo = new XML( cargoXML );
+//     var ting = new Namespace ( "ting", "http://www.dbc.dk/ting" );
+//     var dkabm = new Namespace ( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" );
+//     var dc = new Namespace ( "dc", "http://purl.org/dc/elements/1.1/" );
+// 
+//     var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
     //select the elements in the dc-xml that constitutes the work
     //do something with the xml and return it in string format
-    print( "XML_cargo:"+ XML_cargo + "\n" );
+//     print( "XML_cargo:"+ XML_cargo + "\n" );
    
 //    var creator = XML_cargo.dc::creator;
 //    var source = XML_cargo.dc::source;
 //    var title = XML_cargo.dc::title; 
 //    var type =  XML_cargo.dc::type;
 
-    var xml = new XML (<container/>);
-    xml.addNamespace( ting );
-    xml.addNamespace( dkabm );
-    xml.addNamespace( dc );
- 
-    xml.dkabm::record = "";
-    xml.dkabm::record.dc::title = XML_cargo.dc::title;
-    xml.dkabm::record.dc::creator = XML_cargo.dc::creator;
-    xml.dkabm::record.dc::type = XML_cargo.dc::type;
-    xml.dkabm::record.dc::source= XML_cargo.dc::source;
+//     var xml = new XML (<container/>);
+//     xml.addNamespace( ting );
+//     xml.addNamespace( dkabm );
+//     xml.addNamespace( dc );
+//  
+//     xml.dkabm::record = "";
+//     xml.dkabm::record.dc::title = XML_cargo.dc::title;
+//     xml.dkabm::record.dc::creator = XML_cargo.dc::creator;
+//     xml.dkabm::record.dc::type = XML_cargo.dc::type;
+//     xml.dkabm::record.dc::source= XML_cargo.dc::source;
+// 
+//     print (xml + "\n");
+// 
+//     var res = String(xml);
+// 
+//     workDC.setTitle( XML_cargo.dc::title );
+//     workDC.setCreator( XML_cargo.dc::creator );
+//     workDC.setType( XML_cargo.dc::type );
+//     workDC.setSource( XML_cargo.dc::source );
+// 
+//     return res;
 
-    print (xml + "\n");
 
-    var res = String(xml);
+    Log.info( "RLO: Entering javascript makeworkobject" );
 
-    workDC.setTitle( XML_cargo.dc::title );
-    workDC.setCreator( XML_cargo.dc::creator );
-    workDC.setType( XML_cargo.dc::type );
-    workDC.setSource( XML_cargo.dc::source );
+    var dc = DcCreator.createWorkDc ( cargoXml ); 
 
-    return res;
+    Log.info( "RLO: Leaving javascript" );
+
+    return dc;
+
 }

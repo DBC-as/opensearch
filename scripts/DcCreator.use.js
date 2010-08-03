@@ -124,6 +124,58 @@ const DcCreator = function(){
 
   };
 
+  that.createWorkDc = function ( xml ) {
+
+    var originalXml = XmlUtil.fromString ( xml );
+    var dcXml = DcCreator.createDcObject();
+
+    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")), "title", dc );
+    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
+    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::type), "type", dc );
+    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
+
+    var child;
+
+    for each (child in originalXml.dkabm::record.dc::language) {
+      if (!String(child.@type).match("dcterms:ISO639-2")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::subject) {
+      if (String(child.match("computerspil") || String(child.match("soundtracks")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::contributor) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "contributor", dc );
+    }
+
+    for each (child in originalXml.dkabm::record.dc::identifier) {
+      if (String(child.@type).match("dkdcplus:ISBN")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::identifier) {
+      if (String(child.@type).match("dkdcplus:ISSN")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::identifier) {
+      if (String(child.@type).match("oss:upc")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
+      }
+    }
+
+    var dcString = String(dcXml);
+
+    return dcString;
+
+  };
+
   return that;
 
 }();
