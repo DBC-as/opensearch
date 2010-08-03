@@ -28,7 +28,7 @@ const DcCreator = function(){
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
 
     for each (child in originalXml.dkabm::record.dc::language) {
-      if (!String(child.@type).match("dcterms:ISO639-2")) {
+      if (!String(child.@xsi::type).match("dcterms:ISO639-2")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
@@ -36,19 +36,19 @@ const DcCreator = function(){
     var child;
 
     for each (child in originalXml.dkabm::record.dc::subject) {
-      if (!String(child.@type).match("dkdcplus:DK5")) {
+      if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@type).match("dkdcplus:ISBN")) {
+      if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@type).match("dkdcplus:ISSN")) {
+      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
@@ -133,7 +133,7 @@ const DcCreator = function(){
     var dcXml = DcCreator.createDcObject();
 
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")), "title", dc );
-    if (String(dcXml.oai_dc::dc) === "") {
+    if (String(dcXml.oai_dc::dc.dc::title) === "") {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
@@ -159,19 +159,19 @@ const DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@type).match("dkdcplus:ISBN")) {
+      if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@type).match("dkdcplus:ISSN")) {
+      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISSN:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@type).match("oss:upc")) {
+      if (String(child.@xsi::type).match("oss:upc")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
