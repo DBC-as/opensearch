@@ -294,9 +294,10 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
 
     /**
-     * method that creates a workobject from a CargoContainer. The javascript that gets 
-     * the DC of the cargocontainer defines what data to use. The workobject is stored 
-     * in the objectrepository.
+     * method that creates a workobject from a CargoContainer. 
+     * The javascript that gets the OriginalData of the cargocontainer 
+     * defines which parts of the data to use. 
+     * The workobject is stored in the objectrepository.
      * @param cargo, the post to creare a workobject from
      * @return the pid of the new workobject
      */
@@ -307,18 +308,15 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
          * \todo: Remove the DublinCore object and get a string back from the script instead
          * please see bug 11027
          */
-        //DublinCore workDC = new DublinCore();
         CargoContainer workCargo = new CargoContainer();
-        //get the cargos xml
-        byte[] theDC = cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes();
-        String tempDCString = new String ( E4XXMLHeaderStripper.strip( theDC ) );
+        //get the cargos data
+        byte[] theData = cargo.getCargoObject( DataStreamType.OriginalData ).getBytes();
+        String tempDataString = new String ( E4XXMLHeaderStripper.strip( theData ) );
 
-        //call the javascript that creates a workobject xml from a cargo xml
-
+        //call the javascript that creates a workobject xml from a cargo data
         log.info( "calling makeworkobject" );
 
-        //be warned there are sideeffects on the workDC
-        String workXml = (String)rhinoWrapper.run( createObjectFunc, tempDCString/*, workDC */);
+        String workXml = (String)rhinoWrapper.run( createObjectFunc, tempDataString );
 
         log.debug( "workXml :" + workXml );
 
