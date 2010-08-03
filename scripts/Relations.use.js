@@ -226,7 +226,7 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-      if (result !== pid) {
+      if (String(result) !== String(pid)) {
         scriptClass.createRelation( pid, NS + "isSubjectDescriptionOf", result);
         scriptClass.createRelation( result, NS + "hasSubjectDescription", pid);
       }
@@ -259,7 +259,7 @@ const Relations = function() {
 
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-        if (result !== pid) {
+        if (String(result) !== String(pid)) {
           scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
           scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
         }

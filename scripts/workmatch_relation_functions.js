@@ -45,8 +45,8 @@ function generateSearchPairs( dcXML, originalXML, resultArray )
 function checkmatch( newObject, workObject )
 {
 
-Log.debug("RLO: workXML = " + workObject + ", end\n");
-Log.debug("RLO: newXML = " + newObject + ", end\n");
+    Log.debug("RLO: workXML = " + workObject + ", end\n");
+    Log.debug("RLO: newXML = " + newObject + ", end\n");
     var newObjectXml = new XML( newObject );
     var workObjectXml = new XML( workObject );
     var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
@@ -59,19 +59,19 @@ Log.debug("RLO: newXML = " + newObject + ", end\n");
     var workSource = String(workObjectXml.dc::source);
     var newCreator = String(newObjectXml.dc::creator);
     var workCreator = String(workObjectXml.dc::creator);
-    //var workType = String(workObjectXml.dc::creator);
     var newType = String(newObjectXml.dc::type);
     var workType = String(workObjectXml.dc::type);
-
-
-    // var newTitle = String(newObjectXml.dc::title);
-    // var workTitle = String(workObjectXml.dc::title);
-    // var newSource = String(newObjectXml.dc::source);
-    // var workSource = String(workObjectXml.dc::source);
-    // var newCreator = String(newObjectXml.dc::creator);
-    // var workCreator = String(workObjectXml.dc::creator);
-    // var newType = String(newObjectXml.dc::type);
-    // var workType = String(workObjectXml.dc::type);
+    var newContributors = [];
+    var workContributors = [];
+    var child;
+    for each (child in newObjectXml.dc::contributor) {
+      Log.debug( "RLO: CHILD NEW" + child);
+      newContributors.push(String(child));
+    }
+    for each (child in workObjectXml.dc::contributor) {
+      Log.debug( "RLO: CHILD WORK " + child);
+      workContributors.push(String(child));
+    }
 
     Log.debug( "RLO: start match\n");
     //check for a match. Return true if there is, false if not ;-)
@@ -125,7 +125,7 @@ Log.debug("RLO: newXML = " + newObject + ", end\n");
         break;
       case "CD": case "Grammofonplade": case "netmusik (album)":
         Log.debug( "RLO: CD\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|netmusik (album)")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|netmusik \(album\)")) {
           result = true;
         } else {
           result = false;
@@ -133,8 +133,36 @@ Log.debug("RLO: newXML = " + newObject + ", end\n");
         break;
       case "netmusik (track)": 
         Log.debug( "RLO: netmusik (track)\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("netmusik (track)")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("netmusik \(track\)")) {
           result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "DVD": case "Video": case "Netdokument":
+        Log.debug( "RLO: film\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("DVD|Video|Netdokument")) {
+          result = true;
+        } else if (newTitle === workTitle && workType.match("Bog|Lydbog.*|Diskette")) {
+          for (var a in newContributors) {
+            if (workCreator === newContributors[a]) {
+              result = true;
+            }
+          }
+        } else {
+          result = false;
+        }
+        break;
+      case "Bog": case "Lydbog (cd)": case "Lydbog (b\u00e5nd)": case "Lydbog (cd-mp3)": case "Lydbog (online)": case "Kassettelydb\u00e5nd": case "Diskette":
+        Log.debug( "RLO: film\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("Bog|Lydbog.*|Diskette")) {
+          result = true;
+        } else if (newTitle === workTitle && workType.match("DVD|Video|Netdokument")) {
+          for (var a in workContributors) {
+            if (newCreator === workContributors[a]) {
+              result = true;
+            }
+          }
         } else {
           result = false;
         }
@@ -142,14 +170,14 @@ Log.debug("RLO: newXML = " + newObject + ", end\n");
       default:
         Log.debug( "RLO: default\n");
         if (newCreator === workCreator) {
-Log.debug("RLO: newcreator = workcreator \n");
-          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)| netmusik (track)")) {
+          Log.debug("RLO: newcreator = workcreator \n");
+          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik \(album\)| netmusik \(track\)")) {
             result = true;
-          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)|netmusik (track)")) {
+          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik \(album\)|netmusik \(track\)")) {
             result = true;
-          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)| netmusik (track)")) {
+          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik \(album\)| netmusik \(track\)")) {
             result = true;
-          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|netmusik (album)|netmusik (track)")) {
+          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|netmusik \(album\)|netmusik \(track\)")) {
             result = true;
           } else {
             result = false;
@@ -178,44 +206,6 @@ Log.debug("RLO: newcreator = workcreator \n");
 // workobject. The DC is given to the function and filled in as a sideeffect
 function makeworkobject( cargoXML )
 {
-//     var XML_cargo = new XML( cargoXML );
-//     var ting = new Namespace ( "ting", "http://www.dbc.dk/ting" );
-//     var dkabm = new Namespace ( "dkabm", "http://biblstandard.dk/abm/namespace/dkabm/" );
-//     var dc = new Namespace ( "dc", "http://purl.org/dc/elements/1.1/" );
-// 
-//     var dc = new Namespace( "dc", "http://purl.org/dc/elements/1.1/" );
-    //select the elements in the dc-xml that constitutes the work
-    //do something with the xml and return it in string format
-//     print( "XML_cargo:"+ XML_cargo + "\n" );
-   
-//    var creator = XML_cargo.dc::creator;
-//    var source = XML_cargo.dc::source;
-//    var title = XML_cargo.dc::title; 
-//    var type =  XML_cargo.dc::type;
-
-//     var xml = new XML (<container/>);
-//     xml.addNamespace( ting );
-//     xml.addNamespace( dkabm );
-//     xml.addNamespace( dc );
-//  
-//     xml.dkabm::record = "";
-//     xml.dkabm::record.dc::title = XML_cargo.dc::title;
-//     xml.dkabm::record.dc::creator = XML_cargo.dc::creator;
-//     xml.dkabm::record.dc::type = XML_cargo.dc::type;
-//     xml.dkabm::record.dc::source= XML_cargo.dc::source;
-// 
-//     print (xml + "\n");
-// 
-//     var res = String(xml);
-// 
-//     workDC.setTitle( XML_cargo.dc::title );
-//     workDC.setCreator( XML_cargo.dc::creator );
-//     workDC.setType( XML_cargo.dc::type );
-//     workDC.setSource( XML_cargo.dc::source );
-// 
-//     return res;
-
-
     Log.info( "RLO: Entering javascript makeworkobject" );
 
     var dc = DcCreator.createWorkDc ( cargoXML );

@@ -21,14 +21,14 @@ const DcCreator = function(){
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
 
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")), "title", dc );
+    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")).replace(/\u00a4/, ""), "title", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::type), "type", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dcterms::isPartOf), "relation", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
 
     for each (child in originalXml.dkabm::record.dc::language) {
-      if (!String(child.@xsi::type).match("dcterms:ISO639-2")) {
+      if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("oss:subtitles") && !String(child.@xsi::type).match("oss:spoken")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
@@ -39,6 +39,10 @@ const DcCreator = function(){
       if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::contributor) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "contributor", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
@@ -82,6 +86,10 @@ const DcCreator = function(){
       if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::contributor) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "contributor", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
@@ -132,8 +140,8 @@ const DcCreator = function(){
 
     var dcXml = DcCreator.createDcObject();
 
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")), "title", dc );
-    if (String(dcXml.oai_dc::dc.dc::title) === "") {
+    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")).replace(/\u00a4/, ""), "title", dc );
+    if (dcXml.oai_dc::dc.dc::title === undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
@@ -143,13 +151,13 @@ const DcCreator = function(){
     var child;
 
     for each (child in originalXml.dkabm::record.dc::language) {
-      if (!String(child.@type).match("dcterms:ISO639-2")) {
+      if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("oss:subtitles") && !String(child.@xsi::type).match("oss:spoken")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
 
     for each (child in originalXml.dkabm::record.dc::subject) {
-      if (String(child.match("computerspil")) || String(child.match("soundtracks"))) {
+      if (String(child).match("computerspil") || String(child).match("soundtracks")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }
