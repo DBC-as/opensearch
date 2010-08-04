@@ -16,18 +16,19 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package dk.dbc.opensearch.common.types;
 
-import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
+
 import dk.dbc.opensearch.common.metadata.MetaData;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.apache.log4j.Logger;
 
 
@@ -69,7 +70,6 @@ public class CargoContainer
     {
         data = new ArrayList<CargoObject>();
         metadata = new HashMap<DataStreamType, MetaData>();
-        //this.addMetaData( new DublinCore() );
         log.trace( String.format( "Constructing new CargoContainer" ) );
     }
 
@@ -97,8 +97,6 @@ public class CargoContainer
     public void setIdentifier( ObjectIdentifier new_identifier )
     {
         this.identifier  = new_identifier; 
-        
-        //this.getDublinCoreMetaData().setIdentifier( identifier.getIdentifier() );
     }
 
     
@@ -505,24 +503,5 @@ public class CargoContainer
 
     }
 
-
-    // public DublinCore getDublinCoreMetaData()
-    // {
-    //     DublinCore retval = null;
-    //     for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
-    //     {
-    //         if( meta.getKey() == DataStreamType.DublinCoreData )
-    //         {
-    //             retval = (DublinCore) meta.getValue();
-    //         }
-    //     }
-    //     if( retval == null )
-    //     {
-    //         log.warn( "No DublinCore element found in CargoContainer" );
-    //     }
-    //     return retval;
-    // }
-
- 
 }
 
