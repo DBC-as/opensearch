@@ -35,7 +35,6 @@ import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.List;
-//import java.util.regex.Pattern;
 
 
 
@@ -119,32 +118,6 @@ public interface IObjectRepository
      * @throws ObjectRepositoryException if the object cannot be replaced with the data in {@code cargo}
      */
     public void replaceObject( String identifier, CargoContainer cargo ) throws ObjectRepositoryException;
-    
-
-    /** 
-     * Searches the object repository using the regular expression in
-     * {@code searchExpression} and returns all identifiers that
-     * matches the query limited by {@code maximumResult}
-     * 
-     * @param searchExpression a regular expression expressing the search query
-     * @param maximumResult integer limiting the returned {@link List} of identifiers
-     * 
-     * @return a {@link List} of identifiers that matched {@code searchExpression}
-     */
-    //public List<String> getIdentifiers( Pattern searchExpression, String cutIdentifier, int maximumResult );
-    
-
-    /** 
-     * Searches the object repository using the query expression in
-     * {@code verbatimSearchString} and returns all identifiers that
-     * matches the query limited by {@code maximumResult}
-     * 
-     * @param verbatimSearchString string that is used as query 
-     * @param maximumResult integer limiting the returned {@link List} of identifiers
-     * 
-     * @return a {@link List} of identifiers that matched {@code verbatimSearchString}
-     */    
-    //public List<String> getIdentifiers( String verbatimSearchString, String cutIdentifier, int maximumResult );
 
 
     /** 
@@ -182,15 +155,6 @@ public interface IObjectRepository
     public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutIdentifier, int maximumResults );
 
 
-
-    /**
-     * This method signature is the result of very specific needs for the 
-     * matching of works. It should be obsolete very soon, so if you see this 
-     * after 1st of July it should be commented out and after the 1st of 
-     * september it should be deleted if no problems have arised.  
-     */
-    //  public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
-
     /** 
      * Searches the object repository using the a {@link List} of
      * {@code searchStrings} as query, limiting the search to the
@@ -210,47 +174,6 @@ public interface IObjectRepository
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
     public List< String > getIdentifiersWithNamespace( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace );
-
-
-    /**
-     * \todo: explain what this method does
-     * Searches the object repository using the a {@link List} of
-     * {@code searchStrings} as query, limiting the search to the
-     * {@link List} of {@code searchableFields} and limiting {@link
-     * List} of returned identifiers with {@code maximumResult}
-     *
-     * @param resultSearchFields {@link List} of fields to search in for {@code searchStrings}
-     * @param maximumResults integer limiting the returned {@link List} of identifiers
-     *
-     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
-     */
-    public List< String > getIdentifiersUnqualified( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults );
-
-
-    /**
-     * This code has been commented out since it is not used anywhere
-     * and there seems to be no intentions of ever using it. Should
-     * anyone encounter this commented-out method later than July 1st
-     * 2010, it should be removed altogether.
-     */
-    /** 
-     * Stores data supplied in {@code cargo} in the object identified
-     * by {@code identifier}, overwriting any existing data for that
-     * type if {@code overwrite} has been set. The implementation can
-     * choose to make {@code versionable} and {@code overwrite}
-     * orthogonal, even though setting data as {@code versionable} in
-     * most cases would imply that it should be made inactive rather
-     * than overwritten.
-     * 
-     * @param identifier identifying the object which the data should be stored in. 
-     * @param cargo a {@link CargoObject} containing one unit of data that should be stored in the object
-     * @param versionable indicating whether the data should be versionable in the object repository
-     * @param overwrite indicating whether existing data for the type of the {@link CargoObject} should be overwritten with the one provided.
-     * 
-     * @throws ObjectRepositoryException if the data could not be stored on the object 
-     */
-    // public void storeDataInObject( String identifier, CargoObject cargo, boolean versionable, boolean overwrite ) throws ObjectRepositoryException;
-
 
     /** 
      * Retrieves data identified by {@code identifier} and qualified
@@ -295,27 +218,6 @@ public interface IObjectRepository
      * @throws ObjectRepositoryException if the data could not be deleted from the object
      */
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
-
-    
-    /**
-     * This code has been commented out since it is not used anywhere
-     * and there seems to be no intentions of ever using it. Should
-     * anyone encounter this commented-out method later than July 1st
-     * 2010, it should be removed altogether.
-     */
-    /** 
-     * Replaces data in the object identified by {@code
-     * objectIdentifier}, identified by {@code dataIdentifier} with
-     * the data enclosed in the {@link CargoObject}
-     * 
-     * @param objectIdentifier identifying the object in which the data is to be replaced
-     * @param dataIdentifier identifying the data that is to be replaced
-     * @param cargo a {@link CargoObject} containing the data that is to replace the data in the object
-     * 
-     * @throws ObjectRepositoryException if the data could not be replaced in the object
-     */
-    // public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException;
-    
 
     /** 
      * Retrieves all relations on object identified with {@code objectIdentifier}

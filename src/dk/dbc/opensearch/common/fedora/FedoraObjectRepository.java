@@ -27,8 +27,6 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
-//import dk.dbc.opensearch.common.metadata.DublinCore;
-//import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -816,34 +814,6 @@ public class FedoraObjectRepository implements IObjectRepository
 
         log.debug( String.format( "RET Matching returning: '%s'", ret ) );
         return ret;
-    }
-
-
-
-    @Override
-    public List< String > getIdentifiersUnqualified( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults )
-    {
-        String[] resultFields = new String[ resultSearchFields.size() + 1 ];
-        int i = 0;
-        for (Pair< TargetFields, String > field : resultSearchFields )
-        {
-            TargetFields property = field.getFirst();
-            resultFields[i] = property.fieldname();
-            i++;
-        }
-
-        resultFields[i++] = "pid"; // must be present!
-        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, null );
-
-        int ofLength = objectFields.length;
-        List< String > pids = new ArrayList< String >( ofLength );
-        for( int j = 0; j < ofLength; j++ )
-        {
-            String pidValue = objectFields[j].getPid();
-            pids.add( pidValue );
-        }
-
-        return pids;
     }
 
 
