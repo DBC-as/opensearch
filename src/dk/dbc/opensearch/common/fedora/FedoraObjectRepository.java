@@ -1462,13 +1462,6 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
-    @Override
-    public List< Pair< IPredicate, String > > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
-    {
-        return null;
-    }
-
-
     public List< Pair< IPredicate, String > > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
     {
         try

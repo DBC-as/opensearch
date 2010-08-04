@@ -219,13 +219,10 @@ public interface IObjectRepository
      */
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
 
-    /** 
-     * Retrieves all relations on object identified with {@code objectIdentifier}
-     * @param objectIdentifier identifying the object to retrieve relation data from
-     * @return a List of 
-     * @throws ObjectRepositoryException
+
+    /**
+     * \todo: Write some documentation bug 
      */
-    public List< Pair<IPredicate, String> > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
 
 
     public List< Pair<IPredicate, String> > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException;
