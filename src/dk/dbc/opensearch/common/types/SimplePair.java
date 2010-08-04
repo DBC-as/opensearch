@@ -24,7 +24,8 @@ package dk.dbc.opensearch.common.types;
 
 /**
  * SimplePair is, as the name suggest, a very simple version of a Pair container.
- * You can add two (different) objects to SimplePair and retrieve them again.
+ * You can add two  objects to SimplePair and retrieve them again.
+ * The objects may be different, identical, or the actual same object.
  * After you have added the objects to SimplePair you can no longer modify them,
  * i.e. SimplePair is immutable, even though the objects inside SimplePair may be mutable (see below).
  * <p>
