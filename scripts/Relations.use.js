@@ -22,7 +22,7 @@ const Relations = function() {
     var reviewXML = XmlUtil.fromString( xml );
 
     var identifier = reviewXML.*.*.*.(@tag=='014').*.(@code=='a');
-   
+
     Log.info( "Identifier: " + identifier );    
     Log.info( "pid: " + pid );
 
@@ -39,6 +39,25 @@ const Relations = function() {
       scriptClass.createRelation( result, NS + "hasReview", pid);
     }
 
+    Log.debug ( "REVIEW: " + i );
+
+    if (i === 0) {
+      var title = String(reviewXML.dkabm::record.dc::title).replace(/Anbefaling af: (.*) af .*/, "$1");
+
+      var results = FedoraPIDSearch.title( title );
+
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+
+        Log.info( "result: " + result );
+
+        var NS = "http://oss.dbc.dk/rdf/dkbib#";
+
+        scriptClass.createRelation( pid, NS + "isReviewOf", result);
+        scriptClass.createRelation( result, NS + "hasReview", pid);
+      }
+    }
+
     Log.info ("End isReviewOf" );
 
   };
@@ -51,7 +70,7 @@ const Relations = function() {
     var katalogXML = XmlUtil.fromString( xml );
 
     var identifier = String(katalogXML.*.*.*.(@tag=='001').*.(@code=='a'));
-   
+
     Log.info( "Identifier: " + identifier );    
     Log.info( "pid: " + pid );
 
@@ -79,20 +98,12 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var articleXML = XmlUtil.fromString( xml );
 
-    var child;
+    var relation = String(articleXML.*.*.*.(@tag=='016').*.(@code=='a'));
 
-    for each (child in articleXML.dkabm::record.dcterms::isPartOf) {
-      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-        Log.debug ( "Attribute: " + String(child.@xsi::type));
-        Log.debug ( "Child: " + child );
-        var identifier = "ISSN:" + String(child).replace(/-/g, "");
-      }
-    }
-
-    Log.info( "Identifier: " + identifier );
+    Log.info( "Relation: " + relation );
     Log.info( "pid: " + pid );
 
-    var results = FedoraPIDSearch.identifier( identifier );
+    var results = FedoraPIDSearch.pid( "*:" + relation );
 
     for ( var i = 0; i < results.length; ++i ) {
       var result = results[i];
@@ -103,6 +114,34 @@ const Relations = function() {
 
       scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
       scriptClass.createRelation( result, NS + "hasArticle", pid);
+    }
+
+    if (i === 0) {
+      var child;
+
+      for each (child in articleXML.dkabm::record.dcterms::isPartOf) {
+        if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
+          Log.debug ( "Attribute: " + String(child.@xsi::type));
+          Log.debug ( "Child: " + child );
+          var identifier = "ISSN:" + String(child).replace(/-/g, "");
+        }
+      }
+
+      Log.info( "Identifier: " + identifier );
+      Log.info( "pid: " + pid );
+
+      var results = FedoraPIDSearch.identifier( identifier );
+
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+
+        Log.info( "result: " + result );
+
+        var NS = "http://oss.dbc.dk/rdf/dbcbib#";
+
+        scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
+        scriptClass.createRelation( result, NS + "hasArticle", pid);
+      }
     }
 
     Log.info ("End isPartOfManifestation" );
@@ -116,15 +155,7 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
 
-    var child;
-
-    for each (child in manifestationXML.dkabm::record.dc::identifier) {
-      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-        Log.debug ( "Attribute: " + String(child.@xsi::type));
-        Log.debug ( "Child: " + child );
-        var identifier = "ISSN:" + String(child).replace(/-/g, "");
-      }
-    }
+    var identifier = "PartOf:" + String(manifestationXML.*.*.*.(@tag=='001').*.(@code=='a'));
 
     Log.info( "Identifier: " + identifier );    
     Log.info( "pid: " + pid );
@@ -140,6 +171,34 @@ const Relations = function() {
 
       scriptClass.createRelation( pid, NS + "hasArticle", result);
       scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
+    }
+
+    if (i === 0) {
+      var child;
+
+      for each (child in manifestationXML.dkabm::record.dc::identifier) {
+        if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
+          Log.debug ( "Attribute: " + String(child.@xsi::type));
+          Log.debug ( "Child: " + child );
+          var identifier = "ISSN:" + String(child).replace(/-/g, "");
+        }
+      }
+
+      Log.info( "Identifier: " + identifier );    
+      Log.info( "pid: " + pid );
+
+      var results = FedoraPIDSearch.relation( identifier );
+
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+
+        Log.info( "result: " + result );
+
+        var NS = "http://oss.dbc.dk/rdf/dbcbib#";
+
+        scriptClass.createRelation( pid, NS + "hasArticle", result);
+        scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
+      }
     }
 
     Log.info ("End hasArticle" );

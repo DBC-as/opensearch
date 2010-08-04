@@ -70,6 +70,10 @@ const DcCreator = function(){
       }
     }
 
+    for each (child in originalXml.collection.record.datafield.(@tag=="016").subfield.(@code=="a")) {
+      dcXml.oai_dc::dc += DcCreator.createElement( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc );
+    }
+
     var dcString = String(dcXml);
 
     return dcString;
