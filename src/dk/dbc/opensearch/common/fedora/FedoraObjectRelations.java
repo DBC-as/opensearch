@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.common.Constants;
@@ -59,7 +59,7 @@ public class FedoraObjectRelations
     private static Logger log = Logger.getLogger( FedoraObjectRelations.class );
 
 
-    private static String p = "p"; // used to extract value from SimplePair. Depends on itql statement!!!
+    private static String p = "p"; // used to extract value from Pair. Depends on itql statement!!!
     private final IObjectRepository objectRepository;
     private final FedoraHandle fedoraHandle;
 
@@ -93,7 +93,7 @@ public class FedoraObjectRelations
      * @param predicate_2 Null value accepted
      * @param object_2 Null value accepted
      * @param relation Name of relation Fedora object must have
-     * @return SimplePair of
+     * @return Pair of
      * @throws ConfigurationException
      * @throws ServiceException
      * @throws MalformedURLException
@@ -123,7 +123,7 @@ public class FedoraObjectRelations
         String limit = "limit 1";
 
         query = select + where + relsNS + limit;
-        List<SimplePair<String, String>> tuples = executeGetTuples( query );
+        List<Pair<String, String>> tuples = executeGetTuples( query );
 
         if( !tuples.isEmpty() )
         {
@@ -137,9 +137,9 @@ public class FedoraObjectRelations
 
 
     /**
-     * returns an {@link List< SimplePair< String,String > >} where
-     * {@link SimplePair.getFirst()} represents the {@code subject} tuple
-     * variable and {@link SimplePair.getSecond()} represents the {@code object}
+     * returns an {@link List< Pair< String,String > >} where
+     * {@link Pair.getFirst()} represents the {@code subject} tuple
+     * variable and {@link Pair.getSecond()} represents the {@code object}
      * tuple variable. If the variable is not named, e.g. by using null as
      * parameter, the getters will display the sparql variable substitute.
      *
@@ -152,7 +152,7 @@ public class FedoraObjectRelations
      * @throws MalformedURLException
      * @throws IOException
      */
-    private List<SimplePair<String, String>> executeGetTuples( String query ) throws ConfigurationException, ServiceException, IOException
+    private List<Pair<String, String>> executeGetTuples( String query ) throws ConfigurationException, ServiceException, IOException
     {
         log.debug( String.format( "using query %s", query ) );
 
@@ -194,7 +194,7 @@ public class FedoraObjectRelations
         qparams.put( "flush", "true" );
         qparams.put( "query", query );
         TupleIterator tuples = this.fedoraHandle.getTuples( qparams );
-        ArrayList<SimplePair<String, String>> tupleList = new ArrayList<SimplePair<String, String>>();
+        ArrayList<Pair<String, String>> tupleList = new ArrayList<Pair<String, String>>();
         if( tuples != null )
         {
             try
@@ -208,7 +208,7 @@ public class FedoraObjectRelations
                         {
                             String workRelation = row.get( key ).toString();
                             log.debug( "returning tupleList" );
-                            tupleList.add( new SimplePair<String, String>( key, workRelation ) );
+                            tupleList.add( new Pair<String, String>( key, workRelation ) );
                         }
                     }
                 }
@@ -558,10 +558,10 @@ public class FedoraObjectRelations
         String[] resultFields = { property_1.fieldname(), property_2.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;
-        List< SimplePair< TargetFields, String > > propertiesAndValues = new ArrayList< SimplePair< TargetFields, String > >();
+        List< Pair< TargetFields, String > > propertiesAndValues = new ArrayList< Pair< TargetFields, String > >();
 
-        propertiesAndValues.add( new SimplePair< TargetFields, String >( property_1, value_1 ) );
-        propertiesAndValues.add( new SimplePair< TargetFields, String >( property_2, value_2 ) );
+        propertiesAndValues.add( new Pair< TargetFields, String >( property_1, value_1 ) );
+        propertiesAndValues.add( new Pair< TargetFields, String >( property_2, value_2 ) );
 
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 10000, null );
         String retVal = null;
@@ -589,9 +589,9 @@ public class FedoraObjectRelations
         String[] resultFields = { property.fieldname() };
 
         FedoraObjectRepository fedoraObjectRepository = (FedoraObjectRepository) objectRepository;        
-        List< SimplePair< TargetFields, String > > propertiesAndValues = new ArrayList< SimplePair< TargetFields, String > >();
+        List< Pair< TargetFields, String > > propertiesAndValues = new ArrayList< Pair< TargetFields, String > >();
 
-        propertiesAndValues.add( new SimplePair< TargetFields, String >( property, value ) );
+        propertiesAndValues.add( new Pair< TargetFields, String >( property, value ) );
         ObjectFields[] pids = fedoraObjectRepository.searchRepository( resultFields, propertiesAndValues, "has", 100000, null );
 
         String retval = null;

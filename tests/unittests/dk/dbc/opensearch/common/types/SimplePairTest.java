@@ -22,20 +22,20 @@ public class SimplePairTest {
     @Test
     public void testAddingTwoIdenticalObjectsWorks()
     {
-        new SimplePair<String, String>( "a", "a" );
+        new Pair<String, String>( "a", "a" );
     }
 
     
     @Test( expected=IllegalArgumentException.class )
     public void testConstructorDoesntAcceptNullValuesForFirstArgument()
     {
-        new SimplePair<String, String>( null, "a" );
+        new Pair<String, String>( null, "a" );
     }
 
     @Test( expected=IllegalArgumentException.class )
     public void testConstructorDoesntAcceptNullValuesForSecondArgument()
     {
-        new SimplePair<String, String>( "a", null );
+        new Pair<String, String>( "a", null );
     }
 
     @Test
@@ -43,7 +43,7 @@ public class SimplePairTest {
     {
         List<String> stringlist = new ArrayList<String>();
         stringlist.add( "a" );
-        SimplePair<String, List<String>> pair = new SimplePair<String, List<String>>( "a", stringlist );
+        Pair<String, List<String>> pair = new Pair<String, List<String>>( "a", stringlist );
         stringlist.remove( "a" );
         assertTrue( pair.getSecond().isEmpty() );
     }
@@ -52,7 +52,7 @@ public class SimplePairTest {
     @Test
     public void testGetFirst()
     {
-        SimplePair<String, Integer> names = new SimplePair<String, Integer>( "one", Integer.parseInt( "1" ) );
+        Pair<String, Integer> names = new Pair<String, Integer>( "one", Integer.parseInt( "1" ) );
         String expResult = "one";
         String result = names.getFirst();
         assertEquals( expResult, result );
@@ -62,7 +62,7 @@ public class SimplePairTest {
     @Test
     public void testGetSecond()
     {
-        SimplePair<String, Integer> names = new SimplePair<String, Integer>( "one", Integer.parseInt( "1" ) );
+        Pair<String, Integer> names = new Pair<String, Integer>( "one", Integer.parseInt( "1" ) );
         Integer expResult = new Integer( 1 );
         Integer result = names.getSecond();
         assertEquals( expResult, result );
@@ -72,7 +72,7 @@ public class SimplePairTest {
     @Test
     public void testToString()
     {
-        SimplePair<String, Integer> names = new SimplePair<String, Integer>( "one", Integer.parseInt( "1" ) );
+        Pair<String, Integer> names = new Pair<String, Integer>( "one", Integer.parseInt( "1" ) );
         String expResult = "Pair< one, 1 >";
         String result = names.toString();
         assertEquals( expResult, result );
@@ -82,8 +82,8 @@ public class SimplePairTest {
     @Test
     public void testHashCode()
     {
-        SimplePair<Integer, Integer> ints = new SimplePair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
-        SimplePair<Integer, Integer> moreints = new SimplePair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
 
         assertEquals( ints.hashCode(), moreints.hashCode() );
     }
@@ -94,10 +94,10 @@ public class SimplePairTest {
     @Test
     public void testHashCodeworksForSets()
     {
-        SimplePair<Integer, Integer> ints = new SimplePair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
-        SimplePair<Integer, Integer> moreints = new SimplePair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
 
-        Set<SimplePair<Integer, Integer>> integers = new HashSet<SimplePair<Integer, Integer>>();
+        Set<Pair<Integer, Integer>> integers = new HashSet<Pair<Integer, Integer>>();
         integers.add( ints );
         integers.add( moreints );
 
@@ -108,8 +108,8 @@ public class SimplePairTest {
     @Test
     public void testEquals()
     {
-        SimplePair<Integer, Integer> ints = new SimplePair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
-        SimplePair<Integer, Integer> moreints = new SimplePair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
 
         assertTrue( ints.equals( moreints) );
     }

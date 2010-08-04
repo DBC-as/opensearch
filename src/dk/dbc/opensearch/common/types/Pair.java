@@ -23,22 +23,22 @@ package dk.dbc.opensearch.common.types;
 
 
 /**
- * SimplePair is, as the name suggest, a very simple version of a IPair container.
- * You can add two  objects to SimplePair and retrieve them again.
+ * Pair is, as the name suggest, a very simple version of a IPair container.
+ * You can add two objects to Pair and retrieve them again.
  * The objects may be different, identical, or the actual same object.
- * After you have added the objects to SimplePair you can no longer modify them,
- * i.e. SimplePair is immutable, even though the objects inside SimplePair may be mutable (see below).
+ * After you have added the objects to Pair you can no longer modify them,
+ * i.e. Pair is immutable, even though the objects inside Pair may be mutable (see below).
  * <p>
- * Please notice, SimplePair do not use defensive copying of its two elements. 
- * As a consequence if you modify the original objects after adding them to the SimplePair,
- * the objects inside SimplePair will also be changed. It is the responibility of the user of SimplePair
- * to ensure the correct behavior of the objects after adding them to SimplePair. This is of course only 
+ * Please notice, Pair do not use defensive copying of its two elements.
+ * As a consequence if you modify the original objects after adding them to the Pair,
+ * the objects inside Pair will also be changed. It is the responibility of the user of Pair
+ * to ensure the correct behavior of the objects after adding them to Pair. This is of course only
  * possible if you use mutable objects.
  * <p>
  * If you would like to have sorting done on a IPair type, please use
  * {@link ComparablePair} instead
  */
-public final class SimplePair< E, V > implements IPair< E, V >
+public class Pair< E, V >
 {
     private final E first;
     private final V second;
@@ -52,7 +52,7 @@ public final class SimplePair< E, V > implements IPair< E, V >
      *
      *  @throws IllegalArgumentException if either first or second are null.
      */
-    public SimplePair( final E first, final V second ) throws IllegalArgumentException
+    public Pair( final E first, final V second ) throws IllegalArgumentException
     {
 	if ( first == null || second == null )
 	{
@@ -67,7 +67,6 @@ public final class SimplePair< E, V > implements IPair< E, V >
      *  
      *  @return The first element of the pair.
      */
-    @Override
     public E getFirst()
     {
         return first;
@@ -78,7 +77,6 @@ public final class SimplePair< E, V > implements IPair< E, V >
      *  
      *  @return The second element of the pair.
      */
-    @Override
     public V getSecond()
     {
         return second;
@@ -91,7 +89,7 @@ public final class SimplePair< E, V > implements IPair< E, V >
      *     Pair< String-representation-of-first-element, String-representaion-of-second-element >
      *  }
      *  </pre>
-     *  If the SimplePair as the first element contains a String with value "FancyPants", 
+     *  If the Pair as the first element contains a String with value "FancyPants",
      *  and as its second element the Integer value 42, then the toString will return:
      *  <pre>
      *  {@code
@@ -106,7 +104,7 @@ public final class SimplePair< E, V > implements IPair< E, V >
     }
     
     /**
-     *  Returns a unique hashcode for the specific combination of elements in this SimplePair.
+     *  Returns a unique hashcode for the specific combination of elements in this Pair.
      *  Notice, if you use the same two objects in the same order in two different SimplePairs, 
      *  then the two SimplePairs will return the same hashcode.
      */    
@@ -117,24 +115,24 @@ public final class SimplePair< E, V > implements IPair< E, V >
     }
 
     /**
-     *  Asserts equality of the SimplePair object and another SimplePair object, 
+     *  Asserts equality of the Pair object and another Pair object,
      *  based on equality of the contained elements. The elements are testeted against each other 
-     *  in the same order they appear in the SimplePair. That is, SimplePair< E, V > and SimplePair < V, E >
-     *  are not equal even though it is the same objects (E and V) that are contained in the SimplePair,
+     *  in the same order they appear in the Pair. That is, Pair< E, V > and Pair < V, E >
+     *  are not equal even though it is the same objects (E and V) that are contained in the Pair,
      *  assuming E and V are nonequal.
      */
     @Override
     public boolean equals( Object obj )
     {
-        if(!( obj instanceof SimplePair<?,?> ) )
+        if(!( obj instanceof Pair<?,?> ) )
         {
             return false;
         }
-        else if(!( first.equals( ( (SimplePair<?, ?>)obj ).getFirst() ) ) )
+        else if(!( first.equals( ( (Pair<?, ?>)obj ).getFirst() ) ) )
         {
             return false;
         }
-        else if(!( second.equals( ( (SimplePair<?, ?>)obj ).getSecond() ) ) )
+        else if(!( second.equals( ( (Pair<?, ?>)obj ).getSecond() ) ) )
         {
             return false;
         }

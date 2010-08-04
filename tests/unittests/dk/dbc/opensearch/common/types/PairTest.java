@@ -23,7 +23,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import java.util.HashMap;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -34,13 +34,13 @@ import static org.junit.Assert.*;
  */
 public class PairTest {
 
-    SimplePair<String, String> p;
+    Pair<String, String> p;
 
     /**
      *
      */
     @Before public void SetUp() {
-        p = new SimplePair<String, String>( "a", "b");
+        p = new Pair<String, String>( "a", "b");
     }
 
     /**
@@ -61,8 +61,8 @@ public class PairTest {
 
     @Test 
     public void testHashCode(){
-        SimplePair<String, String> p2 = 
-            new SimplePair<String, String>( "a", "b" );
+        Pair<String, String> p2 =
+            new Pair<String, String>( "a", "b" );
 
         assertEquals( p.hashCode(), p2.hashCode() );
 
@@ -72,8 +72,8 @@ public class PairTest {
      */
 
     @Test public void testEquals(){
-        SimplePair<String, String> p3 = 
-            new SimplePair<String, String>( "a", "b" );
+        Pair<String, String> p3 =
+            new Pair<String, String>( "a", "b" );
 
         assertTrue( p3.equals( p ) );
     }
@@ -83,8 +83,8 @@ public class PairTest {
 
     @Test public void testEqualsDifferent()
     {
-        SimplePair<String, String> p3 = 
-            new SimplePair<String, String>( "a", "a" );
+        Pair<String, String> p3 =
+            new Pair<String, String>( "a", "a" );
 
         assertFalse( p3.equals( p ) ); 
     
@@ -101,12 +101,12 @@ public class PairTest {
     }
 
     @Test public void testPairInHashMaps(){
-        HashMap< SimplePair< String, String >, String > hm =
-            new HashMap< SimplePair< String, String >, String >();
+        HashMap< Pair< String, String >, String > hm =
+            new HashMap< Pair< String, String >, String >();
 
-        hm.put( new SimplePair<String, String>( "a", "b" ), "c" );
-        hm.put( new SimplePair<String, String>( "d", "e" ), "f" );
+        hm.put( new Pair<String, String>( "a", "b" ), "c" );
+        hm.put( new Pair<String, String>( "d", "e" ), "f" );
 
-        assertNotNull( hm.get( new SimplePair<String, String>( "a", "b" ) ) );
+        assertNotNull( hm.get( new Pair<String, String>( "a", "b" ) ) );
     }
 }

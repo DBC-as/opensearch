@@ -23,7 +23,7 @@ package dk.dbc.opensearch.common.metadata;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
 import java.io.ByteArrayInputStream;
@@ -230,15 +230,15 @@ public class AdministrationStream implements MetaData
 
 
     /**
-     * Returns a {@link List} containing an {@link SimplePair}
+     * Returns a {@link List} containing an {@link Pair}
      * containing an {@link Integer} denoting the index position of
-     * the data element and another {@link SimplePair} containing a
+     * the data element and another {@link Pair} containing a
      * {@link CargoObject} and its identifier (which by convention is
      * the DataStreamId).
      */
-    public List< SimplePair< Integer, SimplePair< String, CargoObject > > > getStreams() throws IOException
+    public List< Pair< Integer, Pair< String, CargoObject > > > getStreams() throws IOException
     {
-        List< SimplePair< Integer, SimplePair< String, CargoObject > > > retlist = new ArrayList< SimplePair< Integer, SimplePair< String,CargoObject > > >( admvalues.size() );
+        List< Pair< Integer, Pair< String, CargoObject > > > retlist = new ArrayList< Pair< Integer, Pair< String,CargoObject > > >( admvalues.size() );
         CargoContainer cargo = new CargoContainer();
         for( Entry< Integer, HashMap< AdministrationStreamElement, String> > set : admvalues.entrySet() )
         {
@@ -251,10 +251,10 @@ public class AdministrationStream implements MetaData
                     "ihatefakedata".getBytes() );
         
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
-            SimplePair< String, CargoObject > indexvalue = new SimplePair< String, CargoObject >(
+            Pair< String, CargoObject > indexvalue = new Pair< String, CargoObject >(
                     set.getValue().get( AdministrationStreamElement.ID ),
                     cargo.getCargoObject( DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ) ) );
-            retlist.add( new SimplePair<Integer, SimplePair<String,CargoObject>>( set.getKey(), indexvalue ) );
+            retlist.add( new Pair<Integer, Pair<String,CargoObject>>( set.getKey(), indexvalue ) );
         }
 
         return retlist;

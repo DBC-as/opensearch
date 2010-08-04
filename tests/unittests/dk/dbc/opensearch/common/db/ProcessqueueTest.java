@@ -32,7 +32,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import java.util.Vector;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +50,7 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
 //    StatementResultSetHandler statementHandler;
 //    MockResultSet result;
     @Mocked PostgresqlDBConnection connection;
-    List<SimplePair<String, Integer>> resultVector;
+    List<Pair<String, Integer>> resultVector;
     Processqueue processqueue;
     IDBConnection dbConnection;
 
@@ -58,7 +58,7 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
     public void setUp() throws Exception
     {
         processqueue = new Processqueue( connection );
-        resultVector = new ArrayList<SimplePair<String, Integer>>();
+        resultVector = new ArrayList<Pair<String, Integer>>();
     }
 
     /**
@@ -72,23 +72,23 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
 //
 //        Object r[] =  { "handle1", 1 };
 //        result.addRow( r );
-//        resultVector.add( new SimplePair<String, Integer>( (String) r[0], (Integer) r[1] ) );
+//        resultVector.add( new Pair<String, Integer>( (String) r[0], (Integer) r[1] ) );
 //        r[0] = "handle2";
 //        r[1] = 2;
 //        result.addRow( r );
-//        resultVector.add( new SimplePair<String, Integer>( (String) r[0], (Integer) r[1] ) );
+//        resultVector.add( new Pair<String, Integer>( (String) r[0], (Integer) r[1] ) );
 //        r[0] = "handle3";
 //        r[1] = 3;
 //        result.addRow( r );
-//        resultVector.add( new SimplePair<String, Integer>( (String) r[0], (Integer) r[1] ) );
+//        resultVector.add( new Pair<String, Integer>( (String) r[0], (Integer) r[1] ) );
 //        r[0] = "handle4";
 //        r[1] = 4;
 //        result.addRow( r );
-//        resultVector.add( new SimplePair<String, Integer>( (String) r[0], (Integer) r[1] ) );
+//        resultVector.add( new Pair<String, Integer>( (String) r[0], (Integer) r[1] ) );
 //        r[0] = "handle5";
 //        r[1] = 5;
 //        result.addRow( r );
-//        resultVector.add( new SimplePair<String, Integer>( (String) r[0], (Integer) r[1] ) );
+//        resultVector.add( new Pair<String, Integer>( (String) r[0], (Integer) r[1] ) );
 //    }
 //
 
@@ -140,7 +140,7 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
 //        setupResultset();
 //        statementHandler.prepareGlobalResultSet( result );
 //
-//        Vector<SimplePair<String, Integer>> r = new Vector<SimplePair<String, Integer>>();
+//        Vector<Pair<String, Integer>> r = new Vector<Pair<String, Integer>>();
 //        r = processqueue.popAll();
 //
 //        assertEquals( r, resultVector );
@@ -160,7 +160,7 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
         String sql_query = "SELECT * from get_all_posts()";
         
 //        statementHandler.prepareThrowsSQLException( sql_query, new SQLException( "test exception" ));
-//        Vector<SimplePair<String, Integer>> r = new Vector<SimplePair<String, Integer>>();
+//        Vector<Pair<String, Integer>> r = new Vector<Pair<String, Integer>>();
 //
 //        try{
 //            r = processqueue.popAll();
@@ -183,7 +183,7 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
 //
 //        statementHandler.prepareGlobalResultSet( result );
 //
-//        Vector<SimplePair<String, Integer>> r = new Vector<SimplePair<String, Integer>>();
+//        Vector<Pair<String, Integer>> r = new Vector<Pair<String, Integer>>();
 //        r = processqueue.pop( maxSize );
 //
 //        assertEquals( r, resultVector );
@@ -204,7 +204,7 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
 //        statementHandler.prepareGlobalResultSet( result );
 //
 //
-//        List<SimplePair<String, Integer>> r = new ArrayList<SimplePair<String, Integer>>();
+//        List<Pair<String, Integer>> r = new ArrayList<Pair<String, Integer>>();
 //        r = processqueue.pop( maxSize );
 //
 //        assertEquals( r, resultVector );
@@ -222,7 +222,7 @@ public class ProcessqueueTest// extends BasicJDBCTestCaseAdapter
 //        String sql_query = String.format( "SELECT * from get_posts( %s )", maxSize );
 //
 //        statementHandler.prepareThrowsSQLException( sql_query, new SQLException( "test exception" ));
-//        Vector<SimplePair<String, Integer>> r = new Vector<SimplePair<String, Integer>>();
+//        Vector<Pair<String, Integer>> r = new Vector<Pair<String, Integer>>();
 //
 //        try{
 //            r = processqueue.pop( maxSize );

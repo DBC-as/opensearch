@@ -1,7 +1,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.types.TargetFields;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ public class GetIdentifiersFunc
         System.out.println( "initializing values" );
         TargetFields field = FedoraObjectFields.IDENTIFIER; 
         String value = "*:27768792";
-        SimplePair<TargetFields, String> thePair = new SimplePair( field, value );
-        List<SimplePair<TargetFields, String>> searchList = new ArrayList<SimplePair<TargetFields, String>>();
+        Pair<TargetFields, String> thePair = new Pair( field, value );
+        List<Pair<TargetFields, String>> searchList = new ArrayList<Pair<TargetFields, String>>();
         searchList.add( thePair);
 
         System.out.println( "sending request to the repository" );

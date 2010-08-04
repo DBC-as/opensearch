@@ -30,10 +30,9 @@ import java.io.*;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.ArrayList;
-import dk.dbc.opensearch.common.types.IPair;
+import dk.dbc.opensearch.common.types.Pair;
 
 
 
@@ -59,7 +58,7 @@ public class SimpleRhinoWrapper
 
     public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
     {
-	this( jsFileName, new ArrayList< IPair< String, Object > >() );
+        this( jsFileName, new ArrayList<Pair<String, Object>>() );
     }
 
     /**
@@ -67,11 +66,11 @@ public class SimpleRhinoWrapper
      *
      * @param jsFileName A string containing the name and path of the javascript file to be read
      */
-    public SimpleRhinoWrapper( String jsFileName, List< IPair< String, Object> > objectList ) throws FileNotFoundException
+    public SimpleRhinoWrapper( String jsFileName, List< Pair< String, Object> > objectList ) throws FileNotFoundException
     {
-	FileReader inFile = new FileReader( jsFileName ); // can throw FileNotFindExcpetion
+        FileReader inFile = new FileReader( jsFileName ); // can throw FileNotFindExcpetion
 
-	Context cx = getThreadLocalContext();
+        Context cx = getThreadLocalContext();
 
         // Initialize the standard objects (Object, Function, etc.)
         // This must be done before scripts can be executed. Returns
@@ -80,7 +79,7 @@ public class SimpleRhinoWrapper
         if ( scope == null )
         {
             // This should never happen!
-            String errorMsg = new String( "An error occured when initializing standard objects for javascript" );
+            String errorMsg = "An error occured when initializing standard objects for javascript";
             log.fatal( errorMsg );
             throw new IllegalStateException( errorMsg );
         }
@@ -98,7 +97,7 @@ public class SimpleRhinoWrapper
         } 
         catch ( IOException ioe )
         {
-            String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
+            String errorMsg = "Could not run 'evaluateReader' on the javascript";
             log.error( errorMsg, ioe );
             throw new IllegalStateException( errorMsg, ioe );
         }
@@ -112,7 +111,7 @@ public class SimpleRhinoWrapper
 	}
 
 	// Add objects to scope:
-	for ( IPair< String, Object > objectPair : objectList )
+	for ( Pair< String, Object > objectPair : objectList )
 	{
 	    log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
 	    scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );

@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import dk.dbc.opensearch.common.types.TargetFields;
@@ -423,7 +423,7 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error, ex );
         }
 
-        List< SimplePair< Integer, SimplePair< String, CargoObject > > > adminstreamlist;
+        List< Pair< Integer, Pair< String, CargoObject > > > adminstreamlist;
         try
         {
             adminstreamlist = adminStream.getStreams();
@@ -438,7 +438,7 @@ public class FedoraObjectRepository implements IObjectRepository
         CargoContainer cargo = new CargoContainer();
         cargo.setIdentifier( new PID( identifier ) );
 
-        for ( SimplePair< Integer, SimplePair< String, CargoObject > > cargoobjects : adminstreamlist )
+        for ( Pair< Integer, Pair< String, CargoObject > > cargoobjects : adminstreamlist )
         {
             String streamId = cargoobjects.getSecond().getFirst();
 
@@ -547,14 +547,14 @@ public class FedoraObjectRepository implements IObjectRepository
     public List< String > getIdentifiers( String verbatimSearchString, List< TargetFields > searchableFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ searchableFields.size() ];
-        List< SimplePair< TargetFields, String > > resultSearchFields = new ArrayList< SimplePair< TargetFields, String > >();
+        List< Pair< TargetFields, String > > resultSearchFields = new ArrayList< Pair< TargetFields, String > >();
 
         int i = 0;
         for( TargetFields field : searchableFields )
         {
             TargetFields property = field;
             resultFields[i] = field.fieldname();
-            SimplePair< TargetFields, String > pair = new SimplePair< TargetFields, String >( property,  verbatimSearchString );
+            Pair< TargetFields, String > pair = new Pair< TargetFields, String >( property,  verbatimSearchString );
             resultSearchFields.add( pair );
             i++;
         }
@@ -575,11 +575,11 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiers( List< SimplePair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for( SimplePair< TargetFields, String > field : resultSearchFields )
+        for( Pair< TargetFields, String > field : resultSearchFields )
         {
             TargetFields property = field.getFirst();
             resultFields[i] = property.fieldname();
@@ -619,11 +619,11 @@ public class FedoraObjectRepository implements IObjectRepository
      * either addPidValue or addPidValueExpanded and that there is no cutPid param.
      */
     @Override
-    public List< String > getIdentifiersWithNamespace( List< SimplePair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace )
+    public List< String > getIdentifiersWithNamespace( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for( SimplePair< TargetFields, String > field : resultSearchFields )
+        for( Pair< TargetFields, String > field : resultSearchFields )
         {
             TargetFields property = field.getFirst();
             resultFields[i] = property.fieldname();
@@ -666,11 +666,11 @@ public class FedoraObjectRepository implements IObjectRepository
      */
 
     // @Override
-    // public List< String > getIdentifiers( List< SimplePair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace )
+    // public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace )
     // {
     //     String[] resultFields = new String[ resultSearchFields.size() + 1 ];
     //     int i = 0;
-    //     for( SimplePair< TargetFields, String > field : resultSearchFields )
+    //     for( Pair< TargetFields, String > field : resultSearchFields )
     //     {
     //         TargetFields property = field.getFirst();
     //         resultFields[i] = property.fieldname();
@@ -714,11 +714,11 @@ public class FedoraObjectRepository implements IObjectRepository
      * This method sort out all the non exact matches, since fedora searches
      * some fields with "has" instead of "eq"
      */
-    // private boolean addPidValue( List< SimplePair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
+    // private boolean addPidValue( List< Pair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
     // {
     //     boolean ret = false;
     //     log.debug( String.format( "Matching size: '%s'", resultFields.size() ) );
-    //     for ( SimplePair< TargetFields, String > pair : resultFields )
+    //     for ( Pair< TargetFields, String > pair : resultFields )
     //     {
     //         FedoraObjectFields target = (FedoraObjectFields)pair.getFirst();
     //         log.debug( String.format( "Matching resultField: '%s'", target ) );
@@ -924,11 +924,11 @@ public class FedoraObjectRepository implements IObjectRepository
      * otherwise it is accepted. The switch is different then in the addPidValue
      * method in the way that it returns false if the strings arent equal.
      */
-    private boolean addPidValueExpanded( List< SimplePair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
+    private boolean addPidValueExpanded( List< Pair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
     {
         boolean ret = true;
         log.debug( String.format( "Matching size: '%s'", resultFields.size() ) );
-        for ( SimplePair< TargetFields, String > pair : resultFields )
+        for ( Pair< TargetFields, String > pair : resultFields )
         {
             FedoraObjectFields target = (FedoraObjectFields)pair.getFirst();
             log.debug( String.format( "Matching resultField: '%s'", target ) );
@@ -1122,11 +1122,11 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiersUnqualified( List< SimplePair< TargetFields, String > > resultSearchFields, int maximumResults )
+    public List< String > getIdentifiersUnqualified( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
-        for (SimplePair< TargetFields, String > field : resultSearchFields )
+        for (Pair< TargetFields, String > field : resultSearchFields )
         {
             TargetFields property = field.getFirst();
             resultFields[i] = property.fieldname();
@@ -1161,7 +1161,7 @@ public class FedoraObjectRepository implements IObjectRepository
      * @param namespace Used to limit on pid containing namespace.
      * @return An array of ObjectFields.
      */
-    ObjectFields[] searchRepository( String[] resultFields, List< SimplePair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults, String namespace )
+    ObjectFields[] searchRepository( String[] resultFields, List< Pair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults, String namespace )
     {
         // \Todo: check needed on the operator
         int size = propertiesAndVaulues.size();
@@ -1181,7 +1181,7 @@ public class FedoraObjectRepository implements IObjectRepository
         int i = 0;
         for( ; i < size; i++ )
         {
-            SimplePair< TargetFields, String > pair = propertiesAndVaulues.get( i );
+            Pair< TargetFields, String > pair = propertiesAndVaulues.get( i );
             TargetFields property = pair.getFirst();
             String value = pair.getSecond();
             cond[i] = new Condition( property.fieldname(), comp, value );
@@ -1440,7 +1440,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         try
         {
-            for( SimplePair<Integer, SimplePair<String, CargoObject>> pairs : adminStream.getStreams() )
+            for( Pair<Integer, Pair<String, CargoObject>> pairs : adminStream.getStreams() )
             {
                 DataStreamType datastreamtype = pairs.getSecond().getSecond().getDataStreamType();
                 if( datastreamtype == streamtype )
@@ -1495,7 +1495,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
         try
         {
-            for( SimplePair<Integer, SimplePair<String, CargoObject>> pairs : adminStream.getStreams() )
+            for( Pair<Integer, Pair<String, CargoObject>> pairs : adminStream.getStreams() )
             {
                 String dsId = pairs.getSecond().getFirst();
 
@@ -1903,13 +1903,13 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< SimplePair< IPredicate, String > > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
+    public List< Pair< IPredicate, String > > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
     {
         return null;
     }
 
 
-    public List< SimplePair< IPredicate, String > > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
+    public List< Pair< IPredicate, String > > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
     {
         try
         {
@@ -1917,11 +1917,11 @@ public class FedoraObjectRepository implements IObjectRepository
             RelationshipTuple[] tuple = this.fedoraHandle.getRelationships( subject, predicate );
             if ( tuple != null )
             {
-                List< SimplePair< IPredicate, String > > ret = new ArrayList< SimplePair< IPredicate, String> >();
+                List< Pair< IPredicate, String > > ret = new ArrayList< Pair< IPredicate, String> >();
                 for ( RelationshipTuple relationship : tuple )
                 {
                     String object = relationship.getObject();
-                    SimplePair< IPredicate, String > pair = new SimplePair( predicate, object );
+                    Pair< IPredicate, String > pair = new Pair( predicate, object );
                     ret.add( pair );
                 }
 

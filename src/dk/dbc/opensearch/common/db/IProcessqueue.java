@@ -24,7 +24,7 @@ package dk.dbc.opensearch.common.db;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import java.util.List;
 
 /**
@@ -49,7 +49,7 @@ public interface IProcessqueue
      *
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public List< SimplePair< String, Integer > > popAll() throws SQLException;
+    public List< Pair< String, Integer > > popAll() throws SQLException;
 
 
     /**
@@ -59,7 +59,7 @@ public interface IProcessqueue
      *
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
-    public List< SimplePair< String, Integer > > pop( int maxSize ) throws SQLException;
+    public List< Pair< String, Integer > > pop( int maxSize ) throws SQLException;
 
 
     /**

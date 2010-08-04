@@ -26,7 +26,6 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
@@ -34,25 +33,19 @@ import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
-//import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.SimplePair;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-import dk.dbc.opensearch.common.types.IPair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
@@ -80,16 +73,16 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         this.objectRepository = repository;
 
         // Creates a list of objects to be used in the js-scope
-        List< IPair< String, Object > > objectList = new ArrayList< IPair< String, Object > >();
-        objectList.add( new SimplePair< String, Object >( "Log", log ) );
+        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+        objectList.add( new Pair< String, Object >( "Log", log ) );
 
 	this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
 	
-	this.searchFunc       = args.get( this.searchFuncStr );
-	this.matchFunc        = args.get( this.matchFuncStr );
-	this.createObjectFunc = args.get( this.createObjectFuncStr );
+	this.searchFunc       = args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr );
+	this.matchFunc        = args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr );
+	this.createObjectFunc = args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr );
 
-	this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
+	this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ), objectList );
     }
 
 
@@ -105,7 +98,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * in the repository, used to generate the list of candidate works 
      * @return the unmodified CargoContainer.
      */
-    public CargoContainer run( CargoContainer cargo, List< SimplePair< TargetFields, String > > searchPairs ) throws PluginException
+    public CargoContainer run( CargoContainer cargo, List< Pair< TargetFields, String > > searchPairs ) throws PluginException
     {
 
         List< PID > pidList = getWorkList( searchPairs );
@@ -136,9 +129,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * @param cargo the CargoContianer to generate searchpairs for
      * @return a list of SimplePairs containing a serachfield and the value to match
      */
-    public List< SimplePair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
+    public List< Pair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
     {
-        List< SimplePair< TargetFields, String > > searchList = new ArrayList< SimplePair< TargetFields, String > >();
+        List< Pair< TargetFields, String > > searchList = new ArrayList< Pair< TargetFields, String > >();
         //calls a javascript, with the dc-stream and original data of the
         //cargo as argument, that returns an xml with the pairs to generate
         //start with dummy xml on the javascript-side
@@ -168,7 +161,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         {
             if ( pairArray[ i ] != null )
             {
-                searchList.add( new SimplePair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
+                searchList.add( new Pair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
             }
         }
 
@@ -185,7 +178,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * works to check for a match
      * @return List<PID> a list of the work objects that should be checked for a match.
      */
-    private List< PID > getWorkList( List< SimplePair< TargetFields, String > > searchList )
+    private List< PID > getWorkList( List< Pair< TargetFields, String > > searchList )
     {
         //for each pair in the searchList, search the repository
         //and add the results together in pidList
@@ -195,9 +188,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         List<PID> pidList = new ArrayList<PID>();
         List<String> pidStringList = new ArrayList<String>();
         List<String> searchResultList = new ArrayList<String>();
-        List<SimplePair< TargetFields, String > > tempList = new ArrayList< SimplePair< TargetFields, String > >();
+        List<Pair< TargetFields, String > > tempList = new ArrayList< Pair< TargetFields, String > >();
 
-        for ( SimplePair< TargetFields, String > pair : searchList )
+        for ( Pair< TargetFields, String > pair : searchList )
         {
             num++;
             tempList.clear();
@@ -417,31 +410,45 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * This function will validate the following arguments:
      * "javascript", "searchfunction", "matchfunction" and "createobjectfunction".
      */
-    private void validateArguments( Map< String, String > args, List< IPair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
     {
-	log.info("Validating Arguments - Begin");
+        log.info( "Validating Arguments - Begin" );
 
-	// Validating entrys:
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( javascriptStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", javascriptStr ) );
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( searchFuncStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", searchFuncStr ) );
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( matchFuncStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", matchFuncStr ) );
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( createObjectFuncStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", createObjectFuncStr ) );
+        // Validating entrys:
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( javascriptStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", javascriptStr ) );
+        }
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( searchFuncStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", searchFuncStr ) );
+        }
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( matchFuncStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", matchFuncStr ) );
+        }
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( createObjectFuncStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", createObjectFuncStr ) );
+        }
 
-	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
-	
-	// Validate function entries:
-	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.searchFuncStr) ) )
-	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.searchFuncStr) ) );
-	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.matchFuncStr) ) )
-	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.matchFuncStr) ) );
-	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.createObjectFuncStr) ) )
-	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.createObjectFuncStr) ) );
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
 
-	log.info("Validating Arguments - End");
+        // Validate function entries:
+        if( !tmpWrapper.validateJavascriptFunction( args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr ) ) )
+        {
+            throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr ) ) );
+        }
+        if( !tmpWrapper.validateJavascriptFunction( args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr ) ) )
+        {
+            throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr ) ) );
+        }
+        if( !tmpWrapper.validateJavascriptFunction( args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr ) ) )
+        {
+            throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr ) ) );
+        }
+
+        log.info( "Validating Arguments - End" );
     }
 
 

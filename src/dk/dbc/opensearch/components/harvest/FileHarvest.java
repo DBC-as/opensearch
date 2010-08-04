@@ -33,7 +33,7 @@ import dk.dbc.opensearch.common.config.DatadockConfig;
 import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
@@ -95,7 +95,7 @@ public final class FileHarvest implements IHarvest
 
     private ArrayList<File> submitters;
     private ArrayList<File> formats;
-    private Vector< SimplePair< String, String > > submittersFormatsVector;
+    private Vector< Pair< String, String > > submittersFormatsVector;
     private String datadockJobsFilePath;
     private String toHarvestFolder;
     private String harvestProgressFolder;
@@ -221,7 +221,7 @@ public final class FileHarvest implements IHarvest
             log.error( String.format( "Could not open file '%s' for reading", datadockJobsFilePath ) );
         }
 
-        submittersFormatsVector = new Vector<SimplePair<String, String>>();
+        submittersFormatsVector = new Vector<Pair<String, String>>();
         if( jobNodeList == null )
         {
             throw new IllegalStateException( String.format( "The job list has not been initialized. I error." ) );
@@ -233,7 +233,7 @@ public final class FileHarvest implements IHarvest
             Element pluginElement = (Element) jobNodeList.item( i );
             String formatAtt = pluginElement.getAttribute( "format" );
             String submitterAtt = pluginElement.getAttribute( "submitter" );
-            SimplePair<String, String> submitterFormatPair = new SimplePair<String, String>( submitterAtt, formatAtt );
+            Pair<String, String> submitterFormatPair = new Pair<String, String>( submitterAtt, formatAtt );
             if( !submittersFormatsVector.contains( submitterFormatPair ) )
             {
                 log.debug( String.format( "Adding submitter and format to Vector submitterFormatPair: %s and %s", submitterAtt, formatAtt ) );
@@ -279,7 +279,7 @@ public final class FileHarvest implements IHarvest
         String formatFilePath = formatFile.getAbsolutePath().substring( formatFile.getAbsolutePath().lastIndexOf( "/" ) + 1 );
         log.debug( "FileHarvest.checkSubmitterFormat -> format: " + formatFilePath );
 
-        SimplePair<String, String> pair = new SimplePair<String, String>( submitterFilePath, formatFilePath );
+        Pair<String, String> pair = new Pair<String, String>( submitterFilePath, formatFilePath );
         boolean contains = submittersFormatsVector.contains( pair );
         log.debug( "FileHarvest.checkSubmitterFormat -> contains: " + contains );
         if( contains )

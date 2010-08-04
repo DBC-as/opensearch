@@ -20,7 +20,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.db;
 
 
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -97,7 +97,7 @@ public class Processqueue implements IProcessqueue
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
     @Override
-    public List<SimplePair<String, Integer>> popAll() throws SQLException
+    public List<Pair<String, Integer>> popAll() throws SQLException
     {
         log.debug( "Entering Processqueue.popAll()" );
 
@@ -105,7 +105,7 @@ public class Processqueue implements IProcessqueue
         Statement stmt = null;
         ResultSet rs = null;
 
-        List<SimplePair<String, Integer>> jobs = new ArrayList<SimplePair<String, Integer>>();
+        List<Pair<String, Integer>> jobs = new ArrayList<Pair<String, Integer>>();
 
         try
         {
@@ -119,7 +119,7 @@ public class Processqueue implements IProcessqueue
 
                 log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                SimplePair<String, Integer> pair = new SimplePair<String, Integer>( fedoraHandle, queueID );
+                Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
                 jobs.add( pair );
             }
 
@@ -145,7 +145,7 @@ public class Processqueue implements IProcessqueue
      * @throws SQLException if there is something wrong the database connection or the sqlquery
      */
     @Override
-    public List<SimplePair<String, Integer>> pop( int maxSize ) throws SQLException
+    public List<Pair<String, Integer>> pop( int maxSize ) throws SQLException
     {
         log.debug( "Entering Processqueue.pop()" );
 
@@ -153,7 +153,7 @@ public class Processqueue implements IProcessqueue
         Statement stmt = null;
         ResultSet rs = null;
 
-        List<SimplePair<String, Integer>> jobs = new ArrayList<SimplePair<String, Integer>>();
+        List<Pair<String, Integer>> jobs = new ArrayList<Pair<String, Integer>>();
 
         try
         {
@@ -167,7 +167,7 @@ public class Processqueue implements IProcessqueue
 
                 log.debug( String.format( "Found a new element fh='%s', queueID='%s'", fedoraHandle, queueID ) );
 
-                SimplePair<String, Integer> pair = new SimplePair<String, Integer>( fedoraHandle, queueID );
+                Pair<String, Integer> pair = new Pair<String, Integer>( fedoraHandle, queueID );
                 jobs.add( pair );
             }
 

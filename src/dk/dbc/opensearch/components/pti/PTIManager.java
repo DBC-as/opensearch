@@ -27,8 +27,7 @@ package dk.dbc.opensearch.components.pti;
 
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.types.SimplePair;
-import dk.dbc.opensearch.common.types.IPair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -122,11 +121,11 @@ public class PTIManager
     private int startNewJobs( int maxNumberOfJobs )throws SQLException, ConfigurationException, ClassNotFoundException, ServiceException, MalformedURLException, IOException
     {
         // checking for new jobs
-        List< SimplePair< String, Integer > > newJobs = processqueue.pop( maxNumberOfJobs );
+        List< Pair< String, Integer > > newJobs = processqueue.pop( maxNumberOfJobs );
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
-        for( IPair<String, Integer> job : newJobs )
+        for( Pair<String, Integer> job : newJobs )
         {
             pool.submit( job.getFirst(), job.getSecond() );
             log.debug( String.format( "submitted job: fedorahandle='%s' and queueID='%s'",job.getFirst(), job.getSecond() ) );
@@ -147,7 +146,7 @@ public class PTIManager
     {
 
         // Checking jobs and commiting jobs
-        //Vector< CompletedTask<SimplePair< Boolean, Integer > > > finishedJobs =
+        //Vector< CompletedTask<Pair< Boolean, Integer > > > finishedJobs =
         Map< Integer, Boolean > finishedJobs = pool.checkJobs();
         // log.debug( "size of finishedJobs: " + finishedJobs.size() );
         for ( Entry< Integer, Boolean> task : finishedJobs.entrySet() )

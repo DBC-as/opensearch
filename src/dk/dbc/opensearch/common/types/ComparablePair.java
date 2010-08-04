@@ -38,14 +38,11 @@ package dk.dbc.opensearch.common.types;
  * @param <E>
  * @param <V>
  */
-public final class ComparablePair<E extends Comparable<E>, V extends Comparable<V>> implements Comparable<ComparablePair<E, V>>, IPair<E, V>
+public final class ComparablePair<E extends Comparable<E>, V extends Comparable<V>>  extends Pair<E, V> implements Comparable<ComparablePair<E, V>>
 {
 
-    private final E first;
-    private final V second;
-
     /**
-     * Cosntructs the {@link ComparablePair} with arguments E as first member of
+     * Constructs the {@link ComparablePair} with arguments E as first member of
      * the pair and V as the second member.
      *
      * The {@link ComparablePair} is immutable and as such usable as a key in
@@ -56,59 +53,7 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
      */
     public ComparablePair( E first, V second )
     {
-        this.first = first;
-        this.second = second;
-    }
-
-
-    /**
-     * @return the first value of the {@link ComparablePair}
-     */
-    @Override
-    public E getFirst()
-    {
-        return first;
-    }
-
-
-    /**
-     * @return the second value of the {@link ComparablePair}
-     */
-    @Override
-    public V getSecond()
-    {
-        return second;
-    }
-
-
-    /**
-     * Tests the equality of this object and {@code cPair}
-     * @param cPair the object to test for equality with
-     * @return true if the objects are equal, false otherwise
-     */
-    @Override
-    public boolean equals( Object cPair )
-    {
-        if( cPair == null )
-        {
-            return false;
-        }
-        else if( !(cPair instanceof ComparablePair<?, ?>) )
-        {
-            return false;
-        }
-        else if( !(first.equals( ((ComparablePair<?, ?>) cPair).getFirst() )) )
-        {
-            return false;
-        }
-        else if( !(second.equals( ((ComparablePair<?, ?>) cPair).getSecond() )) )
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        super( first, second );
     }
 
 
@@ -119,21 +64,10 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
     @Override
     public String toString()
     {
-        return String.format( "ComparablePair< %s, %s >", first.toString(), second.toString() );
+        return String.format( "ComparablePair< %s, %s >", getFirst().toString(), getSecond().toString() );
     }
 
 
-    /**
-     *
-     * @return the hashcode for this ComparablePair object
-     */
-    @Override
-    public int hashCode()
-    {
-        return first.hashCode() ^ second.hashCode();
-    }
-
-    
     /**
      * Compares the object with a {@link ComparablePair} returning values in
      * accordance with the {@link Comparable#compareTo(java.lang.Object)}
@@ -153,16 +87,16 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
 
         ComparablePair<E, V> newpair = pair;
 
-        if( !(newpair.getFirst().getClass() == first.getClass()) )
+        if( !(newpair.getFirst().getClass() == getFirst().getClass()) )
         {
-            throw new UnsupportedOperationException( String.format( "Type %s is not a comparable to type %s", newpair.getFirst().getClass(), first.getClass() ) );
+            throw new UnsupportedOperationException( String.format( "Type %s is not a comparable to type %s", newpair.getFirst().getClass(), getFirst().getClass() ) );
         }
 
-        if( first.equals( newpair.getFirst() ) )
+        if( getFirst().equals( newpair.getFirst() ) )
         {
-            return second.compareTo( newpair.getSecond());
+            return getSecond().compareTo( newpair.getSecond());
         }
 
-        return first.compareTo( newpair.getFirst());
+        return getFirst().compareTo( newpair.getFirst());
     }
 }

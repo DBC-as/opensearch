@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.metadata.IPredicate;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.List;
@@ -169,7 +169,7 @@ public interface IObjectRepository
      * {@link List} of {@code searchableFields} and limiting {@link
      * List} of returned identifiers with {@code maximumResult}
      * 
-     * @param resultSearchFields {@link List} of {@link SimplePair}s
+     * @param resultSearchFields {@link List} of {@link Pair}s
      * that contains pairwise search Strings and the fields to search
      * for that String in
      * @param cutIdentifier stops the search and returns result if it
@@ -179,7 +179,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiers( List< SimplePair< TargetFields, String > > resultSearchFields, String cutIdentifier, int maximumResults );
+    public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutIdentifier, int maximumResults );
 
 
 
@@ -189,7 +189,7 @@ public interface IObjectRepository
      * after 1st of July it should be commented out and after the 1st of 
      * september it should be deleted if no problems have arised.  
      */
-    //  public List< String > getIdentifiers( List< SimplePair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
+    //  public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace );
 
     /** 
      * Searches the object repository using the a {@link List} of
@@ -200,7 +200,7 @@ public interface IObjectRepository
      * or at the end
      * The search only returns members of the {@code namespace}
      * 
-     * @param resultSearchFields {@link List} of {@link SimplePair}s
+     * @param resultSearchFields {@link List} of {@link Pair}s
      * that contains pairwise search Strings and the fields to search
      * for that String in
      * @param maximumResults integer limiting the returned {@link List}
@@ -209,7 +209,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiersWithNamespace( List< SimplePair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace );
+    public List< String > getIdentifiersWithNamespace( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace );
 
 
     /**
@@ -224,7 +224,7 @@ public interface IObjectRepository
      *
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiersUnqualified( List< SimplePair< TargetFields, String > > resultSearchFields, int maximumResults );
+    public List< String > getIdentifiersUnqualified( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults );
 
 
     /**
@@ -323,10 +323,10 @@ public interface IObjectRepository
      * @return a List of 
      * @throws ObjectRepositoryException
      */
-    public List< SimplePair<IPredicate, String> > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
+    public List< Pair<IPredicate, String> > getObjectRelations( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
 
 
-    public List< SimplePair<IPredicate, String> > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException;
+    public List< Pair<IPredicate, String> > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException;
 
 
     /**

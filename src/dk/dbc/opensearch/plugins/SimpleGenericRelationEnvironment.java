@@ -25,7 +25,6 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
@@ -37,15 +36,12 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.SimplePair;
-import dk.dbc.opensearch.common.types.IPair;
+import dk.dbc.opensearch.common.types.Pair;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 
@@ -74,16 +70,16 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
 	ScriptMethodsForReviewRelation scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
 
-	List< IPair< String, Object > > objectList = new ArrayList< IPair< String, Object > >();
-	objectList.add( new SimplePair< String, Object >( "Log", log ) );
-	objectList.add( new SimplePair< String, Object >( "scriptClass", scriptClass ) );
-	objectList.add( new SimplePair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
+	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	objectList.add( new Pair< String, Object >( "Log", log ) );
+	objectList.add( new Pair< String, Object >( "scriptClass", scriptClass ) );
+	objectList.add( new Pair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
 
 	this.validateArguments( args, objectList );
 
-	this.entryPointFunc  = args.get( this.entryFuncStr );
+	this.entryPointFunc  = args.get( SimpleGenericRelationEnvironment.entryFuncStr );
 
-	this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
+	this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList );
 
 	log.trace( "Checking wrapper (outer)" );
 	if (jsWrapper == null) {
@@ -126,24 +122,30 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private void validateArguments( Map< String, String > args, List< IPair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
     {
-	log.info("Validating Arguments - Begin");
+        log.info( "Validating Arguments - Begin" );
 
-	// Validating existence of mandatory entrys:
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( this.javascriptStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", this.javascriptStr ) );
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( this.entryFuncStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", this.entryFuncStr ) );
+        // Validating existence of mandatory entrys:
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( SimpleGenericRelationEnvironment.javascriptStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", SimpleGenericRelationEnvironment.javascriptStr ) );
+        }
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( SimpleGenericRelationEnvironment.entryFuncStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", SimpleGenericRelationEnvironment.entryFuncStr ) );
+        }
 
-	// Validating that javascript can be used in the SimpleRhinoWrapper:
-	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
+        // Validating that javascript can be used in the SimpleRhinoWrapper:
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList );
 
-	// Validating function entries:
-	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.entryFuncStr) ) )
-	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.entryFuncStr) ) );
+        // Validating function entries:
+        if( !tmpWrapper.validateJavascriptFunction( args.get( SimpleGenericRelationEnvironment.entryFuncStr ) ) )
+        {
+            throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( SimpleGenericRelationEnvironment.entryFuncStr ) ) );
+        }
 
-	log.info("Validating Arguments - End");
+        log.info( "Validating Arguments - End" );
     }
 
 

@@ -25,47 +25,23 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
-import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
-import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
-import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-//import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.SimplePair;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-import dk.dbc.opensearch.common.types.IPair;
+import dk.dbc.opensearch.common.types.Pair;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
 
 
 public class XMLDCHarvesterEnvironment implements IPluginEnvironment
@@ -73,7 +49,6 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
 
     private static Logger log = Logger.getLogger( XMLDCHarvesterEnvironment.class );
 
-    private IObjectRepository repository;
     private SimpleRhinoWrapper jsWrapper = null;
 
     private static final String javascriptStr = "javascript";
@@ -83,15 +58,14 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
     public XMLDCHarvesterEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
     {
         log.trace( "Constructor called" );
-        this.repository = repository;
 
-	List< IPair< String, Object > > objectList = new ArrayList< IPair< String, Object > >();
-	objectList.add( new SimplePair< String, Object >( "Log", log ) );
+        List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
+        objectList.add( new Pair<String, Object>( "Log", log ) );
 
-	this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
-       
-	this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( this.javascriptStr ), objectList );
-	this.entryFunc = args.get( this.entryFuncStr );
+        this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
+
+        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( XMLDCHarvesterEnvironment.javascriptStr ), objectList );
+        this.entryFunc = args.get( XMLDCHarvesterEnvironment.entryFuncStr );
     }
 
     /**
@@ -146,24 +120,29 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private void validateArguments( Map< String, String > args, List< IPair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
     {
-	log.info("Validating Arguments - Begin");
+        log.info( "Validating Arguments - Begin" );
 
-	// Validating existence of mandatory entrys:
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( javascriptStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", javascriptStr ) );
-	if ( ! PluginEnvironmentUtils.validateMandatoryArgumentName( entryFuncStr, args ) )
-	    throw new PluginException( String.format( "Could not find argument: %s", entryFuncStr ) );
+        // Validating existence of mandatory entrys:
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( javascriptStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", javascriptStr ) );
+        }
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( entryFuncStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", entryFuncStr ) );
+        }
 
-	// Validating that javascript can be used in the SimpleRhinoWrapper:
-	SimpleRhinoWrapper tmpWrapper =  PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
+        // Validating that javascript can be used in the SimpleRhinoWrapper:
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
 
-	// Validating function entries:
-	if ( ! tmpWrapper.validateJavascriptFunction( args.get(this.entryFuncStr) ) )
-	    throw new PluginException( String.format( "Could not use %s as function in javascript", args.get(this.entryFuncStr) ) );
+        // Validating function entries:
+        if( !tmpWrapper.validateJavascriptFunction( args.get( XMLDCHarvesterEnvironment.entryFuncStr ) ) )
+        {
+            throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( XMLDCHarvesterEnvironment.entryFuncStr ) ) );
+        }
 
-	log.info("Validating Arguments - End");
+        log.info( "Validating Arguments - End" );
     }
-
 }

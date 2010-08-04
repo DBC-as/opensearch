@@ -29,7 +29,7 @@ import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
 import dk.dbc.opensearch.common.types.TargetFields;
 
@@ -80,15 +80,15 @@ public class ScriptMethodsForReviewRelation {
 
         log.info( String.format( "getPID called with: %s ", value ) );
         //convert field to the TargetFields type
-        //create a List<SimplePair<TargetFields, String>> with the converted field and
+        //create a List<Pair<TargetFields, String>> with the converted field and
         //the value
         // TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
         TargetFields targetField = (TargetFields)FedoraObjectFields.PID;
         String searchValue = "*:" + value;
         //call the IObjectRepository.getIdentifiers method with the above values,
         //no cutIdentifier and the number of submitters in the maximumResults 
-        List<SimplePair<TargetFields, String>> searchFields = new ArrayList<SimplePair<TargetFields, String>>();
-        searchFields.add( new SimplePair<TargetFields, String>( targetField, searchValue ) );
+        List<Pair<TargetFields, String>> searchFields = new ArrayList<Pair<TargetFields, String>>();
+        searchFields.add( new Pair<TargetFields, String>( targetField, searchValue ) );
 
 	// \note: 10000 below is a hardcodet estimate on max amount of results:
         List<String> resultList = repository.getIdentifiers( searchFields, null, 10000 );

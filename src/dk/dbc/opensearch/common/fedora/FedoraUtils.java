@@ -25,7 +25,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IPair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
 import java.io.ByteArrayOutputStream;
@@ -97,10 +96,9 @@ public class FedoraUtils
          */
         // get normal data from cargocontainer
         int cargo_count = cargo.getCargoObjectCount();
-        List< ? extends IPair< Integer, String > > ordering = getOrderedMapping( cargo );
+        List< ? extends ComparablePair< Integer, String > > ordering = getOrderedMapping( cargo );
         for( int i = 0; i < cargo_count; i++ )
         {
-
             CargoObject c = cargo.getCargoObjects().get( i );
 
             if( c.getDataStreamType() == DataStreamType.DublinCoreData )
@@ -225,53 +223,7 @@ public class FedoraUtils
     }
 
 
-    /**
-     * helper method that contructs an administration stream based on the
-     * CargoObjects found in the supplied CargoContainer.
-     * @param cargo a CargoContainer containing all CargoObjects that are to be
-     *        ingested into the fedora repository
-     * @return An element representing the adminstream xml
-     * @throws ParserConfigurationException
-     */
-    //    private static Element constructAdminStream( CargoContainer cargo ) throws ParserConfigurationException
-    //    {
-    //
-    //        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    //        DocumentBuilder builder = factory.newDocumentBuilder();
-    //
-    //        Document admStream = builder.newDocument();
-    //        Element root = admStream.createElement( "admin-stream" );
-    //
-    //        Element indexingaliasElem = admStream.createElement( "indexingalias" );
-    //        indexingaliasElem.setAttribute( "name", cargo.getIndexingAlias( DataStreamType.OriginalData ).getName() );
-    //        root.appendChild( (Node) indexingaliasElem );
-    //
-    //        Node streams = admStream.createElement( "streams" );
-    //
-    //        int counter = cargo.getCargoObjectCount();
-    //        List<? extends Pair<Integer, String>> lst2 = getOrderedMapping( cargo );
-    //        for( int i = 0; i < counter; i++ )
-    //        {
-    //            CargoObject c = cargo.getCargoObjects().get( i );
-    //
-    //            Element stream = admStream.createElement( "stream" );
-    //
-    //            stream.setAttribute( "id", lst2.get( i ).getSecond() );
-    //            stream.setAttribute( "lang", c.getLang() );
-    //            stream.setAttribute( "format", c.getFormat() );
-    //            stream.setAttribute( "mimetype", c.getMimeType() );
-    //            stream.setAttribute( "submitter", c.getSubmitter() );
-    //            stream.setAttribute( "index", Integer.toString( lst2.get( i ).getFirst() ) );
-    //            stream.setAttribute( "streamNameType", c.getDataStreamType().getName() );
-    //            streams.appendChild( (Node) stream );
-    //        }
-    //
-    //        root.appendChild( streams );
-    //
-    //        return root;
-    //    }
-
-    private static List<? extends IPair<Integer, String>> getOrderedMapping( CargoContainer cargo )
+    private static List<? extends ComparablePair<Integer, String>> getOrderedMapping( CargoContainer cargo )
     {
         int cargo_count = cargo.getCargoObjectCount();
         log.trace( String.format( "Number of CargoObjects in Container %s", cargo_count ) );
@@ -292,7 +244,7 @@ public class FedoraUtils
         DataStreamType dsn = null;
 
         List<ComparablePair<Integer, String>> lst2 = new ArrayList<ComparablePair<Integer, String>>();
-        for( IPair<String, Integer> p : lst )
+        for( ComparablePair<String, Integer> p : lst )
         {
             if( dsn != DataStreamType.getDataStreamTypeFrom( p.getFirst() ) )
             {
@@ -305,8 +257,8 @@ public class FedoraUtils
 
             dsn = DataStreamType.getDataStreamTypeFrom( p.getFirst() );
 
-            log.debug( String.format( "Adding %s to the document list", p.getFirst() +"."+ j ) );
-            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() +"."+ j ) );
+            log.debug( String.format( "Adding %s to the document list", p.getFirst() + "." + j ) );
+            lst2.add( new ComparablePair<Integer, String>( p.getSecond(), p.getFirst() + "." + j ) );
         }
 
         lst2.add( new ComparablePair<Integer, String>( lst2.size(), DataStreamType.AdminData.getName() ) );

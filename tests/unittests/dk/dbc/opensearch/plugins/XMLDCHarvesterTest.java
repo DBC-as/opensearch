@@ -25,16 +25,15 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-//import dk.dbc.opensearch.common.metadata.DublinCoreElement;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.IPair;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 
@@ -123,7 +122,7 @@ public class XMLDCHarvesterTest
     public static class MockSimpleRhinoWrapper
     {
         @Mock
-        public void $init( String jsFileName, List< IPair< String, Object > > objectList )
+        public void $init( String jsFileName, List< Pair< String, Object > > objectList )
         {}
     }
 

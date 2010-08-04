@@ -25,7 +25,7 @@ import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.types.CompletedTask;
-import dk.dbc.opensearch.common.types.SimplePair;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +64,7 @@ public class PTIManagerTest
     IObjectRepository objectRepository = createMock( IObjectRepository.class );
 
     static FutureTask mockFuture = createMock( FutureTask.class );
-    static CompletedTask dummyTask = new CompletedTask( mockFuture, new SimplePair< Boolean, Integer >( true, 1 ) );
+    static CompletedTask dummyTask = new CompletedTask( mockFuture, new Pair< Boolean, Integer >( true, 1 ) );
     static Vector< CompletedTask > checkJobsVector =  new Vector< CompletedTask >();
 
 
@@ -95,7 +95,7 @@ public class PTIManagerTest
     @MockClass( realClass =  PTIPool.class )
     public static class MockPTIPool
     {
-        @Mock public void $init( ThreadPoolExecutor threadpool, Compass compass, HashMap< SimplePair < String, String >, ArrayList< String > > jobMap ) 
+        @Mock public void $init( ThreadPoolExecutor threadpool, Compass compass, HashMap< Pair < String, String >, ArrayList< String > > jobMap )
         {
         
         }
@@ -188,12 +188,12 @@ public class PTIManagerTest
          * setup
          */
         Mockit.setUpMocks( MockPTIManagerConfig.class );
-        Vector< SimplePair< String, Integer > > newJobs = new Vector< SimplePair< String, Integer > >();
-        newJobs.add( new SimplePair< String, Integer >( "test1", 1 ) );
-        newJobs.add( new SimplePair< String, Integer >( "test2", 2 ) );
+        Vector< Pair< String, Integer > > newJobs = new Vector< Pair< String, Integer > >();
+        newJobs.add( new Pair< String, Integer >( "test1", 1 ) );
+        newJobs.add( new Pair< String, Integer >( "test2", 2 ) );
        
 
-        Vector< CompletedTask<SimplePair<Boolean, Integer>> > finishedJobs =  new Vector< CompletedTask<SimplePair<Boolean, Integer>> >();
+        Vector< CompletedTask<Pair<Boolean, Integer>> > finishedJobs =  new Vector< CompletedTask<Pair<Boolean, Integer>> >();
         finishedJobs.add( mockCompletedTask );
 
         /**
@@ -209,7 +209,7 @@ public class PTIManagerTest
 
         //out of while loop
 //        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
-//        expect( mockCompletedTask.getResult() ).andReturn( new SimplePair< Boolean, Integer >( true, 1 ) );
+//        expect( mockCompletedTask.getResult() ).andReturn( new Pair< Boolean, Integer >( true, 1 ) );
 //        mockPQ.commit( 1 );
         
         /**

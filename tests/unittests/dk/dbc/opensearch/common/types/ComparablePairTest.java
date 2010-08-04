@@ -23,10 +23,6 @@
 package dk.dbc.opensearch.common.types;
 
 
-import dk.dbc.opensearch.common.types.ComparablePair;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -45,8 +41,8 @@ public class ComparablePairTest {
      * 
      */
     @Test public void testSortableOnFirst(){
-        ArrayList< ComparablePair > apairlist = 
-            new ArrayList< ComparablePair >();
+        ArrayList< ComparablePair<String, Integer> > apairlist =
+            new ArrayList< ComparablePair<String, Integer> >();
         apairlist.add( new ComparablePair< String, Integer > ( "b", 1 ) );
         apairlist.add( new ComparablePair< String, Integer > ( "c", 2 ) );
         apairlist.add( new ComparablePair< String, Integer > ( "a", 3 ) );
@@ -57,14 +53,14 @@ public class ComparablePairTest {
         assertEquals( apairlist.get( 1 ).getFirst(), "b" );
         assertEquals( apairlist.get( 2 ).getFirst(), "c" );
 
-        assertEquals( apairlist.get( 0 ).getSecond(), 3 );
-        assertEquals( apairlist.get( 1 ).getSecond(), 1 );
-        assertEquals( apairlist.get( 2 ).getSecond(), 2 );
+        assertEquals( (Object)apairlist.get( 0 ).getSecond(), 3 );
+        assertEquals( (Object)apairlist.get( 1 ).getSecond(), 1 );
+        assertEquals( (Object)apairlist.get( 2 ).getSecond(), 2 );
     }
 
     @Test public void testSortableOnSecond(){
-        ArrayList< ComparablePair > apairlist = 
-            new ArrayList< ComparablePair >();
+        ArrayList< ComparablePair<String, Integer> > apairlist =
+            new ArrayList< ComparablePair<String, Integer> >();
         apairlist.add( new ComparablePair< String, Integer > ( "a", 2 ) );
         apairlist.add( new ComparablePair< String, Integer > ( "a", 1 ) );
 
@@ -72,14 +68,16 @@ public class ComparablePairTest {
 
         assertEquals( apairlist.get( 0 ).getFirst(), "a" );
       
-        assertEquals( apairlist.get( 0 ).getSecond(), 1 );
-        assertEquals( apairlist.get( 1 ).getSecond(), 2 );
+        assertEquals( (Object)apairlist.get( 0 ).getSecond(), 1 );
+        assertEquals( (Object)apairlist.get( 1 ).getSecond(), 2 );
     }
 
     /**
      * Verify that null values are not comparable
      */
-    @Test public void testNullDoesNotEqual(){
+    @Test( expected = IllegalArgumentException.class )
+    public void testNullNotAcceptedInConstructor()
+    {
         ComparablePair<String, String> one = new ComparablePair<String, String>( "a", null );
         ComparablePair<String, String> two = null;//new ComparablePair<String, String>( "a", null );
 
@@ -103,10 +101,10 @@ public class ComparablePairTest {
     
     }
 
-   @Test public void testEqualsRejectsOtherClass(){
+    @Test
+    public void testEqualsRejectsOtherClass()
+    {
         ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
-        
-
         assertFalse( one.equals( "test" ) );
     }
 
