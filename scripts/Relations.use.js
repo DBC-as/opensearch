@@ -72,6 +72,81 @@ const Relations = function() {
 
   };
 
+  that.isPartOfManifestation = function ( xml, pid) {
+
+    Log.info ("Start isPartOfManifestation" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var articleXML = XmlUtil.fromString( xml );
+
+    var child;
+
+    for each (child in articleXML.dkabm::record.dcterms::isPartOf) {
+      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
+        Log.debug ( "Attribute: " + String(child.@xsi::type));
+        Log.debug ( "Child: " + child);
+        var identifier = "ISSN:" + String(child).replace(/-/g, "");
+      }
+    }
+
+    Log.info( "Identifier: " + identifier );
+    Log.info( "pid: " + pid );
+
+    var results = FedoraPIDSearch.identifier( identifier );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
+
+      scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
+      scriptClass.createRelation( result, NS + "hasArticle", pid);
+    }
+
+    Log.info ("End isPartOfManifestation" );
+
+  };
+
+  that.hasArticle = function ( xml, pid) {
+
+    Log.info ("Start hasArticle" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    var child;
+
+    for each (child in manifestationXML.dkabm::record.dcterms::isPartOf) {
+      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
+        Log.debug ( "Attribute: " + String(child.@xsi::type));
+        Log.debug ( "Child: " + child);
+        var identifier = child;
+      }
+    }
+
+    Log.info( "Identifier: " + identifier );    
+    Log.info( "pid: " + pid );
+
+    var results = FedoraPIDSearch.relation( "ISSN:" + identifier );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
+
+      scriptClass.createRelation( pid, NS + "hasArticle", result);
+      scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
+    }
+
+    Log.info ("End hasArticle" );
+
+  };
+
+
   that.isPartOfAlbum = function ( xml, pid) {
 
     Log.info ("Start isPartOfAlbum" );

@@ -65,12 +65,22 @@ function checkmatch( newObject, workObject )
     var workContributors = [];
     var child;
     for each (child in newObjectXml.dc::contributor) {
-      Log.debug( "RLO: CHILD NEW" + child);
+      Log.debug( "RLO: CHILD NEW " + child);
       newContributors.push(String(child));
     }
     for each (child in workObjectXml.dc::contributor) {
       Log.debug( "RLO: CHILD WORK " + child);
       workContributors.push(String(child));
+    }
+    var newIdentifier = [];
+    var workIdentifier = [];
+    for each (child in newObjectXml.dc::identifier) {
+      Log.debug( "RLO: CHILD NEW " + child);
+      newIdentifier.push(String(child));
+    }
+    for each (child in workObjectXml.dc::identifier) {
+      Log.debug( "RLO: CHILD WORK " + child);
+      workIdentifier.push(String(child));
     }
 
     Log.debug( "RLO: start match\n");
@@ -91,11 +101,22 @@ function checkmatch( newObject, workObject )
           result = false;
         }
         break;
-      case "Avis":
+      case "Avis": case "Netdokument":
         Log.debug( "RLO: Avis\n");
-        if (newTitle === workTitle && workType === "Avis") {
+        for (var a in newIdentifier) {
+          Log.debug( "NEWIDENTIFIER: " + newIdentifier[a] );
+          for (var b in workIdentifier) {
+            Log.debug( "WORKIDENTIFIER: " + workIdentifier[a] );
+            if (newIdentifier[a] === workIdentifier[b]) {
+              Log.debug( "IDENTIFIERMATCH" );
+              result = true;
+            }
+          }
+        }
+        if (result !== true && newTitle === workTitle && workType === "Avis") {
+          Log.debug( "TITLEMATCH" );
           result = true;
-        } else {
+        } else if (result !== true) {
           result = false;
         }
         break;
@@ -107,11 +128,20 @@ function checkmatch( newObject, workObject )
           result = false;
         }
         break;
-      case "Tidsskrift":
+      case "Tidsskrift": case "Periodikum":
         Log.debug( "RLO: Tidsskrift\n");
-        if (newTitle === workTitle && workType === "Tidsskrift") {
+        for (var a in newIdentifier) {
+          for (var b in workIdentifier) {
+            if (newIdentifier[a] === workIdentifier[b]) {
+              Log.debug( "IDENTIFIERMATCH" );
+              result = true;
+            }
+          }
+        }
+        if (result !== true && newTitle === workTitle && workType === "Tidsskrift") {
+          Log.debug( "TITLEMATCH" );
           result = true;
-        } else {
+        } else  if (result !== true) {
           result = false;
         }
         break;

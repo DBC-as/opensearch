@@ -16,6 +16,14 @@ function isPartOfAlbum ( submitter, format, language, xml, pid ) {
   Relations.isPartOfAlbum ( xml, pid );
 }
 
+function hasArticle ( submitter, format, language, xml, pid ) {
+  Relations.hasArticle ( xml, pid );
+}
+
+function isPartOfManifestation ( submitter, format, language, xml, pid ) {
+  Relations.isPartOfManifestation ( xml, pid );
+}
+
 function hasSoundClip ( submitter, format, language, xml, pid ) {
   Relations.hasSoundClip ( xml, pid );
 }
