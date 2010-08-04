@@ -43,10 +43,20 @@ public final class SimplePair< E, V > implements Pair< E, V >
     private final V second;
 
     /**
-     *  
+     *  Constructor taking two objects. The Objects may be different objects, 
+     *  equal objects, or the same actual object. Neither of the objects may be null.
+     * 
+     *  @param first The first object.
+     *  @param second The second object.
+     *
+     *  @throws IllegalArgumentException if either first or second are null.
      */
-    public SimplePair( E first, V second ) 
+    public SimplePair( final E first, final V second ) throws IllegalArgumentException
     {
+	if ( first == null || second == null )
+	{
+	    throw new IllegalArgumentException( "null values are not accepted as elements in SimplePair." );
+	}
         this.first = first;
         this.second = second;
     }
@@ -109,7 +119,8 @@ public final class SimplePair< E, V > implements Pair< E, V >
      *  Asserts equality of the SimplePair object and another SimplePair object, 
      *  based on equality of the contained elements. The elements are testeted against each other 
      *  in the same order they appear in the SimplePair. That is, Pair< E, V > and Pair < V, E >
-     *  are not equal even though it is the same objects (E and V) that are contained in the SimplePair
+     *  are not equal even though it is the same objects (E and V) that are contained in the SimplePair,
+     *  assuming E and V are nonequal.
      */
     @Override
     public boolean equals( Object obj )
