@@ -482,40 +482,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
             try
             {
-                // if ( co.getDataStreamType() == DataStreamType.DublinCoreData )
-                // {
-                // DublinCore dc;
-                // log.trace( String.format( "Trying to contruct DublinCore element from string: %s", new String( datastream ) ) );
-                // try
-                // {
-                //     dc = new DublinCore( new ByteArrayInputStream( datastream ) );
-                // }
-                // catch( XMLStreamException ex )
-                // {
-                //     String error = String.format( "Failed to construct Dublin Core object from datastream %s from pid '%s': %s", new String( datastream ), identifier, ex.getMessage() );
-                //     log.error( error );
-                //     throw new ObjectRepositoryException( error, ex );
-                // }
-
-                // String dcid = dc.getDCValue( DublinCoreElement.ELEMENT_IDENTIFIER );
-                // log.trace( String.format( "Got dc:identifier '%s' from datastream", dcid ) );
-                // if( null == dcid )
-                // {
-                //     log.warn( String.format( "Dublin Core data has no identifier, will use '%s' one from the CargoContainer", identifier ) );
-                //     dc.setIdentifier( identifier );
-                // }
-                // else
-                // {
-                //     log.info( String.format( "Adding DublinCore data with id '%s' to CargoContainer", dcid ) );
-                // }
-
-                // cargo.addMetaData( dc );
-
-                // }
-                // else
-                // {
                 cargo.add( co.getDataStreamType(), co.getFormat(), co.getSubmitter(), co.getLang(), co.getMimeType(),  datastream );
-                //}
             }
             catch( IOException ex )
             {
@@ -529,14 +496,6 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             throw new ObjectRepositoryException( "CargoContainer is empty, even though adminstream says it gave data" );
         }
-
-        // if ( cargo.getDublinCoreMetaData() == null )
-        // {
-        //     DublinCore dc = new DublinCore( identifier );
-        //     dc.setCreator( cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter() );
-        //     dc.setFormat( cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-        //     dc.setLanguage( cargo.getCargoObject( DataStreamType.OriginalData ).getLang() );
-        // }
 
         return cargo;
     }
@@ -638,8 +597,6 @@ public class FedoraObjectRepository implements IObjectRepository
         for( int j = 0; j < ofLength; j++ )
         {
             String pidValue = objectFields[j].getPid();
-            //log.debug( String.format( "Matching pid: %s", pidValue ) );
-            // System.out.format( String.format( "Matching pid: %s", pidValue ) );
             ObjectFields of = objectFields[j];
 
             /**
@@ -657,264 +614,6 @@ public class FedoraObjectRepository implements IObjectRepository
         }
         return pids;
     }
-
-
-    /**
-     * This method only returns exact matches, because of the reality with the
-     * work matching right now (12th feb. 2010)
-     * Remove this method after 1st of July, it shouldnt be used.
-     */
-
-    // @Override
-    // public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults, String namespace )
-    // {
-    //     String[] resultFields = new String[ resultSearchFields.size() + 1 ];
-    //     int i = 0;
-    //     for( Pair< TargetFields, String > field : resultSearchFields )
-    //     {
-    //         TargetFields property = field.getFirst();
-    //         resultFields[i] = property.fieldname();
-    //         i++;
-    //     }
-
-    //     resultFields[i++] = "pid"; // must be present!
-    //     ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, namespace );
-
-    //     int ofLength = objectFields.length;
-    //     List< String > pids = new ArrayList< String >( ofLength );
-    //     for( int j = 0; j < ofLength; j++ )
-    //     {
-    //         String pidValue = objectFields[j].getPid();
-    //         log.debug( String.format( "Matching pid: %s", pidValue ) );
-    //         // Check to weed out in exact matches
-    //         ObjectFields of = objectFields[j];
-    //         if ( addPidValue( resultSearchFields, of, namespace ) )
-    //         {
-    //             log.debug( String.format( "Matching do addPidValue", "" ) );
-    //             if ( pidValue.contains( namespace ) )
-    //             {
-    //                 if ( cutPid == null )
-    //                 {
-    //                     pids.add( pidValue );
-    //                 }
-    //                 else if ( ! pidValue.equals( cutPid ) )
-    //                 {
-    //                     pids.add( pidValue );
-    //                     return pids;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return pids;
-    // }
-
-
-    /**
-     * This method sort out all the non exact matches, since fedora searches
-     * some fields with "has" instead of "eq"
-     */
-    // private boolean addPidValue( List< Pair< TargetFields, String > > resultFields, ObjectFields of /* objectFields */, String namespace )
-    // {
-    //     boolean ret = false;
-    //     log.debug( String.format( "Matching size: '%s'", resultFields.size() ) );
-    //     for ( Pair< TargetFields, String > pair : resultFields )
-    //     {
-    //         FedoraObjectFields target = (FedoraObjectFields)pair.getFirst();
-    //         log.debug( String.format( "Matching resultField: '%s'", target ) );
-    //         String value = pair.getSecond();
-    //         //log.debug( String.format( "Matching objectFields length: '%s'", objectFields.length ) );
-    //         //for ( ObjectFields of : objectFields )
-    //         //{
-    //         String pid = of.getPid().toLowerCase();
-    //         log.debug( String.format( "Matching pid: '%s'", pid ) );
-    //         if ( pid.contains( namespace ) )
-    //         {
-    //             switch ( target )
-    //             {
-    //             case PID:
-    //                 log.debug( String.format( "PID Matching '%s' and '%s'", pid, value ) );
-    //                 if ( pid.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case STATE:
-    //                 String state = of.getState().toLowerCase();
-    //                 log.debug( String.format( "STATE Matching '%s' and '%s'", state, value ) );
-    //                 if ( state.equals( value) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case OWNERID:
-    //                 String ownerId = of.getOwnerId().toLowerCase();
-    //                 log.debug( String.format( "OWNERID Matching '%s' and '%s'", ownerId, value ) );
-    //                 if ( ownerId.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case CDATE:
-    //                 String cDate = of.getCDate().toLowerCase();
-    //                 log.debug( String.format( "CDATE Matching '%s' and '%s'", cDate, value ) );
-    //                 if ( cDate.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case MDATE:
-    //                 String mDate = of.getMDate().toLowerCase();
-    //                 log.debug( String.format( "MDATE Matching '%s' and '%s'", mDate, value ) );
-    //                 if ( mDate.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case TITLE:
-    //                 String title = of.getTitle()[0].toLowerCase();
-    //                 log.debug( String.format( "TITLE Matching '%s' and '%s'", title, value ) );
-    //                 if ( title.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case CREATOR:
-    //                 String creator = of.getCreator()[0].toLowerCase();
-    //                 log.debug( String.format( "CREATOR Matching '%s' and '%s'", creator, value ) );
-    //                 if ( creator.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case SUBJECT:
-    //                 String subject = of.getSubject()[0].toLowerCase();
-    //                 log.debug( String.format( "SUBJECT Matching '%s' and '%s'", subject, value ) );
-    //                 if ( subject.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case DESCRIPTION:
-    //                 String description = of.getDescription()[0].toLowerCase();
-    //                 log.debug( String.format( "DESCRIPTION Matching '%s' and '%s'", description, value ) );
-    //                 if ( description.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case PUBLISHER:
-    //                 String publisher = of.getPublisher()[0].toLowerCase();
-    //                 log.debug( String.format( "PUBLISHER Matching '%s' and '%s'", publisher, value ) );
-    //                 if ( publisher.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case CONTRIBUTOR:
-    //                 String contributor = of.getContributor()[0].toLowerCase();
-    //                 log.debug( String.format( "CONTRIBUTOR Matching '%s' and '%s'", contributor, value ) );
-    //                 if ( contributor.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case DATE:
-    //                 String date = of.getDate()[0].toLowerCase();
-    //                 log.debug( String.format( "DATE Matching '%s' and '%s'", date, value ) );
-    //                 if ( date.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case TYPE:
-    //                 String type = of.getType()[0].toLowerCase();
-    //                 log.debug( String.format( "TYPE Matching '%s' and '%s'", type, value ) );
-    //                 if ( type.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case FORMAT:
-    //                 String format = of.getFormat()[0].toLowerCase();
-    //                 log.debug( String.format( "FORMAT Matching '%s' and '%s'", format, value ) );
-    //                 if ( format.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case IDENTIFIER:
-    //                 String identifier = of.getIdentifier()[0].toLowerCase();
-    //                 log.debug( String.format( "IDENTIFIER Matching '%s' and '%s'", identifier, value ) );
-    //                 if ( identifier.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case SOURCE:
-    //                 String source = of.getSource()[0].toLowerCase();
-    //                 log.debug( String.format( "SOURCE Matching '%s' and '%s'", source, value ) );
-    //                 if ( source.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case LANGUAGE:
-    //                 String language = of.getLanguage()[0].toLowerCase();
-    //                 log.debug( String.format( "LANGUAGE Matching '%s' and '%s'", language, value ) );
-    //                 if ( language.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case RELATION:
-    //                 String relation = of.getRelation()[0].toLowerCase();
-    //                 log.debug( String.format( "RELATION Matching '%s' and '%s'", relation, value ) );
-    //                 if ( relation.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case COVERAGE:
-    //                 String coverage = of.getCoverage()[0].toLowerCase();
-    //                 log.debug( String.format( "COVERAGE Matching '%s' and '%s'", coverage, value ) );
-    //                 if ( coverage.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case RIGHTS:
-    //                 String rights = of.getRights()[0].toLowerCase();
-    //                 log.debug( String.format( "RIGHTS Matching '%s' and '%s'", rights, value ) );
-    //                 if ( rights.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             case DCMDATE:
-    //                 String dcmDate = of.getDcmDate().toLowerCase();
-    //                 log.debug( String.format( "DCMDATE Matching '%s' and '%s'", dcmDate, value ) );
-    //                 if ( dcmDate.equals( value ) )
-    //                 {
-    //                     ret = true;
-    //                 }
-    //                 break;
-    //             default:
-    //                 //throw new ObjectRepositoryException( "No match!" );
-    //             }
-
-    //             if ( ret )//isnt this to early to return, what if the next value doesnt match?
-    //             {
-    //                 log.debug( String.format( "RET Matching returning: '%s'", ret ) );
-    //                 return ret;
-    //             }
-    //         }
-    //         //}
-    //     }
-
-    //     log.debug( String.format( "RET Matching returning: '%s'", ret ) );
-    //     return ret;
-    // }
 
 
     /**
@@ -1279,91 +978,6 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
-    /**
-     * This code has been commented out since it is not used anywhere
-     * and there seems to be no intentions of ever using it. Should
-     * anyone encounter this commented-out method later than July 1st
-     * 2010, it should be removed altogether.
-     */
-    // @Override
-    // public void storeDataInObject( String identifier, CargoObject object, boolean versionable, boolean overwrite ) throws ObjectRepositoryException
-    // {
-
-    //     AdministrationStream admStream = getAdministrationStream( identifier );
-    //     int count = admStream.getCount( object.getDataStreamType() );
-    //     String dsId = object.getDataStreamType().getName() + Integer.toString( count + 1 );
-    //     boolean addedData = addDataUpdateAdminstream( identifier, dsId, object );
-
-    //     if( !addedData )
-    //     {
-    //         log.warn( String.format( "Could not add data or update administration stream for pid %s, dsId %s", identifier, dsId ) );
-    //     }
-
-    //     //upload the content
-
-    //     /** \todo: the java.nio.channels should relieve the worl of this ugly hack. Please redeem this code*/
-    //     ByteArrayInputStream bais = new ByteArrayInputStream( object.getBytes() );
-    //     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    //     byte[] buf = new byte[1024];
-    //     int len;
-    //     try
-    //     {
-    //         while( (len = bais.read( buf )) > 0 )
-    //         {
-    //             baos.write( buf, 0, len );
-    //         }
-    //     }
-    //     catch( IOException ex )
-    //     {
-    //         String error = String.format( "Could not hack my way through outdated java api for copying inputstreams to outputstreams, sorry" );
-    //         log.error( error );
-    //         throw new ObjectRepositoryException( error, ex );
-    //     }
-
-    //     /** end ugly code hack ;)*/
-    //     String dsLocation = uploadDatastream( baos );
-    //     String logm = String.format( "added %s to the object with pid: %s", dsLocation, identifier );
-    //     String returnedSID = null;
-    //     try
-    //     {
-    //         returnedSID = this.fedoraHandle.addDatastream( identifier, dsId, new String[]
-    //             {
-    //             }, object.getFormat(), versionable, object.getMimeType(), null, dsLocation, "M", "A", null, null, logm );
-    //     }
-    //     catch( ConfigurationException ex )
-    //     {
-    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-    //         log.error( error );
-    //         throw new ObjectRepositoryException( error, ex );
-    //     }
-    //     catch( ServiceException ex )
-    //     {
-    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-    //         log.error( error );
-    //         throw new ObjectRepositoryException( error, ex );
-    //     }
-    //     catch( MalformedURLException ex )
-    //     {
-    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-    //         log.error( error );
-    //         throw new ObjectRepositoryException( error, ex );
-    //     }
-    //     catch( IOException ex )
-    //     {
-    //         String error = String.format( "Failed to add Datastream with id '%s' to object with pid '%s': %s", dsId, identifier, ex.getMessage() );
-    //         log.error( error );
-    //         throw new ObjectRepositoryException( error, ex );
-    //     }
-
-    //     if( returnedSID == null )
-    //     {
-    //         String error = String.format( "Failed to add datastream to object with pid '%s'", identifier );
-    //         log.error( error );
-    //         throw new ObjectRepositoryException( error );
-    //     }
-    // }
-
-
     @Override
     public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
     {
@@ -1539,35 +1153,11 @@ public class FedoraObjectRepository implements IObjectRepository
         return cargo;
     }
 
-    /**
-     * This code has been commented out since it is not used anywhere
-     * and there seems to be no intentions of ever using it. Should
-     * anyone encounter this commented-out method later than July 1st
-     * 2010, it should be removed altogether.
-     */
-    // @Override
-    // public void replaceDataInObject( String objectIdentifier, String dataIdentifier, CargoObject cargo ) throws ObjectRepositoryException
-    // {
-
-    //     /** \todo: this is just a wrapper for the two-phase operation
-    //      * of deleting and storing data. It inherits the weaknesses
-    //      * from both methods, as an exception thrown somewhere in the
-    //      * operations renders the object repository in an inconsistent
-    //      * state*/
-    //     deleteDataFromObject( objectIdentifier, dataIdentifier );
-    //     storeDataInObject( objectIdentifier, cargo, true, true );
-    // }
-
 
     private AdministrationStream constructAdministrationStream( CargoContainer cargo ) throws ObjectRepositoryException
     {
-        // String indexingAlias = cargo.getIndexingAlias( DataStreamType.OriginalData );
-        // if( indexingAlias == null )
-        // {
-        //     log.warn( String.format( "Supplied CargoContainer (format %s) has no Original Data, I find it hard to construct an indexing alias given the circumstances. Instead, it'll be IndexingAlias.None", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() ) );
-        //     indexingAlias = "NULL - no alias found";
-        // }
-        AdministrationStream adminStream = new AdministrationStream(/* indexingAlias*/ );
+
+        AdministrationStream adminStream = new AdministrationStream();
 
         if( 0 == cargo.getCargoObjectCount() )
         {
