@@ -62,6 +62,12 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasArticle"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasAuthorDescription"/>
       </args>
     </plugin>
@@ -123,6 +129,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasArticle"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
@@ -215,6 +227,12 @@
 	<arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="isPartOfManifestation"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="dr_bonanza" submitter="dbc">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -272,6 +290,12 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasArticle"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasAuthorDescription"/>
       </args>
     </plugin>
@@ -297,6 +321,12 @@
       <args>
 	<arg name="javascript" value="simple_relation.js"/>
 	<arg name="entryfunction" value="hasReview"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasArticle"/>
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
