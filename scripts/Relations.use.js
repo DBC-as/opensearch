@@ -84,7 +84,7 @@ const Relations = function() {
     for each (child in articleXML.dkabm::record.dcterms::isPartOf) {
       if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
         Log.debug ( "Attribute: " + String(child.@xsi::type));
-        Log.debug ( "Child: " + child);
+        Log.debug ( "Child: " + child );
         var identifier = "ISSN:" + String(child).replace(/-/g, "");
       }
     }
@@ -118,18 +118,18 @@ const Relations = function() {
 
     var child;
 
-    for each (child in manifestationXML.dkabm::record.dcterms::isPartOf) {
+    for each (child in manifestationXML.dkabm::record.dc::identifier) {
       if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
         Log.debug ( "Attribute: " + String(child.@xsi::type));
-        Log.debug ( "Child: " + child);
-        var identifier = child;
+        Log.debug ( "Child: " + child );
+        var identifier = "ISSN:" + String(child).replace(/-/g, "");
       }
     }
 
     Log.info( "Identifier: " + identifier );    
     Log.info( "pid: " + pid );
 
-    var results = FedoraPIDSearch.relation( "ISSN:" + identifier );
+    var results = FedoraPIDSearch.relation( identifier );
 
     for ( var i = 0; i < results.length; ++i ) {
       var result = results[i];
