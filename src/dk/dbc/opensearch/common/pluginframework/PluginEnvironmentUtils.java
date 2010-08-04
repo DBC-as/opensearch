@@ -28,7 +28,7 @@ package dk.dbc.opensearch.common.pluginframework;
 
 import dk.dbc.opensearch.common.config.FileSystemConfig;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.IPair;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -48,7 +48,7 @@ public final class PluginEnvironmentUtils
      * Initializes a SimpleRhinoWrapper given a javascript filename and a list of objects used to load into the rhino-scope.
      * 
      */
-    public static SimpleRhinoWrapper initializeWrapper( String jsFileName, List< Pair< String, Object > > objectList ) throws PluginException
+    public static SimpleRhinoWrapper initializeWrapper( String jsFileName, List< IPair< String, Object > > objectList ) throws PluginException
     {
 
 	SimpleRhinoWrapper wrapper = null;

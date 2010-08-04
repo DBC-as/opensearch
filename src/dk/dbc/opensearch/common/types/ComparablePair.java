@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * \brief  This is an implementation of the Pair interface guaranteeing that elements can be compared, e.g. using Collection.sort
+ * \brief  This is an implementation of the IPair interface guaranteeing that elements can be compared, e.g. using Collection.sort
  * \file
  */
 
@@ -25,7 +25,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.types;
 
 /**
- * Use this class if you want a {@link Pair} class that can be sorted. It
+ * Use this class if you want a {@link IPair} class that can be sorted. It
  * sorts on the first element and only considers the second if the two
  * first elements are equal. If the client needs sorting on the second
  * element and not the first, please consider using a
@@ -38,7 +38,7 @@ package dk.dbc.opensearch.common.types;
  * @param <E>
  * @param <V>
  */
-public final class ComparablePair<E extends Comparable<E>, V extends Comparable<V>> implements Comparable<ComparablePair<E, V>>, Pair<E, V>
+public final class ComparablePair<E extends Comparable<E>, V extends Comparable<V>> implements Comparable<ComparablePair<E, V>>, IPair<E, V>
 {
 
     private final E first;

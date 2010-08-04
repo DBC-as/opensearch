@@ -29,7 +29,7 @@ package dk.dbc.opensearch.components.datadock;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.IPair;
 import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.pluginframework.PluginTask;
@@ -62,8 +62,8 @@ public class DatadockManager
     private List<TaskInfo> registeredJobs;
     private final Map<String, List< PluginTask > > flowMap;
 
-    private final Map< Pair< String,String >, Boolean > jobExecutionCheckSet = 
-        Collections.synchronizedMap( new HashMap< Pair< String,String >, Boolean >() );
+    private final Map< IPair< String,String >, Boolean > jobExecutionCheckSet = 
+        Collections.synchronizedMap( new HashMap< IPair< String,String >, Boolean >() );
 
     /**
      * Constructs the the DatadockManager instance.
@@ -164,7 +164,7 @@ public class DatadockManager
     private synchronized Boolean hasWorkflow( TaskInfo job )
     {
         Boolean exists = Boolean.FALSE;
-        final Pair<String, String> entry = new SimplePair<String,String>( job.getSubmitter(), job.getFormat() );
+        final IPair<String, String> entry = new SimplePair<String,String>( job.getSubmitter(), job.getFormat() );
 
         if( ! this.jobExecutionCheckSet.containsKey( entry ) )
         {

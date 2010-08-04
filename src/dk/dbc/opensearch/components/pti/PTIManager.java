@@ -28,7 +28,7 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.types.SimplePair;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.IPair;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -126,7 +126,7 @@ public class PTIManager
         log.debug( String.format( "Found '%s' new jobs", newJobs.size() ) );
 
         // Starting new Jobs
-        for( Pair<String, Integer> job : newJobs )
+        for( IPair<String, Integer> job : newJobs )
         {
             pool.submit( job.getFirst(), job.getSecond() );
             log.debug( String.format( "submitted job: fedorahandle='%s' and queueID='%s'",job.getFirst(), job.getSecond() ) );

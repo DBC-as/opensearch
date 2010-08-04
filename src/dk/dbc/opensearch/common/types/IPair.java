@@ -21,10 +21,10 @@ package dk.dbc.opensearch.common.types;
 
 
 /**
- * Pair defines a type that takes two elements and stores them for later
+ * IPair defines a type that takes two elements and stores them for later
  * retrieval.
  */
-public interface Pair<E, V>
+public interface IPair<E, V>
 {
 
     E getFirst();
@@ -33,10 +33,10 @@ public interface Pair<E, V>
 
 
     /**
-     * Asserts equality of the {@link Pair} object and another {@link Pair}
+     * Asserts equality of the {@link IPair} object and another {@link IPair}
      * object
-     * @param obj the {@link Pair} to compare this object with
-     * @return true if the {@link Pair} is equal to this object
+     * @param obj the {@link IPair} to compare this object with
+     * @return true if the {@link IPair} is equal to this object
      */
     @Override
     boolean equals( Object obj );

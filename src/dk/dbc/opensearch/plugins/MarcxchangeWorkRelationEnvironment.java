@@ -42,7 +42,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.SimplePair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.IPair;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.io.ByteArrayOutputStream;
@@ -80,7 +80,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         this.objectRepository = repository;
 
         // Creates a list of objects to be used in the js-scope
-        List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+        List< IPair< String, Object > > objectList = new ArrayList< IPair< String, Object > >();
         objectList.add( new SimplePair< String, Object >( "Log", log ) );
 
 	this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
@@ -417,7 +417,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * This function will validate the following arguments:
      * "javascript", "searchfunction", "matchfunction" and "createobjectfunction".
      */
-    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< IPair< String, Object > > objectList ) throws PluginException
     {
 	log.info("Validating Arguments - Begin");
 

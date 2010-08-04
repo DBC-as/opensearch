@@ -25,8 +25,8 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IPair;
 import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class FedoraUtils
          */
         // get normal data from cargocontainer
         int cargo_count = cargo.getCargoObjectCount();
-        List< ? extends Pair< Integer, String > > ordering = getOrderedMapping( cargo );
+        List< ? extends IPair< Integer, String > > ordering = getOrderedMapping( cargo );
         for( int i = 0; i < cargo_count; i++ )
         {
 
@@ -271,7 +271,7 @@ public class FedoraUtils
     //        return root;
     //    }
 
-    private static List<? extends Pair<Integer, String>> getOrderedMapping( CargoContainer cargo )
+    private static List<? extends IPair<Integer, String>> getOrderedMapping( CargoContainer cargo )
     {
         int cargo_count = cargo.getCargoObjectCount();
         log.trace( String.format( "Number of CargoObjects in Container %s", cargo_count ) );
@@ -292,7 +292,7 @@ public class FedoraUtils
         DataStreamType dsn = null;
 
         List<ComparablePair<Integer, String>> lst2 = new ArrayList<ComparablePair<Integer, String>>();
-        for( Pair<String, Integer> p : lst )
+        for( IPair<String, Integer> p : lst )
         {
             if( dsn != DataStreamType.getDataStreamTypeFrom( p.getFirst() ) )
             {

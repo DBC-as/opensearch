@@ -23,7 +23,7 @@ package dk.dbc.opensearch.common.types;
 
 
 /**
- * SimplePair is, as the name suggest, a very simple version of a Pair container.
+ * SimplePair is, as the name suggest, a very simple version of a IPair container.
  * You can add two  objects to SimplePair and retrieve them again.
  * The objects may be different, identical, or the actual same object.
  * After you have added the objects to SimplePair you can no longer modify them,
@@ -35,10 +35,10 @@ package dk.dbc.opensearch.common.types;
  * to ensure the correct behavior of the objects after adding them to SimplePair. This is of course only 
  * possible if you use mutable objects.
  * <p>
- * If you would like to have sorting done on a Pair type, please use
+ * If you would like to have sorting done on a IPair type, please use
  * {@link ComparablePair} instead
  */
-public final class SimplePair< E, V > implements Pair< E, V >
+public final class SimplePair< E, V > implements IPair< E, V >
 {
     private final E first;
     private final V second;
@@ -119,7 +119,7 @@ public final class SimplePair< E, V > implements Pair< E, V >
     /**
      *  Asserts equality of the SimplePair object and another SimplePair object, 
      *  based on equality of the contained elements. The elements are testeted against each other 
-     *  in the same order they appear in the SimplePair. That is, Pair< E, V > and Pair < V, E >
+     *  in the same order they appear in the SimplePair. That is, SimplePair< E, V > and SimplePair < V, E >
      *  are not equal even though it is the same objects (E and V) that are contained in the SimplePair,
      *  assuming E and V are nonequal.
      */

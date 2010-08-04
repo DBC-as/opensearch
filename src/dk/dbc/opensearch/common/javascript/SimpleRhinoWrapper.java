@@ -33,7 +33,7 @@ import org.mozilla.javascript.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.ArrayList;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.IPair;
 
 
 
@@ -59,7 +59,7 @@ public class SimpleRhinoWrapper
 
     public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
     {
-	this( jsFileName, new ArrayList< Pair< String, Object > >() );
+	this( jsFileName, new ArrayList< IPair< String, Object > >() );
     }
 
     /**
@@ -67,7 +67,7 @@ public class SimpleRhinoWrapper
      *
      * @param jsFileName A string containing the name and path of the javascript file to be read
      */
-    public SimpleRhinoWrapper( String jsFileName, List< Pair< String, Object> > objectList ) throws FileNotFoundException
+    public SimpleRhinoWrapper( String jsFileName, List< IPair< String, Object> > objectList ) throws FileNotFoundException
     {
 	FileReader inFile = new FileReader( jsFileName ); // can throw FileNotFindExcpetion
 
@@ -112,7 +112,7 @@ public class SimpleRhinoWrapper
 	}
 
 	// Add objects to scope:
-	for ( Pair< String, Object > objectPair : objectList )
+	for ( IPair< String, Object > objectPair : objectList )
 	{
 	    log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
 	    scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );

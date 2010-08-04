@@ -38,7 +38,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.SimplePair;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.types.IPair;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
 	ScriptMethodsForReviewRelation scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
 
-	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
+	List< IPair< String, Object > > objectList = new ArrayList< IPair< String, Object > >();
 	objectList.add( new SimplePair< String, Object >( "Log", log ) );
 	objectList.add( new SimplePair< String, Object >( "scriptClass", scriptClass ) );
 	objectList.add( new SimplePair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
@@ -122,11 +122,11 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
      * Currently the "entryfunction" is not tested for validity.
      * 
      * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
-     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     * @param List< IPair< String, Object > > A list of objects used to initialize the RhinoWrapper.
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< IPair< String, Object > > objectList ) throws PluginException
     {
 	log.info("Validating Arguments - Begin");
 
