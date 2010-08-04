@@ -92,7 +92,7 @@ public final class SimplePair< E, V > implements IPair< E, V >
      *  }
      *  </pre>
      *  If the SimplePair as the first element contains a String with value "FancyPants", 
-     *  and as its second element the integer value 42, then the toString will return:
+     *  and as its second element the Integer value 42, then the toString will return:
      *  <pre>
      *  {@code
      *     Pair< FancyPants, 42 >
