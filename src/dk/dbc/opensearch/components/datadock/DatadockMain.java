@@ -201,6 +201,7 @@ public class DatadockMain
                 log.trace( "DatadockMain calling datadockManager update" );
                 long timer = System.currentTimeMillis();
                 int jobsSubmitted = datadockManager.update();
+                log.debug( String.format( "%s jobs submitted according DatadockManager" ) );
                 timer = System.currentTimeMillis() - timer;
                 mainJobsSubmitted += jobsSubmitted;
                 if( jobsSubmitted > 0 )
@@ -212,6 +213,7 @@ public class DatadockMain
                     log.info( String.format( "%1$d Jobs submitted in %2$d ms - ", jobsSubmitted, timer ) );
                     if( terminateOnZeroSubmitted )
                     {
+                        log.info( "Program set to terminate on empty job queue. Shutting down now" );
                         this.shutdown();
                     }
                     else
@@ -239,10 +241,11 @@ public class DatadockMain
         {
             log.fatal( String.format( "Exception caught in Main.runServer: %s", e.getMessage() ), e );
         }
-        finally
-        {
-            this.shutdown();
-        }
+//        finally
+//        {
+//            this.shutdown();
+//        }
+        log.debug( String.format( "Total # jobs submitted to main: %s", mainJobsSubmitted ) );
         return mainJobsSubmitted;
     }
 
