@@ -17,26 +17,18 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
- * \file OracleDBConnection.java 
- * \brief establishes a database
- * connection to a postgressql database.
- */
-
 
 package dk.dbc.opensearch.common.db;
 
 
 import dk.dbc.opensearch.common.config.DataBaseConfig;
 
-import java.lang.ClassNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import dk.dbc.opensearch.common.db.IDBConnection;
 
 
 /**
@@ -64,7 +56,6 @@ public class OracleDBConnection implements IDBConnection
      *
      * @throws ConfigurationException
      * @throws ClassNotFoundException
-     * TODO bug 9205
      */
     public OracleDBConnection() throws ConfigurationException, ClassNotFoundException 
     {
@@ -78,16 +69,17 @@ public class OracleDBConnection implements IDBConnection
 
         Class.forName( driver );        
         log.debug( String.format( "driver: %s, url: %s, userID: %s", driver, url, userID ) );
-        System.out.println( String.format( "driver: %s, url: %s, userID: %s", driver, url, userID ) );
 }
 
     
     /**
-     * Establishes the connction to the database
+     * Establishes a connection to the database
      *
-     * @throws SQLException
+     * @throws SQLException if a database error occurs when obtaining the connection
+     * @throws IllegalStateException if a connection cannot be obtained from the {@link java.sql.DriverManager}
      */
-    public Connection getConnection() throws SQLException 
+    @Override
+    public Connection getConnection() throws SQLException, IllegalStateException
     {
         log.debug( "Establishing connection." );
 
