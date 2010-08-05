@@ -402,7 +402,7 @@ public class DatadockMain
         }
         catch( SQLException sqle )
         {
-            String errorMsg = new String( "An SQL error occured during the setup of the OracleDataSource" );
+            String errorMsg = "An SQL error occured during the setup of the OracleDataSource";
             log.fatal( errorMsg, sqle );
             throw sqle;
         }
