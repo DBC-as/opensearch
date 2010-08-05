@@ -163,10 +163,11 @@ def start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup,
     if harvester:
         properties.append( "-Dharvester=%s" % harvester )
 
+    cmd = [ 'java' ]
+
     if args:
         cmd.append(args)
 
-    cmd = [ 'java' ]
     for p in properties:
         cmd.append(p)
     cmd.append('-Ddaemon.pidfile=%s'%( pid_filename ) )
