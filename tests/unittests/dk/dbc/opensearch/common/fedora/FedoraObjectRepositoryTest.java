@@ -402,16 +402,6 @@ public class FedoraObjectRepositoryTest {
     }
     
 
-    @Test
-    public void testDeleteDataFromObject() throws Exception
-    {
-        String objectIdentifier = "test:1";
-        String dataIdentifier = "originalData.0";
-        
-        instance.deleteDataFromObject( objectIdentifier, dataIdentifier );
-    }
-
-
     @Test( expected = ObjectRepositoryException.class )
     public void testGetDataFromObject_String_DataStreamType() throws Exception
     {

@@ -949,65 +949,6 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
-    {
-        String logm = String.format( "removed stream %s from object %s", dataIdentifier, objectIdentifier );
-        String startDate = null;
-        String endDate = null;
-        String[] stamp;
-        try
-        {
-            stamp = this.fedoraHandle.purgeDatastream( objectIdentifier, dataIdentifier, startDate, endDate, logm, true );
-        }
-        catch( ConfigurationException ex )
-        {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( ServiceException ex )
-        {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( MalformedURLException ex )
-        {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( IOException ex )
-        {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s': %s", dataIdentifier, objectIdentifier, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-
-        if( stamp == null )
-        {
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s'", dataIdentifier, objectIdentifier );
-            log.error( error );
-            throw new ObjectRepositoryException( error );
-        }
-
-        boolean updated = removeDataUpdateAdminstream( objectIdentifier, dataIdentifier );
-
-        if( !updated )
-        {
-            /** \todo: what to do here? the data was deleted, but we
-             * could no update the administration stream. We're in
-             * deep manure. We should do a rollback here or instead of
-             * purging the datastream, we should mark it as deleted
-             * and then try to unmark it here.*/
-            String error = String.format( "Failed to remove data with id '%s' from object with pid '%s'", dataIdentifier, objectIdentifier );
-            log.error( error );
-            throw new ObjectRepositoryException( error );
-        }
-    }
-
-
-    @Override
     public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException
     {
         if ( null == streamtype )

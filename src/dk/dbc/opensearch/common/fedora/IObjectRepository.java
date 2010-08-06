@@ -209,17 +209,6 @@ public interface IObjectRepository
     public CargoContainer getDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
 
 
-    /** 
-     * Deletes data from the object identified by {@code objectIdentifier}, identified by {@code dataIdentifier}.
-     * 
-     * @param objectIdentifier identifying the object from which the data is to be deleted
-     * @param dataIdentifier identifying the data that is to be deleted
-     * 
-     * @throws ObjectRepositoryException if the data could not be deleted from the object
-     */
-    public void deleteDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
-
-
     /**
      * \todo: Write some documentation bug 
      */
