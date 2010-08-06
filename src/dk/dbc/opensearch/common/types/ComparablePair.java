@@ -16,15 +16,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * \brief  This is an implementation of the Pair class extended with Comparable to guarantee that elements can be compared, e.g. using Collection.sort
- * \file
- */
 
 
 package dk.dbc.opensearch.common.types;
 
 /**
+ * This is an implementation of the Pair class extended with Comparable to
+ * guarantee that elements can be compared, e.g. using Collection.sort
+ *
  * Use this class if you want a {@link Pair} class that can be sorted. It
  * sorts on the first element and only considers the second if the two
  * first elements are equal. If the client needs sorting on the second
@@ -35,8 +34,8 @@ package dk.dbc.opensearch.common.types;
  * java.util.Comparator is used to define an alternative sort order for
  * a class.
  *
- * @param <E>
- * @param <V>
+ * @param <E> type that extends {@link Comparable} for that type
+ * @param <V> type that extends {@link Comparable} for that type
  */
 public final class ComparablePair<E extends Comparable<E>, V extends Comparable<V>>  extends Pair<E, V> implements Comparable<ComparablePair<E, V>>
 {
@@ -48,8 +47,8 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
      * The {@link ComparablePair} is immutable and as such usable as a key in
      * Hash structures.
      *
-     * @param first
-     * @param second
+     * @param first value of type {@code E} to put on the left hand side of the ComparablePair
+     * @param second value of type {@code V} to put on the right hand side of the ComparablePair
      */
     public ComparablePair( E first, V second )
     {
@@ -60,6 +59,8 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
     /**
      * Renders as {@code ComparablePair< E, V >}
      * @return a String representation of the object
+     *
+     * @see Pair#toString()
      */
     @Override
     public String toString()

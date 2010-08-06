@@ -116,7 +116,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
      * Currently the "entryfunction" is not tested for validity.
      * 
      * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
-     * @param List< IPair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */

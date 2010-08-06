@@ -23,7 +23,6 @@ package dk.dbc.opensearch.common.types;
 
 
 /**
- * Pair is, as the name suggest, a very simple version of a IPair container.
  * You can add two objects to Pair and retrieve them again.
  * The objects may be different, identical, or the actual same object.
  * After you have added the objects to Pair you can no longer modify them,
@@ -35,7 +34,7 @@ package dk.dbc.opensearch.common.types;
  * to ensure the correct behavior of the objects after adding them to Pair. This is of course only
  * possible if you use mutable objects.
  * <p>
- * If you would like to have sorting done on a IPair type, please use
+ * If you would like to have sorting done on a Pair type, please use
  * {@link ComparablePair} instead
  */
 public class Pair< E, V >

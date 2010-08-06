@@ -66,27 +66,30 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     {
         this.objectRepository = repository;
 
-	// Setting the objectlist.
+        // Setting the objectlist.
         JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
-	ScriptMethodsForReviewRelation scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+        ScriptMethodsForReviewRelation scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
 
-	List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
-	objectList.add( new Pair< String, Object >( "Log", log ) );
-	objectList.add( new Pair< String, Object >( "scriptClass", scriptClass ) );
-	objectList.add( new Pair< String, Object >( "FedoraPIDSearch", fedoraPIDSearch ) );
+        List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
+        objectList.add( new Pair<String, Object>( "Log", log ) );
+        objectList.add( new Pair<String, Object>( "scriptClass", scriptClass ) );
+        objectList.add( new Pair<String, Object>( "FedoraPIDSearch", fedoraPIDSearch ) );
 
-	this.validateArguments( args, objectList );
+        this.validateArguments( args, objectList );
 
-	this.entryPointFunc  = args.get( SimpleGenericRelationEnvironment.entryFuncStr );
+        this.entryPointFunc = args.get( SimpleGenericRelationEnvironment.entryFuncStr );
 
-	this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList );
+        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList );
 
-	log.trace( "Checking wrapper (outer)" );
-	if (jsWrapper == null) {
-	    log.trace("Wrapper is null");
-	} else {
-	    log.trace("Wrapper is initialized");
-	}
+        log.trace( "Checking wrapper (outer)" );
+        if( jsWrapper == null )
+        {
+            log.trace( "Wrapper is null" );
+        }
+        else
+        {
+            log.trace( "Wrapper is initialized" );
+        }
 
     }
 
@@ -100,13 +103,13 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         //find the PID of the target of the review and create the hasReview
         //and reviewOf relations
         CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
-	String submitter = co.getSubmitter();
-	String format    = co.getFormat();
-       	String language  = co.getLang();
-	String XML       = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
+        String submitter = co.getSubmitter();
+        String format = co.getFormat();
+        String language = co.getLang();
+        String XML = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
 
         String pid = cargo.getIdentifierAsString(); // get the pid of the cargocontainer
-	jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
+        jsWrapper.run( entryPointFunc, submitter, format, language, XML, pid );
 
     }
 
@@ -118,7 +121,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
      * Currently the "entryfunction" is not tested for validity.
      * 
      * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
-     * @param List< IPair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
