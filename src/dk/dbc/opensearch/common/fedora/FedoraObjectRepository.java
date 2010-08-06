@@ -1188,53 +1188,6 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
-    private boolean removeDataUpdateAdminstream( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException
-    {
-        AdministrationStream adminStream = getAdministrationStream( objectIdentifier );
-
-        boolean removed = adminStream.removeStream( dataIdentifier );
-
-        if ( !removed )
-        {
-            log.warn( "Could not remove stream from adminstrationstream" );
-        }
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
-            adminStream.serialize( baos, null );
-        }
-        catch( OpenSearchTransformException ex )
-        {
-            String error = String.format( "Could not retrieve administration stream serialization" );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-
-        String adminLabel = "admin [text/xml]";
-        String adminMime = "text/xml";
-        String timeNow = dateFormat.format( new Date( System.currentTimeMillis() ) );
-        String adminLogm = "admin stream updated with added stream data" + timeNow;
-
-        String admLocation = uploadDatastream( baos );
-
-        String[] empty = new String[]{};
-
-        try
-        {
-            this.fedoraHandle.modifyDatastreamByReference( objectIdentifier, DataStreamType.AdminData.getName(), empty, adminLabel, adminMime, null, admLocation, null, null, adminLogm, true );
-        }
-        catch( RemoteException ex )
-        {
-            String error = String.format( "Failed to replace administration stream on object with objectIdentifier '%s'", objectIdentifier );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-
-        return removed;
-    }
-
-
     public Datastream getDatastream( String objectIdentifier, String dataStreamID ) throws ObjectRepositoryException
     {
         Datastream ds = null;
