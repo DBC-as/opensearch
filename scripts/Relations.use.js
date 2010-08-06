@@ -40,7 +40,7 @@ const Relations = function() {
     }
 
     if (i === 0) {
-      if (String(reviewXML.dcterms::references.@xsi::type) === "dkdcplus:ISBN) {
+      if (String(reviewXML.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
         var relation = "ISBN:" + String(reviewXML.dcterms::references);
 
         var results = FedoraPIDSearch.identifier( relation );
@@ -105,7 +105,7 @@ const Relations = function() {
     }
 
     if (i === 0) {
-      if (String(katalogXML.dkabm::record.dc::identifier).match(/ISBN:.*/) {
+      if (String(katalogXML.dkabm::record.dc::identifier).match(/ISBN:.*/)) {
         var identifier = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
 
         Log.info( "Identifier: " + identifier );    
