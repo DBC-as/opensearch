@@ -39,7 +39,24 @@ const Relations = function() {
       scriptClass.createRelation( result, NS + "hasReview", pid);
     }
 
-    Log.debug ( "REVIEW: " + i );
+    if (i === 0) {
+      if (String(reviewXML.dcterms::references.@xsi::type) === "dkdcplus:ISBN) {
+        var relation = "ISBN:" + String(reviewXML.dcterms::references);
+
+        var results = FedoraPIDSearch.identifier( relation );
+
+        for ( var i = 0; i < results.length; ++i ) {
+          var result = results[i];
+
+          Log.info( "result: " + result );
+
+          var NS = "http://oss.dbc.dk/rdf/dkbib#";
+
+          scriptClass.createRelation( pid, NS + "isReviewOf", result);
+          scriptClass.createRelation( result, NS + "hasReview", pid);
+        }
+      }
+    }
 
     if (i === 0) {
       var title = String(reviewXML.dkabm::record.dc::title).replace(/Anbefaling af: (.*) af .*/, "$1");
@@ -85,6 +102,28 @@ const Relations = function() {
 
       scriptClass.createRelation( pid, NS + "hasReview", result);
       scriptClass.createRelation( result, NS + "isReviewOf", pid);
+    }
+
+    if (i === 0) {
+      if (String(katalogXML.dkabm::record.dc::identifier).match(/ISBN:.*/) {
+        var identifier = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
+
+        Log.info( "Identifier: " + identifier );    
+        Log.info( "pid: " + pid );
+
+        var results = FedoraPIDSearch.relation( identifier );
+
+        for ( var i = 0; i < results.length; ++i ) {
+          var result = results[i];
+
+          Log.info( "result: " + result );
+
+          var NS = "http://oss.dbc.dk/rdf/dkbib#";
+
+          scriptClass.createRelation( pid, NS + "hasReview", result);
+          scriptClass.createRelation( result, NS + "isReviewOf", pid);
+        }
+      }
     }
 
     Log.info ("End hasReview" );
