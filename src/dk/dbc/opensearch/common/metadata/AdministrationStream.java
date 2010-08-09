@@ -69,11 +69,10 @@ import org.xml.sax.SAXException;
  */
 public class AdministrationStream implements MetaData
 {
-    //    private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"indexingalias\"><xsd:complexType><xsd:attribute ref=\"name\" use=\"required\"/></xsd:complexType></xsd:element><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
-
     private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
 
-    private Map< Integer, HashMap< AdministrationStreamElement, String > > admvalues;
+    // private Map< Integer, HashMap< AdministrationStreamElement, String > > admvalues;
+    private Map< Integer, AdministrationStreamObject > admvalues;
     private static final String identifier = DataStreamType.AdminData.getName();
 
     /**
@@ -82,7 +81,6 @@ public class AdministrationStream implements MetaData
     public static final DataStreamType type = DataStreamType.AdminData;
 
     private static Logger log = Logger.getLogger( AdministrationStream.class );
-    // private String indexingAlias;
 
 
     /**
@@ -92,7 +90,8 @@ public class AdministrationStream implements MetaData
      */
     public AdministrationStream()
     {
-        admvalues = new HashMap<Integer, HashMap<AdministrationStreamElement, String>>();
+        // admvalues = new HashMap<Integer, HashMap<AdministrationStreamElement, String>>();
+	admvalues = new HashMap<Integer, AdministrationStreamObject >();
     }
 
     /**
@@ -127,7 +126,8 @@ public class AdministrationStream implements MetaData
             in.reset();
         }
 
-        admvalues = new HashMap<Integer, HashMap<AdministrationStreamElement, String>>();
+        // admvalues = new HashMap<Integer, HashMap<AdministrationStreamElement, String>>();
+	admvalues = new HashMap<Integer, AdministrationStreamObject >();
 
         XMLInputFactory infac = XMLInputFactory.newInstance();
         XMLStreamReader parser = infac.createXMLStreamReader( in );
@@ -145,15 +145,36 @@ public class AdministrationStream implements MetaData
                 element = event.asStartElement();
                 if( element.getName().getLocalPart().equals( "stream" ) )
                 {
-                    admvalues.put( counter, new HashMap<AdministrationStreamElement, String>() );
-                    HashMap<AdministrationStreamElement, String> stream = admvalues.get( counter++ );
+		    // admvalues.put( counter, new HashMap<AdministrationStreamElement, String>() );
+                    // HashMap<AdministrationStreamElement, String> stream = admvalues.get( counter++ );
 
                     Attribute attribute;
+		    String id = "";
+		    String lang = "";
+		    String format = "";
+		    String mimetype = "";
+		    String submitter = "";
+		    int index = 0;
+		    DataStreamType streamNameType = null;
                     for( Iterator<Attribute> attributeIter = element.getAttributes(); attributeIter.hasNext(); )
                     {
                         attribute = attributeIter.next();
-                        stream.put( AdministrationStreamElement.valueOf( attribute.getName().getLocalPart().toUpperCase() ), attribute.getValue() );
+			String attrNameUpperCase = attribute.getName().getLocalPart().toUpperCase();
+                        // stream.put( AdministrationStreamElement.valueOf( attribute.getName().getLocalPart().toUpperCase() ), attribute.getValue() );
+			id             = attrNameUpperCase.equals( "ID" ) ? attribute.getValue() : id;
+			format         = attrNameUpperCase.equals( "FORMAT" ) ? attribute.getValue() : format;
+			lang           = attrNameUpperCase.equals( "LANG" ) ? attribute.getValue() : lang;
+			mimetype       = attrNameUpperCase.equals( "MIMETYPE" ) ? attribute.getValue() : mimetype;
+			submitter      = attrNameUpperCase.equals( "SUBMITTER" ) ? attribute.getValue() : submitter;
+			index          = attrNameUpperCase.equals( "INDEX" ) ? new Integer( attribute.getValue() ) : index;
+			streamNameType = attrNameUpperCase.equals( "STREAMNAMETYPE" ) ? DataStreamType.getDataStreamTypeFrom( attribute.getValue() ) : streamNameType;
                     }
+
+		    AdministrationStreamObject ase = 
+			new AdministrationStreamObject( id, lang, format, mimetype, 
+							  submitter, index, streamNameType );
+		    admvalues.put( counter, ase );
+		    counter++;
                 }
             }
         }
@@ -181,14 +202,19 @@ public class AdministrationStream implements MetaData
         
         int pos = admvalues.size();
         boolean added = false;
-        HashMap<AdministrationStreamElement, String> map = new HashMap<AdministrationStreamElement, String>( 6 );
-        map.put( AdministrationStreamElement.FORMAT, obj.getFormat() );
-        map.put( AdministrationStreamElement.INDEX, Integer.toString( pos ) );
-        map.put( AdministrationStreamElement.LANG, obj.getLang() );
-        map.put( AdministrationStreamElement.MIMETYPE, obj.getMimeType() );
-        map.put( AdministrationStreamElement.STREAMNAMETYPE, obj.getDataStreamType().getName() );
-        map.put( AdministrationStreamElement.SUBMITTER, obj.getSubmitter() );
-        map.put( AdministrationStreamElement.ID, id );
+	
+	AdministrationStreamObject map = 
+	    new AdministrationStreamObject( id, obj.getLang(), obj.getFormat(), 
+					    obj.getMimeType(), obj.getSubmitter(),
+					    pos, obj.getDataStreamType() );
+        // HashMap<AdministrationStreamElement, String> map = new HashMap<AdministrationStreamElement, String>( 6 );
+        // map.put( AdministrationStreamElement.FORMAT, obj.getFormat() );
+        // map.put( AdministrationStreamElement.INDEX, Integer.toString( pos ) );
+        // map.put( AdministrationStreamElement.LANG, obj.getLang() );
+        // map.put( AdministrationStreamElement.MIMETYPE, obj.getMimeType() );
+        // map.put( AdministrationStreamElement.STREAMNAMETYPE, obj.getDataStreamType().getName() );
+        // map.put( AdministrationStreamElement.SUBMITTER, obj.getSubmitter() );
+        // map.put( AdministrationStreamElement.ID, id );
         admvalues.put( new Integer( pos ), map );
         if( pos + 1 == admvalues.size() )
         {
@@ -206,25 +232,6 @@ public class AdministrationStream implements MetaData
             log.warn( "Refusing to add adminstream data information to admin stream" );
             added = false;
         }
-        // else if( obj.getType() == DataStreamType.DublinCoreData )
-        // {
-        //     DublinCore dc = (DublinCore) obj;
-
-        //     int pos = admvalues.size();
-        //     HashMap<AdministrationStreamElement, String> map = new HashMap<AdministrationStreamElement, String>( 6 );
-        //     map.put( AdministrationStreamElement.FORMAT, dc.getType().getName() );
-        //     map.put( AdministrationStreamElement.INDEX, Integer.toString( pos ) );
-        //     map.put( AdministrationStreamElement.LANG, "dc" );
-        //     map.put( AdministrationStreamElement.MIMETYPE, "text/xml" );
-        //     map.put( AdministrationStreamElement.STREAMNAMETYPE, dc.getType().getName() );
-        //     map.put( AdministrationStreamElement.SUBMITTER, "dbc" );
-        //     map.put( AdministrationStreamElement.ID, id );
-        //     admvalues.put( new Integer( pos ), map );
-        //     if( pos + 1 == admvalues.size() )
-        //     {
-        //         added = true;
-        //     }
-        // }
         return added;
     }
 
@@ -240,59 +247,33 @@ public class AdministrationStream implements MetaData
     {
         List< Pair< Integer, Pair< String, CargoObject > > > retlist = new ArrayList< Pair< Integer, Pair< String,CargoObject > > >( admvalues.size() );
         CargoContainer cargo = new CargoContainer();
-        for( Entry< Integer, HashMap< AdministrationStreamElement, String> > set : admvalues.entrySet() )
+        // for( Entry< Integer, HashMap< AdministrationStreamElement, String> > set : admvalues.entrySet() )
+	for( Entry< Integer, AdministrationStreamObject > set : admvalues.entrySet() )
         {
-            cargo.add( DataStreamType.getDataStreamTypeFrom(
-                    set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ),
-                    set.getValue().get( AdministrationStreamElement.FORMAT ),
-                    set.getValue().get( AdministrationStreamElement.SUBMITTER ),
-                    set.getValue().get( AdministrationStreamElement.LANG ),
-                    set.getValue().get( AdministrationStreamElement.MIMETYPE ),
-                    "ihatefakedata".getBytes() );
+	    AdministrationStreamObject tmp = set.getValue();
+	    cargo.add( tmp.getStreamNameType(),
+		       tmp.getFormat(),
+		       tmp.getSubmitter(),
+		       tmp.getLang(),
+		       tmp.getMimetype(),
+		       // set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ),
+		       // set.getValue().get( AdministrationStreamElement.FORMAT ),
+		       // set.getValue().get( AdministrationStreamElement.SUBMITTER ),
+		       // set.getValue().get( AdministrationStreamElement.LANG ),
+		       // set.getValue().get( AdministrationStreamElement.MIMETYPE ),
+		       "ihatefakedata".getBytes() );
         
             //String is the datastreamId and CargoObject holds all metadata on the stream, sans the data itself
-            Pair< String, CargoObject > indexvalue = new Pair< String, CargoObject >(
-                    set.getValue().get( AdministrationStreamElement.ID ),
-                    cargo.getCargoObject( DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ) ) );
+            Pair< String, CargoObject > indexvalue = 
+		new Pair< String, CargoObject >(
+						// set.getValue().get( AdministrationStreamElement.ID ),
+						tmp.getId(), 
+						// cargo.getCargoObject( DataStreamType.getDataStreamTypeFrom( set.getValue().get( AdministrationStreamElement.STREAMNAMETYPE ) ) ) );
+						cargo.getCargoObject( tmp.getStreamNameType() ) );
             retlist.add( new Pair<Integer, Pair<String,CargoObject>>( set.getKey(), indexvalue ) );
         }
 
         return retlist;
-    }
-
-
-    /**
-     * Removes a stream from the administrationstream identified by {@code id}.
-     */
-    public boolean removeStream( String id )
-    {
-        boolean success = false;
-        Integer index = null;
-        for ( Entry< Integer, HashMap<AdministrationStreamElement, String> > set : admvalues.entrySet() )
-        {
-            for ( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
-            {
-                if ( streamelem.getKey() == AdministrationStreamElement.ID )
-                {
-                    if ( streamelem.getValue().toLowerCase().equals( id.toLowerCase() ) )
-                    {
-                        index = set.getKey();
-                    }
-                }
-            }
-        }
-
-        if ( index == null )
-        {
-            log.warn( String.format( "Could not remove stream with id %s", id ) );
-        }
-        else
-        {
-            admvalues.remove( index );
-            success = true;
-        }
-
-        return success;
     }
 
 
@@ -313,19 +294,29 @@ public class AdministrationStream implements MetaData
     public int getCount( DataStreamType dst )
     {
         int counter = 0;
-        for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )
-        {
-            for( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
-            {
-                if( streamelem.getKey() == AdministrationStreamElement.STREAMNAMETYPE )
-                {
-                    if( streamelem.getValue().toLowerCase().equals( dst.getName().toLowerCase() ) )
-                    {
-                        counter++;
-                    }
-                }
-            }
-        }
+	for( Entry< Integer, AdministrationStreamObject > set : admvalues.entrySet() )
+	{
+	    // \todo: Skal laves om til at benytte DST i stedet for strengrepræsentation af DST:
+	    AdministrationStreamObject ase = set.getValue();
+	    if ( ase.getStreamNameType() == dst ) 
+	    {
+		counter++;
+	    }
+	}
+
+        // for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )
+        // {
+        //     for( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
+        //     {
+        //         if( streamelem.getKey() == AdministrationStreamElement.STREAMNAMETYPE )
+        //         {
+        //             if( streamelem.getValue().toLowerCase().equals( dst.getName().toLowerCase() ) )
+        //             {
+        //                 counter++;
+        //             }
+        //         }
+        //     }
+        // }
 
         return counter;
     }
@@ -358,13 +349,22 @@ public class AdministrationStream implements MetaData
             xmlw.writeStartElement( "admin-stream" );
      
             xmlw.writeStartElement( "streams" );
-            for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )
+            // for( Entry< Integer, HashMap<AdministrationStreamElement, String > > set : admvalues.entrySet() )
+	    for( Entry< Integer, AdministrationStreamObject > set : admvalues.entrySet() )
             {
                 xmlw.writeStartElement( "stream" );
-                for( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
-                {
-                    xmlw.writeAttribute( streamelem.getKey().localName(), streamelem.getValue() );
-                }
+                // for( Entry< AdministrationStreamElement, String > streamelem : set.getValue().entrySet() )
+                // {
+                //     xmlw.writeAttribute( streamelem.getKey().localName(), streamelem.getValue() );
+                // }
+		AdministrationStreamObject ase = set.getValue();
+		xmlw.writeAttribute( "format", ase.getFormat() );
+		xmlw.writeAttribute( "id", ase.getId() );
+		xmlw.writeAttribute( "index", Integer.toString( ase.getIndex() ) );
+		xmlw.writeAttribute( "lang", ase.getLang() );
+		xmlw.writeAttribute( "mimetype", ase.getMimetype() );
+		xmlw.writeAttribute( "streamNameType", ase.getStreamNameType().getName() );
+		xmlw.writeAttribute( "submitter", ase.getSubmitter() );
 
                 xmlw.writeEndElement();//closes "stream" element
             }
@@ -401,4 +401,42 @@ public class AdministrationStream implements MetaData
     {
         return type;
     }
+
+    /**
+     *  Private class containing an Object with common data
+     *  used in the AdministrationStream.
+     */
+    private final class AdministrationStreamObject 
+    {
+	private final String id;
+	private final String lang;
+	private final String format;
+	private final String mimetype;
+	private final String submitter;
+	private final int index;
+	private final DataStreamType streamNameType;
+
+	AdministrationStreamObject( String id, String lang, String format, String mimetype, String submitter, int index, DataStreamType streamNameType )
+	{
+	    this.id = id;
+	    this.lang = lang;
+	    this.format = format;
+	    this.mimetype = mimetype;
+	    this.submitter = submitter;
+	    this.index = index;
+	    this.streamNameType = streamNameType;
+	}
+
+	public String getId() { return this.id; }
+	public String getLang() { return this.lang; }
+	public String getFormat() { return this.format; }
+	public String getMimetype() { return this.mimetype; }
+	public String getSubmitter() { return this.submitter; }
+	public int getIndex() { return this.index; }
+	public DataStreamType getStreamNameType() { return this.streamNameType; }
+
+}
+
+
+
 }
