@@ -121,22 +121,6 @@ public interface IObjectRepository
 
 
     /** 
-     * Searches the object repository using the {@code
-     * verbatimSearchString} as query limiting the search to the
-     * {@link List} of {@code searchableFields} and limiting {@link
-     * List} of returned identifiers with {@code maximumResult}
-     * 
-     * @param verbatimSearchString string that is used as query
-     * @param searchableFields {@link List} of fields to search with {@code verbatimSearchString} in
-     * @param cutIdentifier stops the search and returns result if it encounters this
-     * @param maximumResult integer limiting the returned {@link List} of identifiers
-     * 
-     * @return a {@link List} of identifiers that matched {@code verbatimSearchString} in {@code searchableFields}
-     */
-    public List< String > getIdentifiers( String verbatimSearchString, List< TargetFields > searchableFields, String cutIdentifier, int maximumResult );
-
-
-    /** 
      * Searches the object repository using the a {@link List} of
      * {@code searchStrings} as query, limiting the search to the
      * {@link List} of {@code searchableFields} and limiting {@link

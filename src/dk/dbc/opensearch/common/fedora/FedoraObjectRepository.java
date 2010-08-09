@@ -500,38 +500,6 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    @Deprecated
-    public List< String > getIdentifiers( String verbatimSearchString, List< TargetFields > searchableFields, String cutPid, int maximumResults )
-    {
-        String[] resultFields = new String[ searchableFields.size() ];
-        List< Pair< TargetFields, String > > resultSearchFields = new ArrayList< Pair< TargetFields, String > >();
-
-        int i = 0;
-        for( TargetFields field : searchableFields )
-        {
-            TargetFields property = field;
-            resultFields[i] = field.fieldname();
-            Pair< TargetFields, String > pair = new Pair< TargetFields, String >( property,  verbatimSearchString );
-            resultSearchFields.add( pair );
-            i++;
-        }
-
-        ObjectFields[] objectFields = searchRepository( resultFields, resultSearchFields, hasStr, maximumResults, null );
-
-        int ofLength = objectFields.length;
-        List< String > pids = new ArrayList< String >( ofLength );
-        log.debug( String.format( "No of objectFields lines %s", objectFields.length ) );
-        for( int j = 0; j < ofLength; j++ )
-        {
-            pids.add( objectFields[j].getPid() );
-        }
-
-        return pids;
-    }
-
-
-
-    @Override
     public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
