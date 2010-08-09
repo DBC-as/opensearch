@@ -36,6 +36,23 @@
       </args>
     </plugin>
   </workflow>
+  <workflow format="littsiden" submitter="150005">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromDkabm"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="isReviewOf"/>
+      </args>
+    </plugin>
+  </workflow>
   <workflow format="katalog" submitter="775100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
