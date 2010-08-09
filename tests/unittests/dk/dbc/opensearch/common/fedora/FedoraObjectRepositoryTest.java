@@ -280,6 +280,7 @@ public class FedoraObjectRepositoryTest {
         instance.deleteObject( identifier, logmessage );
     }
 
+
     @Test( expected = ObjectRepositoryException.class )
     public void testDeleteObjectFailsWithNonExistingObject() throws Exception
     {
@@ -305,6 +306,7 @@ public class FedoraObjectRepositoryTest {
         assertEquals( expResult, result );
     }
 
+
     @Test( expected = IllegalStateException.class )
     public void testStoreObjectWithEmptyCargoGetsNewPidFromFedora() throws Exception
     {
@@ -313,6 +315,7 @@ public class FedoraObjectRepositoryTest {
         String storeObject = instance.storeObject( cargo, logmessage, "test");
         assertEquals( "test:1", storeObject );
     }
+
 
     @Test
     public void testStoreObjectWithEmptyIdentifierFails() throws Exception
@@ -324,6 +327,7 @@ public class FedoraObjectRepositoryTest {
         String storeObject = instance.storeObject( cargo, logmessage, "test");
         assertEquals( "test:1", storeObject ); 
     }
+
 
     /**
      * Replaces object identified by 'test:1' with data in cargocontainer
@@ -339,6 +343,7 @@ public class FedoraObjectRepositoryTest {
 
         instance.replaceObject( "test:1", cargo );
     }
+
 
     /** 
      * Should throw an exception
@@ -364,6 +369,7 @@ public class FedoraObjectRepositoryTest {
         instance.replaceObject( "test:1", cargo );
     }
 
+
     @Test
     public void testReplaceObjectIgnoresPidInReplacementObject() throws Exception
     {
@@ -385,6 +391,7 @@ public class FedoraObjectRepositoryTest {
         assertEquals( identifier, result.getIdentifierAsString() );
     }
 
+
     @Test
     public void testGetObjectReturnsCorrectDCStream() throws Exception
     {
@@ -392,6 +399,7 @@ public class FedoraObjectRepositoryTest {
         CargoContainer result = instance.getObject( identifier );
         assertTrue( null != result.getCargoObject( DataStreamType.DublinCoreData ) );
     }
+
 
     @Test( expected=IllegalStateException.class )
     public void testGetObjectThatDoesntExist() throws Exception
@@ -402,91 +410,14 @@ public class FedoraObjectRepositoryTest {
     }
     
 
-    @Test( expected = ObjectRepositoryException.class )
-    public void testGetDataFromObject_String_DataStreamType() throws Exception
-    {
-
-        String pid = "test:1";
-        DataStreamType streamtype = null;
-
-        CargoContainer expResult = new CargoContainer( ); 
-        expResult.setIdentifier( new PID(pid));
-        expResult.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "original data".getBytes() );
-        //  expResult.setIndexingAlias( "docbook", DataStreamType.OriginalData );
-        CargoContainer result = instance.getDataFromObject( pid, streamtype );
-        assertEquals( expResult.getIdentifier(), result.getIdentifier() );
-    }
-
-
-    @Test
-    public void testGetDataFromObject_String_String() throws Exception
-    {
-        String objectIdentifier = "test:1";
-        String dataIdentifier = "originalData.0";
-
-        CargoContainer expResult = new CargoContainer( );
-        expResult.setIdentifier( new PID( objectIdentifier ) );
-        
-        expResult.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", "original data".getBytes() );
-        //   expResult.setIndexingAlias( "docbook", DataStreamType.OriginalData );
-        CargoContainer result = instance.getDataFromObject( objectIdentifier, dataIdentifier );
-        assertEquals( expResult.getCargoObjectCount(), result.getCargoObjectCount() );
-        String resultXML =  new String( FedoraUtils.CargoContainerToFoxml( result ) );
-        String expectXML =  new String( FedoraUtils.CargoContainerToFoxml( expResult ) );
-
-        // the timestamps in the objects is different, so the cargoobjects 
-        // identifiers will differ as well as the resulting xml serialization, but
-        // on the structural level they must be identical:
-        DifferenceListener myDifferenceListener = new IgnoreTextAndAttributeValuesDifferenceListener();
-        Diff diff = XMLUnit.compareXML( expectXML, resultXML );
-        diff.overrideDifferenceListener(myDifferenceListener);
-        assertTrue("test XML matches control skeleton XML " + diff, diff.similar());
-    }
-
-//    @Test
-//    public void testReplaceDataInObject() throws Exception
-//    {
-//        String objectIdentifier = "test:1";
-//        String dataIdentifier = "originalData.0";
-//        CargoContainer cargo = new CargoContainer( );
-//        cargo.setIdentifier( new PID( objectIdentifier ));
-//
-//        cargo.add( DataStreamType.OriginalData, "artikel", "testSubmitter", "da", "text/xml", "dockbook", "<root><child/></root>".getBytes() );
-//        CargoObject cargoobject = cargo.getCargoObject( DataStreamType.OriginalData );
-//
-//        instance.replaceDataInObject( objectIdentifier, dataIdentifier, cargoobject );
-//    }
-
     @Test
     public void testaddObjectRelation( ) throws Exception {        
         instance.addObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");        
     }
 
+
     @Test
     public void testpurgeObjectRelation( ) throws Exception {        
         instance.removeObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");        
     }
-
-    
-    /*@Test
-    public void testSearchRepository() throws Exception
-    {
-        String[] fieldsToReturn = null;
-        String fieldsToSearch = "pid";
-        String comparisonOperator = "has";
-        int maximumResults = 1;
-
-        ObjectFields[] expResult = new ObjectFields[]
-        {
-            new ObjectFields( samePid, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null )
-        };
-
-        String[] searchString =
-        {
-            "test:1"
-        };
-
-        ObjectFields[] result = instance.searchRepository( fieldsToReturn, fieldsToSearch, searchString, comparisonOperator, maximumResults );
-        assertEquals( expResult[0].getPid(), result[0].getPid() );
-    }*/
 }

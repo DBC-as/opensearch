@@ -175,42 +175,9 @@ public interface IObjectRepository
      */
     public List< String > getIdentifiersWithNamespace( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace );
 
-    /** 
-     * Retrieves data identified by {@code identifier} and qualified
-     * with {@code streamtype} from the object repository, encoded in
-     * a {@link CargoContainer}. If no data matching {@code
-     * streamtype} was found in the object identified by {@code
-     * objectIdentifier}, an empty CargoContainer will be returned.
-     * 
-     * @param objectIdentifier identifying the object to retrieve data from
-     * @param streamtype qualifying the data that is to be retrieved
-     * 
-     * @return a {@link CargoContainer} containing the data matching the parameters given, or empty if nothing matched
-     *
-     * @throws ObjectRepositoryException if the CargoContainer could not be constructed.
-     */
-    public CargoContainer getDataFromObject( String objectIdentifier, DataStreamType streamtype ) throws ObjectRepositoryException;
-
-
-    /** 
-     * Retrieves data identified by {@code identifier} and qualified
-     * with {@code dataIdentifier} from the object repository, encoded in
-     * a {@link CargoContainer}. If no data matching {@code
-     * dataIdentifier} was found in the object identified by {@code
-     * objectIdentifier}, an empty CargoContainer will be returned.
-     * 
-     * @param objectIdentifier identifying the object to retrieve data from
-     * @param dataIdentifier qualifying the data that is to be retrieved
-     * 
-     * @return a {@link CargoContainer} containing the data matching the parameters given, or empty if nothing matched
-     *
-     * @throws ObjectRepositoryException if the CargoContainer could not be constructed.
-     */
-    public CargoContainer getDataFromObject( String objectIdentifier, String dataIdentifier ) throws ObjectRepositoryException;
-
 
     /**
-     * \todo: Write some documentation bug 
+     * \todo: Write some documentation bug 11182
      */
 
 
