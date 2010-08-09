@@ -73,20 +73,15 @@ import org.xml.sax.SAXException;
  */
 public class DatadockThread implements Callable<Boolean>
 {
-    private Logger                  log = Logger.getLogger( DatadockThread.class );
+    private static final Logger log = Logger.getLogger( DatadockThread.class );
 
-    private IHarvest                harvester;
-    private CargoContainer          cargo;
-    private IProcessqueue           queue;
-    private IIdentifier             identifier;
-    private String                  submitter;
-    private String                  format;
+    private IIdentifier identifier;
+    private IProcessqueue queue;
+    private IHarvest harvester;
     private Map<String, List<PluginTask>> flowMap;
 
 
     /**
-     *\todo: Wheet out in the Exceptions
-     *
      * DataDock is initialized with a DatadockJob containing information about
      * the data to be 'docked' into to system
      *
@@ -99,49 +94,31 @@ public class DatadockThread implements Callable<Boolean>
     {
         log.trace( String.format( "Entering DatadockThread Constructor" ) );
 
-        /**
-         * \todo: We should get rid of the datadockjob. the info lies in 
-         * the cargoContainer, so all that is needed is the identifier
-         */
-
         this.identifier = identifier;
+        this.queue = processqueue;
         this.harvester = harvester;
         this.flowMap = flowMap;
-        this.queue = processqueue;
 
         log.trace( String.format( "DatadockThread Construction finished" ) );
     }
 
 
     /**
-     * call() is the thread entry method on the DataDock. Call operates on the
-     * DataDock object, and all data critical for its success is given at
-     * DataDock initialization. This method is used with
-     * java.util.concurrent.FutureTask, which upon finalisation (completion,
-     * exception or termination) will return an estimation of how long time it
-     * will take to bzw. index and save in fedora the data given with the
-     * CargoContainer. \see dk.dbc.opensearch.tools.Estimation
      *
-     * @return true if job is performed
-     * @throws InstantationException
-     *             if the PluginResolver cant instantiate a plugin
-     * @throws IllegalAccessException
-     *             if the PluginResolver cant access the desired plugin
-     * @throws ClassNotFoundException
-     *             if the PluginResolver cant find the desired plugin class
-     * @throws IllegalStateException
      * @throws HarvesterIOException
      * @throws HarvesterUnknownIdentifierException
      * @throws PluginException
+     * @throws ClassNotFoundException
      * @throws SQLException
      */
     @Override
-        public Boolean call() throws ConfigurationException, IOException, ClassNotFoundException, HarvesterIOException, HarvesterUnknownIdentifierException, ParserConfigurationException, PluginException, SAXException, SQLException, InvocationTargetException
+    public Boolean call() throws HarvesterIOException, HarvesterUnknownIdentifierException, PluginException, ClassNotFoundException, SQLException
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
         log.trace( "DatadockThread call method called" );
 
+        CargoContainer cargo;
         try
         {
             cargo = harvester.getCargoContainer( identifier );
@@ -154,21 +131,21 @@ public class DatadockThread implements Callable<Boolean>
         }
 
         //get submitter and format from the first cargoObject in the cargoContainer
-        submitter = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
-        format = cargo.getCargoObject( DataStreamType.OriginalData ).getFormat();
+        String submitter = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
+        String format = cargo.getCargoObject( DataStreamType.OriginalData ).getFormat();
         List<PluginTask> pluginTaskList = flowMap.get( submitter + format);
 
         for( PluginTask pluginTask : pluginTaskList )
         {
 
-	    IPluggable plugin = pluginTask.getPlugin();
-	    String classname = plugin.getClass().getName();
-            
-	    IPluginEnvironment env = pluginTask.getEnvironment();
+            IPluggable plugin = pluginTask.getPlugin();
+            String classname = plugin.getClass().getName();
+
+            IPluginEnvironment env = pluginTask.getEnvironment();
             log.trace( String.format("DatadockThread getPlugin classname: '%s'",classname) );   
 	    
             long timer = System.currentTimeMillis();
-	    cargo = plugin.runPlugin( env, cargo );
+            cargo = plugin.runPlugin( env, cargo );
             timer = System.currentTimeMillis() - timer;
             log.trace( String.format( "Timing: %s time: %s", classname, timer ) );  
             
