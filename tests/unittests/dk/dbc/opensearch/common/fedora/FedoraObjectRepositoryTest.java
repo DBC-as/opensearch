@@ -329,60 +329,6 @@ public class FedoraObjectRepositoryTest {
     }
 
 
-    /**
-     * Replaces object identified by 'test:1' with data in cargocontainer
-     * identified by 'test:2'
-     */
-    @Test
-    public void testReplaceObject() throws Exception
-    {
-        CargoContainer cargo = new CargoContainer( );
-        cargo.setIdentifier( new PID( testPid ));
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
-        //  cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
-
-        instance.replaceObject( "test:1", cargo );
-    }
-
-
-    /** 
-     * Should throw an exception
-     * 
-     */
-    @Test
-    public void testReplaceNonExistingObjectFails() throws Exception
-    {
-        CargoContainer cargo = new CargoContainer( );
-        cargo.setIdentifier( new PID( "test:3" ));
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
-        // cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
-
-        instance.replaceObject( "test:2", cargo );
-        
-    }
-
-    @Test( expected=IllegalStateException.class )
-    public void testReplaceObjectWithEmptyCargoFails() throws Exception
-    {
-        CargoContainer cargo = new CargoContainer();
-
-        instance.replaceObject( "test:1", cargo );
-    }
-
-
-    @Test
-    public void testReplaceObjectIgnoresPidInReplacementObject() throws Exception
-    {
-        CargoContainer cargo = new CargoContainer( );
-        cargo.setIdentifier( new PID( testPid ));
-        
-        cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
-        // cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
-
-        instance.replaceObject( "test:1", cargo);
-        // \todo needs functionality to check internal in the middle of the replace-process
-    }
-
     @Test
     public void testGetObject() throws Exception
     {

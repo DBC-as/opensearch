@@ -105,20 +105,7 @@ public interface IObjectRepository
      * @throws ObjectRepositoryException if the object cannot be deleted
      */
     public void deleteObject( String identifier, String logmessage ) throws ObjectRepositoryException;
-
-
-    /** 
-     * Replaces the object identified by {@code identifier} with the
-     * data contained in the {@code cargo} from the {@link
-     * CargoContainer}. 
-     * 
-     * @param identifier identifying the data to be replaced 
-     * @param cargo containing the data to replace the data identified by {@code identifier}
-     *
-     * @throws ObjectRepositoryException if the object cannot be replaced with the data in {@code cargo}
-     */
-    public void replaceObject( String identifier, CargoContainer cargo ) throws ObjectRepositoryException;
-
+   
 
     /** 
      * Searches the object repository using the a {@link List} of
