@@ -66,7 +66,7 @@ import static mockit.Mockit.tearDownMocks;
 import static org.junit.Assert.*;
 
 /**
- *
+ * \Todo testen dækker ikke alle metoder. Ret op på dette.
  */
 
 public class FedoraObjectRepositoryTest {

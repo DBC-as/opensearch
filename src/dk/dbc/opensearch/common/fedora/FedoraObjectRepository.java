@@ -532,7 +532,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutPid, int maximumResults )
+    public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults )
     {
         String[] resultFields = new String[ resultSearchFields.size() + 1 ];
         int i = 0;
@@ -551,15 +551,7 @@ public class FedoraObjectRepository implements IObjectRepository
         for( int j = 0; j < ofLength; j++ )
         {
             String pidValue = objectFields[j].getPid();
-            if( cutPid == null )
-            {
-                pids.add( pidValue );
-            }
-            else if( ! pidValue.equals( cutPid ) )
-            {
-                pids.add( pidValue );
-                return pids;
-            }
+            pids.add( pidValue );
         }
 
         return pids;

@@ -37,7 +37,7 @@ public class GetIdentifiersFunc
         searchList.add( thePair);
 
         System.out.println( "sending request to the repository" );
-        List<String> results = repository.getIdentifiers( searchList, null, 50);
+        List<String> results = repository.getIdentifiers( searchList, 50);
 
         int size = results.size();
         System.out.println( "Number of pids found: "+ size );

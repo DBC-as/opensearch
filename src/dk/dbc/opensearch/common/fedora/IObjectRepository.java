@@ -145,14 +145,12 @@ public interface IObjectRepository
      * @param resultSearchFields {@link List} of {@link Pair}s
      * that contains pairwise search Strings and the fields to search
      * for that String in
-     * @param cutIdentifier stops the search and returns result if it
-     * encounters this identifier
      * @param maximumResults integer limiting the returned {@link List}
      * of identifiers
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, String cutIdentifier, int maximumResults );
+    public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults );
 
 
     /** 
