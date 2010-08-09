@@ -201,7 +201,7 @@ public class DatadockMain
                 log.trace( "DatadockMain calling datadockManager update" );
                 long timer = System.currentTimeMillis();
                 int jobsSubmitted = datadockManager.update();
-                log.debug( String.format( "%s jobs submitted according DatadockManager" ) );
+                log.debug( String.format( "%s jobs submitted according to the DatadockManager", jobsSubmitted ) );
                 timer = System.currentTimeMillis() - timer;
                 mainJobsSubmitted += jobsSubmitted;
                 if( jobsSubmitted > 0 )
