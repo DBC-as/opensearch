@@ -51,8 +51,9 @@ import org.xml.sax.SAXException;
  * \brief the DataDockManager manages the startup, running and
  * closedown of the associated harvester and threadpool
  */
-public class DatadockManager
+public final class DatadockManager
 {
+    private boolean shutdownRequested = false;
     private static Logger log = Logger.getLogger( DatadockManager.class );
 
     private final DatadockPool pool;
@@ -62,6 +63,7 @@ public class DatadockManager
 
     private final Map< Pair< String,String >, Boolean > jobExecutionCheckSet = 
         Collections.synchronizedMap( new HashMap< Pair< String,String >, Boolean >() );
+
 
     /**
      * Constructs the the DatadockManager instance.
@@ -123,7 +125,7 @@ public class DatadockManager
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
         int jobs_submitted = 0;
 
-        while ( registeredJobs.size() > 0 )
+        while ( registeredJobs.size() > 0 && ! shutdownRequested )
         {
             log.trace( String.format( "processing job: %s", registeredJobs.get( 0 ).getIdentifier() ) );
 
@@ -194,9 +196,13 @@ public class DatadockManager
      */
     public void shutdown() throws InterruptedException, HarvesterIOException
     {
+	shutdownRequested = true;
+
+	log.debug( String.format( "Registered Jobs still in manager before pool shutdown: %s", registeredJobs.size() ) );
         log.debug( "Shutting down the pool" );
         pool.shutdown();
         log.debug( "The pool is down" );
+	log.debug( String.format( "Registered Jobs still in manager after pool shutdown: %s", registeredJobs.size() ) );
 
         log.debug( "Stopping harvester" );
         harvester.shutdown();
