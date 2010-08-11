@@ -157,6 +157,7 @@ public class DatadockThreadTest
         public void setStatusFailure( IIdentifier jobId, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{ throw new UnsupportedOperationException( "Mock method" );}
         public void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
         public void setStatusRetry( IIdentifier jobId ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException{throw new UnsupportedOperationException( "Mock method" );}
+        public void releaseJob( IIdentifier jobId ) {throw new UnsupportedOperationException( "Mock method" );}
     }
 
     @MockClass( realClass = XMLDCHarvester.class )

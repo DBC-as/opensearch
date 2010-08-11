@@ -507,6 +507,18 @@ public final class FileHarvest implements IHarvest
         return returnCargo;
     }
 
+    /**
+     *  This function is not implemented in FileHarvester
+     *
+     *  @param taskInfo unused.
+     */
+    @Override
+    public void releaseJob( IIdentifier jobId ) throws HarvesterIOException
+    {
+	FileIdentifier id = (FileIdentifier)jobId;
+	log.debug( String.format( "(Empty function) Releasing job: %s", id.toString() ) );
+    }
+
 
     /**
      * Returns a HashSet of SimplePairs with file objects. The size of

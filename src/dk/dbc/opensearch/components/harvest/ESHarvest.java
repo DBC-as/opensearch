@@ -482,6 +482,97 @@ public final class ESHarvest implements IHarvest
         return cargo;
     }
 
+    /**
+     *  Releases a job based on the {@link TaskInfo}.
+     *  <p>
+     *  When a job is requested using {@link getJobs} the status of the job in the ES-base 
+     *  is changed to reflect that the job is in progress. This function releases this status,
+     *  ie. remove the in progress status.
+     */
+    @Override
+    public void releaseJob( IIdentifier jobId ) throws HarvesterIOException
+    {
+
+	ESIdentifier id = (ESIdentifier)jobId;
+
+	log.debug( String.format( "Releasing job: %s", id.toString() ) );
+	
+	Connection conn;
+        try
+        {
+            conn = connectionPool.getConnection();
+        }
+        catch( SQLException sqle )
+        {
+            String errorMsg = new String("Could not get a db-connection from the connection pool");
+            log.fatal( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, sqle );
+        }
+
+	try
+	{
+	    PreparedStatement pstmt = conn.prepareStatement( "SELECT targetreference, lbnr, recordstatus " +
+                                                             "FROM taskpackagerecordstructure " +
+                                                             "WHERE recordstatus = ? " +
+                                                             "AND targetreference = ? " +
+							     "ANd lbnr = ? " +
+							     "FOR UPDATE OF recordstatus" );
+	    pstmt.setInt( 1, 3 ); // look for active records
+	    pstmt.setInt( 2, id.getTargetRef() );
+	    pstmt.setInt( 3, id.getLbNr() );
+	    ResultSet rs = pstmt.executeQuery( );
+
+	    int counter = 0;
+	    while ( rs.next() ) 
+	    {
+		++counter;
+	        int targetRef = rs.getInt(1);
+		int lbnr      = rs.getInt(2);
+		log.info( String.format( "Locking for update: targetRef: %s  Lbnr: %s", targetRef, lbnr ) );
+	    }
+	    log.info( String.format( "Locked %d rows for update.", counter ) );
+	    if ( counter == 0 )
+	    {
+                // no rows for update - just close down the statement:
+                conn.rollback();
+                pstmt.close();
+	    }
+            else
+            {
+		PreparedStatement pstmt2 = conn.prepareStatement( "UPDATE taskpackagerecordstructure " +
+								  "SET recordstatus = ? " + 
+								  "WHERE recordstatus = ? " + 
+								  "AND targetreference = ? " + 
+								  "AND lbnr = ?" );
+
+		pstmt2.setInt( 1, 2 );
+		pstmt2.setInt( 2, 3 );
+		pstmt2.setInt( 3, id.getTargetRef() );
+		pstmt2.setInt( 4, id.getLbNr() );
+		int res2 = pstmt2.executeUpdate( );
+
+                log.info("Updating " + res2 + " rows");
+
+                pstmt.close();
+                pstmt2.close();
+                conn.commit();
+            }
+
+	}
+        catch( SQLException sqle )
+        {
+            String errorMsg = String.format( "An SQL error occured while releasing job: %s", id.toString() );
+            log.fatal( errorMsg, sqle );
+            throw new HarvesterIOException( errorMsg, sqle );
+	}
+	finally
+	{
+	    releaseConnection( conn );
+	}
+
+	log.debug( String.format( "Job released: %s", id.toString() ) );
+    }
+
 
     public void setStatusFailure( IIdentifier Id, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException
     {

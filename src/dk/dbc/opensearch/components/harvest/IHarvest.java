@@ -89,4 +89,18 @@ public interface IHarvest
     void setStatusFailure( IIdentifier jobId, String failureDiagnostic ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
 
     void setStatusSuccess( IIdentifier jobId, String PID ) throws HarvesterUnknownIdentifierException, HarvesterInvalidStatusChangeException, HarvesterIOException;
+
+
+    /**
+     * If, for some reason, the datadock can not perform a job/task - ie. nothing is wrong with the job,
+     * but the job are not performed at all, then the datadock can ask the harvester to release the job.
+     * <p>
+     * The intended use for this function is when the datadock is shutting down, and all jobs not yet
+     * performed must be released.
+     * <p>
+     * Only harvesters actually locking jobs when requested for a joblist needs to have a implementation 
+     * of this function. All other harvesters can leave this function empty.
+     */
+    void releaseJob( IIdentifier jobId ) throws HarvesterIOException;
+
 }

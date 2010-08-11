@@ -204,6 +204,12 @@ public final class DatadockManager
         log.debug( "The pool is down" );
 	log.debug( String.format( "Registered Jobs still in manager after pool shutdown: %s", registeredJobs.size() ) );
 
+	// Release jobs in Harvester:
+	for ( TaskInfo taskInfo : registeredJobs )
+	{
+	    harvester.releaseJob( taskInfo.getIdentifier() );
+	}
+
         log.debug( "Stopping harvester" );
         harvester.shutdown();
         log.debug( "The harvester is stopped" );

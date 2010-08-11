@@ -334,6 +334,21 @@ public final class FileHarvestLight implements IHarvest
         }
     }
 
+
+    /**
+     *  Releasing a job
+     *  Since the jobs stays in the Harvester list when inProgress, this function does
+     *  nothing since the job are neither locked or needs to be moved.
+     *
+     *  @param taskInfo unused.
+     */
+    @Override
+    public void releaseJob( IIdentifier jobId ) throws HarvesterIOException
+    {
+	FileIdentifier id = (FileIdentifier)jobId;
+	log.debug( String.format( "(Empty function) Releasing job: %s", id.toString() ) );
+    }
+
     /**
      *  setStatus
      */
@@ -445,5 +460,6 @@ public final class FileHarvestLight implements IHarvest
 	
 	return path;
     }
+
 
 }
