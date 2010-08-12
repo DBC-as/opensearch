@@ -93,9 +93,9 @@ function checkmatch( newObject, workObject )
         Log.debug( "RLO: Anmeldelse\n");
         result = false;
         break;
-      case "Artikel":
+      case "Artikel": case "Avisartikel": case "Tidsskriftsartikel":
         Log.debug( "RLO: Artikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel|Tidsskriftsartikel")) {
           result = true;
         } else {
           result = false;
@@ -120,15 +120,7 @@ function checkmatch( newObject, workObject )
           result = false;
         }
         break;
-      case "Avisartikel":
-        Log.debug( "RLO: Avisartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel")) {
-          result = true;
-        } else {
-          result = false;
-        }
-        break;
-      case "Tidsskrift": case "Periodikum":
+      case "Tidsskrift": case "Periodikum": case "Netdokument":
         Log.debug( "RLO: Tidsskrift\n");
         for (var a in newIdentifier) {
           for (var b in workIdentifier) {
@@ -138,18 +130,10 @@ function checkmatch( newObject, workObject )
             }
           }
         }
-        if (result !== true && newTitle === workTitle && workType === "Tidsskrift") {
+        if (result !== true && newTitle === workTitle && workType === "Tidsskrift|Periodikum") {
           Log.debug( "TITLEMATCH" );
           result = true;
         } else  if (result !== true) {
-          result = false;
-        }
-        break;
-      case "Tidsskriftsartikel":
-        Log.debug( "RLO: Tidsskriftsartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel|Tidsskriftsartikel")) {
-          result = true;
-        } else {
           result = false;
         }
         break;
@@ -169,9 +153,9 @@ function checkmatch( newObject, workObject )
           result = false;
         }
         break;
-      case "DVD": case "Video": case "Netdokument":
+      case "DVD": case "Video": case "Netdokument": case "Blu-ray disc":
         Log.debug( "RLO: film\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("DVD|Video|Netdokument")) {
+        if ((newTitle === workTitle || newTitle === workSource || workTitle === newTitle || workTitle === newSource) && newCreator === workCreator && workType.match("DVD|Video|Netdokument|Blu-ray disc")) {
           result = true;
         } else if (newTitle === workTitle && workType.match("Bog|Lydbog.*|Diskette")) {
           for (var a in newContributors) {
@@ -184,10 +168,10 @@ function checkmatch( newObject, workObject )
         }
         break;
       case "Bog": case "Lydbog (cd)": case "Lydbog (b\u00e5nd)": case "Lydbog (cd-mp3)": case "Lydbog (online)": case "Kassettelydb\u00e5nd": case "Diskette":
-        Log.debug( "RLO: film\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Bog|Lydbog.*|Diskette")) {
+        Log.debug( "RLO: Bog\n");
+        if ((newTitle === workTitle || newTitle === workSource || workTitle === newTitle || workTitle === newSource) && newCreator === workCreator && workType.match("Bog|Lydbog.*|Diskette")) {
           result = true;
-        } else if (newTitle === workTitle && workType.match("DVD|Video|Netdokument")) {
+        } else if (newTitle === workTitle && workType.match("DVD|Video|Netdokument|Blu-ray disc")) {
           for (var a in workContributors) {
             if (newCreator === workContributors[a]) {
               result = true;

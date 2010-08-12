@@ -25,7 +25,6 @@ const DcCreator = function(){
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::type), "type", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
 
     for each (child in originalXml.dkabm::record.dc::language) {
@@ -39,6 +38,12 @@ const DcCreator = function(){
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::type) {
+      if (String(child.@xsi::type).match("dkdcplus:BibDK-Type")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "type", dc );
       }
     }
 
@@ -89,7 +94,6 @@ const DcCreator = function(){
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::type), "type", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
 
     for each (child in originalXml.dkabm::record.dc::language) {
@@ -103,6 +107,12 @@ const DcCreator = function(){
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::type) {
+      if (String(child.@xsi::type).match("dkdcplus:BibDK-Type")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "type", dc );
       }
     }
 
@@ -173,7 +183,6 @@ const DcCreator = function(){
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::type), "type", dc );
     dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::source), "source", dc );
 
     var child;
@@ -187,6 +196,12 @@ const DcCreator = function(){
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (String(child).match("computerspil") || String(child).match("soundtracks")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+      }
+    }
+
+    for each (child in originalXml.dkabm::record.dc::type) {
+      if (String(child.@xsi::type).match("dkdcplus:BibDK-Type")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "type", dc );
       }
     }
 
