@@ -194,7 +194,7 @@ const DcCreator = function(){
 
     var dcXml = DcCreator.createDcObject();
 
-    if (String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) !== "")
+    if (String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) !== "") {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")).replace(/\u00a4/, ""), "title", dc );
     } else {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
