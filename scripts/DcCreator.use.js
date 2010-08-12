@@ -105,7 +105,7 @@ const DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dc::language) {
-      if (String(child.@xsi::type).match("dcterms:ISO639-2")) {
+      if (!String(child.@xsi::type).match("dcterms:ISO639-2")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
