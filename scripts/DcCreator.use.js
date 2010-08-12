@@ -144,6 +144,12 @@ const DcCreator = function(){
       }
     }
 
+    for each (child in originalXml.dkabm::record.dc::identifier) {
+      if (String(child.@xsi::type).match("oss:upc")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
+      }
+    }
+
     for each (child in originalXml.dkabm::record.dcterms::isPartOf) {
       if (String(child.@xsi::type).match("oss:albumId")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "albumId:" + String(child), "relation", dc );
