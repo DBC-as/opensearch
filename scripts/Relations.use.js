@@ -151,33 +151,36 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
 
-      scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
-      scriptClass.createRelation( result, NS + "hasArticle", pid);
+      if (!result.match(/work:.*/)) {
+        scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
+        scriptClass.createRelation( result, NS + "hasArticle", pid);
+      }
     }
 
-    if (i === 0) {
-      var child;
 
-      for each (child in articleXML.dkabm::record.dcterms::isPartOf) {
-        if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-          Log.debug ( "Attribute: " + String(child.@xsi::type));
-          Log.debug ( "Child: " + child );
-          var identifier = "ISSN:" + String(child).replace(/-/g, "");
-        }
+    var child;
+
+    for each (child in articleXML.dkabm::record.dcterms::isPartOf) {
+      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
+        Log.debug ( "Attribute: " + String(child.@xsi::type));
+        Log.debug ( "Child: " + child );
+        var identifier = "ISSN:" + String(child).replace(/-/g, "");
       }
+    }
 
-      Log.info( "Identifier: " + identifier );
-      Log.info( "pid: " + pid );
+    Log.info( "Identifier: " + identifier );
+    Log.info( "pid: " + pid );
 
-      var results = FedoraPIDSearch.identifier( identifier );
+    var results = FedoraPIDSearch.identifier( identifier );
 
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
 
-        Log.info( "result: " + result );
+      Log.info( "result: " + result );
 
-        var NS = "http://oss.dbc.dk/rdf/dbcbib#";
+      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
 
+      if (!result.match(/work:.*/)) {
         scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
         scriptClass.createRelation( result, NS + "hasArticle", pid);
       }
@@ -207,34 +210,34 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-
-      scriptClass.createRelation( pid, NS + "hasArticle", result);
-      scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
+      if (!result.match(/work:.*/)) {
+        scriptClass.createRelation( pid, NS + "hasArticle", result);
+        scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
+      }
     }
 
-    if (i === 0) {
-      var child;
+    var child;
 
-      for each (child in manifestationXML.dkabm::record.dc::identifier) {
-        if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
-          Log.debug ( "Attribute: " + String(child.@xsi::type));
-          Log.debug ( "Child: " + child );
-          var identifier = "ISSN:" + String(child).replace(/-/g, "");
-        }
+    for each (child in manifestationXML.dkabm::record.dc::identifier) {
+      if (String(child.@xsi::type).match("dkdcplus:ISSN")) {
+        Log.debug ( "Attribute: " + String(child.@xsi::type));
+        Log.debug ( "Child: " + child );
+        var identifier = "ISSN:" + String(child).replace(/-/g, "");
       }
+    }
 
-      Log.info( "Identifier: " + identifier );    
-      Log.info( "pid: " + pid );
+    Log.info( "Identifier: " + identifier );    
+    Log.info( "pid: " + pid );
 
-      var results = FedoraPIDSearch.relation( identifier );
+    var results = FedoraPIDSearch.relation( identifier );
 
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
 
-        Log.info( "result: " + result );
+      Log.info( "result: " + result );
 
-        var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-
+      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
+      if (!result.match(/work:.*/)) {
         scriptClass.createRelation( pid, NS + "hasArticle", result);
         scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
       }
