@@ -84,6 +84,10 @@ const DcCreator = function(){
       }
     }
 
+    for each (child in originalXml.collection.record.datafield.(@tag=="014").subfield.(@code=="a")) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace( /-/g, ""), "relation", dc );
+    }
+
     for each (child in originalXml.collection.record.datafield.(@tag=="016").subfield.(@code=="a")) {
       dcXml.oai_dc::dc += DcCreator.createElement( "PartOf:" + String(child).replace( /-/g, ""), "relation", dc );
     }

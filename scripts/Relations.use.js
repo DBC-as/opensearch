@@ -34,9 +34,10 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       var NS = "http://oss.dbc.dk/rdf/dkbib#";
-
-      scriptClass.createRelation( pid, NS + "isReviewOf", result);
-      scriptClass.createRelation( result, NS + "hasReview", pid);
+      if (!String(result).match(/work:.*/)) {
+        scriptClass.createRelation( pid, NS + "isReviewOf", result);
+        scriptClass.createRelation( result, NS + "hasReview", pid);
+      }
     }
 
     if (i === 0) {
@@ -52,13 +53,15 @@ const Relations = function() {
 
           var NS = "http://oss.dbc.dk/rdf/dkbib#";
 
-          scriptClass.createRelation( pid, NS + "isReviewOf", result);
-          scriptClass.createRelation( result, NS + "hasReview", pid);
+          if (!String(result).match(/work:.*/)) {
+            scriptClass.createRelation( pid, NS + "isReviewOf", result);
+            scriptClass.createRelation( result, NS + "hasReview", pid);
+          }
         }
       }
     }
 
-    if (i === 0) {
+    if (i === 0 && String(reviewXML.dkabm::record.dc::title).match(/Anbefaling af:/)) {
       var title = String(reviewXML.dkabm::record.dc::title).replace(/Anbefaling af: (.*) af .*/, "$1");
 
       var results = FedoraPIDSearch.title( title );
@@ -69,9 +72,10 @@ const Relations = function() {
         Log.info( "result: " + result );
 
         var NS = "http://oss.dbc.dk/rdf/dkbib#";
-
-        scriptClass.createRelation( pid, NS + "isReviewOf", result);
-        scriptClass.createRelation( result, NS + "hasReview", pid);
+        if (!String(result).match(/work:.*/)) {
+          scriptClass.createRelation( pid, NS + "isReviewOf", result);
+          scriptClass.createRelation( result, NS + "hasReview", pid);
+        }
       }
     }
 
@@ -99,9 +103,10 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       var NS = "http://oss.dbc.dk/rdf/dkbib#";
-
-      scriptClass.createRelation( pid, NS + "hasReview", result);
-      scriptClass.createRelation( result, NS + "isReviewOf", pid);
+      if (!String(result).match(/work:.*/)) {
+        scriptClass.createRelation( pid, NS + "hasReview", result);
+        scriptClass.createRelation( result, NS + "isReviewOf", pid);
+      }
     }
 
     if (i === 0) {
@@ -120,8 +125,10 @@ const Relations = function() {
 
           var NS = "http://oss.dbc.dk/rdf/dkbib#";
 
-          scriptClass.createRelation( pid, NS + "hasReview", result);
-          scriptClass.createRelation( result, NS + "isReviewOf", pid);
+          if (!String(result).match(/work:.*/)) {
+            scriptClass.createRelation( pid, NS + "hasReview", result);
+            scriptClass.createRelation( result, NS + "isReviewOf", pid);
+          }
         }
       }
     }
@@ -151,7 +158,7 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
 
-      if (!result.match(/work:.*/)) {
+      if (!String(result).match(/work:.*/)) {
         scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
         scriptClass.createRelation( result, NS + "hasArticle", pid);
       }
@@ -180,7 +187,7 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
 
-      if (!result.match(/work:.*/)) {
+      if (!String(result).match(/work:.*/)) {
         scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
         scriptClass.createRelation( result, NS + "hasArticle", pid);
       }
@@ -210,7 +217,7 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-      if (!result.match(/work:.*/)) {
+      if (!String(result).match(/work:.*/)) {
         scriptClass.createRelation( pid, NS + "hasArticle", result);
         scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
       }
@@ -237,7 +244,7 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-      if (!result.match(/work:.*/)) {
+      if (!String(result).match(/work:.*/)) {
         scriptClass.createRelation( pid, NS + "hasArticle", result);
         scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
       }
@@ -277,8 +284,10 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
 
-      scriptClass.createRelation( pid, NS + "isPartOfAlbum", result);
-      scriptClass.createRelation( result, NS + "hasTrack", pid);
+      if (!String(result).match(/work:.*/)) {
+        scriptClass.createRelation( pid, NS + "isPartOfAlbum", result);
+        scriptClass.createRelation( result, NS + "hasTrack", pid);
+      }
     }
 
     Log.info ("End isPartOfAlbum" );
@@ -306,8 +315,10 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcbib#";
 
-      scriptClass.createRelation( pid, NS + "hasTrack", result);
-      scriptClass.createRelation( result, NS + "isPartOfAlbum", pid);
+      if (!String(result).match(/work:.*/)) {
+        scriptClass.createRelation( pid, NS + "hasTrack", result);
+        scriptClass.createRelation( result, NS + "isPartOfAlbum", pid);
+      }
     }
 
     Log.info ("End hasTrack" );
@@ -335,8 +346,10 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-      scriptClass.createRelation( pid, NS + "isAuthorDescriptionOf", result);
-      scriptClass.createRelation( result, NS + "hasAuthorDescription", pid);
+      if (!String(result).match(/work:.*/)) {
+        scriptClass.createRelation( pid, NS + "isAuthorDescriptionOf", result);
+        scriptClass.createRelation( result, NS + "hasAuthorDescription", pid);
+      }
     }
 
     Log.info ("End isAuthorDescriptionOf" );
@@ -353,7 +366,7 @@ const Relations = function() {
     var type = String(manifestationXML.dkabm::record.dc::type);
     Log.info( "Type: " + type );
 
-    var types = ["Artikel", "Avisartikel", "Billedbog", "Bog", "CD (musik)", "Kassettelydb\u00e5nd", "Lydbog (b\u00e5nd)", "Lydbog (cd)", "Lydbog (mp3)", "Lydb\u00e5nd (bog)", "Netdokument", "Tegneserie", "Tidsskriftsartikel"];
+    var types = ["Artikel", "Avisartikel", "Billedbog", "Bog", "CD (musik)", "Kassettelydb\u00e5nd", "Lydbog (b\u00e5nd)", "Lydbog (cd)", "Lydbog (online)", "Lydbog (cd-mp3)", "Netdokument", "Tegneserie", "Tidsskriftsartikel", "CD", "Punktskrift"];
 
     for (var a in types) {
       if (type === types[a]) {
@@ -370,9 +383,10 @@ const Relations = function() {
           Log.info( "result: " + result );
 
           var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
-
-          scriptClass.createRelation( pid, NS + "hasAuthorDescription", result);
-          scriptClass.createRelation( result, NS + "isAuthorDescriptionOf", pid);
+          if (!String(result).match(/work:.*/)) {
+            scriptClass.createRelation( pid, NS + "hasAuthorDescription", result);
+            scriptClass.createRelation( result, NS + "isAuthorDescriptionOf", pid);
+          }
         }
       }
     }
@@ -402,7 +416,7 @@ const Relations = function() {
 
       var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-      if (String(result) !== String(pid)) {
+      if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
         scriptClass.createRelation( pid, NS + "isSubjectDescriptionOf", result);
         scriptClass.createRelation( result, NS + "hasSubjectDescription", pid);
       }
@@ -418,6 +432,8 @@ const Relations = function() {
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
+
+    var child;
 
     for each(child in manifestationXML.dkabm::record.dc::subject) {
 
@@ -435,7 +451,7 @@ const Relations = function() {
 
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-        if (String(result) !== String(pid)) {
+        if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
           scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
           scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
         }
