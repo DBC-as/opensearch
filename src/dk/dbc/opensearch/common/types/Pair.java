@@ -25,7 +25,7 @@ package dk.dbc.opensearch.common.types;
 /**
  * You can add two objects to Pair and retrieve them again.
  * The objects may be different, identical, or the actual same object.
- * After you have added the objects to Pair you can no longer modify them,
+ * After you have added the objects to Pair you can no longer modify it,
  * i.e. Pair is immutable, even though the objects inside Pair may be mutable (see below).
  * <p>
  * Please notice, Pair do not use defensive copying of its two elements.
@@ -95,6 +95,8 @@ public class Pair< E, V >
      *     Pair< FancyPants, 42 >
      *  }
      *  </pre>
+     *
+     *  @return a String representation of the object
      */
     @Override
     public String toString()

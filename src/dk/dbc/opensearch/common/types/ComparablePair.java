@@ -22,13 +22,13 @@ package dk.dbc.opensearch.common.types;
 
 /**
  * This is an implementation of the Pair class extended with Comparable to
- * guarantee that elements can be compared, e.g. using Collection.sort
- *
+ * guarantee that elements can be compared, e.g. using Collection.sort.
+ * <p>
  * Use this class if you want a {@link Pair} class that can be sorted. It
  * sorts on the first element and only considers the second if the two
  * first elements are equal. If the client needs sorting on the second
  * element and not the first, please consider using a
- * {@code http://java.sun.com/javase/6/docs/api/java/util/Comparator.html}
+ * {@code http://java.sun.com/javase/6/docs/api/java/util/Comparator.html}.
  * Please bear in mind, that {@link java.lang.Comparable} is used to define
  * the natural sort order of a class. In contrast,
  * java.util.Comparator is used to define an alternative sort order for
@@ -57,7 +57,20 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
 
 
     /**
-     * Renders as {@code ComparablePair< E, V >}
+     *  A string representation of the pair in the following format:
+     *  <pre>
+     *  {@code
+     *     ComparablePair< String-representation-of-first-element, String-representaion-of-second-element >
+     *  }
+     *  </pre>
+     *  If the {@link ComparablePair} as the first element contains a String with value "FancyPants",
+     *  and as its second element the Integer value 42, then the toString will return:
+     *  <pre>
+     *  {@code
+     *     ComparablePair< FancyPants, 42 >
+     *  }
+     *  </pre>
+     *
      * @return a String representation of the object
      *
      * @see Pair#toString()
@@ -75,7 +88,7 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
      * specification
      * 
      * @param pair the {@link ComparablePair} to compare
-     * @return -1 if {@code pair} is smaller than {@code this} 0 if they're equal
+     * @return -1 if {@code pair} is smaller than {@code this}, 0 if they're equal
      * and 1 otherwise
      */
     @Override
