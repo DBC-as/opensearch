@@ -510,7 +510,7 @@ public final class FileHarvest implements IHarvest
     /**
      *  This function is not implemented in FileHarvester
      *
-     *  @param taskInfo unused.
+     *  @param jobId unused.
      */
     @Override
     public void releaseJob( IIdentifier jobId ) throws HarvesterIOException

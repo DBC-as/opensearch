@@ -485,7 +485,7 @@ public final class ESHarvest implements IHarvest
     /**
      *  Releases a job based on the {@link TaskInfo}.
      *  <p>
-     *  When a job is requested using {@link getJobs} the status of the job in the ES-base 
+     *  When a job is requested using {@link #getJobs} the status of the job in the ES-base 
      *  is changed to reflect that the job is in progress. This function releases this status,
      *  ie. remove the in progress status.
      */

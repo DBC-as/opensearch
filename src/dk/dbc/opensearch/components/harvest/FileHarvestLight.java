@@ -340,7 +340,7 @@ public final class FileHarvestLight implements IHarvest
      *  Since the jobs stays in the Harvester list when inProgress, this function does
      *  nothing since the job are neither locked or needs to be moved.
      *
-     *  @param taskInfo unused.
+     *  @param jobId unused.
      */
     @Override
     public void releaseJob( IIdentifier jobId ) throws HarvesterIOException
