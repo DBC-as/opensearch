@@ -24,7 +24,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.metadata.DBCBIB;
-import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -297,9 +296,9 @@ public class FedoraObjectRepositoryTest {
         CargoContainer cargo = new CargoContainer( );
         cargo.setIdentifier( new PID("test:1") );
         cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
-        //   cargo.setIndexingAlias( "docbook", DataStreamType.OriginalData );
-        DublinCore dc = new DublinCore( "test:1" );
-        cargo.addMetaData( dc );
+	// static final String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">æøå</dc:title>";
+	String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">test:1</dc:title>";
+        cargo.add( DataStreamType.DublinCoreData, "testFormat", "testSubmitter", "da", "text/xml", dublinCore.getBytes() );
         String logmessage = "log";
         String expResult = "test:1";
         String result = instance.storeObject( cargo, logmessage, "test");
