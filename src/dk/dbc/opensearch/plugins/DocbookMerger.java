@@ -20,7 +20,6 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
@@ -87,15 +86,6 @@ public class DocbookMerger implements IPluggable
     // Non-standard funktion - used by a hack in the PTIThread
     public CargoContainer run( CargoContainer cargo ) throws PluginException
     {
-	// DublinCore dc = null;
-
-        // if( cargo.hasMetadata( DataStreamType.DublinCoreData ) )
-        // {
-        //     dc = cargo.getDublinCoreMetaData();
-        // }
-
-
-
         CargoObject orig = cargo.getCargoObject( DataStreamType.OriginalData );
 
         byte[] orig_bytes = orig.getBytes();
@@ -126,19 +116,6 @@ public class DocbookMerger implements IPluggable
 
 
         Element origRoot = doc.getDocumentElement();
-
-        // ByteArrayOutputStream dc_out = new ByteArrayOutputStream();
-        // try
-        // {
-        //     dc.serialize( dc_out, null );
-        // }
-        // catch( OpenSearchTransformException ex )
-        // {
-        //     String error = String.format( "Failed to retrieve Dublin Core metadata from id '%s'", cargo.getIdentifierAsString() );
-        //     log.warn( error, ex );
-        //     log.info( "This plugin will now not merge the OriginalData with the DublinCore metadata" );
-        // }
-        // ByteArrayInputStream dc_is = new ByteArrayInputStream( dc_out.toByteArray() );
 
         byte [] dcByteArray = cargo.getCargoObject( DataStreamType.DublinCoreData ).getBytes();
 
