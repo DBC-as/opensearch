@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -61,11 +62,12 @@ public class FedoraUtils
      * @throws TransformerConfigurationException
      * @throws TransformerException
      */
-    public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws OpenSearchTransformException, ObjectRepositoryException
+    public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws OpenSearchTransformException, ObjectRepositoryException, XMLStreamException
     {
         if( null == cargo.getIdentifier() )
         {
-            throw new OpenSearchTransformException( "CargoContainerToFoxml Called with empty Identifier." );
+            // throw new OpenSearchTransformException( "CargoContainerToFoxml Called with empty Identifier." );
+	    throw new IllegalStateException( "CargoContainerToFoxml Called with empty Identifier." );
         }
 
         String pid = cargo.getIdentifier().getIdentifier();

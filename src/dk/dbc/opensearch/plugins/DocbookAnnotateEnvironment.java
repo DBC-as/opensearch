@@ -60,7 +60,6 @@ import org.xml.sax.SAXException;
 // For class DublinCore:
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import dk.dbc.opensearch.common.metadata.MetaData;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -673,7 +672,7 @@ class DublinCore implements MetaData
     </dc>
      */
     @Override
-    public void serialize( OutputStream out, String identifier )throws OpenSearchTransformException
+    public void serialize( OutputStream out, String identifier )throws XMLStreamException
     {
         // Create an output factory
         XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
@@ -709,7 +708,7 @@ class DublinCore implements MetaData
         {
             String error = "Could not write to stream writer";
             log.error( error );
-            throw new OpenSearchTransformException( error, ex );
+            throw ex;
         }
     }
 

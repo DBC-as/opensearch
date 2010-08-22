@@ -24,7 +24,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -334,7 +333,7 @@ public class AdministrationStream implements MetaData
     </admin-stream>
      */
     @Override
-    public void serialize( OutputStream out, String identifier ) throws OpenSearchTransformException
+    public void serialize( OutputStream out, String identifier ) throws XMLStreamException
     {
 
         // Create an output factory
@@ -378,7 +377,7 @@ public class AdministrationStream implements MetaData
         {
             String error = "Could not write to stream writer";
             log.error( error );
-            throw new OpenSearchTransformException( error, ex );
+            throw ex;
         }
     }
 

@@ -325,22 +325,6 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             throw new PluginException( errorMsg, ioe);
         }
 
-        // ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        // byte[] workDCBytes = null;
-        // try
-        // {
-        //     workDC.serialize( baos, "not needed identifier" );
-        // }
-        // catch( OpenSearchTransformException oste )
-        // {
-        //     String error = String.format( "Error while serialising the DublinCore data created for a workobject to suit the material with identifier; '%s'",
-        //                                   cargo.getIdentifier().getIdentifier() );
-        //     log.error( error, oste );
-        //     throw new PluginException( error, oste );
-        // }
-        // workDCBytes= baos.toByteArray();
-
         try
         {
             log.trace( String.format( "Trying to add workdcstream: '%s'", workXml ) );

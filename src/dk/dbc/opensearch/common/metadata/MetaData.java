@@ -26,8 +26,8 @@
 package dk.dbc.opensearch.common.metadata;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.OutputStream;
+import javax.xml.stream.XMLStreamException;
 
 
 /**
@@ -41,7 +41,7 @@ public interface MetaData {
      * @param out 
      * @param identifier 
      */
-    public void serialize( OutputStream out, String identifier )throws OpenSearchTransformException;    
+    public void serialize( OutputStream out, String identifier ) throws XMLStreamException;
 
     public DataStreamType getType();
 }

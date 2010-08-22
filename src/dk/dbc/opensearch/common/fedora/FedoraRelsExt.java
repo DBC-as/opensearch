@@ -33,7 +33,6 @@ import dk.dbc.opensearch.common.metadata.MetaData;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -144,11 +143,10 @@ public class FedoraRelsExt implements MetaData
      * @param out the {@link OutputStream} to write the serialization to.
      * <p/>
      * The serialized fragment is encoded with UTF-8 by default.
-     * @throws TransformerConfigurationException
-     * @throws TransformerException
+     * @throws XMLStreamException
      */
     @Override
-    public void serialize( OutputStream out, String identifier ) throws OpenSearchTransformException
+    public void serialize( OutputStream out, String identifier ) throws XMLStreamException
     {
 
         // Create an output factory
@@ -214,7 +212,7 @@ public class FedoraRelsExt implements MetaData
         {
             String error = String.format( "Could not write to stream writer %s", ex.getMessage() );
             log.error( error, ex );
-            throw new OpenSearchTransformException( error, ex );
+            throw ex;
         }
     }
 

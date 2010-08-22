@@ -240,6 +240,12 @@ public class FedoraObjectRepository implements IObjectRepository
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
+        catch ( XMLStreamException ex )
+        {
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
 
         String returnedobjectIdentifier = null;
         try
@@ -910,7 +916,7 @@ public class FedoraObjectRepository implements IObjectRepository
         {
             adminStream.serialize( baos, null );
         }
-        catch( OpenSearchTransformException ex )
+        catch( XMLStreamException ex )
         {
             String error = String.format( "Could not retrieve administration stream serialization" );
             log.error( error );
