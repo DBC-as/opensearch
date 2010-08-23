@@ -20,12 +20,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
-import dk.dbc.opensearch.common.types.OpenSearchException;
-
 /**
  * 
  */
-public final class HarvesterInvalidStatusChangeException extends OpenSearchException{
+public final class HarvesterInvalidStatusChangeException extends Exception
+{
     
     static final long serialVersionUID = 632739149100896128L;
     
