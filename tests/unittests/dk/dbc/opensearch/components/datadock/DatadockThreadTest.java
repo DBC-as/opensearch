@@ -45,7 +45,7 @@ import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.HarvesterUnknownIdentifierException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.plugins.DocbookAnnotate;
+import dk.dbc.opensearch.plugins.ForceFedoraPid;
 import dk.dbc.opensearch.plugins.SimpleGenericRelation;
 import dk.dbc.opensearch.plugins.Store;
 import dk.dbc.opensearch.plugins.XMLDCHarvester;
@@ -208,7 +208,7 @@ public class DatadockThreadTest
         }
     }    
         
-    @MockClass( realClass = DocbookAnnotate.class )
+    @MockClass( realClass = ForceFedoraPid.class )
     public static class NullReturningPlugin
     {
         @Mock
@@ -313,7 +313,7 @@ public class DatadockThreadTest
             mockFlowmap.get( anyString );returns( pluginTaskList );
         }};
         
-        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.DocbookAnnotate"), null ); 
+        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin("dk.dbc.opensearch.plugins.ForceFedoraPid"), null ); 
       
         pluginTaskList.add( pluginTask1 );
 
