@@ -139,7 +139,7 @@ function checkmatch( newObject, workObject )
         break;
       case "CD": case "Grammofonplade": case "netmusik (album)":
         Log.debug( "RLO: CD\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|netmusik \(album\)")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|album")) {
           result = true;
         } else {
           result = false;
@@ -147,7 +147,7 @@ function checkmatch( newObject, workObject )
         break;
       case "netmusik (track)": 
         Log.debug( "RLO: netmusik (track)\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("netmusik \(track\)")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("track")) {
           result = true;
         } else {
           result = false;
