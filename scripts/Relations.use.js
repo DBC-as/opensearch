@@ -146,11 +146,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
-        scriptClass.createRelation( result, NS + "hasArticle", pid);
+        DbcBibRelations.isPartOfManifestation( pid, result );
       }
     }
 
@@ -175,11 +172,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "isPartOfManifestation", result);
-        scriptClass.createRelation( result, NS + "hasArticle", pid);
+        DbcBibRelations.isPartOfManifestation( pid, result );
       }
     }
 
@@ -206,10 +200,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "hasArticle", result);
-        scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
+        DbcBibRelations.isPartOfManifestation( result, pid );
       }
     }
 
@@ -233,10 +225,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "hasArticle", result);
-        scriptClass.createRelation( result, NS + "isPartOfManifestation", pid);
+        DbcBibRelations.isPartOfManifestation( result, pid );
       }
     }
 
@@ -272,11 +262,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "isPartOfAlbum", result);
-        scriptClass.createRelation( result, NS + "hasTrack", pid);
+        DbcBibRelations.isPartOfAlbum( pid, result );
       }
     }
 
@@ -303,11 +290,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcbib#";
-
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "hasTrack", result);
-        scriptClass.createRelation( result, NS + "isPartOfAlbum", pid);
+        DbcBibRelations.isPartOfAlbum( result, pid );
       }
     }
 
@@ -334,11 +318,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
-
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "isAuthorDescriptionOf", result);
-        scriptClass.createRelation( result, NS + "hasAuthorDescription", pid);
+        DbcAddiRelations.isAuthorDescriptionOf( pid, result );
       }
     }
 
@@ -372,10 +353,8 @@ const Relations = function() {
 
           Log.info( "result: " + result );
 
-          var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
           if (!String(result).match(/work:.*/)) {
-            scriptClass.createRelation( pid, NS + "hasAuthorDescription", result);
-            scriptClass.createRelation( result, NS + "isAuthorDescriptionOf", pid);
+            DbcAddiRelations.isAuthorDescriptionOf( result, pid );
           }
         }
       }
@@ -404,11 +383,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
-
       if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "isSubjectDescriptionOf", result);
-        scriptClass.createRelation( result, NS + "hasSubjectDescription", pid);
+        DbcAddiRelations.isSubjectDescriptionOf( pid, result );
       }
     }
 
@@ -442,8 +418,7 @@ const Relations = function() {
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
         if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
-          scriptClass.createRelation( pid, NS + "hasSubjectDescription", result);
-          scriptClass.createRelation( result, NS + "isSubjectDescriptionOf", pid);
+          DbcAddiRelations.isSubjectDescriptionOf( result, pid );
         }
       }
 
@@ -462,9 +437,7 @@ const Relations = function() {
 
     var url = String( "http://bibzoom.shop2download.com/samples/" + trackXML.*.*.soundClip);
 
-    var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
-
-    scriptClass.createRelation( pid, NS + "hasSoundClip", url);
+    DbcAddiRelations.hasSoundClip( pid, url );
 
     Log.info ("End hasSoundClip" );
 
