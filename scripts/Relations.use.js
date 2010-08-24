@@ -1,5 +1,7 @@
 use ( "XmlUtil.use.js" );
 use ( "XmlNamespaces.use.js" );
+use ( "DbcAddiRelations.use.js" );
+use ( "DbcBibRelations.use.js" );
 
 EXPORTED_SYMBOLS = ['Relations'];
 
@@ -33,10 +35,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dkbib#";
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "isReviewOf", result);
-        scriptClass.createRelation( result, NS + "hasReview", pid);
+        DbcAddiRelations.isReviewOf( pid, result );
       }
     }
 
@@ -51,11 +51,8 @@ const Relations = function() {
 
           Log.info( "result: " + result );
 
-          var NS = "http://oss.dbc.dk/rdf/dkbib#";
-
           if (!String(result).match(/work:.*/)) {
-            scriptClass.createRelation( pid, NS + "isReviewOf", result);
-            scriptClass.createRelation( result, NS + "hasReview", pid);
+            DbcAddiRelations.isReviewOf( pid, result );
           }
         }
       }
@@ -71,10 +68,8 @@ const Relations = function() {
 
         Log.info( "result: " + result );
 
-        var NS = "http://oss.dbc.dk/rdf/dkbib#";
         if (!String(result).match(/work:.*/)) {
-          scriptClass.createRelation( pid, NS + "isReviewOf", result);
-          scriptClass.createRelation( result, NS + "hasReview", pid);
+          DbcAddiRelations.isReviewOf( pid, result );
         }
       }
     }
@@ -102,10 +97,8 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      var NS = "http://oss.dbc.dk/rdf/dkbib#";
       if (!String(result).match(/work:.*/)) {
-        scriptClass.createRelation( pid, NS + "hasReview", result);
-        scriptClass.createRelation( result, NS + "isReviewOf", pid);
+        DbcAddiRelations.isReviewOf( result, pid );
       }
     }
 
@@ -123,11 +116,8 @@ const Relations = function() {
 
           Log.info( "result: " + result );
 
-          var NS = "http://oss.dbc.dk/rdf/dkbib#";
-
           if (!String(result).match(/work:.*/)) {
-            scriptClass.createRelation( pid, NS + "hasReview", result);
-            scriptClass.createRelation( result, NS + "isReviewOf", pid);
+            DbcAddiRelations.isReviewOf( result, pid );
           }
         }
       }
