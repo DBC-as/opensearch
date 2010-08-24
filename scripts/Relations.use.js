@@ -25,7 +25,7 @@ const Relations = function() {
 
     var identifier = reviewXML.*.*.*.(@tag=='014').*.(@code=='a');
 
-    Log.info( "Identifier: " + identifier );    
+    Log.info( "Identifier: " + identifier );
     Log.info( "pid: " + pid );
 
     var results = FedoraPIDSearch.pid( "*:" + identifier ); // wildcardsearch (only possible in PID).
@@ -36,7 +36,7 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.isReviewOf( pid, result );
+        DbcAddiRelations.isReviewOf( pid, result);
       }
     }
 
