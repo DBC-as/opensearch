@@ -319,7 +319,7 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.isAuthorDescriptionOf( pid, result );
+        DbcAddiRelations.hasAuthorDescription( result, pid );
       }
     }
 
@@ -354,7 +354,7 @@ const Relations = function() {
           Log.info( "result: " + result );
 
           if (!String(result).match(/work:.*/)) {
-            DbcAddiRelations.isAuthorDescriptionOf( result, pid );
+            DbcAddiRelations.hasAuthorDescription( pid, result );
           }
         }
       }
@@ -384,7 +384,7 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
-        DbcAddiRelations.isSubjectDescriptionOf( pid, result );
+        DbcAddiRelations.hasSubjectDescription( result, pid );
       }
     }
 
@@ -418,7 +418,7 @@ const Relations = function() {
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
         if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
-          DbcAddiRelations.isSubjectDescriptionOf( result, pid );
+          DbcAddiRelations.hasSubjectDescription( pid, result );
         }
       }
 
