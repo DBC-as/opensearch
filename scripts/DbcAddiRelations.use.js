@@ -64,7 +64,7 @@ const DbcAddiRelations = function() {
     DbcAddiRelations.hasTutorial = function ( pid1, pid2 ){
         Log.info( "Start hasTutorial" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasTutorial", pid2 );
-        Log.info( End hasTutorial );
+        Log.info( "End hasTutorial" );
     };
 
 
