@@ -9,116 +9,116 @@ const DbcAddiRelations = function() {
     * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcaddi#hasThemeMember
     */
     DbcAddiRelations.isPartOfTheme = function ( pid1, pid2 ){
-        Log.info( Start isPartOfTheme );
+        Log.info( "Start isPartOfTheme" );
         scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#hasThemeMember", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isPartOfTheme", pid2 );
-        Log.info( End isPartOfTheme );
+        Log.info( "End isPartOfTheme" );
     };
 
 
     DbcAddiRelations.hasRingtone = function ( pid1, pid2 ){
-        Log.info( Start hasRingtone );
+        Log.info( "Start hasRingtone" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasRingtone", pid2 );
-        Log.info( End hasRingtone );
+        Log.info( "End hasRingtone" );
     };
 
 
     DbcAddiRelations.hasUserCreatedContent = function ( pid1, pid2 ){
-        Log.info( Start hasUserCreatedContent );
+        Log.info( "Start hasUserCreatedContent" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasUserCreatedContent", pid2 );
-        Log.info( End hasUserCreatedContent );
+        Log.info( "End hasUserCreatedContent" );
     };
 
 
     DbcAddiRelations.hasFulltext = function ( pid1, pid2 ){
-        Log.info( Start hasFulltext );
+        Log.info( "Start hasFulltext" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasFulltext", pid2 );
-        Log.info( End hasFulltext );
+        Log.info( "End hasFulltext" );
     };
 
 
     DbcAddiRelations.hasImageRepresentation = function ( pid1, pid2 ){
-        Log.info( Start hasImageRepresentation );
+        Log.info( "Start hasImageRepresentation" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasImageRepresentation", pid2 );
-        Log.info( End hasImageRepresentation );
+        Log.info( "End hasImageRepresentation" );
     };
 
 
     DbcAddiRelations.hasDemo = function ( pid1, pid2 ){
-        Log.info( Start hasDemo );
+        Log.info( "Start hasDemo" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasDemo", pid2 );
-        Log.info( End hasDemo );
+        Log.info( "End hasDemo" );
     };
 
     /**
     * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcbibaddi#hasReview
     */
     DbcAddiRelations.isReviewOf = function ( pid1, pid2 ){
-        Log.info( Start isReviewOf );
+        Log.info( "Start isReviewOf" );
         scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbibaddi#hasReview", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isReviewOf", pid2 );
-        Log.info( End isReviewOf );
+        Log.info( "End isReviewOf" );
     };
 
 
     DbcAddiRelations.hasTutorial = function ( pid1, pid2 ){
-        Log.info( Start hasTutorial );
+        Log.info( "Start hasTutorial" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasTutorial", pid2 );
         Log.info( End hasTutorial );
     };
 
 
     DbcAddiRelations.hasTrailer = function ( pid1, pid2 ){
-        Log.info( Start hasTrailer );
+        Log.info( "Start hasTrailer" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasTrailer", pid2 );
-        Log.info( End hasTrailer );
+        Log.info( "End hasTrailer" );
     };
 
     /**
     * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcaddi#hasCover
     */
     DbcAddiRelations.isCoverOf = function ( pid1, pid2 ){
-        Log.info( Start isCoverOf );
+        Log.info( "Start isCoverOf" );
         scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#hasCover", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isCoverOf", pid2 );
-        Log.info( End isCoverOf );
+        Log.info( "End isCoverOf" );
     };
 
     /**
     * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcaddi#isSubjectDescriptionOf
     */
     DbcAddiRelations.hasSubjectDescription = function ( pid1, pid2 ){
-        Log.info( Start hasSubjectDescription );
+        Log.info( "Start hasSubjectDescription" );
         scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isSubjectDescriptionOf", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasSubjectDescription", pid2 );
-        Log.info( End hasSubjectDescription );
+        Log.info( "End hasSubjectDescription" );
     };
 
 
     DbcAddiRelations.hasSoundClip = function ( pid1, pid2 ){
-        Log.info( Start hasSoundClip );
+        Log.info( "Start hasSoundClip" );
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasSoundClip", pid2 );
-        Log.info( End hasSoundClip );
+        Log.info( "End hasSoundClip" );
     };
 
     /**
     * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcbib#isReviewOf
     */
     DbcAddiRelations.hasReview = function ( pid1, pid2 ){
-        Log.info( Start hasReview );
+        Log.info( "Start hasReview" );
         scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbib#isReviewOf", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasReview", pid2 );
-        Log.info( End hasReview );
+        Log.info( "End hasReview" );
     };
 
     /**
     * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcaddi#isAuthorDescriptionOf
     */
     DbcAddiRelations.hasAuthorDescription = function ( pid1, pid2 ){
-        Log.info( Start hasAuthorDescription );
+        Log.info( "Start hasAuthorDescription" );
         scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isAuthorDescriptionOf", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasAuthorDescription", pid2 );
-        Log.info( End hasAuthorDescription );
+        Log.info( "End hasAuthorDescription" );
     };
 
 that}();
