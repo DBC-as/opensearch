@@ -121,4 +121,6 @@ const DbcAddiRelations = function() {
         Log.info( "End hasAuthorDescription" );
     };
 
-that}();
+  return that;
+
+}();

@@ -35,4 +35,6 @@ const DbcBibRelations = function() {
         Log.info( "End isMemberOfWork" );
     };
 
-that}();
+  return that;
+
+}();
