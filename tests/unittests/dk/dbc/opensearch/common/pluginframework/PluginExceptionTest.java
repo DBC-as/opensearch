@@ -59,10 +59,13 @@ public class PluginExceptionTest
     @Test 
     public void testConstructorNoMsg() 
     {
+	// When only giving a cause and _no_ message, 
+	// the underlying class will create a message based 
+	// on the cause's message.
         pe = new PluginException( new IOException( "test" ) );
-        assertTrue( pe.getException().getClass() == IOException.class );
-        assertTrue( pe.getException().getMessage() == "test" );
-        assertTrue( pe.getMessage() == null ); 
+        assertTrue( pe.getCause().getClass() == IOException.class );
+        assertTrue( pe.getCause().getMessage().equals( "test" ) );
+	assertTrue( pe.getMessage().equals( "java.io.IOException: test" ) );
     }
     
 
@@ -73,8 +76,8 @@ public class PluginExceptionTest
     public void testConstructorNoExp() 
     {
         pe = new PluginException( "test" );
-        assertTrue( pe.getException() == null );
-        assertTrue( pe.getMessage() == "test" ); 
+        assertTrue( pe.getCause() == null );
+        assertTrue( pe.getMessage().equals( "test" ) ); 
     }
     
 
@@ -85,8 +88,8 @@ public class PluginExceptionTest
     public void testConstructor() 
     {
         pe = new PluginException( "test", new IOException( "test" ) );
-        assertTrue( pe.getException().getClass() == IOException.class );
-        assertTrue( pe.getException().getMessage() == "test" );
-        assertTrue( pe.getMessage() == "test" ); 
+        assertTrue( pe.getCause().getClass() == IOException.class );
+        assertTrue( pe.getCause().getMessage().equals( "test" ) );
+        assertTrue( pe.getMessage().equals( "test" ) ); 
     }
 }

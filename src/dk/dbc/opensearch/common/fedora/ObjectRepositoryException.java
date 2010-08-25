@@ -20,8 +20,6 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.types.OpenSearchException;
-
 
 /**
  * Exception thrown in case of plugin processing or calculation errors. All
@@ -30,12 +28,8 @@ import dk.dbc.opensearch.common.types.OpenSearchException;
  * exception. The wrapped (original) exception can be accessed by the
  * getException() method.
  */
-public final class ObjectRepositoryException extends OpenSearchException
+public final class ObjectRepositoryException extends Exception
 {
-
-    private Exception e;
-    private String msg;
-
 
     /**
      * Constructor wrapping the original exception.
@@ -78,28 +72,4 @@ public final class ObjectRepositoryException extends OpenSearchException
         super( msg );
     }
 
-
-    /**
-     * Returns the wrapped (original) exception that was caught inside the
-     * plugin. Returns null if the ObjectRepositoryException is the originating exception
-     *
-     * @return Exception the wrapped exception
-     */
-    @Override
-    public Exception getException()
-    {
-        return super.getException();
-    }
-
-
-    /**
-     * Returns the message that was given from the plugin at the cathing of the
-     * original exception. Returns null if no message was given at the time of
-     * the catch.
-     */
-    @Override
-    public String getMessage()
-    {
-        return super.getMessage();
-    }
 }

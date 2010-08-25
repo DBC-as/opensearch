@@ -217,7 +217,7 @@ public class StoreTest
      * tests the handling of the ObjectRepositoryException
      */
     @Test( expected = ObjectRepositoryException.class )
-    public void testObjectRepositoryException() throws Exception
+    public void testObjectRepositoryException() throws Throwable
     {
         setUpMocks( MockFedoraObjectRepositoryException.class );
         FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
@@ -231,7 +231,7 @@ public class StoreTest
         }
         catch( PluginException pe )
         {
-            throw pe.getException();
+            throw pe.getCause();
         }
     }
 

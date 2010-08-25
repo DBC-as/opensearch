@@ -20,7 +20,6 @@
 
 package dk.dbc.opensearch.common.pluginframework;
 
-import dk.dbc.opensearch.common.types.OpenSearchException;
 
 /**
  * Exception thrown in case of plugin processing or calculation errors. All
@@ -29,7 +28,7 @@ import dk.dbc.opensearch.common.types.OpenSearchException;
  * exception. The wrapped (original) exception can be accessed by the
  * getException() method.
  */
-public final class PluginException extends OpenSearchException
+public final class PluginException extends Exception
 {
 
     private static final long serialVersionUID = 4451067896581886657L;
