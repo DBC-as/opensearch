@@ -109,6 +109,20 @@ public interface IObjectRepository
 
     /** 
      * Searches the object repository using the a {@link List} of
+     * {@code conditions} as query, limiting {@link List} of returned 
+     * identifiers with {@code maximumResult}
+     * 
+     * @param conditions {@link List} of {@link OpenSearchCondition}s.
+     * @param maximumResults integer limiting the returned {@link List}
+     * of identifiers
+     * 
+     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
+     */
+    public List< String > getIdentifiersNew( List< OpenSearchCondition > conditions, int maximumResults );
+
+
+    /** 
+     * Searches the object repository using the a {@link List} of
      * {@code searchStrings} as query, limiting the search to the
      * {@link List} of {@code searchableFields} and limiting {@link
      * List} of returned identifiers with {@code maximumResult}

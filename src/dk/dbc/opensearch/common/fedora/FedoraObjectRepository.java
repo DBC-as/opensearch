@@ -415,6 +415,45 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
+    /**
+     * Retrieves all identifiers mathcing {@code conditions}
+     *
+     * @param conditions A list of {@link OpenSearchCondition}s 
+     * @param maximumResults the largest number of results to retrieve
+     *
+     * @return A {@link List} containing all matching identifiers.
+     *
+     * @throws IllegalArgumentException if {@code maximumResults} is
+     * less than one, since neither a negative number of results or
+     * zero results makes any sense.
+     */
+    @Override
+    public List< String > getIdentifiersNew( List< OpenSearchCondition > conditions, int maximumResults ) throws IllegalArgumentException
+    { 
+	if ( maximumResults < 1 )
+	{
+	    throw new IllegalArgumentException( String.format( "The maximum number of results retrived cannot be null or less than one. Argument given: %s", maximumResults ) );
+	}
+	
+	String[] resultFields = { "pid" }; // we will only return pids!
+	// \todo: Perhaps NonNegativeInteger should be replaced with PositiveInteger,
+	// since this function disallows values < 1.
+	NonNegativeInteger maxRes = new NonNegativeInteger( Integer.toString( maximumResults ) );
+
+        ObjectFields[] objectFields = searchRepositoryNew( resultFields, conditions, maximumResults );
+	
+        int ofLength = objectFields.length;
+        List< String > pids = new ArrayList< String >( ofLength );
+        for( int j = 0; j < ofLength; j++ )
+        {
+            String pidValue = objectFields[j].getPid();
+            pids.add( pidValue );
+        }
+
+        return pids;
+    }
+
+
     @Override
     public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults )
     {
@@ -744,6 +783,111 @@ public class FedoraObjectRepository implements IObjectRepository
             }
 
             cond[i++] = new Condition( FedoraObjectFields.PID.fieldname(), comp, namespace );
+        }
+
+        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
+        FieldSearchResult fsr = null;
+
+        // A list to contain arrays of ObjectFields.
+        // Whenever a new array of ObjectFields are found, either from findObjects or
+        // resumeFindObjects, it is added to the list.
+        // The Arrays are later collected into a single array.
+        LinkedList< ObjectFields[] > objFieldsList = new LinkedList< ObjectFields[] >();
+        int numberOfResults = 0;
+        try
+        {
+            NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );
+            fsr = this.fedoraHandle.findObjects( resultFields, maxResults, fsq );
+
+            numberOfResults += fsr.getResultList().length;
+            objFieldsList.push( fsr.getResultList() );
+
+            ListSession listSession = fsr.getListSession();
+            while ( listSession != null )
+            {
+                String token = listSession.getToken();
+                fsr = this.fedoraHandle.resumeFindObjects( token );
+                if ( fsr != null )
+                {
+                    numberOfResults += fsr.getResultList().length;
+                    objFieldsList.push( fsr.getResultList() );
+                    listSession = fsr.getListSession();
+                }
+                else
+                {
+                    listSession = null;
+                }
+            }
+
+            log.debug( String.format( "Result length of resultlist: %s", numberOfResults ) );
+
+        }
+        catch( ConfigurationException ex )
+        {
+            String warn = String.format( "ConfigurationException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+        catch( ServiceException ex )
+        {
+            String warn = String.format( "ServiceException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+        catch( MalformedURLException ex )
+        {
+            String warn = String.format( "MalformedURLException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+        catch( IOException ex )
+        {
+            String warn = String.format( "IOException -> Could not conduct query: %s", ex.getMessage() );
+            log.warn( warn );
+        }
+
+        if( fsr == null )
+        {
+            log.warn( "Retrieved no hits from search, returning empty List<String>" );
+            return new ObjectFields[]{ };
+        }
+
+        ObjectFields[] objectFields = new ObjectFields[ numberOfResults ];
+
+        // Collecting ObjectFields arrays into a single array:
+        int destPos = 0; // destination position
+        for ( ObjectFields[] of : objFieldsList )
+        {
+            System.arraycopy( of, 0, objectFields, destPos, of.length );
+            destPos += of.length;
+        }
+
+        return objectFields;
+    }
+
+
+    /***
+     * Searches repository with conditions specified by propertiesAndValues using comparisonOperator, e.g. 'has', 'eq'.
+     * The parameter 'namespace' if not null is used to limit the result set on pid containing namespace. Beware that
+     * the comparison operator in this case cannot be 'eq'.
+     *
+     * @param resultFields
+     * @param conditions
+     * @param maximumResults
+     *
+     * @return An array of ObjectFields.
+     */
+    ObjectFields[] searchRepositoryNew( String[] resultFields, List< OpenSearchCondition > conditions, int maximumResults )
+    {
+        Condition[] cond = new Condition[ conditions.size() ];
+	int i=0;
+        for( OpenSearchCondition condition : conditions )
+        {
+	    TargetFields field = (TargetFields)condition.getField();
+	    String value = condition.getValue();
+	    // Notice: ComparisonOperator from Fedora is not an enum, and as such has no function valueOf().
+	    //         It do, however, has a function fromString() which seems to do the same - hopefully.
+	    // \note: It is possible, that the below conversion fails due to differnces between 
+	    //       comparison operators in fedora and opensearch.
+	    ComparisonOperator comp = ComparisonOperator.fromString( condition.getOperator().toString() );
+            cond[i++] = new Condition( field.fieldname(), comp, value );
         }
 
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
