@@ -165,7 +165,7 @@ public class JSFedoraPIDSearch {
 	conditions.add( condition );
 
 	// \note: 10000 below is a hardcodet estimate on max amount of results:
-	List< String > resultList = repository.getIdentifiersNew( conditions, 10000 );
+	List< String > resultList = repository.getIdentifiers( conditions, 10000 );
 
 	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
 	String[] sa = new String[resultList.size()];

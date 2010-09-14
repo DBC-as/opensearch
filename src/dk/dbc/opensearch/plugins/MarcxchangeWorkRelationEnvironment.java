@@ -200,7 +200,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 	    // Add the default Namespace-condition:
 	    conditions.add( new OpenSearchCondition( FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, "work:*" ) );
 
-	    searchResultList = objectRepository.getIdentifiersNew( conditions, 10000 );
+	    searchResultList = objectRepository.getIdentifiers( conditions, 10000 );
 
             log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
 

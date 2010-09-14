@@ -118,45 +118,7 @@ public interface IObjectRepository
      * 
      * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
      */
-    public List< String > getIdentifiersNew( List< OpenSearchCondition > conditions, int maximumResults );
-
-
-    /** 
-     * Searches the object repository using the a {@link List} of
-     * {@code searchStrings} as query, limiting the search to the
-     * {@link List} of {@code searchableFields} and limiting {@link
-     * List} of returned identifiers with {@code maximumResult}
-     * 
-     * @param resultSearchFields {@link List} of {@link Pair}s
-     * that contains pairwise search Strings and the fields to search
-     * for that String in
-     * @param maximumResults integer limiting the returned {@link List}
-     * of identifiers
-     * 
-     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
-     */
-    public List< String > getIdentifiers( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults );
-
-
-    /** 
-     * Searches the object repository using the a {@link List} of
-     * {@code searchStrings} as query, limiting the search to the
-     * {@link List} of {@code searchableFields} and limiting {@link
-     * List} of returned identifiers with {@code maximumResult}. 
-     * The {@code searchStrings} can have wildcards at the beginning
-     * or at the end
-     * The search only returns members of the {@code namespace}
-     * 
-     * @param resultSearchFields {@link List} of {@link Pair}s
-     * that contains pairwise search Strings and the fields to search
-     * for that String in
-     * @param maximumResults integer limiting the returned {@link List}
-     * of identifiers
-     * @param namespace {@link String} is the namespace to search in 
-     * 
-     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
-     */
-    public List< String > getIdentifiersWithNamespace( List< Pair< TargetFields, String > > resultSearchFields, int maximumResults, String namespace );
+    public List< String > getIdentifiers( List< OpenSearchCondition > conditions, int maximumResults );
 
 
     /**
