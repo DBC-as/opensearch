@@ -29,6 +29,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
@@ -188,15 +189,18 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         List<PID> pidList = new ArrayList<PID>();
         List<String> pidStringList = new ArrayList<String>();
         List<String> searchResultList = new ArrayList<String>();
-        List<Pair< TargetFields, String > > tempList = new ArrayList< Pair< TargetFields, String > >();
 
         for ( Pair< TargetFields, String > pair : searchList )
         {
             num++;
-            tempList.clear();
-            tempList.add( pair );
 
-            searchResultList = objectRepository.getIdentifiersWithNamespace( tempList, 10000, "work" );
+	    List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >( 2 );
+	    // Add the search Condition:
+	    conditions.add( new OpenSearchCondition( pair.getFirst(), OpenSearchCondition.Operator.EQUALS, pair.getSecond() ) );
+	    // Add the default Namespace-condition:
+	    conditions.add( new OpenSearchCondition( FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, "work:*" ) );
+
+	    searchResultList = objectRepository.getIdentifiersNew( conditions, 10000 );
 
             log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
 
