@@ -144,6 +144,16 @@ public class JSFedoraPIDSearch {
     }
 
 
+    /**
+     *  Given a {@code targetField} an {@code operator} and a {@code searchValue} this functions performs
+     *  a search and returns the matching PIDs.
+     *
+     *  @param targetField the field in which to search. 
+     *  @param operator the operator to use for comparison.
+     *  @param searchValue the value to search for in the {@code targetField}.
+     *
+     *  @return An array of {@link String}s containg PIDs matching the search-query.
+     */
     private String[] single_field_search( TargetFields targetField, OpenSearchCondition.Operator operator,  String searchValue)
     {
 	log.info( String.format( "Entering with targetfield=[%s] operator=[%s] value=[%s]", targetField, operator, searchValue ) );
@@ -170,36 +180,15 @@ public class JSFedoraPIDSearch {
 	
     }
 
+    /**
+     * A wrapper for {@link single_field_search( TargetFields, OpenSearchCondition.Operator, String)},
+     * forcing the operator to {@link OpenSearchCondition.Operator.EQUALS}.
+     */
     private String[] single_field_search( TargetFields targetField, String searchValue )
     {
 	// Add default operator EQUALS:
 	return single_field_search( targetField, OpenSearchCondition.Operator.EQUALS, searchValue );
     }
-
-    // private String[] single_field_search( TargetFields targetField, String searchValue )
-    // {
-    // 	log.info( String.format( "Entering with targetfield=%s and value=%s", targetField, searchValue ) );
-
-    //     //call the IObjectRepository.getIdentifiers method with the above values,
-    //     //no cutIdentifier and the number of submitters in the maximumResults 
-    //     List<Pair<TargetFields, String>> searchFields = new ArrayList<Pair<TargetFields, String>>();
-    //     searchFields.add( new Pair<TargetFields, String>( targetField, searchValue ) );
-
-    // 	// \note: 10000 below is a hardcodet estimate on max amount of results:
-    //     List<String> resultList = repository.getIdentifiersNew( searchFields, 10000 );
-
-    // 	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
-    // 	String[] sa = new String[resultList.size()];
-    // 	int counter = 0;
-    // 	for( String str : resultList ) 
-    // 	{
-    // 	    log.info( String.format( "returning pid: %s", str ) );
-    // 	    sa[counter++] = str;
-    // 	}
-    //     log.info( String.format( "returned %s results", counter ) );
-    // 	return sa;
-
-    // }
 
 
     /**
