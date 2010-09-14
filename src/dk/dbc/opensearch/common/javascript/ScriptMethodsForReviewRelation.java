@@ -70,40 +70,4 @@ public class ScriptMethodsForReviewRelation {
 
     }
 
-    /**
-     * Method exposed to the script for finding pids of object in the objectrepository
-     * @param value the value to match
-     * @return the pids of the objects containing the value in the specified term
-     */
-    public String[] getPID( String value )
-    {
-
-        log.info( String.format( "getPID called with: %s ", value ) );
-        //convert field to the TargetFields type
-        //create a List<Pair<TargetFields, String>> with the converted field and
-        //the value
-        // TargetFields targetField = (TargetFields)FedoraObjectFields.IDENTIFIER;
-        TargetFields targetField = (TargetFields)FedoraObjectFields.PID;
-        String searchValue = "*:" + value;
-        //call the IObjectRepository.getIdentifiers method with the above values,
-        //no cutIdentifier and the number of submitters in the maximumResults 
-        List<Pair<TargetFields, String>> searchFields = new ArrayList<Pair<TargetFields, String>>();
-        searchFields.add( new Pair<TargetFields, String>( targetField, searchValue ) );
-
-	// \note: 10000 below is a hardcodet estimate on max amount of results:
-        List<String> resultList = repository.getIdentifiers( searchFields, 10000 );
-
-	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
-	String[] sa = new String[resultList.size()];
-	int counter = 0;
-	for( String str : resultList ) 
-	{
-	    log.info( String.format( "returning pid: %s", str ) );
-	    sa[counter++] = str;
-	}
-        log.info( String.format( "getPID returned %s results", counter ) );
-	return sa;
-	
-    }
-
 }
