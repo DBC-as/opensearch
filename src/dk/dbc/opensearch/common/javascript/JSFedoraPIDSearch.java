@@ -3,6 +3,7 @@ package dk.dbc.opensearch.common.javascript;
 
 import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.common.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.common.types.TargetFields;
 import dk.dbc.opensearch.common.types.Pair;
 
@@ -25,7 +26,16 @@ public class JSFedoraPIDSearch {
     public String[] pid( String searchValue )
     {
         log.info( String.format( "PID called with: %s ", searchValue ) );
-	return single_field_search( (TargetFields)FedoraObjectFields.PID, searchValue );
+	if ( contains_wildcard( searchValue ) )
+	{
+	    // Use HAS-operator:
+	    return single_field_search( (TargetFields)FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, searchValue );
+	}
+	else
+	{
+	    // default: EQUALS-operator
+	    return single_field_search( (TargetFields)FedoraObjectFields.PID, searchValue );
+	}
     }
     public String[] label( String searchValue )
     {
@@ -134,17 +144,18 @@ public class JSFedoraPIDSearch {
     }
 
 
-    private String[] single_field_search( TargetFields targetField, String searchValue )
+    private String[] single_field_search( TargetFields targetField, OpenSearchCondition.Operator operator,  String searchValue)
     {
-	log.info( String.format( "Entering with targetfield=%s and value=%s", targetField, searchValue ) );
-
+	log.info( String.format( "Entering with targetfield=[%s] operator=[%s] value=[%s]", targetField, operator, searchValue ) );
+	
         //call the IObjectRepository.getIdentifiers method with the above values,
         //no cutIdentifier and the number of submitters in the maximumResults 
-        List<Pair<TargetFields, String>> searchFields = new ArrayList<Pair<TargetFields, String>>();
-        searchFields.add( new Pair<TargetFields, String>( targetField, searchValue ) );
+	OpenSearchCondition condition = new OpenSearchCondition( targetField, operator, searchValue );
+	List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >(1);
+	conditions.add( condition );
 
 	// \note: 10000 below is a hardcodet estimate on max amount of results:
-        List<String> resultList = repository.getIdentifiers( searchFields, 10000 );
+	List< String > resultList = repository.getIdentifiersNew( conditions, 10000 );
 
 	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
 	String[] sa = new String[resultList.size()];
@@ -156,10 +167,70 @@ public class JSFedoraPIDSearch {
 	}
         log.info( String.format( "returned %s results", counter ) );
 	return sa;
-
+	
     }
 
+    private String[] single_field_search( TargetFields targetField, String searchValue )
+    {
+	// Add default operator EQUALS:
+	return single_field_search( targetField, OpenSearchCondition.Operator.EQUALS, searchValue );
+    }
 
+    // private String[] single_field_search( TargetFields targetField, String searchValue )
+    // {
+    // 	log.info( String.format( "Entering with targetfield=%s and value=%s", targetField, searchValue ) );
+
+    //     //call the IObjectRepository.getIdentifiers method with the above values,
+    //     //no cutIdentifier and the number of submitters in the maximumResults 
+    //     List<Pair<TargetFields, String>> searchFields = new ArrayList<Pair<TargetFields, String>>();
+    //     searchFields.add( new Pair<TargetFields, String>( targetField, searchValue ) );
+
+    // 	// \note: 10000 below is a hardcodet estimate on max amount of results:
+    //     List<String> resultList = repository.getIdentifiersNew( searchFields, 10000 );
+
+    // 	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
+    // 	String[] sa = new String[resultList.size()];
+    // 	int counter = 0;
+    // 	for( String str : resultList ) 
+    // 	{
+    // 	    log.info( String.format( "returning pid: %s", str ) );
+    // 	    sa[counter++] = str;
+    // 	}
+    //     log.info( String.format( "returned %s results", counter ) );
+    // 	return sa;
+
+    // }
+
+
+    /**
+     *  Tests whether a {@link String} contains one of the two wildcards "*"
+     *  or "?".  There is no possibility for escaping the two
+     *  wildcards.
+     *
+     * @param s A {@link String}, not null.
+     *
+     * @return true if the {@link String} contains either of the wildcards. False otherwise.
+     *
+     * @throws IllegalArgumentException if the {@link String} is null.
+     */
+    private boolean contains_wildcard( String s )
+    {
+	if ( s == null )
+	{
+	    throw new IllegalArgumentException( "The input String can not be null." );
+	}
+
+	// test for wildcard "*":
+	boolean contains = s.contains("*");
+
+	// If no "*" found, test for wildcard "?"
+	if ( !contains )
+	{
+	    s.contains("?");
+	}
+
+	return contains;
+    }
 
 
 }

@@ -876,20 +876,74 @@ public class FedoraObjectRepository implements IObjectRepository
      */
     ObjectFields[] searchRepositoryNew( String[] resultFields, List< OpenSearchCondition > conditions, int maximumResults )
     {
-        Condition[] cond = new Condition[ conditions.size() ];
-	int i=0;
+	// We will convert from OpenSearchCondition to Condition in two steps:
+	// 1) converting operators and test validity of search-value
+	// 2) put valid conditions into a Condition[].
+	// 
+
+	// Convert operators and test validity of search values
+	List< Condition > validConditions = new ArrayList< Condition >( conditions.size() );
         for( OpenSearchCondition condition : conditions )
         {
 	    TargetFields field = (TargetFields)condition.getField();
 	    String value = condition.getValue();
+
+	    // Set the fedora ComparisonOperator:
 	    // Notice: ComparisonOperator from Fedora is not an enum, and as such has no function valueOf().
 	    //         It do, however, has a function fromString() which seems to do the same - hopefully.
-	    // \note: It is possible, that the below conversion fails due to differnces between 
-	    //       comparison operators in fedora and opensearch.
-	    ComparisonOperator comp = ComparisonOperator.fromString( condition.getOperator().toString() );
-            cond[i++] = new Condition( field.fieldname(), comp, value );
+	    String compStr = "eq";
+	    switch ( condition.getOperator() )
+	    {
+	    case EQUALS:
+		compStr = "eq";
+		break;
+	    case CONTAINS:
+		compStr = "has";
+		break;
+	    case GREATER_THAN:
+		compStr = "gt";
+		break;
+	    case GREATER_OR_EQUAL:
+		compStr = "ge";
+		break;
+	    case LESS_THAN:
+		compStr = "lt";
+		break;
+	    case LESS_OR_EQUAL:
+		compStr = "le";
+		break;
+	    default:
+		compStr = "eq";
+	    }
+	    ComparisonOperator comp = ComparisonOperator.fromString( compStr );
+	    log.info( String.format( "Setting fedora-condition: field[%s] comp[%s] value[%s]",
+				      field.fieldname(), comp.toString(), value) );
+
+	    if ( value.isEmpty() ) 
+	    {
+		log.warn( "Ignoring condition: We do not allow searches with empty search values." );
+		continue;
+	    }
+	    
+	    validConditions.add( new Condition( field.fieldname(), comp, value ) );
         }
 
+	// If there are no valid conditions, there is no need to perform the search:
+	if ( validConditions.size() == 0 ) 
+	{
+	    // \todo: I do not like to return in a middle of a function!
+	    return new ObjectFields[ 0 ];
+	}
+
+	// Convert validConditions-list into a Condition-array:
+        Condition[] cond = new Condition[ validConditions.size() ];
+	int i=0;
+	for ( Condition condition : validConditions )
+	{
+	    cond[i++] = condition;
+	}
+       
+	// Create query end result:
         FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
         FieldSearchResult fsr = null;
 
