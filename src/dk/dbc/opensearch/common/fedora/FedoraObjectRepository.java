@@ -440,7 +440,7 @@ public class FedoraObjectRepository implements IObjectRepository
 	// since this function disallows values < 1.
 	NonNegativeInteger maxRes = new NonNegativeInteger( Integer.toString( maximumResults ) );
 
-        ObjectFields[] objectFields = searchRepositoryNew( resultFields, conditions, maximumResults );
+        ObjectFields[] objectFields = searchRepository( resultFields, conditions, maximumResults );
 	
         int ofLength = objectFields.length;
         List< String > pids = new ArrayList< String >( ofLength );
@@ -460,142 +460,12 @@ public class FedoraObjectRepository implements IObjectRepository
      * the comparison operator in this case cannot be 'eq'.
      *
      * @param resultFields
-     * @param propertiesAndVaulues
-     * @param comparisonOperator In most case this should be 'has'. 'eq' cannot be used with namespace not null!!!
-     * @param maximumResults
-     * @param namespace Used to limit on pid containing namespace.
-     * @return An array of ObjectFields.
-     */
-    ObjectFields[] searchRepository( String[] resultFields, List< Pair< TargetFields, String > > propertiesAndVaulues, String comparisonOperator, int maximumResults, String namespace )
-    {
-        // \Todo: check needed on the operator
-        int size = propertiesAndVaulues.size();
-        ComparisonOperator comp = ComparisonOperator.fromString( comparisonOperator );
-
-        Condition[] cond;
-        log.debug( String.format( "Matching namespace: %s", namespace ) );
-        if ( namespace != null )
-        {
-            cond = new Condition[ size + 1 ];
-        }
-        else
-        {
-            cond = new Condition[ size ];
-        }
-
-        int i = 0;
-        for( ; i < size; i++ )
-        {
-            Pair< TargetFields, String > pair = propertiesAndVaulues.get( i );
-            TargetFields property = pair.getFirst();
-            String value = pair.getSecond();
-            cond[i] = new Condition( property.fieldname(), comp, value );
-        }
-
-        if ( namespace != null )
-        {
-            if ( ! namespace.endsWith( ":" ) )
-            {
-                namespace = namespace + ":*";
-            }
-            else if ( namespace.endsWith( ":" ) )
-            {
-                namespace = namespace + "*";
-            }
-
-            cond[i++] = new Condition( FedoraObjectFields.PID.fieldname(), comp, namespace );
-        }
-
-        FieldSearchQuery fsq = new FieldSearchQuery( cond, null );
-        FieldSearchResult fsr = null;
-
-        // A list to contain arrays of ObjectFields.
-        // Whenever a new array of ObjectFields are found, either from findObjects or
-        // resumeFindObjects, it is added to the list.
-        // The Arrays are later collected into a single array.
-        LinkedList< ObjectFields[] > objFieldsList = new LinkedList< ObjectFields[] >();
-        int numberOfResults = 0;
-        try
-        {
-            NonNegativeInteger maxResults = new NonNegativeInteger( Integer.toString( maximumResults ) );
-            fsr = this.fedoraHandle.findObjects( resultFields, maxResults, fsq );
-
-            numberOfResults += fsr.getResultList().length;
-            objFieldsList.push( fsr.getResultList() );
-
-            ListSession listSession = fsr.getListSession();
-            while ( listSession != null )
-            {
-                String token = listSession.getToken();
-                fsr = this.fedoraHandle.resumeFindObjects( token );
-                if ( fsr != null )
-                {
-                    numberOfResults += fsr.getResultList().length;
-                    objFieldsList.push( fsr.getResultList() );
-                    listSession = fsr.getListSession();
-                }
-                else
-                {
-                    listSession = null;
-                }
-            }
-
-            log.debug( String.format( "Result length of resultlist: %s", numberOfResults ) );
-
-        }
-        catch( ConfigurationException ex )
-        {
-            String warn = String.format( "ConfigurationException -> Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-        catch( ServiceException ex )
-        {
-            String warn = String.format( "ServiceException -> Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-        catch( MalformedURLException ex )
-        {
-            String warn = String.format( "MalformedURLException -> Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-        catch( IOException ex )
-        {
-            String warn = String.format( "IOException -> Could not conduct query: %s", ex.getMessage() );
-            log.warn( warn );
-        }
-
-        if( fsr == null )
-        {
-            log.warn( "Retrieved no hits from search, returning empty List<String>" );
-            return new ObjectFields[]{ };
-        }
-
-        ObjectFields[] objectFields = new ObjectFields[ numberOfResults ];
-
-        // Collecting ObjectFields arrays into a single array:
-        int destPos = 0; // destination position
-        for ( ObjectFields[] of : objFieldsList )
-        {
-            System.arraycopy( of, 0, objectFields, destPos, of.length );
-            destPos += of.length;
-        }
-
-        return objectFields;
-    }
-
-
-    /***
-     * Searches repository with conditions specified by propertiesAndValues using comparisonOperator, e.g. 'has', 'eq'.
-     * The parameter 'namespace' if not null is used to limit the result set on pid containing namespace. Beware that
-     * the comparison operator in this case cannot be 'eq'.
-     *
-     * @param resultFields
      * @param conditions
      * @param maximumResults
      *
      * @return An array of ObjectFields.
      */
-    ObjectFields[] searchRepositoryNew( String[] resultFields, List< OpenSearchCondition > conditions, int maximumResults )
+    ObjectFields[] searchRepository( String[] resultFields, List< OpenSearchCondition > conditions, int maximumResults )
     {
 	// We will convert from OpenSearchCondition to Condition in two steps:
 	// 1) converting operators and test validity of search-value
