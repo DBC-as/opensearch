@@ -332,12 +332,19 @@ public class FedoraHandle
 
     boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
+	log.debug( String.format( "Adding Relationship: [%s][%s] => [%s]", pid, predicate, object ) );
         long timer = 0;
 
         if( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis();
         }
+	
+	if ( pid.equals( object ) ) 
+	{
+	    log.warn( String.format( "We do not allow for a relation=[%s] to have identical subject=[%s] and object=[%s]", predicate, pid, object ) );
+	    return false;
+	}
 
         boolean ret = this.getAPIM().addRelationship( pid, predicate, object, isLiteral, datatype );
 
