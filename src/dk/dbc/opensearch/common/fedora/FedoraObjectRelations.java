@@ -306,98 +306,12 @@ public class FedoraObjectRelations
     }
 
 
-    /**
-     * Wrapper method for adding the the relationship
-     * "isMemberOfCollection" on a RELS-EXT stream of the
-     * DigitalObject designated by `pid`
-     *
-     * @param pid the pid on the DigitalObject to add the relation on
-     * @param namespace
-     *
-     * @return true iff the relationship could be added, false otherwise
-     */
-    public boolean addIsMbrOfCollRelationship( String pid, String namespace ) throws ObjectRepositoryException
-    {
-        /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
-        log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
-        String predicate = "fedora:isMemberOfCollection";
-        return addRelation( pid, predicate, namespace, true, null );
-    }
-
-
     public boolean addIsOwnedByRelationship( String pid, String namespace ) throws ObjectRepositoryException
     {
-        /** \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid() */
+        // \todo: namespace is merely a hard coded String and not a namespace+pid obtained from fedora by getnextpid()
         log.debug( String.format( "adding relationship for pid '%s' with namespace '%s'", pid, namespace ) );
         String predicate = "fedora:isOwnedBy";
         return addRelation( pid, predicate, namespace, true, null );
-    }
-
-
-    /**
-     * Method for adding relationship data
-     */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, TargetFields property_1, String value_1, TargetFields property_2, String value_2, String namespace ) throws ObjectRepositoryException
-    {
-        log.trace( String.format( "Finding objects for pid '%s' with property '%s' and value '%s'", sourcePid, property_1.fieldname(), value_1 ) );
-        String targetPid = findPropertiesPid( sourcePid, property_1, value_1, property_2, value_2 );
-        log.debug( "targetPid found: " + targetPid );
-        return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
-    }
-
-
-    /**
-     * Method for adding relationship data
-     */
-    public boolean addIsMbrOfCollRelationship( String sourcePid, TargetFields property, String value, String namespace ) throws ObjectRepositoryException
-    {
-        log.trace( String.format( "Finding objecs for pid '%s' with property '%s' and value '%s'", sourcePid, property.fieldname(), value ) );
-        String targetPid = findPropertyPid( sourcePid, property, value );
-        log.debug( "targetPid found: " + targetPid );
-        return addIsMbrOfCollRelationship( sourcePid, targetPid, namespace );
-    }
-
-
-    /**
-     * Method for adding relationship data, used by other method
-     */
-    private boolean addIsMbrOfCollRelationship( String sourcePid, String targetPid, String namespace ) throws ObjectRepositoryException
-    {
-        String relationshipObject = null;
-        String predicate = "fedora:isMemberOfCollection";
-
-        if( targetPid != null ) // object with matching 'value' on 'property' found
-        {
-            log.debug( String.format( "targetPid: %s", targetPid ) );
-            RelationshipTuple[] rel = getRelationships( targetPid, predicate );
-
-            if( rel != null ) // existing relationships found
-            {
-                log.debug( "RelationshipTuple not null; existing relationship found" );
-                relationshipObject = rel[0].getObject();
-            }
-            else // no existing relationships found -> add relationship to new RELS-EXT object
-            {
-                log.debug( "no existing relationships found" );
-                relationshipObject = getNextRelationshipObject( namespace );
-            }
-        }
-        else // no object found -> add relationship to new RELS-EXT object
-        {
-            relationshipObject = getNextRelationshipObject( namespace );
-        }
-
-        log.debug( String.format( "relationshipObject: '%s'", relationshipObject ) );
-        return addIsMbrOfCollRelationshipNewRelsExt( sourcePid, predicate, relationshipObject );
-    }
-
-
-    /**
-     * Method for adding relationship data, used by other methods
-     */
-    private boolean addIsMbrOfCollRelationshipNewRelsExt( String sourcePid, String predicate, String relationshipObject ) throws ObjectRepositoryException
-    {
-        return addRelation( sourcePid, predicate, relationshipObject, true, null );
     }
 
 
