@@ -35,12 +35,6 @@
         <arg name="entryfunction" value="isAuthorDescriptionOf"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasImage"/>
-      </args>
-    </plugin>
   </workflow>
   <workflow format="image" submitter="150016">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
