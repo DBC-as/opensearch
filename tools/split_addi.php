@@ -47,8 +47,8 @@ if ( array_key_exists('n',$options) ) $numberofrecords = $options[n];
 
 $fp = fopen($inputfile,"r");
 
-$numberofrecords = $numberofrecords * 2;
 $startrecord = $startrecord * 2;
+$numberofrecords = $numberofrecords * 2 + $startrecord;
 $count = 0;
 
 while ( $bytecount = fgets($fp) ) {
