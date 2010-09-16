@@ -36,22 +36,6 @@
       </args>
     </plugin>
   </workflow>
-  <workflow format="image" submitter="150016">
-    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
-    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
-      <args>
-        <arg name="javascript" value="xmldcharvester_beta.js"/>
-        <arg name="entryfunction" value="dcFromOso"/>
-      </args>
-    </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.Store"/>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="isImageOf"/>
-      </args>
-    </plugin>
-  </workflow>
   <workflow format="littsiden" submitter="150005">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
