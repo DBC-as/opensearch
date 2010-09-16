@@ -28,7 +28,7 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
-import dk.dbc.opensearch.common.javascript.ScriptMethodsForReviewRelation;
+import dk.dbc.opensearch.common.javascript.JSRelationFunctions;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
@@ -68,11 +68,11 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 
         // Setting the objectlist.
         JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
-        ScriptMethodsForReviewRelation scriptClass = new ScriptMethodsForReviewRelation( objectRepository );
+        JSRelationFunctions relationFunctions = new JSRelationFunctions( objectRepository );
 
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );
-        objectList.add( new Pair<String, Object>( "scriptClass", scriptClass ) );
+        objectList.add( new Pair<String, Object>( "scriptClass", relationFunctions ) );
         objectList.add( new Pair<String, Object>( "FedoraPIDSearch", fedoraPIDSearch ) );
 
         this.validateArguments( args, objectList );

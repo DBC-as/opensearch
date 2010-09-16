@@ -18,9 +18,7 @@
 */
 
 /**
- * \file dk.dbc.opensearch.tools.ScriptsMethodsForReviewRelation
- * \brief class that contains the methods needed by the javascript invoked in
- * the ReviewRelation plugin
+ *
  */
 package dk.dbc.opensearch.common.javascript;
 
@@ -38,21 +36,24 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-public class ScriptMethodsForReviewRelation {
+public class JSRelationFunctions {
 
-    private Logger log = Logger.getLogger( ScriptMethodsForReviewRelation.class );
+    private Logger log = Logger.getLogger( JSRelationFunctions.class );
 
     private IObjectRepository repository;
-    public ScriptMethodsForReviewRelation( IObjectRepository repository ) 
+    public JSRelationFunctions( IObjectRepository repository ) 
     {
         this.repository = repository;
     }
 
     /**
      * Method exposed to the script for creating relations
+     * 
      * @param object the pid of the object of the relation
      * @param relation the name of the relation to make
      * @param subject the pid of the target of the relation
+     * 
+     * @return true if the relation is created, false otherwise
      */
     public boolean createRelation( String subject, String relation, String object)
     {
