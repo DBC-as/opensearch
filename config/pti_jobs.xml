@@ -12,15 +12,19 @@
     <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="dbc" format="matvurd" alias="docbook">
+  <job submitter="870976" format="matvurd" alias="review">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="dbc" format="anmeld" alias="danmarcxchange">
+  <job submitter="870971" format="anmeld" alias="review">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>  
-  <job submitter="dbc" format="artikler" alias="danmarcxchange">
+  <job submitter="870971" format="artikler" alias="danmarcxchange">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>  
+  <job submitter="159002" format="lokalbibl" alias="danmarcxchange">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>  
