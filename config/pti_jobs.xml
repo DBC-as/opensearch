@@ -76,4 +76,8 @@
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
+  <job submitter="721700" format="katalog" alias="danmarcxchange">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>
 </job_list>
