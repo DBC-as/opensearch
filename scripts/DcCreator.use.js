@@ -13,6 +13,7 @@ const DcCreator = function(){
   var ting = XmlNamespaces.ting;
   var oai_dc = XmlNamespaces.oai_dc;
   var marcx = XmlNamespaces.marcx;
+  var oso = XmlNamespaces.oso;
 
   var that = {};
 
@@ -21,8 +22,10 @@ const DcCreator = function(){
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
 
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")).replace(/\u00a4/, ""), "title", dc );
-    if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
+    for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
+    }
+	if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
@@ -252,6 +255,32 @@ const DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
+
+    Log.debug( "RLO, DCXML: " + dcXml);
+
+    var dcString = String(dcXml);
+
+    Log.debug( "RLO, DCSTRING: " + dcString);
+
+    return dcString;
+
+  };
+
+  that.createDcFromOso = function ( xml ) {
+
+    var originalXml = XmlUtil.fromString ( xml );
+
+    Log.debug( "RLO, ORIGINALXML: " + originalXml);
+
+    var dcXml = DcCreator.createDcObject();
+
+      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::title), "title", dc );
+
+      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::creator), "creator", dc );
+
+      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::identifier), "identifier", dc );
+
+      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::type), "type", dc );
 
     Log.debug( "RLO, DCXML: " + dcXml);
 
