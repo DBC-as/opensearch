@@ -154,6 +154,7 @@ public final class DatadockManager
                 log.error( error, re );
             }
         }
+
         //checking for finished jobs in the pool
         pool.checkJobs();
 

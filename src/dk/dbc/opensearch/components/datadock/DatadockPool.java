@@ -239,5 +239,11 @@ public class DatadockPool
         
         threadpool.shutdown();
         threadpool.awaitTermination(1, TimeUnit.DAYS);
+
+	// courtesy checkJobs - must be called in order to make sure that 
+	// all jobs are finished correctly.
+	this.checkJobs();
+
+        log.trace( "shutdown() called - leaving" );
     }
 }
