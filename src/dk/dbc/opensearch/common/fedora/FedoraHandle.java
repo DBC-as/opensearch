@@ -153,7 +153,7 @@ public class FedoraHandle
         if( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s f) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE ingest Timing: ( %s f) %s", this.getClass(), timer ) );
         }
 
         return pid;
@@ -174,7 +174,7 @@ public class FedoraHandle
         if( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE uploadFile Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return msg;
@@ -195,7 +195,7 @@ public class FedoraHandle
         if( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE modify Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return timestamp;
@@ -214,7 +214,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE addDatastream Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return returnedSID;
@@ -236,7 +236,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return ds.getStream();
@@ -256,7 +256,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return res;
@@ -276,7 +276,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return res;
@@ -297,7 +297,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         if ( pidlist == null )
@@ -323,7 +323,7 @@ public class FedoraHandle
         if( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return tuples;
@@ -351,7 +351,7 @@ public class FedoraHandle
         if( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE addRelation Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return ret;
@@ -372,7 +372,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE purgeRelation Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return ret;
@@ -393,7 +393,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE findObjects Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return fsr;
@@ -413,7 +413,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE resumeFindObjects Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return fsr;
@@ -436,7 +436,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return rt;
@@ -457,7 +457,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return rt;
@@ -478,7 +478,7 @@ public class FedoraHandle
         if ( log.isDebugEnabled() )
         {
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "Timing: ( %s ) %s", this.getClass(), timer ) );
+            log.trace( String.format( "HANDLE purgeObject Timing: ( %s ) %s", this.getClass(), timer ) );
         }
 
         return timestamp;
@@ -487,6 +487,14 @@ public class FedoraHandle
 
     boolean hasObject( String identifier ) throws RemoteException
     {
+        long timer = 0;
+
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis();
+        }
+
+	boolean retValue = true;
         try
         {
             DatastreamDef[] d = this.fea.listDatastreams( identifier, null );
@@ -495,9 +503,15 @@ public class FedoraHandle
         catch ( IOException ioe )
         {
             log.info( String.format( "Could not list datastreams for object %s. We take this as an indication that the object doesn't exist", identifier ) );
-            return false;
+            retValue = false;
         }
 
-        return true;
+        if ( log.isDebugEnabled() )
+        {
+            timer = System.currentTimeMillis() - timer;
+            log.trace( String.format( "HANDLE hasObject Timing: ( %s ) %s", this.getClass(), timer ) );
+        }
+
+        return retValue;
     }
 }

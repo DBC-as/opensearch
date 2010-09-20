@@ -80,14 +80,20 @@ public class MarcxchangeWorkRelation implements IPluggable
 
 	MarcxchangeWorkRelationEnvironment env = (MarcxchangeWorkRelationEnvironment)ienv;
 
+	long sp_timer = System.currentTimeMillis();
 	List< Pair< TargetFields, String > > searchPairs = env.getSearchPairs( cargo );
+	sp_timer = System.currentTimeMillis() - sp_timer;
+	log.trace( String.format( "searchPairs Timing: time: %s", sp_timer ) );  
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );
 
+	long run_timer = System.currentTimeMillis();
 	CargoContainer returnCargo = null;
 	synchronized (this )
 	{
 	    returnCargo = env.run( cargo, searchPairs );
 	}
+        run_timer = System.currentTimeMillis() - run_timer;
+	log.trace( String.format( "run Timing: time: %s", run_timer ) );  
 
 	return returnCargo;
     }

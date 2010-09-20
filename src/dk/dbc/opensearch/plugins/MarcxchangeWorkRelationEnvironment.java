@@ -102,22 +102,34 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
     public CargoContainer run( CargoContainer cargo, List< Pair< TargetFields, String > > searchPairs ) throws PluginException
     {
 
+	long gwl_timer = System.currentTimeMillis();
         List< PID > pidList = getWorkList( searchPairs );
+	gwl_timer = System.currentTimeMillis() - gwl_timer;
+	log.trace( String.format( "KULMULE getWorkList Timing: time: %s", gwl_timer ) );  
 
         log.debug( String.format( "length of pidList: %s", pidList.size() ) );
 
+	long cm_timer = System.currentTimeMillis();
         PID workPid = checkMatch( cargo, pidList );
+	cm_timer = System.currentTimeMillis() - cm_timer;
+	log.trace( String.format( "KULMULE checkMatch Timing: time: %s", cm_timer ) );  
 
         if( workPid == null )
         {
             log.info( "no matching work found creating and storing one" );
+	    long casw_timer = System.currentTimeMillis();
             workPid = createAndStoreWorkobject( cargo );
+	    casw_timer = System.currentTimeMillis() - casw_timer;
+	    log.trace( String.format( "KULMULE createAndStoreWorkobject Timing: time: %s", casw_timer ) );  
         }
 
         log.debug( "cargo pid: "+ cargo.getIdentifier().getIdentifier() );
         log.debug( "work pid: "+ workPid.getIdentifier() );
         log.debug( "Relating object and work");
+	long rpaw_timer = System.currentTimeMillis();
         relatePostAndWork( (PID)cargo.getIdentifier(), workPid );
+	rpaw_timer = System.currentTimeMillis() - rpaw_timer;
+	log.trace( String.format( "KULMULE relatePostAndWork Timing: time: %s", rpaw_timer ) );  
 
         return cargo;
 
