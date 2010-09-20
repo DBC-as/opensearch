@@ -8,7 +8,7 @@
   <xml-object alias="docbook" sub-index="opensearch-index">
     <xml-id
         name="id"
-        xpath="/ting:container/ting:fedoraPid"/>
+        xpath="/ting:container/dkabm:record/ac:identifier"/>
     <xml-property
         name="rec.id"
         xpath="/ting:container/dkabm:record/ac:identifier | /ting:container/ting:fedoraPid"
