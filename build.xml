@@ -129,6 +129,9 @@
     <antcall target="_test-single" />
   </target>
 
+  <target name="compile-javatools" depends="compile-tests">
+    <antcall target="_compile-javatools" />
+  </target>
 
   <target name="config_py">
     <antcall target="py_config" />
@@ -181,6 +184,13 @@
     </antcall>
   </target> 
 
+  <target name="emptyfedora">
+    <antcall target="_dist_emptyfedora">
+      <param name="src.dir" value="javatools/${src.dir}" />
+      <param name="project.name" value="dist/${dist.jar}_emptyfedora.jar" />
+    </antcall>
+    
+  </target>
 
   <target name="dist_datadock" depends="compile">
     <antcall target="_dist_datadock"/>
@@ -223,6 +233,10 @@
 
   <target name="dist_itqlquery" depends="compile-tests">
     <antcall target="_dist_itqlquery"/>
+  </target>
+
+  <target name="dist_emptyfedora" depends="compile-tests, compile-javatools">
+    <antcall target="_dist_emptyfedora"/>
   </target>
 
 

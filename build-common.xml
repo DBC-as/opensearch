@@ -195,6 +195,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </javac>
   </target>
 
+  <target name="_compile-javatools" description="builds javatools" >
+    <javac srcdir="javatools/src" destdir="${classes.dir}" debug="on">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
   
   <target name="py_config">
     <exec dir="${base.dir}" executable="/usr/bin/python" os="Linux">
@@ -256,11 +261,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
   <target name="_doc" description="generates documentation for ${src.dir}">
-    <!-- <taskdef name="doxygen" -->
-    <!--          classname="org.doxygen.tools.DoxygenTask" -->
-    <!--          classpath="${alp}" />     -->
-    <!-- <doxygen configFilename="${base.dir}/Doxyfile" /> -->
-    
     <javadoc access="package" author="true" classpathref="classpath" 
              destdir="${api.dir}" doctitle="OpenSearch" nodeprecated="false" 
              nodeprecatedlist="false" noindex="false" nonavbar="false" 
@@ -308,6 +308,10 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   <target name="_dist_indexchecker">
     <opensearch_dist dist.name="INDEXCHECKER" Main-Class="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain"/>
+  </target>
+ 
+  <target name="_dist_emptyfedora">
+    <opensearch_dist dist.name="EMPTYFEDORA" Main-Class="dk.dbc.opensearch.common.fedora.EmptyFedora"/>
   </target>
  
     
@@ -409,12 +413,4 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
     </cobertura-report>
   </target>
 
-  <!-- <target name="_coverage-check" depends="_coverage-test"> -->
-  <!--   <cobertura-check branchrate="100" linerate="100" totallinerate="100" datafile="${instrumented.dir}/cobertura.ser" > -->
-  <!--     < ! - -  Vi skal have fundet nogle fornuftige værdier her - - > -->
-  <!--     < ! - -  <regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/> - - > -->
-  <!--     < ! - -  <regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/> - - > -->
-  <!--   </cobertura-check> -->
-  <!-- </target> -->
-  <!--target name="toplevel.coverage-reports" depends="toplevel.coverage-test, toplevel.coverage-report-html, toplevel.coverage-report-xml" /-->
 </project>
