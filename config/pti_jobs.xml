@@ -2,14 +2,12 @@
 
 <job_list xmlns="info:opensearch.dbc.dk#">
 
-  <job submitter="dbc" format="faktalink" alias="docbook">
+  <job submitter="150017" format="faktalink" alias="review">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
-    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="dbc" format="forfatterw" alias="docbook">
+  <job submitter="150016" format="portraet" alias="review">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
-    <plugin name="docbookmerger" classname="dk.dbc.opensearch.plugins.DocbookMerger" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="870976" format="matvurd" alias="review">
