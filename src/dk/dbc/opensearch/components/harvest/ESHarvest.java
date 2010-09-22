@@ -54,8 +54,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-// \todo: Remove HarvesterInvalidStatusChangeException. It is unneccesary after the new setStatusXXX
-
 /**
  * The ES-base implementation of the Harvester-backend. The ESHarvester delivers jobs 
  * to a frontend, i.e. the DataDock, delivers data through {@link #getCargoContainer} and maintains the state of 
@@ -488,11 +486,12 @@ public final class ESHarvest implements IHarvest
      *  When a job is requested using {@link #getJobs} the status of the job in the ES-base 
      *  is changed to reflect that the job is in progress. This function releases this status,
      *  ie. remove the in progress status.
+     * 
+     *  Updates taskpackagerecordstructure.recordstatus to 2 where targetref and lbnr matches jobId.
      */
     @Override
     public void releaseJob( IIdentifier jobId ) throws HarvesterIOException
     {
-
 	ESIdentifier id = (ESIdentifier)jobId;
 
 	log.debug( String.format( "Releasing job: %s", id.toString() ) );
@@ -557,6 +556,8 @@ public final class ESHarvest implements IHarvest
                 pstmt2.close();
                 conn.commit();
             }
+
+	    setTaskpackageTaskstatusAndSubstatus( id.getTargetRef(), TaskStatus.PENDING, conn );
 
 	}
         catch( SQLException sqle )
@@ -848,7 +849,7 @@ public final class ESHarvest implements IHarvest
     }
 
 
-    private void setTaskpackageTaskstatusAndSubstatus( int targetref, TaskStatus status, Connection conn ) throws SQLException, HarvesterInvalidStatusChangeException
+    private void setTaskpackageTaskstatusAndSubstatus( int targetref, TaskStatus status, Connection conn ) throws SQLException
     {
         log.info( String.format( "Setting Taskpackage.taskstatus with targetref [%s] to %s.", targetref, status ) );
 
@@ -870,16 +871,19 @@ public final class ESHarvest implements IHarvest
             default:
                 // This should not happen!
                 conn.rollback();
-		releaseConnection( conn );
-                throw new HarvesterInvalidStatusChangeException( String.format( "Unknown status for Taskpackage.taskstatus: %s", status ) );
+		// releaseConnection( conn );
+                // throw new HarvesterInvalidStatusChangeException( String.format( "Unknown status for Taskpackage.taskstatus: %s", status ) );
+		log.error( String.format( "Unknown status for Taskpackage.taskstatus: %s", status ) );
         }
 
         // lock row for update:
         PreparedStatement pstmt = conn.prepareStatement( "SELECT taskstatus, substatus " +
                                  "FROM taskpackage " +
                                  "WHERE targetreference = ? " +
+				 "AND taskstatus != ? " +
                                  "FOR UPDATE OF taskstatus, substatus" );
         pstmt.setInt( 1, targetref );
+        pstmt.setInt( 2, taskstatus );
         ResultSet rs = pstmt.executeQuery( );
 
         if ( !rs.next() )
