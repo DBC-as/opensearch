@@ -22,6 +22,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
+
 public class EmptyFedora 
 {
 
@@ -33,6 +34,8 @@ public class EmptyFedora
 
     private static List unremovablePIDs = new ArrayList< String >();
 
+    private final static int MAX_TO_REMOVE = 2004; // the last 4 is to compensate for the four fedora system objects.
+
     static {
 	unremovablePIDs.add( "fedora-system:ContentModel-3.0" );
 	unremovablePIDs.add( "fedora-system:FedoraObject-3.0" );
@@ -40,30 +43,41 @@ public class EmptyFedora
 	unremovablePIDs.add( "fedora-system:ServiceDeployment-3.0" );
     }
 
-    public EmptyFedora()
+    public EmptyFedora( boolean log )
     {
-	setupLogger();
+	if ( log )
+	{
+	    setupLogger();
+	}
 
 	setupFedora();
 
-	log.debug("Hej");
+	List< String > allObjects = getAllObjects();
+	if ( allObjects.size() > MAX_TO_REMOVE )
+	{
+	    System.out.println( String.format( "Found %s objects, but I am not allowed to remove objects if there are more than %s in the repository. Sorry.", allObjects.size(), MAX_TO_REMOVE ) );
+	    return;
+	}
 
-	List< String > PIDsStateI = getAllAtState("I");
-	List< String > PIDsStateA = getAllAtState("A");
-	List< String > PIDsStateD = getAllAtState("D");
-
-	deleteObjects( PIDsStateI );
-	deleteObjects( PIDsStateA );
-	deleteObjects( PIDsStateD );
+	deleteObjects( allObjects );
 
     }
 
     public static void main( String[] args ) 
     {
-	EmptyFedora ef = new EmptyFedora();
+	// Handle command line arguments:
+	// \todo: the above
+
+	EmptyFedora ef = new EmptyFedora( true );
     }
 
 
+    /**
+     *  Deletes all pids in the given List, except the pids stated in
+     *  the unremovablePids-list, which are fedoras internal objects.
+     * 
+     *  @param pids A list of pids represented as Strings.
+     */
     private void deleteObjects( List< String > pids )
     {
 	for ( String pid : pids )
@@ -89,22 +103,24 @@ public class EmptyFedora
 	}
     }
 
-    private List<String> getAllAtState( String state )
+
+    /**
+     * Retrieves all objects in the repository
+     * Assuming the fedora-field State only can contain one-character values.
+     * 
+     * @return a list of Strings containing all the pids in the repository.
+     */
+    private List<String> getAllObjects( )
     {
+	
 	List resList = new ArrayList< String >();
 
 	String[] resultFields = {"pid"};
 
 	List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >( 1 );
-	conditions.add( new OpenSearchCondition( FedoraObjectFields.STATE, OpenSearchCondition.Operator.EQUALS, state ) );
+	conditions.add( new OpenSearchCondition( FedoraObjectFields.STATE, OpenSearchCondition.Operator.CONTAINS, "?" ) );
 
-	ObjectFields[] oFields = repos.searchRepository( resultFields, conditions, 1000);
-
-	// String[] resultFields = {"pid"};
-	// Pair pair = new Pair< TargetFields, String >( FedoraObjectFields.STATE, state);
-	// List l = new ArrayList< Pair< TargetFields, String > >();
-	// l.add(pair);
-	// ObjectFields[] oFields = repos.searchRepository( resultFields, l, "has", 2000, null);
+	ObjectFields[] oFields = repos.searchRepository( resultFields, conditions, 3000);
 
 	int counter = 0;
 	for (ObjectFields field : oFields )
@@ -121,6 +137,10 @@ public class EmptyFedora
 	return resList;
     }
 
+    /**
+     *  Set fedora up, based on the FedoraObjectRepository.
+     *  Reads all values needed to setup fedora from the standard config file.
+     */
     private void setupFedora()
     {
 	try
@@ -134,6 +154,9 @@ public class EmptyFedora
 
     }
 
+    /**
+     *  Sets log4j up, using the values given in the standard config files.
+     */
     private static void setupLogger()
     {
         try
@@ -147,7 +170,6 @@ public class EmptyFedora
 
         log.removeAppender( "RootConsoleAppender" );
         log.addAppender( startupAppender );
-
     }
 
 }
