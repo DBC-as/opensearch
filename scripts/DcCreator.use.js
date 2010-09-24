@@ -22,10 +22,16 @@ const DcCreator = function(){
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
 
-    for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
-      dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
+//  This part is to be used with next version of work relation
+//    for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
+//      dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
+//    }
+    // Used until next version of work relation
+    if (originalXml.dkabm::record.dc::title[0] !== undefined) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
     }
-	if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
+    
+	  if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
@@ -41,6 +47,14 @@ const DcCreator = function(){
       if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
+    }
+    
+    for each (child in originalXml.dkabm::record.dcterms::spatial) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+    }
+    
+    for each (child in originalXml.dkabm::record.dcterms::temporal) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::type) {
@@ -124,6 +138,14 @@ const DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }
+    
+    for each (child in originalXml.dkabm::record.dcterms::spatial) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+    }
+    
+    for each (child in originalXml.dkabm::record.dcterms::temporal) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+    }
 
     for each (child in originalXml.dkabm::record.dc::type) {
       if (String(child.@xsi::type).match("dkdcplus:BibDK-Type")) {
@@ -200,14 +222,16 @@ const DcCreator = function(){
     Log.debug( "RLO, ORIGINALXML: " + originalXml);
 
     var dcXml = DcCreator.createDcObject();
-
-    if (String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) !== "") {
-      for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
-        dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
-      }
-    } else {
+ 
+ // Until next version of work relation
+ //   if (String(originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) !== "") {
+ //     for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
+ //       dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
+ //     }
+ //   } else {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
-    }
+ //   }
+ 
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
@@ -224,6 +248,14 @@ const DcCreator = function(){
       if (String(child).match("computerspil") || String(child).match("soundtracks")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
+    }
+    
+    for each (child in originalXml.dkabm::record.dcterms::spatial) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
+    }
+    
+    for each (child in originalXml.dkabm::record.dcterms::temporal) {
+      dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
     }
 
     for each (child in originalXml.dkabm::record.dc::type) {

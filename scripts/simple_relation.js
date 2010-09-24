@@ -43,3 +43,15 @@ function isSubjectDescriptionOf ( submitter, format, language, xml, pid ) {
 function hasSubjectDescription ( submitter, format, language, xml, pid ) {
   Relations.hasSubjectDescription ( xml, pid );
 }
+
+function isImageOf ( submitter, format, language, xml, pid ) {
+  Relations.isImageOf ( xml, pid );
+}
+
+function hasImage ( submitter, format, language, xml, pid ) {
+  Relations.hasImage ( xml, pid );
+}
+
+function hasFullText ( submitter, format, language, xml, pid ) {
+  Relations.hasFullText ( xml, pid );
+}

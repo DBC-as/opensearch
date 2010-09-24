@@ -13,6 +13,7 @@ const Relations = function() {
   var dcterms = XmlNamespaces.dcterms;
   var xsi = XmlNamespaces.xsi;
   var ting = XmlNamespaces.ting;
+  var oso = XmlNamespaces.oso;
 
   var that = {};
 
@@ -383,7 +384,7 @@ const Relations = function() {
 
       Log.info( "result: " + result );
 
-      if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
+      if (!String(result).match(/work:.*/)) {
         DbcAddiRelations.hasSubjectDescription( result, pid );
       }
     }
@@ -417,7 +418,7 @@ const Relations = function() {
 
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
-        if (String(result) !== String(pid) && !String(result).match(/work:.*/)) {
+        if (String(result).match(/150017:.*/)) {
           DbcAddiRelations.hasSubjectDescription( pid, result );
         }
       }
@@ -425,6 +426,64 @@ const Relations = function() {
     }
 
     Log.info ("End hasSubjectDescription" );
+
+  };
+
+  that.isImageOf = function ( xml, pid ) {
+
+    Log.info ("Start isImageOf" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var imageXML = XmlUtil.fromString( xml );
+
+    var identifier = String(imageXML.oso::object.oso::identifier).replace( /(.*)image\|(.*)/, "$2:$1");
+
+    Log.info( "Identifier: " + identifier );
+    Log.info( "pid: " + pid );
+
+    var results = FedoraPIDSearch.pid( identifier );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      if (!String(result).match(/work:.*/)) {
+        DbcAddiRelations.hasImage( result, pid );
+      }
+    }
+
+    Log.info ("End isImageOf" );
+
+  };
+
+  that.hasImage = function ( xml, pid ) {
+
+    Log.info ("Start hasImage" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)|(.*)/, "$2:$1image");
+
+    Log.info( "Identifier: " + identifier );
+    Log.info( "pid: " + pid );
+
+    var results = FedoraPIDSearch.pid( identifier );
+
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+
+        Log.info( "result: " + result );
+
+        var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
+
+        if (!String(result).match(/work:.*/)) {
+          DbcAddiRelations.hasImage( pid, result );
+        }
+      }
+
+    Log.info ("End hasImage" );
 
   };
 
@@ -440,6 +499,29 @@ const Relations = function() {
     DbcAddiRelations.hasSoundClip( pid, url );
 
     Log.info ("End hasSoundClip" );
+
+  };
+
+  that.hasFullText = function( xml, pid ) {
+
+    Log.info ("Start hasFullText" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    if (String(manifestationXML.*.*.*.(@tag=='n01').*.(@code=='a')) !== "") {
+      var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "[authentication]");
+    }
+    var child;
+    for each (child in manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')) {
+      if (child.match(/ARK.*/)) {
+        var url = String( "" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "");
+      }
+    }
+
+    DbcAddiRelations.hasFulltext( pid, url );
+
+    Log.info ("End hasFullText" );
 
   };
 

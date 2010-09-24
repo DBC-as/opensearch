@@ -22,6 +22,7 @@ const XmlNamespaces = function(){
     that.marcx = new Namespace ( "marcx", "http://www.bs.dk/standards/MarcXchange" );
     that.docbook = new Namespace ( "docbook", "http://docbook.org/ns/docbook" );
     that.oai_dc = new Namespace( "oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/" );
+    that.oso = new Namespace ( "oso", "http://oss.dbc.dk/ns/opensearchobjects");
 
     const const_that = that;
     return const_that;

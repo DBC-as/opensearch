@@ -38,3 +38,16 @@ function dcFromDkabm( xml )
     return dc;
 
 }
+
+function dcFromOso( xml )
+{
+
+    Log.info( "RLO: Entering javascript dcFromOso" );
+
+    var dc = DcCreator.createDcFromOso ( xml ); 
+
+    Log.info( "RLO: Leaving javascript" );
+
+    return dc;
+
+}
