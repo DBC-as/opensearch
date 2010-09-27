@@ -354,7 +354,7 @@ const Relations = function() {
 
           Log.info( "result: " + result );
 
-          if (!String(result).match(/work:.*/)) {
+          if (String(result).match(/150016:.*/)) {
             DbcAddiRelations.hasAuthorDescription( pid, result );
           }
         }
