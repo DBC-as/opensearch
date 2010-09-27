@@ -24,7 +24,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -74,7 +73,7 @@ public class AdministrationStreamTest
      * found in the xml.
      */
     @Test
-    public void testConstructorWithExistingStream() throws XMLStreamException, OpenSearchTransformException, SAXException, IOException
+    public void testConstructorWithExistingStream() throws XMLStreamException, SAXException, IOException
     {
         ByteArrayInputStream bais = new ByteArrayInputStream( expectedAdminStreamXML.getBytes() );
         AdministrationStream instance = new AdministrationStream( bais, true );
@@ -95,7 +94,7 @@ public class AdministrationStreamTest
      * alias, but no streams
      */
     @Test
-    public void emptySerializationFromEmptyStream() throws XMLStreamException, SAXException, IOException, OpenSearchTransformException
+    public void emptySerializationFromEmptyStream() throws XMLStreamException, SAXException, IOException
     {
         AdministrationStream instance = new AdministrationStream();
 

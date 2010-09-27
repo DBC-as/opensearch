@@ -22,8 +22,6 @@ import dk.dbc.opensearch.common.metadata.AdministrationStream;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
 import org.junit.*;
 import org.xml.sax.SAXException;
 import org.custommonkey.xmlunit.*;
@@ -70,7 +70,7 @@ public class FedoraUtilsTest// extends XMLTestCase
 
 
     @Before
-    public void SetUp() throws UnsupportedEncodingException, IOException, OpenSearchTransformException, ObjectRepositoryException, XMLStreamException, XMLStreamException, SAXException
+    public void SetUp() throws UnsupportedEncodingException, IOException, ObjectRepositoryException, XMLStreamException, XMLStreamException, SAXException, TransformerConfigurationException, TransformerException
     {
         byte[] cargoBytes = utf8Str.getBytes( "UTF-8" );
         cargo = new CargoContainer( );

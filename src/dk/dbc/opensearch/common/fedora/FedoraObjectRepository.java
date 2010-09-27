@@ -34,7 +34,6 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.ObjectIdentifier;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.common.Constants;
@@ -63,6 +62,8 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.ConfigurationException;
@@ -234,18 +235,37 @@ public class FedoraObjectRepository implements IObjectRepository
             foxml = FedoraUtils.CargoContainerToFoxml( cargo );
 
         }
-        catch ( OpenSearchTransformException ex )
-        {
-            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
         catch ( XMLStreamException ex )
         {
             String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
+        catch ( TransformerConfigurationException ex )
+        {
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch ( TransformerException ex )
+        {
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch ( SAXException ex )
+        {
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch ( IOException ex )
+        {
+            String error = String.format( "Failed in serializing CargoContainer with id '%s': %s", identifierAsString, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+
 
         String returnedobjectIdentifier = null;
         try

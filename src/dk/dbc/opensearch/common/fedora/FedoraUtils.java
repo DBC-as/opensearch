@@ -25,7 +25,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.OpenSearchTransformException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,11 +61,10 @@ public class FedoraUtils
      * @throws TransformerConfigurationException
      * @throws TransformerException
      */
-    public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws OpenSearchTransformException, ObjectRepositoryException, XMLStreamException
+    public static byte[] CargoContainerToFoxml( CargoContainer cargo ) throws ObjectRepositoryException, XMLStreamException, TransformerConfigurationException, TransformerException, SAXException, IOException
     {
         if( null == cargo.getIdentifier() )
         {
-            // throw new OpenSearchTransformException( "CargoContainerToFoxml Called with empty Identifier." );
 	    throw new IllegalStateException( "CargoContainerToFoxml Called with empty Identifier." );
         }
 
@@ -200,25 +198,25 @@ public class FedoraUtils
         {
             String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
             log.error( error );
-            throw new OpenSearchTransformException( error, ex );
+	    throw ex;
         }
         catch( TransformerException ex )
         {
             String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
             log.error( error );
-            throw new OpenSearchTransformException( error, ex );
+	    throw ex;
         }
         catch( SAXException ex )
         {
             String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
             log.error( error );
-            throw new OpenSearchTransformException( error, ex );
+	    throw ex;
         }
         catch( IOException ex )
         {
             String error = String.format( "Failed to construct foxml XML Document: %s", ex.getMessage() );
             log.error( error );
-            throw new OpenSearchTransformException( error, ex );
+	    throw ex;
         }
 
         return baos.toByteArray();
