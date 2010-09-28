@@ -23,20 +23,17 @@ public class StringLock
     Logger log = Logger.getLogger( StringLock.class );
     /**
      * inner class used for maintainence of the lock and its counter
-     * Its a pair of a lock and a counter
      */
 
     private class LockAdmin
     {
         private ReentrantLock lock;
         private int counter;
-        private long owner;
 
         LockAdmin()
         {
-            this.lock = new ReentrantLock( true ); //we try to be fair
+            this.lock = new ReentrantLock();
             this.counter = 0;
-            this.owner = 0L;
         }
 
         /**
@@ -87,44 +84,24 @@ public class StringLock
         }
 
         /**
-         * sets the owner of the lock
-         */
-        void setOwner( long id )
-        {
-            owner = id;
-        }
-
-        /**
-         * gets the owner of the lock
-         */
-        long getOwner()
-        {
-            return owner;
-        }
-
-        /**
          *  A string representation of the elements in the following format:
-         *  a string representation of the lock, the value of the counter and the
-         *  value of the threadId of the thread currently holding the lock
+         *  a string representation of the lock and the value of the counter
          *  @return a String representation of the object
          */
         @Override
         public String toString()
         {
-            return String.format( "LockPair< %s, %s, %s >", lock.toString(), counter, owner );
+            return String.format( "LockAdmin, Lock: %s, Counter: %s >", lock.toString(), counter );
         }
 
         /**
          *  Returns a unique hashcode for the specific combination
-         *  of elements in this Pair.
-         *  Notice, if you use the same two objects in the same order in
-         *  two different Pairs,
-         *  then the two Pairs will return the same hashcode.
+         *  of elements in this LockAdmin
          */
         @Override
         public int hashCode()
         {
-            return lock.hashCode() ^ counter ^ (int)owner;
+            return lock.hashCode() ^ counter;
         }
     }
 
@@ -158,7 +135,6 @@ public class StringLock
         }
         log.trace( String.format( "lock, Thread '%s' trying to get lock on pid :'%s'", Thread.currentThread().getId() ,pid  ) );
         pidLock.lock();
-        lockAdm.setOwner( Thread.currentThread().getId() );
         log.trace( String.format( "lock, Thread '%s' got lock on pid: '%s'", Thread.currentThread().getId(), pid ) );
     }
 
@@ -177,16 +153,8 @@ public class StringLock
                 throw new IllegalStateException( msg );
             }
 
-            log.trace( String.format( "unlock called by thread: '%s' when lock for pid: '%s' is owned by thread: '%s'", Thread.currentThread().getId(), pid, lockAdm.getOwner() ) );
-            if( lockAdm.getOwner() != Thread.currentThread().getId() )
-            {
-                String msg = String.format( "unlock called by thread: '%s' but lock for pid: '%s' is owned by thread: '%s'", Thread.currentThread().getId(), pid, lockAdm.getOwner() );
-                log.error( msg );
-                throw new IllegalStateException( msg );
-            }
-
-            lockAdm.decreaseCounter();
             log.info( String.format( "unlock, thread: '%s' released lock on pid: '%s'", Thread.currentThread().getId(), pid ) );
+            lockAdm.decreaseCounter();
             lockAdm.getLock().unlock();
 
             if( lockAdm.counterIsZero() )
