@@ -64,43 +64,6 @@ public class ComparablePairTest {
     }
     
 
-    @Test public void testHashCode()
-    {
-        String test = "string";
-        int testInt = 1;
-        Integer testInteger = testInt;
-        int match = test.hashCode()^ testInteger.hashCode();
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
-        assertTrue( match == one.hashCode() );
-    }
-
-
-    @Test public void testEqualsRejectsInvalidArg(){
-        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
-        ComparablePair<String, String> two = new ComparablePair<String, String>( "b", "1" );
-        ComparablePair<String, String> three = new ComparablePair<String, String>( "a", "2" );
-
-        assertFalse( one.equals( two ) );
-        assertFalse( one.equals( three ) );
-    
-    }
-
-    @Test
-    public void testEqualsRejectsOtherClass()
-    {
-        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
-        assertFalse( one.equals( "test" ) );
-    }
-
-
-    @Test public void testEqualsWorkWithValidArg(){
-        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
-        ComparablePair<String, String> two = new ComparablePair<String, String>( "a", "1" );
-
-         assertTrue( one.equals( two ) );
-    } 
-
-
     /**
      * Test of the compareTo method, when the first elements of the 
      * comparablePair are unequal 

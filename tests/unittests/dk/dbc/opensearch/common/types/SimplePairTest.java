@@ -80,6 +80,40 @@ public class SimplePairTest {
 
 
     @Test
+    public void testEquals()
+    {
+        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+
+        assertTrue( ints.equals( moreints) );
+    }
+
+    @Test public void testEqualsWorkWithValidArg(){
+        Pair<String, String> one = new Pair<String, String>( "a", "1" );
+        Pair<String, String> two = new Pair<String, String>( "a", "1" );
+
+         assertTrue( one.equals( two ) );
+    } 
+
+    @Test public void testNonEqualObjectsForPairMakesUnequalPair(){
+        Pair<String, String> one = new Pair<String, String>( "a", "1" );
+        Pair<String, String> two = new Pair<String, String>( "b", "1" );
+        Pair<String, String> three = new Pair<String, String>( "a", "2" );
+
+        assertFalse( one.equals( two ) );
+        assertFalse( one.equals( three ) );
+    }
+
+
+    @Test
+    public void testEqualsRejectsOtherClass()
+    {
+        Pair<String, String> one = new Pair<String, String>( "a", "1" );
+        assertFalse( one.equals( "test" ) );
+    }
+
+
+    @Test
     public void testHashCode()
     {
         Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
@@ -105,12 +139,4 @@ public class SimplePairTest {
     }
 
 
-    @Test
-    public void testEquals()
-    {
-        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
-        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
-
-        assertTrue( ints.equals( moreints) );
-    }
 }
