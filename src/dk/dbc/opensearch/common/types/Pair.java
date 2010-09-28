@@ -55,7 +55,7 @@ public class Pair< E, V >
     {
 	if ( first == null || second == null )
 	{
-	    throw new IllegalArgumentException( "null values are not accepted as elements in SimplePair." );
+	    throw new IllegalArgumentException( "null values are not accepted as elements in Pair." );
 	}
         this.first = first;
         this.second = second;
@@ -106,8 +106,8 @@ public class Pair< E, V >
     
     /**
      *  Returns a unique hashcode for the specific combination of elements in this Pair.
-     *  Notice, if you use the same two objects in the same order in two different SimplePairs, 
-     *  then the two SimplePairs will return the same hashcode.
+     *  Notice, if you use the same two objects in the same order in two different Pairs, 
+     *  then the two Pairs will return the same hashcode.
      */    
     @Override
     public int hashCode()

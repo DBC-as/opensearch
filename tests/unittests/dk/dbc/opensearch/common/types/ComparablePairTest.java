@@ -37,8 +37,127 @@ import static org.junit.Assert.*;
  */
 public class ComparablePairTest {
 
+    
     /**
-     * 
+     * Verify that null values are not comparable
+     */
+    @Test( expected = IllegalArgumentException.class )
+    public void testNullNotAcceptedInConstructor()
+    {
+        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", null );
+        ComparablePair<String, String> two = null;
+
+        assertTrue( ! one.equals( two ) );
+    }
+
+    /**
+     * Test of {@code toString()} according to the documentation.
+     */
+    @Test public void testToString()
+    {
+        String test = "string";
+        int testInt = 1;
+        String match = String.format( "ComparablePair< %s, %s >", test.toString(), testInt );
+        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
+        assertEquals( match, one.toString() );
+        
+    }
+    
+
+    @Test public void testHashCode()
+    {
+        String test = "string";
+        int testInt = 1;
+        Integer testInteger = testInt;
+        int match = test.hashCode()^ testInteger.hashCode();
+        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
+        assertTrue( match == one.hashCode() );
+    }
+
+
+    @Test public void testEqualsRejectsInvalidArg(){
+        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
+        ComparablePair<String, String> two = new ComparablePair<String, String>( "b", "1" );
+        ComparablePair<String, String> three = new ComparablePair<String, String>( "a", "2" );
+
+        assertFalse( one.equals( two ) );
+        assertFalse( one.equals( three ) );
+    
+    }
+
+    @Test
+    public void testEqualsRejectsOtherClass()
+    {
+        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
+        assertFalse( one.equals( "test" ) );
+    }
+
+
+    @Test public void testEqualsWorkWithValidArg(){
+        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
+        ComparablePair<String, String> two = new ComparablePair<String, String>( "a", "1" );
+
+         assertTrue( one.equals( two ) );
+    } 
+
+
+    /**
+     * Test of the compareTo method, when the first elements of the 
+     * comparablePair are unequal 
+     */
+    @Test public void testCompareToNonequalFirsts() throws IOException
+    {
+        String testSmall = "a";
+        String testLarge = "b";
+        int testInt = 1;
+
+        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( testLarge, testInt );
+        ComparablePair<String, Integer> two = new ComparablePair<String, Integer >( testSmall, testInt );
+        
+        assertTrue( one.compareTo( two ) > 0 );
+        assertTrue( two.compareTo( one ) < 0 );
+    }
+
+
+    /**
+     * Test of the compareTo method, when the first elements of the 
+     * comparablePair are equal 
+     */
+    @Test public void testCompareToEqualFirsts() //throws IOException
+    {
+        String test = "equal";
+      
+        int smallInt = 1;
+        int largeInt = 9;
+
+        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, largeInt );
+        ComparablePair<String, Integer> two = new ComparablePair<String, Integer>( test, smallInt );
+        
+        assertTrue( one.compareTo( two ) > 0 );
+        assertTrue( two.compareTo( one ) < 0 );
+    }
+
+
+    /**
+     * Testing the case where the first and the second element in in the two
+     * pairs are equal
+     */
+    @Test public void testCompareToEqualPairs()
+    {
+        String test = "equal";
+        int equal = 1;
+        
+        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, equal );
+        ComparablePair<String, Integer> two = new ComparablePair<String, Integer>( test, equal );
+    
+        assertTrue( 0 == one.compareTo( two ) );
+        assertTrue( 0 == two.compareTo( one ) );
+    }
+
+
+    /**
+     * Test that an array of ComparablePair objects can be sorted
+     * according to the contents of {@code first}.
      */
     @Test public void testSortableOnFirst(){
         ArrayList< ComparablePair<String, Integer> > apairlist =
@@ -58,6 +177,11 @@ public class ComparablePairTest {
         assertEquals( (Object)apairlist.get( 2 ).getSecond(), 2 );
     }
 
+    /**
+     * Test that an array of ComparablePair objects can be sorted
+     * according to the contents of {@code first}, and then {@code
+     * second}
+     */
     @Test public void testSortableOnSecond(){
         ArrayList< ComparablePair<String, Integer> > apairlist =
             new ArrayList< ComparablePair<String, Integer> >();
@@ -70,120 +194,5 @@ public class ComparablePairTest {
       
         assertEquals( (Object)apairlist.get( 0 ).getSecond(), 1 );
         assertEquals( (Object)apairlist.get( 1 ).getSecond(), 2 );
-    }
-
-    /**
-     * Verify that null values are not comparable
-     */
-    @Test( expected = IllegalArgumentException.class )
-    public void testNullNotAcceptedInConstructor()
-    {
-        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", null );
-        ComparablePair<String, String> two = null;//new ComparablePair<String, String>( "a", null );
-
-        assertTrue( ! one.equals( two ) );
-    }
-
-    @Test public void testEqualsWorkWithValidArg(){
-        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
-        ComparablePair<String, String> two = new ComparablePair<String, String>( "a", "1" );
-
-         assertTrue( one.equals( two ) );
-    } 
-    
-    @Test public void testEqualsRejectsInvalidArg(){
-        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
-        ComparablePair<String, String> two = new ComparablePair<String, String>( "b", "1" );
-        ComparablePair<String, String> three = new ComparablePair<String, String>( "a", "2" );
-
-        assertFalse( one.equals( two ) );
-        assertFalse( one.equals( three ) );
-    
-    }
-
-    @Test
-    public void testEqualsRejectsOtherClass()
-    {
-        ComparablePair<String, String> one = new ComparablePair<String, String>( "a", "1" );
-        assertFalse( one.equals( "test" ) );
-    }
-
-    @Test public void testToString()
-    {
-        String test = "string";
-        int testInt = 1;
-        String match = String.format( "ComparablePair< %s, %s >", test.toString(), testInt );
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
-        assertEquals( match, one.toString() );
-        
-    }
-    
-    @Test public void testHashCode()
-    {
-        String test = "string";
-        int testInt = 1;
-        Integer testInteger = testInt;
-        int match = test.hashCode()^ testInteger.hashCode();
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, testInt );
-        assertTrue( match == one.hashCode() );
-    }
-
-
-    /**
-     * Test of the compareTo method, when the first elements of the 
-     * comparablePair are unequal 
-     */
-
-    @Test public void testCompareToNonequalFirsts() throws IOException
-    {
-        String testSmall = "a";
-        String testLarge = "b";
-        int testInt = 1;
-
-       
-
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( testLarge, testInt );
-        ComparablePair<String, Integer> two = new ComparablePair<String, Integer >( testSmall, testInt );
-        
-        assertTrue( one.compareTo( two ) > 0 );
-        assertTrue( two.compareTo( one ) < 0 );
-
-    }
-  /**
-     * Test of the compareTo method, when the first elements of the 
-     * comparablePair are equal 
-     */
-
-    @Test public void testCompareToEqualFirsts() //throws IOException
-    {
-        String test = "equal";
-      
-        int smallInt = 1;
-        int largeInt = 9;
-       
-
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, largeInt );
-        ComparablePair<String, Integer> two = new ComparablePair<String, Integer>( test, smallInt );
-        
-        assertTrue( one.compareTo( two ) > 0 );
-        assertTrue( two.compareTo( one ) < 0 );
-
-    }
-
-    /**
-     * Testing that case where the first and the second element is in the two
-     * pairs are equal
-     */
-
-    @Test public void testCompareToEqualPairs()
-    {
-        String test = "equal";
-        int equal = 1;
-        
-        ComparablePair<String, Integer> one = new ComparablePair<String, Integer>( test, equal );
-        ComparablePair<String, Integer> two = new ComparablePair<String, Integer>( test, equal );
-    
-        assertTrue( 0 == one.compareTo( two ) );
-        assertTrue( 0 == two.compareTo( one ) );
     }
 }

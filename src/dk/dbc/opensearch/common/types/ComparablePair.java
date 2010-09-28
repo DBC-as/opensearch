@@ -31,7 +31,7 @@ package dk.dbc.opensearch.common.types;
  * {@code http://java.sun.com/javase/6/docs/api/java/util/Comparator.html}.
  * Please bear in mind, that {@link java.lang.Comparable} is used to define
  * the natural sort order of a class. In contrast,
- * java.util.Comparator is used to define an alternative sort order for
+ * {@link java.util.Comparator} is used to define an alternative sort order for
  * a class.
  *
  * @param <E> type that extends {@link Comparable} for that type
