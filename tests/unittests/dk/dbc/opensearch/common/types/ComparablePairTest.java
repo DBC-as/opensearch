@@ -33,11 +33,25 @@ import static org.junit.Assert.*;
 
 
 /**
- * 
+ *  Many tests that could be performed in this class are not. Since
+ *  this class inherits from {@link Pair}, these tests naturally
+ *  belongs in that class. There is therefore no common sense in
+ *  trying to create and maintain tests for i.e. {@code getFirst()}
+ *  since this test more naturally belongs in the {@link Pair} class.
+ *
+ *  The tests in this suite is ordered he following way:
+ *  * Tests for constructor
+ *  * Tests for toString()
+ *  * Tests for compareTo()
+ *  * Tests to check compareTo()'s behaviour using a sort-function. 
+ *
  */
 public class ComparablePairTest {
 
     
+    /**
+     *  Constructor test
+     */ 
     @Test( expected = IllegalArgumentException.class )
     public void testNullNotAcceptedInConstructorFirst()
     {
@@ -49,6 +63,9 @@ public class ComparablePairTest {
         assertTrue( one.equals( two ) );
     }
 
+    /**
+     *  Constructor test
+     */ 
     @Test( expected = IllegalArgumentException.class )
     public void testNullNotAcceptedInConstructorSecond()
     {
@@ -73,7 +90,10 @@ public class ComparablePairTest {
         
     }
     
-
+    /**
+     * Test for NullPointerException when comparing a null to a
+     * ComparablePair.
+     */
     @Test( expected = NullPointerException.class )
     public void testCompareToNull() throws IOException
     {
