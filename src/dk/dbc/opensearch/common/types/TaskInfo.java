@@ -75,26 +75,47 @@ public final class TaskInfo
      * In the XML Document an info-tag must be present, containing the following attributes:
      * "submitter", "format", "language", "mimetype".
      * "submitter" and "format" are mandatory and must contain values, whereas "language" and "mimetype" are optional.
-     * If no "language" attribute or an empty "language" attribute are given, the "language" value will default to "da".
-     * If no "mimetype" attribute or an empty "mimetype" attribute are given, 
-     * the "mimetype" value will default to "xml".
-     * If any other than the four above stated attributes are given, an IllegalArgumentException will be thrown.
-     * If the XML does not contain reference and info tags an IllegalArgumentException will be thrown.
-     * If the either the identifer or the referenceData are null, an IllegalStateException will be thrown.
-     * 
+     *
+     * <ul>
+     * <li> If no "language" attribute or an empty "language" attribute is given, 
+     * the "language" value will default to "da".
+     * <li> If no "mimetype" attribute or an empty "mimetype" attribute is given, 
+     * the "mimetype" value will default to "text/xml".
+     * </ul>
+     *
      * @param identifier the identifier of the data of the job
      * @param referenceData the data concerning the job
      * 
+     * @throws IllegalArgumentException in any of the three cases described below:
+     * <ul>
+     * <li> If any other than the four above stated attributes are given.
+     * <li> If the XML does not contain reference and info tags.
+     * <li> If either the identifer or the referenceData are null.
+     * </ul>
      */
-    public TaskInfo( IIdentifier identifier, Document referenceData )
+    public TaskInfo( IIdentifier identifier, Document referenceData ) throws IllegalArgumentException
     {
+        if ( identifier == null )
+        {
+            String error = "Identifier can not be null.";
+            log.error( error );
+            throw new IllegalArgumentException( error );
+        }
+
+        if ( referenceData == null )
+        {
+            String error = "ReferenceData can not be null.";
+            log.error( error );
+            throw new IllegalArgumentException( error );
+        }
+
         this.identifier = identifier;
 
         initValuesFromReferenceData( referenceData );
     }
 
     /**
-     * Gets the submitter
+     * Retrieves the submitter
      * @return The submitter
      */
     public String getSubmitter()
@@ -104,7 +125,7 @@ public final class TaskInfo
 
 
     /**
-     * Gets the format
+     * Retrieves the format
      * @return The format
      */
     public String getFormat()
@@ -113,7 +134,7 @@ public final class TaskInfo
     }
 
     /**
-     * Gets the language
+     * Retrieves the language
      *
      * For information about default value for language, please see {@link TaskInfo}
      *
@@ -126,7 +147,7 @@ public final class TaskInfo
 
 
     /**
-     * Gets the mimetype
+     * Retrieves the mimetype
      * 
      * For information about default value for mimetype, please see {@link TaskInfo}
      *
@@ -139,7 +160,7 @@ public final class TaskInfo
 
 
     /**
-     * Gets the identifier from the job
+     * Retrieves the identifier from the job
      * @return the identifier of the job
      */
     public IIdentifier getIdentifier()
@@ -154,12 +175,6 @@ public final class TaskInfo
      */   
     private void initValuesFromReferenceData( Document referenceData )
     {
-        if ( referenceData == null )
-        {
-            String error = "ReferenceData is empty or null. Aborting";
-            log.error( error );
-            throw new IllegalStateException( error );
-        }
 
         NodeList elementSet = referenceData.getElementsByTagName( "es:info" );
 

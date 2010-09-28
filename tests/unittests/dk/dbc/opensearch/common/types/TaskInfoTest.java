@@ -64,8 +64,42 @@ public class TaskInfoTest {
 	System.out.close();
     }
 
+
+    /**
+     * Constructor tests:
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void TaskInfoIllegalAttributeTest() throws Exception
+    {
+        TaskInfo job = new TaskInfo( mockIdentifier, xmldataIllegalAttribute );
+    }
+
+    @Test( expected=IllegalArgumentException.class )
+    public void IllegalStateForNullIdentifierTest() throws Exception
+    {
+        TaskInfo job = new TaskInfo( null, xmldataComplete );
+    }
+
+    @Test( expected=IllegalArgumentException.class )
+    public void IllegalStateForNullReferenceDataTest() throws Exception
+    {
+        TaskInfo job = new TaskInfo( mockIdentifier, null );
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void IllegalArgumentForWrongReferenceDataTest() throws Exception
+    {
+        Document reference = XMLUtils.documentFromString( "<?xml version=\"1.0\"?><error/>" );
+        TaskInfo job = new TaskInfo( mockIdentifier, reference );
+    }
+
+
+    /**
+     * This test check a correct XML with all possible values sat to
+     * something meaningful will also retreive all the corect values.
+     */
     @Test
-    public void TaskInfoTest()
+    public void TaskInfoAllIsGoodTest()
     {
         TaskInfo job = new TaskInfo( mockIdentifier, xmldataComplete );
         assertEquals( mockIdentifier, job.getIdentifier() );
@@ -106,28 +140,12 @@ public class TaskInfoTest {
 	assertEquals( "text/xml", job.getMimeType() );
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void TaskInfoIllegalAttributeTest() throws Exception
-    {
-        TaskInfo job = new TaskInfo( mockIdentifier, xmldataIllegalAttribute );
-    }
-
-    @Test( expected=IllegalStateException.class )
-    public void IllegalStateForEmptyReferenceDataTest() throws Exception
-    {
-        TaskInfo job = new TaskInfo( mockIdentifier, null );
-    }
-
-    @Test(expected=IllegalArgumentException.class)
-    public void IllegalArgumentForWrongReferenceDataTest() throws Exception
-    {
-        Document reference = XMLUtils.documentFromString( "<?xml version=\"1.0\"?><error/>" );
-        TaskInfo job = new TaskInfo( mockIdentifier, reference );
-    }
 
 
-    // Test that we dont change the XML-document as a sideeffect.
-    // We want to make sure we do not corrupt the XML inside TaskInfo.
+    /**
+     * Test that we dont change the XML-document as a sideeffect.
+     * We want to make sure we do not corrupt the XML inside TaskInfo.
+     */
     @Test
     public void TaskInfoGetDocumentTest() throws Exception
     {
