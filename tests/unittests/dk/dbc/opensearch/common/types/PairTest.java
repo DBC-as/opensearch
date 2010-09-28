@@ -1,112 +1,142 @@
-/** \brief UnitTest for Pair */
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package dk.dbc.opensearch.common.types;
 
-/*
-   
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s, 
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
-
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-import java.util.HashMap;
-import dk.dbc.opensearch.common.types.Pair;
-
-import org.junit.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
-
 /**
- * 
+ *
+ * @author stm
  */
 public class PairTest {
 
-    Pair<String, String> p;
-
-    /**
-     *
-     */
-    @Before public void SetUp() {
-        p = new Pair<String, String>( "a", "b");
-    }
-
-    /**
-     *
-     */
-    @After public void TearDown() {
-
-    }
-
-    /**
-     * 
-     */
-    @Test 
-    public void testTypeConsistency() {
-        assertEquals( p.getFirst(), "a" );
-        assertEquals( p.getSecond(), "b" );
-    }
-
-    @Test 
-    public void testHashCode(){
-        Pair<String, String> p2 =
-            new Pair<String, String>( "a", "b" );
-
-        assertEquals( p.hashCode(), p2.hashCode() );
-
-    }
-    /**
-     * happy path
-     */
-
-    @Test public void testEquals(){
-        Pair<String, String> p3 =
-            new Pair<String, String>( "a", "b" );
-
-        assertTrue( p3.equals( p ) );
-    }
-    /**
-     * two non-equal pair
-     */
-
-    @Test public void testEqualsDifferent()
+    @Test
+    public void testAddingTwoIdenticalObjectsWorks()
     {
-        Pair<String, String> p3 =
-            new Pair<String, String>( "a", "a" );
-
-        assertFalse( p3.equals( p ) ); 
-    
+        new Pair<String, String>( "a", "a" );
     }
-    /**
-     * Calling equal with a non-pair
-     */
-   @Test public void testEqualsInvalid()
+
+    
+    @Test( expected=IllegalArgumentException.class )
+    public void testConstructorDoesntAcceptNullValuesForFirstArgument()
     {
-        String test = "test";
-
-        assertFalse( p.equals( test ) ); 
-    
+        new Pair<String, String>( null, "a" );
     }
 
-    @Test public void testPairInHashMaps(){
-        HashMap< Pair< String, String >, String > hm =
-            new HashMap< Pair< String, String >, String >();
-
-        hm.put( new Pair<String, String>( "a", "b" ), "c" );
-        hm.put( new Pair<String, String>( "d", "e" ), "f" );
-
-        assertNotNull( hm.get( new Pair<String, String>( "a", "b" ) ) );
+    @Test( expected=IllegalArgumentException.class )
+    public void testConstructorDoesntAcceptNullValuesForSecondArgument()
+    {
+        new Pair<String, String>( "a", null );
     }
+
+    @Test
+    public void testNoDefensiveCopyingIsMadeInSimplePairConstructor()
+    {
+        List<String> stringlist = new ArrayList<String>();
+        stringlist.add( "a" );
+        Pair<String, List<String>> pair = new Pair<String, List<String>>( "a", stringlist );
+        stringlist.remove( "a" );
+        assertTrue( pair.getSecond().isEmpty() );
+    }
+
+
+    @Test
+    public void testGetFirst()
+    {
+        Pair<String, Integer> names = new Pair<String, Integer>( "one", Integer.parseInt( "1" ) );
+        String expResult = "one";
+        String result = names.getFirst();
+        assertEquals( expResult, result );
+    }
+
+
+    @Test
+    public void testGetSecond()
+    {
+        Pair<String, Integer> names = new Pair<String, Integer>( "one", Integer.parseInt( "1" ) );
+        Integer expResult = new Integer( 1 );
+        Integer result = names.getSecond();
+        assertEquals( expResult, result );
+    }
+
+
+    @Test
+    public void testToString()
+    {
+        Pair<String, Integer> names = new Pair<String, Integer>( "one", Integer.parseInt( "1" ) );
+        String expResult = "Pair< one, 1 >";
+        String result = names.toString();
+        assertEquals( expResult, result );
+    }
+
+
+    @Test
+    public void testEquals()
+    {
+        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+
+        assertTrue( ints.equals( moreints) );
+    }
+
+    @Test public void testEqualsWorkWithValidArg(){
+        Pair<String, String> one = new Pair<String, String>( "a", "1" );
+        Pair<String, String> two = new Pair<String, String>( "a", "1" );
+
+         assertTrue( one.equals( two ) );
+    } 
+
+    @Test public void testNonEqualObjectsForPairMakesUnequalPair(){
+        Pair<String, String> one = new Pair<String, String>( "a", "1" );
+        Pair<String, String> two = new Pair<String, String>( "b", "1" );
+        Pair<String, String> three = new Pair<String, String>( "a", "2" );
+
+        assertFalse( one.equals( two ) );
+        assertFalse( one.equals( three ) );
+    }
+
+
+    @Test
+    public void testEqualsRejectsOtherClass()
+    {
+        Pair<String, String> one = new Pair<String, String>( "a", "1" );
+        assertFalse( one.equals( "test" ) );
+    }
+
+
+    @Test
+    public void testHashCode()
+    {
+        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+
+        assertEquals( ints.hashCode(), moreints.hashCode() );
+    }
+
+    /**
+     * Using the Set type to externally guarantee the hash code generation
+     */
+    @Test
+    public void testHashCodeworksForSets()
+    {
+        Pair<Integer, Integer> ints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+        Pair<Integer, Integer> moreints = new Pair<Integer, Integer>( Integer.MIN_VALUE, Integer.MAX_VALUE );
+
+        Set<Pair<Integer, Integer>> integers = new HashSet<Pair<Integer, Integer>>();
+        integers.add( ints );
+        integers.add( moreints );
+
+        assertTrue( integers.size() == 1 );
+    }
+
+
 }
