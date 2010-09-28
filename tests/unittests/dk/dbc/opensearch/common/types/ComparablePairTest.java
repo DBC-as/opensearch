@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
  *  trying to create and maintain tests for i.e. {@code getFirst()}
  *  since this test more naturally belongs in the {@link Pair} class.
  *
- *  The tests in this suite is ordered he following way:
+ *  The tests in this suite are ordered the following way:
  *  * Tests for constructor
  *  * Tests for toString()
  *  * Tests for compareTo()
