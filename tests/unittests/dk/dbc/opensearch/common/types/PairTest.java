@@ -112,6 +112,20 @@ public class PairTest {
         assertFalse( one.equals( "test" ) );
     }
 
+    /**
+     * An explicit test for equality against zero.  We do not say
+     * anything about what should happen, but it ought to just return
+     * false.
+     */
+    @Test
+    public void testEqualityAgainstNull()
+    {
+        Pair<String, String> one = new Pair<String, String>( "a", "1" );
+	Pair<String, String> two = null;
+
+        assertFalse( one.equals( two ) );
+    }
+
 
     @Test
     public void testHashCode()

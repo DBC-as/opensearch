@@ -49,10 +49,23 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
      *
      * @param first value of type {@code E} to put on the left hand side of the ComparablePair
      * @param second value of type {@code V} to put on the right hand side of the ComparablePair
+     *
+     * @throws IllegalArgumentException if either of the arguments are null.
      */
     public ComparablePair( E first, V second )
     {
         super( first, second );
+
+	// Post-check of arguments since super must be the first call in the constructor.
+	// We have added the check for null on the arguments in ComparablePair even though it is
+	// tested in Pair, in order to make sure that some Clever Programmer(tm) do not 
+	// remove the check in Pair. In ComparablePair we still needs to ensure that
+	// none of the arguments are null in order to handle the comparison, which is
+	// a significant part of this class.
+	if ( first == null || second == null )
+	{
+	    throw new IllegalArgumentException( "null values are not accepted as elements in ComparablePair." );
+	}
     }
 
 
@@ -90,6 +103,8 @@ public final class ComparablePair<E extends Comparable<E>, V extends Comparable<
      * @param pair the {@link ComparablePair} to compare
      * @return -1 if {@code pair} is smaller than {@code this}, 0 if they're equal
      * and 1 otherwise
+     *
+     * @throws NullPointerException if {@code pair} is null.
      */
     @Override
     public int compareTo( ComparablePair<E, V> pair )

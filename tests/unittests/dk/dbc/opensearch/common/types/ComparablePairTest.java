@@ -38,16 +38,26 @@ import static org.junit.Assert.*;
 public class ComparablePairTest {
 
     
-    /**
-     * Verify that null values are not comparable
-     */
     @Test( expected = IllegalArgumentException.class )
-    public void testNullNotAcceptedInConstructor()
+    public void testNullNotAcceptedInConstructorFirst()
+    {
+        ComparablePair<String, String> one = new ComparablePair<String, String>( null, "1" );
+	// We should now have thrown an exception.
+        ComparablePair<String, String> two = new ComparablePair<String, String>( "a", "1" );
+	
+	// We should never reach this assert:
+        assertTrue( one.equals( two ) );
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void testNullNotAcceptedInConstructorSecond()
     {
         ComparablePair<String, String> one = new ComparablePair<String, String>( "a", null );
-        ComparablePair<String, String> two = null;
-
-        assertTrue( ! one.equals( two ) );
+	// We should now have thrown an exception.
+        ComparablePair<String, String> two = new ComparablePair<String, String>( "a", "1" );
+	
+	// We should never reach this assert:
+        assertTrue( one.equals( two ) );
     }
 
     /**
@@ -63,6 +73,16 @@ public class ComparablePairTest {
         
     }
     
+
+    @Test( expected = NullPointerException.class )
+    public void testCompareToNull() throws IOException
+    {
+        ComparablePair<Integer, String> one = new ComparablePair<Integer, String>( (Integer)1, "test" );
+        ComparablePair<Integer, String> two = null;
+
+	one.compareTo( two ); // Throws NullPointerException
+    }
+
 
     /**
      * Test of the compareTo method, when the first elements of the 
