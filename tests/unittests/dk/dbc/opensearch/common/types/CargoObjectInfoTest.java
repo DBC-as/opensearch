@@ -1,5 +1,3 @@
-package dk.dbc.opensearch.common.types;
-
 /*
    
 This file is part of opensearch.
@@ -20,6 +18,10 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+package dk.dbc.opensearch.common.types;
+
+
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoMimeType;
 import dk.dbc.opensearch.common.types.CargoObject;
@@ -34,7 +36,6 @@ import java.io.UnsupportedEncodingException;
 import static org.junit.Assert.*;
 import org.junit.*;
 
-import org.apache.log4j.Logger;
 
 
 /**
@@ -43,9 +44,6 @@ import org.apache.log4j.Logger;
 
 public class CargoObjectInfoTest
 {
-
-    Logger log = Logger.getLogger("CargoObjectInfoTest");
-
     CargoMimeType cmt;
     CargoObjectInfo coi;
     CargoContainer cc;
@@ -56,6 +54,7 @@ public class CargoObjectInfoTest
     String teststring;
     byte[] data;
     long id;
+
 
     @Before 
     public void SetUp() throws UnsupportedEncodingException, IOException
@@ -80,18 +79,6 @@ public class CargoObjectInfoTest
     	}
     }
     
-    // @Test
-    // public void testIndexingAliasGetFromDataStreamType() throws IOException
-    // {
-    //     CargoContainer cc = new CargoContainer();
-    //     String ia = "docbook";
-    //     long id = cc.add( DataStreamType.OriginalData, test_format, test_submitter, test_lang, cmt.getMimeType(), data );
-    //     //cc.setIndexingAlias( ia, DataStreamType.OriginalData );
-
-    //     assertTrue( ia == cc.getIndexingAlias( DataStreamType.OriginalData ) );
-    // }
-
-
     @Test 
     public void testCorrectnessOfgetFormat() 
     {
@@ -117,46 +104,4 @@ public class CargoObjectInfoTest
     	       
     }
     
-    
-    @Test @Ignore( "We do not have a list of valid submitters" )
-    public void testCheckSubmitter()
-    {
-    	for( CargoObject co : cc.getCargoObjects() )
-    		assertTrue( co.validSubmitter( test_submitter ) );
-    }
-    
-    @Test @Ignore( "We do not have a list of valid submitters" )
-    public void testCheckSubmitterInvalid()
-    {
-    	for( CargoObject co : cc.getCargoObjects() )
-    		assertFalse( co.validSubmitter( "invalid" ) );
-    }
-    
-    @Test @Ignore( "we do not have a list of valid languages" )
-    public void testCheckLanguageValid()
-    {
-    	for( CargoObject co : cc.getCargoObjects() )
-    		assertTrue( co.checkLanguage( test_lang ) );
-    }
-     
-    @Test @Ignore( "we do not have a list of valid languages" )
-    public void testCheckLanguageInvalid()
-    {
-    	for( CargoObject co : cc.getCargoObjects() )
-    		assertFalse( co.checkLanguage( "invalid" ) );
-    }
-    
-    @Test
-    public void testValidMimetype()
-    {
-    	for( CargoObject co : cc.getCargoObjects() )
-    		assertTrue( co.validMimetype( cmt.getMimeType() ) );
-    }
-
-    @Test
-    public void testInvalidMimetype()
-    {
-    	for( CargoObject co : cc.getCargoObjects() )
-    		assertFalse( co.validMimetype( "foo/bar" ) );
-    }
 }
