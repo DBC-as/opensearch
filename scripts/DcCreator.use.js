@@ -115,6 +115,15 @@ const DcCreator = function(){
 
   };
 
+  that.createDcFromMarc.__doc__ = <doc type="method">
+    <brief>Method that extracts data from a marcXchange record to create Dublin Core data</brief>
+    <syntax>DcCreator.createDcFromMarc( xml )</syntax>
+    <param name="xml">String containing the original XML (marcXchange)</param>
+    <description></description>
+    <returns>A string containing OAI Dublin Core XML</returns>
+    <examples></examples>
+  </doc>;
+
   that.createDcFromDkabm = function ( xml ) {
 
     var originalXml = XmlUtil.fromString ( xml );
@@ -193,6 +202,15 @@ const DcCreator = function(){
     return dcString;
 
   };
+  
+  that.createDcFromDkabm.__doc__ = <doc type="method">
+    <brief>Method that extracts data from a DKABM record to create Dublin Core data</brief>
+    <syntax>DcCreator.createDcFromDkabm( xml )</syntax>
+    <param name="xml">String containing the original XML (DKABM)</param>
+    <description></description>
+    <returns>A string containing OAI Dublin Core XML</returns>
+    <examples></examples>
+  </doc>;
 
   that.createDcObject = function () {
 
@@ -204,6 +222,14 @@ const DcCreator = function(){
     return dcXml;
 
   };
+  
+  that.createDcObject.__doc__ = <doc type="method">
+    <brief>Method that creates an OAI Dublin Core XML Object, sets and adds namespaces.</brief>
+    <syntax>DcCreator.createDcObject()</syntax>
+    <description></description>
+    <returns>An OAI Dublin Core XML Object</returns>
+    <examples></examples>
+  </doc>;
 
   that.createElement = function ( elementValue, elementName, namespace ) {
     var element = XmlUtil.fromString (<{elementName}>{elementValue}</{elementName}>);
@@ -299,6 +325,15 @@ const DcCreator = function(){
     return dcString;
 
   };
+  
+  that.createWorkDc.__doc__ = <doc type="method">
+    <brief>Method that extracts data from a DKABM record to create Dublin Core data for a work object</brief>
+    <syntax>DcCreator.createWorkDc( xml )</syntax>
+    <param name="xml">String containing the original XML (DKABM)</param>
+    <description></description>
+    <returns>A string containing OAI Dublin Core XML</returns>
+    <examples></examples>
+  </doc>;
 
   that.createDcFromOso = function ( xml ) {
 
@@ -325,6 +360,15 @@ const DcCreator = function(){
     return dcString;
 
   };
+  
+  that.createDcFromOso.__doc__ = <doc type="method">
+    <brief>Method that extracts data from Open Search Object XML to create Dublin Core data</brief>
+    <syntax>DcCreator.createWorkDc( xml )</syntax>
+    <param name="xml">String containing the original XML (Open Search Object)</param>
+    <description></description>
+    <returns>A string containing OAI Dublin Core XML</returns>
+    <examples></examples>
+  </doc>;
 
   return that;
 
