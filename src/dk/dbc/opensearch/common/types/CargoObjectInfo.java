@@ -97,28 +97,6 @@ public class CargoObjectInfo
     }
 
 
-    boolean checkLanguage( String language )
-    {
-        throw new UnsupportedOperationException( "this method has yet to be implemented" );
-        /** \todo: implement real check of language*/
-        // return true;
-    }
-
-
-    boolean validMimetype( String mimetype )
-    {
-        return CargoMimeType.validMimetype( mimetype );
-    }
-
-
-    boolean validSubmitter( String name )
-    {
-        throw new UnsupportedOperationException( "this method has yet to be implemented" );
-        /** \todo: implement real check of submitter*/
-        // return true;
-    }
-
-
     long getTimestamp()
     {
         return timestamp.getTime();

@@ -103,46 +103,6 @@ public class CargoObject
     {
         return coi.getId();
     }
-    
-    
-    /**
-     * Checks if the language of the submitted data is allowed in a
-     * CargoObject
-     * 
-     * @param language the language to be checked
-     * @return True if language is allowed, False otherwise
-     */
-    public boolean checkLanguage( String language )
-    {
-        return coi.checkLanguage( language );
-    }
-
-
-    /**
-     * Checks if the mimetype of the submitted data is allowed in a
-     * CargoObject. The string should contain a mimetype conforming 
-     * to the RFC 822 ( http://www.faqs.org/rfcs/rfc822.html)
-     * 
-     * @param mimetype the mimetype to be checked
-     * @return True if mimetype is allowed, False otherwise
-     */
-    public boolean validMimetype( String mimetype )
-    {
-        return coi.validMimetype( mimetype );
-    }
-
-
-    /**
-     * Checks if the submitter of the submitted data is allowed in a
-     * CargoObject
-     * 
-     * @param name the submitter to be checked
-     * @return True if mimetype is allowed, False otherwise
-     */
-    public boolean validSubmitter( String name ) throws IllegalArgumentException
-    {
-        return coi.validSubmitter( name );
-    }
 
 
     /**
