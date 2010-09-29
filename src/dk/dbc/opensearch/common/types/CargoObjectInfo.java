@@ -32,12 +32,11 @@ import org.apache.log4j.Logger;
 
 
 /**
- * \brief Holds the metadata for CargoObject that are contained in a CargoContainer
+ * Holds the metadata for CargoObject that are contained in a CargoContainer
  */
 public class CargoObjectInfo
 {
-    Logger log = Logger.getLogger( CargoObjectInfo.class );
-
+    private static Logger log = Logger.getLogger( CargoObjectInfo.class );
 
     /**
      * Property naming type of data stream.
@@ -63,14 +62,36 @@ public class CargoObjectInfo
     /** used to make statistics and estimates regarding the processtime of the dataobject */
     private Date timestamp;
 
-    /** unique identifier of the CargoObject*/
+    /** unique identifier of the CargoObject */
     private long id;
 
     /**
-     * Constructs a CargoObjectInfo instance that acts as a container
-     * for the metadata associated with a given CargoContainers
+     * Constructs a {@link CargoObjectInfo} instance that acts as a container
+     * for the metadata associated with a given {@link CargoContainer}s
      * data. 
-     * See the CargoObject constructor for implementation documentation
+     *
+     * This object is supposed to be used in a {@link CargoObject},
+     * therefore, please see the {@link
+     * CargoObject#CargoObject(DataStreamType, String, String, String,
+     * String, byte[]) CargoObject()} for implementation
+     * documentation.
+     *
+     * A timestamp for an instance of the {@link CargoObjectInfo} will
+     * be created at the time of creation of the instance.  The
+     * timestamp can be retrieved with {@link
+     * CargoObjectInfo#getTimestamp()}.  The intended use of the
+     * timestamp is for timings in the datadock.
+     *
+     * @param dataStreamName the type of datastream.
+     * @param mimeType the mimetype.
+     * @param lang the language.
+     * @param submitter the submitter.
+     * @param format the format.
+     * @param id the id.
+     *
+     * @throws IllegalArgumentException if either of the arguments
+     * {@code dataStreamName}, {@code mimeType}, {@code lang}, {@code
+     * submitter}, {@code format} are null.
      */
     CargoObjectInfo( DataStreamType dataStreamName, 
                      CargoMimeType mimeType, 
@@ -80,55 +101,117 @@ public class CargoObjectInfo
                      long id )
     {
         log.debug( String.format( "Entering CargoObjectInfo" ) );
-        assert( dataStreamName != null && format != null && lang != null && mimeType != null && submitter != null  && id != 0 );
+
+	if ( dataStreamName == null ) 
+	{
+	    throw new IllegalArgumentException("CargoObject.dataStreamName can not be null.");
+	}
+	if ( mimeType == null ) 
+	{
+	    throw new IllegalArgumentException("CargoObject.mimeType can not be null.");
+	}
+	if ( lang == null ) 
+	{
+	    throw new IllegalArgumentException("CargoObject.lang can not be null.");
+	}
+	if ( submitter == null ) 
+	{
+	    throw new IllegalArgumentException("CargoObject.submitter can not be null.");
+	}
+	if ( format == null ) 
+	{
+	    throw new IllegalArgumentException("CargoObject.format can not be null.");
+	}
+
         this.dataStreamName = dataStreamName;
-        this.format = format;
-        this.language = lang;
         this.mimeType = mimeType;
+        this.language = lang;
         this.submitter = submitter;
-        this.timestamp = new Date();
+        this.format = format;
         this.id = id;
+        this.timestamp = new Date();
     }
     
-
-    long getId()
+    /**
+     * Retrieves the datastreamtype.
+     */ 
+    DataStreamType getDataStreamType()
     {
-        return id;
+        return dataStreamName;
     }
 
 
-    long getTimestamp()
-    {
-        return timestamp.getTime();
-    }
-
-
+    /**
+     * Retrieves the mimetype.
+     */ 
     String getMimeType()
     {
         return mimeType.getMimeType();
     }
 
 
+    /**
+     * Retrieves the language.
+     */ 
+    String getLanguage()
+    {
+        return language;
+    }
+
+
+    /**
+     * Retrieves the submitter.
+     */ 
     String getSubmitter()
     {
         return submitter;
     }
 
 
+    /**
+     * Retrieves the format.
+     */ 
     String getFormat()
     {
         return format;
     }
 
 
-    String getLanguage()
+    /**
+     * Retrieves the id.
+     */ 
+    long getId()
     {
-        return language;
+        return id;
     }
 
-    
-    DataStreamType getDataStreamType()
+
+    /**
+     * Retrieves the timestamp.
+     */ 
+    long getTimestamp()
     {
-        return dataStreamName;
+        return timestamp.getTime();
+    }
+
+
+    /**
+     * Returns a {@link String} representation of this object in the following form:
+     * <pre>
+     * {@code
+     *    CargoObjectInfo[ "DataStreamType" , "MimeType" , "language" , "submitter" , "format" , "id" ]
+     * }
+     * </pre>
+     *
+     * Where the text in the double-quotes represent the string from the actual variable. 
+     * Notice, the double-quotes will not be contained in the {@link String}.
+     */
+    @Override
+    public String toString()
+    {
+	String stringrep = String.format( "CargoObjectInfo[ %s , %s , %s , %s , %s , %s ]",
+					  dataStreamName.toString(), mimeType.toString(),
+					  language, submitter, format, id );
+	return stringrep;
     }
 }
