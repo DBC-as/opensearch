@@ -24,7 +24,6 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.common.config.PTIManagerConfig;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.types.CompletedTask;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.util.ArrayList;
@@ -59,13 +58,10 @@ public class PTIManagerTest
     PTIManager ptiManager;
     Processqueue mockPQ = createMock( Processqueue.class );
     PTIPool mockPTIPool = createMock( PTIPool.class);
-    CompletedTask mockCompletedTask = createMock( CompletedTask.class );
 
     IObjectRepository objectRepository = createMock( IObjectRepository.class );
 
     static FutureTask mockFuture = createMock( FutureTask.class );
-    static CompletedTask dummyTask = new CompletedTask( mockFuture, new Pair< Boolean, Integer >( true, 1 ) );
-    static Vector< CompletedTask > checkJobsVector =  new Vector< CompletedTask >();
 
 
     @MockClass( realClass = PTIManagerConfig.class )
@@ -81,12 +77,6 @@ public class PTIManagerTest
         }
  
     }
-
-//    @MockClass( realClass = FedoraObjectRepository.class )
-//    public static class MockObjectRepository
-//    {
-//
-//    }
 
     ThreadPoolExecutor mockExecutor = createMock( ThreadPoolExecutor.class );
     Compass mockCompass = createMock( Compass.class );
@@ -108,17 +98,7 @@ public class PTIManagerTest
             }
         }
 
-        @Mock public Vector< CompletedTask > checkJobs()
-        {
-            checkJobsVector.add( dummyTask );
-            //System.out.println( "size of checkJobs: " + checkJobsVector.size() );
-            return checkJobsVector;
-        }
-    
     }
-
-
-    // @MockClass( realClass =  .class )
 
 
     /**
@@ -135,7 +115,6 @@ public class PTIManagerTest
         Mockit.tearDownMocks();
         reset( mockPQ );
         reset( mockPTIPool );
-        reset( mockCompletedTask );
         reset( mockCompass );
         reset( mockFuture );
         reset( mockExecutor );
@@ -178,65 +157,4 @@ public class PTIManagerTest
       
     }
 
-    /**
-     * tests the update methods happy path
-     */
- 
-    @Test @Ignore public void testUpdateMethodHappyPath() throws ClassNotFoundException, SQLException, ConfigurationException, InterruptedException, ServiceException, MalformedURLException, IOException
-    {
-        /**
-         * setup
-         */
-        Mockit.setUpMocks( MockPTIManagerConfig.class );
-        Vector< Pair< String, Integer > > newJobs = new Vector< Pair< String, Integer > >();
-        newJobs.add( new Pair< String, Integer >( "test1", 1 ) );
-        newJobs.add( new Pair< String, Integer >( "test2", 2 ) );
-       
-
-        Vector< CompletedTask<Pair<Boolean, Integer>> > finishedJobs =  new Vector< CompletedTask<Pair<Boolean, Integer>> >();
-        finishedJobs.add( mockCompletedTask );
-
-        /**
-         * expectations
-         */
-        //constructor
-        expect( mockPQ.deActivate() ).andReturn( 0 );
-        //update method
-        expect( mockPQ.pop( 2 ) ).andReturn( newJobs );
-        //while loop on newJobs
-        mockPTIPool.submit( "test1", 1 );
-        mockPTIPool.submit( "test2", 2 );
-
-        //out of while loop
-//        expect( mockPTIPool.checkJobs() ).andReturn( finishedJobs );
-//        expect( mockCompletedTask.getResult() ).andReturn( new Pair< Boolean, Integer >( true, 1 ) );
-//        mockPQ.commit( 1 );
-        
-        /**
-         * replay
-         */
-        
-        replay( mockPQ );
-        replay( mockPTIPool);
-        replay( mockCompletedTask );
-            
-        /**
-         * do stuff
-         */
-
-        ptiManager = new PTIManager( mockPTIPool, mockPQ );
-        ptiManager.update();
-
-        /**
-         * verify
-         */
-        verify( mockPTIPool );
-        verify( mockPQ );
-        verify( mockCompletedTask );
-    }
-
-    /**
-     * Tests the behaviour of the update method when the finishedjobs contains a 
-     * CompletedTask with a null value 
-     */
 }

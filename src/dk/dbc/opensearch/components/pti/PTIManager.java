@@ -146,7 +146,6 @@ public class PTIManager
     {
 
         // Checking jobs and commiting jobs
-        //Vector< CompletedTask<Pair< Boolean, Integer > > > finishedJobs =
         Map< Integer, Boolean > finishedJobs = pool.checkJobs();
         // log.debug( "size of finishedJobs: " + finishedJobs.size() );
         for ( Entry< Integer, Boolean> task : finishedJobs.entrySet() )
