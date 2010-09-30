@@ -154,4 +154,18 @@ public class CargoObjectInfoTest
 	assertTrue( coi.getTimestamp() >= timestampBefore.getTime() );
 	assertTrue( coi.getTimestamp() <= timestampAfter.getTime() );
     }
+
+
+    /**
+     * A test of toString according to the javadoc.
+     */
+    @Test
+    public void testToString()
+    {
+	String expectedResult = String.format( "CargoObjectInfo[ %s , %s , %s , %s , %s , %s ]",
+					       test_datastreamtype.toString(), test_mimetype.toString(),
+					       test_language, test_submitter, test_format, test_id );
+
+	assertTrue( default_coi.toString().equals( expectedResult ) );
+    }
 }
