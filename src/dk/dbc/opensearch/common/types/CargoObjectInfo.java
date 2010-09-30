@@ -31,38 +31,39 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Holds the metadata for CargoObject that are contained in a CargoContainer
+ * Holds the metadata for {@link CargoObjects CargoObject} that are
+ * contained in a {@link CargoContainer}
  */
 public class CargoObjectInfo
 {
-    private static Logger log = Logger.getLogger( CargoObjectInfo.class );
+    private static final Logger log = Logger.getLogger( CargoObjectInfo.class );
 
     /**
      * Property naming type of data stream.
      */
-    private DataStreamType dataStreamName;
+    private final DataStreamType dataStreamName;
 
-    private String format;
+    private final String format;
 
     /** \todo: the language of the submitted data determines which analyzer
      * should be used in the indexing process, therefore we want full
      * control of allowed languages
      */
-    private String language;
+    private final String language;
 
     /** \see CargoMimeType */
-    private CargoMimeType mimeType;
+    private final CargoMimeType mimeType;
 
     /** \todo submitter is primarily thought as an authentication
      * prerequisite, it will probably change in time
      */
-    private String submitter;
+    private final String submitter;
 
     /** used to make statistics and estimates regarding the processtime of the dataobject */
-    private Date timestamp;
+    private final Date timestamp;
 
     /** unique identifier of the CargoObject */
-    private long id;
+    private final long id;
 
     /**
      * Constructs a {@link CargoObjectInfo} instance that acts as a container
@@ -82,11 +83,11 @@ public class CargoObjectInfo
      * timestamp is for timings in the datadock.
      *
      * @param dataStreamName the type of datastream.
-     * @param mimeType the mimetype.
-     * @param lang the language.
-     * @param submitter the submitter.
-     * @param format the format.
-     * @param id the id.
+     * @param mimeType the mimetype of the datastream
+     * @param lang the language of the datastream 
+     * @param submitter the submitter of the datastream
+     * @param format the format of the datastream
+     * @param id the id of the datastream
      *
      * @throws IllegalArgumentException if either of the arguments
      * {@code dataStreamName}, {@code mimeType}, {@code lang}, {@code
@@ -205,7 +206,7 @@ public class CargoObjectInfo
     /**
      * Retrieves the timestamp as a long, representing the date of creation of this object.
      * Please notice, internally the timestamp is created by {@link Date#Date()}, and it is therefore
-     * affected by locales and timezone etc.
+     * affected by locales, timezone etc.
      *
      * @return long representing date of creation.
      * 
