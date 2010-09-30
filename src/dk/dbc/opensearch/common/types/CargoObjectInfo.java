@@ -1,5 +1,4 @@
 /*
-
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s,
   Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
@@ -91,7 +90,7 @@ public class CargoObjectInfo
      *
      * @throws IllegalArgumentException if either of the arguments
      * {@code dataStreamName}, {@code mimeType}, {@code lang}, {@code
-     * submitter}, {@code format} are null.
+     * submitter} or {@code format} are null.
      */
     CargoObjectInfo( DataStreamType dataStreamName, 
                      CargoMimeType mimeType, 
@@ -134,6 +133,8 @@ public class CargoObjectInfo
     
     /**
      * Retrieves the datastreamtype.
+     *
+     * @return the type of the datastream.
      */ 
     DataStreamType getDataStreamType()
     {
@@ -142,7 +143,14 @@ public class CargoObjectInfo
 
 
     /**
-     * Retrieves the mimetype.
+     * Retrieves the mimetype as a String converted through {@link
+     * CargoMimeType#getMimeType()}. The returned mimetype is
+     * therefore <it>not</it> the same as {@link
+     * CargoMimeType#toString()}.
+     *
+     * @return mimetype as a {@link String}.
+     *
+     * @see CargoMimeType
      */ 
     String getMimeType()
     {
@@ -152,6 +160,8 @@ public class CargoObjectInfo
 
     /**
      * Retrieves the language.
+     *
+     * @return language as a {@link String}.
      */ 
     String getLanguage()
     {
@@ -161,6 +171,8 @@ public class CargoObjectInfo
 
     /**
      * Retrieves the submitter.
+     *
+     * @return submitter as a {@link String}.
      */ 
     String getSubmitter()
     {
@@ -170,6 +182,8 @@ public class CargoObjectInfo
 
     /**
      * Retrieves the format.
+     *
+     * @return format as a {@link String}.
      */ 
     String getFormat()
     {
@@ -179,6 +193,8 @@ public class CargoObjectInfo
 
     /**
      * Retrieves the id.
+     *
+     * @return long representing the {@code id}.
      */ 
     long getId()
     {
@@ -187,7 +203,13 @@ public class CargoObjectInfo
 
 
     /**
-     * Retrieves the timestamp.
+     * Retrieves the timestamp as a long, representing the date of creation of this object.
+     * Please notice, internally the timestamp is created by {@link Date#Date()}, and it is therefore
+     * affected by locales and timezone etc.
+     *
+     * @return long representing date of creation.
+     * 
+     * @see Date
      */ 
     long getTimestamp()
     {
