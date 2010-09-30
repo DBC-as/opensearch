@@ -37,6 +37,8 @@ import org.custommonkey.xmlunit.Diff;
 public class TaskInfoTest {
 
     static final String referenceDataComplete = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"123456\" format=\"someFormat\" language=\"se\" mimetype=\"pdf\"/></referencedata>";
+    static final String referenceDataNoReferenceElement = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><empty/>";
+    static final String referenceDataNoInfoElement = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata></referencedata>";
     static final String referenceDataNoLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" mimetype=\"pdf\"/></referencedata>";
     static final String referenceDataEmptyLang = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"\" mimetype=\"pdf\"/></referencedata>";
     static final String referenceDataNoMimeType = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"se\"/></referencedata>";
@@ -44,6 +46,8 @@ public class TaskInfoTest {
     static final String referenceDataIllegalAttribute = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><referencedata><info submitter=\"775100\" format=\"ebrary\" language=\"dk\" illegalattribute=\"illegal\"/></referencedata>";
     @Mocked IIdentifier mockIdentifier;
     private Document xmldataComplete;
+    private Document xmldataNoInfoElement;
+    private Document xmldataNoReferenceElement;
     private Document xmldataNoLang;
     private Document xmldataEmptyLang;
     private Document xmldataNoMimeType;
@@ -54,6 +58,8 @@ public class TaskInfoTest {
     public void setUp() throws Exception
     {
         xmldataComplete = XMLUtils.documentFromString( referenceDataComplete );
+        xmldataNoInfoElement = XMLUtils.documentFromString( referenceDataNoInfoElement );
+        xmldataNoReferenceElement = XMLUtils.documentFromString( referenceDataNoReferenceElement );
         xmldataNoLang = XMLUtils.documentFromString( referenceDataNoLang );
         xmldataEmptyLang = XMLUtils.documentFromString( referenceDataEmptyLang );
         xmldataNoMimeType = XMLUtils.documentFromString( referenceDataNoMimeType );
@@ -96,7 +102,7 @@ public class TaskInfoTest {
 
     /**
      * This test check a correct XML with all possible values sat to
-     * something meaningful will also retreive all the corect values.
+     * something meaningful will also retreive all the correct values.
      */
     @Test
     public void TaskInfoAllIsGoodTest()
@@ -107,6 +113,18 @@ public class TaskInfoTest {
         assertEquals( "someFormat", job.getFormat() );
 	assertEquals( "se", job.getLanguage() );
 	assertEquals( "pdf", job.getMimeType() );
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void TaskInfoTestNoInfoElement()
+    {
+        TaskInfo job = new TaskInfo( mockIdentifier, xmldataNoInfoElement );
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void TaskInfoTestNoReferenceElement()
+    {
+        TaskInfo job = new TaskInfo( mockIdentifier, xmldataNoReferenceElement );
     }
 
     @Test

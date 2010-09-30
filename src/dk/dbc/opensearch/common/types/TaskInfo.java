@@ -89,7 +89,7 @@ public final class TaskInfo
      * @throws IllegalArgumentException in any of the three cases described below:
      * <ul>
      * <li> If any other than the four above stated attributes are given.
-     * <li> If the XML does not contain reference and info tags.
+     * <li> If the XML does not contain reference and info elements.
      * <li> If either the identifer or the referenceData are null.
      * </ul>
      */
