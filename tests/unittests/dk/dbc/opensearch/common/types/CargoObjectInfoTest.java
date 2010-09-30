@@ -36,11 +36,6 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 
-
-/**
- * The getTimestamp method is not tested
- */
-
 public class CargoObjectInfoTest
 {
 
