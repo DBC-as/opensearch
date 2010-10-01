@@ -26,6 +26,10 @@ const DcCreator = function(){
 //    for each (child in originalXml.collection.record.datafield.(@tag=="245").subfield.(@code=="a")) {
 //      dcXml.oai_dc::dc += DcCreator.createElement( String(child).replace(/\u00a4/, ""), "title", dc );
 //    }
+    //Used until better implementation in Java
+    if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
+      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+    }
     // Used until next version of work relation
     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
@@ -35,13 +39,13 @@ const DcCreator = function(){
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
 
+    var child;
+
     for each (child in originalXml.dkabm::record.dc::language) {
       if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("oss:subtitles") && !String(child.@xsi::type).match("oss:spoken")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
-
-    var child;
 
     for each (child in originalXml.dkabm::record.dc::subject) {
       if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
