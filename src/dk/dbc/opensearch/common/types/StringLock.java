@@ -110,13 +110,13 @@ public class StringLock
     /**
      * Constructor for the StringLock class
      */
-    StringLock()
+    public StringLock()
     {
         lockMap = new HashMap< String, LockAdmin >();
         log.info( "StringLock constructed" );
     }
 
-    void lock( String pid )
+    public void lock( String pid )
     {
         log.info( String.format( "Thread '%s' calling StringLock.lock with pid: '%s'", Thread.currentThread().getId(), pid  ) );
         ReentrantLock pidLock= null;
@@ -138,7 +138,7 @@ public class StringLock
         log.trace( String.format( "lock, Thread '%s' got lock on pid: '%s'", Thread.currentThread().getId(), pid ) );
     }
 
-    void unlock( String pid )
+    public void unlock( String pid )
     {
         log.debug( String.format( "Thread '%s' calling StringLock.unlock with pid: '%s'", Thread.currentThread().getId(), pid  ) );
         ReentrantLock pidLock = null;
