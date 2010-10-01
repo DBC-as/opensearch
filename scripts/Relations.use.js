@@ -509,17 +509,10 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
 
-    if (String(manifestationXML.*.*.*.(@tag=='n01').*.(@code=='a')) !== "") {
-      var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "[authentication]");
+    if (String(manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) === "Infomedia") {
+      var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
+      DbcAddiRelations.hasFulltext( pid, url );
     }
-    var child;
-    for each (child in manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')) {
-      if (child.match(/ARK.*/)) {
-        var url = String( "" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "");
-      }
-    }
-
-    DbcAddiRelations.hasFulltext( pid, url );
 
     Log.info ("End hasFullText" );
 
