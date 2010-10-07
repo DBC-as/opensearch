@@ -27,10 +27,17 @@ package dk.dbc.opensearch.common.types;
 
 
 /**
- * This interface specifies the type that uniquely identifies a 
- * {@link TaskInfo} with the {@link dk.dbc.opensearch.components.harvest.IHarvest} implementation.
- * Clients must not be allowed to read information from the IIdentifier.
+ * This interface specifies the type that uniquely identifies a {@link
+ * TaskInfo} with the {@link
+ * dk.dbc.opensearch.components.harvest.IHarvest} implementation.
+ * Clients must not be allowed to read information from the
+ * IIdentifier, i.e. the contents of the IIdentifier is private to the
+ * corresponding harvester.
  */
 public interface IIdentifier
 { 
+    // This interface is intentionally left empty since 
+    // the purpose of the interface is to have a way to distribute 
+    // a "closed" identifier to clients of harvesters,
+    // which can be given to harvesters in relation to getting jobs, etc.
 }
