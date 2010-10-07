@@ -36,11 +36,4 @@ public interface ObjectIdentifier
      * @return a String containing the identifier in a String representation
      */
     public String getIdentifier();
-
-    
-    /**
-     * Accessor for the namespace (if any) on the object identifier.
-     * @return a String containing the namespace (if the identifier has one)
-     */
-    public String getNamespace();
 }
