@@ -59,7 +59,7 @@ public class CargoContainer
     private Map<DataStreamType, MetaData> metadata;
 
     /** place holder for PID / Identifier namespace */
-    private ObjectIdentifier identifier = null;
+    private IObjectIdentifier identifier = null;
     
 
     /**
@@ -74,7 +74,7 @@ public class CargoContainer
     }
 
 
-    public ObjectIdentifier getIdentifier()
+    public IObjectIdentifier getIdentifier()
     {
         return this.identifier;
     }
@@ -94,7 +94,7 @@ public class CargoContainer
         return this.identifier.getIdentifier();
     }
 
-    public void setIdentifier( ObjectIdentifier new_identifier )
+    public void setIdentifier( IObjectIdentifier new_identifier )
     {
         this.identifier  = new_identifier; 
     }

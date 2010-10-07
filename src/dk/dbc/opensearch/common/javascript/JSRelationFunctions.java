@@ -28,7 +28,7 @@ import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.IObjectIdentifier;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class JSRelationFunctions {
     public boolean createRelation( String subject, String relation, String object)
     {
 
-        ObjectIdentifier subjectPID = new PID( subject );
+        IObjectIdentifier subjectPID = new PID( subject );
 	try
 	{
 	    repository.addUncheckedObjectRelation( subjectPID, relation, object );

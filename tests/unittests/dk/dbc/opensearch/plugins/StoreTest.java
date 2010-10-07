@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.IObjectIdentifier;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import java.util.Map;
@@ -59,7 +59,7 @@ public class StoreTest
     CargoContainer cargo = new CargoContainer();
     String testString = "testStringUsedToGenerateBytes";
     byte[] dataBytes = testString.getBytes();
-    ObjectIdentifier objectIdentifier;
+    IObjectIdentifier objectIdentifier;
     @Mocked IObjectRepository mockedRepository;
     @Mocked Map<String, String> mockArgsMap; 
 
@@ -71,7 +71,7 @@ public class StoreTest
         }
 
         @Mock
-        public static boolean hasObject( ObjectIdentifier objectIdentifier )
+        public static boolean hasObject( IObjectIdentifier objectIdentifier )
         {
             return false;
         }
@@ -92,7 +92,7 @@ public class StoreTest
         }
 
         @Mock
-        public static boolean hasObject( ObjectIdentifier objectIdentifier )
+        public static boolean hasObject( IObjectIdentifier objectIdentifier )
         {
             return true;
         }

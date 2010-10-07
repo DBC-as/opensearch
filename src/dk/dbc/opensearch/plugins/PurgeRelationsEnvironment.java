@@ -35,7 +35,7 @@ import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.IObjectIdentifier;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -77,7 +77,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
         //     throw new PluginException( error );
         // }
 
-        ObjectIdentifier identifier = cargo.getIdentifier();
+        IObjectIdentifier identifier = cargo.getIdentifier();
 
         if ( objectRepository.hasObject( identifier ) )
         {
@@ -95,7 +95,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
                     if ( anmeldelsesRelations != null && anmeldelsesRelations.size() > 0 )
                     {
                         log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", anmeldelse, reviewOf.getPredicateString(), subject ) );
-                        ObjectIdentifier anmeldelsesIdentifier = new dk.dbc.opensearch.common.fedora.PID( anmeldelse );
+                        IObjectIdentifier anmeldelsesIdentifier = new dk.dbc.opensearch.common.fedora.PID( anmeldelse );
                         objectRepository.removeObjectRelation( anmeldelsesIdentifier, reviewOf, subject );
                     }
                 }
@@ -118,7 +118,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
         //     throw new PluginException( error );
         // }
 
-        ObjectIdentifier identifier = cargo.getIdentifier();
+        IObjectIdentifier identifier = cargo.getIdentifier();
         
         if ( objectRepository.hasObject( identifier ) )
         {
@@ -137,7 +137,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
                     if ( workRelations != null && workRelations.size() > 0 )
                     {
                         log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", work, hasManifestation.getPredicateString(), subject ) );
-                        ObjectIdentifier workIdentifier = new dk.dbc.opensearch.common.fedora.PID( work );
+                        IObjectIdentifier workIdentifier = new dk.dbc.opensearch.common.fedora.PID( work );
                         objectRepository.removeObjectRelation( workIdentifier, hasManifestation, subject );
                     }
                     else

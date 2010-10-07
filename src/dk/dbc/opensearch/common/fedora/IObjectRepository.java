@@ -29,7 +29,7 @@ package dk.dbc.opensearch.common.fedora;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.IObjectIdentifier;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TargetFields;
@@ -59,7 +59,7 @@ public interface IObjectRepository
      * 
      * @return true if the object exists in the repository, false otherwise
      */
-    public boolean hasObject( ObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
+    public boolean hasObject( IObjectIdentifier objectIdentifier ) throws ObjectRepositoryException;
 
 
     /** 
@@ -138,7 +138,7 @@ public interface IObjectRepository
      * @param subject
      * @throws ObjectRepositoryException
      */     
-     public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
+     public void addObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
 
 
     /**
@@ -147,7 +147,7 @@ public interface IObjectRepository
      * @param subject
      * @throws ObjectRepositoryException
      */     
-     public void addUncheckedObjectRelation( ObjectIdentifier objectIdentifier, String relation, String subject ) throws ObjectRepositoryException;
+     public void addUncheckedObjectRelation( IObjectIdentifier objectIdentifier, String relation, String subject ) throws ObjectRepositoryException;
 
 
      /**
@@ -157,6 +157,6 @@ public interface IObjectRepository
       * @param subject
       * @throws ObjectRepositoryException
       */
-     public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
+     public void removeObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
 
 }

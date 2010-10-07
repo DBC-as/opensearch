@@ -29,7 +29,7 @@ package dk.dbc.opensearch.common.types;
 /**
  * Uniquely identifies objects in the object repository and in CargoContainers
  */
-public interface ObjectIdentifier
+public interface IObjectIdentifier
 {
     /**
      * Accessor for the string representation of the identifier

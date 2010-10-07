@@ -33,7 +33,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.IObjectIdentifier;
 import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.common.Constants;
@@ -100,7 +100,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public boolean hasObject( ObjectIdentifier identifier ) throws ObjectRepositoryException
+    public boolean hasObject( IObjectIdentifier identifier ) throws ObjectRepositoryException
     {
         try
         {
@@ -223,7 +223,7 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new IllegalStateException( String.format( "No data in CargoContainer, refusing to store nothing" ) );
         }
 
-        ObjectIdentifier identifier = getOrGenerateIdentifier( cargo, defaultPidNamespace );
+        IObjectIdentifier identifier = getOrGenerateIdentifier( cargo, defaultPidNamespace );
         cargo.setIdentifier( identifier );
         String identifierAsString = identifier.getIdentifier();
 
@@ -888,14 +888,14 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public void addObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
+    public void addObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
         String relationString = relation.getPredicateString();
         this.addUncheckedObjectRelation( objectIdentifier, relationString, subject );
     }
 
     @Override
-    public void addUncheckedObjectRelation( ObjectIdentifier objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException
+    public void addUncheckedObjectRelation( IObjectIdentifier objectIdentifier, String relationString, String subject ) throws ObjectRepositoryException
     {
         try
         {
@@ -974,7 +974,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public void removeObjectRelation( ObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
+    public void removeObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
         try
         {
@@ -1022,9 +1022,9 @@ public class FedoraObjectRepository implements IObjectRepository
      * @return
      * @throws ObjectRepositoryException
      */
-    private ObjectIdentifier getOrGenerateIdentifier( CargoContainer cargo, String defaultPidNameSpace ) throws ObjectRepositoryException
+    private IObjectIdentifier getOrGenerateIdentifier( CargoContainer cargo, String defaultPidNameSpace ) throws ObjectRepositoryException
     {
-        ObjectIdentifier identifier = cargo.getIdentifier();
+        IObjectIdentifier identifier = cargo.getIdentifier();
 
         if (identifier != null)
         {

@@ -26,13 +26,13 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.types.ObjectIdentifier;
+import dk.dbc.opensearch.common.types.IObjectIdentifier;
 
 
 /**
  *
  */
-public class PID implements ObjectIdentifier
+public class PID implements IObjectIdentifier
 {
     private String id;
 
