@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.types.TargetFields;
+import dk.dbc.opensearch.common.types.ITargetField;
 
 /**
  * OpenSearchCondition is a container for a search condition
@@ -64,7 +64,7 @@ public final class OpenSearchCondition
 	LESS_OR_EQUAL;
     }
     
-    private final TargetFields field;
+    private final ITargetField field;
     private final Operator operator;
     private final String value;
 
@@ -77,7 +77,7 @@ public final class OpenSearchCondition
      *
      * @throws IllegalArgumentException if either of the three arguments are null.
      */ 
-    public OpenSearchCondition( TargetFields field, Operator operator, String value ) throws IllegalArgumentException
+    public OpenSearchCondition( ITargetField field, Operator operator, String value ) throws IllegalArgumentException
     {
 	if ( field == null ) 
 	{
@@ -97,7 +97,7 @@ public final class OpenSearchCondition
 	this.value = value;
     }
 
-    public TargetFields getField()
+    public ITargetField getField()
     {
 	return this.field;
     }

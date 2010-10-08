@@ -40,7 +40,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.TargetFields;
+import dk.dbc.opensearch.common.types.ITargetField;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * in the repository, used to generate the list of candidate works 
      * @return the unmodified CargoContainer.
      */
-    public CargoContainer run( CargoContainer cargo, List< Pair< TargetFields, String > > searchPairs ) throws PluginException
+    public CargoContainer run( CargoContainer cargo, List< Pair< ITargetField, String > > searchPairs ) throws PluginException
     {
 
 	long gwl_timer = System.currentTimeMillis();
@@ -142,9 +142,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * @param cargo the CargoContianer to generate searchpairs for
      * @return a list of SimplePairs containing a serachfield and the value to match
      */
-    public List< Pair< TargetFields, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
+    public List< Pair< ITargetField, String > > getSearchPairs( CargoContainer cargo ) throws PluginException
     {
-        List< Pair< TargetFields, String > > searchList = new ArrayList< Pair< TargetFields, String > >();
+        List< Pair< ITargetField, String > > searchList = new ArrayList< Pair< ITargetField, String > >();
         //calls a javascript, with the dc-stream and original data of the
         //cargo as argument, that returns an xml with the pairs to generate
         //start with dummy xml on the javascript-side
@@ -167,14 +167,14 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         rhinoWrapper.run( searchFunc, dcString, orgData, pairArray );
 
         //go through the pairArray
-        //create the TargetFields for the searchList
+        //create the ITargetField for the searchList
         int length = pairArray.length;
         log.debug( String.format( "length of search list: %s", length ) );
         for ( int i = 0; i < length; i += 2 )
         {
             if ( pairArray[ i ] != null )
             {
-                searchList.add( new Pair< TargetFields, String >( (TargetFields)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
+                searchList.add( new Pair< ITargetField, String >( (ITargetField)FedoraObjectFields.getFedoraObjectFields( pairArray[i] ), pairArray[ i + 1 ].toLowerCase() ) );
             }
         }
 
@@ -191,7 +191,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * works to check for a match
      * @return List<PID> a list of the work objects that should be checked for a match.
      */
-    private List< PID > getWorkList( List< Pair< TargetFields, String > > searchList )
+    private List< PID > getWorkList( List< Pair< ITargetField, String > > searchList )
     {
         //for each pair in the searchList, search the repository
         //and add the results together in pidList
@@ -202,7 +202,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         List<String> pidStringList = new ArrayList<String>();
         List<String> searchResultList = new ArrayList<String>();
 
-        for ( Pair< TargetFields, String > pair : searchList )
+        for ( Pair< ITargetField, String > pair : searchList )
         {
             num++;
 

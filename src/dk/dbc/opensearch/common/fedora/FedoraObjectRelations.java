@@ -27,7 +27,6 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.common.Constants;
 import fedora.server.types.gen.ObjectFields;

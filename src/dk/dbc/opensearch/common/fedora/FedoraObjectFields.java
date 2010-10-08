@@ -25,14 +25,14 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.types.TargetFields;
+import dk.dbc.opensearch.common.types.ITargetField;
 
 
 /**
  * Enum class for representing the searchable fields in a fedora
  * object repository.
  */
-public enum FedoraObjectFields implements TargetFields
+public enum FedoraObjectFields implements ITargetField
 {
     PID( "pid" ),
     LABEL( "label" ),

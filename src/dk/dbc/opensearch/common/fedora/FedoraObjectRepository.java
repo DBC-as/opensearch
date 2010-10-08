@@ -34,7 +34,7 @@ import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.IObjectIdentifier;
-import dk.dbc.opensearch.common.types.TargetFields;
+import dk.dbc.opensearch.common.types.ITargetField;
 
 import fedora.common.Constants;
 import fedora.server.types.gen.Condition;
@@ -496,7 +496,7 @@ public class FedoraObjectRepository implements IObjectRepository
 	List< Condition > validConditions = new ArrayList< Condition >( conditions.size() );
         for( OpenSearchCondition condition : conditions )
         {
-	    TargetFields field = (TargetFields)condition.getField();
+	    ITargetField field = (ITargetField)condition.getField();
 	    String value = condition.getValue();
 
 	    // Set the fedora ComparisonOperator:

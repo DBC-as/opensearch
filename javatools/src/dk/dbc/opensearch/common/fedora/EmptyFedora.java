@@ -6,7 +6,6 @@ import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.TargetFields;
 
 import fedora.server.types.gen.ObjectFields;
 

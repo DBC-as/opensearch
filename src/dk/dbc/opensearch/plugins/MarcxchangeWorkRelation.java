@@ -32,7 +32,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.TargetFields;
+import dk.dbc.opensearch.common.types.ITargetField;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +81,7 @@ public class MarcxchangeWorkRelation implements IPluggable
 	MarcxchangeWorkRelationEnvironment env = (MarcxchangeWorkRelationEnvironment)ienv;
 
 	long sp_timer = System.currentTimeMillis();
-	List< Pair< TargetFields, String > > searchPairs = env.getSearchPairs( cargo );
+	List< Pair< ITargetField, String > > searchPairs = env.getSearchPairs( cargo );
 	sp_timer = System.currentTimeMillis() - sp_timer;
 	log.trace( String.format( "searchPairs Timing: time: %s", sp_timer ) );  
         log.debug( String.format( "the searchList: %s", searchPairs.toString() ) );

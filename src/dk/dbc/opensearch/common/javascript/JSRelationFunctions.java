@@ -29,7 +29,6 @@ import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.IObjectIdentifier;
-import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.ArrayList;
 import java.util.List;

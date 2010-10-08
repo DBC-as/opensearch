@@ -32,7 +32,6 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IObjectIdentifier;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.TargetFields;
 
 import java.util.List;
 

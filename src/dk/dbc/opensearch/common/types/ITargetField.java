@@ -28,7 +28,7 @@ package dk.dbc.opensearch.common.types;
  *  specify single fields on the objects without having to know the
  *  concrete implementation.
  */
-public interface TargetFields
+public interface ITargetField
 {
     /** 
      * @return the name of the field as a String
