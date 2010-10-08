@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Holds the metadata for {@link CargoObjects CargoObject} that are
+ * Holds the metadata for {@link CargoObject CargoObjects} that are
  * contained in a {@link CargoContainer}
  */
 public class CargoObjectInfo
