@@ -1,3 +1,22 @@
+/*
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s, 
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 
 package dk.dbc.opensearch.common.types;
 
@@ -9,13 +28,26 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 
+
 /**
- * Class needed for synchronisation of access to modification of
- * objects represented by a PID (String)
- * The Map lockMap has a String (most often ad PID) as value and a
- * Pair consisting of a lock and a counter.
- * The counter is used to maintain the map so we know when a lock is no longer
- * in use and can be deleted
+ * This class enables locking based on identifiers. Currently the
+ * identifiers need to be {@link String}s.  There are no limitations
+ * on the contents of the {@link String}, just that it is not null.
+ * <p/>
+ * The class contains two public methods {@link StringLock#lock(
+ * String )} and {@link StringLock#unlock( String )}. It is therefore
+ * evidient that the identifier is needed both for locking and
+ * unlocking. This enables a thread to lock on more than one identifier at a time
+ * <p/>
+ * The internal lock is based on a reentrant lock type, and as such a
+ * thread can lock the same identifier severeal times without
+ * unlocking it. Please notice, that the thread must perform as many
+ * unlocks as it performs locks in order to truly release the lock for
+ * use by another thread. 
+ * Please see {@link java.util.concurrent.locks.ReentrantLock} for reference.
+ * <p/>
+ * Internally the identifiers are connected each to a different
+ * lock. A lock will only be kept internally as long as it is in use.
  */
 public class StringLock
 {
@@ -108,7 +140,7 @@ public class StringLock
     private Map< String, LockAdmin > lockMap;
 
     /**
-     * Constructor for the StringLock class
+     * Constructor for the StringLock class. 
      */
     public StringLock()
     {
@@ -116,51 +148,81 @@ public class StringLock
         log.info( "StringLock constructed" );
     }
 
-    public void lock( String pid )
+    /**
+     * Tries to get a lock on the {@code identifier}.  If noone has
+     * the lock it will be granted, otherwise the lock will block
+     * until it is granted.
+     * 
+     * @param identifier the identifier you wish to lock on.
+     *
+     * @throws IllegalStateException if null is given as
+     * identifer. That is, the null-object, not \"null\" as a {@link
+     * String} which is a perfectly legal value.
+     */
+    public void lock( String identifier )
     {
-        log.info( String.format( "Thread '%s' calling StringLock.lock with pid: '%s'", Thread.currentThread().getId(), pid  ) );
-        ReentrantLock pidLock= null;
+        log.info( String.format( "Thread '%s' calling StringLock.lock with identifier: '%s'", Thread.currentThread().getId(), identifier  ) );
+
+	if ( identifier == null )
+	{
+	    String errMsg = String.format( "\"null\" is not accepted as a legal value for lock()" );
+	    log.warn( errMsg );
+	    throw new IllegalStateException( errMsg );
+	}
+
+        ReentrantLock identifierLock= null;
         LockAdmin lockAdm = null;
         synchronized(lockMap)
         {
-            lockAdm = lockMap.get( pid );
+            lockAdm = lockMap.get( identifier );
             if( lockAdm == null )
             {
                 lockAdm = new LockAdmin();
-                lockMap.put( pid, lockAdm );
+                lockMap.put( identifier, lockAdm );
             }
 
             lockAdm.increaseCounter();
-            pidLock = lockAdm.getLock();
+            identifierLock = lockAdm.getLock();
         }
-        log.trace( String.format( "lock, Thread '%s' trying to get lock on pid :'%s'", Thread.currentThread().getId() ,pid  ) );
-        pidLock.lock();
-        log.trace( String.format( "lock, Thread '%s' got lock on pid: '%s'", Thread.currentThread().getId(), pid ) );
+        log.trace( String.format( "lock, Thread '%s' trying to get lock on identifier :'%s'", Thread.currentThread().getId() ,identifier  ) );
+        identifierLock.lock();
+        log.trace( String.format( "lock, Thread '%s' got lock on identifier: '%s'", Thread.currentThread().getId(), identifier ) );
     }
 
-    public void unlock( String pid )
+    /**
+     * Releases a lock on an identifier.
+     *
+     * @param identifier A {@link String} containing the identifier you want to unlock.
+     *
+     * @throws IllegalStateException if the {@code identifier} is not
+     * associated with a lock, i.e. {@link StringLock#lock( String )} has not been called
+     * on the {@code identifier}.
+     *
+     * @throws IllegalMonitorStateException if the unlocking thread is
+     * not the owner of the lock.
+     */
+    public void unlock( String identifier )
     {
-        log.debug( String.format( "Thread '%s' calling StringLock.unlock with pid: '%s'", Thread.currentThread().getId(), pid  ) );
-        ReentrantLock pidLock = null;
+        log.info( String.format( "Thread '%s' calling StringLock.unlock with identifier: '%s'", Thread.currentThread().getId(), identifier  ) );
 
         synchronized(lockMap)
         {
-            LockAdmin lockAdm = lockMap.get( pid );
+            LockAdmin lockAdm = lockMap.get( identifier );
             if( lockAdm == null )
             {
-                String msg = String.format( "unlock called and no LockAdmin corresponding to the PID: '%s' found in the lockMap", pid );
+                String msg = String.format( "unlock called and no LockAdmin corresponding to the identifier: '%s' found in the lockMap", identifier);
                 log.error( msg );
                 throw new IllegalStateException( msg );
             }
 
-            log.info( String.format( "unlock, thread: '%s' released lock on pid: '%s'", Thread.currentThread().getId(), pid ) );
-            lockAdm.decreaseCounter();
-            lockAdm.getLock().unlock();
+            lockAdm.getLock().unlock(); // try to release lock.
+            lockAdm.decreaseCounter(); // can not decrease counter before we have assured we can unlock.
+            log.info( String.format( "unlock, thread: '%s' released lock on identifier: '%s'", Thread.currentThread().getId(), identifier ) );
 
             if( lockAdm.counterIsZero() )
             {
-                log.info( String.format( "unlock, removed lock associated with pid: '%s' from the lockMap", pid ) );
-                lockMap.remove( pid );
+                log.info( String.format( "unlock, removed lock associated with identifier: '%s' from the lockMap", identifier ) );
+                lockMap.remove( identifier );
             }
         }
     }
