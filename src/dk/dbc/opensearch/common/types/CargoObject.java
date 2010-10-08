@@ -162,7 +162,7 @@ public class CargoObject
      */
     public String getMimeType()
     {
-        return coi.getMimeType();
+        return coi.getMimeType().getMimeType();
     }
 
 

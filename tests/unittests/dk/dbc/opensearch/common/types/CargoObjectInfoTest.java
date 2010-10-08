@@ -98,17 +98,10 @@ public class CargoObjectInfoTest
 	assertTrue( default_coi.getDataStreamType().equals( test_datastreamtype ) );
     }
 
-    /**
-     * This one is a little bit tricky - we use a variable of
-     * CargoMimeType as parameter, but when we retrieve the variable
-     * it is converted to a String - through
-     * CargoMimeType.getMimeType(). This test is therefore more of a
-     * whitebox test than a blackbox test.
-     */    
     @Test 
     public void testGetMimeType() 
     {
-	assertTrue( default_coi.getMimeType().equals( test_mimetype.getMimeType() ) );
+	assertTrue( default_coi.getMimeType().equals( test_mimetype ) );
     }
 
     @Test 

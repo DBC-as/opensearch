@@ -144,18 +144,15 @@ public class CargoObjectInfo
 
 
     /**
-     * Retrieves the mimetype as a String converted through {@link
-     * CargoMimeType#getMimeType()}. The returned mimetype is
-     * therefore <i>not</i> the same as {@link
-     * CargoMimeType#toString()}.
+     * Retrieves the mimetype.
      *
-     * @return mimetype as a {@link String}.
+     * @return the mimetype.
      *
      * @see CargoMimeType
      */ 
-    String getMimeType()
+    CargoMimeType getMimeType()
     {
-        return mimeType.getMimeType();
+        return mimeType; 
     }
 
 
