@@ -178,4 +178,31 @@ public class StringLockTest
     }
 
 
+    @Test
+    public void testT1LockT2LockT1UnlockT2UnlockSameLockConcurrent() throws InterruptedException
+    {
+	final StringLock sl3 = new StringLock(); // needs unique name
+
+	// Creating inner class with thread for test
+	class MyThread extends Thread
+	{
+	    public void lock() { sl3.lock( "id_1" ); }
+	    public void unlock() { sl3.unlock( "id_1" ); }
+
+	    public void run() 
+	    {
+	    }
+	}
+
+	MyThread t1 = new MyThread();
+	MyThread t2 = new MyThread();
+	t1.start(); // starting the other thread to get the lock
+	t2.start();
+
+	t1.lock();
+	t2.lock();
+	t1.unlock();
+	t2.unlock();
+    }
+
 }
