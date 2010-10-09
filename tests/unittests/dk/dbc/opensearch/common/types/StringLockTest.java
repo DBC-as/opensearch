@@ -177,13 +177,23 @@ public class StringLockTest
 	sl2.unlock( "id_1" ); // unlock in current thread; this should throw an exception. 
     }
 
-
+    /**
+     * In this test the following should happen:
+     *
+     * Thread 1 ask for and aquire lock on "id_1"
+     * Thread 2 ask for lock on "id_1"
+     * Thread 1 releases lock on "id_1"
+     * Thread 2 aquire lock on "id_1"
+     * Thread 2 releases lock on "id_1"
+     */
     @Test
     public void testT1LockT2LockT1UnlockT2UnlockSameLockConcurrent() throws InterruptedException
     {
 	final StringLock sl3 = new StringLock(); // needs unique name
 
-	// Creating inner class with thread for test
+	// Creating inner class with thread for test.
+	// This class has methods for locking and unlocking on 
+	// the identifier "id_1":
 	class MyThread extends Thread
 	{
 	    public void lock() { sl3.lock( "id_1" ); }
@@ -194,10 +204,12 @@ public class StringLockTest
 	    }
 	}
 
+	// We need two threads in this test in 
+	// order to be able to perform the test without deadlocking.
 	MyThread t1 = new MyThread();
 	MyThread t2 = new MyThread();
-	t1.start(); // starting the other thread to get the lock
-	t2.start();
+	t1.start(); // starting thread 1
+	t2.start(); // starting thread 2
 
 	t1.lock();
 	t2.lock();

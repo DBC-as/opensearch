@@ -21,10 +21,9 @@
 package dk.dbc.opensearch.common.types;
 
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
