@@ -2,19 +2,19 @@
 
 <job_list xmlns="info:opensearch.dbc.dk#">
 
-  <job submitter="150017" format="faktalink" alias="review">
+  <job submitter="150017" format="faktalink" alias="addi">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="150016" format="portraet" alias="review">
+  <job submitter="150016" format="portraet" alias="addi">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="870976" format="matvurd" alias="review">
+  <job submitter="870976" format="matvurd" alias="addi">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="870971" format="anmeld" alias="review">
+  <job submitter="870971" format="anmeld" alias="addi">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>  
@@ -42,7 +42,7 @@
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
-  <job submitter="150014" format="nmtrack" alias="dkabm" >
+  <job submitter="150014" format="nmtrack" alias="addi" >
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
@@ -59,6 +59,10 @@
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
   <job submitter="775100" format="katalog" alias="danmarcxchange">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>
+  <job submitter="875180" format="katalog" alias="danmarcxchange">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>
