@@ -53,12 +53,12 @@ function checkmatch( newObject, workObject )
     //var oai_dc = new Namespace( "oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/" );
 
     var result = false;
-    var newTitle = String(newObjectXml.dc::title);
-    var workTitle = String(workObjectXml.dc::title);
-    var newSource = String(newObjectXml.dc::source);
-    var workSource = String(workObjectXml.dc::source);
-    var newCreator = String(newObjectXml.dc::creator);
-    var workCreator = String(workObjectXml.dc::creator);
+    var newTitle = String(newObjectXml.dc::title).toLowerCase();
+    var workTitle = String(workObjectXml.dc::title).toLowerCase();
+    var newSource = String(newObjectXml.dc::source).toLowerCase();
+    var workSource = String(workObjectXml.dc::source).toLowerCase();
+    var newCreator = String(newObjectXml.dc::creator).toLowerCase();
+    var workCreator = String(workObjectXml.dc::creator).toLowerCase();
     var newType = String(newObjectXml.dc::type);
     var workType = String(workObjectXml.dc::type);
     var newContributors = [];
@@ -66,11 +66,11 @@ function checkmatch( newObject, workObject )
     var child;
     for each (child in newObjectXml.dc::contributor) {
       Log.debug( "RLO: CHILD NEW " + child);
-      newContributors.push(String(child));
+      newContributors.push(String(child).toLowerCase());
     }
     for each (child in workObjectXml.dc::contributor) {
       Log.debug( "RLO: CHILD WORK " + child);
-      workContributors.push(String(child));
+      workContributors.push(String(child).toLowerCase());
     }
     var newIdentifier = [];
     var workIdentifier = [];
@@ -139,6 +139,7 @@ function checkmatch( newObject, workObject )
         break;
       case "CD": case "Grammofonplade": case "netmusik (album)":
         Log.debug( "RLO: CD\n");
+        Log.debug( "RLO: All Values:\n" + newTitle + "\n" + workTitle + "\n" + newCreator + "\n" + workCreator + "\n" + workType+ "\n" );
         if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|album")) {
           result = true;
         } else {
