@@ -50,100 +50,42 @@ import org.apache.log4j.Logger;
  */
 public class StringLock
 {
+    /*
+      We need to maintain a relationship between a Reentrant lock and
+      a String (the identifier) on which the lock is associated.  This
+      relationship have decided to maintain in a map (HashMap), with
+      the String as Key and the ReentrantLock as Value, thereby
+      ensuring that at most one ReentrantLock can exist for a given
+      String.
 
-    Logger log = Logger.getLogger( StringLock.class );
-    /**
-     * inner class used for maintainence of the lock and its counter
-     */
+      We also strive to meet the goal of not keeping unused locks in
+      the map.  We do this by maintaining a counter, which tracks how
+      many threads have called lock() on the ReentrantLock
+      
+      Internally in this class, we therefore need to maintain a
+      relation between the String, the ReentrantLock and the counter.
+      We have decided, instead of having the ReentrantLock as the
+      Value of the HashMap we use a Pair-type as Value, which contains
+      a ReentrantLock and an Integer.  Notice, that we cannot use the
+      primitive 'int' in a Generic, and therefore we need to use the
+      boxed primitive Integer. An Integer-type is Immutable, and
+      therefore, each time we need to increment or decrement the
+      Integer, we must associate a new Pair-object with the String in
+      the HashMap. This choice do clutter the following code a little,
+      but we think it better to used well tested types over creating
+      an internal class which in order needs to be well tested in
+      order to esnure correctness of the overall algorithm.
+    */
 
-    private class LockAdmin
-    {
-        private ReentrantLock lock;
-        private int counter;
-
-        LockAdmin()
-        {
-            this.lock = new ReentrantLock();
-            this.counter = 0;
-        }
-
-        /**
-         *  Retrieves the lock of the pair.
-         *  @return ReentrantLock The lock of the pair.
-         */
-        ReentrantLock getLock()
-        {
-            return lock;
-        }
-
-        /**
-         *  Retrieves the counter of the pair.
-         *  @return int The counter the pair.
-         */
-        boolean counterIsZero()
-        {
-            if( counter == 0 )
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * decreases the counter part of the pair with 1
-         * @throws IllegalStateException if the counter is attempted to
-         * be decreased below zero
-         */
-        void decreaseCounter() throws IllegalStateException
-        {
-            if( counter == 0 )
-            {
-                String msg = "counter is decreased below zero!!" ;
-                log.error( msg );
-                throw new IllegalStateException( msg );
-            }
-
-            counter--;
-        }
-
-        /**
-         * increases the counter part of the pair with 1
-         */
-        void increaseCounter()
-        {
-            counter++;
-        }
-
-        /**
-         *  A string representation of the elements in the following format:
-         *  a string representation of the lock and the value of the counter
-         *  @return a String representation of the object
-         */
-        @Override
-        public String toString()
-        {
-            return String.format( "LockAdmin, Lock: %s, Counter: %s >", lock.toString(), counter );
-        }
-
-        /**
-         *  Returns a unique hashcode for the specific combination
-         *  of elements in this LockAdmin
-         */
-        @Override
-        public int hashCode()
-        {
-            return lock.hashCode() ^ counter;
-        }
-    }
-
-    private Map< String, LockAdmin > lockMap;
+    private static Logger log = Logger.getLogger( StringLock.class );
+    private Map< String, Pair< ReentrantLock, Integer > > lockMap;
 
     /**
      * Constructor for the StringLock class. 
      */
     public StringLock()
     {
-        lockMap = new HashMap< String, LockAdmin >();
+        lockMap = new HashMap< String, Pair< ReentrantLock, Integer > >();
         log.info( "StringLock constructed" );
     }
 
@@ -170,23 +112,32 @@ public class StringLock
 	}
 
         ReentrantLock identifierLock= null;
-        LockAdmin lockAdm = null;
         synchronized(lockMap)
         {
-            lockAdm = lockMap.get( identifier );
-            if( lockAdm == null )
+            Pair< ReentrantLock, Integer > pair = lockMap.get( identifier );
+            if( pair == null )
             {
-                lockAdm = new LockAdmin();
-                lockMap.put( identifier, lockAdm );
+		log.info( String.format( "Creating new Lock for identifier: %s", identifier ) );
+		pair = new Pair< ReentrantLock, Integer >( new ReentrantLock(), new Integer(0) );
             }
+	    // At this point, we are certain that 'pair' contains a sensible value.
 
-            lockAdm.increaseCounter();
-            identifierLock = lockAdm.getLock();
+	    // Increment:
+	    int cur = pair.getSecond().intValue(); // current counter
+	    Integer inc = new Integer( cur + 1 ); // incremented counter
+	    log.debug( String.format( "Counter for %s is now: %s", identifier, inc ) );
+
+            identifierLock = pair.getFirst();
+
+	    // Update the map with a pair containing the incremented counter:
+	    lockMap.put( identifier, new Pair< ReentrantLock, Integer >( identifierLock, inc ) );
         }
+
         log.trace( String.format( "lock, Thread '%s' trying to get lock on identifier :'%s'", Thread.currentThread().getId() ,identifier  ) );
         identifierLock.lock();
         log.trace( String.format( "lock, Thread '%s' got lock on identifier: '%s'", Thread.currentThread().getId(), identifier ) );
     }
+
 
     /**
      * Releases a lock on an identifier.
@@ -206,23 +157,38 @@ public class StringLock
 
         synchronized(lockMap)
         {
-            LockAdmin lockAdm = lockMap.get( identifier );
-            if( lockAdm == null )
+            Pair< ReentrantLock, Integer > pair = lockMap.get( identifier );
+            if( pair == null )
             {
                 String msg = String.format( "unlock called and no LockAdmin corresponding to the identifier: '%s' found in the lockMap", identifier);
                 log.error( msg );
                 throw new IllegalStateException( msg );
             }
+	    
+	    // If we decrease counter before we unlock, and the thread calling unlock()
+	    // do not have the lock, then we first decrease the counter and then throws an exception.
+	    // The counter will then be out of sync.
+	    // Not a good idea! We therefore do it the other way around.
+	    
+            pair.getFirst().unlock(); // try to release lock.
 
-            lockAdm.getLock().unlock(); // try to release lock.
-            lockAdm.decreaseCounter(); // can not decrease counter before we have assured we can unlock.
+            // We can now decrease counter since we have unlocked.
+	    int cur = pair.getSecond().intValue(); // current counter
+	    Integer dec = new Integer( cur - 1 );  // decreased counter
+	    log.debug( String.format( "Counter for %s is now: %s", identifier, dec ) );
+
             log.info( String.format( "unlock, thread: '%s' released lock on identifier: '%s'", Thread.currentThread().getId(), identifier ) );
 
-            if( lockAdm.counterIsZero() )
+            if(  dec.intValue() == 0 )
             {
                 log.info( String.format( "unlock, removed lock associated with identifier: '%s' from the lockMap", identifier ) );
                 lockMap.remove( identifier );
             }
+	    else
+	    {
+		// Replace the pair in the Map with a pair containing a decremented counter:
+		lockMap.put( identifier, new Pair< ReentrantLock, Integer >( pair.getFirst(), dec ) );
+	    }
         }
     }
 }
