@@ -1103,7 +1103,7 @@
 
   </xml-object>
 
-<xml-object alias="review" sub-index="opensearch-index"> 
+<xml-object alias="addi" sub-index="opensearch-index"> 
 
     <xml-id
        name="id"
