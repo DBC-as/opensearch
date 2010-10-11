@@ -111,7 +111,7 @@ public class StringLock
 	    throw new IllegalStateException( errMsg );
 	}
 
-        ReentrantLock identifierLock= null;
+        ReentrantLock identifierLock = null;
         synchronized(lockMap)
         {
             Pair< ReentrantLock, Integer > pair = lockMap.get( identifier );
@@ -133,7 +133,7 @@ public class StringLock
 	    lockMap.put( identifier, new Pair< ReentrantLock, Integer >( identifierLock, inc ) );
         }
 
-        log.trace( String.format( "lock, Thread '%s' trying to get lock on identifier :'%s'", Thread.currentThread().getId() ,identifier  ) );
+        log.trace( String.format( "lock, Thread '%s' trying to get lock on identifier :'%s'", Thread.currentThread().getId() ,identifier ) );
         identifierLock.lock();
         log.trace( String.format( "lock, Thread '%s' got lock on identifier: '%s'", Thread.currentThread().getId(), identifier ) );
     }
@@ -153,14 +153,14 @@ public class StringLock
      */
     public void unlock( String identifier )
     {
-        log.info( String.format( "Thread '%s' calling StringLock.unlock with identifier: '%s'", Thread.currentThread().getId(), identifier  ) );
+        log.info( String.format( "Thread '%s' calling StringLock.unlock with identifier: '%s'", Thread.currentThread().getId(), identifier ) );
 
         synchronized(lockMap)
         {
             Pair< ReentrantLock, Integer > pair = lockMap.get( identifier );
             if( pair == null )
             {
-                String msg = String.format( "unlock called and no LockAdmin corresponding to the identifier: '%s' found in the lockMap", identifier);
+                String msg = String.format( "unlock called and no lock and counter corresponding to the identifier: '%s' found in the lockMap", identifier );
                 log.error( msg );
                 throw new IllegalStateException( msg );
             }
@@ -169,6 +169,7 @@ public class StringLock
 	    // do not have the lock, then we first decrease the counter and then throws an exception.
 	    // The counter will then be out of sync.
 	    // Not a good idea! We therefore do it the other way around.
+            // We are in the synchronized block on lockMap, so no new threads can get a lock.
 	    
             pair.getFirst().unlock(); // try to release lock.
 
@@ -179,7 +180,7 @@ public class StringLock
 
             log.info( String.format( "unlock, thread: '%s' released lock on identifier: '%s'", Thread.currentThread().getId(), identifier ) );
 
-            if(  dec.intValue() == 0 )
+            if( dec.intValue() == 0 )
             {
                 log.info( String.format( "unlock, removed lock associated with identifier: '%s' from the lockMap", identifier ) );
                 lockMap.remove( identifier );
