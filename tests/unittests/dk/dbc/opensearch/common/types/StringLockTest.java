@@ -126,6 +126,10 @@ public class StringLockTest
      * OtherThread:   unlock( "id_2" )
      * CurrentThread: unlock( "id_1" )
      */ 
+
+    /**
+     * \Todo: How are we sure that this happens as descriped?
+     */
     @Test
     public void testTwoLocksConcurrent() throws InterruptedException
     {
@@ -206,6 +210,14 @@ public class StringLockTest
 
 	// We need two threads in this test in 
 	// order to be able to perform the test without deadlocking.
+        /** \Todo: Why must the work of t1 be done in a thread ? Why not:
+         *      
+         * sl3.lock();
+         * t2.lock();
+         * sl3.unlock();
+         * t2.unlock();
+         */
+
 	MyThread t1 = new MyThread();
 	MyThread t2 = new MyThread();
 	t1.start(); // starting thread 1
