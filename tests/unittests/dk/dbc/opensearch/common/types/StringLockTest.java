@@ -113,10 +113,10 @@ public class StringLockTest
     }
 
     /**
-     * The following tests are concurrency tests.
-     * The names end with "Concurrent".
-     * Normally it is undesired to have threads in unittests, 
-     * but this is not a normal class.
+     * The following tests are concurrency tests.  The names end with
+     * "Concurrent".  Normally it is undesired to have threads in
+     * unittests, but this is not a normal class.
+     * BTW: Errors in the code were found based on these unittests!
      */ 
 
     /**
@@ -126,10 +126,6 @@ public class StringLockTest
      * OtherThread:   unlock( "id_2" )
      * CurrentThread: unlock( "id_1" )
      */ 
-
-    /**
-     * \Todo: How are we sure that this happens as descriped?
-     */
     @Test
     public void testTwoLocksConcurrent() throws InterruptedException
     {
@@ -189,6 +185,10 @@ public class StringLockTest
      * Thread 1 releases lock on "id_1"
      * Thread 2 aquire lock on "id_1"
      * Thread 2 releases lock on "id_1"
+     *
+     * This test is implemented using two threads in order to ensure
+     * readability. Thread 1 could be the current thread, but I belive
+     * that would clutter the code.
      */
     @Test
     public void testT1LockT2LockT1UnlockT2UnlockSameLockConcurrent() throws InterruptedException
@@ -207,16 +207,6 @@ public class StringLockTest
 	    {
 	    }
 	}
-
-	// We need two threads in this test in 
-	// order to be able to perform the test without deadlocking.
-        /** \Todo: Why must the work of t1 be done in a thread ? Why not:
-         *      
-         * sl3.lock();
-         * t2.lock();
-         * sl3.unlock();
-         * t2.unlock();
-         */
 
 	MyThread t1 = new MyThread();
 	MyThread t2 = new MyThread();
