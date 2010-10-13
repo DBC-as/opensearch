@@ -142,19 +142,12 @@ public class FedoraHandle
 
     String ingest( byte[] data, String datatype, String logmessage ) throws ConfigurationException, ServiceException, ServiceException, IOException
     {
-        long timer = 0;
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         String pid = this.getAPIM().ingest( data, datatype, logmessage );
 
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE ingest Timing: ( %s f) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s f) %s", this.getClass(), timer ) );
 
         return pid;
     }
@@ -162,20 +155,12 @@ public class FedoraHandle
 
     String uploadFile( File fileToUpload ) throws IOException
     {
-        long timer = 0;
-
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         String msg = this.getFC().uploadFile( fileToUpload );
 
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE uploadFile Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return msg;
     }
@@ -183,39 +168,25 @@ public class FedoraHandle
 
     String modifyDatastreamByReference( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, String MIMEType, String formatURI, String dsLocation, String checksumType, String checksum, String logMessage, boolean force ) throws RemoteException
     {
-        long timer = 0;
 
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         String timestamp = this.getAPIM().modifyDatastreamByReference( pid, datastreamID, alternativeDsIds, dsLabel, MIMEType, formatURI, dsLocation, checksumType, checksum, logMessage, force);
 
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE modify Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return timestamp;
     }
 
     String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        long timer = 0;
-
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         String returnedSID = this.getAPIM().addDatastream( pid, datastreamID, alternativeDsIds, dsLabel, versionable, MIMEType, formatURI, dsLocation, controlGroup, datastreamState, checksumType, checksum, logmessage );
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE addDatastream Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return returnedSID;
     }
@@ -223,21 +194,12 @@ public class FedoraHandle
 
     byte[] getDatastreamDissemination( String pid, String datastreamId, String asOfDateTime ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
     {
-        MIMETypedStream ds = null;
-        long timer = 0;
+	long timer = System.currentTimeMillis();
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+        MIMETypedStream ds = this.getAPIA().getDatastreamDissemination( pid, datastreamId, asOfDateTime );
 
-        ds = this.getAPIA().getDatastreamDissemination( pid, datastreamId, asOfDateTime );
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return ds.getStream();
     }
@@ -245,19 +207,12 @@ public class FedoraHandle
 
     Datastream getDatastream( String pid, String dsID ) throws RemoteException
     {
-        long timer = 0;
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         Datastream res = getAPIM().getDatastream( pid, dsID, null );
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return res;
     }
@@ -265,19 +220,12 @@ public class FedoraHandle
 
     Datastream[] getDataStreamsXML( String pid ) throws IOException
     {
-        long timer = 0;
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         Datastream[] res = getAPIM().getDatastreams( pid, null, null );
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return res;
     }
@@ -285,20 +233,12 @@ public class FedoraHandle
 
     String[] getNextPID( int numberOfPids, String prefix ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        String[] pidlist = null;
-        long timer = 0;
+	long timer = System.currentTimeMillis();
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
-        pidlist = this.getAPIM().getNextPID( new NonNegativeInteger( Integer.toString( numberOfPids ) ) , prefix);
+        String[] pidlist = this.getAPIM().getNextPID( new NonNegativeInteger( Integer.toString( numberOfPids ) ) , prefix);
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         if ( pidlist == null )
         {
@@ -312,19 +252,12 @@ public class FedoraHandle
 
     TupleIterator getTuples( Map< String,String > params ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        long timer = 0;
-
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         TupleIterator tuples = this.getFC().getTuples( params );
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return tuples;
     }
@@ -332,13 +265,12 @@ public class FedoraHandle
 
     boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
+	// There is a check in this function in order to avoid having
+	// realations from an object to itself.
+	
 	log.debug( String.format( "Adding Relationship: [%s][%s] => [%s]", pid, predicate, object ) );
-        long timer = 0;
 
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 	
 	if ( pid.equals( object ) ) 
 	{
@@ -348,11 +280,8 @@ public class FedoraHandle
 
         boolean ret = this.getAPIM().addRelationship( pid, predicate, object, isLiteral, datatype );
 
-        if( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE addRelation Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return ret;
     }
@@ -360,20 +289,12 @@ public class FedoraHandle
 
     boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         boolean ret = this.getAPIM().purgeRelationship( pid, predicate, object, isLiteral, datatype );
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE purgeRelation Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return ret;
     }
@@ -381,63 +302,39 @@ public class FedoraHandle
 
     FieldSearchResult findObjects( String[] resultFields, NonNegativeInteger maxResults, FieldSearchQuery fsq ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
     {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         FieldSearchResult fsr = this.getAPIA().findObjects( resultFields, maxResults, fsq );
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE findObjects Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return fsr;
     }
+
 
     FieldSearchResult resumeFindObjects( String token ) throws ConfigurationException, MalformedURLException, IOException, ServiceException
     {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         FieldSearchResult fsr = this.getAPIA().resumeFindObjects( token );
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE resumeFindObjects Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return fsr;
     }
-
 
 
     RelationshipTuple[] getRelationships( String subject, String predicate ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            log.debug( String.format( "calling with subject '%s' and predicate '%s'", subject, predicate ) );
-            timer = System.currentTimeMillis();
-        }
+	log.debug( String.format( "calling with subject '%s' and predicate '%s'", subject, predicate ) );
+	long timer = System.currentTimeMillis();
 
         RelationshipTuple[] rt = this.getAPIM().getRelationships( subject, predicate );
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return rt;
     }
@@ -445,20 +342,12 @@ public class FedoraHandle
 
     String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies ) throws ConfigurationException, ServiceException, MalformedURLException, IOException
     {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         String[] rt = this.getAPIM().purgeDatastream( pid, sID, startDate, endDate, logm, breakDependencies);
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return rt;
     }
@@ -466,20 +355,12 @@ public class FedoraHandle
 
     String purgeObject( String identifier, String logmessage, boolean force ) throws ConfigurationException, ServiceException, MalformedURLException, IOException, RemoteException
     {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
         String timestamp = this.getAPIM().purgeObject( identifier, logmessage, force );
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE purgeObject Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return timestamp;
     }
@@ -487,12 +368,7 @@ public class FedoraHandle
 
     boolean hasObject( String identifier ) throws RemoteException
     {
-        long timer = 0;
-
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis();
-        }
+	long timer = System.currentTimeMillis();
 
 	boolean retValue = true;
         try
@@ -506,11 +382,8 @@ public class FedoraHandle
             retValue = false;
         }
 
-        if ( log.isDebugEnabled() )
-        {
-            timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "HANDLE hasObject Timing: ( %s ) %s", this.getClass(), timer ) );
-        }
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
 
         return retValue;
     }

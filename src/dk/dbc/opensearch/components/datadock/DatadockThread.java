@@ -147,7 +147,7 @@ public class DatadockThread implements Callable<Boolean>
             long timer = System.currentTimeMillis();
             cargo = plugin.runPlugin( env, cargo );
             timer = System.currentTimeMillis() - timer;
-            log.trace( String.format( "runPlugin Timing: %s time: %s", classname, timer ) );  
+            log.info( String.format( "runPlugin Timing: %s time: %s", classname, timer ) );  
             
             if( null == cargo || cargo.getCargoObjectCount() < 1 )
             {
