@@ -191,6 +191,12 @@ const DcCreator = function(){
         dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
+    
+    for each (child in originalXml.dkabm::record.dcterms::references) {
+      if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
+        dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "relation", dc );
+      }
+    }
 
     for each (child in originalXml.dkabm::record.dcterms::isPartOf) {
       if (String(child.@xsi::type).match("oss:albumId")) {

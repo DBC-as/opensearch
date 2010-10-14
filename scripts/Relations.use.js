@@ -42,8 +42,8 @@ const Relations = function() {
     }
 
     if (i === 0) {
-      if (String(reviewXML.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
-        var relation = "ISBN:" + String(reviewXML.dcterms::references);
+      if (String(reviewXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
+        var relation = "ISBN:" + String(reviewXML.dkabm::record.dcterms::references);
 
         var results = FedoraPIDSearch.identifier( relation );
 
@@ -55,22 +55,6 @@ const Relations = function() {
           if (!String(result).match(/work:.*/)) {
             DbcAddiRelations.isReviewOf( pid, result );
           }
-        }
-      }
-    }
-
-    if (i === 0 && String(reviewXML.dkabm::record.dc::title).match(/Anbefaling af:/)) {
-      var title = String(reviewXML.dkabm::record.dc::title).replace(/Anbefaling af: (.*) af .*/, "$1");
-
-      var results = FedoraPIDSearch.title( title );
-
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-
-        Log.info( "result: " + result );
-
-        if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.isReviewOf( pid, result );
         }
       }
     }
@@ -117,7 +101,7 @@ const Relations = function() {
 
           Log.info( "result: " + result );
 
-          if (!String(result).match(/work:.*/)) {
+          if (!String(result).match(/work:.*|150005:.*/)) {
             DbcAddiRelations.isReviewOf( result, pid );
           }
         }
@@ -125,6 +109,33 @@ const Relations = function() {
     }
 
     Log.info ("End hasReview" );
+
+  };
+  
+  that.isAnalysesOf = function ( xml, pid ) {
+
+    Log.info ("Start isAnalysesOf" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var analysesXML = XmlUtil.fromString( xml );
+
+    if (String(analysesXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
+      var relation = "ISBN:" + String(analysesXML.dkabm::record.dcterms::references);
+
+      var results = FedoraPIDSearch.identifier( relation );
+
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+
+        Log.info( "result: " + result );
+
+        if (!String(result).match(/work:.*/)) {
+          DbcAddiRelations.isAnalysesOf( pid, result );
+        }
+      }
+    }
+
+    Log.info ("End isAnalysesOf" );
 
   };
 
@@ -512,6 +523,15 @@ const Relations = function() {
     if (String(manifestationXML.*.*.*.(@tag=='538').*.(@code=='i')) === "Infomedia") {
       var url = String("[useraccessinfomedia]?action=getArticle&faust=" + manifestationXML.*.*.*.(@tag=='001').*.(@code=='a') + "&libraryCode=[libraryCode]&userId=[userId]&userPinCode=[userPinCode]");
       DbcAddiRelations.hasFulltext( pid, url );
+    }
+    
+    var child;
+    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden|Faktalink|Forfatterweb/)) {
+      for each (child in manifestationXML.dkabm::record.dc::identifier) {
+        if (String(child.@xsi::type).match("dcterms:URI")) {
+          DbcAddiRelations.hasFulltext( pid, String(child) );
+        }
+      }
     }
 
     Log.info ("End hasFullText" );
