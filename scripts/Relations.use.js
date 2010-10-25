@@ -323,15 +323,17 @@ const Relations = function() {
     Log.info( "Creator: " + creator );    
     Log.info( "pid: " + pid );
 
-    var results = FedoraPIDSearch.creator( creator );
-
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
-
-      Log.info( "result: " + result );
-
-      if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasAuthorDescription( result, pid );
+    if (creator !== "undefined") {
+      var results = FedoraPIDSearch.creator(creator);
+      
+      for (var i = 0; i < results.length; ++i) {
+        var result = results[i];
+        
+        Log.info("result: " + result);
+        
+        if (!String(result).match(/work:.*/)) {
+          DbcAddiRelations.hasAuthorDescription(result, pid);
+        }
       }
     }
 
