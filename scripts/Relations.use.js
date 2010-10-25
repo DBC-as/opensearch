@@ -390,15 +390,17 @@ const Relations = function() {
     Log.info( "Title: " + title );    
     Log.info( "pid: " + pid );
 
-    var results = FedoraPIDSearch.subject( title );
-
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
-
-      Log.info( "result: " + result );
-
-      if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasSubjectDescription( result, pid );
+    if (title !== "undefined") {
+      var results = FedoraPIDSearch.subject(title);
+      
+      for (var i = 0; i < results.length; ++i) {
+        var result = results[i];
+        
+        Log.info("result: " + result);
+        
+        if (!String(result).match(/work:.*/)) {
+          DbcAddiRelations.hasSubjectDescription(result, pid);
+        }
       }
     }
 
