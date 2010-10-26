@@ -3,7 +3,7 @@
      generated right now by the ForceFedoraPid plugin so ForceFedoraPid
      must be run before XMLDCHarvester -->
 <workflows xmlns="info:opensearch.dbc.dk#">
-  <workflow format="filmstrib" submitter="150021">
+  <workflow format="filmstrib" submitter="150022">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
@@ -19,7 +19,7 @@
       </args>
     </plugin>
   </workflow>
-  <workflow format="filmstrib" submitter="150020">
+  <workflow format="filmstrib" submitter="150021">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
