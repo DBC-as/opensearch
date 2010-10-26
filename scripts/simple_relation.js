@@ -59,3 +59,11 @@ function hasImage ( submitter, format, language, xml, pid ) {
 function hasFullText ( submitter, format, language, xml, pid ) {
   Relations.hasFullText ( xml, pid );
 }
+
+function hasOnlineAccess ( submitter, format, language, xml, pid ) {
+  Relations.hasOnlineAccess ( xml, pid );
+}
+
+function hasSpecificOnlineAccess ( submitter, format, language, xml, pid ) {
+  Relations.hasSpecificOnlineAccess ( xml, pid );
+}

@@ -541,6 +541,45 @@ const Relations = function() {
     Log.info ("End hasFullText" );
 
   };
+  
+  that.hasOnlineAccess = function( xml, pid ) {
+
+    Log.info ("Start hasOnlineAccess" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSS/)) {
+      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
+      DbcAddiRelations.hasOnlineAccess( pid, url );
+    }
+
+    Log.info ("End hasOnlineAccess" );
+
+  };
+  
+  that.hasSpecificOnlineAccess = function( xml, pid ) {
+
+    Log.info ("Start hasSpecificOnlineAccess" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSF/)) {
+      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var url = String("http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=" + id);
+      DbcAddiRelations.hasRemoteAccess( pid, url );
+    }
+    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSB/)) {
+      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var url = String("http://www.filmstriben.dk/bibliotek/filmdetails.aspx?id=" + id);
+      DbcAddiRelations.hasOnSiteAccess( pid, url );
+    }
+
+    Log.info ("End hasSpecificOnlineAccess" );
+
+  };
 
   return that;
 
