@@ -215,6 +215,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasCreatorHomePage"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="ebsco" submitter="775100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -293,6 +299,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasCreatorHomePage"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="875180">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -335,6 +347,12 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasCreatorHomePage"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="katalog" submitter="710100">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -375,6 +393,12 @@
       <args>
         <arg name="javascript" value="simple_relation.js"/>
         <arg name="entryfunction" value="hasSubjectDescription"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasCreatorHomePage"/>
       </args>
     </plugin>
   </workflow>
@@ -443,14 +467,6 @@
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
-      <args>
-        <arg name="javascript" value="workmatch_relation_functions.js"/>
-	<arg name="searchfunction" value="generateSearchPairs"/>
-	<arg name="matchfunction" value="checkmatch"/>
-	<arg name="createobjectfunction" value="makeworkobject"/>
-      </args>
-    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
