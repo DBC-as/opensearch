@@ -234,7 +234,7 @@
       </args>
     </plugin>
   </workflow>
-  <workflow format="ebrary" submitter="775100">
+  <workflow format="ebrary" submitter="150008">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
@@ -484,7 +484,7 @@
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
   </workflow>
-  <workflow format="dsd" submitter="dbc">
+  <workflow format="dsd" submitter="150012">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
       <args>
