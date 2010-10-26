@@ -580,6 +580,22 @@ const Relations = function() {
     Log.info ("End hasSpecificOnlineAccess" );
 
   };
+  
+  that.hasCreatorHomePage = function( xml, pid ) {
+
+    Log.info ("Start hasCreatorHomePage" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    if (String(manifestationXML.*.*.*.(@tag=='529').*.(@code=='a')).match(/MySpace/)) {
+      var url = String(manifestationXML.*.*.*.(@tag=='529').*.(@code=='u'));
+      DbcAddiRelations.hasCreatorHomePage( pid, url );
+    }
+
+    Log.info ("End hasCreatorHomePage" );
+
+  };
 
   return that;
 

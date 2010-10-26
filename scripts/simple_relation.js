@@ -67,3 +67,7 @@ function hasOnlineAccess ( submitter, format, language, xml, pid ) {
 function hasSpecificOnlineAccess ( submitter, format, language, xml, pid ) {
   Relations.hasSpecificOnlineAccess ( xml, pid );
 }
+
+function hasCreatorHomePage ( submitter, format, language, xml, pid ) {
+  Relations.hasCreatorHomePage ( xml, pid );
+}
