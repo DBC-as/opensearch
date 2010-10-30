@@ -359,16 +359,18 @@ const Relations = function() {
 
         Log.info( "Creator: " + creator );
         Log.info( "pid: " + pid );
+        
+        if (creator !== "undefined") {
+          var results = FedoraPIDSearch.title( creator );
 
-        var results = FedoraPIDSearch.title( creator );
+          for ( var i = 0; i < results.length; ++i ) {
+            var result = results[i];
 
-        for ( var i = 0; i < results.length; ++i ) {
-          var result = results[i];
+            Log.info( "result: " + result );
 
-          Log.info( "result: " + result );
-
-          if (String(result).match(/150016:.*/)) {
-            DbcAddiRelations.hasAuthorDescription( pid, result );
+            if (String(result).match(/150016:.*/)) {
+              DbcAddiRelations.hasAuthorDescription( pid, result );
+            }
           }
         }
       }
