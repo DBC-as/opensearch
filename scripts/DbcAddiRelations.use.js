@@ -36,7 +36,7 @@ const DbcAddiRelations = function() {
     /**
     * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcbibaddi#hasAnalyses
     */
-    that.isAnalysesOf = function ( pid1, pid2 ){
+    that.isAnalysisOf = function ( pid1, pid2 ){
         Log.info( "Start isAnalysesOf" );
         scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbibaddi#hasAnalyses", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isAnalysesOf", pid2 );
@@ -68,13 +68,13 @@ const DbcAddiRelations = function() {
     };
 
     /**
-    * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcbib#isAnalysesOf
+    * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcbib#isAnalysisOf
     */
-    that.hasAnalyses = function ( pid1, pid2 ){
-        Log.info( "Start hasAnalyses" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbib#isAnalysesOf", pid1);
-        scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasAnalyses", pid2 );
-        Log.info( "End hasAnalyses" );
+    that.hasAnalysis = function ( pid1, pid2 ){
+        Log.info( "Start hasAnalysis" );
+        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbib#isAnalysisOf", pid1);
+        scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasAnalysis", pid2 );
+        Log.info( "End hasAnalysis" );
     };
 
     /**

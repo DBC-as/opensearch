@@ -112,15 +112,15 @@ const Relations = function() {
 
   };
   
-  that.isAnalysesOf = function ( xml, pid ) {
+  that.isAnalysisOf = function ( xml, pid ) {
 
-    Log.info ("Start isAnalysesOf" );
+    Log.info ("Start isAnalysisOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var analysesXML = XmlUtil.fromString( xml );
+    var analysisXML = XmlUtil.fromString( xml );
 
-    if (String(analysesXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
-      var relation = "ISBN:" + String(analysesXML.dkabm::record.dcterms::references);
+    if (String(analysisXML.dkabm::record.dcterms::references.@xsi::type) === "dkdcplus:ISBN") {
+      var relation = "ISBN:" + String(analysisXML.dkabm::record.dcterms::references);
 
       var results = FedoraPIDSearch.identifier( relation );
 
@@ -130,12 +130,12 @@ const Relations = function() {
         Log.info( "result: " + result );
 
         if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.isAnalysesOf( pid, result );
+          DbcAddiRelations.isAnalysisOf( pid, result );
         }
       }
     }
 
-    Log.info ("End isAnalysesOf" );
+    Log.info ("End isAnalysisOf" );
 
   };
 
