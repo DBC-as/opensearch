@@ -272,6 +272,10 @@ const DcCreator = function(){
      }
  //   }
  
+    if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
+      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+    }
+ 
     if (originalXml.dkabm::record.dc::creator[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::creator[0]), "creator", dc );
     }
