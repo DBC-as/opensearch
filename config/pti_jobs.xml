@@ -25,6 +25,22 @@
   <job submitter="159002" format="lokalbibl" alias="danmarcxchange">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
     <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>
+  <job submitter="159005" format="artikler" alias="dkabm">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>  
+  <job submitter="159005" format="anmeld" alias="addi">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>  
+  <job submitter="159005" format="analyse" alias="addi">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
+  </job>  
+  <job submitter="159005" format="portraet" alias="addi">
+    <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
+    <plugin name="indexerxsem" classname="dk.dbc.opensearch.plugins.IndexerXSEM" />
   </job>  
   <job submitter="dbc" format="dr_atlas" alias="danmarcxchange">
     <plugin name="normalizeCharacters" classname="dk.dbc.opensearch.plugins.NormalizeDocument" />
