@@ -121,7 +121,11 @@ public interface IObjectRepository
 
 
     /**
-     * \todo: Write some documentation bug 11182
+     * Gets the PIDs of targets of a certain type of relation an object in the repository has
+     * @param subject, a {@link String} representing the object we want to get relations for
+     * @param predicate, a {@link String} specifying which relation to get
+     * @return a {@link List} of {@link Pair} of {@link String} and {@link String} containing the objects 
+     * of the relations that subject has relation predicate to
      */
 
 
