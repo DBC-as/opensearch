@@ -88,7 +88,7 @@ const Relations = function() {
     }
 
     if (i === 0) {
-      if (String(katalogXML.dkabm::record.dc::identifier).match(/ISBN:.*/)) {
+      if (String(katalogXML.dkabm::record.dc::identifier.@xsi::type).match(/dkdcplus:ISBN/)) {
         var identifier = "ISBN:" + String(katalogXML.dkabm::record.dc::identifier);
 
         Log.info( "Identifier: " + identifier );    
@@ -101,7 +101,7 @@ const Relations = function() {
 
           Log.info( "result: " + result );
 
-          if (!String(result).match(/work:.*|150005:.*/)) {
+          if (String(result).match(/150005:.*/)) {
             DbcAddiRelations.isReviewOf( result, pid );
           }
         }
