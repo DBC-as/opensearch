@@ -34,13 +34,13 @@ const DbcAddiRelations = function() {
     };
 
     /**
-    * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcbibaddi#hasAnalyses
+    * Will also set the inverse relation http://oss.dbc.dk/rdf/dbcbibaddi#hasAnalysis
     */
     that.isAnalysisOf = function ( pid1, pid2 ){
-        Log.info( "Start isAnalysesOf" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbibaddi#hasAnalyses", pid1);
-        scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isAnalysesOf", pid2 );
-        Log.info( "End isAnalysesOf" );
+        Log.info( "Start isAnalysisOf" );
+        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbibaddi#hasAnalysis", pid1);
+        scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#isAnalysisOf", pid2 );
+        Log.info( "End isAnalysisOf" );
     };
 
     /**

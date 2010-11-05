@@ -8,8 +8,8 @@ function hasReview ( submitter, format, language, xml, pid ) {
   Relations.hasReview ( xml, pid );
 }
 
-function isAnalysesOf ( submitter, format, language, xml, pid ) {
-  Relations.isAnalysesOf ( xml, pid );
+function isAnalysisOf ( submitter, format, language, xml, pid ) {
+  Relations.isAnalysisOf ( xml, pid );
 }
 
 function hasTrack ( submitter, format, language, xml, pid ) {
