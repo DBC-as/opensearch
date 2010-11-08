@@ -925,17 +925,16 @@ public class FedoraObjectRepository implements IObjectRepository
 
     /**
      * This method finds the targets of the relations identified by the predicate argument for the object 
-     * identified by the subject argument
-     * @param subject, String identifying the object to get relations for
-     * @param predicate, string telling what relation to get targets for
-     * @return a list of Pairs of IPredicate and String. In each pair is the IPredicate representing the relation 
-     * and the String the object
+     * identified by the subject argument.
+     *
+     * @param subject {@link String} identifying the object to get relations for.
+     * @param predicate {@link String} telling what relation to get targets for.
+     * @return a {@link List} of {@link Pair}s of {@link IPredicate} and {@link String}.
+     * In each {@link Pair} is the {@link IPredicate} representing the relation and the {@link String} the object.
      * 
      * \Todo: Why do we return the IPredicate telleing what relation we found, when we in the predicate param 
      * specifies what relation type to search for?
-     * 
      */
-
     public List< Pair< IPredicate, String > > getObjectRelations( String subject, String predicate ) throws ObjectRepositoryException
     {
         try
