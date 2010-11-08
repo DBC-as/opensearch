@@ -19,7 +19,7 @@
 
 package dk.dbc.opensearch.tools.relations;
 
-import fedora.client.FedoraClient;
+import org.fcrepo.client.FedoraClient;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;

@@ -28,15 +28,15 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.config.FedoraConfig;
 
-import fedora.client.FedoraClient;
-import fedora.server.access.FedoraAPIA;
-import fedora.server.management.FedoraAPIM;
-import fedora.server.types.gen.Datastream;
-import fedora.server.types.gen.DatastreamDef;
-import fedora.server.types.gen.FieldSearchQuery;
-import fedora.server.types.gen.FieldSearchResult;
-import fedora.server.types.gen.MIMETypedStream;
-import fedora.server.types.gen.RelationshipTuple;
+import org.fcrepo.client.FedoraClient;
+import org.fcrepo.server.access.FedoraAPIA;
+import org.fcrepo.server.management.FedoraAPIM;
+import org.fcrepo.server.types.gen.Datastream;
+import org.fcrepo.server.types.gen.DatastreamDef;
+import org.fcrepo.server.types.gen.FieldSearchQuery;
+import org.fcrepo.server.types.gen.FieldSearchResult;
+import org.fcrepo.server.types.gen.MIMETypedStream;
+import org.fcrepo.server.types.gen.RelationshipTuple;
 
 import java.io.File;
 import java.net.MalformedURLException;

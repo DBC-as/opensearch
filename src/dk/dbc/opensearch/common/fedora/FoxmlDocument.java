@@ -27,9 +27,9 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
-import fedora.utilities.Base64;
-import fedora.utilities.NamespaceContextImpl;
-import fedora.utilities.XmlTransformUtility;
+import org.fcrepo.utilities.Base64;
+import org.fcrepo.utilities.NamespaceContextImpl;
+import org.fcrepo.utilities.XmlTransformUtility;
 
 import java.io.IOException;
 import java.io.OutputStream;

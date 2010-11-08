@@ -28,9 +28,9 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
-import fedora.server.types.gen.FieldSearchQuery;
-import fedora.server.types.gen.FieldSearchResult;
-import fedora.server.types.gen.ObjectFields;
+import org.fcrepo.server.types.gen.FieldSearchQuery;
+import org.fcrepo.server.types.gen.FieldSearchResult;
+import org.fcrepo.server.types.gen.ObjectFields;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

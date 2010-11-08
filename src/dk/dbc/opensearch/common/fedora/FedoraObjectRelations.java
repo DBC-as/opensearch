@@ -28,9 +28,9 @@ package dk.dbc.opensearch.common.fedora;
 
 import dk.dbc.opensearch.common.types.Pair;
 
-import fedora.common.Constants;
-import fedora.server.types.gen.ObjectFields;
-import fedora.server.types.gen.RelationshipTuple;
+import org.fcrepo.common.Constants;
+import org.fcrepo.server.types.gen.ObjectFields;
+import org.fcrepo.server.types.gen.RelationshipTuple;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -158,7 +158,7 @@ public class FedoraObjectRelations
         /**
          * FedoraClient.getTuples might throw:
          * java.io.IOException: Error getting tuple iterator: Error parsing
-         * 	at fedora.client.FedoraClient.getTuples(FedoraClient.java:{linenumber})
+         * 	at org.fcrepo.client.FedoraClient.getTuples(FedoraClient.java:{linenumber})
          *
          * which (to anyone but the original coder) could indicate that there
          * was a problem with either;
@@ -172,7 +172,7 @@ public class FedoraObjectRelations
          * org.trippi.TrippiException: Error parsing
          *	at org.trippi.io.SparqlTupleIterator.<init>(SparqlTupleIterator.java:47)
          *	at org.trippi.TupleIterator.fromStream(TupleIterator.java:152)
-         *	at fedora.client.FedoraClient.getTuples(FedoraClient.java:705)
+         *	at org.fcrepo.client.FedoraClient.getTuples(FedoraClient.java:705)
          *	... local call stack ...
          * Caused by: org.xmlpull.v1.XmlPullParserException: caused by: org.xmlpull.v1.XmlPullParserException:
          * resource not found: /META-INF/services/org.xmlpull.v1.XmlPullParserFactory make sure that parser implementing XmlPull API is available

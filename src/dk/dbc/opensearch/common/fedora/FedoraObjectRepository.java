@@ -36,15 +36,15 @@ import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.IObjectIdentifier;
 import dk.dbc.opensearch.common.types.ITargetField;
 
-import fedora.common.Constants;
-import fedora.server.types.gen.Condition;
-import fedora.server.types.gen.ComparisonOperator;
-import fedora.server.types.gen.Datastream;
-import fedora.server.types.gen.FieldSearchQuery;
-import fedora.server.types.gen.FieldSearchResult;
-import fedora.server.types.gen.ListSession;
-import fedora.server.types.gen.ObjectFields;
-import fedora.server.types.gen.RelationshipTuple;
+import org.fcrepo.common.Constants;
+import org.fcrepo.server.types.gen.Condition;
+import org.fcrepo.server.types.gen.ComparisonOperator;
+import org.fcrepo.server.types.gen.Datastream;
+import org.fcrepo.server.types.gen.FieldSearchQuery;
+import org.fcrepo.server.types.gen.FieldSearchResult;
+import org.fcrepo.server.types.gen.ListSession;
+import org.fcrepo.server.types.gen.ObjectFields;
+import org.fcrepo.server.types.gen.RelationshipTuple;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
