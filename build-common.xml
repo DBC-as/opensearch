@@ -151,7 +151,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       building project '${ant.project.name}',
       and putting it all into '${classes.dir}'
     </echo>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/**" debug="on">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" excludes="**/tests/* Harvest/**" 
+	   debug="on" includeantruntime="false">
       <classpath refid="classpath"/>
     </javac>
   </target>
@@ -165,7 +166,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       and putting it all into '${classes.dir}'
     </echo>
     <javac srcdir="${src.dir}" destdir="${classes.dir}" 
-           excludes="**/tests/* Harvest/** testdir/**" debug="on">
+           excludes="**/tests/* Harvest/** testdir/**" debug="on"
+	   includeantruntime="false">
       <classpath refid="classpath"/> 
       <compilerarg value="-Xlint"/>
     </javac>
@@ -178,7 +180,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       building project '${ant.project.name}',
       and putting it all into '${classes.dir}'
     </echo>
-    <javac srcdir="${tests.dir}" destdir="${classes.dir}" debug="on">
+    <javac srcdir="${tests.dir}" destdir="${classes.dir}" debug="on" includeantruntime="false">
       <classpath refid="classpath"/>
     </javac>
   </target>
@@ -190,13 +192,13 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       building project '${ant.project.name}',
       and putting it all into '${classes.dir}'
     </echo>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="on" includeantruntime="false">
       <classpath refid="classpath"/>
     </javac>
   </target>
 
   <target name="_compile-javatools" description="builds javatools" >
-    <javac srcdir="javatools/src" destdir="${classes.dir}" debug="on">
+    <javac srcdir="javatools/src" destdir="${classes.dir}" debug="on" includeantruntime="false">
       <classpath refid="classpath"/>
     </javac>
   </target>
