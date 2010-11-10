@@ -19,39 +19,29 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.common.compass;
 
-
-
 import dk.dbc.opensearch.common.config.CompassConfig;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
+import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
+
 import org.junit.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-import static mockit.Mockit.setUpMocks;
-import static mockit.Mockit.tearDownMocks;
-import static mockit.Mockit.redefineMethods;
-import mockit.Expectations;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 
 
 public class CPMAliasTest 
 {
-
-
     private static NodeList getNodeList() throws Exception
     {
         String xsemxml = "<compass-core-mapping><xml-object alias=\"article\" sub-index=\"opensearch-index\"></xml-object></compass-core-mapping>";
@@ -63,13 +53,15 @@ public class CPMAliasTest
         return ret;
     }
 
-     @MockClass( realClass=CompassConfig.class)
-     public static class MockCompassConfig
-     {
+    
+    @MockClass( realClass=CompassConfig.class)
+    public static class MockCompassConfig
+    {
          @Mock public static String getXSEMPath(){ return "mockPath"; }
          @Mock public static String getHttpUrl(){ return "httpurl";}
          @Mock public static String getDTDPath(){ return "dtdpath"; }
-     }
+    }
+
 
     @MockClass( realClass = CPMAlias.class )
     public static class MockCPMAlias

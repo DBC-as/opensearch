@@ -19,7 +19,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.common.compass;
 
+
 import java.io.IOException;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,8 +31,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-public class CompassEntityResolverTest {
-
+public class CompassEntityResolverTest
+{
     static String publicId;
     static String systemId;
     static String publicURL;

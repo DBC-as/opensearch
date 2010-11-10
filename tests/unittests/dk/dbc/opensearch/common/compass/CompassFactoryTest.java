@@ -21,17 +21,21 @@
  * \file CompassFactoryTest.java
  * \brief Tests The Compass Factory
  */
-
 package dk.dbc.opensearch.common.compass;
 
+
 import dk.dbc.opensearch.common.config.CompassConfig;
+
 import java.io.File;
 import java.io.FileOutputStream;
+
 import mockit.Mockit;
+
 import org.compass.core.Compass;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
 
 /**
  * Tests The Compass Factory
