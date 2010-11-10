@@ -25,15 +25,15 @@
 
 package dk.dbc.opensearch.common.javascript;
 
+
+import dk.dbc.opensearch.common.types.Pair;
+
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
-
-import java.util.List;
-import java.util.ArrayList;
-import dk.dbc.opensearch.common.types.Pair;
-
 
 
 /**
@@ -101,26 +101,26 @@ public class SimpleRhinoWrapper
             log.error( errorMsg, ioe );
             throw new IllegalStateException( errorMsg, ioe );
         }
-	catch ( RhinoException re )
-	{
-	    log.debug( "Evaluate" );
+        catch ( RhinoException re )
+        {
+            log.debug( "Evaluate" );
 
-	    logRhinoException( re );
+            logRhinoException( re );
 
-	    throw re;
-	}
+            throw re;
+        }
 
-	// Add objects to scope:
-	for ( Pair< String, Object > objectPair : objectList )
-	{
-	    log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
-	    scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );
-	}
+        // Add objects to scope:
+        for ( Pair< String, Object > objectPair : objectList )
+        {
+            log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
+            scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );
+        }
 
-	// Seal scope:
-	scope.sealObject();
+        // Seal scope:
+        scope.sealObject();
+    }
 
-    }							  
 
     public boolean validateJavascriptFunction( String functionEntryPoint )
     {
@@ -129,12 +129,14 @@ public class SimpleRhinoWrapper
         {
             String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
             log.error( errorMsg );
-	    return false;
+
+            return false;
         }
-	return true;
+
+        return true;
     }
 
-    
+
     public Object run( String functionEntryPoint, Object... args )
     {
         log.trace( String.format( "Entering run function with %s", functionEntryPoint ) );
@@ -150,42 +152,44 @@ public class SimpleRhinoWrapper
         else
         {
             log.debug( String.format( "%s is defined or is a function", functionEntryPoint ) );
-	    Context cx = getThreadLocalContext();
+            Context cx = getThreadLocalContext();
             Function f = (Function)fObj;
-	    try 
-	    {
-		result = f.call(cx, scope, scope, args);
-	    }
-	    catch ( RhinoException re )
-	    {
-		log.debug( "Call" );
 
-		logRhinoException( re );
+            try
+            {
+                result = f.call(cx, scope, scope, args);
+            }
+            catch ( RhinoException re )
+            {
+                log.debug( "Call" );
+                logRhinoException( re );
 
-		throw re;
-	    }
-
+                throw re;
+            }
         }
+
         return result;
     }
 
 
     private Context getThreadLocalContext() 
     {
-	log.trace( "Entering getThreadLocalContext" );
-	Context cx = Context.getCurrentContext();
-	if ( cx == null )
-	{
-	    cx = Context.enter();
-	    
-	    if ( cx == null ) 
-	    {
-		throw new NullPointerException( "The retrieved Context is null" );
-	    }
-	}
+        log.trace( "Entering getThreadLocalContext" );
+        Context cx = Context.getCurrentContext();
 
-	log.trace( "Leaving getThreadLocalContext" );
-	return cx;
+        if ( cx == null )
+        {
+            cx = Context.enter();
+
+            if ( cx == null )
+            {
+                throw new NullPointerException( "The retrieved Context is null" );
+            }
+        }
+
+        log.trace( "Leaving getThreadLocalContext" );
+
+        return cx;
     }
 
 
@@ -201,30 +205,28 @@ public class SimpleRhinoWrapper
     public static void logRhinoException( RhinoException re )
     {
 
-	if ( re instanceof EcmaError )
+        if ( re instanceof EcmaError )
         {
-	    EcmaError ee = (EcmaError)re;
-	    log.error( String.format( "An EcmaError was caught (details): %s", ee.details() ) );
-	    log.error( String.format( "An EcmaError was caught (typename): %s", ee.getName() ) );
-	    log.error( String.format( "An EcmaError was caught (message): %s", ee.getMessage() ) );
-	}
-	else if ( re instanceof JavaScriptException )
-	{
-	    JavaScriptException jse = (JavaScriptException)re;
-	    log.error( String.format( "JavaScriptException (details): %s", jse.details() ) );
-	    log.error( String.format( "JavaScriptException (value): %s", jse.getValue() ) );
-	}
+            EcmaError ee = (EcmaError)re;
+            log.error( String.format( "An EcmaError was caught (details): %s", ee.details() ) );
+            log.error( String.format( "An EcmaError was caught (typename): %s", ee.getName() ) );
+            log.error( String.format( "An EcmaError was caught (message): %s", ee.getMessage() ) );
+        }
+        else if ( re instanceof JavaScriptException )
+        {
+            JavaScriptException jse = (JavaScriptException)re;
+            log.error( String.format( "JavaScriptException (details): %s", jse.details() ) );
+            log.error( String.format( "JavaScriptException (value): %s", jse.getValue() ) );
+        }
 
-	// print for all exceptions:
-	log.error( String.format( "RhinoException (source_name) %s", re.sourceName() ) );
-	log.error( String.format( "RhinoException (line_number) %s", re.lineNumber() ) );
-	log.error( String.format( "RhinoException (column_number) %s", re.columnNumber() ) );
-	log.error( String.format( "RhinoException (line_source) %s", 
-				  re.lineSource() != null ? re.lineSource() : "null" ) );
-	log.error( String.format( "RhinoException (scriptStackTrace) %s", re.getScriptStackTrace() ) );
+        // print for all exceptions:
+        log.error( String.format( "RhinoException (source_name) %s", re.sourceName() ) );
+        log.error( String.format( "RhinoException (line_number) %s", re.lineNumber() ) );
+        log.error( String.format( "RhinoException (column_number) %s", re.columnNumber() ) );
+        log.error( String.format( "RhinoException (line_source) %s",
+                      re.lineSource() != null ? re.lineSource() : "null" ) );
+        log.error( String.format( "RhinoException (scriptStackTrace) %s", re.getScriptStackTrace() ) );
     }
-
-
 }
 
 

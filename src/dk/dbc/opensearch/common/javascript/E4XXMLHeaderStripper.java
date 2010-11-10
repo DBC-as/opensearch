@@ -22,17 +22,17 @@
  * \brief
  */
 
-
 package dk.dbc.opensearch.common.javascript;
+
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 
+
 public class  E4XXMLHeaderStripper 
 {
-
     private static Logger log = Logger.getLogger( E4XXMLHeaderStripper.class );
     
     private static final Pattern p = Pattern.compile( "<[?]xml[^>]*[?]>\\s*" );
@@ -40,25 +40,25 @@ public class  E4XXMLHeaderStripper
 
     public static byte[] strip( byte[] XML )
     {
-	return strip( new String( XML ) ).getBytes();
+        return strip( new String( XML ) ).getBytes();
     }
 
 
     public static String strip( String XML )
     {
-	log.trace( "Before: " + XML );
+        log.trace( "Before: " + XML );
 
-	// Hmmmm...... These do not seem to work properly:	
-	// String newXML = XML.replace( "<[?]xml[^>]*[?]>\\s*", "" );
-	// String newXML = XML.replace( "<?xml[^>]*?>", "" );
+        // Hmmmm...... These do not seem to work properly:
+        // String newXML = XML.replace( "<[?]xml[^>]*[?]>\\s*", "" );
+        // String newXML = XML.replace( "<?xml[^>]*?>", "" );
 
-	// Instead I'll use Pattern and Matcher from java.util.regex:
-	Matcher m = p.matcher( XML );
-	String newXML = m.replaceFirst( "" );
+        // Instead I'll use Pattern and Matcher from java.util.regex:
+        Matcher m = p.matcher( XML );
+        String newXML = m.replaceFirst( "" );
 
-	log.trace( "After: " + newXML ) ;
+        log.trace( "After: " + newXML ) ;
 
-	return newXML;
+        return newXML;
     } 
 
 

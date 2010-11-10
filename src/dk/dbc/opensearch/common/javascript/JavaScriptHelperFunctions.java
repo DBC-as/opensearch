@@ -25,110 +25,108 @@
 
 package dk.dbc.opensearch.common.javascript;
 
-import org.apache.log4j.Logger;
-import org.mozilla.javascript.*;
 
 import dk.dbc.opensearch.common.config.FileSystemConfig; // Testing
-import org.apache.commons.configuration.ConfigurationException; // Testing
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
-
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+import org.mozilla.javascript.*;
+import org.apache.commons.configuration.ConfigurationException; // Testing
+
+
 public class JavaScriptHelperFunctions // extends ScriptableObject
 {
-
     private static Map< Scriptable, Set< String > > loadedScripts = new HashMap< Scriptable, Set< String > >();
 
     private static Logger log = Logger.getLogger( JavaScriptHelperFunctions.class );
+
 
     // This function is taken from rhinos examplecode,
     // from the function Shell.java
     public static void print(Context cx, Scriptable thisObj,
 			     Object[] args, Function funObj)
     {
-	for (int i=0; i < args.length; i++) 
-	{
-	    if (i > 0)
-	    {
-		System.out.print(" ");
-	    }
+        for (int i=0; i < args.length; i++)
+        {
+            if (i > 0)
+            {
+                System.out.print(" ");
+            }
 
-	    // Convert the arbitrary JavaScript value into a string form.
-	    String s = Context.toString(args[i]);
+            // Convert the arbitrary JavaScript value into a string form.
+            String s = Context.toString(args[i]);
 
-	    System.out.print(s);
-	    log.debug( "Text: " + s );
-	}
-	// System.out.print();
+            System.out.print(s);
+            log.debug( "Text: " + s );
+        }
+        // System.out.print();
     }
 
 
-    public static void use(Context cx, Scriptable thisObj, 
-			   Object[] args, Function funObj) throws FileNotFoundException, ConfigurationException
+    public static void use(Context cx, Scriptable thisObj, Object[] args, Function funObj) throws FileNotFoundException, ConfigurationException
     {
-	if ( args.length < 1 ) 
-	{
-	    // "silently" return
-	    log.warn( "No arguments given" );
-	    return;
-	} 
+        if ( args.length < 1 )
+        {
+            // "silently" return
+    	    log.warn( "No arguments given" );
+            return;
+        }
 
-	String jsFileName = Context.toString( args[0] );
-	log.debug( String.format( "The following script was given: %s. Trying to load it", jsFileName ) );
+        String jsFileName = Context.toString( args[0] );
+        log.debug( String.format( "The following script was given: %s. Trying to load it", jsFileName ) );
 	
-	if ( ! loadedScripts.containsKey( thisObj ) ) 
-	{
-	    // Create new entry in Map:
-	    log.trace( String.format( "Adding the Object: %s", thisObj.hashCode() ) );
-	    
-	    // Adding the Scope and a new Set:
-	    Set< String > scriptSet = new HashSet< String >();
-	    scriptSet.add( jsFileName );
-	    log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
-	    loadedScripts.put( thisObj, scriptSet );
-	}
-	else
-	{
-	    // Entry already in Map:
-	    Set< String > scriptSet = loadedScripts.get( thisObj );
-	    if ( scriptSet.add( jsFileName ) )
-	    {
-		// Script is new:
-		log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
-	    }
-	    else 
-	    {
-		// Script is already loaded - do nothing!
-		log.trace( String.format( "The script: %s seems to already be associated with Object: %s", jsFileName, thisObj.hashCode() ) );
-		return;
-	    }
-	}
-	
-	// Load script into Scope
-	FileReader inFile = new FileReader( FileSystemConfig.getScriptPath() + jsFileName ); // can throw FileNotFoundExcpetion
-	try
-	{
-	    Object o = cx.evaluateReader((Scriptable)thisObj, inFile, jsFileName, 1, null);
-	} 
-	catch ( IOException ioe )
-	{
-	    String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
-	    log.error( errorMsg, ioe );
-	    throw new IllegalStateException( errorMsg, ioe );
-	}
-	catch ( RhinoException re )
-	{
-	    log.debug( "Evaluate" );
-	    SimpleRhinoWrapper.logRhinoException( re );
-	    throw re;
-	}
+        if ( ! loadedScripts.containsKey( thisObj ) )
+        {
+            // Create new entry in Map:
+            log.trace( String.format( "Adding the Object: %s", thisObj.hashCode() ) );
 
+            // Adding the Scope and a new Set:
+            Set< String > scriptSet = new HashSet< String >();
+            scriptSet.add( jsFileName );
+            log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
+            loadedScripts.put( thisObj, scriptSet );
+        }
+        else
+        {
+            // Entry already in Map:
+            Set< String > scriptSet = loadedScripts.get( thisObj );
+            if ( scriptSet.add( jsFileName ) )
+            {
+            // Script is new:
+            log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
+            }
+            else
+            {
+            // Script is already loaded - do nothing!
+            log.trace( String.format( "The script: %s seems to already be associated with Object: %s", jsFileName, thisObj.hashCode() ) );
+            return;
+            }
+        }
+
+        // Load script into Scope
+        FileReader inFile = new FileReader( FileSystemConfig.getScriptPath() + jsFileName ); // can throw FileNotFoundExcpetion
+        try
+        {
+            Object o = cx.evaluateReader((Scriptable)thisObj, inFile, jsFileName, 1, null);
+        }
+        catch ( IOException ioe )
+        {
+            String errorMsg = new String( "Could not run 'evaluateReader' on the javascript" );
+            log.error( errorMsg, ioe );
+            throw new IllegalStateException( errorMsg, ioe );
+        }
+        catch ( RhinoException re )
+        {
+            log.debug( "Evaluate" );
+            SimpleRhinoWrapper.logRhinoException( re );
+            throw re;
+        }
     }
-
 }

@@ -23,27 +23,26 @@
 package dk.dbc.opensearch.common.javascript;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.PID;
-import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.IObjectIdentifier;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
-public class JSRelationFunctions {
 
+public class JSRelationFunctions
+{
     private Logger log = Logger.getLogger( JSRelationFunctions.class );
 
     private IObjectRepository repository;
+
+
     public JSRelationFunctions( IObjectRepository repository ) 
     {
         this.repository = repository;
     }
+
 
     /**
      * Method exposed to the script for creating relations
@@ -58,16 +57,15 @@ public class JSRelationFunctions {
     {
 
         IObjectIdentifier subjectPID = new PID( subject );
-	try
-	{
-	    repository.addUncheckedObjectRelation( subjectPID, relation, object );
+        try
+        {
+            repository.addUncheckedObjectRelation( subjectPID, relation, object );
         }
         catch( ObjectRepositoryException ore )
         {
             return false;
         }
-	return true;
 
+       return true;
     }
-
 }

@@ -25,17 +25,20 @@
 
 package dk.dbc.opensearch.common.lucene;
 
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+
 import java.util.Set;
 import java.util.HashSet;
+
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+
 
 /**
  * 
  */
 public class DBCAnalyzer extends StandardAnalyzer
 {
-
     final static Set stopWords = new HashSet();
+
     
 	public DBCAnalyzer()
 	{
