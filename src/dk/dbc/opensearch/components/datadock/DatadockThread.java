@@ -116,12 +116,12 @@ public class DatadockThread implements Callable<Boolean>
     {
         // Must be implemented due to class implementing Callable< Boolean > interface.
         // Method is to be extended when we connect to 'Posthuset'
-        log.trace( "DatadockThread call method called" );
+        log.info( String.format( "DatadockThread call method called on identifier: %s", this.identifier.toString() ) );
 
         CargoContainer cargo;
         try
         {
-            cargo = harvester.getCargoContainer( identifier );
+            cargo = harvester.getCargoContainer( this.identifier );
         }
         catch( HarvesterUnknownIdentifierException huie )
         {
@@ -133,6 +133,7 @@ public class DatadockThread implements Callable<Boolean>
         //get submitter and format from the first cargoObject in the cargoContainer
         String submitter = cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter();
         String format = cargo.getCargoObject( DataStreamType.OriginalData ).getFormat();
+	log.info( String.format( "Found submitter = \"%s\" and format = \"%s\"", submitter, format ) );
         List<PluginTask> pluginTaskList = flowMap.get( submitter + format);
 
         for( PluginTask pluginTask : pluginTaskList )
