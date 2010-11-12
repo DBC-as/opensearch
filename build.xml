@@ -245,6 +245,11 @@
   </target>
 
 
+  <target name="doc_architecture">
+    <antcall target="_doc_architecture" />
+  </target>
+
+
   <target name="coverage-instrument" depends="compile-tests">
     <antcall target="_coverage-instrument" />
   </target>

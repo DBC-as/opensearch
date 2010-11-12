@@ -272,7 +272,12 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
       <link offline="false" href="http://download.oracle.com/javase/6/docs/api/"/>
     </javadoc>
   </target>
-  
+
+  <target name="_doc_architecture" description="Build documentation">
+    <exec dir="${doc.dir}" executable="/usr/bin/make" os="Linux">
+      <arg line="html"/>
+    </exec>
+  </target> 
 
   <!-- Distribution targets -->
   <target name="_dist_datadock">
