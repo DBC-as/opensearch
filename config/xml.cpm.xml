@@ -241,6 +241,46 @@
         index="un_tokenized"
         value-converter="sort"
         />
+        <xml-property
+        name="rank.title"
+        xpath="/ting:container/dkabm:record/dc:title"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.creator"
+        xpath="/ting:container/dkabm:record/dc:creator"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.subject"
+        xpath="/ting:container/dkabm:record/dc:subject"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.type"
+        xpath="/ting:container/dkabm:record/dc:type"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.language"
+        xpath="/ting:container/dkabm:record/dc:language"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.source"
+        xpath="/ting:container/dkabm:record/dc:source"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.publisher"
+        xpath="/ting:container/dkabm:record/dc:publisher"
+        value-converter="default"
+        />
     <xml-property
         name="creator"
         xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
@@ -546,6 +586,46 @@
         xpath="/ting:container/dkabm:record/dc:title[1]"
         index="un_tokenized"
         value-converter="sort"
+        />
+        <xml-property
+        name="rank.title"
+        xpath="/ting:container/dkabm:record/dc:title"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.creator"
+        xpath="/ting:container/dkabm:record/dc:creator"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.subject"
+        xpath="/ting:container/dkabm:record/dc:subject"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.type"
+        xpath="/ting:container/dkabm:record/dc:type"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.language"
+        xpath="/ting:container/dkabm:record/dc:language"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.source"
+        xpath="/ting:container/dkabm:record/dc:source"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.publisher"
+        xpath="/ting:container/dkabm:record/dc:publisher"
+        value-converter="default"
         />
     <xml-property
         name="creator"
@@ -905,84 +985,6 @@
         value-converter="phrase"
         />
     <xml-property
-        name="creator"
-        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="date"
-        xpath="/ting:container/dkabm:record/dc:date"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="description"
-        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="format"
-        xpath="/ting:container/dkabm:record/dc:format | /ting:container/dkabm:record/dcterms:extent"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="identifier"
-        xpath="/ting:container/dkabm:record/dc:identifier"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="language"
-        xpath="/ting:container/dkabm:record/dc:language[not(@*)]"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="publisher"
-        xpath="/ting:container/dkabm:record/dc:publisher"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="source"
-        xpath="/ting:container/dkabm:record/dc:source | /ting:container/dkabm:record/dcterms:isPartOf"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="subject"
-        xpath="/ting:container/dkabm:record/dc:subject"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="title"
-        xpath="/ting:container/dkabm:record/dc:title"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="type"
-        xpath="/ting:container/dkabm:record/dc:type"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="relation"
-        xpath="/ting:container/dkabm:record/dc:relation"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
-        name="rights"
-        xpath="/ting:container/dkabm:record/dc:rights"
-        index="un_tokenized"
-        value-converter="facet"
-        />
-    <xml-property
         name="facet.acSource"
         xpath="/ting:container/dkabm:record/ac:source"
         index="un_tokenized"
@@ -1083,6 +1085,124 @@
         xpath="/ting:container/dkabm:record/dc:title[1]"
         index="un_tokenized"
        value-converter="sort"
+        />
+        <xml-property
+        name="rank.title"
+        xpath="/ting:container/dkabm:record/dc:title"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.creator"
+        xpath="/ting:container/dkabm:record/dc:creator"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.subject"
+        xpath="/ting:container/dkabm:record/dc:subject"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.type"
+        xpath="/ting:container/dkabm:record/dc:type"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.language"
+        xpath="/ting:container/dkabm:record/dc:language"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.source"
+        xpath="/ting:container/dkabm:record/dc:source"
+        value-converter="default"
+        />
+    <xml-property
+        name="rank.publisher"
+        xpath="/ting:container/dkabm:record/dc:publisher"
+        value-converter="default"
+        />
+    <xml-property
+        name="creator"
+        xpath="/ting:container/dkabm:record/dc:creator | /ting:container/dkabm:record/dc:contributor"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="date"
+        xpath="/ting:container/dkabm:record/dc:date"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="description"
+        xpath="/ting:container/dkabm:record/dc:description | /ting:container/dkabm:record/dcterms:abstract"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="format"
+        xpath="/ting:container/dkabm:record/dc:format | /ting:container/dkabm:record/dcterms:extent"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="identifier"
+        xpath="/ting:container/dkabm:record/dc:identifier"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="language"
+        xpath="/ting:container/dkabm:record/dc:language[not(@*)]"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="publisher"
+        xpath="/ting:container/dkabm:record/dc:publisher"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="source"
+        xpath="/ting:container/dkabm:record/dc:source | /ting:container/dkabm:record/dcterms:isPartOf"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="subject"
+        xpath="/ting:container/dkabm:record/dc:subject"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="title"
+        xpath="/ting:container/dkabm:record/dc:title"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="type"
+        xpath="/ting:container/dkabm:record/dc:type"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="relation"
+        xpath="/ting:container/dkabm:record/dc:relation"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+    <xml-property
+        name="rights"
+        xpath="/ting:container/dkabm:record/dc:rights"
+        index="un_tokenized"
+        value-converter="facet"
         />
     <xml-property
         xpath="/ting:container/ting:fedoraPid"
