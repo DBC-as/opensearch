@@ -23,19 +23,19 @@ function generateSearchPairs( dcXML, originalXML, resultArray )
     //but it works for now
     if (String(XML_dc.dc::title) !== "") {
       resultArray[0] = "title";
-      resultArray[1] = XML_dc.dc::title;
+      resultArray[1] = String(XML_dc.dc::title);
     }
     if (String(XML_dc.dc::source) !== "") {
       resultArray[2] = "title";
-      resultArray[3] = XML_dc.dc::source;
+      resultArray[3] = String(XML_dc.dc::source);
     }
     if (String(XML_dc.dc::title) !== "") {
       resultArray[4] = "source";
-      resultArray[5] = XML_dc.dc::title;
+      resultArray[5] = String(XML_dc.dc::title);
     }
     if (String(XML_dc.dc::source) !== "") {
       resultArray[6] = "source";
-      resultArray[7] = XML_dc.dc::source;
+      resultArray[7] = String(XML_dc.dc::source);
     }
 } 
 
@@ -65,44 +65,111 @@ function checkmatch( newObject, workObject )
     var workContributors = [];
     var child;
     for each (child in newObjectXml.dc::contributor) {
-      Log.debug( "RLO: CHILD NEW " + child);
       newContributors.push(String(child).toLowerCase());
     }
     for each (child in workObjectXml.dc::contributor) {
-      Log.debug( "RLO: CHILD WORK " + child);
       workContributors.push(String(child).toLowerCase());
     }
     var newIdentifier = [];
     var workIdentifier = [];
     for each (child in newObjectXml.dc::identifier) {
-      Log.debug( "RLO: CHILD NEW " + child);
       newIdentifier.push(String(child));
     }
     for each (child in workObjectXml.dc::identifier) {
-      Log.debug( "RLO: CHILD WORK " + child);
       workIdentifier.push(String(child));
+    }
+    var newSubjects = [];
+    var workSubjects = [];
+    for each (child in newObjectXml.dc::subject) {
+      newSubjects.push(String(child));
+    }
+    for each (child in workObjectXml.dc::subject) {
+      workSubjects.push(String(child));
+    }
+    
+    var newMaterial;
+    switch (newType) {
+      case "Anmeldelse": case "Anmeldelse (online)":
+        newMaterial = "other";
+        break;
+      case "Artikel": case "Avisartikel": case "Tidsskriftsartikel": case "Artikel (online)":
+        newMaterial = "article";
+        break;
+      case "Avis":
+        newMaterial = "newspaper";
+        break;
+      case "Tidsskrift": case "Periodikum": case "Tidsskrift (online)":
+        newMaterial = "journal";
+        break;
+      case "Dvd": case "Video": case "Blu-ray disc": case "Film (online)": case "PSP (film)":
+        newMaterial = "movie";
+        break;
+      case "Cd": case "Grammofonplade": case "Musikalbum (online)":
+        newMaterial = "music";
+        break;
+      case "Musiknummer (online)":
+        newMaterial = "track";
+        break;
+      case "Bog": case "E-bog": case "Tegneserie": case "Graphic novel": case "Lydbog (cd)": case "Lydbog (b\u00e5nd)": case "Lydbog (cd-mp3)": case "Lydbog (online)": case "Kassettelydb\u00e5nd": case "Diskette":
+        newMaterial = "literature";
+        break;
+      case "Playstation (spil)": case "Playstation 2 (spil)": case "Playstation 3 (spil)": case "Xbox (spil)": case "Xbox 360 (spil)": case "Nintendo DS (spil)": case "Wii (spil)": case "Pc-spil (Online)": case "Cd-rom": case "Dvd-rom": case "Gameboy (spil)": case "Gameboy Advance (spil)": case "PSP (spil)":
+        newMaterial = "game";
+        break;
+      default:
+        newMaterial = "other";
+    }
+    
+    var workMaterial;
+    switch (workType) {
+      case "Anmeldelse": case "Anmeldelse (online)":
+        workMaterial = "other";
+        break;
+      case "Artikel": case "Avisartikel": case "Tidsskriftsartikel": case "Artikel (online)":
+        workMaterial = "article";
+        break;
+      case "Avis":
+        workMaterial = "newspaper";
+        break;
+      case "Tidsskrift": case "Periodikum": case "Tidsskrift (online)":
+        workMaterial = "journal";
+        break;
+      case "DVD": case "Video": case "Blu-ray disc": case "Film (online)": case "PSP (film)":
+        workMaterial = "movie";
+        break;
+      case "CD": case "Grammofonplade": case "Musikalbum (online)":
+        workMaterial = "music";
+        break;
+      case "Musiknummer (online)":
+        workMaterial = "track";
+        break;
+      case "Bog": case "E-bog": case "Tegneserie": case "Graphic novel": case "Lydbog (cd)": case "Lydbog (b\u00e5nd)": case "Lydbog (cd-mp3)": case "Lydbog (online)": case "Kassettelydb\u00e5nd": case "Diskette":
+        workMaterial = "literature";
+        break;
+      case "Playstation (spil)": case "Playstation 2 (spil)": case "Playstation 3 (spil)": case "Xbox (spil)": case "Xbox 360 (spil)": case "Nintendo DS (spil)": case "Wii (spil)": case "PC-spil (Online)": case "CD-rom": case "DVD-rom": case "Gameboy (spil)": case "Gameboy Advance (spil)": case "PSP (spil)":
+        workMaterial = "game";
+        break;
+      default:
+        workMaterial = "other";
     }
 
     Log.debug( "RLO: start match\n");
-    //check for a match. Return true if there is, false if not ;-)
-    Log.debug( "RLO: newType = " + newType + "\n" );
-    Log.debug( "RLO: worktype = " + workType + "\n");
-    Log.debug( "RLO: workcreator = " + workCreator + "\n" );
-    switch (newType) {
-      case "Anmeldelse":
-        Log.debug( "RLO: Anmeldelse\n");
+    //check for a match.
+    switch (newMaterial) {
+      case "other":
+        Log.debug( "RLO: other\n");
         result = false;
         break;
-      case "Artikel": case "Avisartikel": case "Tidsskriftsartikel":
-        Log.debug( "RLO: Artikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel|Tidsskriftsartikel")) {
+      case "article":
+        Log.debug( "RLO: article\n");
+        if (newTitle === workTitle && newCreator === workCreator && workMaterial === "article") {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "Avis": case "Netdokument":
-        Log.debug( "RLO: Avis\n");
+      case "newspaper":
+        Log.debug( "RLO: newspaper\n");
         for (var a in newIdentifier) {
           Log.debug( "NEWIDENTIFIER: " + newIdentifier[a] );
           for (var b in workIdentifier) {
@@ -113,15 +180,15 @@ function checkmatch( newObject, workObject )
             }
           }
         }
-        if (result !== true && newTitle === workTitle && workType === "Avis") {
+        if (result !== true && newTitle === workTitle && workMaterial === "newspaper") {
           Log.debug( "TITLEMATCH" );
           result = true;
         } else if (result !== true) {
           result = false;
         }
         break;
-      case "Tidsskrift": case "Periodikum": case "Netdokument":
-        Log.debug( "RLO: Tidsskrift\n");
+      case "journal":
+        Log.debug( "RLO: journal\n");
         for (var a in newIdentifier) {
           for (var b in workIdentifier) {
             if (newIdentifier[a] === workIdentifier[b]) {
@@ -130,83 +197,92 @@ function checkmatch( newObject, workObject )
             }
           }
         }
-        if (result !== true && newTitle === workTitle && workType === "Tidsskrift|Periodikum") {
+        if (result !== true && newTitle === workTitle && workMaterial === "journal") {
           Log.debug( "TITLEMATCH" );
           result = true;
         } else  if (result !== true) {
           result = false;
         }
         break;
-      case "CD": case "Grammofonplade": case "netmusik (album)":
-        Log.debug( "RLO: CD\n");
-        Log.debug( "RLO: All Values:\n" + newTitle + "\n" + workTitle + "\n" + newCreator + "\n" + workCreator + "\n" + workType+ "\n" );
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|album")) {
+      case "music":
+        Log.debug("RLO: music\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType === "music") {
+          result = true;
+        } else if (newTitle === workTitle) {
+          for (var a in newSubjects) {
+            if (newSubjects[a] === "soundtracks" || newSubjects[a] === "filmmusik") {
+              result = true;
+            }
+          }
+        } else {
+          result = false;
+        }
+        break;
+      case "track": 
+        Log.debug( "RLO: track\n");
+        if (newTitle === workTitle && newCreator === workCreator && workMaterial === "track") {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "netmusik (track)": 
-        Log.debug( "RLO: netmusik (track)\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("track")) {
+      case "movie":
+        Log.debug( "RLO: movie\n");
+        if ((newTitle === workTitle || newTitle === workSource || workTitle === newTitle || workTitle === newSource) && newCreator === workCreator && workMaterial === "movie") {
           result = true;
-        } else {
-          result = false;
-        }
-        break;
-      case "DVD": case "Video": case "Netdokument": case "Blu-ray disc":
-        Log.debug( "RLO: film\n");
-        if ((newTitle === workTitle || newTitle === workSource || workTitle === newTitle || workTitle === newSource) && newCreator === workCreator && workType.match("DVD|Video|Netdokument|Blu-ray disc")) {
-          result = true;
-        } else if (newTitle === workTitle && workType.match("Bog|Lydbog.*|Diskette")) {
+        } else if (newTitle === workTitle && workMaterial === "literature") {
           for (var a in newContributors) {
             if (workCreator === newContributors[a]) {
               result = true;
             }
           }
+        } else if (newTitle === workTitle) {
+          for (var a in workSubjects) {
+            if (workSubjects[a] === "soundtracks" || workSubjects[a] === "filmmusik") {
+              result = true;
+            } else if (workMaterial === "game") {
+              result = true;
+            }
+          }
         } else {
           result = false;
         }
         break;
-      case "Bog": case "Lydbog (cd)": case "Lydbog (b\u00e5nd)": case "Lydbog (cd-mp3)": case "Lydbog (online)": case "Kassettelydb\u00e5nd": case "Diskette":
-        Log.debug( "RLO: Bog\n");
-        if ((newTitle === workTitle || newTitle === workSource || workTitle === newTitle || workTitle === newSource) && newCreator === workCreator && workType.match("Bog|Lydbog.*|Diskette")) {
+      case "literature":
+        Log.debug( "RLO: literature\n");
+        if ((newTitle === workTitle || newTitle === workSource || workTitle === newTitle || workTitle === newSource) && newCreator === workCreator && workMaterial === "literature") {
           result = true;
-        } else if (newTitle === workTitle && workType.match("DVD|Video|Netdokument|Blu-ray disc")) {
+        } else if (newTitle === workTitle && workMaterial === "movie") {
           for (var a in workContributors) {
             if (newCreator === workContributors[a]) {
               result = true;
             }
           }
+        } else if (newTitle === workTitle && workMaterial === "game") {
+          result = true;
+        } else {
+          result = false;
+        }
+        break;
+      case "game":
+        Log.debug( "RLO: game\n");
+        if ((newTitle === workTitle || newTitle === workSource || workTitle === newTitle || workTitle === newSource) && newCreator === workCreator && workMaterial === "game") {
+          result = true;
+        }
+        else if (newTitle === workTitle && (workMaterial === "movie" || workMaterial === "literature")) {
+          result = true;
         } else {
           result = false;
         }
         break;
       default:
         Log.debug( "RLO: default\n");
-        if (newCreator === workCreator) {
-          Log.debug("RLO: newcreator = workcreator \n");
-          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik \(album\)| netmusik \(track\)")) {
-            result = true;
-          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik \(album\)|netmusik \(track\)")) {
-            result = true;
-          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik \(album\)| netmusik \(track\)")) {
-            result = true;
-          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|netmusik \(album\)|netmusik \(track\)")) {
-            result = true;
-          } else {
-            result = false;
-          }
-        } else {
-          result = false;
-        }
+        result = false;
         break;
     }
-    if (result === false) {
-      return false;
-    } else {
-      return true;
-    }
+    
+  return result;
+
 }
 
 
