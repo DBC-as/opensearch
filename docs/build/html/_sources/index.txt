@@ -17,6 +17,7 @@ in this regard.
 
    Fedora <fedora_dbc/fedora_dbc_intro>
    Solr <solr_dbc/solr_dbc_intro>
+   Solr Regression Test <solr_dbc/solr_regression>
    Datadock <opensearch/datadock>
    DBC's Python Project <dbc_python/dbc_python_intro>
 
@@ -35,6 +36,14 @@ Introduction to DBC's Solr
 
 At DBC we use the Solr/Lucene... For further details pleaser refer to: 
 :doc:`solr_dbc/solr_dbc_intro`.
+
+====================================
+Introduction to Solr Regression Test
+====================================
+
+An easy to use test framework used for testing a post from it is ingested into FCREPO 
+until it is made searchable through a Lucene index. For further details please refer to:
+:doc:`solr_dbc/solr_regression`
 
 ============================
 Introduction to the Datadock
