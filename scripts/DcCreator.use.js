@@ -132,6 +132,10 @@ const DcCreator = function(){
 
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
+    
+    if (String(originalXml.ting::originalData.status === "d")) {
+      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+    }
 
     if (originalXml.dkabm::record.dc::title[0] !== undefined) {
       dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.dc::title[0]), "title", dc );
