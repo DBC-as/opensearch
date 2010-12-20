@@ -24,7 +24,7 @@ const DbcBibRelations = function() {
     */
     that.isPartOfManifestation = function ( pid1, pid2 ){
         Log.info( "Start isPartOfManifestation" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbib#hasArticle", pid1);
+        //scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcbib#hasArticle", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcbib#isPartOfManifestation", pid2 );
         Log.info( "End isPartOfManifestation" );
     };

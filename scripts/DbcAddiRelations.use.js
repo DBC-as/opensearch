@@ -127,7 +127,7 @@ const DbcAddiRelations = function() {
     */
     that.hasSubjectDescription = function ( pid1, pid2 ){
         Log.info( "Start hasSubjectDescription" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isSubjectDescriptionOf", pid1);
+        //scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isSubjectDescriptionOf", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasSubjectDescription", pid2 );
         Log.info( "End hasSubjectDescription" );
     };
@@ -178,7 +178,7 @@ const DbcAddiRelations = function() {
     */
     that.hasAuthorDescription = function ( pid1, pid2 ){
         Log.info( "Start hasAuthorDescription" );
-        scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isAuthorDescriptionOf", pid1);
+        //scriptClass.createRelation( pid2, "http://oss.dbc.dk/rdf/dbcaddi#isAuthorDescriptionOf", pid1);
         scriptClass.createRelation( pid1, "http://oss.dbc.dk/rdf/dbcaddi#hasAuthorDescription", pid2 );
         Log.info( "End hasAuthorDescription" );
     };
