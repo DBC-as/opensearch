@@ -7,7 +7,7 @@ import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.common.types.Pair;
 
-import fedora.server.types.gen.ObjectFields;
+import org.fcrepo.server.types.gen.ObjectFields;
 
 import java.util.ArrayList;
 import java.util.HashSet;
