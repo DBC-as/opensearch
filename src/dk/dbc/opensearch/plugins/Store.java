@@ -27,6 +27,7 @@ import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.StringLock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +46,11 @@ public class Store implements IPluggable
 
     StoreEnvironment env = null;
 
+    StringLock strlock = null;
+
     public Store( IObjectRepository repository ) throws PluginException
     {
+	strlock = new StringLock();
     }    
 
     /*
@@ -55,7 +59,7 @@ public class Store implements IPluggable
      * See bug#10534.
      */
     @Override
-    synchronized public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
+    public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
 	if ( !( ienv instanceof StoreEnvironment) )
 	{
@@ -68,7 +72,12 @@ public class Store implements IPluggable
 
     	log.trace( "Entering storeCargoContainer( CargoContainer )" );
 
-	return env.run( cargo );
+	String pid = cargo.getIdentifierAsString(); // saving pid in case cargo should be modified during call!
+	strlock.lock( pid );
+	CargoContainer returnCC = env.run( cargo );
+	strlock.unlock( pid );
+
+	return returnCC;
     }
 
     @Override
