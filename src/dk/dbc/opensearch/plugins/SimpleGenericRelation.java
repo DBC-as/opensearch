@@ -66,7 +66,7 @@ public class SimpleGenericRelation implements IPluggable
      * @throws PluginException thrown if anything goes wrong during annotation.
      */
     @Override
-    synchronized public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
+    public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
 	if ( !( ienv instanceof SimpleGenericRelationEnvironment) )
 	{
