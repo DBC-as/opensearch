@@ -70,7 +70,9 @@ public class JavaScriptHelperFunctions // extends ScriptableObject
     }
 
 
-    public static void use(Context cx, Scriptable thisObj, Object[] args, Function funObj) throws FileNotFoundException, ConfigurationException
+    public static void use(Context cx, Scriptable thisObj, Object[] 
+			   args, Function funObj) 
+	throws FileNotFoundException, ConfigurationException
     {
         if ( args.length < 1 )
         {
@@ -128,5 +130,19 @@ public class JavaScriptHelperFunctions // extends ScriptableObject
             SimpleRhinoWrapper.logRhinoException( re );
             throw re;
         }
+	finally
+	{
+	    // This is ugly - but necessary
+	    log.debug( String.format( "Closing file: %s", jsFileName ) );
+	    try
+	    {
+		inFile.close();
+	    }
+	    catch( IOException ioe )
+	    {
+		log.warn( String.format( "Could not close the file: \"%s\" I will regrettably leave it open." ) );
+	    }
+
+	}
     }
 }

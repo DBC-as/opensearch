@@ -109,6 +109,19 @@ public class SimpleRhinoWrapper
 
             throw re;
         }
+	finally
+	{
+	    // This is ugly - but necessary
+	    log.debug( String.format( "Closing file: %s", jsFileName ) );
+	    try
+	    {
+		inFile.close();
+	    }
+	    catch( IOException ioe )
+	    {
+		log.warn( String.format( "Could not close the file: \"%s\" I will regrettably leave it open." ) );
+	    }
+	}
 
         // Add objects to scope:
         for ( Pair< String, Object > objectPair : objectList )
