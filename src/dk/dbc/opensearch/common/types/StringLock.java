@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * This class enables locking based on identifiers. Currently the
  * identifiers need to be {@link String}s.  There are no limitations
@@ -35,14 +34,16 @@ import org.apache.log4j.Logger;
  * <p/>
  * The class contains two public methods {@link StringLock#lock(
  * String )} and {@link StringLock#unlock( String )}. It is therefore
- * evidient that the identifier is needed both for locking and
- * unlocking. This enables a thread to lock on more than one identifier at a time
+ * evident that the identifier is needed both for locking and
+ * unlocking. This enables a thread to lock on more than one
+ * identifier at a time
  * <p/>
  * The internal lock is based on a reentrant lock type, and as such a
  * thread can lock the same identifier severeal times without
  * unlocking it. Please notice, that the thread must perform as many
  * unlocks as it performs locks in order to truly release the lock for
- * use by another thread. 
+ * use by another thread. It is the responisibilty of the thread to
+ * ensure that as many unlocks as locks are performed.
  * Please see {@link java.util.concurrent.locks.ReentrantLock} for reference.
  * <p/>
  * Internally the identifiers are connected each to a different
@@ -72,9 +73,9 @@ public class StringLock
       therefore, each time we need to increment or decrement the
       Integer, we must associate a new Pair-object with the String in
       the HashMap. This choice do clutter the following code a little,
-      but we think it better to used well tested types over creating
+      but we think it better to use a well tested type (Pair) over creating
       an internal class which in order needs to be well tested in
-      order to esnure correctness of the overall algorithm.
+      order to ensure correctness of the overall algorithm.
     */
 
     private static Logger log = Logger.getLogger( StringLock.class );
@@ -111,6 +112,17 @@ public class StringLock
 	    throw new IllegalStateException( errMsg );
 	}
 
+	// The call til identifierLock.lock() below must be outside
+	// the synchronized block.  
+	// Otherwise a deadlock may occur:
+	// Assume 'thread 1' locks on identifer 'a', and then 'thread
+	// 2' locks on identifier 'a'.  If identifierLock.lock is
+	// inside the synchronized block, then the second call to
+	// lock() will halt - since 'thread 1' has the lock - inside
+	// the synchronized block, effectivly ensuring that no-one
+	// can access lockMap - not even for unlocking. Hence the
+	// deadlock.
+
         ReentrantLock identifierLock = null;
         synchronized(lockMap)
         {
@@ -134,7 +146,7 @@ public class StringLock
         }
 
         log.trace( String.format( "lock, Thread '%s' trying to get lock on identifier :'%s'", Thread.currentThread().getId() ,identifier ) );
-        identifierLock.lock();
+        identifierLock.lock(); // See explanation above for reason why this must be outside synchronized block.
         log.trace( String.format( "lock, Thread '%s' got lock on identifier: '%s'", Thread.currentThread().getId(), identifier ) );
     }
 
@@ -171,7 +183,7 @@ public class StringLock
 	    // Not a good idea! We therefore do it the other way around.
             // We are in the synchronized block on lockMap, so no new threads can get a lock.
 	    
-            pair.getFirst().unlock(); // try to release lock.
+            pair.getFirst().unlock(); // try to release lock. Throws IllegalMonitorStateException if not owner of lock.
 
             // We can now decrease counter since we have unlocked.
 	    int cur = pair.getSecond().intValue(); // current counter
