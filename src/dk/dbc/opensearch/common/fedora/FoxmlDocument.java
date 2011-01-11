@@ -256,7 +256,13 @@ public final class FoxmlDocument
         rootElement.setAttribute( "VERSION", "1.1" );
         rootElement.setAttribute( "PID", id );
 
-        factory = XPathFactory.newInstance();
+	// XPathFactory is not thread-safe - only one thread must invoke it at a time - throughout the application.
+	// \WARNING: Possible bug:
+	// See ForceFedoraPidEnvironment.java (bug#11838) for a description of the problem.
+	synchronized(this)
+	{
+	    factory = XPathFactory.newInstance();
+	}
         xpath = factory.newXPath();
         xformFactory = XmlTransformUtility.getTransformerFactory();
 

@@ -74,7 +74,25 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
         }
 
         byte[] b = co.getBytes();
-        XPath xpath = XPathFactory.newInstance().newXPath();
+
+	// BUG 11838:
+	log.trace( String.format( "BUG#11838: Retrieved the following data from the CargoContainer ( size: %s ):\n%s", b.length, new String( b ) ) );
+
+	// BUG 11838:
+	// This is very ugly and probably not safe!
+	// The main problem here is, that XPathFactory is not thread-safe, and must not be invoked
+	// from more than one thread at once - throughout the application. It is the programmers responsibility to ensure this, which in my opinion
+	// is pretty much impossible. Assume You use some third party software which uses XPathFactory in another thread and 
+	// you at the same time invoke XPathFactory from your thread - then we have a race-condition - one you have no way to avoid what so ever :(
+	// 
+	// I have moved the XPathFactory invocation into a synchronized-block in order to prevent a race-condition in this class.
+	// I have checked the Datadock-code, and found another invocation of XPathFactory in FoxmlDocument.java.
+	// There is therefore an off chance that these two invocations happen simultaniously.
+        XPath xpath = null;
+	synchronized(this) 
+	{
+	    xpath = XPathFactory.newInstance().newXPath();
+	}
         xpath.setNamespaceContext( nsc );
         XPathExpression xPathExpression;
 
