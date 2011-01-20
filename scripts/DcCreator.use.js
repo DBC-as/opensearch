@@ -133,7 +133,8 @@ const DcCreator = function(){
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
     
-    if (String(originalXml.ting::originalData.status === "d")) {
+    if (String(originalXml.ting::originalData.status) === "d") {
+      Log.info( "RLO: DELETED OBJECT - WHY?" );
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
 
@@ -212,7 +213,6 @@ const DcCreator = function(){
       }
     }
 
-
     var dcString = String(dcXml);
 
     return dcString;
@@ -279,7 +279,7 @@ const DcCreator = function(){
     if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
-    if (String(originalXml.ting::originalData.status === "d")) {
+    if (String(originalXml.ting::originalData.status) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
  
