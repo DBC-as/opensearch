@@ -145,6 +145,12 @@
 	      <arg name="createobjectfunction" value="makeworkobject"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="ebscoart" submitter="150010">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
@@ -156,12 +162,10 @@
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
-    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
-        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
-	      <arg name="searchfunction" value="generateSearchPairs"/>
-	      <arg name="matchfunction" value="checkmatch"/>
-	      <arg name="createobjectfunction" value="makeworkobject"/>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
@@ -391,7 +395,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasSpecificOnlineAccess"/>
+        <arg name="entryfunction" value="hasCatCodeOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
@@ -404,6 +408,30 @@
       </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasCatCodeOnlineAccess"/>
+      </args>
+    </plugin>
+  </workflow>
+  <workflow format="ebrary" submitter="150025">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromMarc"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+    <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
+      <args>
+        <arg name="javascript" value="workmatch_relation_functions.1.1.js"/>
+	      <arg name="searchfunction" value="generateSearchPairs"/>
+	      <arg name="matchfunction" value="checkmatch"/>
+	      <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
@@ -1339,6 +1367,12 @@
         <arg name="searchfunction" value="generateSearchPairs"/>
         <arg name="matchfunction" value="checkmatch"/>
         <arg name="createobjectfunction" value="makeworkobject"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
