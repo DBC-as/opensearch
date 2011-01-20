@@ -532,7 +532,7 @@ const Relations = function() {
     }
     
     var child;
-    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden|Faktalink|Forfatterweb/)) {
+    if (String(manifestationXML.dkabm::record.ac::source).match(/Faktalink|Forfatterweb/)) {
       for each (child in manifestationXML.dkabm::record.dc::identifier) {
         if (String(child.@xsi::type).match("dcterms:URI")) {
           DbcAddiRelations.hasFulltext( pid, String(child) );
@@ -568,6 +568,14 @@ const Relations = function() {
       var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
       var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
       DbcAddiRelations.hasOnlineAccess( pid, url );
+    }
+    var child;
+    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden/)) {
+      for each (child in manifestationXML.dkabm::record.dc::identifier) {
+        if (String(child.@xsi::type).match("dcterms:URI")) {
+          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
+        }
+      }
     }
     
     Log.info ("End hasFilmstribenOnlineAccess" );
