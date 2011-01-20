@@ -557,33 +557,42 @@ const Relations = function() {
 
   };
   
-  that.hasCatCodeOnlineAccess = function( xml, pid ) {
+  that.hasFilmstribenOnlineAccess = function( xml, pid ) {
 
-    Log.info ("Start hasCatCodeOnlineAccess" );
+    Log.info ("Start hasFilmstribenOnlineAccess" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
 
-    if (String(manifestationXML.dkabm::record.ac::identifier).replace(/.*\|/, "") === "150022") {
-      if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSS/)) {
-        var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
-        var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
-        DbcAddiRelations.hasOnlineAccess( pid, url );
-      }
-    } else {
-      if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSF/)) {
-        var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
-        var url = String("http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=" + id);
-        DbcAddiRelations.hasRemoteAccess( pid, url );
-      }
-      if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSB/)) {
-        var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
-        var url = String("http://www.filmstriben.dk/bibliotek/filmdetails.aspx?id=" + id);
-        DbcAddiRelations.hasOnSiteAccess( pid, url );
-      }
+    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSS/)) {
+      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
+      DbcAddiRelations.hasOnlineAccess( pid, url );
+    }
+    
+    Log.info ("End hasFilmstribenOnlineAccess" );
+
+  };
+  
+  that.hasSpecificOnlineAccess = function( xml, pid ) {
+
+    Log.info ("Start hasSpecificOnlineAccess" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var manifestationXML = XmlUtil.fromString( xml );
+
+    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSF/)) {
+      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var url = String("http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=" + id);
+      DbcAddiRelations.hasRemoteAccess( pid, url );
+    }
+    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSB/)) {
+      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var url = String("http://www.filmstriben.dk/bibliotek/filmdetails.aspx?id=" + id);
+      DbcAddiRelations.hasOnSiteAccess( pid, url );
     }
 
-    Log.info ("End hasCatCodeOnlineAccess" );
+    Log.info ("End hasSpecificOnlineAccess" );
 
   };
   
