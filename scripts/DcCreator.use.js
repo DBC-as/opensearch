@@ -134,7 +134,6 @@ const DcCreator = function(){
     var dcXml = DcCreator.createDcObject();
     
     if (String(originalXml.ting::originalData.status) === "d") {
-      Log.info( "RLO: DELETED OBJECT - WHY?" );
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
 
