@@ -64,8 +64,8 @@ function hasOnlineAccess ( submitter, format, language, xml, pid ) {
   Relations.hasOnlineAccess ( xml, pid );
 }
 
-function hasSpecificOnlineAccess ( submitter, format, language, xml, pid ) {
-  Relations.hasSpecificOnlineAccess ( xml, pid );
+function hasCatCodeOnlineAccess ( submitter, format, language, xml, pid ) {
+  Relations.hasCatCodeOnlineAccess ( xml, pid );
 }
 
 function hasCreatorHomePage ( submitter, format, language, xml, pid ) {

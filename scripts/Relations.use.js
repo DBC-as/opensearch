@@ -551,23 +551,24 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
 
-    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSS/)) {
-      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
-      var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
-      DbcAddiRelations.hasOnlineAccess( pid, url );
-    }
+    DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
 
     Log.info ("End hasOnlineAccess" );
 
   };
   
-  that.hasSpecificOnlineAccess = function( xml, pid ) {
+  that.hasCatCodeOnlineAccess = function( xml, pid ) {
 
-    Log.info ("Start hasSpecificOnlineAccess" );
+    Log.info ("Start hasCatCodeOnlineAccess" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
 
+    if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSS/)) {
+      var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
+      var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
+      DbcAddiRelations.hasOnlineAccess( pid, url );
+    }
     if (String(manifestationXML.*.*.*.(@tag=='032').*.(@code=='x')).match(/FSF/)) {
       var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
       var url = String("http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=" + id);
@@ -579,7 +580,7 @@ const Relations = function() {
       DbcAddiRelations.hasOnSiteAccess( pid, url );
     }
 
-    Log.info ("End hasSpecificOnlineAccess" );
+    Log.info ("End hasCatCodeOnlineAccess" );
 
   };
   
