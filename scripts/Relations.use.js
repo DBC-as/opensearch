@@ -550,8 +550,17 @@ const Relations = function() {
 
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
-
-    DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
+    
+    var child;
+    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden/)) {
+      for each (child in manifestationXML.dkabm::record.dc::identifier) {
+        if (String(child.@xsi::type).match("dcterms:URI")) {
+          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
+        }
+      }
+    } else {
+      DbcAddiRelations.hasOnlineAccess ( pid, "[URL]" + String(manifestationXML.dkabm::record.ac::identifier).replace(/\|.*/, ""));
+    }
 
     Log.info ("End hasOnlineAccess" );
 
@@ -568,14 +577,6 @@ const Relations = function() {
       var id = String(manifestationXML.*.*.*.(@tag=='856').*.(@code=='u')).replace(/http:\/\/www.filmstriben.dk\/\?showfilm=(.*)/, "$1");
       var url = String("http://www.filmstriben.dk/skole/filmdetails.aspx?id=" + id);
       DbcAddiRelations.hasOnlineAccess( pid, url );
-    }
-    var child;
-    if (String(manifestationXML.dkabm::record.ac::source).match(/Litteratursiden/)) {
-      for each (child in manifestationXML.dkabm::record.dc::identifier) {
-        if (String(child.@xsi::type).match("dcterms:URI")) {
-          DbcAddiRelations.hasOnlineAccess( pid, String(child) );
-        }
-      }
     }
     
     Log.info ("End hasFilmstribenOnlineAccess" );
