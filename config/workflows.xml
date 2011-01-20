@@ -395,7 +395,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasCatCodeOnlineAccess"/>
+        <arg name="entryfunction" value="hasSpecificOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
@@ -411,7 +411,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasCatCodeOnlineAccess"/>
+        <arg name="entryfunction" value="hasFilmstribenOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
