@@ -139,9 +139,6 @@ const DcCreator = function(){
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
     
-    dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.dkabm::record.ac::activity.ac::action), "type", dc );
-
-    
     if (String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope" ) {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
