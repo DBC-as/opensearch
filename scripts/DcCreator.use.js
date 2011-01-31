@@ -133,7 +133,7 @@ const DcCreator = function(){
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
     
-    if (String(originalXml.ting::originalData.status) === "d" || originalXml.dkabm::record.ac::activity.ac::action === "delete-out-of-scope" ) {
+    if (String(originalXml.ting::originalData.status) === "d" || String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope" ) {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
 
@@ -278,7 +278,7 @@ const DcCreator = function(){
     if (String(originalXml.collection.record.datafield.(@tag=="004").subfield.(@code=="r")) === "d") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
-    if (String(originalXml.ting::originalData.status) === "d" || originalXml.dkabm::record.ac::activity.ac::action === "delete-out-of-scope") {
+    if (String(originalXml.ting::originalData.status) === "d" || String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope") {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
  
