@@ -133,7 +133,13 @@ const DcCreator = function(){
     var originalXml = XmlUtil.fromString ( xml );
     var dcXml = DcCreator.createDcObject();
     
-    if (String(originalXml.ting::originalData.status) === "d" || String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope" ) {
+    Log.info ("TEST: " + String(originalXml.dkabm::record.ac::activity.ac::action));
+    
+    if (String(originalXml.ting::originalData.status) === "d") {
+      dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+    }
+    
+    if (String(originalXml.dkabm::record.ac::activity.ac::action) === "delete-out-of-scope" ) {
       dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
     }
 
