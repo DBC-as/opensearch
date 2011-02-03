@@ -366,6 +366,29 @@
         <arg name="entryfunction" value="isAuthorDescriptionOf"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="hasImage"/>
+      </args>
+    </plugin>
+  </workflow>
+  <workflow format="image" submitter="150016">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromDkabm"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store">
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="isImageOf"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="faktalink" submitter="150017">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
