@@ -436,7 +436,7 @@ const Relations = function() {
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
         if (String(result).match(/150017:.*/)) {
-          DbcAddiRelations.hasSubjectDescription( pid, result );
+          DbcAddiRelations.hasSubjectDescription( result, pid );
         }
       }
 
@@ -466,7 +466,7 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.isImageOf( result, pid );
+        DbcAddiRelations.isImageOf( pid, result );
       }
     }
 
