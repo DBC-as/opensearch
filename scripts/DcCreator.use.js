@@ -370,15 +370,16 @@ const DcCreator = function(){
     Log.debug( "RLO, ORIGINALXML: " + originalXml);
 
     var dcXml = DcCreator.createDcObject();
-
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::title), "title", dc );
-
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::creator), "creator", dc );
-
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::identifier), "identifier", dc );
-
-      dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::type), "type", dc );
-
+    
+      if (String(originalXml.ting::originalData.status) === "d") {
+        dcXml.oai_dc::dc = DcCreator.createElement("DELETED OBJECT", "type", dc);
+      } else {
+        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::title), "title", dc );
+        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::creator), "creator", dc );
+        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::identifier), "identifier", dc );
+        dcXml.oai_dc::dc += DcCreator.createElement( String(originalXml.oso::object.oso::type), "type", dc );
+      }
+      
     Log.debug( "RLO, DCXML: " + dcXml);
 
     var dcString = String(dcXml);
