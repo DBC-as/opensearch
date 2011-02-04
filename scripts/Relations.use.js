@@ -466,7 +466,7 @@ const Relations = function() {
       Log.info( "result: " + result );
 
       if (!String(result).match(/work:.*/)) {
-        DbcAddiRelations.hasImage( result, pid );
+        DbcAddiRelations.isImageOf( result, pid );
       }
     }
 
@@ -496,7 +496,7 @@ const Relations = function() {
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
         if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.hasImage( pid, result );
+          DbcAddiRelations.isImageOf( pid, result );
         }
       }
 
