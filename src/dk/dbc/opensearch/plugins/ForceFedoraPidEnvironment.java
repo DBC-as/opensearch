@@ -52,6 +52,11 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
 
     private IObjectRepository repository;
 
+    // Create lock-object to guarantee sequential access to XPathFactory.
+    // It is static to ensure that all instances of ForceFedoraPidEnvironment can access it.
+    // It is private to ensure only we - inside this class can access it - thereby noone else locks on it and slows us down.
+    private static final Object XPathFactoryLock = new Object();
+
     ForceFedoraPidEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
 	this.repository = repository;
@@ -86,10 +91,13 @@ public class ForceFedoraPidEnvironment implements IPluginEnvironment
 	// you at the same time invoke XPathFactory from your thread - then we have a race-condition - one you have no way to avoid what so ever :(
 	// 
 	// I have moved the XPathFactory invocation into a synchronized-block in order to prevent a race-condition in this class.
+	// I have created an object XPathFactoryLock which is private to all instanceses of ForceFedoraPidEnvironment,
+	// in order to have a safe object to synchronize on. For more information see bug 11838.
+	//
 	// I have checked the Datadock-code, and found another invocation of XPathFactory in FoxmlDocument.java.
 	// There is therefore an off chance that these two invocations happen simultaniously.
         XPath xpath = null;
-	synchronized(this) 
+	synchronized( this.XPathFactoryLock )
 	{
 	    xpath = XPathFactory.newInstance().newXPath();
 	}
