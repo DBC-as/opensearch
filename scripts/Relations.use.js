@@ -496,7 +496,7 @@ const Relations = function() {
         var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
         if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.isImageOf( pid, result );
+          DbcAddiRelations.isImageOf( result, pid );
         }
       }
 
