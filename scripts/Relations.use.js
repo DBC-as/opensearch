@@ -481,7 +481,7 @@ const Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
 
-    var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)|(.*)/, "$2:$1image");
+    var identifier = String(manifestationXML.dkabm::record.ac::identifier).replace( /(.*)\|(.*)/, "$2:$1image");
 
     Log.info( "Identifier: " + identifier );
     Log.info( "pid: " + pid );
