@@ -3,7 +3,7 @@ EXPORTED_SYMBOLS = ['DcCreator'];
 use ( "XmlUtil.use.js" );
 use ( "XmlNamespaces.use.js" );
 
-const DcCreator = function(){
+var DcCreator = function(){
 
   var dkabm = XmlNamespaces.dkabm;
   var dc = XmlNamespaces.dc;

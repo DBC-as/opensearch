@@ -5,7 +5,7 @@ use ( "DbcBibRelations.use.js" );
 
 EXPORTED_SYMBOLS = ['Relations'];
 
-const Relations = function() {
+var Relations = function() {
 
   var dkabm = XmlNamespaces.dkabm;
   var dc = XmlNamespaces.dc;

@@ -5,7 +5,7 @@
 
 EXPORTED_SYMBOLS = [ "DbcBibRelations" ];
 
-const DbcBibRelations = function() {
+var DbcBibRelations = function() {
 
     var that = {};
 

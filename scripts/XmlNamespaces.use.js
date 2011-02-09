@@ -2,7 +2,7 @@
 
 EXPORTED_SYMBOLS=[ 'XmlNamespaces' ];
 
-const XmlNamespaces = function(){
+var XmlNamespaces = function(){
 
     var that = {};
     that.ubf = new Namespace( "ubf", "http://www.dbc.dk/ubf" ); 
@@ -24,7 +24,7 @@ const XmlNamespaces = function(){
     that.oai_dc = new Namespace( "oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/" );
     that.oso = new Namespace ( "oso", "http://oss.dbc.dk/ns/opensearchobjects");
 
-    const const_that = that;
+    var const_that = that;
     return const_that;
 }();
 

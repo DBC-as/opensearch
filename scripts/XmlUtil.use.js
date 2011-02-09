@@ -4,7 +4,7 @@
 // use( "Log" );
 
 EXPORTED_SYMBOLS = [ "XmlUtil" ];
-const XmlUtil = function() {
+var XmlUtil = function() {
     var that = {};
 
     that.fromString = function( xmlString ) {
