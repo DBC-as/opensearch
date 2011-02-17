@@ -379,6 +379,44 @@ var Relations = function() {
     Log.info ("End hasAuthorDescription" );
 
   };
+  
+  that.isCreatorDescriptionOf = function ( xml, pid ) {
+
+    Log.info ("Start isCreatorDescriptionOf" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var subjectXml = XmlUtil.fromString( xml );
+
+    Log.info ("End isCreatorDescriptionOf" );
+
+  };
+
+  that.hasCreatorDescription = function ( xml, pid ) {
+
+    Log.info ("Start hasCreatorDescription" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var creatorXml = XmlUtil.fromString( xml );
+    
+    var creator = String(creatorXml.dkabm::record.dc::creator);
+    
+    if (creator !== "undefined") {
+      var results = FedoraPIDSearch.subject(creator);
+      
+      for (var i = 0; i < results.length; ++i) {
+        var result = results[i];
+        
+        Log.info("result: " + result);
+        
+        if (!String(result).match(/work:.*/)) {
+          DbcAddiRelations.hasCreatorDescription(result, pid);
+        }
+      }
+    }
+    
+    Log.info ("End hasCreatorDescription" );
+
+  };
 
   that.isSubjectDescriptionOf = function ( xml, pid ) {
 

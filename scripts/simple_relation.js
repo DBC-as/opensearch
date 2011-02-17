@@ -40,6 +40,14 @@ function hasAuthorDescription ( submitter, format, language, xml, pid ) {
   Relations.hasAuthorDescription ( xml, pid );
 }
 
+function isCreatorDescriptionOf ( submitter, format, language, xml, pid ) {
+  Relations.isCreatorDescriptionOf ( xml, pid );
+}
+
+function hasCreatorDescription ( submitter, format, language, xml, pid ) {
+  Relations.hasCreatorDescription ( xml, pid );
+}
+
 function isSubjectDescriptionOf ( submitter, format, language, xml, pid ) {
   Relations.isSubjectDescriptionOf ( xml, pid );
 }
