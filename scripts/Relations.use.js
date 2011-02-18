@@ -444,7 +444,7 @@ var Relations = function() {
 
       var subject = String(child);
 
-      Log.info( "Subject: " + subject );
+      Log.info( "SubjectCreator: " + subject );
       Log.info( "pid: " + pid );
 
       var results = FedoraPIDSearch.creator( subject );
@@ -453,8 +453,6 @@ var Relations = function() {
         var result = results[i];
 
         Log.info( "result: " + result );
-
-        var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
         if (String(result).match(/150026:.*/)) {
           DbcAddiRelations.hasCreatorDescription( pid, result );
@@ -546,8 +544,6 @@ var Relations = function() {
         var result = results[i];
 
         Log.info( "result: " + result );
-
-        var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
 
         if (String(result).match(/150017:.*/)) {
           DbcAddiRelations.hasSubjectDescription( result, pid );
