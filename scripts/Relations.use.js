@@ -455,7 +455,7 @@ var Relations = function() {
         Log.info( "result: " + result );
 
         if (String(result).match(/150026:.*/)) {
-          DbcAddiRelations.hasCreatorDescription( pid, result );
+          DbcAddiRelations.hasCreatorDescription( result, pid );
         }
       }
 
@@ -483,7 +483,7 @@ var Relations = function() {
         Log.info("result: " + result);
         
         if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.hasCreatorDescription( result, pid );
+          DbcAddiRelations.hasCreatorDescription( pid, result );
         }
       }
     }
