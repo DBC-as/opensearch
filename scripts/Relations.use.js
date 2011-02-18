@@ -438,6 +438,8 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var manifestationXML = XmlUtil.fromString( xml );
     
+    var child;
+    
     for each(child in manifestationXML.dkabm::record.dc::subject) {
 
       var subject = String(child);
