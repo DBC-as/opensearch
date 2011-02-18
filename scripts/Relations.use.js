@@ -2,6 +2,7 @@ use ( "XmlUtil.use.js" );
 use ( "XmlNamespaces.use.js" );
 use ( "DbcAddiRelations.use.js" );
 use ( "DbcBibRelations.use.js" );
+use ( "Dcterms.use.js" );
 
 EXPORTED_SYMBOLS = ['Relations'];
 
@@ -136,6 +137,31 @@ var Relations = function() {
     }
 
     Log.info ("End isAnalysisOf" );
+
+  };
+  
+  that.references = function ( xml, pid ) {
+
+    Log.info ("Start references" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var referenceXML = XmlUtil.fromString( xml );
+
+    var relation = String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
+
+    var results = FedoraPIDSearch.identifier( relation );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      if (!String(result).match(/work:.*/)) {
+        Dcterms.references( pid, result );
+      }
+    }
+
+    Log.info ("End references" );
 
   };
 
