@@ -83,3 +83,7 @@ function hasFilmstribenOnlineAccess ( submitter, format, language, xml, pid ) {
 function hasCreatorHomePage ( submitter, format, language, xml, pid ) {
   Relations.hasCreatorHomePage ( xml, pid );
 }
+
+function references ( submitter, format, language, xml, pid ) {
+  Relations.references ( xml, pid );
+}
