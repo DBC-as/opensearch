@@ -164,6 +164,31 @@ var Relations = function() {
     Log.info ("End references" );
 
   };
+  
+  that.isReferencedBy = function ( xml, pid ) {
+
+    Log.info ("Start isReferencedBy" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var referenceXML = XmlUtil.fromString( xml );
+
+    var relation = String();
+
+    var results = FedoraPIDSearch.identifier( relation );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      if (!String(result).match(/work:.*/)) {
+        Dcterms.references( result, pid );
+      }
+    }
+
+    Log.info ("End isReferencedBy" );
+
+  };
 
   that.isPartOfManifestation = function ( xml, pid) {
 
@@ -411,7 +436,30 @@ var Relations = function() {
     Log.info ("Start isCreatorDescriptionOf" );
 
     // Converting the xml-string to an XMLObject which e4x can handle:
-    var subjectXml = XmlUtil.fromString( xml );
+    var manifestationXML = XmlUtil.fromString( xml );
+    
+    for each(child in manifestationXML.dkabm::record.dc::subject) {
+
+      var subject = String(child);
+
+      Log.info( "Subject: " + subject );
+      Log.info( "pid: " + pid );
+
+      var results = FedoraPIDSearch.creator( subject );
+
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+
+        Log.info( "result: " + result );
+
+        var NS = "http://oss.dbc.dk/rdf/dbcaddi#";
+
+        if (String(result).match(/150026:.*/)) {
+          DbcAddiRelations.hasCreatorDescription( pid, result );
+        }
+      }
+
+    }
 
     Log.info ("End isCreatorDescriptionOf" );
 
@@ -435,7 +483,7 @@ var Relations = function() {
         Log.info("result: " + result);
         
         if (!String(result).match(/work:.*/)) {
-          DbcAddiRelations.hasCreatorDescription(result, pid);
+          DbcAddiRelations.hasCreatorDescription( result, pid );
         }
       }
     }
