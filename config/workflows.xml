@@ -515,6 +515,12 @@
         <arg name="entryfunction" value="isCreatorOf"/>
       </args>
     </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
+      <args>
+        <arg name="javascript" value="simple_relation.js"/>
+        <arg name="entryfunction" value="isReferencedBy"/>
+      </args>
+    </plugin>
   </workflow>
   <workflow format="lokalbibl" submitter="159002">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
