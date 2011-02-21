@@ -88,6 +88,10 @@ function references ( submitter, format, language, xml, pid ) {
   Relations.references ( xml, pid );
 }
 
+function isReferencedBy ( submitter, format, language, xml, pid ) {
+  Relations.isReferencedBy ( xml, pid );
+}
+
 function hasCreator ( submitter, format, language, xml, pid ) {
   Relations.hasCreator ( xml, pid );
 }

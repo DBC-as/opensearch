@@ -205,6 +205,8 @@ var DcCreator = function(){
     for each (child in originalXml.dkabm::record.dcterms::references) {
       if (String(child.@xsi::type).match("dkdcplus:ISBN")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "ISBN:" + String(child).replace( /-/g, ""), "relation", dc );
+      } else if (child.match("LokalKunstner")){
+        dcXml.oai_dc::dc += DcCreator.createElement( String(child), "relation", dc );
       }
     }
 
