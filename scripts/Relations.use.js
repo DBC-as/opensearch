@@ -25,7 +25,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var reviewXML = XmlUtil.fromString( xml );
 
-    var identifier = reviewXML.*.*.*.(@tag=='014').*.(@code=='a');
+    var identifier = String(reviewXML.*.*.*.(@tag=='014').*.(@code=='a'));
 
     Log.info( "Identifier: " + identifier );
     Log.info( "pid: " + pid );
@@ -151,20 +151,6 @@ var Relations = function() {
       var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
   
       var results = FedoraPIDSearch.identifier( relation );
-  
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-  
-        Log.info( "result: " + result );
-  
-        if (!String(result).match(/work:.*/)) {
-          Dcterms.references( pid, result );
-        }
-      }
-    } else if (String(referenceXML.ting::originalData.link.@objectType) === "Kunstner") {
-      var relation = String(referenceXML.oso::object.oso::identifier).replace(/(.*)\|.*)/, "$1");
-  
-      var results = FedoraPIDSearch.relation( relation );
   
       for ( var i = 0; i < results.length; ++i ) {
         var result = results[i];
