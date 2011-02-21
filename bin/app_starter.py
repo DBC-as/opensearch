@@ -1,4 +1,4 @@
-26#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 
@@ -28,7 +28,8 @@ import logging as log
 import fedora_conn
 import glob
 
-def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_allocation, force ):
+def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, maxpermsize, 
+          cmsclassunloadingenabled, mem_allocation, force ):
     log_filename = 'app_starter.log'
     log_path = os.path.abspath( 'log-files' )
 
@@ -102,6 +103,15 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
         sys.exit( "Cannot stop nonrunning process" )
 
     if do_start:
+        if app=='pti':
+        #Compass has some problems finishing the optimizer thread, so
+        #we'll check if there remains a lock file in the index dir:
+            index_dir = os.environ.get("LUCENE_INDEX_PATH")
+            for fil in glob.glob( index_dir ):
+                if fil.find( 'lock' ) > 0:
+                    logger.error( "Write lock on lucene indexes found. Delete before starting indexer again")
+                    print "Exiting due to existence of lock file on lucene index" 
+                    sys.exit(1)
 
         if fedora_arg:
         ### Check if fedora is up and running
@@ -120,7 +130,7 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
         
         print "starting process"
         log.debug( "Starting process with q_name=%s, pid_filename=%s"%( q_name, pid_filename ) )
-        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation )
+        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, maxpermsize, cmsclassunloadingenabled )
         log.debug( "Started process with pid=%s"%( pid ) )
         open( pid_filename, 'w' ).write( str( pid ) )
         print "process started with pid=%s"%( pid )
@@ -129,13 +139,13 @@ def main( app, action, monitor, fedora_arg, harvester, esharvester_cleanup, mem_
         print "starting process"
         args = "-DshutDownOnJobsDone=true"
         
-        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, args )
+        proc, pid = start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, maxpermsize, cmsclassunloadingenabled, args )
         print "Waiting for process to stop pid=%s "%(pid)
         os.waitpid( pid, 0 );
         
         print "print done waiting"
 
-def start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, args=None ):
+def start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup, mem_allocation, maxpermsize, cmsclassunloadingenabled, args=None ):
     
     """
     Starts the Application daemon
@@ -162,6 +172,12 @@ def start_daemon( q_name, pid_filename, monitor, harvester, esharvester_cleanup,
 
     if harvester:
         properties.append( "-Dharvester=%s" % harvester )
+
+    if maxpermsize:
+        properties.append( "-XX:MaxPermSize=%s" % maxpermsize )
+
+    if cmsclassunloadingenabled:
+        properties.append( "-XX:+CMSClassUnloadingEnabled" )
 
     cmd = [ 'java' ]
 
@@ -277,6 +293,12 @@ if __name__ == '__main__':
     parser.add_option( "--esharvester_clean_inprogress", action="store_true", dest="esharvester_cleanup",
                        help="resets records in database which are set to recordstatus=inProgress. The recordsstatus are reset to 'queued'." )
 
+    parser.add_option( "--MaxPermSize", action="store", dest="maxpermsize",
+                       help="Addes the parameter: '-XX:MaxPermSize=MAXPERMSIZE' to the java process." )
+
+    parser.add_option( "--CMSClassUnloadingEnabled", action="store_true", dest="cmsclassunloadingenabled",
+                       help="Addes the parameter: '-XX:+CMSClassUnloadingEnabled' to the java process." )
+
     (options, args) = parser.parse_args()
 
     mem_allocation = [options.Xms, options.Xmx]
@@ -321,7 +343,7 @@ if __name__ == '__main__':
         sys.exit( parser.print_help() )
 
     if options.app == 'both':
-        main( 'pti', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup )
-        main( 'datadock', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup )
+        main( 'pti', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup, maxpermsize, cmsclassunloadingenabled )
+        main( 'datadock', args[0], options.monitor, fedora_arg, options.harvester, options.esharvester_cleanup, maxpermsize, cmsclassunloadingenabled )
     else:
-        main( options.app, args[0], options.monitor, fedora_arg, harvester, options.esharvester_cleanup, mem_allocation, options.force )
+        main( options.app, args[0], options.monitor, fedora_arg, harvester, options.esharvester_cleanup, options.maxpermsize, options.cmsclassunloadingenabled, mem_allocation, options.force )
