@@ -162,22 +162,6 @@ var Relations = function() {
         }
       }
     }
-    
-    if (String(referenceXML.ting::originalData.link.@objectType) === "Kunstner") {
-      var relation = String(referenceXML.oso::object.oso::identifier).replace(/(.*)|.*)/, "$1");
-  
-      var results = FedoraPIDSearch.relation( relation );
-  
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-  
-        Log.info( "result: " + result );
-  
-        if (!String(result).match(/work:.*/)) {
-          Dcterms.references( pid, result );
-        }
-      }
-    }
 
     Log.info ("End references" );
 
