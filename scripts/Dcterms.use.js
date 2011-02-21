@@ -18,5 +18,11 @@ const Dcterms = function() {
         scriptClass.createRelation( pid2, "http://purl.org/dc/terms/#isReferencedBy", pid1);
         Log.info( "End references" );
     };
+    
+    that.creator = function ( pid1, pid2 ){
+        Log.info( "Start references" );
+        scriptClass.createRelation( pid1, "http://purl.org/dc/terms/#creator", pid2 );
+        Log.info( "End references" );
+    };
 
 return that;}();

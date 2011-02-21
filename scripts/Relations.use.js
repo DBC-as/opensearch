@@ -147,17 +147,19 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var referenceXML = XmlUtil.fromString( xml );
 
-    var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
-
-    var results = FedoraPIDSearch.identifier( relation );
-
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
-
-      Log.info( "result: " + result );
-
-      if (!String(result).match(/work:.*/)) {
-        Dcterms.references( pid, result );
+    if (String(referenceXML.ting::originalData.link.@objectType) === "Vaerk") {
+      var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
+  
+      var results = FedoraPIDSearch.identifier( relation );
+  
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+  
+        Log.info( "result: " + result );
+  
+        if (!String(result).match(/work:.*/)) {
+          Dcterms.references( pid, result );
+        }
       }
     }
 
@@ -172,7 +174,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var referenceXML = XmlUtil.fromString( xml );
 
-    var relation = String();
+    var relation = String(referenceXML.dkabm::record.dcterms::references);
 
     var results = FedoraPIDSearch.identifier( relation );
 
@@ -187,6 +189,58 @@ var Relations = function() {
     }
 
     Log.info ("End isReferencedBy" );
+
+  };
+  
+  that.hasCreator = function ( xml, pid ) {
+
+    Log.info ("Start creator" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var referenceXML = XmlUtil.fromString( xml );
+
+    if (String(referenceXML.ting::originalData.link.@objectType) === "Kunstner") {
+      var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
+  
+      var results = FedoraPIDSearch.identifier( relation );
+  
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+  
+        Log.info( "result: " + result );
+  
+        if (!String(result).match(/work:.*/)) {
+          Dcterms.creator( pid, result );
+        }
+      }
+    }
+
+    Log.info ("End creator" );
+
+  };
+  
+  that.isCreatorOf = function ( xml, pid ) {
+
+    Log.info ("Start isCreatorOf" );
+
+    // Converting the xml-string to an XMLObject which e4x can handle:
+    var referenceXML = XmlUtil.fromString( xml );
+
+    var creator = String(referenceXML.dkabm::record.dc::title);
+
+    var results = FedoraPIDSearch.creator( creator );
+
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
+
+      Log.info( "result: " + result );
+
+      if (String(result).match(/150026:.*/)) {
+        Dcterms.creator( result, pid );
+      }
+    }
+
+    Log.info ("End isCreatorOf" );
 
   };
 
