@@ -87,3 +87,11 @@ function hasCreatorHomePage ( submitter, format, language, xml, pid ) {
 function references ( submitter, format, language, xml, pid ) {
   Relations.references ( xml, pid );
 }
+
+function hasCreator ( submitter, format, language, xml, pid ) {
+  Relations.hasCreator ( xml, pid );
+}
+
+function isCreatorOf ( submitter, format, language, xml, pid ) {
+  Relations.isCreatorOf ( xml, pid );
+}
