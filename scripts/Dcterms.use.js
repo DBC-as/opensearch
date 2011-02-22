@@ -14,7 +14,7 @@ const Dcterms = function() {
     */
     that.references = function ( pid1, pid2 ){
         Log.info( "Start references" );
-        scriptClass.createRelation( pid1, "http://purl.org/dc/terms/#References", pid2 );
+        scriptClass.createRelation( pid1, "http://purl.org/dc/terms/#references", pid2 );
         scriptClass.createRelation( pid2, "http://purl.org/dc/terms/#isReferencedBy", pid1);
         Log.info( "End references" );
     };
