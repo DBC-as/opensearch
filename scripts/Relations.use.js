@@ -147,17 +147,20 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var referenceXML = XmlUtil.fromString( xml );
 
-    var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
-  
-    var results = FedoraPIDSearch.identifier( relation );
-  
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
-  
-      Log.info( "result: " + result );
-  
-      if (!String(result).match(/work:.*/)) {
-        Dcterms.references( pid, result );
+    var child;
+    for each (child in referenceXML.ting::originalData.link) {
+      var relation = "150026:" + String(child.@objectExtId).replace(/:/, "");
+    
+      var results = FedoraPIDSearch.identifier( relation );
+    
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+    
+        Log.info( "result: " + result );
+    
+        if (!String(result).match(/work:.*/)) {
+          Dcterms.references( pid, result );
+        }
       }
     }
 
