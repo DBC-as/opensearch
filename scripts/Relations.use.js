@@ -147,34 +147,17 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var referenceXML = XmlUtil.fromString( xml );
 
-    if (String(referenceXML.ting::originalData.link.@objectType) === "Vaerk") {
-      var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
+    var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
   
-      var results = FedoraPIDSearch.identifier( relation );
+    var results = FedoraPIDSearch.identifier( relation );
   
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
+    for ( var i = 0; i < results.length; ++i ) {
+      var result = results[i];
   
-        Log.info( "result: " + result );
+      Log.info( "result: " + result );
   
-        if (!String(result).match(/work:.*/)) {
-          Dcterms.references( pid, result );
-        }
-      }
-    }
-    if (String(referenceXML.ting::originalData.link.@objectType) === "Kunstner") {
-      var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
-  
-      var results = FedoraPIDSearch.identifier( relation );
-  
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-  
-        Log.info( "result: " + result );
-  
-        if (!String(result).match(/work:.*/)) {
-          Dcterms.references( pid, result );
-        }
+      if (!String(result).match(/work:.*/)) {
+        Dcterms.references( pid, result );
       }
     }
 
@@ -189,19 +172,19 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var referenceXML = XmlUtil.fromString( xml );
 
-    var relation = String(referenceXML.dkabm::record.dcterms::references);
-
-    var results = FedoraPIDSearch.identifier( relation );
-
-    for ( var i = 0; i < results.length; ++i ) {
-      var result = results[i];
-
-      Log.info( "result: " + result );
-
-      if (!String(result).match(/work:.*/)) {
-        Dcterms.references( result, pid );
+    var relation = "150026:" + String(referenceXML.ting::originalData.link.@objectExtId).replace(/:/, "");
+  
+      var results = FedoraPIDSearch.identifier( relation );
+  
+      for ( var i = 0; i < results.length; ++i ) {
+        var result = results[i];
+  
+        Log.info( "result: " + result );
+  
+        if (!String(result).match(/work:.*/)) {
+          Dcterms.references( pid, result );
+        }
       }
-    }
 
     Log.info ("End isReferencedBy" );
 
@@ -241,7 +224,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var referenceXML = XmlUtil.fromString( xml );
 
-    var creator = String(referenceXML.dkabm::record.dc::title);
+    var creator = String(referenceXML.ting::originalData.navn);
 
     var results = FedoraPIDSearch.creator( creator );
 
