@@ -182,7 +182,7 @@ var Relations = function() {
         Log.info( "result: " + result );
   
         if (!String(result).match(/work:.*/)) {
-          Dcterms.references( pid, result );
+          Dcterms.references( result, pid );
         }
       }
 
