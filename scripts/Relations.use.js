@@ -224,7 +224,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var referenceXML = XmlUtil.fromString( xml );
 
-    var creator = String(referenceXML.ting::originalData.navn);
+    var creator = String(referenceXML.ting::originalData.navn).replace(/(.*), (.*)/, "$2 $1");
 
     var results = FedoraPIDSearch.creator( creator );
 
