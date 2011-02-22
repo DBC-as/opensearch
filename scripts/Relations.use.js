@@ -174,7 +174,7 @@ var Relations = function() {
 
     var relation = String(referenceXML.oso::object.oso::identifier).replace(/(.*)\|.*/, "$1");
   
-      var results = FedoraPIDSearch.identifier( relation );
+      var results = FedoraPIDSearch.relation( relation );
   
       for ( var i = 0; i < results.length; ++i ) {
         var result = results[i];
