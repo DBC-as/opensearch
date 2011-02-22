@@ -524,7 +524,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var creatorXml = XmlUtil.fromString( xml );
     
-    var creator = String(creatorXml.dkabm::record.dc::creator);
+    var creator = String(creatorXml.dkabm::record.dc::creator[0]);
     
     if (creator !== "undefined") {
       var results = FedoraPIDSearch.subject(creator);
