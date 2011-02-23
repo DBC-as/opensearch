@@ -597,12 +597,6 @@
         <arg name="entryfunction" value="hasSubjectDescription"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
-      <args>
-        <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="isCreatorDescriptionOf"/>
-      </args>
-    </plugin>
   </workflow>
   <workflow format="katalog" submitter="715700">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
