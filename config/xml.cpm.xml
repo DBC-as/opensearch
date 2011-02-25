@@ -366,6 +366,7 @@
     <xml-property
         xpath="/ting:container/ting:fedoraNormPid"
         index="un_tokenized"
+        value-converter="lowercase"
         />
     <xml-property
         xpath="/ting:container/ting:original_format"
@@ -712,6 +713,7 @@
     <xml-property
         xpath="/ting:container/ting:fedoraNormPid"
         index="un_tokenized"
+        value-converter="lowercase"
         />
     <xml-property
         xpath="/ting:container/ting:original_format"
@@ -1211,6 +1213,7 @@
     <xml-property
         xpath="/ting:container/ting:fedoraNormPid"
         index="un_tokenized"
+        value-converter="lowercase"
         />
     <xml-property
         xpath="/ting:container/ting:original_format"
@@ -1292,6 +1295,7 @@
     <xml-property
         xpath="/ting:container/ting:fedoraNormPid"
         index="un_tokenized"
+        value-converter="lowercase"
         />
     <xml-property
         xpath="/ting:container/ting:original_format"
@@ -1324,6 +1328,7 @@
     <xml-property
         xpath="/ting:container/ting:original_format"
         index="un_tokenized"
+        value-converter="lowercase"
         />
     <xml-property
         xpath="/ting:container/ting:submitter"
