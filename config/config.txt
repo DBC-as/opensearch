@@ -34,7 +34,7 @@ oracle_password:     lvh
 # As with postgresql_driver, but for Oracle databases
 oracle_driver:   oracle.jdbc.driver.OracleDriver
 # As with postgresql_url, but for Oracle databases
-oracle_url:      dbc:oracle:thin:@tora1.dbc.dk:1521
+oracle_url:      jdbc:oracle:thin:@tora1.dbc.dk:1521/tora1.dbc.dk
 # The name of the database to use
 oracle_database_name: ting
 # the name identifying the db pools cache
