@@ -474,7 +474,7 @@ var Relations = function() {
 
             Log.info( "result: " + result );
 
-            if (String(result).match(/150016:.*/)) {
+            if (String(result).match(/150016:.*/) && !String(result).match(/image/)) {
               DbcAddiRelations.hasAuthorDescription( pid, result );
             }
           }
