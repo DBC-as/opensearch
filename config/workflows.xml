@@ -11,7 +11,7 @@
         <arg name="entryfunction" value="dcFromMarc"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
+		<plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
     <plugin class="dk.dbc.opensearch.plugins.Store"/>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>
@@ -449,6 +449,16 @@
       </args>
     </plugin>
   </workflow>
+	  <workflow format="danhist" submitter="150018">
+    <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
+    <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
+      <args>
+        <arg name="javascript" value="xmldcharvester_beta.js"/>
+        <arg name="entryfunction" value="dcFromDkabm"/>
+      </args>
+    </plugin>
+    <plugin class="dk.dbc.opensearch.plugins.Store"/>
+  </workflow>	
   <workflow format="filmstrib" submitter="150021">
     <plugin class="dk.dbc.opensearch.plugins.ForceFedoraPid"/>
     <plugin class="dk.dbc.opensearch.plugins.XMLDCHarvester">
