@@ -28,6 +28,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.opensearch.common.config.DataBaseConfig;
 import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
@@ -370,6 +371,8 @@ public class DatadockMain
         String initialLimit = DataBaseConfig.getOracleInitialLimit();
         String connectionWaitTimeout = DataBaseConfig.getOracleConnectionWaitTimeout();
 
+        boolean usePriorityFlag = HarvesterConfig.getPriorityFlag();
+
         log.info( String.format( "DB Url : %s ", oracleUrl ) );
         log.info( String.format( "DB User: %s ", oracleUser ) );
         OracleDataSource ods;
@@ -409,7 +412,7 @@ public class DatadockMain
 
         OracleDBPooledConnection connectionPool = new OracleDBPooledConnection( oracleCacheName, ods );
 
-        return new ESHarvest( connectionPool, dataBaseName );
+        return new ESHarvest( connectionPool, dataBaseName, usePriorityFlag );
 
     }
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException

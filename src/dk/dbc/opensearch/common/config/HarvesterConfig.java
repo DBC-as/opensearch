@@ -117,4 +117,19 @@ public class HarvesterConfig extends Config
         HarvesterConfig hc = new HarvesterConfig();
         return hc.getHarvesterMaxToHarvest();
     }
+
+
+    /* Use priority field */
+    private boolean getHarvesterPriorityFlag()
+    {
+        boolean ret = config.getBoolean( "harvester.usepriorityfield", false );
+        return ret;
+    }
+
+
+    public static boolean getPriorityFlag() throws ConfigurationException
+    {
+        HarvesterConfig hc = new HarvesterConfig();
+        return hc.getHarvesterPriorityFlag();
+    }
 }

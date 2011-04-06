@@ -64,8 +64,9 @@ public final class ESHarvest implements IHarvest
     Logger log = Logger.getLogger( ESHarvest.class );
 
 
-    private OracleDBPooledConnection connectionPool = null; // The connectionPool, given through the constuctor
-    private String databasename; // The ES-base databasename - given through the constructor
+    private final OracleDBPooledConnection connectionPool; // The connectionPool, given through the constuctor
+    private final String databasename; // The ES-base databasename - given through the constructor
+    private final boolean usePriorityFlag; // Use priority flag when querying for new jobs
 
     
     private LinkedList< ESIdentifier > jobCandidatesQueue = new LinkedList< ESIdentifier >();
@@ -75,10 +76,11 @@ public final class ESHarvest implements IHarvest
      *   Creates a new ES-Harvester.
      *   The Harvester 
      */
-    public ESHarvest( OracleDBPooledConnection connectionPool , String databasename ) throws HarvesterIOException
+    public ESHarvest( OracleDBPooledConnection connectionPool, String databasename, boolean usePriorityFlag) throws HarvesterIOException
     {
         this.connectionPool = connectionPool;
         this.databasename = databasename;
+        this.usePriorityFlag = usePriorityFlag;
     }
 
 
@@ -141,6 +143,7 @@ public final class ESHarvest implements IHarvest
                                      "FROM updatepackages " +
                                      "WHERE taskstatus = ? " +
                                      "AND databasename = ? " +
+                                     ( this.usePriorityFlag ? "AND rownum < 2 " : "" ) +
                                      "ORDER BY update_priority , creationdate , targetreference" );
             pstmt.setInt( 1, 0 ); // taskstatus
             pstmt.setString( 2, databasename );
