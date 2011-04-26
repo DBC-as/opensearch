@@ -1088,6 +1088,11 @@
         index="un_tokenized"
        value-converter="sort"
         />
+    <xml-property
+        name="sort.acquisitionDate" 
+        xpath="/*/*/*/*[@tag='096']/*[@code='t']"
+        value-converter="sort"
+        />
         <xml-property
         name="rank.title"
         xpath="/ting:container/dkabm:record/dc:title"
