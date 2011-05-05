@@ -21,7 +21,7 @@
 package dk.dbc.opensearch.common.types;
 
 
-import dk.dbc.opensearch.common.metadata.MetaData;
+import dk.dbc.opensearch.common.metadata.IMetaData;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,8 +47,8 @@ import org.apache.log4j.Logger;
  * Although the CargoContainer can hold an unlimited amount of data of
  * the same type - defined by the add method with the type defined by
  * DataStreamType - a CargoContainer instance can only hold on
- * MetaData element of a given type at a time. Any subsequent calls to
- * the addMetaData method with MetaData with identical types will
+ * IMetaData element of a given type at a time. Any subsequent calls to
+ * the addMetaData method with IMetaData with identical types will
  * overwrite existing metadata of this type in the CargoContainer.
  */
 public class CargoContainer
@@ -57,7 +57,7 @@ public class CargoContainer
     Logger log = Logger.getLogger( CargoContainer.class );
     /** The internal representation of the data contained in the CargoContainer*/
     private ArrayList<CargoObject> data;
-    private Map<DataStreamType, MetaData> metadata;
+    private Map<DataStreamType, IMetaData> metadata;
 
     /** place holder for PID / Identifier namespace */
     private IObjectIdentifier identifier = null;
@@ -70,7 +70,7 @@ public class CargoContainer
     public CargoContainer()
     {
         data = new ArrayList<CargoObject>();
-        metadata = new HashMap<DataStreamType, MetaData>();
+        metadata = new HashMap<DataStreamType, IMetaData>();
         log.trace( String.format( "Constructing new CargoContainer" ) );
     }
 
@@ -102,16 +102,16 @@ public class CargoContainer
 
     
     /**
-     * Adds a metadata element conforming to the {@link MetaData}
-     * interface. If this class already contains a {@link MetaData}
+     * Adds a metadata element conforming to the {@link IMetaData}
+     * interface. If this class already contains a {@link IMetaData}
      * element with the same identifier, the supplied metadata will
      * overwrite the existing metadata in this {@link CargoContainer}
      * 
-     * @param metadataelement the MetaData element to be added to this CargoContainer
+     * @param metadataelement the IMetaData element to be added to this CargoContainer
      */
-    public void addMetaData( MetaData metadataelement )
+    public void addMetaData( IMetaData metadataelement )
     {
-        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
+        for( Entry<DataStreamType, IMetaData> meta : metadata.entrySet() )
         {
             if( meta.getValue().getClass() == metadataelement.getClass() )
             {
@@ -239,8 +239,8 @@ public class CargoContainer
      * method will return false. If the method successfully removed the
      * metadata, it returns true
      *
-     * @param metadatatype the type of the MetaData element to be removed
-     * @return true if the MetaData element could be removed, false otherwise
+     * @param metadatatype the type of the IMetaData element to be removed
+     * @return true if the IMetaData element could be removed, false otherwise
      */
     public boolean removeMetaData( DataStreamType metadatatype )
     {
@@ -404,7 +404,7 @@ public class CargoContainer
     /**
      * Get the total number of Objects in the CargoContainer, with the
      * return value representing the CargoObjects together with the
-     * MetaData objects
+     * IMetaData objects
      *
      * @return the count of CargoObjects in the CargoContainer
      */
@@ -458,7 +458,7 @@ public class CargoContainer
 
     public boolean hasMetadata( DataStreamType type )
     {
-        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
+        for( Entry<DataStreamType, IMetaData> meta : metadata.entrySet() )
         {
             if( meta.getKey() == type )
             {
@@ -469,26 +469,26 @@ public class CargoContainer
     }
 
 
-    public List<MetaData> getMetaData()
+    public List<IMetaData> getMetaData()
     {
-        List<MetaData> retval = new ArrayList<MetaData>();
-        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
+        List<IMetaData> retval = new ArrayList<IMetaData>();
+        for( Entry<DataStreamType, IMetaData> meta : metadata.entrySet() )
         {
             retval.add( meta.getValue() );
         }
 
         if( retval == null )
         {
-            log.warn( "Could not retrieve MetaData elements from CargoContainer" );
+            log.warn( "Could not retrieve IMetaData elements from CargoContainer" );
         }
         return retval;
     }
 
 
-    public MetaData getMetaData( DataStreamType mdst )
+    public IMetaData getMetaData( DataStreamType mdst )
     {
-        MetaData retval = null;
-        for( Entry<DataStreamType, MetaData> meta : metadata.entrySet() )
+        IMetaData retval = null;
+        for( Entry<DataStreamType, IMetaData> meta : metadata.entrySet() )
         {
             if( meta.getKey() == mdst )
             {

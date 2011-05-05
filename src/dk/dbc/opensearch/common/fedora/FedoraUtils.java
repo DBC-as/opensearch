@@ -20,7 +20,7 @@
 
 package dk.dbc.opensearch.common.fedora;
 
-import dk.dbc.opensearch.common.metadata.MetaData;
+import dk.dbc.opensearch.common.metadata.IMetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;
@@ -148,7 +148,7 @@ public class FedoraUtils
         }
 
         //get metadata from cargocontainer
-        for( MetaData meta: cargo.getMetaData() )
+        for( IMetaData meta: cargo.getMetaData() )
         {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             log.trace( String.format( "Serializing metadata %s with identifier %s", meta.getClass(), cargo.getIdentifierAsString() ) );
@@ -171,19 +171,19 @@ public class FedoraUtils
             }
             catch( XPathExpressionException ex )
             {
-                String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", pid, new String( baos.toByteArray() ) );
+                String error = String.format( "With id %s; Failed to add metadata to foxml from IMetaData\" %s\"", pid, new String( baos.toByteArray() ) );
                 log.error( error , ex);
                 throw new ObjectRepositoryException( error, ex );
             }
             catch( SAXException ex )
             {
-                String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", pid, new String( baos.toByteArray() ) );
+                String error = String.format( "With id %s; Failed to add metadata to foxml from IMetaData\" %s\"", pid, new String( baos.toByteArray() ) );
                 log.error( error , ex);
                 throw new ObjectRepositoryException( error, ex );
             }
             catch( IOException ex )
             {
-                String error = String.format( "With id %s; Failed to add metadata to foxml from MetaData\" %s\"", pid, new String( baos.toByteArray() ) );
+                String error = String.format( "With id %s; Failed to add metadata to foxml from IMetaData\" %s\"", pid, new String( baos.toByteArray() ) );
                 log.error( error , ex);
                 throw new ObjectRepositoryException( error, ex );
             }

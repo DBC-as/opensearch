@@ -27,8 +27,8 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
+import dk.dbc.opensearch.common.metadata.IMetaData;
 import dk.dbc.opensearch.common.metadata.IPredicate;
-import dk.dbc.opensearch.common.metadata.MetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
@@ -655,7 +655,7 @@ public class FedoraObjectRepository implements IObjectRepository
             adminStream.addStream( co, id );
         }
         streamtypecounter = 0;
-        for( MetaData meta : cargo.getMetaData() )
+        for( IMetaData meta : cargo.getMetaData() )
         {
             streamtypecounter = adminStream.getCount( meta.getType() );
             String id = meta.getType().getName() + "." + Integer.toString( streamtypecounter );

@@ -28,8 +28,8 @@ package dk.dbc.opensearch.common.fedora;
 
 import javax.xml.parsers.ParserConfigurationException;
 import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
+import dk.dbc.opensearch.common.metadata.IMetaData;
 import dk.dbc.opensearch.common.metadata.IPredicate;
-import dk.dbc.opensearch.common.metadata.MetaData;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;
@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
  * instances could accidentally make duplicate relations on the same rels-ext
  * stream.
  */
-public class FedoraRelsExt implements MetaData
+public class FedoraRelsExt implements IMetaData
 {    
     private Set<String> relations;
 

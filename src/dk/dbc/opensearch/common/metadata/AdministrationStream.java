@@ -66,7 +66,7 @@ import org.xml.sax.SAXException;
  * it can be used in general to retrieve information on the
  * CargoContainer.
  */
-public class AdministrationStream implements MetaData
+public class AdministrationStream implements IMetaData
 {
     private static final String schemaString = "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:attribute name=\"name\" type=\"xsd:string\"/><xsd:element name=\"admin-stream\"><xsd:complexType><xsd:sequence><xsd:element name=\"streams\"><xsd:complexType><xsd:sequence><xsd:element name=\"stream\" maxOccurs=\"unbounded\"><xsd:complexType><xsd:attribute name=\"format\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"id\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"index\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"lang\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"mimetype\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"streamNameType\" type=\"xsd:string\" use=\"required\"/><xsd:attribute name=\"submitter\" type=\"xsd:string\" use=\"required\"/></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType></xsd:element></xsd:schema>";
 
@@ -223,7 +223,7 @@ public class AdministrationStream implements MetaData
     }
 
 
-    public boolean addStream( MetaData obj, String id )
+    public boolean addStream( IMetaData obj, String id )
     {
         boolean added = false;
         if( obj.getType() == DataStreamType.AdminData )

@@ -33,7 +33,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  *
  */
-public interface MetaData {
+public interface IMetaData {
 
     /** 
      * 
