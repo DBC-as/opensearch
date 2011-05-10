@@ -73,6 +73,7 @@ public class FedoraUtils
 
 
         //\note: we always create inactive objects
+	// NOTE: We use 'format' as 'label' and 'submitter' as owner.
         FoxmlDocument foxml;
         try
         {

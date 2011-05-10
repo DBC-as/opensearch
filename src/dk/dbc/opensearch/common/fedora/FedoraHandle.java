@@ -387,4 +387,38 @@ public class FedoraHandle
 
         return retValue;
     }
+
+
+    /**
+     * Wrapper function to FedoraAPIM.
+     * No magic here.
+     * <p>
+     * The functions primary functionality is to modify the {@code state} of an object, but it can also be 
+     * used to modify the {@code label} or the {@code ownerId}. If you intende to modify an then please notice,
+     * that it is unknown what happens if you change the {@code label} or the {@code ownerId}.
+     * The reason it is unknown is because the internal datastreams such as adminStream probably does
+     * not change its submitter or format through this function.
+     * </p>
+     * @param pid The identifier for the object to modify.
+     * @param state The state you wish to change into. The legal states are: {@code A}, {@code I} or {@code D}. 
+     * @param label The label you wish to change into. Commonly this is the format.
+     * @param ownerId The ownerid you wish to change into. commonly this is the submitter.
+     * @param logMessage Any message you want to pass on to fedoras log.
+     *
+     * @return Server-date of modification as a {@link String}.
+     *
+     * @throws RemoteException if an error of any kind occurs. This is probably both communication errors and malformed data errors.
+     */
+    String modifyObject( String pid, String state, String label, String ownerId, String logMessage ) throws RemoteException
+    {
+	long timer = System.currentTimeMillis();
+
+        String date = this.getAPIM().modifyObject( pid, state, label, ownerId, logMessage );
+	
+	timer = System.currentTimeMillis() - timer;
+	log.info( String.format( "HANDLE Timing: ( %s ) %s", this.getClass(), timer ) );
+	
+	return date;
+    }
+
 }
