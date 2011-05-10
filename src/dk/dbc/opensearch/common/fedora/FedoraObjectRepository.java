@@ -1071,4 +1071,20 @@ public class FedoraObjectRepository implements IObjectRepository
 
         return new PID( newPid );
     }
+
+
+    public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
+    {
+        try
+        {
+            this.fedoraHandle.modifyObject( objectIdentifier, "D", label, ownerId, logMessage );
+        }
+        catch ( RemoteException e )
+        {
+            String error = String.format( "RemoteException Error Connecting to fedora: %s", e.getMessage() );
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
+        }
+    }
+
 }

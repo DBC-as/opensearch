@@ -27,13 +27,22 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.common.types.IObjectIdentifier;
+import dk.dbc.opensearch.common.types.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
 
@@ -42,44 +51,109 @@ public class StoreEnvironment implements IPluginEnvironment
 
     private static Logger log = Logger.getLogger( StoreEnvironment.class );
 
-    private IObjectRepository objectRepository;
+    private final IObjectRepository objectRepository;
+    private final SimpleRhinoWrapper jsWrapper;
+
+    // For validation:
+    private static final String javascriptStr = "javascript";
+    private static final String entryFuncStr  = "entryfunction";
+
+    private final String entryPointFunc;
+    private final String javascript;
 
     public StoreEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
     {
         this.objectRepository = repository;
+
+        List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
+        objectList.add( new Pair<String, Object>( "Log", log ) );
+
+        //this.validateArguments( args, objectList );
+
+        this.entryPointFunc = args.get( StoreEnvironment.entryFuncStr );
+        this.javascript = args.get( StoreEnvironment.javascriptStr );
+        if( javascript != null && javascript.length() > 0 )
+        {
+            this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( javascript, objectList );
+        }
+        else
+        {
+            // Use old behaviour
+            jsWrapper = null;
+        }
+
+        log.trace( "Checking wrapper (outer)" );
+        if( jsWrapper == null )
+        {
+            log.trace( "Wrapper is null" );
+        }
+        else
+        {
+            log.trace( "Wrapper is initialized" );
+        }
     }
 
 
     public CargoContainer run( CargoContainer cargo ) throws PluginException
     {
+        CargoObject co = cargo.getCargoObject( DataStreamType.OriginalData );
+        String submitter = co.getSubmitter();
+        String format = co.getFormat();
+        String language = co.getLang();
+        String XML = new String( E4XXMLHeaderStripper.strip( co.getBytes() ) ); // stripping: <?xml...?>
+        IObjectIdentifier pid = cargo.getIdentifier(); // get the pid of the cargocontainer
+        String pidStr = cargo.getIdentifierAsString();
 
-        String logm = String.format( "%s inserted with pid %s", cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getIdentifier() );
-        try
+        // Let javascript decide if post should be deleted or stored
+        boolean deletePost = false;
+        if (jsWrapper != null)
         {
-            if ( cargo.getIdentifier() != null )
-            {
-                String new_pid = cargo.getIdentifierAsString();
-                                
-                boolean hasObject = objectRepository.hasObject( cargo.getIdentifier() );
-                log.debug( String.format( "hasObject( %s ) returned %b",new_pid, hasObject ) );
-                if ( hasObject )
-                {
-                    log.trace( String.format( "will try to delete pid %s", new_pid ) );
-                    objectRepository.deleteObject( new_pid, "delte before store hack" );
-                }
-            }
-            
-            objectRepository.storeObject( cargo, logm, "auto" );
+            log.debug( "Calling javascript to determine if post should be deleted");
+            deletePost = ( (Boolean) jsWrapper.run( entryPointFunc, submitter, format, language, XML, pidStr ) ).booleanValue();
         }
-        catch( ObjectRepositoryException ex )
+        if( !deletePost )
         {
-            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", cargo.getIdentifierAsString(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), cargo.getCargoObject( DataStreamType.OriginalData ).getFormat() );
-            log.error( error, ex);
-            throw new PluginException( error, ex );
+            String logm = String.format( "Datadock: %s inserted with pid %s", format, pid );
+            try
+            {
+                if ( pid != null )
+                {
+                    boolean hasObject = objectRepository.hasObject( pid );
+                    log.debug( String.format( "hasObject( %s ) returned %b",pidStr, hasObject ) );
+                    if ( hasObject )
+                    {
+                        log.trace( String.format( "will try to delete pid %s", pidStr ) );
+                        objectRepository.deleteObject( pidStr, "delte before store hack" );
+                    }
+                }
+
+                objectRepository.storeObject( cargo, logm, "auto" );
+            }
+            catch( ObjectRepositoryException ex )
+            {
+                String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", pidStr, submitter, format );
+                log.error( error, ex);
+                throw new PluginException( error, ex );
+            }
+        }
+        else
+        {
+            log.info( "Post will be deleted: pid="+pidStr );
+            String logm = String.format( "Datadock: %s marked deleted with pid %s", format, pid );
+            try
+            {
+                objectRepository.markDeleted( pidStr, format, submitter, logm );
+            }
+            catch( ObjectRepositoryException ex )
+            {
+                String error = String.format( "Failed to mark deleted CargoContainer with id %s, submitter %s and format %s", pidStr, submitter, format );
+                log.error( error, ex );
+                throw new PluginException( error, ex );
+            }
         }
         
         return cargo;
-
     }
 
+    
 }

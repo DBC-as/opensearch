@@ -162,4 +162,18 @@ public interface IObjectRepository
       */
      public void removeObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException;
 
+
+    /**
+     * Mark an object as deleted
+     * @param objectIdentifier identifies the object in the scope of the object repository
+     * @param label The label you wish to change into. Commonly this is the format.
+     * @param ownerId The ownerid you wish to change into. commonly this is the submitter.
+     * @param logMessage Any message you want to pass on to fedoras log.
+     *
+     * @return Server-date of modification as a {@link String}.
+     *
+     * @throws RemoteException if an error of any kind occurs. This is probably both communication errors and malformed data errors.
+     */
+    public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException;
+
 }

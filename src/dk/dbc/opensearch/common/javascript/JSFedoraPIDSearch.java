@@ -240,7 +240,7 @@ public class JSFedoraPIDSearch
 	// If no "*" found, test for wildcard "?"
 	if ( !contains )
 	{
-	    s.contains("?");
+	    contains = s.contains("?");
 	}
 
 	return contains;

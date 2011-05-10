@@ -159,6 +159,7 @@ public class FlowMapCreator
 
                     if( startElement.getName().getLocalPart().equals( "plugin" ) )
                     {
+                        argsMap.clear();
                         pluginclass = startElement.getAttributeByName( new QName( "class" )).getValue();
                         break;
                     }
