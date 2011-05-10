@@ -1,31 +1,33 @@
 /*
-This file is part of opensearch.
-Copyright © 2009, Dansk Bibliotekscenter a/s,
-Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
+  This file is part of opensearch.
+  Copyright © 2009, Dansk Bibliotekscenter a/s,
+  Tempovej 7-11, DK-2750 Ballerup, Denmark. CVR: 15149043
 
-opensearch is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  opensearch is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-opensearch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  opensearch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
  * \file
  * \brief
  */
 
+
 package dk.dbc.opensearch.common.fedora;
+
 
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
 import org.fcrepo.server.types.gen.FieldSearchQuery;
@@ -43,34 +45,31 @@ import javax.xml.xpath.XPathFactory;
 
 import mockit.Mock;
 import mockit.MockClass;
+import static mockit.Mockit.setUpMocks;
+import static mockit.Mockit.tearDownMocks;
 
 import org.apache.axis.types.NonNegativeInteger;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.DifferenceListener;
-import org.custommonkey.xmlunit.IgnoreTextAndAttributeValuesDifferenceListener;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 
-import static mockit.Mockit.setUpMocks;
-import static mockit.Mockit.tearDownMocks;
-import static org.junit.Assert.*;
 
 /**
  * \Todo testen dækker ikke alle metoder. Ret op på dette.
  */
 
-public class FedoraObjectRepositoryTest {
-
+public class FedoraObjectRepositoryTest
+{
     FedoraObjectRepository instance;
+    
     static final String samePid = "test:1";
     static final String testPid = "test:2";
     
@@ -81,6 +80,7 @@ public class FedoraObjectRepositoryTest {
 
     //static final String dublinCoreStream = "<?xml version=\"1.0\"?><dc xmlns=\"http://purl.org/dc/elements/1.1/\"><title>Test title</title><identifier>test:1</identifier></dc>";
 
+    
     @MockClass( realClass = FedoraHandle.class )
     public static class MockFedoraHandle
     {
@@ -89,6 +89,7 @@ public class FedoraObjectRepositoryTest {
         {
         }
 
+
         @Mock
         public String purgeObject( String identifier, String logmessage, boolean force )
         {
@@ -96,8 +97,11 @@ public class FedoraObjectRepositoryTest {
             {
                 return "timestamp";
             }
+
             return null;
         }
+
+
         @Mock
         public String ingest( byte[] data, String datatype, String logmessage ) throws Exception
         {
@@ -123,6 +127,7 @@ public class FedoraObjectRepositoryTest {
             return newPid;
         }
 
+
         @Mock
         public byte[] getDatastreamDissemination( String pid, String datastreamId, String asOfDateTime )
         {
@@ -142,7 +147,8 @@ public class FedoraObjectRepositoryTest {
                 {
                     retarray = administrationStream.getBytes();
                 }
-            } else if( pid.equals( testPid ) ) // with no dc data
+            }
+            else if( pid.equals( testPid ) ) // with no dc data
             {
                 if( datastreamId.equals( "originalData.0" ) )
                 {
@@ -160,11 +166,13 @@ public class FedoraObjectRepositoryTest {
             return retarray;
         }
 
+
         @Mock
         public String[] getNextPID( int maxPids, String prefix )
         {
             return new String[]{prefix+":1"};
         }
+
 
         @Mock
         FieldSearchResult findObjects( String[] resultFields, NonNegativeInteger maxResults, FieldSearchQuery fsq )
@@ -179,11 +187,13 @@ public class FedoraObjectRepositoryTest {
             return fsr;
         }
 
+
         @Mock
         public String uploadFile( File fileToUpload )
         {
             return "testLocation";
         }
+
 
         @Mock
         public String modifyDatastreamByReference( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, String MIMEType, String formatURI, String dsLocation, String checksumType, String checksum, String logMessage, boolean force )
@@ -195,6 +205,7 @@ public class FedoraObjectRepositoryTest {
             return null;
         }
 
+
         @Mock
         public String addDatastream( String pid, String datastreamID, String[] alternativeDsIds, String dsLabel, boolean versionable, String MIMEType, String formatURI, String dsLocation, String controlGroup, String datastreamState, String checksumType, String checksum, String logmessage )
         {
@@ -205,6 +216,7 @@ public class FedoraObjectRepositoryTest {
             return null;
         }
 
+
         @Mock
         public String[] purgeDatastream( String pid, String sID, String startDate, String endDate, String logm, boolean breakDependencies )
         {
@@ -214,6 +226,7 @@ public class FedoraObjectRepositoryTest {
             }
             return new String[]{};
         }
+
         
         @Mock
         public boolean addRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) 
@@ -226,6 +239,7 @@ public class FedoraObjectRepositoryTest {
             }                       
             return true;
         }
+
 
         @Mock
         public boolean purgeRelationship( String pid, String predicate, String object, boolean isLiteral, String datatype ) 
@@ -242,6 +256,7 @@ public class FedoraObjectRepositoryTest {
 
     }
 
+    
     @BeforeClass
     public static void generalSetup()
     {
@@ -296,8 +311,8 @@ public class FedoraObjectRepositoryTest {
         CargoContainer cargo = new CargoContainer( );
         cargo.setIdentifier( new PID("test:1") );
         cargo.add( DataStreamType.OriginalData, "testFormat", "testSubmitter", "da", "text/xml", " ".getBytes() );
-	// static final String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">æøå</dc:title>";
-	String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">test:1</dc:title>";
+        // static final String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">æøå</dc:title>";
+        String dublinCore    = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><dc:title xmlns:dc=\"hej\">test:1</dc:title>";
         cargo.add( DataStreamType.DublinCoreData, "testFormat", "testSubmitter", "da", "text/xml", dublinCore.getBytes() );
         String logmessage = "log";
         String expResult = "test:1";
