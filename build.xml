@@ -91,7 +91,8 @@
   	</if>
   </target-->
 	
-  <target name="compile" depends="clean, config_py"> 
+<!-- must never depend on clean since this is used by other targets that depends on what is build-->
+  <target name="compile" > 
     <antcall target="_compile" />
   </target>
 
@@ -101,7 +102,7 @@
   </target>
 
 
-  <target name="compile_project" >
+  <target name="compile_project">
     <antcall target="_compile" />
   </target>
 
@@ -192,12 +193,12 @@
     
   </target>
 
-  <target name="dist_datadock" depends="compile">
+  <target name="dist_datadock" depends="compile, config_py">
     <antcall target="_dist_datadock"/>
   </target>
 
 
-  <target name="dist_pti" depends="compile">
+  <target name="dist_pti" depends="compile, config_py">
     <antcall target="_dist_pti"/>
   </target>
 
