@@ -26,6 +26,10 @@ package dk.dbc.opensearch.plugins;
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import java.util.HashMap;
+import java.util.List;
+import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
@@ -83,7 +87,60 @@ public class StoreTest
         }
 
     } 
-    
+
+
+    @MockClass( realClass = FedoraObjectRepository.class )
+    public static class MockFedoraObjectRepositoryMarkDeleted
+    {
+        @Mock public void $init()
+        {
+        }
+
+        @Mock
+        public static boolean hasObject( IObjectIdentifier objectIdentifier )
+        {
+            return false;
+        }
+
+        @Mock( invocations = 0 )
+        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
+        {
+            return "stored";
+        }
+
+        @Mock( invocations = 1 )
+        public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage )
+        {
+        }
+    }
+
+    @MockClass( realClass = FedoraObjectRepository.class )
+    public static class MockFedoraObjectRepositoryMarkDeletedException
+    {
+        @Mock public void $init()
+        {
+        }
+
+        @Mock
+        public static boolean hasObject( IObjectIdentifier objectIdentifier )
+        {
+            return false;
+        }
+
+        @Mock( invocations = 0 )
+        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
+        {
+            return "stored";
+        }
+
+        @Mock( invocations = 1 )
+        public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
+        {
+            throw new ObjectRepositoryException( "test" );
+        }
+    }
+
+
     @MockClass( realClass = FedoraObjectRepository.class )
     public static class MockFedoraObjectRepositoryHasObject
     {
@@ -123,6 +180,24 @@ public class StoreTest
             throw new ObjectRepositoryException( "test" );
         }
 
+    }
+
+    /**
+     * mocks the constructor called in the environment
+     */
+    @MockClass( realClass = SimpleRhinoWrapper.class )
+    public static class MockSimpleRhinoWrapper
+    {
+        @Mock
+        public void $init( String jsFileName, List< Pair< String, Object > > objectList )
+        {}
+
+        @Mock
+        public Object run( String functionEntryPoint, Object... args )
+        {
+            System.out.println("in Rhino run");
+            return Boolean.TRUE;
+        }
     }
 
     @Before
@@ -235,4 +310,42 @@ public class StoreTest
         }
     }
 
+    /**
+     * testing the path through the plugin when javascript returns true.
+     */
+
+    @Test
+    public void storeCargoContainerMarkDeleted() throws Exception
+    {
+        setUpMocks( MockSimpleRhinoWrapper.class, MockFedoraObjectRepositoryMarkDeleted.class );
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        cargo.setIdentifier( objectIdentifier );
+        CargoContainer returnCargo;
+        storePlugin = new Store( fedObjRep );
+        Map< String, String > args = new HashMap< String, String >();
+        args.put("javascript", "test");
+
+        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args );
+        returnCargo = storePlugin.runPlugin( env, cargo );
+        assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
+    }
+
+    /**
+     * tests the handling of PluginException when javascript returns true.
+     */
+
+    @Test( expected = PluginException.class )
+    public void storeCargoContainerMarkDeletedException() throws Exception
+    {
+        setUpMocks( MockSimpleRhinoWrapper.class, MockFedoraObjectRepositoryMarkDeletedException.class );
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        cargo.setIdentifier( objectIdentifier );
+        CargoContainer returnCargo;
+        storePlugin = new Store( fedObjRep );
+        Map< String, String > args = new HashMap< String, String >();
+        args.put("javascript", "test");
+
+        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args );
+        returnCargo = storePlugin.runPlugin( env, cargo );
+    }
 }
