@@ -91,7 +91,7 @@
   	</if>
   </target-->
 	
-  <target name="compile"> 
+  <target name="compile" depends="clean, config_py"> 
     <antcall target="_compile" />
   </target>
 
@@ -142,7 +142,7 @@
     <antcall target="compile_project">
       <param name="project.name" value="dist/*.jar" />
     </antcall>
-    <antcall target="_dist_datadock">
+    <antcall target="_dist_datadock" >
       <!--param name="src.dir" value="${src.dir}" /-->
       <param name="project.name" value="dist/${dist.jar}_DATADOCK.jar" />
     </antcall>
