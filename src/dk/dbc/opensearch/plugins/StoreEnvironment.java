@@ -111,6 +111,10 @@ public class StoreEnvironment implements IPluginEnvironment
             log.debug( "Calling javascript to determine if post should be deleted");
             deletePost = ( (Boolean) jsWrapper.run( entryPointFunc, submitter, format, language, XML, pidStr ) ).booleanValue();
         }
+        else
+        {
+            log.debug(String.format("Javascript not defined for [%s:%s], skipping", format, submitter));
+        }
         if( !deletePost )
         {
             String logm = String.format( "Datadock: %s inserted with pid %s", format, pid );
