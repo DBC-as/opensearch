@@ -315,57 +315,6 @@ public class FedoraObjectRelations
 
 
     /**
-     *
-     */
-    private String getNextRelationshipObject( String namespace ) throws ObjectRepositoryException
-    {
-        String[] relationshipObject;
-        try
-        {
-            relationshipObject = fedoraHandle.getNextPID( 1,  namespace );
-        }
-        catch( ServiceException ex )
-        {
-            String error = String.format( "Could not get pid for prefix '%s'", namespace );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( ConfigurationException ex )
-        {
-            String error = String.format( "Could not get pid for prefix '%s'", namespace );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( MalformedURLException ex )
-        {
-            String error = String.format( "Could not get pid for prefix '%s'", namespace );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( IOException ex )
-        {
-            String error = String.format( "Could not get pid for prefix '%s'", namespace );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        catch( IllegalStateException ex )
-        {
-            String error = String.format( "Could not get pid for prefix '%s'", namespace );
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        if( null == relationshipObject && 1 != relationshipObject.length )
-        {
-            log.warn( String.format( "pid is empty for namespace '%s', but no exception was caught.", namespace ) );
-            return null;
-        }
-        relationshipObject[0] = String.format( "info:fedora/%s", relationshipObject[0] );
-
-        return relationshipObject[0];
-    }
-
-
-    /**
      * method for getting the relationships an object has
      * @param pid the object to get relations for
      * @param predicate the predicate to search for, null means all

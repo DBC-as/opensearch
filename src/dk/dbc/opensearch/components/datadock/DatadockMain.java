@@ -479,7 +479,7 @@ public class DatadockMain
         catch ( Exception e )
         {
             System.out.println( "Startup failed." + e.getMessage() );
-            log.fatal( String.format( "Startup failed: %s", e.getMessage() ) );
+            log.fatal( String.format( "Startup failed: %s", e.getMessage() ), e );
             serverInstance.shutdown();
 
         }

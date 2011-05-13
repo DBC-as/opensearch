@@ -31,6 +31,8 @@ import dk.dbc.opensearch.common.types.Pair;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
@@ -53,8 +55,21 @@ import org.mozilla.javascript.*;
 public class SimpleRhinoWrapper
 {
     private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
-    private ScriptableObject scope = null;
+    private final ScriptableObject scope;
+    private static ScriptableObject sharedScope;
 
+    // List of java script file names that have been loaded.
+    // Used to prevent loading the same file more than once.
+    private final static Set< String > knownScripts = new HashSet< String >();
+
+    private static synchronized ScriptableObject getSharedScope( Context cx)
+    {
+        if (sharedScope == null)
+        {
+            sharedScope = cx.initStandardObjects( null, true ); // true => sealed standard objects
+        }
+        return sharedScope;
+    }
 
     public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
     {
@@ -68,85 +83,101 @@ public class SimpleRhinoWrapper
      */
     public SimpleRhinoWrapper( String jsFileName, List< Pair< String, Object> > objectList ) throws FileNotFoundException
     {
-        FileReader inFile = new FileReader( jsFileName ); // can throw FileNotFindExcpetion
-
-        Context cx = getThreadLocalContext();
-
-        // Initialize the standard objects (Object, Function, etc.)
-        // This must be done before scripts can be executed. Returns
-        // a scope object that we use in later calls.
-        scope = cx.initStandardObjects( null, true ); // true => sealed standard objects
-        if ( scope == null )
-        {
-            // This should never happen!
-            String errorMsg = "An error occured when initializing standard objects for javascript";
-            log.fatal( errorMsg );
-            throw new IllegalStateException( errorMsg );
-        }
-
-        // String[] names1 = { "Use" };
-        // scope.defineFunctionProperties(names1, SimpleRhinoWrapper.class, ScriptableObject.DONTENUM);
-
-        String[] names = { "print", "use" };
-        scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
-	
-        // Evaluate the javascript
+        Context cx = Context.enter();
         try
         {
-            Object o = cx.evaluateReader((Scriptable)scope, inFile, jsFileName, 1, null);
-        } 
-        catch ( IOException ioe )
-        {
-            String errorMsg = "Could not run 'evaluateReader' on the javascript";
-            log.error( errorMsg, ioe );
-            throw new IllegalStateException( errorMsg, ioe );
+            // Initialize the standard objects (Object, Function, etc.)
+            // This must be done before scripts can be executed. Returns
+            // a scope object that we use in later calls.
+            scope = getSharedScope( cx );
+            if ( scope == null )
+            {
+                // This should never happen!
+                String errorMsg = "An error occured when initializing standard objects for javascript";
+                log.fatal( errorMsg );
+                throw new IllegalStateException( errorMsg );
+            }
+
+            // String[] names1 = { "Use" };
+            // scope.defineFunctionProperties(names1, SimpleRhinoWrapper.class, ScriptableObject.DONTENUM);
+
+            String[] names = { "print", "use" };
+            scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
+
+            synchronized (knownScripts)
+            {
+                // Check that the java script file as not already been loaded in this scope
+                if (!knownScripts.contains(jsFileName))
+                {
+                    FileReader inFile = new FileReader(jsFileName); // can throw FileNotFindExcpetion
+                    try
+                    {
+                        // Evaluate the javascript
+                        Object o = cx.evaluateReader((Scriptable) scope, inFile, jsFileName, 1, null);
+                    }
+                    catch ( IOException ioe )
+                    {
+                        String errorMsg = "Could not run 'evaluateReader' on the javascript";
+                        log.error( errorMsg, ioe );
+                        throw new IllegalStateException( errorMsg, ioe );
+                    }
+                    catch ( RhinoException re )
+                    {
+                        log.debug( "Evaluate" );
+
+                        logRhinoException( re );
+
+                        throw re;
+                    }
+                    finally
+                    {
+                        // This is ugly - but necessary
+                        log.debug( String.format( "Closing file: %s", jsFileName ) );
+                        try
+                        {
+                            inFile.close();
+                        }
+                        catch( IOException ioe )
+                        {
+                            log.warn( String.format( "Could not close the file: \"%s\" I will regrettably leave it open." ) );
+                        }
+                    }
+                }
+            }
+            // Add objects to scope:
+            for ( Pair< String, Object > objectPair : objectList )
+            {
+                log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
+                scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );
+            }
         }
-        catch ( RhinoException re )
+        finally
         {
-            log.debug( "Evaluate" );
-
-            logRhinoException( re );
-
-            throw re;
+            Context.exit();
         }
-	finally
-	{
-	    // This is ugly - but necessary
-	    log.debug( String.format( "Closing file: %s", jsFileName ) );
-	    try
-	    {
-		inFile.close();
-	    }
-	    catch( IOException ioe )
-	    {
-		log.warn( String.format( "Could not close the file: \"%s\" I will regrettably leave it open." ) );
-	    }
-	}
-
-        // Add objects to scope:
-        for ( Pair< String, Object > objectPair : objectList )
-        {
-            log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
-            scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );
-        }
-
-        // Seal scope:
-        scope.sealObject();
     }
 
 
     public boolean validateJavascriptFunction( String functionEntryPoint )
     {
-        Object fObj = scope.get( functionEntryPoint, scope );
-        if ( !( fObj instanceof Function ) )
+        Context cx = Context.enter();
+        try
         {
-            String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
-            log.error( errorMsg );
+            Object fObj = scope.get( functionEntryPoint, scope );
+            if ( !( fObj instanceof Function ) )
+            {
+                String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
+                log.error( errorMsg );
 
-            return false;
+                return false;
+            }
+
+            return true;
         }
-
-        return true;
+        finally
+        {
+            Context.exit();
+        }
     }
 
 
@@ -154,55 +185,39 @@ public class SimpleRhinoWrapper
     {
         log.trace( String.format( "Entering run function with %s", functionEntryPoint ) );
 
-        Object fObj = scope.get( functionEntryPoint, scope );
-        Object result = null;
-        if ( !( fObj instanceof Function ) )
+        Context cx = Context.enter();
+        try
         {
-            String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
-            log.fatal( errorMsg );
-            throw new IllegalStateException( errorMsg );
-        }
-        else
-        {
-            log.debug( String.format( "%s is defined or is a function", functionEntryPoint ) );
-            Context cx = getThreadLocalContext();
-            Function f = (Function)fObj;
-
-            try
+            Object fObj = scope.get( functionEntryPoint, scope );
+            if ( !( fObj instanceof Function ) )
             {
-                result = f.call(cx, scope, scope, args);
+                String errorMsg = String.format( "%s is undefined or not a function", functionEntryPoint );
+                log.fatal( errorMsg );
+                throw new IllegalStateException( errorMsg );
             }
-            catch ( RhinoException re )
+            else
             {
-                log.debug( "Call" );
-                logRhinoException( re );
+                log.debug( String.format( "%s is defined or is a function", functionEntryPoint ) );
+                Function f = (Function)fObj;
 
-                throw re;
-            }
-        }
+                try
+                {
+                    Object result = f.call(cx, scope, scope, args);
+                    return result;
+                }
+                catch ( RhinoException re )
+                {
+                    log.debug( "Call" );
+                    logRhinoException( re );
 
-        return result;
-    }
-
-
-    private Context getThreadLocalContext() 
-    {
-        log.trace( "Entering getThreadLocalContext" );
-        Context cx = Context.getCurrentContext();
-
-        if ( cx == null )
-        {
-            cx = Context.enter();
-
-            if ( cx == null )
-            {
-                throw new NullPointerException( "The retrieved Context is null" );
+                    throw re;
+                }
             }
         }
-
-        log.trace( "Leaving getThreadLocalContext" );
-
-        return cx;
+        finally
+        {
+            Context.exit();
+        }
     }
 
 
