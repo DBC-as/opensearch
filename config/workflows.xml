@@ -13,6 +13,10 @@
     </plugin>
 		<plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
     <plugin class="dk.dbc.opensearch.plugins.Store">
+      <!-- The args for the Store plugin can specify a script filename and
+           a function name. This function will then be called to determine if the
+           object should be marked as deleted in the database in stead of stored
+           If no args are specified for the store plugin, the object will be stored usual -->
       <!--args>
         <arg name="javascript" value="store_functions.js"/>
         <arg name="entryfunction" value="isDeletePostMarc"/>

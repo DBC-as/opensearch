@@ -68,12 +68,11 @@ public class StoreEnvironment implements IPluginEnvironment
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );
 
-        //this.validateArguments( args, objectList );
-
         this.entryPointFunc = args.get( StoreEnvironment.entryFuncStr );
         this.javascript = args.get( StoreEnvironment.javascriptStr );
         if( javascript != null && javascript.length() > 0 )
         {
+            this.validateArguments( args, objectList );
             this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( javascript, objectList );
         }
         else
@@ -159,5 +158,41 @@ public class StoreEnvironment implements IPluginEnvironment
         return cargo;
     }
 
+
+    /**
+     * This function will validate the following argumentnames: "javascript" and "entryfunction".
+     * All other argumentnames will be silently ignored.
+     * Currently the "entryfunction" is not tested for validity.
+     *
+     * @param Map< String, String > the argumentmap containing argumentnames as keys and arguments as values
+     * @param List< Pair< String, Object > > A list of objects used to initialize the RhinoWrapper.
+     *
+     * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
+     */
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
+    {
+        log.info( "Validating Arguments - Begin" );
+
+        // Validating existence of mandatory entrys:
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( StoreEnvironment.javascriptStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", StoreEnvironment.javascriptStr ) );
+        }
+        if( !PluginEnvironmentUtils.validateMandatoryArgumentName( StoreEnvironment.entryFuncStr, args ) )
+        {
+            throw new PluginException( String.format( "Could not find argument: %s", StoreEnvironment.entryFuncStr ) );
+        }
+
+        // Validating that javascript can be used in the SimpleRhinoWrapper:
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( StoreEnvironment.javascriptStr ), objectList );
+
+        // Validating function entries:
+        if( !tmpWrapper.validateJavascriptFunction( args.get( StoreEnvironment.entryFuncStr ) ) )
+        {
+            throw new PluginException( String.format( "Could not use %s as function in javascript", args.get( StoreEnvironment.entryFuncStr ) ) );
+        }
+
+        log.info( "Validating Arguments - End" );
+    }
     
 }
