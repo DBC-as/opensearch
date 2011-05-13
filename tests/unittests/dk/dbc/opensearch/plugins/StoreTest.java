@@ -198,6 +198,11 @@ public class StoreTest
             System.out.println("in Rhino run");
             return Boolean.TRUE;
         }
+        @Mock
+        public boolean validateJavascriptFunction( String functionEntryPoint )
+        {
+            return true;
+        }
     }
 
     @Before
@@ -324,6 +329,7 @@ public class StoreTest
         storePlugin = new Store( fedObjRep );
         Map< String, String > args = new HashMap< String, String >();
         args.put("javascript", "test");
+        args.put("entryfunction", "test");
 
         IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args );
         returnCargo = storePlugin.runPlugin( env, cargo );
@@ -344,6 +350,7 @@ public class StoreTest
         storePlugin = new Store( fedObjRep );
         Map< String, String > args = new HashMap< String, String >();
         args.put("javascript", "test");
+        args.put("entryfunction", "test");
 
         IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args );
         returnCargo = storePlugin.runPlugin( env, cargo );
