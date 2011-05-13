@@ -195,7 +195,6 @@ public class StoreTest
         @Mock
         public Object run( String functionEntryPoint, Object... args )
         {
-            System.out.println("in Rhino run");
             return Boolean.TRUE;
         }
         @Mock
