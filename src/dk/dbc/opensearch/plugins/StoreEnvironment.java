@@ -116,7 +116,7 @@ public class StoreEnvironment implements IPluginEnvironment
         }
         if( !deletePost )
         {
-            String logm = String.format( "Datadock: %s inserted with pid %s", format, pid );
+            String logm = String.format( "Datadock: %s inserted with pid %s", format, pidStr );
             try
             {
                 if ( pid != null )
@@ -142,7 +142,7 @@ public class StoreEnvironment implements IPluginEnvironment
         else
         {
             log.info( "Post will be deleted: pid="+pidStr );
-            String logm = String.format( "Datadock: %s marked deleted with pid %s", format, pid );
+            String logm = String.format( "Datadock: %s marked deleted with pid %s", format, pidStr );
             try
             {
                 objectRepository.markDeleted( pidStr, format, submitter, logm );
