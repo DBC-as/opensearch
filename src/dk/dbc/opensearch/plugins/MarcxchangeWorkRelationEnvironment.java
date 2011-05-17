@@ -44,8 +44,10 @@ import dk.dbc.opensearch.common.types.ITargetField;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -212,7 +214,11 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 	    // Add the default Namespace-condition:
 	    conditions.add( new OpenSearchCondition( FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, "work:*" ) );
 
-	    searchResultList = objectRepository.getIdentifiers( conditions, 10000 );
+            Set< String > undeletedStates = new HashSet< String >();
+            undeletedStates.add("I");
+            undeletedStates.add("A");
+
+            searchResultList = objectRepository.getIdentifiersByState( conditions, 10000, undeletedStates );
 
             log.debug( String.format( "searchResultList: %s at search number: %s",searchResultList, num ) );
 

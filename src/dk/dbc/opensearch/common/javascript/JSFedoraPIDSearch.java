@@ -31,7 +31,9 @@ import dk.dbc.opensearch.common.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.common.types.ITargetField;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -67,6 +69,7 @@ public class JSFedoraPIDSearch
         log.info( String.format( "LABEL called with: %s ", searchValue ) );
 	return single_field_search( (ITargetField)FedoraObjectFields.LABEL, searchValue );
     }
+    @Deprecated
     public String[] state( String searchValue )
     {
         log.info( String.format( "STATE called with: %s ", searchValue ) );
@@ -181,28 +184,32 @@ public class JSFedoraPIDSearch
      */
     private String[] single_field_search( ITargetField targetField, OpenSearchCondition.Operator operator,  String searchValue)
     {
-	log.info( String.format( "Entering with targetfield=[%s] operator=[%s] value=[%s]", targetField, operator, searchValue ) );
+        log.info( String.format( "Entering with targetfield=[%s] operator=[%s] value=[%s]", targetField, operator, searchValue ) );
 	
-        //call the IObjectRepository.getIdentifiers method with the above values,
+        //call the IObjectRepository.getIdentifiersByState method with the above values,
         //no cutIdentifier and the number of submitters in the maximumResults 
-	OpenSearchCondition condition = new OpenSearchCondition( targetField, operator, searchValue );
-	List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >(1);
-	conditions.add( condition );
+        OpenSearchCondition condition = new OpenSearchCondition( targetField, operator, searchValue );
+        List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >(1);
+        conditions.add( condition );
 
-	// \note: 10000 below is a hardcodet estimate on max amount of results:
-	List< String > resultList = repository.getIdentifiers( conditions, 10000 );
+        Set< String > undeletedStates = new HashSet< String >();
+        undeletedStates.add("I");
+        undeletedStates.add("A");
 
-	// Convert the List of Strings to a String array in order to satisfy javascripts internal types:
-	String[] sa = new String[resultList.size()];
-	int counter = 0;
-	for( String str : resultList ) 
-	{
-	    log.info( String.format( "returning pid: %s", str ) );
-	    sa[counter++] = str;
-	}
+        // \note: 10000 below is a hardcodet estimate on max amount of results:
+        List< String > resultList = repository.getIdentifiersByState( conditions, 10000, undeletedStates );
+
+        // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
+        String[] sa = new String[resultList.size()];
+        int counter = 0;
+        for( String str : resultList ) 
+        {
+            log.info( String.format( "returning pid: %s", str ) );
+            sa[counter++] = str;
+	    }
         log.info( String.format( "returned %s results", counter ) );
-	return sa;
-	
+
+	    return sa;	
     }
 
     /**

@@ -107,17 +107,19 @@ public interface IObjectRepository
    
 
     /** 
-     * Searches the object repository using the a {@link List} of
-     * {@code conditions} as query, limiting {@link List} of returned 
-     * identifiers with {@code maximumResult}
+     * Searches the object repository using the {@link List} of
+     * {@code conditions} as query, returning a {@link List} of maximum
+     * {@code maximumResult} identifiers of objects having one of the
+     * specified {@code states}.
      * 
      * @param conditions {@link List} of {@link OpenSearchCondition}s.
      * @param maximumResults integer limiting the returned {@link List}
      * of identifiers
-     * 
-     * @return a {@link List} of identifiers that matched {@code searchStrings} in {@code searchableFields}
+     * @param states {@link Set} {@link String}s of accepted object states.
+     *
+     * @return a {@link List} of identifiers that matched
      */
-    public List< String > getIdentifiers( List< OpenSearchCondition > conditions, int maximumResults );
+    public abstract List< String > getIdentifiersByState( List< OpenSearchCondition > conditions, int maximumResults, java.util.Set<String> states );
 
 
     /**

@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.stream.XMLStreamException;
@@ -86,7 +87,7 @@ public class FedoraObjectRepository implements IObjectRepository
     protected static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS" );
     private final String hasStr = "has";
     private FedoraHandle fedoraHandle;
-
+    private static final String DeletedState = "D";
 
     /**
      * Initializes the FedoraObjectRepository; tries to connect to the
@@ -436,10 +437,17 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     /**
-     * Retrieves all identifiers mathcing {@code conditions}
+     * Retrieves all identifiers matching {@code conditions} from objects 
+     * having one of the specified {@code states}.
      *
-     * @param conditions A list of {@link OpenSearchCondition}s 
+     * Specifying state in both {@code conditions} and {@code states} will
+     * result only in identifiers matching both criteria.
+     *
+     *
+     * @param conditions A {@link List} of {@link OpenSearchCondition}s
      * @param maximumResults the largest number of results to retrieve
+     * @param states A {@link Set} of object states {@link String} for which to
+     * include object identifiers
      *
      * @return A {@link List} containing all matching identifiers.
      *
@@ -448,17 +456,17 @@ public class FedoraObjectRepository implements IObjectRepository
      * zero results makes any sense.
      */
     @Override
-    public List< String > getIdentifiers( List< OpenSearchCondition > conditions, int maximumResults ) throws IllegalArgumentException
+    public List< String > getIdentifiersByState( List< OpenSearchCondition > conditions, int maximumResults, Set< String > states ) throws IllegalArgumentException
     { 
-	if ( maximumResults < 1 )
-	{
-	    throw new IllegalArgumentException( String.format( "The maximum number of results retrived cannot be null or less than one. Argument given: %s", maximumResults ) );
-	}
+	    if ( maximumResults < 1 )
+	    {
+	        throw new IllegalArgumentException( String.format( "The maximum number of results retrived cannot be null or less than one. Argument given: %s", maximumResults ) );
+	    }
 	
-	String[] resultFields = { "pid" }; // we will only return pids!
-	// \todo: Perhaps NonNegativeInteger should be replaced with PositiveInteger,
-	// since this function disallows values < 1.
-	NonNegativeInteger maxRes = new NonNegativeInteger( Integer.toString( maximumResults ) );
+	    String[] resultFields = { "pid", "state" }; // we will only return pids!
+	    // \todo: Perhaps NonNegativeInteger should be replaced with PositiveInteger,
+	    // since this function disallows values < 1.
+	    NonNegativeInteger maxRes = new NonNegativeInteger( Integer.toString( maximumResults ) );
 
         ObjectFields[] objectFields = searchRepository( resultFields, conditions, maximumResults );
 	
@@ -467,7 +475,12 @@ public class FedoraObjectRepository implements IObjectRepository
         for( int j = 0; j < ofLength; j++ )
         {
             String pidValue = objectFields[j].getPid();
-            pids.add( pidValue );
+            // Only add pid to result if object is in an accepted state.
+            String objectState = objectFields[j].getState();
+            if( objectState != null && states.contains( objectState ) )
+            {
+                pids.add( pidValue );
+            }
         }
 
         return pids;
@@ -1077,7 +1090,7 @@ public class FedoraObjectRepository implements IObjectRepository
     {
         try
         {
-            this.fedoraHandle.modifyObject( objectIdentifier, "D", label, ownerId, logMessage );
+            this.fedoraHandle.modifyObject( objectIdentifier, DeletedState, label, ownerId, logMessage );
         }
         catch ( RemoteException e )
         {
