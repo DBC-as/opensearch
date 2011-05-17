@@ -224,6 +224,7 @@ public class FlowMapCreator
 
                     if( endElement.getName().getLocalPart().equals( "workflow" ) )
                     {
+                        log.info( "Adding workflow for " + key);
                         flowMap.put( key, new ArrayList<PluginTask>( taskList ) );
 			
                         break;            
