@@ -34,6 +34,7 @@ import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.util.List;
+import java.util.Set;
 
 
 
@@ -171,8 +172,6 @@ public interface IObjectRepository
      * @param label The label you wish to change into. Commonly this is the format.
      * @param ownerId The ownerid you wish to change into. commonly this is the submitter.
      * @param logMessage Any message you want to pass on to fedoras log.
-     *
-     * @return Server-date of modification as a {@link String}.
      *
      * @throws RemoteException if an error of any kind occurs. This is probably both communication errors and malformed data errors.
      */
