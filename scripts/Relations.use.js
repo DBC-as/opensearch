@@ -554,7 +554,7 @@ var Relations = function() {
     // Converting the xml-string to an XMLObject which e4x can handle:
     var authorXML = XmlUtil.fromString( xml );
 
-    var title = String(authorXML.dkabm::record.dc::title);
+    var title = String(authorXML.dkabm::record.dc::title[0]);
 
     Log.info( "Title: " + title );    
     Log.info( "pid: " + pid );
