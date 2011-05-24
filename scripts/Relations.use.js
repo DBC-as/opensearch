@@ -600,7 +600,7 @@ var Relations = function() {
 
         Log.info( "result: " + result );
 
-        if (String(result).match(/150017:.*/)) {
+        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/)) {
           DbcAddiRelations.hasSubjectDescription( result, pid );
         }
       }
