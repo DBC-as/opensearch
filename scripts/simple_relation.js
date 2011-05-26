@@ -76,8 +76,16 @@ function hasSpecificOnlineAccess ( submitter, format, language, xml, pid ) {
   Relations.hasSpecificOnlineAccess ( xml, pid );
 }
 
-function hasFilmstribenOnlineAccess ( submitter, format, language, xml, pid ) {
-  Relations.hasFilmstribenOnlineAccess ( xml, pid );
+function hasFilmstribenFSSOnlineAccess ( submitter, format, language, xml, pid ) {
+  Relations.hasFilmstribenFSSOnlineAccess ( xml, pid );
+}
+
+function hasFilmstribenFSFOnlineAccess ( submitter, format, language, xml, pid ) {
+  Relations.hasFilmstribenFSFOnlineAccess ( xml, pid );
+}
+
+function hasFilmstribenFSBOnlineAccess ( submitter, format, language, xml, pid ) {
+  Relations.hasFilmstribenFSBOnlineAccess ( xml, pid );
 }
 
 function hasCreatorHomePage ( submitter, format, language, xml, pid ) {
