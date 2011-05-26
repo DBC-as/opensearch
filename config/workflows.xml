@@ -661,7 +661,7 @@
     <plugin class="dk.dbc.opensearch.plugins.SimpleGenericRelation">
       <args>
         <arg name="javascript" value="simple_relation.js"/>
-        <arg name="entryfunction" value="hasSpecificOnlineAccess"/>
+        <arg name="entryfunction" value="hasFilmstribenFSFOnlineAccess"/>
       </args>
     </plugin>
   </workflow>
