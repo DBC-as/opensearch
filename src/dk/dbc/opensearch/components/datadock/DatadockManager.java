@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.components.datadock;
 
 
+import dk.dbc.opensearch.common.config.HarvesterConfig;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
@@ -110,7 +111,7 @@ public final class DatadockManager
      * @throws HarvesterInvalidStatusChangeException
      * @throws InterruptedException
      */
-    public int update()throws HarvesterIOException, HarvesterInvalidStatusChangeException, InterruptedException
+    public int update()throws HarvesterIOException, HarvesterInvalidStatusChangeException, InterruptedException, ConfigurationException
     {
         log.trace( "DatadockManager update called" );
 
@@ -119,7 +120,7 @@ public final class DatadockManager
         if( registeredJobs.isEmpty() )
         {
             log.trace( "no more jobs. requesting new jobs from the harvester" );
-            registeredJobs = this.harvester.getJobs( 100 );
+            registeredJobs = this.harvester.getJobs( HarvesterConfig.getMaxToHarvest() );
         }
 
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );
