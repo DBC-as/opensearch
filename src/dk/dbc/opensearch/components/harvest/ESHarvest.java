@@ -158,8 +158,8 @@ public final class ESHarvest implements IHarvest
                 // No candidates found. Queue empty.
                 return 0;
             }
-
             rs1.close();
+            pstmt.close();
 
             //
             // Set the taskpackage with the found targetreference to active:
@@ -169,12 +169,12 @@ public final class ESHarvest implements IHarvest
                                           "WHERE targetreference = ?" );
             activateTPStmt.setInt( 1, targetRef );
             int res = activateTPStmt.executeUpdate();
+            activateTPStmt.close();
 
             if ( res != 1 )
             {
                 conn.rollback();
                 // stmt.close();
-                pstmt.close();
                 String errorMsg = String.format( "Error: updated %s row(s). 1 row was expected", res );
                 log.fatal( errorMsg );
 		releaseConnection( conn );
@@ -199,6 +199,8 @@ public final class ESHarvest implements IHarvest
                 jobCandidatesQueue.add( id );
                 retrievedAmount++;
             }
+            rs2.close();
+            selectLbnrQueryStmt.close();
 
         }
         catch ( SQLException sqle )
@@ -238,6 +240,8 @@ public final class ESHarvest implements IHarvest
                 releaseConnection( conn );
                 throw new HarvesterIOException( errorMsg );
             }
+            rs.close();
+            pstmt.close();
         }
         catch( SQLException sqle )
         {
@@ -420,6 +424,8 @@ public final class ESHarvest implements IHarvest
                     throw new HarvesterIOException( errorMsg );
                 }
             }
+            rs.close();
+            pstmt.close();
         }
         catch( SQLException sqle )
         {
@@ -457,6 +463,9 @@ public final class ESHarvest implements IHarvest
 
         // Retrieve the data.
         byte[] data = getDataDBCall( id , conn );
+
+        String dataString = new String( data );
+        log.info( "data: " + dataString );
 
         log.debug( "Creating CargoContainer" );
 	CargoContainer cargo = new CargoContainer();
