@@ -79,9 +79,9 @@ public class DatadockManagerTest
     @BeforeClass
     public static void classSetup() throws Exception
     {
-        BasicConfigurator.configure();
-        LogManager.getRootLogger().setLevel( Level.TRACE );
-        xmldata = XMLUtils.documentFromString( referenceData );
+        // BasicConfigurator.configure();
+        // LogManager.getRootLogger().setLevel( Level.TRACE );
+         xmldata = XMLUtils.documentFromString( referenceData );
     }
 
     @Before
