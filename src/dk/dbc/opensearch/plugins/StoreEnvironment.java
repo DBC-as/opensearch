@@ -104,17 +104,17 @@ public class StoreEnvironment implements IPluginEnvironment
         String pidStr = cargo.getIdentifierAsString();
 
         // Let javascript decide if post should be deleted or stored
-        boolean deletePost = false;
+        boolean deleteRecord = false;
         if (jsWrapper != null)
         {
             log.debug( "Calling javascript to determine if post should be deleted");
-            deletePost = ( (Boolean) jsWrapper.run( entryPointFunc, submitter, format, language, XML, pidStr ) ).booleanValue();
+            deleteRecord = ( (Boolean) jsWrapper.run( entryPointFunc, submitter, format, language, XML, pidStr ) ).booleanValue();
         }
         else
         {
             log.debug(String.format("Javascript not defined for [%s:%s], skipping", format, submitter));
         }
-        if( !deletePost )
+        if( !deleteRecord )
         {
             String logm = String.format( "Datadock: %s inserted with pid %s", format, pidStr );
             try
@@ -146,6 +146,10 @@ public class StoreEnvironment implements IPluginEnvironment
             try
             {
                 objectRepository.deleteObject( pidStr, format, submitter, logm );
+
+                // mark the cargo as delete record so the workflow can be
+                // halted.
+                cargo.setIsDeleteRecord( deleteRecord );
             }
             catch( ObjectRepositoryException ex )
             {
