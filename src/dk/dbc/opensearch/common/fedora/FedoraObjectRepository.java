@@ -117,7 +117,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public void deleteObject( String identifier, String logmessage ) throws ObjectRepositoryException
+    public void purgeObject( String identifier, String logmessage ) throws ObjectRepositoryException
     {
         String timestamp = null;
         try
@@ -1086,17 +1086,74 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
-    public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
+    @Override
+    public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
     {
         try
         {
             this.fedoraHandle.modifyObject( objectIdentifier, DeletedState, label, ownerId, logMessage );
+            removeOutboundRelations( objectIdentifier );
         }
         catch ( RemoteException e )
         {
             String error = String.format( "RemoteException Error Connecting to fedora: %s", e.getMessage() );
             log.error( error, e );
             throw new ObjectRepositoryException( error, e );
+        }
+    }
+
+    /**
+     * Removes all outbound relationships from the object identified by
+     * {@code objectIdentifier}
+     *
+     * Currently this boils down to complete removal of the RELS-EXT datastream,
+     * meaning also that an {@link ObjectRepositoryException} will be thrown
+     * when the method is called on an object already in its deleted state.
+     *
+     * @param objectIdentifier the fedora pid identifying the object in the
+     * repository
+     * @throws ObjectRepositoryException when outbound relations could not be
+     * removed
+     */
+    public void removeOutboundRelations( String objectIdentifier ) throws ObjectRepositoryException
+    {
+        String[] purged = null;
+        try
+        {
+            String msg = String.format( "removing RELS-EXT datastream from pid %s", objectIdentifier );
+            log.info( msg );
+            purged = this.fedoraHandle.purgeDatastream( objectIdentifier, "RELS-EXT", null, null, msg, false );
+        }
+        catch( ConfigurationException ex )
+        {
+            String error = String.format( "ConfigurationException Could not remove outbound relations from object referenced by pid '%s': %s", objectIdentifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( ServiceException ex )
+        {
+            String error = String.format( "ServiceException Could not remove outbound relations object referenced by pid '%s': %s", objectIdentifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( MalformedURLException ex )
+        {
+            String error = String.format( "MalformedURLException Could not remove outbound relations from object referenced by pid '%s': %s", objectIdentifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+        catch( IOException ex )
+        {
+            String error = String.format( "IOException Could not remove outbound relations from object referenced by pid '%s': %s", objectIdentifier, ex.getMessage() );
+            log.error( error );
+            throw new ObjectRepositoryException( error, ex );
+        }
+
+        if ( purged == null || purged.length == 0 )
+        {
+            String error = String.format( "Could not remove outbound relations from object referenced by pid '%s'", objectIdentifier );
+            log.error( error );
+            throw new ObjectRepositoryException( error );
         }
     }
 

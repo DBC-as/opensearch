@@ -286,22 +286,22 @@ public class FedoraObjectRepositoryTest
 
 
     @Test
-    public void testDeleteObject() throws Exception
+    public void testPurgeObject() throws Exception
     {
         String identifier = "test:1";
         String logmessage = "log";
 
-        instance.deleteObject( identifier, logmessage );
+        instance.purgeObject( identifier, logmessage );
     }
 
 
     @Test( expected = ObjectRepositoryException.class )
-    public void testDeleteObjectFailsWithNonExistingObject() throws Exception
+    public void testPurgeObjectFailsWithNonExistingObject() throws Exception
     {
         String identifier = "idontexist";
         String logmessage = "log";
 
-        instance.deleteObject( identifier, logmessage );
+        instance.purgeObject( identifier, logmessage );
     }
 
 
@@ -380,4 +380,24 @@ public class FedoraObjectRepositoryTest
     public void testpurgeObjectRelation( ) throws Exception {        
         instance.removeObjectRelation(new PID("object:1"), DBCBIB.IS_MEMBER_OF_WORK , "Subject:1");        
     }
+
+    @Test
+    public void testRemoveOutboundRelations() throws Exception
+    {
+        String identifier = "test:1";
+        String logmessage = "log";
+
+        instance.removeOutboundRelations( identifier );
+    }
+
+    @Test( expected = ObjectRepositoryException.class )
+    public void testRemoveOutboundRelationsFailsWithNonExistingObject() throws Exception
+    {
+        String identifier = "idontexist";
+        String logmessage = "log";
+
+        instance.removeOutboundRelations( identifier );
+    }
+
+
 }

@@ -95,16 +95,15 @@ public interface IObjectRepository
 
 
     /** 
-     * Deletes the object identified by {@code identifier} from the
-     * repository. The implementation can choose whether the object
-     * should be permanently deleted or just hidden from the client.
+     * Purges the object identified by {@code identifier} from the
+     * repository.
      * 
      * @param identifier identifying the object in the repository
-     * @param logmessage describing the reasons for the deletion
+     * @param logmessage describing the reasons for the purging
      * 
-     * @throws ObjectRepositoryException if the object cannot be deleted
+     * @throws ObjectRepositoryException if the object cannot be purged
      */
-    public void deleteObject( String identifier, String logmessage ) throws ObjectRepositoryException;
+    public void purgeObject( String identifier, String logmessage ) throws ObjectRepositoryException;
    
 
     /** 
@@ -167,7 +166,9 @@ public interface IObjectRepository
 
 
     /**
-     * Mark an object as deleted
+     * Deletes an object by setting its state to 'D' and removes all
+     * outbound relations from and all inbound relations to the object.
+     *
      * @param objectIdentifier identifies the object in the scope of the object repository
      * @param label The label you wish to change into. Commonly this is the format.
      * @param ownerId The ownerid you wish to change into. commonly this is the submitter.
@@ -175,6 +176,6 @@ public interface IObjectRepository
      *
      * @throws RemoteException if an error of any kind occurs. This is probably both communication errors and malformed data errors.
      */
-    public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException;
+    public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException;
 
 }

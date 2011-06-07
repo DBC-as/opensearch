@@ -126,7 +126,7 @@ public class StoreEnvironment implements IPluginEnvironment
                     if ( hasObject )
                     {
                         log.trace( String.format( "will try to delete pid %s", pidStr ) );
-                        objectRepository.deleteObject( pidStr, "delte before store hack" );
+                        objectRepository.purgeObject( pidStr, "purge before store hack" );
                     }
                 }
 
@@ -141,11 +141,11 @@ public class StoreEnvironment implements IPluginEnvironment
         }
         else
         {
-            log.info( "Post will be deleted: pid="+pidStr );
-            String logm = String.format( "Datadock: %s marked deleted with pid %s", format, pidStr );
+            log.info( String.format( "Object will be deleted: pid [%s]", pidStr ) );
+            String logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
             try
             {
-                objectRepository.markDeleted( pidStr, format, submitter, logm );
+                objectRepository.deleteObject( pidStr, format, submitter, logm );
             }
             catch( ObjectRepositoryException ex )
             {

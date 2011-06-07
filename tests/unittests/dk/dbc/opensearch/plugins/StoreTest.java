@@ -109,7 +109,7 @@ public class StoreTest
         }
 
         @Mock( invocations = 1 )
-        public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage )
+        public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage )
         {
         }
     }
@@ -134,7 +134,7 @@ public class StoreTest
         }
 
         @Mock( invocations = 1 )
-        public void markDeleted( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
+        public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
         {
             throw new ObjectRepositoryException( "test" );
         }
@@ -155,7 +155,7 @@ public class StoreTest
         }
 
         @Mock
-        public static void deleteObject( String identifier, String logmessage)
+        public static void purgeObject( String identifier, String logmessage)
         {
         }
 
