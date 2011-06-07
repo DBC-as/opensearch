@@ -191,6 +191,23 @@ public class DatadockThreadTest
             return mockCC;
         }
     } 
+
+    @MockClass( realClass = Store.class )
+    public static class MockStoreIsDeleteRecord
+    {
+        @Mock
+        public PluginType getPluginType()
+        {
+            return PluginType.STORE;
+        }
+
+        @Mock
+	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
+        {
+            mockCC.setIsDeleteRecord( true );
+            return mockCC;
+        }
+    }
     
     @MockClass( realClass = SimpleGenericRelation.class )
     public static class MockRelation
@@ -236,7 +253,6 @@ public class DatadockThreadTest
         Mockit.setUpMocks( MockRelation.class );
         Mockit.setUpMocks( MockStore.class );
         Mockit.setUpMocks( NullReturningPlugin.class );
-
     }
 
 
@@ -358,5 +374,33 @@ public class DatadockThreadTest
 
         ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockFlowmap );
         ddThread.call();
+    }
+
+
+    /**
+     * Tests whether the plugin flow is stopped or not when a CargoContainer has the
+     * isDeleteRecord flag set to true.
+     * If not, a IllegalStateException will be thrown when the second plugin is run 
+     */
+    @Test
+    public void testIsDeleteRecordFromCargoContainer() throws Exception
+    {
+        Mockit.setUpMocks( MockStoreIsDeleteRecord.class );
+        
+        new NonStrictExpectations()
+        {{
+            mockHarvester.getCargoContainer( mockIdentifier );returns( mockCC );
+            mockFlowmap.get( anyString );returns( pluginTaskList );
+        }};
+        
+        pluginTask1 = new PluginTask( mockPluginResolver.getPlugin( "dk.dbc.opensearch.plugins.Store" ), null ); 
+        pluginTask2 = new PluginTask( mockPluginResolver.getPlugin( "dk.dbc.opensearch.plugins.ForceFedoraPid" ), null ); 
+      
+        pluginTaskList.add( pluginTask1 );  
+        pluginTaskList.add( pluginTask2 );  
+        TaskInfo job = new TaskInfo( mockIdentifier, referenceData );
+        ddThread = new DatadockThread( job.getIdentifier(), mockProcessqueue, mockHarvester, mockFlowmap );
+        ddThread.call();
+        
     }
 }

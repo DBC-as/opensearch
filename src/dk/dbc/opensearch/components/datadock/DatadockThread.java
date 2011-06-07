@@ -156,6 +156,13 @@ public class DatadockThread implements Callable<Boolean>
                 log.error( error );
                 throw new IllegalStateException( error );
             }
+
+            /** Check to see if it is a delete record **/
+            if ( cargo.getIsDeleteRecord() )
+            {
+                log.info( String.format( "Delete record found with id '%s' leaving plugin loop", cargo.getIdentifierAsString() ) );
+                break;
+            }
         }
 
         String identifierAsString = cargo.getIdentifierAsString();
