@@ -27,6 +27,7 @@ package dk.dbc.opensearch.common.fedora;
 
 
 import dk.dbc.opensearch.common.metadata.AdministrationStream;
+import dk.dbc.opensearch.common.metadata.DBCBIB;
 import dk.dbc.opensearch.common.metadata.IMetaData;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.CargoContainer;
@@ -1156,5 +1157,31 @@ public class FedoraObjectRepository implements IObjectRepository
             throw new ObjectRepositoryException( error );
         }
     }
+
+    public void removeInboundRelations( String objectIdentifier ) throws ObjectRepositoryException
+    {
+        OpenSearchCondition cond = new OpenSearchCondition( FedoraObjectFields.RELOBJ, OpenSearchCondition.Operator.EQUALS, objectIdentifier );
+
+        String[] resultFields = { "pid", "relpredobj" };
+        List< OpenSearchCondition > conditions = new ArrayList();
+        conditions.add( cond );
+
+        ObjectFields[] result = searchRepository( resultFields, conditions, 10000 );
+
+        for( ObjectFields of : result )
+        {
+            String relPredObjCSV = of.getRelPredObj();
+            for (String relPredObj : relPredObjCSV.split( "," ) )
+            {
+                String[] predObjPair = relPredObj.split( "|" );
+                if( objectIdentifier.equals( predObjPair[1] ) )
+                {
+                    //String relation = ;
+                    //removeObjectRelation( predObjPair[1], relation, objectIdentifier );
+                }
+            }
+        }
+    }
+
 
 }

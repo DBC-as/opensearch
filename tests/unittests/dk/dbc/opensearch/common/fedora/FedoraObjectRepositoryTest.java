@@ -181,8 +181,8 @@ public class FedoraObjectRepositoryTest
             fsr.setResultList( 
                     new ObjectFields[]
                     {
-                        new ObjectFields( samePid, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ),
-                        new ObjectFields( testPid, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null )
+                        new ObjectFields( samePid, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ),
+                        new ObjectFields( testPid, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null )
                     } );            
             return fsr;
         }
