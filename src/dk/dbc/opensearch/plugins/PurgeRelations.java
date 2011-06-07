@@ -36,7 +36,6 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.HashMap;
 import java.util.Map;
 import javax.xml.rpc.ServiceException;
 
@@ -66,8 +65,8 @@ public class PurgeRelations implements IPluggable
     {
         // log.trace( "PurgeRelations constructor called" );
 
-	// Map< String, String> tmpMap = new HashMap< String, String >();
-	// env = (PurgeRelationsEnvironment)this.createEnvironment( repository, tmpMap );
+        // Map< String, String> tmpMap = new HashMap< String, String >();
+        // env = (PurgeRelationsEnvironment)this.createEnvironment( repository, tmpMap );
     }
 
 
@@ -87,16 +86,16 @@ public class PurgeRelations implements IPluggable
     {
         log.trace( "runPlugin() called" );
 
-	if ( !( ienv instanceof PurgeRelationsEnvironment) )
-	{
-	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "PurgeRelationsEnvironment", ienv.getClass().getName() );
-	    log.error( errMsg );
-	    throw new PluginException( errMsg );
-	}
+        if( !( ienv instanceof PurgeRelationsEnvironment) )
+        {
+            String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "PurgeRelationsEnvironment", ienv.getClass().getName() );
+            log.error( errMsg );
+            throw new PluginException( errMsg );
+        }
 
-	PurgeRelationsEnvironment env = (PurgeRelationsEnvironment)ienv;
+        PurgeRelationsEnvironment env = (PurgeRelationsEnvironment)ienv;
 
-        if ( cargo == null )
+        if( cargo == null )
         {
             log.error( "cargo is null" );
             throw new PluginException( new NullPointerException( "PurgeRelation runPlugin throws NullPointerException" ) );
@@ -106,19 +105,19 @@ public class PurgeRelations implements IPluggable
         try
         {
             log.debug( String.format( "purging work relations", "" ) );
-	    synchronized(this) 
-	    {
-		ok = env.purgeWorkRelationForMaterial( cargo );
-	    }
+            synchronized(this)
+            {
+                ok = env.purgeWorkRelationForMaterial( cargo );
+            }
             log.debug( String.format( "work relations purged: %s", ok ) );
 
             if ( ok )
             {
                 log.debug( String.format( "purging anmeldelses relations", "" ) );
-		synchronized(this) 
-		{
-		    ok = env.purgeAnmeldelsesRelationForMaterial( cargo );
-		}
+                synchronized(this)
+                {
+                    ok = env.purgeAnmeldelsesRelationForMaterial( cargo );
+                }
                 log.debug( String.format( "anmeldelses relations purged: %s", ok ) );
             }
         }
@@ -162,22 +161,22 @@ public class PurgeRelations implements IPluggable
     }
 
 
-
     @Override
     public PluginType getPluginType()
     {
         return pluginType;
     }
 
+
     private boolean validateArgs( Map<String, String> argsMap )
     {
         return true;
     }
+
 
     @Override
     public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {
     	return new PurgeRelationsEnvironment( repository, args );
     }
-
 }

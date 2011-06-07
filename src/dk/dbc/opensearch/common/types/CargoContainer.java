@@ -53,14 +53,21 @@ import org.apache.log4j.Logger;
  */
 public class CargoContainer
 {
-
     Logger log = Logger.getLogger( CargoContainer.class );
+
+
     /** The internal representation of the data contained in the CargoContainer*/
-    private ArrayList<CargoObject> data;
-    private Map<DataStreamType, IMetaData> metadata;
+    private ArrayList< CargoObject > data;
+    private Map< DataStreamType, IMetaData > metadata;
 
     /** place holder for PID / Identifier namespace */
     private IObjectIdentifier identifier = null;
+
+    /**
+     * flag indicating whether the record represented by this CargoContainer
+     * is a delete record or not.
+     */
+    private boolean isDeleteRecord = false;
     
 
     /**
@@ -69,8 +76,8 @@ public class CargoContainer
      */
     public CargoContainer()
     {
-        data = new ArrayList<CargoObject>();
-        metadata = new HashMap<DataStreamType, IMetaData>();
+        data = new ArrayList< CargoObject >();
+        metadata = new HashMap< DataStreamType, IMetaData >();
         log.trace( String.format( "Constructing new CargoContainer" ) );
     }
 
@@ -95,9 +102,22 @@ public class CargoContainer
         return this.identifier.getIdentifier();
     }
 
+    
     public void setIdentifier( IObjectIdentifier new_identifier )
     {
         this.identifier  = new_identifier; 
+    }
+
+
+    public boolean getIsDeleteRecord()
+    {
+        return isDeleteRecord;
+    }
+
+
+    public void setIsDeleteRecord( boolean value )
+    {
+        isDeleteRecord = value;
     }
 
     
