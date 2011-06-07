@@ -998,20 +998,30 @@ public class FedoraObjectRepository implements IObjectRepository
     }
 
 
+    /**
+     * overload of the method to still be able to use the IPredicate class
+     * \Todo: See if it is possible to remove the use of IPredicate in the code
+     */
     @Override
     public void removeObjectRelation( IObjectIdentifier objectIdentifier, IPredicate relation, String subject ) throws ObjectRepositoryException
     {
+        removeObjectRelation( objectIdentifier.getIdentifier(), relation.getPredicateString(), subject );
+    }
+
+
+    public void removeObjectRelation( String objectIdentifier, String relation, String subject ) throws ObjectRepositoryException
+    {
         try
         {
-            String relationString = relation.getPredicateString();
-            String pid = objectIdentifier.getIdentifier();
+            //String relationString = relation.getPredicateString();
+            String pid = objectIdentifier;//.getIdentifier();
 
-            log.debug( String.format( "trying to remove object %s with relation %s from pid %s", subject, relationString, pid ) );
-            boolean purgeRelationship = this.fedoraHandle.purgeRelationship( pid, relationString, subject, true, null );
+            log.debug( String.format( "trying to remove object %s with relation %s from pid %s", subject, relation, pid ) );
+            boolean purgeRelationship = this.fedoraHandle.purgeRelationship( pid, relation, subject, true, null );
             if ( purgeRelationship )
             {
                 log.debug("purged");
-                log.info( String.format( "Ignored error from purgeRelationeship : on %s-%s->%s", pid, relationString, subject ) );
+                log.info( String.format( "Ignored error from purgeRelationeship : on %s-%s->%s", pid, relation, subject ) );
             }
             else
             {
@@ -1158,6 +1168,20 @@ public class FedoraObjectRepository implements IObjectRepository
         }
     }
 
+    /**
+     * Removes all inbound relations to the object in hand identified by
+     * {@code objectIdentifier}
+     * We do this by searching for objects that has the object at hand as 
+     * part of a relation. For each of those objects we get it's relations 
+     * and traverse them and for each realtion to this object we remove the 
+     * particular relation
+     * @param objectIdentifier {@link String} identifier for the object to remove 
+     * inbound relations for
+     * @throws {@linkObjectRepositoryException} when inbound relation could not
+     * be removed
+     * 
+     */
+
     public void removeInboundRelations( String objectIdentifier ) throws ObjectRepositoryException
     {
         OpenSearchCondition cond = new OpenSearchCondition( FedoraObjectFields.RELOBJ, OpenSearchCondition.Operator.EQUALS, objectIdentifier );
@@ -1171,17 +1195,18 @@ public class FedoraObjectRepository implements IObjectRepository
         for( ObjectFields of : result )
         {
             String relPredObjCSV = of.getRelPredObj();
+            String otherObjectIdentifier = of.getPid();
+            //splitting the string containing all the relations for the object found
             for (String relPredObj : relPredObjCSV.split( "," ) )
             {
                 String[] predObjPair = relPredObj.split( "|" );
+                //splitting to get the predicate and the subject identifier seperated
                 if( objectIdentifier.equals( predObjPair[1] ) )
                 {
                     //String relation = ;
-                    //removeObjectRelation( predObjPair[1], relation, objectIdentifier );
+                    removeObjectRelation( otherObjectIdentifier, predObjPair[0], objectIdentifier );
                 }
             }
         }
     }
-
-
 }
