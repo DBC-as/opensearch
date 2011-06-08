@@ -66,6 +66,11 @@ public class CargoContainer
     /**
      * flag indicating whether the record represented by this CargoContainer
      * is a delete record or not.
+     *
+     * WARNING: This flag is to be set only with great caution and probably only in the
+     * store plugin. If set elsewhere analyse the reason for doing so very carefully.
+     * The plugin design is probably broken, and this is a temporary hack fix (tm) so
+     * solve 'delete records'
      */
     private boolean isDeleteRecord = false;
     
@@ -109,12 +114,28 @@ public class CargoContainer
     }
 
 
+    /**
+     * Warning repeated from flag definition:
+     *
+     * WARNING: This flag is to be set only with great caution and probably only in the
+     * store plugin. If set elsewhere analyse the reason for doing so very carefully.
+     * The plugin design is probably broken, and this is a temporary hack fix (tm) so
+     * solve 'delete records'
+     */
     public boolean getIsDeleteRecord()
     {
         return isDeleteRecord;
     }
 
 
+    /**
+     * Warning repeated from flag definition:
+     * 
+     * WARNING: This flag is to be set only with great caution and probably only in the
+     * store plugin. If set elsewhere analyse the reason for doing so very carefully.
+     * The plugin design is probably broken, and this is a temporary hack fix (tm) so
+     * solve 'delete records'
+     */
     public void setIsDeleteRecord( boolean value )
     {
         isDeleteRecord = value;
