@@ -698,12 +698,12 @@
         <arg name="entryfunction" value="dcFromMarc"/>
       </args>
     </plugin>
-    <plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/>
+    <!--plugin class="dk.dbc.opensearch.plugins.PurgeRelations"/-->
     <plugin class="dk.dbc.opensearch.plugins.Store">
-      <!--args>
+      <args>
         <arg name="javascript" value="store_functions.js"/>
         <arg name="entryfunction" value="isDeletePostMarc"/>
-      </args-->
+      </args>
     </plugin>
     <plugin class="dk.dbc.opensearch.plugins.MarcxchangeWorkRelation">
       <args>

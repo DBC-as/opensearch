@@ -1103,7 +1103,7 @@ public class FedoraObjectRepository implements IObjectRepository
         try
         {
             this.fedoraHandle.modifyObject( objectIdentifier, DeletedState, label, ownerId, logMessage );
-            removeOutboundRelations( objectIdentifier );
+            log.debug( String.format( "marked object '%s' as deleted", objectIdentifier ) );
         }
         catch ( RemoteException e )
         {
@@ -1190,20 +1190,25 @@ public class FedoraObjectRepository implements IObjectRepository
         List< OpenSearchCondition > conditions = new ArrayList();
         conditions.add( cond );
 
+        
         ObjectFields[] result = searchRepository( resultFields, conditions, 10000 );
+        log.debug( String.format( "length of the search result: '%s'", result.length ) );
 
         for( ObjectFields of : result )
         {
             String relPredObjCSV = of.getRelPredObj();
             String otherObjectIdentifier = of.getPid();
+            log.debug( String.format( "checking relations for object: '%s'", otherObjectIdentifier ) );
+            log.debug( String.format( "relationstring for '%s' is: '%s'", otherObjectIdentifier, relPredObjCSV) );
             //splitting the string containing all the relations for the object found
             for (String relPredObj : relPredObjCSV.split( "," ) )
             {
-                String[] predObjPair = relPredObj.split( "|" );
+                String[] predObjPair = relPredObj.split( "\\|" );
                 //splitting to get the predicate and the subject identifier seperated
+                log.debug( String.format( "found relation '%s' from obj '%s' to obj '%s'", predObjPair[0], otherObjectIdentifier, predObjPair[1] ) );
                 if( objectIdentifier.equals( predObjPair[1] ) )
                 {
-                    //String relation = ;
+                    log.info(String.format( "removing relation from obj '%s'", otherObjectIdentifier ) );
                     removeObjectRelation( otherObjectIdentifier, predObjPair[0], objectIdentifier );
                 }
             }

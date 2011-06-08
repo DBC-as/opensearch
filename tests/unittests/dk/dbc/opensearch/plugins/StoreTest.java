@@ -99,13 +99,7 @@ public class StoreTest
         @Mock
         public static boolean hasObject( IObjectIdentifier objectIdentifier )
         {
-            return false;
-        }
-
-        @Mock( invocations = 0 )
-        public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
-        {
-            return "stored";
+            return true;
         }
 
         @Mock( invocations = 1 )
@@ -124,7 +118,7 @@ public class StoreTest
         @Mock
         public static boolean hasObject( IObjectIdentifier objectIdentifier )
         {
-            return false;
+            return true;
         }
 
         @Mock( invocations = 0 )
@@ -158,6 +152,11 @@ public class StoreTest
         public static void purgeObject( String identifier, String logmessage)
         {
         }
+        
+        @Mock 
+        public static void removeInboundRelations( String objectIdentifier )
+        {
+        }
 
         @Mock( invocations = 1 )
         public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace )
@@ -174,7 +173,13 @@ public class StoreTest
         {
         }
 
-        @Mock( invocations = 1 )
+        @Mock 
+        public static boolean hasObject( IObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
+        {
+            throw new ObjectRepositoryException( "test" );
+        }
+
+        @Mock
         public static String storeObject( CargoContainer cargo, String logmessage, String defaultNamespace ) throws ObjectRepositoryException
         {
             throw new ObjectRepositoryException( "test" );
@@ -270,8 +275,9 @@ public class StoreTest
 	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
 	returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
-
     }
+
+
     /**
      * tests that no object is being tried purged from the repository when 
      * the cargoContainer have no indentifier 
@@ -317,7 +323,7 @@ public class StoreTest
     /**
      * testing the path through the plugin when javascript returns true.
      */
-
+    @Ignore //we dont store objects marked for deletion
     @Test
     public void storeCargoContainerMarkDeleted() throws Exception
     {
@@ -338,7 +344,7 @@ public class StoreTest
     /**
      * tests the handling of PluginException when javascript returns true.
      */
-
+    @Ignore //we dont store objects marked for deletion
     @Test( expected = PluginException.class )
     public void storeCargoContainerMarkDeletedException() throws Exception
     {

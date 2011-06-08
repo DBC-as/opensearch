@@ -178,4 +178,22 @@ public interface IObjectRepository
      */
     public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException;
 
+
+    /**
+     * removes relations pointing to an object
+     * 
+     * @param {@link String} objectIdentifier identifies the object to search for
+     * through other objects relations
+     * @throws {@code ObjectRepositoryException} if contact to the repository cannot be established
+     */
+    public void removeInboundRelations( String objectIdentifier ) throws ObjectRepositoryException;
+
+    /**
+     * removes relations pointing from an object
+     * 
+     * @param {@link String} objectIdentifier identifies the object remove all relations from
+     * @throws {@code ObjectRepositoryException} if contact to the repository cannot be established
+     */
+    public void removeOutboundRelations( String objectIdentifier ) throws ObjectRepositoryException;
+
 }
