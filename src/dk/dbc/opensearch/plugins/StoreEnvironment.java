@@ -122,137 +122,79 @@ public class StoreEnvironment implements IPluginEnvironment
             hasObject = objectRepository.hasObject( pid );
             log.debug( String.format( "hasObject( %s ) returned %b",pidStr, hasObject ) );
         }
-        catch( ObjectRepositoryException ore )
+        catch( ObjectRepositoryException e )
         {
             String error = String.format( "exception caught when calling hasObject for object: '%s'", pidStr  );
-            log.error( error, ore );
-            throw new PluginException( error, ore );
+            log.error( error, e );
+            throw new PluginException( error, e );
         }
 
-        String logm = String.format( "Datadock: %s inserted with pid %s", format, pidStr );
-        /**
-         * if we have the object in the repository we modify it according to whether it is a delete record or an update
-         */
-        if( hasObject )
-        {
-            //allways remove inbound relations on an existing object
-            try
-            {
-                objectRepository.removeInboundRelations( pidStr );
-            }
-            catch( ObjectRepositoryException ore )
-            {
-                String error = String.format( "exception caught when trying to remove inbound relations to object: '%s'", pidStr  );
-                log.error( error, ore );
-                throw new PluginException( error, ore );
-            }
-            
-            if( !deleteRecord )
-            {
-                //an update to an existing record
-                //if not a delete record we purge the object in the repos and store the incoming
-                log.trace( String.format( "will try to purge pid %s", pidStr ) );
-                try
-                {
-                    objectRepository.purgeObject( pidStr, "purge before store hack" );
-                    objectRepository.storeObject( cargo, logm, "auto" );
-                }
-                catch( ObjectRepositoryException ore )
-                {
-                    String error = String.format( "exception caught when trying to purge and store object: '%s'", pidStr  );
-                    log.error( error, ore );
-                    throw new PluginException( error, ore );
-                }
-            }
-            else
-            {
-                //if its a delete record we mark the post in the repository as deleted
-                // remove the outbound relations
-                //and set the isDeleteRecord flag on the CargoContainer
-                log.info( String.format( "Object will be deleted: pid [%s]", pidStr ) );
-                logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
-                try
-                {                    
-                    objectRepository.deleteObject( pidStr, format, submitter, logm );
-                    objectRepository.removeOutboundRelations( pidStr );
-                    cargo.setIsDeleteRecord( deleteRecord );
-                }
-                catch( ObjectRepositoryException ore )
-                {
-                    String error = String.format( "Failed to mark deleted CargoContainer with id %s, submitter %s and format %s", pidStr, submitter, format );
-                    log.error( error, ore );
-                    throw new PluginException( error, ore );
-                }
-            }
-        }
-        else
-        {
-            if( deleteRecord)
-            {
-                //a delete record for a record that is not in the repository
-                //\Todo: throw exception
-                log.error( String.format( "no object in the repository for object: '':", pidStr ) );
-            }
-            else
-            {
-                //a record that has been received the for first time
-                try
-                {
-                    objectRepository.storeObject( cargo, logm, "auto" ); 
-                }
-                catch( ObjectRepositoryException ore )
-                {
-                    String error = String.format( "exception caught when trying to store object: '%s'", pidStr  );
-                    log.error( error, ore );
-                    throw new PluginException( error, ore );
-                }
+	//
+	// We check whether the given record is marked deleted or not and whether the object is currently in the repository.
+	// We use deletedRecord in the outer if-statement because that is our "control"-boolean, that is, the most import thing
+	// to check.
+        //
+	if ( deleteRecord )
+	{
+	    if ( !hasObject )
+	    {
+		// Delete-record for an object that is not in the repository
+		// Note: We cannot delete an unexisting record!
+		String warning = String.format( "Cannot delete nonexisting object from repository: [%s]", pidStr );
+		log.warn( warning );
+		throw new PluginException( warning );
+	    }
+	    else
+	    { // hasObject
+		log.info( String.format( "Object will be deleted: pid [%s]", pidStr ) );
+		try
+		{                    
+		    String logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
+		    objectRepository.removeInboundRelations( pidStr );
+		    objectRepository.deleteObject( pidStr, format, submitter, logm );
+		    objectRepository.removeOutboundRelations( pidStr );
+		    cargo.setIsDeleteRecord( deleteRecord );
+		}
+		catch( ObjectRepositoryException e )
+		{
+		    String error = String.format( "Failed to mark CargoContainer as deleted and/or remove relations. Pid: [%s], submitter: [%s] and format: [%s]", pidStr, submitter, format );
+		    log.error( error, e );
+		    throw new PluginException( error, e );
+		}
+	    }
+	}
+	else
+	{ // !deleteRecord
+	    if ( hasObject )
+	    {
+		log.info( String.format( "Purging object: [%s]", pidStr ) );
+		try
+		{
+		    objectRepository.removeInboundRelations( pidStr );
+		    objectRepository.purgeObject( pidStr, "purge before store hack" );
+		}
+		catch( ObjectRepositoryException e )
+		{
+		    String error = String.format( "exception caught when trying to remove inbound relations and/or purge object: [%s]", pidStr  );
+		    log.error( error, e );
+		    throw new PluginException( error, e );
+		}
+	    }
 
-            }
-        }
-        /**
-        String logm = String.format( "Datadock: %s inserted with pid %s", format, pidStr );
-        try
-        {
-            if ( pid != null )
+	    // Ingesting object
+	    try
             {
-                boolean hasObject = objectRepository.hasObject( pid );
-                log.debug( String.format( "hasObject( %s ) returned %b",pidStr, hasObject ) );
-                if ( hasObject )
-                {
-                    log.trace( String.format( "will try to delete pid %s", pidStr ) );
-                    objectRepository.purgeObject( pidStr, "purge before store hack" );
-                    //removing relations pointing to the object
-                    objectRepository.removeInboundRelations( pidStr );
-                }
-            }
-            
-            objectRepository.storeObject( cargo, logm, "auto" );
-        }
-        catch( ObjectRepositoryException ex )
-        {
-            String error = String.format( "Failed to store CargoContainer with id %s, submitter %s and format %s", pidStr, submitter, format );
-            log.error( error, ex);
-            throw new PluginException( error, ex );
-        }
-        if( deleteRecord )
-        {
-            log.info( String.format( "Object will be deleted: pid [%s]", pidStr ) );
-            logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
-            try
-            {
-                objectRepository.deleteObject( pidStr, format, submitter, logm );
-                
-                // mark the cargo as delete record so the workflow can be
-                // halted.
-                cargo.setIsDeleteRecord( deleteRecord );
-            }
-            catch( ObjectRepositoryException ex )
-            {
-                String error = String.format( "Failed to mark deleted CargoContainer with id %s, submitter %s and format %s", pidStr, submitter, format );
-                log.error( error, ex );
-                throw new PluginException( error, ex );
-            }
-        }    */    
+		String logm = String.format( "Datadock: [%s] inserted with pid [%s]", format, pidStr );
+		objectRepository.storeObject( cargo, logm, "auto" ); 
+	    }
+	    catch( ObjectRepositoryException e )
+	    {
+		String error = String.format( "exception caught when trying to store object: [%s]", pidStr  );
+		log.error( error, e );
+		throw new PluginException( error, e );
+	    }
+	}
+
         return cargo;
     }
 
