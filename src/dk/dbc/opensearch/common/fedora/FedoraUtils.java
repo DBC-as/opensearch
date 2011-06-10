@@ -77,7 +77,7 @@ public class FedoraUtils
         FoxmlDocument foxml;
         try
         {
-            foxml = new FoxmlDocument( FoxmlDocument.State.I, pid, cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
+            foxml = new FoxmlDocument( FoxmlDocument.State.A, pid, cargo.getCargoObject( DataStreamType.OriginalData ).getFormat(), cargo.getCargoObject( DataStreamType.OriginalData ).getSubmitter(), System.currentTimeMillis() );
         }
         catch( ParserConfigurationException ex )
         {
