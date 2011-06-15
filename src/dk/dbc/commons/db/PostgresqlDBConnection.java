@@ -24,7 +24,7 @@
  */
 
 
-package dk.dbc.opensearch.common.db;
+package dk.dbc.commons.db;
 
 
 import dk.dbc.opensearch.config.DataBaseConfig;
@@ -36,7 +36,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import dk.dbc.opensearch.common.db.IDBConnection;
+import dk.dbc.commons.db.IDBConnection;
 
 
 /**

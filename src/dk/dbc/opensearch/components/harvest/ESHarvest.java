@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
+import dk.dbc.commons.db.OracleDBPooledConnection;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

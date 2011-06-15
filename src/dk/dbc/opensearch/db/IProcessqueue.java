@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.db;
+package dk.dbc.opensearch.db;
 
 
 import java.sql.SQLException;

@@ -18,20 +18,25 @@
    along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.db;
+package dk.dbc.opensearch.db;
 
+
+import dk.dbc.commons.db.IDBConnection;
+import dk.dbc.commons.db.PostgresqlDBConnection;
+import dk.dbc.opensearch.common.types.Pair;
 
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
-
-import org.apache.commons.configuration.ConfigurationException;
-import java.util.Vector;
-import dk.dbc.opensearch.common.types.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Vector;
+
 import mockit.Mocked;
 import mockit.Mockit;
+
+import org.apache.commons.configuration.ConfigurationException;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

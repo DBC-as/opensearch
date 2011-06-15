@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;

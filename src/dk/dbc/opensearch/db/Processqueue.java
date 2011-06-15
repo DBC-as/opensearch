@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.db;
+package dk.dbc.opensearch.db;
 
-
+import dk.dbc.commons.db.IDBConnection;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.sql.Connection;

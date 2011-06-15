@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;

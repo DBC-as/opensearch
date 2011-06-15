@@ -26,14 +26,14 @@
 package dk.dbc.opensearch.components.pti;
 
 
+import dk.dbc.commons.db.IDBConnection;
+import dk.dbc.commons.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.compass.CompassFactory;
 import dk.dbc.opensearch.compass.PhraseMap;
 import dk.dbc.opensearch.config.CompassConfig;
 import dk.dbc.opensearch.config.PtiConfig;
-import dk.dbc.opensearch.common.db.IDBConnection;
-import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
-import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.db.IProcessqueue;
+import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.pluginframework.PluginResolver;

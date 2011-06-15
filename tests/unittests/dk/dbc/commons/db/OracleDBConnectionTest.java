@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.db;
+package dk.dbc.commons.db;
 
 import java.sql.Connection;
 import org.junit.Test;

@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.db;
+package dk.dbc.commons.db;
 
 import java.sql.SQLException;
 import java.sql.Connection;

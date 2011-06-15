@@ -26,13 +26,13 @@
 package dk.dbc.opensearch.components.datadock;
 
 
+import dk.dbc.commons.db.OracleDBPooledConnection;
+import dk.dbc.commons.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
-import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
-import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
-import dk.dbc.opensearch.common.db.Processqueue;
+import dk.dbc.opensearch.db.IProcessqueue;
+import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;

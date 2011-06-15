@@ -27,7 +27,7 @@ package dk.dbc.opensearch.components.pti;
 
 
 import dk.dbc.opensearch.config.PtiConfig;
-import dk.dbc.opensearch.common.db.IProcessqueue;
+import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
 
 import java.io.IOException;
