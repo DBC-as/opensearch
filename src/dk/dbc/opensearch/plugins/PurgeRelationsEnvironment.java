@@ -28,9 +28,9 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
-//import dk.dbc.opensearch.common.metadata.DublinCore;
-import dk.dbc.opensearch.common.metadata.IPredicate;
+import dk.dbc.opensearch.metadata.DBCBIB;
+//import dk.dbc.opensearch.metadata.DublinCore;
+import dk.dbc.opensearch.metadata.IPredicate;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;

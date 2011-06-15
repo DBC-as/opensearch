@@ -20,7 +20,7 @@
 
 package dk.dbc.opensearch.fedora;
 
-import dk.dbc.opensearch.common.metadata.IMetaData;
+import dk.dbc.opensearch.metadata.IMetaData;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.ComparablePair;

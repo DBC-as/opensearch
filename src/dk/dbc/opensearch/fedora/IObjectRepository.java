@@ -30,7 +30,7 @@ import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IObjectIdentifier;
-import dk.dbc.opensearch.common.metadata.IPredicate;
+import dk.dbc.opensearch.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.util.List;

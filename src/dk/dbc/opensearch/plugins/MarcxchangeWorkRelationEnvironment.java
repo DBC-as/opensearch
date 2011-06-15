@@ -33,7 +33,7 @@ import dk.dbc.opensearch.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
+import dk.dbc.opensearch.metadata.DBCBIB;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.common.pluginframework.PluginException;

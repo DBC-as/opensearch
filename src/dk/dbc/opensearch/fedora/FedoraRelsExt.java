@@ -28,8 +28,8 @@ package dk.dbc.opensearch.fedora;
 
 import javax.xml.parsers.ParserConfigurationException;
 import dk.dbc.opensearch.fedora.FedoraNamespaceContext.FedoraNamespace;
-import dk.dbc.opensearch.common.metadata.IMetaData;
-import dk.dbc.opensearch.common.metadata.IPredicate;
+import dk.dbc.opensearch.metadata.IMetaData;
+import dk.dbc.opensearch.metadata.IPredicate;
 
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.Pair;

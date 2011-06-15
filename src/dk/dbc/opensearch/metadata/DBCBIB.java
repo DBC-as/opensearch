@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dk.dbc.opensearch.common.metadata;
+package dk.dbc.opensearch.metadata;
 
 import javax.xml.namespace.QName;
 

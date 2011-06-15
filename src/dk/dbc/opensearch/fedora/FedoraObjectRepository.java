@@ -26,10 +26,10 @@
 package dk.dbc.opensearch.fedora;
 
 
-import dk.dbc.opensearch.common.metadata.AdministrationStream;
-import dk.dbc.opensearch.common.metadata.DBCBIB;
-import dk.dbc.opensearch.common.metadata.IMetaData;
-import dk.dbc.opensearch.common.metadata.IPredicate;
+import dk.dbc.opensearch.metadata.AdministrationStream;
+import dk.dbc.opensearch.metadata.DBCBIB;
+import dk.dbc.opensearch.metadata.IMetaData;
+import dk.dbc.opensearch.metadata.IPredicate;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;

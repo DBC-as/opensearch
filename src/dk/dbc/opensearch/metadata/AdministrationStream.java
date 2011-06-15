@@ -17,7 +17,7 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dk.dbc.opensearch.common.metadata;
+package dk.dbc.opensearch.metadata;
 
 
 import dk.dbc.opensearch.common.types.CargoContainer;

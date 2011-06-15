@@ -19,7 +19,7 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.metadata.IMetaData;
+import dk.dbc.opensearch.metadata.IMetaData;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;

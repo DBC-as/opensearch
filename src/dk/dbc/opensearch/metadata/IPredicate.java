@@ -15,33 +15,23 @@
 
   You should have received a copy of the GNU General Public License
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/**
- * \file
- * \brief
  */
 
 
-package dk.dbc.opensearch.common.metadata;
+package dk.dbc.opensearch.metadata;
 
-import dk.dbc.opensearch.common.types.DataStreamType;
-import java.io.OutputStream;
-import javax.xml.stream.XMLStreamException;
+
+import javax.xml.namespace.QName;
 
 
 /**
- *
+ * Interface for ell enums that describes predicates for use in
+ * specifying relationsships between objects in some formal form.
  */
-public interface IMetaData {
+public interface IPredicate
+{
+    public QName getPredicate();
 
-    /** 
-     * 
-     * 
-     * @param out 
-     * @param identifier 
-     */
-    public void serialize( OutputStream out, String identifier ) throws XMLStreamException;
-
-    public DataStreamType getType();
+    
+    public String getPredicateString();
 }

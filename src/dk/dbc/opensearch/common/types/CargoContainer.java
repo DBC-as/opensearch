@@ -21,7 +21,7 @@
 package dk.dbc.opensearch.common.types;
 
 
-import dk.dbc.opensearch.common.metadata.IMetaData;
+import dk.dbc.opensearch.metadata.IMetaData;
 
 import java.io.IOException;
 import java.util.ArrayList;

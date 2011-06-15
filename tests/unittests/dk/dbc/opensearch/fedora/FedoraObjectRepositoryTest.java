@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.fedora;
 
 
-import dk.dbc.opensearch.common.metadata.DBCBIB;
+import dk.dbc.opensearch.metadata.DBCBIB;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 
