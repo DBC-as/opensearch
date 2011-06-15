@@ -22,7 +22,7 @@
  * \brief Builds PhraseMap for normalization and modifies mapping file
  */
 
-package dk.dbc.opensearch.common.compass;
+package dk.dbc.opensearch.compass;
 
 import dk.dbc.opensearch.common.config.CompassConfig;
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;

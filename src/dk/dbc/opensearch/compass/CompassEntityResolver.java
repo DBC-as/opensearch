@@ -24,7 +24,7 @@
  */
 
 
-package dk.dbc.opensearch.common.compass;
+package dk.dbc.opensearch.compass;
 
 
 import org.apache.log4j.Logger;

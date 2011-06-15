@@ -2,7 +2,7 @@
  * 
  */
 
-package dk.dbc.opensearch.common.compass;
+package dk.dbc.opensearch.compass;
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import java.io.BufferedInputStream;

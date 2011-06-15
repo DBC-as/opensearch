@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.compass.converters;
+package dk.dbc.opensearch.compass.converters;
 
 import mockit.Mockit;
 import org.compass.core.Property;

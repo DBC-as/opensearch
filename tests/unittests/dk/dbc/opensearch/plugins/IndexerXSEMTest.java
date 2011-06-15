@@ -30,7 +30,7 @@ import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.compass.CompassFactory;
+import dk.dbc.opensearch.compass.CompassFactory;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;

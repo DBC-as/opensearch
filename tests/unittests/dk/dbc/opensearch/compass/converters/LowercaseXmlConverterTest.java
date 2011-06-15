@@ -18,12 +18,12 @@
 */
 
 /**
- * \file FacetConverterTest.java
- * \brief Tests the facet conversion
+ * \file LowercaseXmlConverterTest.java
+ * \brief Tests the lowercasexml conversion
  */
 
 
-package dk.dbc.opensearch.common.compass.converters;
+package dk.dbc.opensearch.compass.converters;
 
 import mockit.Mockit;
 import org.compass.core.Property;
@@ -42,13 +42,13 @@ import static org.easymock.classextension.EasyMock.*;
 /**
  *
  */
-public class FacetConverterTest {
+public class LowercaseXmlConverterTest {
 
     static String expectedNullValue = "NULLVALUE";
 
     // Test String for conversion
-    static String inputValue  = "T\uA732\uA733eststr";
-    static String expectedOutput = "taaaaeststr";
+    static String inputValue  = "TestSTR";
+    static String expectedOutput = "teststr";
 
     // mockObjects
     public static class MockSimpleXmlValueConverterTrue {
@@ -80,15 +80,15 @@ public class FacetConverterTest {
     Resource mockResource = createMock(Resource.class);
 
     /**
-     * Tests the facet conversion
+     * Tests the lowercasexml conversion
      */
     @Test
-    public void testFacetConversion() {
+    public void testLowercaseXmlConversion() {
      MockSimpleXmlValueConverterTrue mockSimpleXmlValueConverter = new MockSimpleXmlValueConverterTrue();
         Mockit.redefineMethods(SimpleXmlValueConverter.class, mockSimpleXmlValueConverter);
         String propertyName = "TEST";
 
-        FacetConverter instance = new FacetConverter();
+        LowercaseXmlConverter instance = new LowercaseXmlConverter();
 
         expect(mockMapping.getPath()).andReturn(mockPropertyPath);
         expect(mockMapping.getStore()).andReturn(Property.Store.YES);

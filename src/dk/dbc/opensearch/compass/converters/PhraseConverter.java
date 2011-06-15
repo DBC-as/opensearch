@@ -8,7 +8,7 @@
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  opensearch is ditributed in the hope that it will be useful,
+  opensearch is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
@@ -18,11 +18,11 @@
 */
 
 /**
- * \file FacetConverter.java
- * \brief Converts facet fields
+ * \file PhraseConverter.java
+ * \brief Converts phrase fields
  */
 
-package dk.dbc.opensearch.common.compass.converters;
+package dk.dbc.opensearch.compass.converters;
 
 import dk.dbc.opensearch.common.string.StringUtils;
 import java.util.HashMap;
@@ -38,16 +38,16 @@ import org.compass.core.marshall.MarshallingContext;
 import org.compass.core.xml.XmlObject;
 
 /**
- * Normalizes facet fields. it replaces "\uA732" with "AA" and "\uA733" with "aa", and lowercases the string
+ * Normalizes phrase fields. it replaces "\uA732" with "Å" and "\uA733" with "å", and lowercases the string
  */
-public class FacetConverter extends SimpleXmlValueConverter
+public class PhraseConverter extends SimpleXmlValueConverter
 {
     /**
      * Marshalls root to resource. replaces characters and lowercases the string
      * @param resource The resource to marhsall the object to
      * @param root The Object to marshall to the resource
      * @param mapping The mapping definition of how to marshall the Object to the resoruce
-     * @param context The context for the current marhslling process
+     * @param context The context for the current marshalling process
      * @return true if data was saved
      * @throws ConversionException
      */
@@ -65,8 +65,8 @@ public class FacetConverter extends SimpleXmlValueConverter
         {   // normalize string
             sValue = toString( xmlObject, xmlPropertyMapping );
             HashMap<String, String> replaceMap = new HashMap<String, String>();
-            replaceMap.put("\uA732", "AA");
-            replaceMap.put("\uA733", "aa");
+            replaceMap.put("\uA732", "Å");
+            replaceMap.put("\uA733", "å");
             sValue = StringUtils.replace(sValue, replaceMap);
             sValue = sValue.toLowerCase();
         }

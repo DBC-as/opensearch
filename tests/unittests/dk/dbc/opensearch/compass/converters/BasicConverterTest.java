@@ -22,7 +22,7 @@
  * \brief Tests the common basics for the different converters
  */
 
-package dk.dbc.opensearch.common.compass.converters;
+package dk.dbc.opensearch.compass.converters;
 
 import java.util.ArrayList;
 import mockit.Mockit;

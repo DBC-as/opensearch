@@ -23,7 +23,7 @@
  * \brief Converts default fields
  */
 
-package dk.dbc.opensearch.common.compass.converters;
+package dk.dbc.opensearch.compass.converters;
 
 import dk.dbc.opensearch.common.string.StringUtils;
 import java.util.HashMap;

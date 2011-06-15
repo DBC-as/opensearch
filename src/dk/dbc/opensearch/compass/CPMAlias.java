@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.compass;
+package dk.dbc.opensearch.compass;
 
 
 import dk.dbc.opensearch.common.config.CompassConfig;

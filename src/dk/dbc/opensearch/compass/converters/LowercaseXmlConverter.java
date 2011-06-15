@@ -22,7 +22,7 @@
  * \brief Lowercases the string marshalled from the xml
  */
 
-package dk.dbc.opensearch.common.compass.converters;
+package dk.dbc.opensearch.compass.converters;
 
 
 import org.apache.log4j.Logger;

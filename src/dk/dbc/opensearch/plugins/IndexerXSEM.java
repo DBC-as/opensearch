@@ -25,7 +25,7 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.compass.CPMAlias;
+import dk.dbc.opensearch.compass.CPMAlias;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
