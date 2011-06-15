@@ -4,7 +4,7 @@
 
   <groupId>dk.dbc</groupId>
   <artifactId>opensearch</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5</version>
   <packaging>jar</packaging>
 
   <name>opensearch</name>
@@ -24,6 +24,8 @@
   </repositories>
 
   <build>
+    <!-- sourceDirectory and testSourceDirectory shuold be removed
+         from this pom.xml when ant is to be removed. -->
     <sourceDirectory>
       ${project.basedir}/src
     </sourceDirectory>
