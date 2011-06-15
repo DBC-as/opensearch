@@ -28,8 +28,8 @@ package dk.dbc.opensearch.components.datadock;
 
 
 
-import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.components.harvest.FileHarvest;
+import dk.dbc.opensearch.harvest.IHarvest;
+import dk.dbc.opensearch.harvest.FileHarvest;
 import dk.dbc.opensearch.pluginframework.PluginTask;
 import java.util.List;
 import mockit.Mock;

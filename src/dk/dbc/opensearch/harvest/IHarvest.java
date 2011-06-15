@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.components.harvest;
+package dk.dbc.opensearch.harvest;
 
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.IIdentifier;

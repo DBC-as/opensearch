@@ -23,19 +23,16 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.components.datadock;
 
-import dk.dbc.opensearch.components.harvest.HarvesterIOException;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.BasicConfigurator;
+
 import dk.dbc.commons.db.OracleDBPooledConnection;
 import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.db.IProcessqueue;
+import dk.dbc.opensearch.harvest.ESHarvest;
+import dk.dbc.opensearch.harvest.HarvesterIOException;
+import dk.dbc.opensearch.harvest.IHarvest;
 import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.types.IIdentifier;
 import dk.dbc.opensearch.types.TaskInfo;
-import dk.dbc.opensearch.components.harvest.ESHarvest;
-import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -46,6 +43,11 @@ import mockit.Mock;
 import mockit.MockClass;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.BasicConfigurator;
 
 import org.junit.*;
 import org.w3c.dom.Document;

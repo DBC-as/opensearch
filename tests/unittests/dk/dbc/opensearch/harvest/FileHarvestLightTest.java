@@ -23,7 +23,7 @@
  * \package harvest;
  */
 
-package dk.dbc.opensearch.components.harvest;
+package dk.dbc.opensearch.harvest;
 
 import mockit.Expectations;
 import mockit.Mock;

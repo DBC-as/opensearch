@@ -37,16 +37,16 @@ import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.harvest.ESHarvest;
+import dk.dbc.opensearch.harvest.FileHarvest;
+import dk.dbc.opensearch.harvest.FileHarvestLight;
+import dk.dbc.opensearch.harvest.HarvesterIOException;
+import dk.dbc.opensearch.harvest.IHarvest;
 import dk.dbc.opensearch.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
 import dk.dbc.opensearch.pluginframework.FlowMapCreator;
 import dk.dbc.opensearch.pluginframework.PluginTask;
-import dk.dbc.opensearch.components.harvest.ESHarvest;
-import dk.dbc.opensearch.components.harvest.FileHarvest;
-import dk.dbc.opensearch.components.harvest.FileHarvestLight;
-import dk.dbc.opensearch.components.harvest.HarvesterIOException;
-import dk.dbc.opensearch.components.harvest.IHarvest;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -140,7 +140,7 @@ public class DatadockMain
 
     /**
      *  Gets the type of a
-     * {@link dk.dbc.opensearch.components.harvest.IHarvest Harvester} from a
+     * {@link dk.dbc.opensearch.harvest.IHarvest Harvester} from a
      * command line parameter or, if that fails, the type of a default harvester
      * specified in the class
      */

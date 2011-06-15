@@ -24,7 +24,7 @@
  */
 
 
-package dk.dbc.opensearch.components.harvest;
+package dk.dbc.opensearch.harvest;
 
 
 import dk.dbc.commons.os.FileHandler;

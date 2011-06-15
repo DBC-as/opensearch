@@ -21,15 +21,15 @@
 package dk.dbc.opensearch.components.datadock;
 
 
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.db.Processqueue;
+import dk.dbc.opensearch.harvest.ESHarvest;
+import dk.dbc.opensearch.harvest.IHarvest;
 import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.IIdentifier;
 import dk.dbc.opensearch.types.TaskInfo;
-import dk.dbc.commons.xml.XMLUtils;
-import dk.dbc.opensearch.components.harvest.ESHarvest;
-import dk.dbc.opensearch.components.harvest.IHarvest;
 
 import java.util.List;
 import java.util.Map;

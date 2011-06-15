@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.components.harvest;
+package dk.dbc.opensearch.harvest;
 
 
 /**
