@@ -20,7 +20,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.compass;
 
 
-import dk.dbc.opensearch.common.config.CompassConfig;
+import dk.dbc.opensearch.config.CompassConfig;
 import dk.dbc.opensearch.common.xml.XMLUtils;
 
 import java.io.IOException;

@@ -24,7 +24,7 @@
 package dk.dbc.opensearch.compass;
 
 
-import dk.dbc.opensearch.common.config.CompassConfig;
+import dk.dbc.opensearch.config.CompassConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;

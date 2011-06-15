@@ -20,7 +20,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * 
  */
-package dk.dbc.opensearch.common.config;
+package dk.dbc.opensearch.config;
 
 
 import org.apache.commons.configuration.ConfigurationException;

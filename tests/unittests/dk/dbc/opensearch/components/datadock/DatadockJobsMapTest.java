@@ -27,7 +27,7 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.JobMapCreator;
 import dk.dbc.opensearch.common.xml.XMLUtils;

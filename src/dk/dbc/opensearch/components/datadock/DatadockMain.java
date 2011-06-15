@@ -26,9 +26,9 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.config.DataBaseConfig;
-import dk.dbc.opensearch.common.config.DatadockConfig;
-import dk.dbc.opensearch.common.config.HarvesterConfig;
+import dk.dbc.opensearch.config.DataBaseConfig;
+import dk.dbc.opensearch.config.DatadockConfig;
+import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;

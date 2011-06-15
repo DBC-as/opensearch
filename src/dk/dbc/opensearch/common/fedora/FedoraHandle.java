@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.fedora;
 
 
-import dk.dbc.opensearch.common.config.FedoraConfig;
+import dk.dbc.opensearch.config.FedoraConfig;
 
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.server.access.FedoraAPIA;

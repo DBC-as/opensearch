@@ -26,7 +26,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.config.FileSystemConfig;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;

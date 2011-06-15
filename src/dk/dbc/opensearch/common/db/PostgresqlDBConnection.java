@@ -27,7 +27,7 @@
 package dk.dbc.opensearch.common.db;
 
 
-import dk.dbc.opensearch.common.config.DataBaseConfig;
+import dk.dbc.opensearch.config.DataBaseConfig;
 
 import java.lang.ClassNotFoundException;
 import java.sql.Connection;

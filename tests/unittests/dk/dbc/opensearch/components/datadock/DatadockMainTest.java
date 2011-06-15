@@ -39,7 +39,7 @@ import mockit.Mockit;
 import dk.dbc.opensearch.common.db.IDBConnection;
 import java.util.HashMap;
 import mockit.Expectations;
-import dk.dbc.opensearch.common.config.DatadockConfig;
+import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.common.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.common.fedora.IObjectRepository;

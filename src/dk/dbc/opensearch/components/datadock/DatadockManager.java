@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.common.config.HarvesterConfig;
+import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;

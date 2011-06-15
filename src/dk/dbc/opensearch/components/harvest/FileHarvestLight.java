@@ -25,7 +25,7 @@
 
 package dk.dbc.opensearch.components.harvest;
 
-import dk.dbc.opensearch.common.config.HarvesterConfig;
+import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;

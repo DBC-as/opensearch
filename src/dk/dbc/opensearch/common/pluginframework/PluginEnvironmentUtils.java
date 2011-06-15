@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.pluginframework;
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig;
+import dk.dbc.opensearch.config.FileSystemConfig;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.types.Pair;
 

@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.common.javascript;
 
 
-import dk.dbc.opensearch.common.config.FileSystemConfig; // Testing
+import dk.dbc.opensearch.config.FileSystemConfig; // Testing
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

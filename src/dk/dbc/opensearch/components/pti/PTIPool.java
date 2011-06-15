@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.components.pti;
 
 
-import dk.dbc.opensearch.common.config.PtiConfig;
+import dk.dbc.opensearch.config.PtiConfig;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;
 

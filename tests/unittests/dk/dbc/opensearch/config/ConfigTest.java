@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.common.config;
+package dk.dbc.opensearch.config;
 
 /*
    
@@ -21,7 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.config.Config;
+import dk.dbc.opensearch.config.Config;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;

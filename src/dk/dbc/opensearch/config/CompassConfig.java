@@ -20,10 +20,10 @@
 /**
  * \file CompassConfig.java
  * \brief The CompassConfig class
- * \package dk.dbc.opensearch.common.config;
+ * \package dk.dbc.opensearch.config;
  */
 
-package dk.dbc.opensearch.common.config;
+package dk.dbc.opensearch.config;
 
 
 import org.apache.commons.configuration.ConfigurationException;

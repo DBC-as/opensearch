@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.common.config;
+package dk.dbc.opensearch.config;
 
 /*
    
