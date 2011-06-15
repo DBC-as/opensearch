@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.string;
+package dk.dbc.commons.string;
 
 /** \brief UnitTest for StringUtils **/
 

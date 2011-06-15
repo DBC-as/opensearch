@@ -31,7 +31,7 @@ import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.string.StringUtils;
+import dk.dbc.commons.string.StringUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;

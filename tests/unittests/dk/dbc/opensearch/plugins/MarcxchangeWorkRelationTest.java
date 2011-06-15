@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.string.StringUtils;
+import dk.dbc.commons.string.StringUtils;
 
 import static org.junit.Assert.*;
 import org.junit.Test;

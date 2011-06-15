@@ -22,7 +22,7 @@
  * \brief Contains methods for string manipulation
  */
 
-package dk.dbc.opensearch.common.string;
+package dk.dbc.commons.string;
 
 import java.util.HashMap;
 import java.util.HashSet;

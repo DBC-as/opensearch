@@ -24,7 +24,7 @@
 
 package dk.dbc.opensearch.compass.converters;
 
-import dk.dbc.opensearch.common.string.StringUtils;
+import dk.dbc.commons.string.StringUtils;
 import java.util.HashMap;
 
 import org.compass.core.Property;
