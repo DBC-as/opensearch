@@ -21,7 +21,7 @@ package dk.dbc.opensearch.compass;
 
 
 import dk.dbc.opensearch.config.CompassConfig;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 
 import java.io.IOException;
 

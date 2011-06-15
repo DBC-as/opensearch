@@ -20,7 +20,7 @@
 package dk.dbc.opensearch.common.types;
 
 
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.common.types.IIdentifier;
 
 /** \brief UnitTest for TaskInfo **/

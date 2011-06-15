@@ -39,7 +39,7 @@ import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;

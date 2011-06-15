@@ -32,7 +32,7 @@ import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

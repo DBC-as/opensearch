@@ -24,7 +24,7 @@
  */
 
 
-package dk.dbc.opensearch.common.xml;
+package dk.dbc.commons.xml;
 
 
 import java.io.ByteArrayInputStream;

@@ -31,7 +31,7 @@ import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.os.FileHandler;

@@ -34,7 +34,7 @@ import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 

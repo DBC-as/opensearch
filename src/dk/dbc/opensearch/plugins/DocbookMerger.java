@@ -27,7 +27,7 @@ import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;
 import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

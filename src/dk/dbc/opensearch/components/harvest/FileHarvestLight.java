@@ -33,7 +33,7 @@ import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.os.StreamHandler;
 import dk.dbc.opensearch.common.os.NoRefFileFilter;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

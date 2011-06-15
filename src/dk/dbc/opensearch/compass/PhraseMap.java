@@ -26,7 +26,7 @@ package dk.dbc.opensearch.compass;
 
 import dk.dbc.opensearch.config.CompassConfig;
 import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

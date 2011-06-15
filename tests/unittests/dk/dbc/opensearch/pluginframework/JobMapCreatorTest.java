@@ -26,7 +26,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.pluginframework;
 
 
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

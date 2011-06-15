@@ -27,7 +27,7 @@ package dk.dbc.opensearch.pluginframework;
 
 
 import dk.dbc.opensearch.compass.CPMAlias;
-import dk.dbc.opensearch.common.xml.XMLUtils;
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.types.Pair;
 
