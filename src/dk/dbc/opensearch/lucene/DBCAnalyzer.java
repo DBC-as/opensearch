@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.lucene;
+package dk.dbc.opensearch.lucene;
 
 
 import java.util.Set;

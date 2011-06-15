@@ -18,25 +18,25 @@
                   type="org.compass.core.converter.mapping.xsem.XmlContentMappingConverter">
        </converter>
        <converter name="lowercase"
-                  type="dk.dbc.opensearch.common.compass.converters.LowercaseXmlConverter">
+                  type="dk.dbc.opensearch.compass.converters.LowercaseXmlConverter">
        </converter>
        <converter name="default"
-                  type="dk.dbc.opensearch.common.compass.converters.DefaultConverter">
+                  type="dk.dbc.opensearch.compass.converters.DefaultConverter">
        </converter>
        <converter name="facet"
-                  type="dk.dbc.opensearch.common.compass.converters.FacetConverter">
+                  type="dk.dbc.opensearch.compass.converters.FacetConverter">
        </converter>
        <converter name="phrase"
-                  type="dk.dbc.opensearch.common.compass.converters.PhraseConverter">
+                  type="dk.dbc.opensearch.compass.converters.PhraseConverter">
        </converter>
        <converter name="sort"
-                  type="dk.dbc.opensearch.common.compass.converters.SortConverter">
+                  type="dk.dbc.opensearch.compass.converters.SortConverter">
        </converter>
        
      </converters>
 
      <searchEngine>
-       <analyzer name="default" type="CustomAnalyzer" analyzerClass="dk.dbc.opensearch.common.lucene.DBCAnalyzer">
+       <analyzer name="default" type="CustomAnalyzer" analyzerClass="dk.dbc.opensearch.lucene.DBCAnalyzer">
          </analyzer>
      </searchEngine>
      
