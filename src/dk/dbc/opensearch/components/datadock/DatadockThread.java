@@ -26,10 +26,10 @@ package dk.dbc.opensearch.components.datadock;
 
 
 import dk.dbc.opensearch.common.db.IProcessqueue;
-import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
-import dk.dbc.opensearch.common.pluginframework.IPluggable;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.pluginframework.PluginTask;
+import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.pluginframework.IPluggable;
+import dk.dbc.opensearch.pluginframework.PluginException;
+import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.components.harvest.IHarvest;

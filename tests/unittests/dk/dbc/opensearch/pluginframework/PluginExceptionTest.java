@@ -1,6 +1,6 @@
 /** \brief UnitTest for PluginException */
 
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 /*
    
@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import dk.dbc.opensearch.common.pluginframework.PluginException;
+import dk.dbc.opensearch.pluginframework.PluginException;
 import java.io.IOException;
 
 import static org.junit.Assert.*;

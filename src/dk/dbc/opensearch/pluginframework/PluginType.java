@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 
 public enum PluginType

@@ -26,8 +26,8 @@ package dk.dbc.opensearch.plugins;
 
 
 import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.PluginException;
-import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.pluginframework.PluginException;
+import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.compass.CompassFactory;

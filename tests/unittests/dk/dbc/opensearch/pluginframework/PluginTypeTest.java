@@ -1,6 +1,6 @@
 /** \brief UnitTest for PluginType */
 
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 /*   
 This file is part of opensearch.
@@ -22,7 +22,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.pluginframework.PluginType;
 
 import static org.junit.Assert.*;
 import org.junit.*;

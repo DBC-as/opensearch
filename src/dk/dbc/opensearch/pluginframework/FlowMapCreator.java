@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 
 import java.io.File;
 import java.io.FileInputStream;

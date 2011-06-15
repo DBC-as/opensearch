@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 /*
    
@@ -21,8 +21,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
-import dk.dbc.opensearch.common.pluginframework.IPluggable;
+import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.pluginframework.IPluggable;
 
 import java.util.Map;
 import java.util.HashMap;

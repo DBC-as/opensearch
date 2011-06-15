@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 
 /*   
@@ -21,8 +21,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.IPluggable;
-import dk.dbc.opensearch.common.pluginframework.PluginType;
+import dk.dbc.opensearch.pluginframework.IPluggable;
+import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.io.InputStream;

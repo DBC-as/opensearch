@@ -30,7 +30,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.BasicConfigurator;
 import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.OracleDBPooledConnection;
-import dk.dbc.opensearch.common.pluginframework.PluginTask;
+import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.TaskInfo;
 import dk.dbc.opensearch.common.types.TaskInfo;

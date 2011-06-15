@@ -32,7 +32,7 @@ import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeExceptio
 import dk.dbc.opensearch.components.harvest.IHarvest;
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.pluginframework.PluginTask;
+import dk.dbc.opensearch.pluginframework.PluginTask;
 
 
 import java.io.IOException;

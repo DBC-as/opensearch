@@ -17,7 +17,7 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 import dk.dbc.opensearch.fedora.IObjectRepository;
 

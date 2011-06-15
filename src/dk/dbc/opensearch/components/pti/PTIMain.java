@@ -36,7 +36,7 @@ import dk.dbc.opensearch.common.db.IProcessqueue;
 import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.pluginframework.PluginResolver;
+import dk.dbc.opensearch.pluginframework.PluginResolver;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;

@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 
 /**
@@ -60,7 +60,7 @@ package dk.dbc.opensearch.common.pluginframework;
  */
 
 import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
+import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.types.CargoContainer;
 
 import java.util.Map;

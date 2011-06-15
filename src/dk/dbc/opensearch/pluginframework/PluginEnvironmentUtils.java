@@ -23,7 +23,7 @@
  *
  */
 
-package dk.dbc.opensearch.common.pluginframework;
+package dk.dbc.opensearch.pluginframework;
 
 
 import dk.dbc.opensearch.config.FileSystemConfig;
