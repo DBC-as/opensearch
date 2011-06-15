@@ -26,8 +26,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+import dk.dbc.commons.os.FileHandler;
 import dk.dbc.opensearch.config.CompassConfig;
-import dk.dbc.opensearch.common.os.FileHandler;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;

@@ -27,11 +27,11 @@
 package dk.dbc.opensearch.components.harvest;
 
 
+import dk.dbc.commons.os.FileHandler;
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.commons.xml.XMLUtils;
 
 import java.io.File;
 import java.io.IOException;

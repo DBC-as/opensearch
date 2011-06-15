@@ -1,7 +1,7 @@
 /** 
  * \brief UnitTest for PluginFileFilter 
  */
-package dk.dbc.opensearch.common.os;
+package dk.dbc.opensearch.os;
 
 
 /*   
@@ -24,7 +24,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.os.PdfFileFilter;
+import dk.dbc.opensearch.os.PdfFileFilter;
 
 import java.io.File;
 

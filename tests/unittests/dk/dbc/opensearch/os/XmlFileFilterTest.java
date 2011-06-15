@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.common.os;
+package dk.dbc.opensearch.os;
 
 /*
    
@@ -21,7 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 *//** \brief UnitTest for FileFilter */
 
 
-import dk.dbc.opensearch.common.os.XmlFileFilter;
+import dk.dbc.opensearch.os.XmlFileFilter;
 
 import static org.junit.Assert.*;
 import org.junit.*;

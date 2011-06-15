@@ -2,7 +2,7 @@
  * \brief UnitTest for StreamHandler 
  */
 
-package dk.dbc.opensearch.common.os;
+package dk.dbc.commons.os;
 
 
 /*   
@@ -25,7 +25,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.os.StreamHandler;
+import dk.dbc.commons.os.StreamHandler;
 
 import java.io.InputStream;
 import java.io.IOException;

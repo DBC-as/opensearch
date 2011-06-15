@@ -4,7 +4,7 @@
  * \package os;
  */
 
-package dk.dbc.opensearch.common.os;
+package dk.dbc.opensearch.os;
 
 /*
    

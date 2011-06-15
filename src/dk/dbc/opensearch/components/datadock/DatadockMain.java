@@ -28,6 +28,7 @@ package dk.dbc.opensearch.components.datadock;
 
 import dk.dbc.commons.db.OracleDBPooledConnection;
 import dk.dbc.commons.db.PostgresqlDBConnection;
+import dk.dbc.commons.os.FileHandler;
 import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
@@ -37,7 +38,6 @@ import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.helpers.Log4jConfiguration;
-import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
 import dk.dbc.opensearch.pluginframework.FlowMapCreator;

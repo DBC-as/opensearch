@@ -25,14 +25,14 @@
 
 package dk.dbc.opensearch.components.harvest;
 
+import dk.dbc.commons.os.FileHandler;
+import dk.dbc.commons.os.StreamHandler;
 import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.DataStreamType;
 import dk.dbc.opensearch.common.types.IIdentifier;
 import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.common.os.StreamHandler;
-import dk.dbc.opensearch.common.os.NoRefFileFilter;
+import dk.dbc.opensearch.os.NoRefFileFilter;
 import dk.dbc.commons.xml.XMLUtils;
 
 import java.io.ByteArrayInputStream;

@@ -3,7 +3,7 @@
  * \brief The FileFilter class
  * \package tools
  */
-package  dk.dbc.opensearch.common.os;
+package  dk.dbc.opensearch.os;
 
 
 import java.io.File;

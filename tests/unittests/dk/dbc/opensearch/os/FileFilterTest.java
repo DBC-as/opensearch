@@ -1,10 +1,10 @@
 /**
  * \file FileFilterTest.java
  * \brief The FileFilterTest class
- * \package dk.dbc.opensearch.common.os;
+ * \package dk.dbc.opensearch.os;
  */
 
-package dk.dbc.opensearch.common.os;
+package dk.dbc.opensearch.os;
 
 /*
    

@@ -27,10 +27,10 @@
 package dk.dbc.opensearch.components.datadock;
 
 
-import dk.dbc.opensearch.config.DatadockConfig;
-import dk.dbc.opensearch.common.os.FileHandler;
-import dk.dbc.opensearch.pluginframework.JobMapCreator;
+import dk.dbc.commons.os.FileHandler;
 import dk.dbc.commons.xml.XMLUtils;
+import dk.dbc.opensearch.config.DatadockConfig;
+import dk.dbc.opensearch.pluginframework.JobMapCreator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

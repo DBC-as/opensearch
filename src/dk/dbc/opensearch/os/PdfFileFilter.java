@@ -25,7 +25,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-package dk.dbc.opensearch.common.os;
+package dk.dbc.opensearch.os;
 
 
 import java.io.File;

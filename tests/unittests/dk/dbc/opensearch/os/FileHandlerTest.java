@@ -1,10 +1,10 @@
 /**
  * \file FileHandlerTest.java
  * \brief The FileHandlerTest class
- * \package dk.dbc.opensearch.common.os;
+ * \package dk.dbc.commons.os;
  */
 
-package dk.dbc.opensearch.common.os;
+package dk.dbc.commons.os;
 
 /*
    
@@ -27,7 +27,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.commons.os.FileHandler;
 
 import org.junit.*;
 import static org.junit.Assert.*;

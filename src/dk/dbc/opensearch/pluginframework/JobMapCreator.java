@@ -26,9 +26,9 @@
 package dk.dbc.opensearch.pluginframework;
 
 
-import dk.dbc.opensearch.compass.CPMAlias;
+import dk.dbc.commons.os.FileHandler;
 import dk.dbc.commons.xml.XMLUtils;
-import dk.dbc.opensearch.common.os.FileHandler;
+import dk.dbc.opensearch.compass.CPMAlias;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.File;
