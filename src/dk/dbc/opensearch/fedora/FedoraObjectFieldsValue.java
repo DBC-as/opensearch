@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 /**
  * Class for representing the value of the searchable fields in a fedora

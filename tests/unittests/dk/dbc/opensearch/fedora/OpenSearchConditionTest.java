@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 
 import org.junit.AfterClass;

@@ -19,7 +19,7 @@
 
 package dk.dbc.opensearch.common.pluginframework;
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.IObjectRepository;
 
 import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;

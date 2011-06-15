@@ -23,10 +23,10 @@
  */
 
 
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
+import dk.dbc.opensearch.fedora.FedoraNamespaceContext.FedoraNamespace;
 import org.fcrepo.utilities.Base64;
 import org.fcrepo.utilities.NamespaceContextImpl;
 import org.fcrepo.utilities.XmlTransformUtility;

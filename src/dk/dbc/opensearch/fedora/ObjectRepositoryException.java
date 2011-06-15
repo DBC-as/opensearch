@@ -18,7 +18,7 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 
 /**

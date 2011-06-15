@@ -23,11 +23,11 @@
  */
 
  
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 
 import javax.xml.parsers.ParserConfigurationException;
-import dk.dbc.opensearch.common.fedora.FedoraNamespaceContext.FedoraNamespace;
+import dk.dbc.opensearch.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.common.metadata.IMetaData;
 import dk.dbc.opensearch.common.metadata.IPredicate;
 

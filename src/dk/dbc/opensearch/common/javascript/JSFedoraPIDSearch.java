@@ -25,9 +25,9 @@
 package dk.dbc.opensearch.common.javascript;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.OpenSearchCondition;
+import dk.dbc.opensearch.fedora.FedoraObjectFields;
+import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.OpenSearchCondition;
 import dk.dbc.opensearch.common.types.ITargetField;
 
 import java.util.ArrayList;

@@ -4,7 +4,7 @@
  */
 
 
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 import dk.dbc.opensearch.common.types.CargoContainer;
 import dk.dbc.opensearch.common.types.CargoObject;

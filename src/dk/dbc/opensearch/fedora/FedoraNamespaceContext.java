@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
 import java.util.ArrayList;

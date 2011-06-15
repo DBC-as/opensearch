@@ -26,11 +26,11 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.fedora.FedoraObjectFields;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.fedora.OpenSearchCondition;
-import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.fedora.FedoraObjectFields;
+import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.fedora.OpenSearchCondition;
+import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.metadata.DBCBIB;

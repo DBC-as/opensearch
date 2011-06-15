@@ -26,8 +26,8 @@
 package dk.dbc.opensearch.plugins;
 
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.common.metadata.DBCBIB;
 //import dk.dbc.opensearch.common.metadata.DublinCore;
 import dk.dbc.opensearch.common.metadata.IPredicate;
@@ -95,7 +95,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
                     if ( anmeldelsesRelations != null && anmeldelsesRelations.size() > 0 )
                     {
                         log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", anmeldelse, reviewOf.getPredicateString(), subject ) );
-                        IObjectIdentifier anmeldelsesIdentifier = new dk.dbc.opensearch.common.fedora.PID( anmeldelse );
+                        IObjectIdentifier anmeldelsesIdentifier = new dk.dbc.opensearch.fedora.PID( anmeldelse );
                         objectRepository.removeObjectRelation( anmeldelsesIdentifier, reviewOf, subject );
                     }
                 }
@@ -137,7 +137,7 @@ public class PurgeRelationsEnvironment implements IPluginEnvironment
                     if ( workRelations != null && workRelations.size() > 0 )
                     {
                         log.debug( String.format( "Purging object relations for work '%s' with relation '%s' to '%s'", work, hasManifestation.getPredicateString(), subject ) );
-                        IObjectIdentifier workIdentifier = new dk.dbc.opensearch.common.fedora.PID( work );
+                        IObjectIdentifier workIdentifier = new dk.dbc.opensearch.fedora.PID( work );
                         objectRepository.removeObjectRelation( workIdentifier, hasManifestation, subject );
                     }
                     else

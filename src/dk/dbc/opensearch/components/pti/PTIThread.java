@@ -21,7 +21,7 @@
 package dk.dbc.opensearch.components.pti;
 
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.plugins.DocbookMerger;
 import dk.dbc.opensearch.plugins.IndexerXSEM;
 import dk.dbc.opensearch.plugins.NormalizeDocument;

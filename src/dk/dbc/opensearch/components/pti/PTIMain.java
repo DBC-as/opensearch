@@ -47,8 +47,8 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.compass.core.Compass;
-import dk.dbc.opensearch.common.fedora.FedoraObjectRepository;
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.FedoraObjectRepository;
+import dk.dbc.opensearch.fedora.IObjectRepository;
 
 
 /**

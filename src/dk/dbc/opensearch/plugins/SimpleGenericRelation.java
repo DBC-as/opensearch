@@ -25,7 +25,7 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.pluginframework.IPluggable;
 import dk.dbc.opensearch.common.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.common.pluginframework.PluginException;

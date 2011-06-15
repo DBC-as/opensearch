@@ -25,7 +25,7 @@
 
 package dk.dbc.opensearch.plugins;
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
 import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
 import dk.dbc.opensearch.common.javascript.JSRelationFunctions;

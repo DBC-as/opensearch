@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.fedora;
+package dk.dbc.opensearch.fedora;
 
 
 import dk.dbc.opensearch.config.FedoraConfig;

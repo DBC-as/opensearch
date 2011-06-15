@@ -23,9 +23,9 @@
 package dk.dbc.opensearch.common.javascript;
 
 
-import dk.dbc.opensearch.common.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.fedora.PID;
+import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.fedora.ObjectRepositoryException;
+import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.common.types.IObjectIdentifier;
 
 import org.apache.log4j.Logger;
