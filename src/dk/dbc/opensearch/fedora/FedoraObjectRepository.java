@@ -26,16 +26,16 @@
 package dk.dbc.opensearch.fedora;
 
 
+import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.metadata.AdministrationStream;
 import dk.dbc.opensearch.metadata.DBCBIB;
 import dk.dbc.opensearch.metadata.IMetaData;
 import dk.dbc.opensearch.metadata.IPredicate;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.IObjectIdentifier;
-import dk.dbc.opensearch.common.types.ITargetField;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.DataStreamType;
+import dk.dbc.opensearch.types.IObjectIdentifier;
+import dk.dbc.opensearch.types.ITargetField;
 
 import org.fcrepo.common.Constants;
 import org.fcrepo.server.types.gen.Condition;
@@ -681,7 +681,7 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     /**
-     * Wrapper around {@link #getDataStream(java.lang.String, dk.dbc.opensearch.common.types.DataStreamType)}
+     * Wrapper around {@link #getDataStream(java.lang.String, dk.dbc.opensearch.types.DataStreamType)}
      * that retrieves an {@link AdministrationStream} and handles intermediary
      * exceptions that surface from the lower layers.
      *

@@ -22,6 +22,8 @@
  */
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.commons.string.StringUtils;
+import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.components.pti.PTIJobsMap;
 import dk.dbc.opensearch.compass.PhraseMap;
 import dk.dbc.opensearch.fedora.IObjectRepository;
@@ -29,13 +31,11 @@ import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginType;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.commons.string.StringUtils;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.commons.xml.XMLUtils;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

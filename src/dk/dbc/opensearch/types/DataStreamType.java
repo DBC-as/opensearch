@@ -17,7 +17,7 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
 public enum DataStreamType 

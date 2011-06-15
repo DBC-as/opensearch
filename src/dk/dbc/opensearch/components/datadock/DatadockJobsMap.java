@@ -26,10 +26,10 @@
 package dk.dbc.opensearch.components.datadock;
 
 
+import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.FileSystemConfig;
 import dk.dbc.opensearch.pluginframework.JobMapCreator;
-import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;

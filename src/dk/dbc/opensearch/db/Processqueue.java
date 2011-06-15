@@ -20,7 +20,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.db;
 
 import dk.dbc.commons.db.IDBConnection;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.commons.types.Pair;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

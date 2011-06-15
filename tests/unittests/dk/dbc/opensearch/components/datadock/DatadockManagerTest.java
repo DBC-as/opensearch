@@ -32,9 +32,8 @@ import dk.dbc.commons.db.OracleDBPooledConnection;
 import dk.dbc.commons.xml.XMLUtils;
 import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.pluginframework.PluginTask;
-import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.TaskInfo;
-import dk.dbc.opensearch.common.types.TaskInfo;
+import dk.dbc.opensearch.types.IIdentifier;
+import dk.dbc.opensearch.types.TaskInfo;
 import dk.dbc.opensearch.components.harvest.ESHarvest;
 import dk.dbc.opensearch.components.harvest.IHarvest;
 

@@ -24,7 +24,7 @@ package dk.dbc.opensearch.components.pti;
 import dk.dbc.opensearch.config.PTIManagerConfig;
 import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.commons.types.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;

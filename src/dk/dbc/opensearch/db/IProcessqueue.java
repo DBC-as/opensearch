@@ -21,11 +21,11 @@
 package dk.dbc.opensearch.db;
 
 
-import java.sql.SQLException;
-import java.util.NoSuchElementException;
+import dk.dbc.commons.types.Pair;
 
-import dk.dbc.opensearch.common.types.Pair;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * The IProcessqueue handles communication with the processqueue

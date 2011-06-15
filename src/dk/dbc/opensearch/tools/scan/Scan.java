@@ -31,7 +31,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import org.apache.log4j.Logger;
 
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.commons.types.Pair;
 
 import java.io.IOException;
 import java.util.ArrayList;

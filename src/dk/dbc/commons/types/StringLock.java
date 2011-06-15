@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.commons.types;
 
 
 import java.util.concurrent.locks.ReentrantLock;

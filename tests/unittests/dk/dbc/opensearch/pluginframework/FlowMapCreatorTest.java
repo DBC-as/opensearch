@@ -4,7 +4,7 @@ import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.os.FileHandler;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
-import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoContainer;
 
 import java.io.File;
 import java.io.FileNotFoundException;

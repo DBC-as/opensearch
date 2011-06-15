@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
 import dk.dbc.opensearch.metadata.IMetaData;
@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * \ingroup common.types
+ * \ingroup types
  * \brief CargoContainer is a data structure used throughout
  *  OpenSearch for carrying information submitted for
  *  indexing. CargoContainer retains data in a private data structure

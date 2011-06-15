@@ -23,7 +23,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginType;
-import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoContainer;
 
 import java.io.InputStream;
 

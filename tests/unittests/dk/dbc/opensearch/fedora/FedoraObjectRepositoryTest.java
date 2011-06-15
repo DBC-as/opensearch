@@ -27,8 +27,8 @@ package dk.dbc.opensearch.fedora;
 
 
 import dk.dbc.opensearch.metadata.DBCBIB;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import org.fcrepo.server.types.gen.FieldSearchQuery;
 import org.fcrepo.server.types.gen.FieldSearchResult;

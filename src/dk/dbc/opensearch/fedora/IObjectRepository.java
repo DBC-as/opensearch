@@ -26,12 +26,12 @@
 package dk.dbc.opensearch.fedora;
 
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IObjectIdentifier;
+import dk.dbc.commons.types.Pair;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.DataStreamType;
+import dk.dbc.opensearch.types.IObjectIdentifier;
 import dk.dbc.opensearch.metadata.IPredicate;
-import dk.dbc.opensearch.common.types.Pair;
 
 import java.util.List;
 import java.util.Set;

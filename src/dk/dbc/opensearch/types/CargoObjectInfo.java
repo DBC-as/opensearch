@@ -22,7 +22,7 @@
  * \brief The CargoObjectInfo class
  * \package datadock
  */
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
 import java.util.Date;

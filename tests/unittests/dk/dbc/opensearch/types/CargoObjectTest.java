@@ -19,11 +19,11 @@
 
 /** \brief UnitTest for CargoObject */
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

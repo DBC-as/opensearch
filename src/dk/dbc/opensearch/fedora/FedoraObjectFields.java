@@ -25,7 +25,7 @@
 
 package dk.dbc.opensearch.fedora;
 
-import dk.dbc.opensearch.common.types.ITargetField;
+import dk.dbc.opensearch.types.ITargetField;
 
 
 /**

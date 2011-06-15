@@ -17,11 +17,11 @@
   along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
 import dk.dbc.commons.xml.XMLUtils;
-import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.types.IIdentifier;
 
 /** \brief UnitTest for TaskInfo **/
 

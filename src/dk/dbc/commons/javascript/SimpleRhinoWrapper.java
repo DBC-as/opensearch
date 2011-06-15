@@ -26,7 +26,7 @@
 package dk.dbc.commons.javascript;
 
 
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.commons.types.Pair;
 
 import java.io.*;
 import java.util.List;

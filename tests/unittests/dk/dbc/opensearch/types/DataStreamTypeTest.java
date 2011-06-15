@@ -21,10 +21,10 @@
 /** \brief UnitTest for DataStreamType */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import static org.junit.Assert.*;
 import org.junit.*;

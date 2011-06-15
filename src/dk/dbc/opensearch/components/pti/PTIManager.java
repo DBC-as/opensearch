@@ -25,9 +25,9 @@
 
 package dk.dbc.opensearch.components.pti;
 
+import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.config.PTIManagerConfig;
 import dk.dbc.opensearch.db.IProcessqueue;
-import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

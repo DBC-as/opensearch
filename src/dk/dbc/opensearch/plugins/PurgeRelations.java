@@ -32,7 +32,7 @@ import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginType;
-import dk.dbc.opensearch.common.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoContainer;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

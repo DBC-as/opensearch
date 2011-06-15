@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.fedora;
 
 
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.commons.types.Pair;
 
 import org.fcrepo.common.Constants;
 import org.fcrepo.server.types.gen.ObjectFields;

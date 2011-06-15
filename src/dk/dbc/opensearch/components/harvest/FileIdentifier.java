@@ -26,7 +26,7 @@
 package dk.dbc.opensearch.components.harvest;
 
 
-import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.types.IIdentifier;
 import java.net.URI;
 
 

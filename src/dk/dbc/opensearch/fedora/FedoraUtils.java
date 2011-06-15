@@ -20,11 +20,11 @@
 
 package dk.dbc.opensearch.fedora;
 
+import dk.dbc.commons.types.ComparablePair;
 import dk.dbc.opensearch.metadata.IMetaData;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.ComparablePair;
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class FedoraUtils
 
     /**
      * Creates a fedora digital object document XML representation of a given
-     * {@link dk.dbc.opensearch.common.types.CargoContainer}
+     * {@link dk.dbc.opensearch.types.CargoContainer}
      *
      * @param cargo the CargoContainer to create a foxml representation of
      * @return a byte[] containing the xml representation

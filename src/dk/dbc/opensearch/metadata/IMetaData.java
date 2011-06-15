@@ -25,7 +25,7 @@
 
 package dk.dbc.opensearch.metadata;
 
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.DataStreamType;
 import java.io.OutputStream;
 import javax.xml.stream.XMLStreamException;
 

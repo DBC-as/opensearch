@@ -25,14 +25,14 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginType;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.ITargetField;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.ITargetField;
 
 import java.util.HashMap;
 import java.util.List;

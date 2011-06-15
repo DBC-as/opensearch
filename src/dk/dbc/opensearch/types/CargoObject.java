@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
 import java.io.IOException;
@@ -27,10 +27,10 @@ import org.apache.log4j.Logger;
 
 
 /**
- * \ingroup common.types
+ * \ingroup types
  * 
  * \brief CargoObject is a data structure used throughout OpenSearch,
- * which basically consists of a pair (common.types.Pair) of
+ * which basically consists of a pair (dk.dbc.commons.types.Pair) of
  * CargoObjectInfo and a byte[]. This class is the access point
  * (through the CargoObjectInfo object) for information about the
  * input stream stored in the byte[]. It is used as a
@@ -51,7 +51,7 @@ public class CargoObject
      * construction of a CargoObjectInfoObject. Also, the InputStream
      * is read into a byte[] holding the actual data of the
      * object. The two are stored in a pair
-     * (dk.dbc.opensearch.common.types.Pair).
+     * (dk.dbc.commons.types.Pair).
      * 
      * The constructor will create an object id on the basis of the
      * hashcodes of the parts of the CargoContainer. This means that
@@ -107,7 +107,7 @@ public class CargoObject
 
     /**
      * gets the name of the datastream (\see:
-     * dk.dbc.opensearch.common.types.DataStreamNames)
+     * dk.dbc.opensearch.types.DataStreamNames)
      * 
      * @return the enum value of the name of the Datastream
      */

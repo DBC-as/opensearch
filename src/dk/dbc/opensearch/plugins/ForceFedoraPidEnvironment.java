@@ -30,9 +30,9 @@ import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;

@@ -23,9 +23,9 @@
  */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
-import dk.dbc.opensearch.common.types.IIdentifier;
+import dk.dbc.opensearch.types.IIdentifier;
 
 import java.util.HashSet;
 import java.util.Set;

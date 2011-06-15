@@ -19,8 +19,8 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 package dk.dbc.opensearch.fedora;
 
 import dk.dbc.opensearch.metadata.AdministrationStream;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

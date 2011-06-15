@@ -1,3 +1,4 @@
+
 /*
   This file is part of opensearch.
   Copyright © 2009, Dansk Bibliotekscenter a/s, 
@@ -18,7 +19,7 @@
 */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.commons.types;
 
 
 /**

@@ -6,9 +6,9 @@
 
 package dk.dbc.opensearch.fedora;
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.CargoObject;
-import dk.dbc.opensearch.common.types.DataStreamType;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.CargoObject;
+import dk.dbc.opensearch.types.DataStreamType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -19,10 +19,10 @@
 
 /** \brief UnitTest for CargoMimeType */
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
-import dk.dbc.opensearch.common.types.CargoMimeType;
+import dk.dbc.opensearch.types.CargoMimeType;
 
 import static org.junit.Assert.*;
 import org.junit.*;

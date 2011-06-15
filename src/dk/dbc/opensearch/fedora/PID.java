@@ -26,7 +26,7 @@
 
 package dk.dbc.opensearch.fedora;
 
-import dk.dbc.opensearch.common.types.IObjectIdentifier;
+import dk.dbc.opensearch.types.IObjectIdentifier;
 
 
 /**

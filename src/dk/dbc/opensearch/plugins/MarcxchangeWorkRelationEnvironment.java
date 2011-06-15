@@ -26,6 +26,7 @@
 package dk.dbc.opensearch.plugins;
 
 
+import dk.dbc.commons.types.Pair;
 import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.fedora.FedoraObjectFields;
@@ -37,10 +38,9 @@ import dk.dbc.opensearch.metadata.DBCBIB;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.ITargetField;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.DataStreamType;
+import dk.dbc.opensearch.types.ITargetField;
 
 import java.io.IOException;
 import java.util.ArrayList;

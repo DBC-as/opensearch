@@ -25,7 +25,7 @@
  */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 
 import org.apache.log4j.Logger;

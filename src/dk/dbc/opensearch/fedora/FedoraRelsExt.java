@@ -26,22 +26,23 @@
 package dk.dbc.opensearch.fedora;
 
 
-import javax.xml.parsers.ParserConfigurationException;
+import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.fedora.FedoraNamespaceContext.FedoraNamespace;
 import dk.dbc.opensearch.metadata.IMetaData;
 import dk.dbc.opensearch.metadata.IPredicate;
+import dk.dbc.opensearch.types.DataStreamType;
 
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.Pair;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.log4j.Logger;
 
 

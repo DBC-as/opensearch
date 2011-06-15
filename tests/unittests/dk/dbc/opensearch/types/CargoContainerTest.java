@@ -22,7 +22,7 @@
  * \brief UnitTest for CargoContainer
  **/
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

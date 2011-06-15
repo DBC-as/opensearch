@@ -26,12 +26,12 @@
 package dk.dbc.opensearch.components.datadock;
 
 
+import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.components.harvest.HarvesterIOException;
 import dk.dbc.opensearch.components.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.components.harvest.IHarvest;
-import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.types.TaskInfo;
+import dk.dbc.opensearch.types.TaskInfo;
 import dk.dbc.opensearch.pluginframework.PluginTask;
 
 

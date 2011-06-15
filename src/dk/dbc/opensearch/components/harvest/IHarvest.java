@@ -20,9 +20,9 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 package dk.dbc.opensearch.components.harvest;
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.TaskInfo;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.IIdentifier;
+import dk.dbc.opensearch.types.TaskInfo;
 import java.util.List;
 
 /**

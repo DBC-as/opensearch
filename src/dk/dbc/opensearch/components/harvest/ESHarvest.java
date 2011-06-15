@@ -27,10 +27,10 @@
 package dk.dbc.opensearch.components.harvest ;
 
 
-import dk.dbc.opensearch.common.types.CargoContainer;
-import dk.dbc.opensearch.common.types.DataStreamType;
-import dk.dbc.opensearch.common.types.IIdentifier;
-import dk.dbc.opensearch.common.types.TaskInfo;
+import dk.dbc.opensearch.types.CargoContainer;
+import dk.dbc.opensearch.types.DataStreamType;
+import dk.dbc.opensearch.types.IIdentifier;
+import dk.dbc.opensearch.types.TaskInfo;
 import dk.dbc.commons.db.OracleDBPooledConnection;
 
 import java.io.ByteArrayInputStream;

@@ -18,7 +18,7 @@
 */
 
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.opensearch.types;
 
 /** 
  *  This interface describes the notion of a Field in the context of

@@ -23,7 +23,7 @@ package dk.dbc.opensearch.db;
 
 import dk.dbc.commons.db.IDBConnection;
 import dk.dbc.commons.db.PostgresqlDBConnection;
-import dk.dbc.opensearch.common.types.Pair;
+import dk.dbc.commons.types.Pair;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

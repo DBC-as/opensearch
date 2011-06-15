@@ -19,7 +19,7 @@
 
 /** \brief UnitTest for ComparablePair **/
 
-package dk.dbc.opensearch.common.types;
+package dk.dbc.commons.types;
 
 
 import java.io.IOException;
