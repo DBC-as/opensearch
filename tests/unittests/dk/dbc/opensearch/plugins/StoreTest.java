@@ -29,7 +29,7 @@ package dk.dbc.opensearch.plugins;
 import java.util.HashMap;
 import java.util.List;
 import dk.dbc.opensearch.common.types.Pair;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
+import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;

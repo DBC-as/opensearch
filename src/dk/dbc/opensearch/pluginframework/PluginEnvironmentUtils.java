@@ -26,8 +26,8 @@
 package dk.dbc.opensearch.pluginframework;
 
 
+import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.config.FileSystemConfig;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.common.types.Pair;
 
 import java.io.FileNotFoundException;

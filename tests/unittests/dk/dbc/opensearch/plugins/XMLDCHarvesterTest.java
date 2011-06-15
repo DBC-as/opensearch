@@ -27,7 +27,7 @@ package dk.dbc.opensearch.plugins;
 
 import dk.dbc.opensearch.common.types.Pair;
 import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
+import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;

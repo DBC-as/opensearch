@@ -22,7 +22,7 @@
  * \brief
  */
 
-package dk.dbc.opensearch.common.javascript;
+package dk.dbc.opensearch.javascript;
 
 
 import dk.dbc.opensearch.fedora.FedoraObjectFields;

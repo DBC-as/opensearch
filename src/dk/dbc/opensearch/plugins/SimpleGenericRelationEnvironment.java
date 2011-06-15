@@ -25,11 +25,11 @@
 
 package dk.dbc.opensearch.plugins;
 
+import dk.dbc.commons.javascript.E4XXMLHeaderStripper;
+import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.opensearch.fedora.IObjectRepository;
-import dk.dbc.opensearch.common.javascript.E4XXMLHeaderStripper;
-import dk.dbc.opensearch.common.javascript.JSFedoraPIDSearch;
-import dk.dbc.opensearch.common.javascript.JSRelationFunctions;
-import dk.dbc.opensearch.common.javascript.SimpleRhinoWrapper;
+import dk.dbc.opensearch.javascript.JSFedoraPIDSearch;
+import dk.dbc.opensearch.javascript.JSRelationFunctions;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginEnvironmentUtils;
 import dk.dbc.opensearch.pluginframework.PluginException;

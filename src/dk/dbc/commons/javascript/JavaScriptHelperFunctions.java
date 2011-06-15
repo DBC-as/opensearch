@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.common.javascript;
+package dk.dbc.commons.javascript;
 
 
 import dk.dbc.opensearch.config.FileSystemConfig; // Testing

@@ -22,7 +22,7 @@
  * \brief
  */
 
-package dk.dbc.opensearch.common.javascript;
+package dk.dbc.commons.javascript;
 
 
 import java.util.regex.Pattern;
