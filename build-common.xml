@@ -236,7 +236,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 
   <target name="_test-single"
-          description="Run a single unittest using\nant -Dtest='dk.dbc.opensearch.common.fedora.MyTest' test-single" 
+          description="Run a single unittest using\nant -Dtest='dk.dbc.opensearch.fedora.MyTest' test-single" 
           depends="py_config">
     <junit fork="yes"
            forkmode="once"
@@ -281,7 +281,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
   <!-- Distribution targets -->
   <target name="_dist_datadock">
-    <opensearch_dist dist.name="DATADOCK" Main-Class="dk.dbc.opensearch.components.datadock.DatadockMain"/>
+    <opensearch_dist dist.name="DATADOCK" Main-Class="dk.dbc.opensearch.datadock.DatadockMain"/>
   </target>
 
   <target name="_dist_pti">
@@ -289,11 +289,11 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   </target>
 
   <target name="_dist_adminfunc">
-    <opensearch_dist dist.name="ADMIN_FUNC" Main-Class="dk.dbc.opensearch.common.fedora.AdministrationFunc"/>
+    <opensearch_dist dist.name="ADMIN_FUNC" Main-Class="dk.dbc.opensearch.fedora.AdministrationFunc"/>
   </target>
 
   <target name="_dist_fedora">
-    <opensearch_dist dist.name="FEDORA" Main-Class="dk.dbc.opensearch.common.fedora.FedoraMain"/>
+    <opensearch_dist dist.name="FEDORA" Main-Class="dk.dbc.opensearch.fedora.FedoraMain"/>
   </target>
 
   <target name="_dist_rhino">
@@ -317,7 +317,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   </target>
  
   <target name="_dist_emptyfedora">
-    <opensearch_dist dist.name="EMPTYFEDORA" Main-Class="dk.dbc.opensearch.common.fedora.EmptyFedora"/>
+    <opensearch_dist dist.name="EMPTYFEDORA" Main-Class="dk.dbc.opensearch.fedora.EmptyFedora"/>
   </target>
  
     

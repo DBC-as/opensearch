@@ -41,16 +41,16 @@
                           ...
               
              3) ant test-single -Dtest="project"
-                Examples: ant test-single -Dtest="dk.dbc.opensearch.common.os.FileFilterTest"
-                          ant test-single -Dtest="dk.dbc.opensearch.components.datadock.DatadockManagerTest"
+                Examples: ant test-single -Dtest="dk.dbc.opensearch.os.FileFilterTest"
+                          ant test-single -Dtest="dk.dbc.opensearch.datadock.DatadockManagerTest"
                           ...
              
              4) ant functionaltests -Darg="classname"
-                Examples: ant functionaltests -Darg="dk.dbc.opensearch.common.fedora.AdministrationFunc"
+                Examples: ant functionaltests -Darg="dk.dbc.opensearch.fedora.AdministrationFunc"
                           DOES NOT WORK!: ant functionaltests -Darg="dk.dbc.opensearch.tools.indexchecker.IndexCheckerMain"
 
              5) ant functionaltests -Darg="classname" Dmainargs="args"
-                Examples: ant functionaltests -Darg="dk.dbc.opensearch.common.fedora.FedoraAuxiliaryMain" -Dmainarg="deletepids"
+                Examples: ant functionaltests -Darg="dk.dbc.opensearch.fedora.FedoraAuxiliaryMain" -Dmainarg="deletepids"
                 args:     - "deletepids"
                           <!-- - "getnextpid work" (work is relation prefix: "work", "dbc", "775100", "710100") -->
                 
@@ -293,14 +293,14 @@
   <!-- ANT TARGETS -->  
   <target name="config" depends="test_Darg">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/config" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/config" />
       <param name="project.name" value="config" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/config" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/config" />
           <param name="project.name" value="config" />
         </antcall>
       </then>
@@ -310,14 +310,14 @@
 
   <target name="db" depends="test_Darg, types">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/db" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/db" />
       <param name="project.name" value="db" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/db" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/db" />
           <param name="project.name" value="db" />
         </antcall>
       </then>
@@ -327,14 +327,14 @@
 
   <target name="fedora" depends="test_Darg, db, statistics, helpers">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/fedora" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/fedora" />
       <param name="project.name" value="fedora" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/fedora" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/fedora" />
           <param name="project.name" value="fedora" />
         </antcall>
       </then>
@@ -344,14 +344,14 @@
 
   <target name="helpers" depends="test_Darg, types, os">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/helpers" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/helpers" />
       <param name="project.name" value="helpers" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/helpers" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/helpers" />
           <param name="project.name" value="helpers" />
         </antcall>
       </then>
@@ -361,14 +361,14 @@
 
   <target name="os" depends="test_Darg">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/os" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/os" />
       <param name="project.name" value="os" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/os" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/os" />
           <param name="project.name" value="os" />
         </antcall>
       </then>
@@ -378,14 +378,14 @@
 
   <target name="pluginframework" depends="test_Darg, types, os, helpers, statistics">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/pluginframework" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/pluginframework" />
       <param name="project.name" value="pluginframework" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/pluginframework" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/pluginframework" />
           <param name="project.name" value="pluginframework" />
         </antcall>
       </then>
@@ -395,14 +395,14 @@
 
   <target name="statistics" depends="test_Darg, db">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/statistics" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/statistics" />
       <param name="project.name" value="statistics" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/statistics" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/statistics" />
           <param name="project.name" value="statistics" />
          </antcall>
        </then>
@@ -412,14 +412,14 @@
 
   <target name="types" depends="test_Darg, config">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/types" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/types" />
       <param name="project.name" value="types" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/types" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/types" />
           <param name="project.name" value="types" />
          </antcall>
        </then>
@@ -429,14 +429,14 @@
 
   <target name="datadock" depends="test_Darg, fedora, os, pluginframework, harvest, plugins">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/datadock" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/datadock" />
       <param name="project.name" value="datadock" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/components/datadock" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/datadock" />
           <param name="project.name" value="datadock" />
          </antcall>
        </then>
@@ -446,14 +446,14 @@
 
   <target name="harvest" depends="test_Darg, helpers">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/harvest" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/harvest" />
       <param name="project.name" value="harvest" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/components/harvest" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/harvest" />
           <param name="project.name" value="harvest" />
          </antcall>
        </then>
@@ -480,14 +480,14 @@
 
   <target name="compass" depends="test_Darg, config, os, helpers">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/common/compass" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/compass" />
       <param name="project.name" value="compass" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/common/compass" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/compass" />
           <param name="project.name" value="compass" />
          </antcall>
        </then>
