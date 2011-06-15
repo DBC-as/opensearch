@@ -1,9 +1,9 @@
 /** 
  * \file Log4jConfiguration.java
  * \brief Helper class used for configuring log4j framework
- * \package dk.dbc.opensearch.common.helpers;
+ * \package dk.dbc.opensearch.helpers;
  */
-package dk.dbc.opensearch.common.helpers;
+package dk.dbc.opensearch.helpers;
 
 
 /** 

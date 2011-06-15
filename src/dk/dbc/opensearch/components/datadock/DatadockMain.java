@@ -36,7 +36,7 @@ import dk.dbc.opensearch.common.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.fedora.ObjectRepositoryException;
-import dk.dbc.opensearch.common.helpers.Log4jConfiguration;
+import dk.dbc.opensearch.helpers.Log4jConfiguration;
 import dk.dbc.opensearch.common.os.FileHandler;
 import dk.dbc.opensearch.common.pluginframework.PluginException;
 import dk.dbc.opensearch.common.pluginframework.PluginResolver;

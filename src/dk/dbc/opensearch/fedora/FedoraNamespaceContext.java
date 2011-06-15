@@ -18,7 +18,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  */
 package dk.dbc.opensearch.fedora;
 
-import dk.dbc.opensearch.common.helpers.OpensearchNamespaceContext;
+import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

@@ -1,4 +1,4 @@
-package dk.dbc.opensearch.common.helpers;
+package dk.dbc.opensearch.helpers;
 
 /*
    
