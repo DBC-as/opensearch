@@ -21,7 +21,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  * \brief The DatadockManagerTest class
  * \package tests;
  */
-package dk.dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.datadock;
 
 
 import dk.dbc.commons.db.OracleDBPooledConnection;

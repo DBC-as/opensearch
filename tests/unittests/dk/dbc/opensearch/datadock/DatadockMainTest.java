@@ -24,7 +24,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
  * \package tests;
  */
 
-package dk.dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.datadock;
 
 
 

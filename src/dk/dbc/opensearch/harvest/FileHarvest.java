@@ -36,7 +36,7 @@ import dk.dbc.opensearch.types.TaskInfo;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
-import dk.dbc.opensearch.components.datadock.DatadockJobsMap;
+import dk.dbc.opensearch.datadock.DatadockJobsMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;

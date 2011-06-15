@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.datadock;
 
 
 import dk.dbc.commons.db.OracleDBPooledConnection;

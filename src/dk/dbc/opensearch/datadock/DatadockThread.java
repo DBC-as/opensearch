@@ -22,7 +22,7 @@
  * \brief Thread handling in datadock framework
  */
 
-package dk.dbc.opensearch.components.datadock;
+package dk.dbc.opensearch.datadock;
 
 
 import dk.dbc.opensearch.db.IProcessqueue;
