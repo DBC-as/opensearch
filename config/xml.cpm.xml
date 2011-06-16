@@ -542,7 +542,7 @@
         />
 	<xml-property
         name="facet.genreCategory"
-        xpath="/ting:container/dkabm:record/dc:subject[.='fiktion'] || /ting:container/dkabm:record/dc:subject[.='nonfiktion']"
+        xpath="/ting:container/dkabm:record/dc:subject[.='fiktion'] | /ting:container/dkabm:record/dc:subject[.='nonfiktion']"
         index="un_tokenized"
         value-converter="facet"
         />
@@ -1006,7 +1006,7 @@
         />
 	<xml-property
         name="facet.genreCategory"
-        xpath="/ting:container/dkabm:record/dc:subject[.='fiktion'] || /ting:container/dkabm:record/dc:subject[.='nonfiktion']"
+        xpath="/ting:container/dkabm:record/dc:subject[.='fiktion'] | /ting:container/dkabm:record/dc:subject[.='nonfiktion']"
         index="un_tokenized"
         value-converter="facet"
         />
