@@ -32,6 +32,7 @@ import dk.dbc.commons.os.FileHandler;
 import dk.dbc.opensearch.compass.CompassFactory;
 import dk.dbc.opensearch.compass.PhraseMap;
 import dk.dbc.opensearch.config.CompassConfig;
+import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.PtiConfig;
 import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.db.Processqueue;
@@ -177,7 +178,12 @@ public class PTIMain
 
             log.debug( "initializing resources" );
 
-            IDBConnection dbConnection = new PostgresqlDBConnection();
+	    String driver = DataBaseConfig.getPostgresqlDriver();
+	    String url    = DataBaseConfig.getPostgresqlUrl();
+	    String userId = DataBaseConfig.getPostgresqlUserID();
+	    String passwd = DataBaseConfig.getPostgresqlPassWd();
+	    
+            IDBConnection dbConnection = new PostgresqlDBConnection( userId, passwd, url, driver );
             IProcessqueue processqueue = new Processqueue( dbConnection );
             IObjectRepository repository = new FedoraObjectRepository();
             PhraseMap phraseMap = PhraseMap.instance(CompassConfig.getXSEMPath(), CompassConfig.getModifiedXSEMPath());

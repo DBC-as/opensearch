@@ -418,7 +418,12 @@ public class DatadockMain
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
         log.trace( "Initializing process queue" );
-        IProcessqueue processqueue = new Processqueue( new PostgresqlDBConnection() );
+        String driver = DataBaseConfig.getPostgresqlDriver();
+        String url    = DataBaseConfig.getPostgresqlUrl();
+        String userId = DataBaseConfig.getPostgresqlUserID();
+        String passwd = DataBaseConfig.getPostgresqlPassWd();
+	PostgresqlDBConnection conn = new PostgresqlDBConnection( userId, passwd, url, driver );
+        IProcessqueue processqueue = new Processqueue( conn );
 
         log.trace( "Initializing plugin resolver" );
         IObjectRepository repository = new FedoraObjectRepository();

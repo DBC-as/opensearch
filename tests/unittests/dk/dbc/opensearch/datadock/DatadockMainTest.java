@@ -28,28 +28,33 @@ package dk.dbc.opensearch.datadock;
 
 
 
-import dk.dbc.opensearch.harvest.IHarvest;
-import dk.dbc.opensearch.harvest.FileHarvest;
-import dk.dbc.opensearch.pluginframework.PluginTask;
-import java.util.List;
-import mockit.Mock;
-import mockit.MockClass;
-import dk.dbc.opensearch.db.Processqueue;
-import mockit.Mockit;
 import dk.dbc.commons.db.IDBConnection;
-import java.util.HashMap;
-import mockit.Expectations;
-import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.commons.db.PostgresqlDBConnection;
+
+import dk.dbc.opensearch.config.DataBaseConfig;
+import dk.dbc.opensearch.config.DatadockConfig;
+import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
+import dk.dbc.opensearch.harvest.IHarvest;
+import dk.dbc.opensearch.harvest.FileHarvest;
 import dk.dbc.opensearch.pluginframework.FlowMapCreator;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
+import dk.dbc.opensearch.pluginframework.PluginTask;
+
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockClass;
 import mockit.Mocked;
+import mockit.Mockit;
+import mockit.Expectations;
 import mockit.NonStrictExpectations;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -70,6 +75,7 @@ public class DatadockMainTest
 {
 
     @Mocked DatadockConfig configClass;
+    @Mocked DataBaseConfig dbConfigClass;
     @Mocked IDBConnection dbConn;
     
 //    @BeforeClass
@@ -145,7 +151,7 @@ public class DatadockMainTest
 
     @MockClass( realClass=PostgresqlDBConnection.class)
     public static class MockDBConnection{
-        @Mock public void $init(){}
+        @Mock public void $init( String userId, String passwd, String url, String driver ){}
     }
 
     @MockClass( realClass=FedoraObjectRepository.class )

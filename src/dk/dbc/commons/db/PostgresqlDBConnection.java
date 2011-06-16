@@ -27,16 +27,12 @@
 package dk.dbc.commons.db;
 
 
-import dk.dbc.opensearch.config.DataBaseConfig;
-
 import java.lang.ClassNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
-import dk.dbc.commons.db.IDBConnection;
 
 
 /**
@@ -53,10 +49,10 @@ public class PostgresqlDBConnection implements IDBConnection
     /**
      * Variables to hold configuration parameters
      */
-    private static String driver = "";
-    private static String url = "";
-    private static String userID = "";
-    private static String passwd = "";
+    private final String driver;
+    private final String url;
+    private final String userId;
+    private final String passwd;
     
     
     /**
@@ -65,19 +61,18 @@ public class PostgresqlDBConnection implements IDBConnection
      * @throws ConfigurationException
      * @throws ClassNotFoundException
      */
-    public PostgresqlDBConnection() throws ConfigurationException, ClassNotFoundException 
+    public PostgresqlDBConnection( String userId, String passwd, String url, String driver ) throws ClassNotFoundException 
     {
         log.debug( "PostgresqlDBConnection constructor");   
-        log.debug( "Obtain config paramaters");
 
-        driver = DataBaseConfig.getPostgresqlDriver();
-        url    = DataBaseConfig.getPostgresqlUrl();
-        userID = DataBaseConfig.getPostgresqlUserID();
-        passwd = DataBaseConfig.getPostgresqlPassWd();
+        this.userId = userId;
+        this.passwd = passwd;
+        this.url    = url;
+        this.driver = driver;
 
-        Class.forName( driver );        
-        log.debug( String.format( "driver: %s, url: %s, userID: %s", driver, url, userID ) );
-}
+        Class.forName( this.driver );        
+        log.debug( String.format( "driver: %s, url: %s, userId: %s", this.driver, this.url, this.userId ) );
+    }
 
     
     /**
@@ -90,10 +85,10 @@ public class PostgresqlDBConnection implements IDBConnection
         log.debug( "Establishing connection." );
 
         Connection con = null;
-        con = DriverManager.getConnection( url, userID, passwd );        
+        con = DriverManager.getConnection( this.url, this.userId, this.passwd );        
         if( con == null )
         {
-            throw new NullPointerException( String.format( "Could not get connection to database using url=%s, userID=%s, passwd=%s", url, userID, passwd ) );
+            throw new NullPointerException( String.format( "Could not get connection to database using url=%s, userId=%s, passwd=%s", this.url, this.userId, this.passwd ) );
         }
         return con;
     }
