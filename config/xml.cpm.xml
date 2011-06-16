@@ -540,6 +540,12 @@
         index="un_tokenized"
         value-converter="facet"
         />
+	<xml-property
+        name="facet.genreCategory"
+        xpath="/ting:container/dkabm:record/dc:subject[.='fiktion'] || /ting:container/dkabm:record/dc:subject[.='nonfiktion']"
+        index="un_tokenized"
+        value-converter="facet"
+        />
     <xml-property
         name="facet.creator"
         xpath="/ting:container/dkabm:record/dc:creator[not(@xsi:type='oss:sort')] | /ting:container/dkabm:record/dc:contributor"
@@ -995,6 +1001,12 @@
     <xml-property
         name="facet.category"
         xpath="/ting:container/dkabm:record/dcterms:audience"
+        index="un_tokenized"
+        value-converter="facet"
+        />
+	<xml-property
+        name="facet.genreCategory"
+        xpath="/ting:container/dkabm:record/dc:subject[.='fiktion'] || /ting:container/dkabm:record/dc:subject[.='nonfiktion']"
         index="un_tokenized"
         value-converter="facet"
         />
