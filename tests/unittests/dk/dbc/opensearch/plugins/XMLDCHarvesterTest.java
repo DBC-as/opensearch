@@ -122,7 +122,7 @@ public class XMLDCHarvesterTest
     public static class MockSimpleRhinoWrapper
     {
         @Mock
-        public void $init( String jsFileName, List< Pair< String, Object > > objectList )
+        public void $init( String jsFilePath, String jsFileName, List< Pair< String, Object > > objectList )
         {}
     }
 

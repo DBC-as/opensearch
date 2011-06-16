@@ -26,8 +26,6 @@
 package dk.dbc.commons.javascript;
 
 
-import dk.dbc.opensearch.config.FileSystemConfig; // Testing
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
@@ -38,7 +36,6 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
-import org.apache.commons.configuration.ConfigurationException; // Testing
 
 
 public class JavaScriptHelperFunctions // extends ScriptableObject
@@ -70,9 +67,9 @@ public class JavaScriptHelperFunctions // extends ScriptableObject
     }
 
 
-    public static void use(Context cx, Scriptable thisObj, Object[] 
-			   args, Function funObj) 
-	throws FileNotFoundException, ConfigurationException
+    public static void use(Context cx, Scriptable thisObj, 
+			   Object[] args, Function funObj) 
+	throws FileNotFoundException
     {
         if ( args.length < 1 )
         {
@@ -101,19 +98,23 @@ public class JavaScriptHelperFunctions // extends ScriptableObject
             Set< String > scriptSet = loadedScripts.get( thisObj );
             if ( scriptSet.add( jsFileName ) )
             {
-            // Script is new:
-            log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
+		// Script is new:
+		log.trace( String.format( "Added the script: %s to Object: %s", jsFileName, thisObj.hashCode() ) );
             }
             else
             {
-            // Script is already loaded - do nothing!
-            log.trace( String.format( "The script: %s seems to already be associated with Object: %s", jsFileName, thisObj.hashCode() ) );
+		// Script is already loaded - do nothing!
+		log.trace( String.format( "The script: %s seems to already be associated with Object: %s", jsFileName, thisObj.hashCode() ) );
             return;
             }
         }
 
+	ScriptableObject so = (ScriptableObject)thisObj;
+	String jsFilePath = (String)so.getAssociatedValue( SimpleRhinoWrapper.JS_FILE_PATH_VALUE_STRING );
+	log.debug( String.format( "jsFilePath: %s", jsFilePath ) ); 
+
         // Load script into Scope
-        FileReader inFile = new FileReader( FileSystemConfig.getScriptPath() + jsFileName ); // can throw FileNotFoundExcpetion
+        FileReader inFile = new FileReader( jsFilePath  + jsFileName ); // can throw FileNotFoundExcpetion
         try
         {
             Object o = cx.evaluateReader((Scriptable)thisObj, inFile, jsFileName, 1, null);

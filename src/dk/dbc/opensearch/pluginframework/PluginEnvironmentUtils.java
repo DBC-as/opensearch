@@ -54,7 +54,7 @@ public final class PluginEnvironmentUtils
 	SimpleRhinoWrapper wrapper = null;
         try 
 	{
-	    wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath() + jsFileName, objectList );
+	    wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath(), jsFileName, objectList );
 	}
 	catch( FileNotFoundException fnfe )
 	{

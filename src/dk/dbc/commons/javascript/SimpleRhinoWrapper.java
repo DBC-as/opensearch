@@ -58,6 +58,8 @@ public class SimpleRhinoWrapper
     private final ScriptableObject scope;
     private static ScriptableObject sharedScope;
 
+    protected final static String JS_FILE_PATH_VALUE_STRING = "jsFilePath";
+
     // List of java script file names that have been loaded.
     // Used to prevent loading the same file more than once.
     private final static Set< String > knownScripts = new HashSet< String >();
@@ -71,17 +73,22 @@ public class SimpleRhinoWrapper
         return sharedScope;
     }
 
-    public SimpleRhinoWrapper( String jsFileName ) throws FileNotFoundException
+    public SimpleRhinoWrapper( String jsFilePath, String jsFileName ) throws FileNotFoundException
     {
-        this( jsFileName, new ArrayList<Pair<String, Object>>() );
+        this( jsFilePath, jsFileName, new ArrayList<Pair<String, Object>>() );
     }
 
     /**
      * Constructs an instance of a javascript environment, containing the given javascript.
      *
-     * @param jsFileName A string containing the name and path of the javascript file to be read
+     * @param jsFileName A string containing the name of the javascript file to be read
+     * @param jsFilePath A string containing the path of the javascript file to be read. 
+     *                   The file-path will also be used to find other dependent javascripts.
+     * @param objectList A list of properties to add to the javascript scope.
+     *
+     * @throws FileNotFoundException if {@code jsFileName} cannot be found.
      */
-    public SimpleRhinoWrapper( String jsFileName, List< Pair< String, Object> > objectList ) throws FileNotFoundException
+    public SimpleRhinoWrapper( String jsFilePath, String jsFileName, List< Pair< String, Object> > objectList ) throws FileNotFoundException
     {
         Context cx = Context.enter();
         try
@@ -98,9 +105,7 @@ public class SimpleRhinoWrapper
                 throw new IllegalStateException( errorMsg );
             }
 
-            // String[] names1 = { "Use" };
-            // scope.defineFunctionProperties(names1, SimpleRhinoWrapper.class, ScriptableObject.DONTENUM);
-
+	    scope.associateValue( JS_FILE_PATH_VALUE_STRING, jsFilePath );
             String[] names = { "print", "use" };
             scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
@@ -109,7 +114,7 @@ public class SimpleRhinoWrapper
                 // Check that the java script file as not already been loaded in this scope
                 if (!knownScripts.contains(jsFileName))
                 {
-                    FileReader inFile = new FileReader(jsFileName); // can throw FileNotFindExcpetion
+                    FileReader inFile = new FileReader( jsFilePath + jsFileName); // can throw FileNotFindExcpetion
                     try
                     {
                         // Evaluate the javascript
