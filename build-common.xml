@@ -285,7 +285,7 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
   </target>
 
   <target name="_dist_pti">
-    <opensearch_dist dist.name="PTI" Main-Class="dk.dbc.opensearch.components.pti.PTIMain"/>
+    <opensearch_dist dist.name="PTI" Main-Class="dk.dbc.opensearch.pti.PTIMain"/>
   </target>
 
   <target name="_dist_adminfunc">

@@ -463,14 +463,14 @@
 
   <target name="pti" depends="test_Darg, fedora, pluginframework, compass">
     <antcall target="compile_project">
-      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/components/pti" />
+      <param name="src.dir" value="${targets.basedir}/src/dk/dbc/opensearch/pti" />
       <param name="project.name" value="pti" />
     </antcall>
     <if>
       <equals arg1="${arg}" arg2="test"/>
       <then>
         <antcall target="${arg}_project">
-          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/components/pti" />
+          <param name="src.dir" value="${targets.basedir}/tests/unittests/dk/dbc/opensearch/pti" />
           <param name="project.name" value="pti" />
          </antcall>
        </then>

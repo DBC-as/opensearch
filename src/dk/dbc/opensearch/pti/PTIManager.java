@@ -23,7 +23,7 @@
  */
 
 
-package dk.dbc.opensearch.components.pti;
+package dk.dbc.opensearch.pti;
 
 import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.config.PTIManagerConfig;

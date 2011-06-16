@@ -32,10 +32,10 @@ import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginType;
+import dk.dbc.opensearch.pti.PTIJobsMap;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.CargoObject;
 import dk.dbc.opensearch.types.DataStreamType;
-import dk.dbc.opensearch.components.pti.PTIJobsMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
