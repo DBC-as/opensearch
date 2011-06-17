@@ -171,7 +171,6 @@ public final class DatadockManager
         if( ! this.jobExecutionCheckSet.containsKey( entry ) )
         {
             List< PluginTask > checkList = flowMap.get( job.getSubmitter() + job.getFormat() );
-            //            if ( DatadockJobsMap.hasPluginList( job.getSubmitter(), job.getFormat() ) )
             if( ! ( checkList == null ) )
             {
                 exists = Boolean.TRUE;

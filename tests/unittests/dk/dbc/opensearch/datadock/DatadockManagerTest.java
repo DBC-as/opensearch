@@ -65,7 +65,6 @@ public class DatadockManagerTest
 
     @Mocked IHarvest mockHarvester;
     @Mocked static IIdentifier mockIdentifier;
-    @Mocked DatadockJobsMap jobMapHandler;
     @Mocked Map< String, List< PluginTask > > mockFlowMap;
 
     DatadockPool mockDatadockPool;
@@ -125,7 +124,6 @@ public class DatadockManagerTest
         new NonStrictExpectations()
         {{
             mockFlowMap.get( anyString );returns( true );
-            DatadockJobsMap.hasPluginList( anyString, anyString );returns( true );
         }};
 
         int update = datadockManager.update();

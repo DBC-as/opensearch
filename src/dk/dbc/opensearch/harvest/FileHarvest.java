@@ -36,7 +36,6 @@ import dk.dbc.opensearch.types.TaskInfo;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
-import dk.dbc.opensearch.datadock.DatadockJobsMap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -459,38 +458,6 @@ public final class FileHarvest implements IHarvest
         String noFormatString = theRawPath.substring( 0, formatSlash );
         int submitterSlash = noFormatString.lastIndexOf( "/" );
         String submitter = noFormatString.substring( submitterSlash + 1 );
-        //String errMsg = "Could not retrive indexingAlias from map";
-        
-        // try
-        // {
-        // alias = DatadockJobsMap.getIndexingAlias( submitter, format);
-        // }
-        // catch( ConfigurationException ce)
-        // {
-        //     log.error( errMsg, ce );
-        //     throw new HarvesterIOException( errMsg, ce );
-        // }
-        // catch( IOException ioe )
-        // {
-        //     log.error( errMsg, ioe );
-        //     throw new HarvesterIOException( errMsg, ioe );
-        // }
-        // catch( ParserConfigurationException pce )
-        // {
-        //     log.error( errMsg, pce );
-        //     throw new HarvesterIOException( errMsg, pce );
-        // }
-        // catch( SAXException saxe )
-        // {
-        //     log.error( errMsg, saxe );
-        //     throw new HarvesterIOException( errMsg, saxe );
-        // }
-
-        // if( alias == null )
-        // {
-        //     log.error( String.format( "got null back when asked for alias with values submitter: %s format: %s ", submitter, format ) );
-        // }
-        
  
         log.debug( String.format("constructing datadock with values: format = %s submitter = %s ", format, submitter ) );
         
