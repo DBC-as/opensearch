@@ -90,7 +90,6 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         {
             log.trace( "Wrapper is initialized" );
         }
-
     }
 
 

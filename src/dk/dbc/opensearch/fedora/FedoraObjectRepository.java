@@ -508,8 +508,9 @@ public class FedoraObjectRepository implements IObjectRepository
 
 	// Convert operators and test validity of search values
 	List< Condition > validConditions = new ArrayList< Condition >( conditions.size() );
-        for( OpenSearchCondition condition : conditions )
-        {
+
+    for( OpenSearchCondition condition : conditions )
+    {
 	    ITargetField field = (ITargetField)condition.getField();
 	    String value = condition.getValue();
 
@@ -519,39 +520,39 @@ public class FedoraObjectRepository implements IObjectRepository
 	    String compStr = "eq";
 	    switch ( condition.getOperator() )
 	    {
-	    case EQUALS:
-		compStr = "eq";
-		break;
-	    case CONTAINS:
-		compStr = "has";
-		break;
-	    case GREATER_THAN:
-		compStr = "gt";
-		break;
-	    case GREATER_OR_EQUAL:
-		compStr = "ge";
-		break;
-	    case LESS_THAN:
-		compStr = "lt";
-		break;
-	    case LESS_OR_EQUAL:
-		compStr = "le";
-		break;
-	    default:
-		compStr = "eq";
+            case EQUALS:
+                compStr = "eq";
+                break;
+            case CONTAINS:
+                compStr = "has";
+                break;
+            case GREATER_THAN:
+                compStr = "gt";
+                break;
+            case GREATER_OR_EQUAL:
+                compStr = "ge";
+                break;
+            case LESS_THAN:
+                compStr = "lt";
+                break;
+            case LESS_OR_EQUAL:
+                compStr = "le";
+                break;
+            default:
+                compStr = "eq";
 	    }
+        
 	    ComparisonOperator comp = ComparisonOperator.fromString( compStr );
-	    log.info( String.format( "Setting fedora-condition: field[%s] comp[%s] value[%s]",
-				      field.fieldname(), comp.toString(), value) );
+	    log.info( String.format( "Setting fedora-condition: field[%s] comp[%s] value[%s]", field.fieldname(), comp.toString(), value) );
 
 	    if ( value.isEmpty() ) 
 	    {
-		log.warn( "Ignoring condition: We do not allow searches with empty search values." );
-		continue;
+            log.warn( "Ignoring condition: We do not allow searches with empty search values." );
+            continue;
 	    }
 	    
 	    validConditions.add( new Condition( field.fieldname(), comp, value ) );
-        }
+    }
 
 	// If there are no valid conditions, there is no need to perform the search:
 	if ( validConditions.size() == 0 ) 

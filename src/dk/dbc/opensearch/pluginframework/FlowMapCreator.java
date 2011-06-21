@@ -66,9 +66,12 @@ import org.apache.log4j.Logger;
 public class FlowMapCreator
 {
     static Logger log = Logger.getLogger( FlowMapCreator.class );
+
+
     static Map<String, List<PluginTask>> flowMap;
     private InputStream workflowStream;
 
+    
     //initiates the object with the path to the workflow xml file and creates an InputStream
     public FlowMapCreator( File path, File xsdPath ) throws IllegalStateException//, SAXException, IOException, ConfigurationException
     {

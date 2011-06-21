@@ -66,6 +66,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+
 import org.xml.sax.SAXException;
 
 
@@ -90,6 +91,8 @@ public class DatadockMain
     }
 
     private final static Logger log = Logger.getLogger( DatadockMain.class );
+
+    
     /** TODO: what is the purpose of rootAppender and startupAppender wrt the startup in this class*/
     private final static ConsoleAppender startupAppender = new ConsoleAppender( new SimpleLayout() );
 
@@ -113,6 +116,7 @@ public class DatadockMain
     static java.util.Date startTime = null;
     private boolean terminateOnZeroSubmitted = false;
 
+    
     public DatadockMain()  throws ConfigurationException
     {
         pollTime = DatadockConfig.getMainPollTime();
@@ -148,25 +152,25 @@ public class DatadockMain
     {
         log.trace( "Trying to get harvester type from commandline" );
         String harvestTypeFromCmdLine = System.getProperty( "harvester" );
-	log.debug( String.format( "Found this harvester: %s", harvestTypeFromCmdLine ) );
+        log.debug( String.format( "Found this harvester: %s", harvestTypeFromCmdLine ) );
 
         HarvestType harvestType = null;
-	if ( harvestTypeFromCmdLine == null || harvestTypeFromCmdLine.isEmpty() )
-	{
-	    // Only set to default harvester if none is given on commandline
-	    harvestType = defaultHarvestType;
-	} 
-	else 
-	{
-	    harvestType = harvestTypeFromCmdLine.equals( "ESHarvest" ) ? HarvestType.ESHarvest : harvestType;
-	    harvestType = harvestTypeFromCmdLine.equals( "FileHarvest" ) ? HarvestType.FileHarvest : harvestType;
-	    harvestType = harvestTypeFromCmdLine.equals( "FileHarvestLight" ) ? HarvestType.FileHarvestLight : harvestType;
+        if ( harvestTypeFromCmdLine == null || harvestTypeFromCmdLine.isEmpty() )
+        {
+            // Only set to default harvester if none is given on commandline
+            harvestType = defaultHarvestType;
+        }
+        else
+        {
+            harvestType = harvestTypeFromCmdLine.equals( "ESHarvest" ) ? HarvestType.ESHarvest : harvestType;
+            harvestType = harvestTypeFromCmdLine.equals( "FileHarvest" ) ? HarvestType.FileHarvest : harvestType;
+            harvestType = harvestTypeFromCmdLine.equals( "FileHarvestLight" ) ? HarvestType.FileHarvestLight : harvestType;
 
-	    if ( harvestType == null ) 
-	    {
-		throw new IllegalArgumentException( String.format( "Unknown harvestType: %s", harvestTypeFromCmdLine ) );
-	    }
-	}
+            if ( harvestType == null )
+            {
+            throw new IllegalArgumentException( String.format( "Unknown harvestType: %s", harvestTypeFromCmdLine ) );
+            }
+        }
 	
         log.debug( String.format( "initialized harvester with type: %s", harvestType ) );
         return harvestType;
@@ -333,7 +337,8 @@ public class DatadockMain
         }
     }
 
-   private IHarvest initializeHarvester() throws SQLException, IllegalArgumentException, ConfigurationException, SAXException, HarvesterIOException, IOException
+
+    private IHarvest initializeHarvester() throws SQLException, IllegalArgumentException, ConfigurationException, SAXException, HarvesterIOException, IOException
     {
         log.trace( "Getting harvester type" );
         HarvestType harvestType = this.getHarvesterType();
@@ -415,6 +420,8 @@ public class DatadockMain
         return new ESHarvest( connectionPool, dataBaseName, usePriorityFlag );
 
     }
+
+
     private void initializeServices() throws ObjectRepositoryException, InstantiationException, IllegalAccessException, PluginException, HarvesterIOException, IllegalStateException, ParserConfigurationException, IOException, IllegalArgumentException, SQLException, InvocationTargetException, SAXException, ConfigurationException, ClassNotFoundException
     {
         log.trace( "Initializing process queue" );
@@ -422,7 +429,7 @@ public class DatadockMain
         String url    = DataBaseConfig.getPostgresqlUrl();
         String userId = DataBaseConfig.getPostgresqlUserID();
         String passwd = DataBaseConfig.getPostgresqlPassWd();
-	PostgresqlDBConnection conn = new PostgresqlDBConnection( userId, passwd, url, driver );
+        PostgresqlDBConnection conn = new PostgresqlDBConnection( userId, passwd, url, driver );
         IProcessqueue processqueue = new Processqueue( conn );
 
         log.trace( "Initializing plugin resolver" );
@@ -475,7 +482,6 @@ public class DatadockMain
 
         log.removeAppender( "RootConsoleAppender" );
         log.addAppender( startupAppender );
-
 
         try
         {

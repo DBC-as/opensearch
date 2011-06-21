@@ -55,6 +55,8 @@ import org.mozilla.javascript.*;
 public class SimpleRhinoWrapper
 {
     private static Logger log = Logger.getLogger( SimpleRhinoWrapper.class );
+
+    
     private final ScriptableObject scope;
     private static ScriptableObject sharedScope;
 
@@ -64,6 +66,7 @@ public class SimpleRhinoWrapper
     // Used to prevent loading the same file more than once.
     private final static Set< String > knownScripts = new HashSet< String >();
 
+    
     private static synchronized ScriptableObject getSharedScope( Context cx)
     {
         if (sharedScope == null)
@@ -73,6 +76,7 @@ public class SimpleRhinoWrapper
         return sharedScope;
     }
 
+    
     public SimpleRhinoWrapper( String jsFilePath, String jsFileName ) throws FileNotFoundException
     {
         this( jsFilePath, jsFileName, new ArrayList<Pair<String, Object>>() );
@@ -105,7 +109,7 @@ public class SimpleRhinoWrapper
                 throw new IllegalStateException( errorMsg );
             }
 
-	    scope.associateValue( JS_FILE_PATH_VALUE_STRING, jsFilePath );
+            scope.associateValue( JS_FILE_PATH_VALUE_STRING, jsFilePath );
             String[] names = { "print", "use" };
             scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 

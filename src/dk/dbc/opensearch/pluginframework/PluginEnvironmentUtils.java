@@ -51,36 +51,39 @@ public final class PluginEnvironmentUtils
     public static SimpleRhinoWrapper initializeWrapper( String jsFileName, List< Pair< String, Object > > objectList ) throws PluginException
     {
 
-	SimpleRhinoWrapper wrapper = null;
+        SimpleRhinoWrapper wrapper = null;
         try 
-	{
-	    wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath(), jsFileName, objectList );
-	}
-	catch( FileNotFoundException fnfe )
-	{
-	    String errorMsg = String.format( "Could not find the file: %s", jsFileName );
-	    log.error( errorMsg, fnfe );
-	    throw new PluginException( errorMsg, fnfe );
-	}
-	catch( ConfigurationException ce )
-	{
-	    String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-	    log.fatal( errorMsg, ce );
-	    throw new PluginException( errorMsg, ce );
-	}
+        {
+            wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath(), jsFileName, objectList );
+        }
+        catch( FileNotFoundException fnfe )
+        {
+            String errorMsg = String.format( "Could not find the file: %s", jsFileName );
+            log.error( errorMsg, fnfe );
+            throw new PluginException( errorMsg, fnfe );
+        }
+        catch( ConfigurationException ce )
+        {
+            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
+            log.fatal( errorMsg, ce );
+            throw new PluginException( errorMsg, ce );
+        }
 
-	log.trace( "Checking wrapper (inner)" );
-	if (wrapper == null) {
-	    log.trace("Wrapper is null");
-	    throw new PluginException( "After construction of RhinoWrapper it was still null." );
-	} else {
-	    log.trace("Wrapper is initialized");
-	}
+        log.trace( "Checking wrapper (inner)" );
+        if (wrapper == null)
+        {
+            log.trace("Wrapper is null");
+            throw new PluginException( "After construction of RhinoWrapper it was still null." );
+        }
+        else
+        {
+            log.trace("Wrapper is initialized");
+        }
 
-	return wrapper;
-
+        return wrapper;
     }
 
+    
     /**
      * Validates whether an argumentname is found in the argument-map. 
      * This is mostly a wrapper in order to not write the same log-lines 

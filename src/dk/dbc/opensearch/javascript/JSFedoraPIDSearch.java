@@ -53,17 +53,19 @@ public class JSFedoraPIDSearch
     public String[] pid( String searchValue )
     {
         log.info( String.format( "PID called with: %s ", searchValue ) );
-	if ( contains_wildcard( searchValue ) )
-	{
-	    // Use HAS-operator:
-	    return single_field_search( (ITargetField)FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, searchValue );
-	}
-	else
-	{
-	    // default: EQUALS-operator
-	    return single_field_search( (ITargetField)FedoraObjectFields.PID, searchValue );
-	}
+        if ( contains_wildcard( searchValue ) )
+        {
+            // Use HAS-operator:
+            return single_field_search( (ITargetField)FedoraObjectFields.PID, OpenSearchCondition.Operator.CONTAINS, searchValue );
+        }
+        else
+        {
+            // default: EQUALS-operator
+            return single_field_search( (ITargetField)FedoraObjectFields.PID, searchValue );
+        }
     }
+
+
     public String[] label( String searchValue )
     {
         log.info( String.format( "LABEL called with: %s ", searchValue ) );
@@ -262,21 +264,21 @@ public class JSFedoraPIDSearch
      */
     private boolean contains_wildcard( String s )
     {
-	if ( s == null )
-	{
-	    throw new IllegalArgumentException( "The input String can not be null." );
-	}
+        if ( s == null )
+        {
+            throw new IllegalArgumentException( "The input String can not be null." );
+        }
 
-	// test for wildcard "*":
-	boolean contains = s.contains("*");
+        // test for wildcard "*":
+        boolean contains = s.contains("*");
 
-	// If no "*" found, test for wildcard "?"
-	if ( !contains )
-	{
-	    contains = s.contains("?");
-	}
+        // If no "*" found, test for wildcard "?"
+        if ( !contains )
+        {
+            contains = s.contains("?");
+        }
 
-	return contains;
+        return contains;
     }
 
 
