@@ -67,13 +67,39 @@ public class JSFedoraPIDSearch
     public String[] label( String searchValue )
     {
         log.info( String.format( "LABEL called with: %s ", searchValue ) );
+        OpenSearchCondition condition = new OpenSearchCondition( (ITargetField)FedoraObjectFields.LABEL, OpenSearchCondition.Operator.EQUALS, searchValue );
+        
 	return single_field_search( (ITargetField)FedoraObjectFields.LABEL, searchValue );
     }
-    @Deprecated
+    
+    //This method calls the repositorywrapper directly, because it needs to be able to 
+    //find deleted posts as well
     public String[] state( String searchValue )
     {
         log.info( String.format( "STATE called with: %s ", searchValue ) );
-	return single_field_search( (ITargetField)FedoraObjectFields.STATE, searchValue );
+        OpenSearchCondition condition = new OpenSearchCondition( (ITargetField)FedoraObjectFields.STATE, OpenSearchCondition.Operator.EQUALS, searchValue );
+        List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >(1);
+        conditions.add( condition );
+
+        Set< String > states = new HashSet< String >();
+        states.add( "I" );
+        states.add( "A" );
+        states.add( "D" );
+        List < String > resultList = repository.getIdentifiersByState( conditions, 10000, states );
+	
+        // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
+        String[] sa = new String[resultList.size()];
+        int counter = 0;
+        for( String str : resultList ) 
+        {
+            log.info( String.format( "returning pid: %s", str ) );
+            sa[counter++] = str;
+        }
+        log.info( String.format( "returned %s results", counter ) );
+        
+        return sa;	
+        
+
     }
     public String[] ownerid( String searchValue )
     {
