@@ -56,7 +56,8 @@ public enum FedoraObjectFields implements ITargetField
     COVERAGE( "coverage" ),
     RIGHTS( "rights" ),
     DCMDATE( "dcmdate" ),
-    RELOBJ( "relobj" );
+    RELOBJ( "relobj" ),
+    DCTYPE( "dctype" );
 
     private String fieldname;
 
