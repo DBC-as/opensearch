@@ -198,6 +198,11 @@ public class JSFedoraPIDSearch
         log.info( String.format( "DCMDATE called with: %s ", searchValue ) );
 	return single_field_search( (ITargetField)FedoraObjectFields.DCMDATE, searchValue );
     }
+    public String[] dctype( String searchValue)
+    {
+        log.info( String.format( "DCTYPE called with: %s ", searchValue ) );
+        return single_field_search( (ITargetField)FedoraObjectFields.DCTYPE, searchValue );
+    }
 
 
     /**
