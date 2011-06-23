@@ -71,7 +71,7 @@ public class JSFedoraPIDSearch
         log.info( String.format( "LABEL called with: %s ", searchValue ) );
         OpenSearchCondition condition = new OpenSearchCondition( (ITargetField)FedoraObjectFields.LABEL, OpenSearchCondition.Operator.EQUALS, searchValue );
         
-	return single_field_search( (ITargetField)FedoraObjectFields.LABEL, searchValue );
+        return single_field_search( (ITargetField)FedoraObjectFields.LABEL, searchValue );
     }
     
     //This method calls the repositorywrapper directly, because it needs to be able to 
