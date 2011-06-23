@@ -1110,11 +1110,26 @@ public class FedoraObjectRepository implements IObjectRepository
 
 
     @Override
-    public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException
+    public void deleteObject( String objectIdentifier, String logMessage ) throws ObjectRepositoryException
     {
         try
         {
-            this.fedoraHandle.modifyObject( objectIdentifier, DeletedState, label, ownerId, logMessage );
+            this.fedoraHandle.modifyObject( objectIdentifier, DeletedState, null, null, logMessage );
+            log.debug( String.format( "marked object '%s' as deleted", objectIdentifier ) );
+        }
+        catch ( RemoteException e )
+        {
+            String error = String.format( "RemoteException Error Connecting to fedora: %s", e.getMessage() );
+            log.error( error, e );
+            throw new ObjectRepositoryException( error, e );
+        }
+    }
+
+    public void undeleteObject( String objectIdentifier, String logMessage ) throws ObjectRepositoryException
+    {
+        try
+        {
+            this.fedoraHandle.modifyObject( objectIdentifier, "A", null, null, logMessage );
             log.debug( String.format( "marked object '%s' as deleted", objectIdentifier ) );
         }
         catch ( RemoteException e )

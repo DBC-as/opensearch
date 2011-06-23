@@ -176,7 +176,7 @@ public interface IObjectRepository
      *
      * @throws RemoteException if an error of any kind occurs. This is probably both communication errors and malformed data errors.
      */
-    public void deleteObject( String objectIdentifier, String label, String ownerId, String logMessage ) throws ObjectRepositoryException;
+    public void deleteObject( String objectIdentifier, String logMessage ) throws ObjectRepositoryException;
 
 
     /**

@@ -43,17 +43,15 @@ public class JSFedoraObjectModification
      * Method exposed to scripts for delete marking objects in the fcrepo
      * 
      * @param pid {@link String} the identifier of the object to be marked
-     * @param format {@link String} the format of the object post
-     * @param submitter {@link String} the submitter (owner) of the object
      * @param logmessage {@link String} log for the obejct
      */
-    public boolean deleteMarkObject( String pid, String format, String submitter, String logmessage )
+    public boolean deleteMarkObject( String pid, String logmessage )
     {
         boolean success = true;
         
         try
         {
-        repository.deleteObject( pid, format, submitter, logmessage);
+        repository.deleteObject( pid, logmessage);
         }
         catch( ObjectRepositoryException e )
         {

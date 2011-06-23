@@ -151,7 +151,7 @@ public class StoreEnvironment implements IPluginEnvironment
 		{                    
 		    String logm = String.format( "Datadock: %s deleted with pid %s", format, pidStr );
 		    objectRepository.removeInboundRelations( pidStr );
-		    objectRepository.deleteObject( pidStr, format, submitter, logm );
+		    objectRepository.deleteObject( pidStr, logm );
 		    objectRepository.removeOutboundRelations( pidStr );
 		    cargo.setIsDeleteRecord( deleteRecord );
 		}

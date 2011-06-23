@@ -413,9 +413,9 @@ public class FedoraHandle
      * not change its submitter or format through this function.
      * </p>
      * @param pid The identifier for the object to modify.
-     * @param state The state you wish to change into. The legal states are: {@code A}, {@code I} or {@code D}. 
-     * @param label The label you wish to change into. Commonly this is the format.
-     * @param ownerId The ownerid you wish to change into. commonly this is the submitter.
+     * @param state The state you wish to change into. The legal states are: {@code A}, {@code I} or {@code D}. Specify null to leave existing value unchanged
+     * @param label The label you wish to change into. Commonly this is the format. Specify null to leave existing value unchanged
+     * @param ownerId The ownerid you wish to change into. commonly this is the submitter. Specify null to leave existing value unchanged
      * @param logMessage Any message you want to pass on to fedoras log.
      *
      * @return Server-date of modification as a {@link String}.

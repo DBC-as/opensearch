@@ -111,6 +111,10 @@ public final class OpenSearchCondition
     {
 	return this.value;
     }
+    public String toString()
+    {
+        return "field='" + field + "', operator='" + operator + "', value='" + value + "'";
+    }
 
    
 }

@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 
 public class JSFedoraPIDSearch
 {
+    public static final int MAX_SEARCH_RESULTS = 10000;
     private Logger log = Logger.getLogger( JSFedoraPIDSearch.class );
     private IObjectRepository repository;
 
@@ -87,7 +88,7 @@ public class JSFedoraPIDSearch
         states.add( "I" );
         states.add( "A" );
         states.add( "D" );
-        List < String > resultList = repository.getIdentifiersByState( conditions, 10000, states );
+        List < String > resultList = repository.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS , states);
 	
         // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
         String[] sa = new String[resultList.size()];
@@ -205,6 +206,46 @@ public class JSFedoraPIDSearch
     }
 
 
+    public String[] multiFieldSearch(String[] fieldNames, String[] searchOperators, String[] searchValues)
+    {
+        if (fieldNames.length != searchValues.length || fieldNames.length != searchOperators.length)
+        {
+            log.error( "fieldNames, searchValues and searchOperators must be the same length");
+            /** todo: Throw exception in stead? */
+            return new String[]{};
+        }
+        Set< String > undeletedStates = new HashSet< String >();
+        undeletedStates.add("I");
+        undeletedStates.add("A");
+
+        List< OpenSearchCondition > conditions = new ArrayList< OpenSearchCondition >(1);
+
+        for (int i = 0 ; i < fieldNames.length ; i++)
+        {
+            ITargetField targetField = FedoraObjectFields.getFedoraObjectFields( fieldNames[i] );
+            OpenSearchCondition.Operator operator = OpenSearchCondition.Operator.valueOf( searchOperators[i].toUpperCase() );
+            String searchValue = searchValues[i];
+            OpenSearchCondition condition = new OpenSearchCondition( targetField, operator, searchValue );
+            log.info( "Adding search condition: " + condition);
+            conditions.add( condition );
+        }
+
+        List< String > resultList = repository.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS , undeletedStates);
+
+        // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
+        String[] sa = new String[resultList.size()];
+        int counter = 0;
+        for( String str : resultList )
+        {
+            log.info( String.format( "returning pid: %s", str ) );
+            sa[counter++] = str;
+	    }
+        log.info( String.format( "returned %s results", counter ) );
+
+	    return sa;
+    }
+
+
     /**
      *  Given a {@code targetField} an {@code operator} and a {@code searchValue} this functions performs
      *  a search and returns the matching PIDs.
@@ -230,7 +271,7 @@ public class JSFedoraPIDSearch
         undeletedStates.add("A");
 
         // \note: 10000 below is a hardcodet estimate on max amount of results:
-        List< String > resultList = repository.getIdentifiersByState( conditions, 10000, undeletedStates );
+        List< String > resultList = repository.getIdentifiersByState( conditions, MAX_SEARCH_RESULTS, undeletedStates);
 
         // Convert the List of Strings to a String array in order to satisfy javascripts internal types:
         String[] sa = new String[resultList.size()];
