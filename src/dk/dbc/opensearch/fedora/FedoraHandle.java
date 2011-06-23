@@ -64,6 +64,12 @@ public class FedoraHandle
     private String fedora_base_url;
 
 
+    FedoraHandle( String host, String port, String user, String pass ) throws ObjectRepositoryException
+    {
+        createFedoraClient( host, port, user, pass );
+    }
+
+
     FedoraHandle() throws ObjectRepositoryException
     {
         String host;
@@ -86,7 +92,13 @@ public class FedoraHandle
             log.error( error );
             throw new ObjectRepositoryException( error, ex );
         }
+        
+        createFedoraClient( host, port, user, pass );
+    }
 
+
+    private void createFedoraClient( String host, String port, String user, String pass ) throws ObjectRepositoryException
+    {
         this.fedora_base_url = String.format( "http://%s:%s/fedora", host, port );
         log.debug( String.format( "connecting to fedora base using %s, user=%s, pass=%s", fedora_base_url, user, pass ) );
         try
@@ -119,6 +131,7 @@ public class FedoraHandle
         }
     }
 
+    
     private FedoraAPIA getAPIA() throws ServiceException
     {
         log.trace( "FedoraHandle getAPIA" );
