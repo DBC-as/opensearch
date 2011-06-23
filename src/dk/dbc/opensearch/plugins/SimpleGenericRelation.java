@@ -68,20 +68,22 @@ public class SimpleGenericRelation implements IPluggable
     @Override
     public CargoContainer runPlugin( IPluginEnvironment ienv, CargoContainer cargo ) throws PluginException
     {
-	if ( !( ienv instanceof SimpleGenericRelationEnvironment) )
-	{
-	    String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "SimpleGenericRelationEnvironment", ienv.getClass().getName() );
-	    log.error( errMsg );
-	    throw new PluginException( errMsg );
-	}
-	SimpleGenericRelationEnvironment env = (SimpleGenericRelationEnvironment)ienv;
+        if ( !( ienv instanceof SimpleGenericRelationEnvironment) )
+        {
+            String errMsg = String.format( "The given PluginEnvironment is of incorrect type. Expected: %s, got: %s", "SimpleGenericRelationEnvironment", ienv.getClass().getName() );
+            log.error( errMsg );
+            throw new PluginException( errMsg );
+        }
+        
+        SimpleGenericRelationEnvironment env = (SimpleGenericRelationEnvironment)ienv;
 
         log.trace( "runPlugin() called" );
   
-	env.addRelation( cargo );
+        env.addRelation( cargo );
 
         return cargo;
     }
+
 
     @Override
     public PluginType getPluginType()
@@ -89,6 +91,7 @@ public class SimpleGenericRelation implements IPluggable
         return pluginType;
     }
 
+    
     @Override
     public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
     {

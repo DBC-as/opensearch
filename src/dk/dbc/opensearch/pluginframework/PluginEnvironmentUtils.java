@@ -40,18 +40,17 @@ import org.apache.log4j.Logger;
 
 public final class PluginEnvironmentUtils
 {
-
-
     private static Logger log = Logger.getLogger( PluginEnvironmentUtils.class );
 
+    
     /**
      * Initializes a SimpleRhinoWrapper given a javascript filename and a list of objects used to load into the rhino-scope.
      * 
      */
     public static SimpleRhinoWrapper initializeWrapper( String jsFileName, List< Pair< String, Object > > objectList ) throws PluginException
     {
-
         SimpleRhinoWrapper wrapper = null;
+        
         try 
         {
             wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath(), jsFileName, objectList );

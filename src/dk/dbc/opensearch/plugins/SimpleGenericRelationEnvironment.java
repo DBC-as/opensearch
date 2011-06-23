@@ -67,8 +67,8 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         this.objectRepository = repository;
 
         // Setting the objectlist.
-        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( objectRepository );
-        JSRelationFunctions relationFunctions = new JSRelationFunctions( objectRepository );
+        JSFedoraPIDSearch fedoraPIDSearch = new JSFedoraPIDSearch( this.objectRepository );
+        JSRelationFunctions relationFunctions = new JSRelationFunctions( this.objectRepository );
 
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );
@@ -113,7 +113,6 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
     }
 
 
-
     /**
      * This function will validate the following argumentnames: "javascript" and "entryfunction".
      * All other argumentnames will be silently ignored.
@@ -149,6 +148,4 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 
         log.info( "Validating Arguments - End" );
     }
-
-
 }

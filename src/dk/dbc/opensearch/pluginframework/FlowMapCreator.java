@@ -106,11 +106,11 @@ public class FlowMapCreator
             throw new IllegalStateException( error, fnfe );
         }
 
-        flowMap = new HashMap<String, List<PluginTask>>();
+        flowMap = new HashMap< String, List< PluginTask > >();
     }
 
     //creates the flowmap from the file specified in the path
-    public Map<String, List<PluginTask>> createMap( PluginResolver pluginResolver, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
+    public Map<String, List< PluginTask > > createMap( PluginResolver pluginResolver, IObjectRepository repository ) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, PluginException
     {
         XMLInputFactory infac = XMLInputFactory.newInstance(); 
        //read the stream into the xmlEventReader
@@ -131,7 +131,6 @@ public class FlowMapCreator
             List<PluginTask> taskList = new ArrayList<PluginTask>();
             Map<String, String> argsMap = new HashMap<String, String>();
 
-
             while( eventReader.hasNext() )
             {
                 try
@@ -147,92 +146,92 @@ public class FlowMapCreator
 
                 switch( event.getEventType() )
                 {
-                case XMLStreamConstants.START_ELEMENT:
-                    startElement = event.asStartElement();
+                    case XMLStreamConstants.START_ELEMENT:
+                        startElement = event.asStartElement();
                     
-                    if( startElement.getName().getLocalPart().equals( "workflow" ) )
-                    {
-                        taskList.clear();
-                        format = startElement.getAttributeByName( new QName( "format" )).getValue();
-                        submitter = startElement.getAttributeByName( new QName( "submitter" )).getValue();
-                                  
-                        key = submitter + format;
-                        break;
-                    }
+                        if( startElement.getName().getLocalPart().equals( "workflow" ) )
+                        {
+                            taskList.clear();
+                            format = startElement.getAttributeByName( new QName( "format" )).getValue();
+                            submitter = startElement.getAttributeByName( new QName( "submitter" )).getValue();
 
-                    if( startElement.getName().getLocalPart().equals( "plugin" ) )
-                    {
-                        argsMap.clear();
-                        pluginclass = startElement.getAttributeByName( new QName( "class" )).getValue();
-                        break;
-                    }
+                            key = submitter + format;
+                            break;
+                        }
 
-                    if( startElement.getName().getLocalPart().equals( "args" ) )
-                    {
-                        argsMap.clear();
-                        break;
-                    }
+                        if( startElement.getName().getLocalPart().equals( "plugin" ) )
+                        {
+                            argsMap.clear();
+                            pluginclass = startElement.getAttributeByName( new QName( "class" )).getValue();
+                            break;
+                        }
 
-                    if( startElement.getName().getLocalPart().equals( "arg" ) )
-                    {
-                        name = startElement.getAttributeByName( new QName( "name" )).getValue();
-                        value = startElement.getAttributeByName( new QName( "value" )).getValue();
-                        argsMap.put( name, value );
+                        if( startElement.getName().getLocalPart().equals( "args" ) )
+                        {
+                            argsMap.clear();
+                            break;
+                        }
+
+                        if( startElement.getName().getLocalPart().equals( "arg" ) )
+                        {
+                            name = startElement.getAttributeByName( new QName( "name" )).getValue();
+                            value = startElement.getAttributeByName( new QName( "value" )).getValue();
+                            argsMap.put( name, value );
+                            break;
+                        }
+
                         break;
-                    }
+
+                    case XMLStreamConstants.END_ELEMENT:
+                        endElement = event.asEndElement();
                     
-                    break;
+                        if( endElement.getName().getLocalPart().equals( "plugin" ) )
+                        {
+                            try
+                            {
+                                log.trace( String.format( "Trying to add plugin: %s", pluginclass ) );
+                                IPluggable plugin = pluginResolver.getPlugin( pluginclass );
+                                IPluginEnvironment env = plugin.createEnvironment( repository, argsMap );
+                                taskList.add( new PluginTask( plugin, env ) );
+                            }
+                            catch( InstantiationException ie )
+                            {
+                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                throw ie;
+                            }
+                            catch( IllegalAccessException iae )
+                                {
+                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                throw iae;
+                            }
+                            catch( ClassNotFoundException cnfe )
+                            {
+                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                throw cnfe;
+                            }
+                            catch( InvocationTargetException ite )
+                            {
+                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                throw ite;
+                            }
+                            catch( PluginException pe )
+                                {
+                                log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
+                                throw pe;
+                            }
+                        
+                            break;
+                        }
 
-                case XMLStreamConstants.END_ELEMENT:
-                    endElement = event.asEndElement();
-                    
-                    if( endElement.getName().getLocalPart().equals( "plugin" ) )
-                    {
-			try 
-			{	
-			    log.trace( String.format( "Trying to add plugin: %s", pluginclass ) );
-			    IPluggable plugin = pluginResolver.getPlugin( pluginclass );
-			    IPluginEnvironment env = plugin.createEnvironment( repository, argsMap );
-			    taskList.add( new PluginTask( plugin, env ) );
-			}
-			catch( InstantiationException ie )
-			{
-			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
-			    throw ie;
-			}
-			catch( IllegalAccessException iae )
-		        {
-			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
-			    throw iae;
-			}
-			catch( ClassNotFoundException cnfe )
-	                {
-			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
-			    throw cnfe;
-			}
-			catch( InvocationTargetException ite )
-			{
-			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
-			    throw ite;
-			}
-			catch( PluginException pe )
-		        {
-			    log.fatal( String.format( "An error occured while creating plugin: %s", pluginclass) );
-			    throw pe;
-			}
+                        if( endElement.getName().getLocalPart().equals( "workflow" ) )
+                        {
+                            log.info( "Adding workflow for " + key);
+                            flowMap.put( key, new ArrayList<PluginTask>( taskList ) );
 
-
+                            break;
+                        }
+                        
                         break;
-                    }
-
-                    if( endElement.getName().getLocalPart().equals( "workflow" ) )
-                    {
-                        log.info( "Adding workflow for " + key);
-                        flowMap.put( key, new ArrayList<PluginTask>( taskList ) );
-			
-                        break;            
-                    }
-                    break;
                 }
        
             }
@@ -243,9 +242,11 @@ public class FlowMapCreator
             log.fatal( error, xse );
             throw new IllegalStateException( error, xse );
         }
+
         return flowMap;
     }
 
+    
     private static void validateWorkflowsXMLFile( File xmlPath, File xsdPath ) throws IOException,/* ConfigurationException, */SAXException
     {
         SchemaFactory factory = SchemaFactory.newInstance( "http://www.w3.org/2001/XMLSchema" );
