@@ -31,6 +31,7 @@ import dk.dbc.commons.db.PostgresqlDBConnection;
 import dk.dbc.commons.os.FileHandler;
 import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
+import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.db.Processqueue;
@@ -433,7 +434,11 @@ public class DatadockMain
         IProcessqueue processqueue = new Processqueue( conn );
 
         log.trace( "Initializing plugin resolver" );
-        IObjectRepository repository = new FedoraObjectRepository();
+	String host = FedoraConfig.getHost();
+	String port = FedoraConfig.getPort();
+	String user = FedoraConfig.getUser();
+	String pass = FedoraConfig.getPassPhrase();
+        IObjectRepository repository = new FedoraObjectRepository( host, port, user, pass );
         PluginResolver pluginResolver = new PluginResolver( repository );
         flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
         Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, repository );

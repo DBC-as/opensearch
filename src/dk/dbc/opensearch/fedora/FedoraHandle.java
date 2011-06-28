@@ -26,8 +26,6 @@
 package dk.dbc.opensearch.fedora;
 
 
-import dk.dbc.opensearch.config.FedoraConfig;
-
 import org.fcrepo.client.FedoraClient;
 import org.fcrepo.server.access.FedoraAPIA;
 import org.fcrepo.server.management.FedoraAPIM;
@@ -68,34 +66,6 @@ public class FedoraHandle
     {
         createFedoraClient( host, port, user, pass );
     }
-
-
-    FedoraHandle() throws ObjectRepositoryException
-    {
-        String host;
-        String port;
-        String user;
-        String pass;
-
-        log.debug( "FedoraHandle constructor" );
-
-        try
-        {
-            host = FedoraConfig.getHost();
-            port = FedoraConfig.getPort();
-            user = FedoraConfig.getUser();
-            pass = FedoraConfig.getPassPhrase();
-        }
-        catch( ConfigurationException ex )
-        {
-            String error = String.format( "Failed to obtain configuration values for FedoraHandle");
-            log.error( error );
-            throw new ObjectRepositoryException( error, ex );
-        }
-        
-        createFedoraClient( host, port, user, pass );
-    }
-
 
     private void createFedoraClient( String host, String port, String user, String pass ) throws ObjectRepositoryException
     {

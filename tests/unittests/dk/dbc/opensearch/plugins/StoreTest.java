@@ -70,9 +70,9 @@ public class StoreTest
     @MockClass( realClass = FedoraObjectRepository.class )
     public static class MockFedoraObjectRepository
     {
-        @Mock public void $init()
-        {
-        }
+        @Mock public void $init( String host, String port, String user, String passwd ) 
+	{
+	}
 
         @Mock
         public static boolean hasObject( IObjectIdentifier objectIdentifier )
@@ -92,9 +92,9 @@ public class StoreTest
     @MockClass( realClass = FedoraObjectRepository.class )
     public static class MockFedoraObjectRepositoryMarkDeleted
     {
-        @Mock public void $init()
-        {
-        }
+        @Mock public void $init( String host, String port, String user, String passwd ) 
+	{
+	}
 
         @Mock
         public static boolean hasObject( IObjectIdentifier objectIdentifier )
@@ -111,9 +111,9 @@ public class StoreTest
     @MockClass( realClass = FedoraObjectRepository.class )
     public static class MockFedoraObjectRepositoryMarkDeletedException
     {
-        @Mock public void $init()
-        {
-        }
+        @Mock public void $init( String host, String port, String user, String passwd ) 
+	{
+	}
 
         @Mock
         public static boolean hasObject( IObjectIdentifier objectIdentifier )
@@ -138,9 +138,9 @@ public class StoreTest
     @MockClass( realClass = FedoraObjectRepository.class )
     public static class MockFedoraObjectRepositoryHasObject
     {
-        @Mock public void $init()
-        {
-        }
+        @Mock public void $init( String host, String port, String user, String passwd ) 
+	{
+	}
 
         @Mock
         public static boolean hasObject( IObjectIdentifier objectIdentifier )
@@ -169,9 +169,9 @@ public class StoreTest
     @MockClass( realClass = FedoraObjectRepository.class )
     public static class MockFedoraObjectRepositoryException
     {
-        @Mock public void $init()
-        {
-        }
+        @Mock public void $init( String host, String port, String user, String passwd ) 
+	{
+	}
 
         @Mock 
         public static boolean hasObject( IObjectIdentifier objectIdentifier ) throws ObjectRepositoryException
@@ -248,7 +248,7 @@ public class StoreTest
     public void storeCargoContainerHappyPathTest() throws Exception
     {
         setUpMocks( MockFedoraObjectRepository.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
@@ -267,7 +267,7 @@ public class StoreTest
     public void storeCargoContainerHappyPathDeleteTest() throws Exception
     {
         setUpMocks( MockFedoraObjectRepositoryHasObject.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );        
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
@@ -286,7 +286,7 @@ public class StoreTest
     public void storeCargoContainerHappyPathNoIdentifierTest() throws Exception
     {
          setUpMocks( MockFedoraObjectRepository.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
         //cargo.setIdentifier( null );        
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
@@ -305,7 +305,7 @@ public class StoreTest
     public void testObjectRepositoryException() throws Throwable
     {
         setUpMocks( MockFedoraObjectRepositoryException.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
 
@@ -328,7 +328,7 @@ public class StoreTest
     public void storeCargoContainerMarkDeleted() throws Exception
     {
         setUpMocks( MockSimpleRhinoWrapper.class, MockFedoraObjectRepositoryMarkDeleted.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
@@ -349,7 +349,7 @@ public class StoreTest
     public void storeCargoContainerMarkDeletedException() throws Exception
     {
         setUpMocks( MockSimpleRhinoWrapper.class, MockFedoraObjectRepositoryMarkDeletedException.class );
-        FedoraObjectRepository fedObjRep = new FedoraObjectRepository();
+        FedoraObjectRepository fedObjRep = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
         cargo.setIdentifier( objectIdentifier );
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );

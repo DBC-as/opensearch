@@ -33,6 +33,7 @@ import dk.dbc.opensearch.compass.CompassFactory;
 import dk.dbc.opensearch.compass.PhraseMap;
 import dk.dbc.opensearch.config.CompassConfig;
 import dk.dbc.opensearch.config.DataBaseConfig;
+import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.PtiConfig;
 import dk.dbc.opensearch.db.IProcessqueue;
 import dk.dbc.opensearch.db.Processqueue;
@@ -185,7 +186,11 @@ public class PTIMain
 	    
             IDBConnection dbConnection = new PostgresqlDBConnection( userId, passwd, url, driver );
             IProcessqueue processqueue = new Processqueue( dbConnection );
-            IObjectRepository repository = new FedoraObjectRepository();
+	    String host = FedoraConfig.getHost();
+	    String port = FedoraConfig.getPort();
+	    String user = FedoraConfig.getUser();
+	    String pass = FedoraConfig.getPassPhrase();
+	    IObjectRepository repository = new FedoraObjectRepository( host, port, user, pass );
             PhraseMap phraseMap = PhraseMap.instance(CompassConfig.getXSEMPath(), CompassConfig.getModifiedXSEMPath());
             CompassFactory compassFactory = new CompassFactory();
             Compass compass = compassFactory.getCompass();

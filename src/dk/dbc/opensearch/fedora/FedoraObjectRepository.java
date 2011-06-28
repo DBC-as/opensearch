@@ -95,17 +95,6 @@ public class FedoraObjectRepository implements IObjectRepository
      * underlying objectrepository. If this fails in some way, an
      * ObjectRepositoryException is thrown.
      */
-    public FedoraObjectRepository() throws ObjectRepositoryException
-    {
-        this.fedoraHandle = new FedoraHandle();
-    }
-
-
-    /**
-     * Initializes the FedoraObjectRepository; tries to connect to the
-     * underlying objectrepository. If this fails in some way, an
-     * ObjectRepositoryException is thrown.
-     */
     public FedoraObjectRepository( String host, String port, String user, String pass ) throws ObjectRepositoryException
     {
         this.fedoraHandle = new FedoraHandle( host, port, user, pass );

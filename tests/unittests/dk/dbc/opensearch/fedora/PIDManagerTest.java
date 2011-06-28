@@ -41,10 +41,7 @@ public class PIDManagerTest
     @MockClass( realClass = FedoraHandle.class )
     public static class MockFedoraHandle
     {
-        @Mock
-        public MockFedoraHandle()
-        {
-        }
+        @Mock public void $init( String host, String port, String user, String passwd ) {}
 
         @Mock
         public String[] getNextPID( int maxPids, String prefix )
@@ -76,7 +73,7 @@ public class PIDManagerTest
     @Test ( expected=IllegalStateException.class )
     public void testPrefixMustBeSpecified() throws ObjectRepositoryException, ServiceException, ConfigurationException, MalformedURLException, IllegalStateException, IOException
     {
-        FedoraHandle fedoraHandle = new FedoraHandle();
+        FedoraHandle fedoraHandle = new FedoraHandle( "Host", "Port", "User", "Password" );
         String[] pid = fedoraHandle.getNextPID( 1,  "" );
     }
 
@@ -84,7 +81,7 @@ public class PIDManagerTest
     @Test //( expected=IllegalStateException.class )
     public void testFedoraConnectionMustBePresent() throws ObjectRepositoryException, ServiceException, ConfigurationException, MalformedURLException, IllegalStateException, IOException
     {
-        FedoraHandle fedoraHandle = new FedoraHandle();
+        FedoraHandle fedoraHandle = new FedoraHandle( "Host", "Port", "User", "Password" );
         fedoraHandle.getNextPID( 1,  "a" );
     }
 }

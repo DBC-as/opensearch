@@ -33,6 +33,7 @@ import dk.dbc.commons.db.PostgresqlDBConnection;
 
 import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
+import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
@@ -76,6 +77,7 @@ public class DatadockMainTest
 
     @Mocked DatadockConfig configClass;
     @Mocked DataBaseConfig dbConfigClass;
+    @Mocked FedoraConfig fedoraClass;
     @Mocked IDBConnection dbConn;
     
 //    @BeforeClass
@@ -156,7 +158,7 @@ public class DatadockMainTest
 
     @MockClass( realClass=FedoraObjectRepository.class )
     public static class MockRepository{
-        @Mock public void $init(){}
+        @Mock public void $init( String host, String port, String user, String passwd ){}
     }
 
     @MockClass( realClass=FlowMapCreator.class )

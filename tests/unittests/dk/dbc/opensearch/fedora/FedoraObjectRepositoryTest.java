@@ -84,10 +84,13 @@ public class FedoraObjectRepositoryTest
     @MockClass( realClass = FedoraHandle.class )
     public static class MockFedoraHandle
     {
-        @Mock
-        public MockFedoraHandle()
-        {
-        }
+
+        @Mock public void $init( String host, String port, String user, String passwd ) {}
+
+        // @Mock
+        // public MockFedoraHandle( String host, String port, String user, String passwd )
+        // {
+        // }
 
 
         @Mock
@@ -274,7 +277,7 @@ public class FedoraObjectRepositoryTest
     public void setUp() throws Exception
     {
         setUpMocks( MockFedoraHandle.class );
-        instance = new FedoraObjectRepository();
+        instance = new FedoraObjectRepository( "Host", "Port", "User", "Password" );
     }
 
 
