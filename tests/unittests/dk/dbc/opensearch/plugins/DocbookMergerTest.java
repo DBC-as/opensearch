@@ -91,7 +91,7 @@ public class DocbookMergerTest {
 	// I am ignoring this test since this is not the intended use of a plugin in PTI
         DocbookMerger instance = new DocbookMerger( mockIObjectRepository );
 	Map< String, String > emptyMap = new HashMap< String, String >();
-	IPluginEnvironment env = instance.createEnvironment( mockIObjectRepository, emptyMap );
+	IPluginEnvironment env = instance.createEnvironment( mockIObjectRepository, emptyMap, null );
         CargoContainer result = instance.runPlugin( env, cargo );
         XMLUnit.compareXML( happyPathData, new String( result.getCargoObject( DataStreamType.OriginalData ).getBytes() ) );
     }

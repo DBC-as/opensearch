@@ -80,7 +80,7 @@ public class FlowMapCreatorTest
 	}
 
 	@Override
-        public IPluginEnvironment createEnvironment( IObjectRepository repos , Map< String, String > args )
+        public IPluginEnvironment createEnvironment( IObjectRepository repos , Map< String, String > args, String scriptPath )
 	{
 	    return mockIPluginEnvironment;
 	}
@@ -144,7 +144,7 @@ public class FlowMapCreatorTest
         Mockit.setUpMocks( MockPluginResolver.class );
 
         fmc = new FlowMapCreator( new File( path ), new File( xsdPath ) );
-        flowMap = fmc.createMap( new PluginResolver( repository ), repository );
+        flowMap = fmc.createMap( new PluginResolver( repository ), repository, null );
         assertTrue( validateMap1( flowMap ) );
     }
 

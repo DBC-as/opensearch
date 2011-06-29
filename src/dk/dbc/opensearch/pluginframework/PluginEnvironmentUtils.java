@@ -28,7 +28,6 @@ package dk.dbc.opensearch.pluginframework;
 
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
 import dk.dbc.commons.types.Pair;
-import dk.dbc.opensearch.config.FileSystemConfig;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -47,25 +46,21 @@ public final class PluginEnvironmentUtils
      * Initializes a SimpleRhinoWrapper given a javascript filename and a list of objects used to load into the rhino-scope.
      * 
      */
-    public static SimpleRhinoWrapper initializeWrapper( String jsFileName, List< Pair< String, Object > > objectList ) throws PluginException
+    public static SimpleRhinoWrapper initializeWrapper( String jsFileName, 
+							List< Pair< String, Object > > objectList, 
+							String scriptPath ) throws PluginException
     {
         SimpleRhinoWrapper wrapper = null;
         
         try 
         {
-            wrapper = new SimpleRhinoWrapper( FileSystemConfig.getScriptPath(), jsFileName, objectList );
+            wrapper = new SimpleRhinoWrapper( scriptPath, jsFileName, objectList );
         }
         catch( FileNotFoundException fnfe )
         {
             String errorMsg = String.format( "Could not find the file: %s", jsFileName );
             log.error( errorMsg, fnfe );
             throw new PluginException( errorMsg, fnfe );
-        }
-        catch( ConfigurationException ce )
-        {
-            String errorMsg = String.format( "A ConfigurationExcpetion was cought while trying to construct the path+filename for javascriptfile: %s", jsFileName );
-            log.fatal( errorMsg, ce );
-            throw new PluginException( errorMsg, ce );
         }
 
         log.trace( "Checking wrapper (inner)" );

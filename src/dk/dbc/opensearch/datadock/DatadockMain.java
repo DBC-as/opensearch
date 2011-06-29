@@ -31,6 +31,7 @@ import dk.dbc.commons.db.PostgresqlDBConnection;
 import dk.dbc.commons.os.FileHandler;
 import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
+import dk.dbc.opensearch.config.FileSystemConfig;
 import dk.dbc.opensearch.config.FedoraConfig;
 import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.db.IProcessqueue;
@@ -116,6 +117,7 @@ public class DatadockMain
     private static HarvestType defaultHarvestType = HarvestType.FileHarvest;
     static java.util.Date startTime = null;
     private boolean terminateOnZeroSubmitted = false;
+    private final int maxToHarvest;
 
     
     public DatadockMain()  throws ConfigurationException
@@ -140,6 +142,8 @@ public class DatadockMain
         }
         log.debug(  String.format( "Starting Datadock with pluginFlowXmlPath = %s", pluginFlowXmlPath ) );
         log.debug(  String.format( "Starting Datadock with pluginFlowXsdPath = %s", pluginFlowXsdPath) );
+
+	maxToHarvest = HarvesterConfig.getMaxToHarvest();
     }
 
 
@@ -206,7 +210,7 @@ public class DatadockMain
             {
                 log.trace( "DatadockMain calling datadockManager update" );
                 long timer = System.currentTimeMillis();
-                int jobsSubmitted = datadockManager.update();
+                int jobsSubmitted = datadockManager.update( this.maxToHarvest );
                 log.debug( String.format( "%s jobs submitted according to the DatadockManager", jobsSubmitted ) );
                 timer = System.currentTimeMillis() - timer;
                 mainJobsSubmitted += jobsSubmitted;
@@ -440,8 +444,9 @@ public class DatadockMain
 	String pass = FedoraConfig.getPassPhrase();
         IObjectRepository repository = new FedoraObjectRepository( host, port, user, pass );
         PluginResolver pluginResolver = new PluginResolver( repository );
+	String javascriptPath = FileSystemConfig.getScriptPath();
         flowMapCreator = new FlowMapCreator( this.pluginFlowXmlPath, this.pluginFlowXsdPath );
-        Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, repository );
+        Map<String, List<PluginTask>> flowMap = flowMapCreator.createMap( pluginResolver, repository, javascriptPath );
 
         log.trace( "Initializing harvester" );
         IHarvest harvester = this.initializeHarvester();

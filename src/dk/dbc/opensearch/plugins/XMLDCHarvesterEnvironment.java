@@ -55,16 +55,18 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
     private static final String entryFuncStr  = "entryfunction";
     private final String entryFunc;
 
-    public XMLDCHarvesterEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
+    public XMLDCHarvesterEnvironment( IObjectRepository repository, 
+				      Map<String, String> args,
+				      String scriptPath ) throws PluginException
     {
         log.trace( "Constructor called" );
 
         List<Pair<String, Object>> objectList = new ArrayList<Pair<String, Object>>();
         objectList.add( new Pair<String, Object>( "Log", log ) );
 
-        this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
+        this.validateArguments( args, objectList, scriptPath ); // throws PluginException in case of trouble!
 
-        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( XMLDCHarvesterEnvironment.javascriptStr ), objectList );
+        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( XMLDCHarvesterEnvironment.javascriptStr ), objectList, scriptPath );
         this.entryFunc = args.get( XMLDCHarvesterEnvironment.entryFuncStr );
     }
 
@@ -120,7 +122,9 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, 
+				    List< Pair< String, Object > > objectList,
+				    String scriptPath ) throws PluginException
     {
         log.info( "Validating Arguments - Begin" );
 
@@ -135,7 +139,7 @@ public class XMLDCHarvesterEnvironment implements IPluginEnvironment
         }
 
         // Validating that javascript can be used in the SimpleRhinoWrapper:
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList, scriptPath );
 
         // Validating function entries:
         if( !tmpWrapper.validateJavascriptFunction( args.get( XMLDCHarvesterEnvironment.entryFuncStr ) ) )

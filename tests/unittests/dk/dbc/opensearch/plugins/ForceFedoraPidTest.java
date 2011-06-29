@@ -102,7 +102,7 @@ public class ForceFedoraPidTest {
                    databytes );
 
         //      cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
-	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap );
+	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap, null );
         returnCargo = forcePlugin.runPlugin( env, cargo );
      
         
@@ -127,7 +127,7 @@ public class ForceFedoraPidTest {
                    databytes );
         //   cargo.setIndexingAlias( indexAlias, streamTypeOriginal );
 
-	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap );
+	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap, null );
         forcePlugin.runPlugin( env, cargo );
     }
 

@@ -126,7 +126,8 @@ public class DatadockManagerTest
             mockFlowMap.get( anyString );returns( true );
         }};
 
-        int update = datadockManager.update();
+	int maxToHarvest = 100;
+        int update = datadockManager.update( maxToHarvest );
         datadockManager.shutdown();
 
         assertEquals( 1, update );

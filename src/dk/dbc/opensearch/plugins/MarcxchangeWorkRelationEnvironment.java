@@ -71,7 +71,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
 
 
 
-    public MarcxchangeWorkRelationEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
+    public MarcxchangeWorkRelationEnvironment( IObjectRepository repository, 
+					       Map<String, String> args,
+					       String scriptPath ) throws PluginException
     {
         this.objectRepository = repository;
 
@@ -79,13 +81,13 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
         List< Pair< String, Object > > objectList = new ArrayList< Pair< String, Object > >();
         objectList.add( new Pair< String, Object >( "Log", log ) );
 
-	this.validateArguments( args, objectList ); // throws PluginException in case of trouble!
+	this.validateArguments( args, objectList, scriptPath ); // throws PluginException in case of trouble!
 	
 	this.searchFunc       = args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr );
 	this.matchFunc        = args.get( MarcxchangeWorkRelationEnvironment.matchFuncStr );
 	this.createObjectFunc = args.get( MarcxchangeWorkRelationEnvironment.createObjectFuncStr );
 
-	this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ), objectList );
+	this.rhinoWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( MarcxchangeWorkRelationEnvironment.javascriptStr ), objectList, scriptPath );
     }
 
 
@@ -416,7 +418,9 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
      * This function will validate the following arguments:
      * "javascript", "searchfunction", "matchfunction" and "createobjectfunction".
      */
-    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, 
+				    List< Pair< String, Object > > objectList,
+				    String scriptPath ) throws PluginException
     {
         log.info( "Validating Arguments - Begin" );
 
@@ -438,7 +442,7 @@ public class MarcxchangeWorkRelationEnvironment implements IPluginEnvironment
             throw new PluginException( String.format( "Could not find argument: %s", createObjectFuncStr ) );
         }
 
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList );
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( javascriptStr ), objectList, scriptPath );
 
         // Validate function entries:
         if( !tmpWrapper.validateJavascriptFunction( args.get( MarcxchangeWorkRelationEnvironment.searchFuncStr ) ) )

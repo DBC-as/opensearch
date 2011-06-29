@@ -51,7 +51,7 @@ public class TestPlugin implements IPluggable
     }
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repos, Map<String, String> argsMap ) throws PluginException
+    public IPluginEnvironment createEnvironment( IObjectRepository repos, Map<String, String> argsMap, String scriptPath ) throws PluginException
     {
 	return null;
     }

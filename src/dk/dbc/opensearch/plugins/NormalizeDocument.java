@@ -320,8 +320,9 @@ public class NormalizeDocument implements IPluggable
     }
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
     {
+	// scriptPath is unused.
     	return new NormalizeDocumentEnvironment( repository, args );
     }
 

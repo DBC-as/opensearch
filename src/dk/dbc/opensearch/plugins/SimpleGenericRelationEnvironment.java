@@ -62,7 +62,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
 
     /**
      */
-    public SimpleGenericRelationEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
+    public SimpleGenericRelationEnvironment( IObjectRepository repository, Map<String, String> args, String scriptPath ) throws PluginException
     {
         this.objectRepository = repository;
 
@@ -75,11 +75,11 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         objectList.add( new Pair<String, Object>( "scriptClass", relationFunctions ) );
         objectList.add( new Pair<String, Object>( "FedoraPIDSearch", fedoraPIDSearch ) );
 
-        this.validateArguments( args, objectList );
+        this.validateArguments( args, objectList, scriptPath );
 
         this.entryPointFunc = args.get( SimpleGenericRelationEnvironment.entryFuncStr );
 
-        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList );
+        this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList, scriptPath );
 
         log.trace( "Checking wrapper (outer)" );
         if( jsWrapper == null )
@@ -123,7 +123,9 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, 
+				    List< Pair< String, Object > > objectList, 
+				    String scriptPath ) throws PluginException
     {
         log.info( "Validating Arguments - Begin" );
 
@@ -138,7 +140,7 @@ public class SimpleGenericRelationEnvironment implements IPluginEnvironment
         }
 
         // Validating that javascript can be used in the SimpleRhinoWrapper:
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList );
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( SimpleGenericRelationEnvironment.javascriptStr ), objectList, scriptPath );
 
         // Validating function entries:
         if( !tmpWrapper.validateJavascriptFunction( args.get( SimpleGenericRelationEnvironment.entryFuncStr ) ) )

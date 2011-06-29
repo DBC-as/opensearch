@@ -27,7 +27,6 @@ package dk.dbc.opensearch.datadock;
 
 
 import dk.dbc.commons.types.Pair;
-import dk.dbc.opensearch.config.HarvesterConfig;
 import dk.dbc.opensearch.harvest.HarvesterIOException;
 import dk.dbc.opensearch.harvest.HarvesterInvalidStatusChangeException;
 import dk.dbc.opensearch.harvest.IHarvest;
@@ -79,7 +78,8 @@ public final class DatadockManager
      * @throws SAXException
      * 
      */
-    public DatadockManager( DatadockPool pool, IHarvest harvester, Map< String, List< PluginTask > > flowMap ) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, HarvesterIOException
+    public DatadockManager( DatadockPool pool, IHarvest harvester, Map< String, List< PluginTask > > flowMap ) 
+	throws ConfigurationException, ParserConfigurationException, SAXException, IOException, HarvesterIOException
     {
         log.trace( "entering DatadockManager" );
 
@@ -111,7 +111,8 @@ public final class DatadockManager
      * @throws HarvesterInvalidStatusChangeException
      * @throws InterruptedException
      */
-    public int update()throws HarvesterIOException, HarvesterInvalidStatusChangeException, InterruptedException, ConfigurationException
+    public int update( int maxToHarvest )
+	throws HarvesterIOException, HarvesterInvalidStatusChangeException, InterruptedException, ConfigurationException
     {
         log.trace( "DatadockManager update called" );
 
@@ -120,7 +121,7 @@ public final class DatadockManager
         if( registeredJobs.isEmpty() )
         {
             log.trace( "no more jobs. requesting new jobs from the harvester" );
-            registeredJobs = this.harvester.getJobs( HarvesterConfig.getMaxToHarvest() );
+            registeredJobs = this.harvester.getJobs( maxToHarvest );
         }
 
         log.debug( "DatadockManager.update: Size of registeredJobs: " + registeredJobs.size() );

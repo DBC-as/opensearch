@@ -107,9 +107,9 @@ public class MarcxchangeWorkRelation implements IPluggable
     }
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
     {
-    	return new MarcxchangeWorkRelationEnvironment( repository, args );
+    	return new MarcxchangeWorkRelationEnvironment( repository, args, scriptPath );
     }
 
 }

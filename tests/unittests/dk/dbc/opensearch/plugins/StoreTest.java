@@ -253,7 +253,7 @@ public class StoreTest
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
 
-	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
 	returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
 
@@ -272,7 +272,7 @@ public class StoreTest
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
 
-	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
 	returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
     }
@@ -291,7 +291,7 @@ public class StoreTest
         CargoContainer returnCargo;
         storePlugin = new Store( fedObjRep );
 
-	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
 	returnCargo = storePlugin.runPlugin( env, cargo );
        
         assertEquals( returnCargo.getIdentifierAsString(), "" );
@@ -311,7 +311,7 @@ public class StoreTest
 
         try
         {
-	    IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap );
+	    IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, mockArgsMap, null );
 	    returnCargo = storePlugin.runPlugin( env, cargo );
         }
         catch( PluginException pe )
@@ -336,7 +336,7 @@ public class StoreTest
         args.put("javascript", "test");
         args.put("entryfunction", "test");
 
-        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args );
+        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args, null );
         returnCargo = storePlugin.runPlugin( env, cargo );
         assertEquals( returnCargo.getIdentifierAsString(), cargo.getIdentifierAsString() );
     }
@@ -357,7 +357,7 @@ public class StoreTest
         args.put("javascript", "test");
         args.put("entryfunction", "test");
 
-        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args );
+        IPluginEnvironment env = storePlugin.createEnvironment( fedObjRep, args, null );
         returnCargo = storePlugin.runPlugin( env, cargo );
     }
 }

@@ -175,8 +175,9 @@ public class PurgeRelations implements IPluggable
 
 
     @Override
-    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args ) throws PluginException
+    public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
     {
+	// stringPath is unused.
     	return new PurgeRelationsEnvironment( repository, args );
     }
 }

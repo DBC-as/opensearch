@@ -61,7 +61,8 @@ public class StoreEnvironment implements IPluginEnvironment
     private final String entryPointFunc;
     private final String javascript;
 
-    public StoreEnvironment( IObjectRepository repository, Map<String, String> args ) throws PluginException
+    public StoreEnvironment( IObjectRepository repository, Map<String, String> args, 
+			     String scriptPath ) throws PluginException
     {
         this.objectRepository = repository;
 
@@ -72,8 +73,8 @@ public class StoreEnvironment implements IPluginEnvironment
         this.javascript = args.get( StoreEnvironment.javascriptStr );
         if( javascript != null && javascript.length() > 0 )
         {
-            this.validateArguments( args, objectList );
-            this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( javascript, objectList );
+            this.validateArguments( args, objectList, scriptPath );
+            this.jsWrapper = PluginEnvironmentUtils.initializeWrapper( javascript, objectList, scriptPath );
         }
         else
         {
@@ -209,7 +210,8 @@ public class StoreEnvironment implements IPluginEnvironment
      *
      * @throws PluginException if an argumentname is not found in the argumentmap or if one of the arguments cannot be used to instantiate the pluginenvironment.
      */
-    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList ) throws PluginException
+    private void validateArguments( Map< String, String > args, List< Pair< String, Object > > objectList,
+				    String scriptPath ) throws PluginException
     {
         log.info( "Validating Arguments - Begin" );
 
@@ -224,7 +226,7 @@ public class StoreEnvironment implements IPluginEnvironment
         }
 
         // Validating that javascript can be used in the SimpleRhinoWrapper:
-        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( StoreEnvironment.javascriptStr ), objectList );
+        SimpleRhinoWrapper tmpWrapper = PluginEnvironmentUtils.initializeWrapper( args.get( StoreEnvironment.javascriptStr ), objectList, scriptPath );
 
         // Validating function entries:
         if( !tmpWrapper.validateJavascriptFunction( args.get( StoreEnvironment.entryFuncStr ) ) )

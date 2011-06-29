@@ -34,6 +34,7 @@ import dk.dbc.commons.db.PostgresqlDBConnection;
 import dk.dbc.opensearch.config.DataBaseConfig;
 import dk.dbc.opensearch.config.DatadockConfig;
 import dk.dbc.opensearch.config.FedoraConfig;
+import dk.dbc.opensearch.config.FileSystemConfig;
 import dk.dbc.opensearch.db.Processqueue;
 import dk.dbc.opensearch.fedora.FedoraObjectRepository;
 import dk.dbc.opensearch.fedora.IObjectRepository;
@@ -78,6 +79,7 @@ public class DatadockMainTest
     @Mocked DatadockConfig configClass;
     @Mocked DataBaseConfig dbConfigClass;
     @Mocked FedoraConfig fedoraClass;
+    @Mocked FileSystemConfig FSClass;
     @Mocked IDBConnection dbConn;
     
 //    @BeforeClass
@@ -148,6 +150,7 @@ public class DatadockMainTest
         Deencapsulation.setField( datadock, "corePoolSize", 1 );
         Deencapsulation.setField( datadock, "maxPoolSize", 1);
         Deencapsulation.setField( datadock, "keepAliveTime", 1);
+        Deencapsulation.setField( datadock, "maxToHarvest", 1);
         Deencapsulation.invoke( datadock, "initializeServices" );
     }
 
@@ -165,7 +168,7 @@ public class DatadockMainTest
     public static class MockMapCreator{
         @Mock public void $init( File a, File b ){}
         @Mock
-        public Map<String, List<PluginTask>> createMap( PluginResolver a, IObjectRepository b )
+        public Map<String, List<PluginTask>> createMap( PluginResolver a, IObjectRepository b, String c )
         {
             return new HashMap<String,List<PluginTask>>();
         }
