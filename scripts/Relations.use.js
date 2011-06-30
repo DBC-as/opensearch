@@ -586,25 +586,25 @@ var Relations = function() {
 
     var child;
 
-    for each(child in manifestationXML.dkabm::record.dc::subject(!@xsi::type == "dkdcplus:genre")) {
-
-      var subject = String(child);
-
-      Log.info( "Subject: " + subject );
-      Log.info( "pid: " + pid );
-
-      var results = FedoraPIDSearch.title( subject );
-
-      for ( var i = 0; i < results.length; ++i ) {
-        var result = results[i];
-
-        Log.info( "result: " + result );
-
-        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/)) {
-          DbcAddiRelations.hasSubjectDescription( result, pid );
-        }
-      }
-
+    for each(child in manifestationXML.dkabm::record.dc::subject) {
+      if (!child.@xsi::type.match("dkdcplus:genre")) {
+	      var subject = String(child);
+	
+	      Log.info( "Subject: " + subject );
+	      Log.info( "pid: " + pid );
+	
+	      var results = FedoraPIDSearch.title( subject );
+	
+	      for ( var i = 0; i < results.length; ++i ) {
+	        var result = results[i];
+	
+	        Log.info( "result: " + result );
+	
+	        if (String(result).match(/150017:.*/) || String(result).match(/150012:.*/)) {
+	          DbcAddiRelations.hasSubjectDescription( result, pid );
+	        }
+	      }
+			}
     }
 
     Log.info ("End hasSubjectDescription" );
