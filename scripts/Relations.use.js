@@ -586,7 +586,7 @@ var Relations = function() {
 
     var child;
 
-    for each(child in manifestationXML.dkabm::record.dc::subject) {
+    for each(child in manifestationXML.dkabm::record.dc::subject(!@xsi::type == "dkdcplus:genre")) {
 
       var subject = String(child);
 
