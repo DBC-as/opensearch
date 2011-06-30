@@ -560,7 +560,7 @@
         />
     <xml-property
         name="facet.subject"
-        xpath="/ting:container/dkabm:record/dc:subject"
+        xpath="/ting:container/dkabm:record/dc:subject[not(@xsi:type='dkdcplus:genre')]"
         index="un_tokenized"
         value-converter="facet"
         />
@@ -1024,7 +1024,7 @@
         />
     <xml-property
         name="facet.subject"
-        xpath="/ting:container/dkabm:record/dc:subject[not(@xsi:type='dkdcplus:DK5' or @xsi:type='dkdcplus:DK5-Text')]"
+        xpath="/ting:container/dkabm:record/dc:subject[not(@xsi:type='dkdcplus:DK5' or @xsi:type='dkdcplus:DK5-Text' or @xsi:type='dkdcplus:genre')]"
         index="un_tokenized"
         value-converter="facet"
         />
