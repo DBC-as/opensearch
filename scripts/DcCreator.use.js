@@ -48,7 +48,7 @@ var DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dc::subject) {
-      if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
+      if (!String(child.@xsi::type).match("dkdcplus:DK5") && !String(child.@xsi::type).match("dkdcplus:genre")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }
@@ -161,7 +161,7 @@ var DcCreator = function(){
     var child;
 
     for each (child in originalXml.dkabm::record.dc::subject) {
-      if (!String(child.@xsi::type).match("dkdcplus:DK5")) {
+      if (!String(child.@xsi::type).match("dkdcplus:DK5")  && !String(child.@xsi::type).match("dkdcplus:genre")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "subject", dc );
       }
     }
