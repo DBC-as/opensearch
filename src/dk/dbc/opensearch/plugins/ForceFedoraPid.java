@@ -29,7 +29,6 @@ import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.HashMap;
@@ -50,13 +49,6 @@ public class ForceFedoraPid implements IPluggable
     {
 	// Map< String, String > tmpMap = new HashMap< String, String >();
 	// env = (ForceFedoraPidEnvironment)this.createEnvironment( repository, tmpMap );
-    }
-
-
-    @Override
-    public PluginType getPluginType()
-    {
-        return PluginType.ANNOTATE;
     }
 
 

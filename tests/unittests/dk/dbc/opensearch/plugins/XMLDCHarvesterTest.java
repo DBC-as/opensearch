@@ -28,7 +28,6 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.commons.types.Pair;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.commons.javascript.SimpleRhinoWrapper;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.types.CargoContainer;
@@ -178,18 +177,4 @@ public class XMLDCHarvesterTest
         dcPlugin.runPlugin( wrongEnvInstance, mockCargo );
     }
 
-    /**
-     * test that the plugin has the right type
-     */
-    @Test
-    public void testPluginType() throws Exception
-    {        
-        dcPlugin = new XMLDCHarvester( mockRepository );
-        assertEquals( PluginType.HARVEST, dcPlugin.getPluginType() );
-
-    }
-    
- 
-
-  
 }

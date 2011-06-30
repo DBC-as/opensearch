@@ -29,7 +29,6 @@ import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.HashMap;
@@ -45,7 +44,6 @@ public class SimpleGenericRelation implements IPluggable
 {
     private static Logger log = Logger.getLogger( SimpleGenericRelation.class );
 
-    private PluginType pluginType = PluginType.RELATION;
 
     /**
      * Constructor for the SimpleGenericRelation plugin.
@@ -85,13 +83,6 @@ public class SimpleGenericRelation implements IPluggable
     }
 
 
-    @Override
-    public PluginType getPluginType()
-    {
-        return pluginType;
-    }
-
-    
     @Override
     public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException
     {

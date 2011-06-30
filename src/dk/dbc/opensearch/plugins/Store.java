@@ -26,7 +26,6 @@ import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.HashMap;
@@ -41,8 +40,6 @@ import org.apache.log4j.Logger;
 public class Store implements IPluggable
 {
     private static Logger log = Logger.getLogger( Store.class );
-
-    private PluginType pluginType = PluginType.STORE;
 
     StoreEnvironment env = null;
 
@@ -78,12 +75,6 @@ public class Store implements IPluggable
 	strlock.unlock( pid );
 
 	return returnCC;
-    }
-
-    @Override
-    public PluginType getPluginType()
-    {
-        return pluginType;
     }
 
     @Override

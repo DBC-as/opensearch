@@ -38,7 +38,6 @@ import dk.dbc.opensearch.harvest.IHarvest;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
 import dk.dbc.opensearch.pluginframework.PluginResolver;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.pluginframework.PluginTask;
 import dk.dbc.opensearch.plugins.ForceFedoraPid;
 import dk.dbc.opensearch.plugins.SimpleGenericRelation;
@@ -163,12 +162,6 @@ public class DatadockThreadTest
     public static class MockDBHarvest
     {
         @Mock
-        public PluginType getPluginType()
-        {
-            return PluginType.HARVEST;
-        }
-
-        @Mock
 	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
             return mockCC;
@@ -179,12 +172,6 @@ public class DatadockThreadTest
     public static class MockStore
     {
         @Mock
-        public PluginType getPluginType()
-        {
-            return PluginType.STORE;
-        }
-
-        @Mock
 	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
             return mockCC;
@@ -194,12 +181,6 @@ public class DatadockThreadTest
     @MockClass( realClass = Store.class )
     public static class MockStoreIsDeleteRecord
     {
-        @Mock
-        public PluginType getPluginType()
-        {
-            return PluginType.STORE;
-        }
-
         @Mock
 	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
@@ -212,12 +193,6 @@ public class DatadockThreadTest
     public static class MockRelation
     {
         @Mock
-        public PluginType getPluginType()
-        {
-            return PluginType.RELATION;
-        }
-
-        @Mock
 	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {
             return mockCC;
@@ -227,12 +202,6 @@ public class DatadockThreadTest
     @MockClass( realClass = ForceFedoraPid.class )
     public static class NullReturningPlugin
     {
-        @Mock
-        public PluginType getPluginType()
-        {
-            return PluginType.ANNOTATE;
-        }
-
         @Mock
 	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
         {

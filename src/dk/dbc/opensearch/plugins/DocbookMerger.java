@@ -23,7 +23,6 @@ import dk.dbc.opensearch.helpers.OpensearchNamespaceContext;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.CargoObject;
 import dk.dbc.opensearch.types.DataStreamType;
@@ -53,7 +52,6 @@ public class DocbookMerger implements IPluggable
 {
 
     private static Logger log = Logger.getLogger( DocbookMerger.class );
-    private PluginType pluginType = PluginType.PROCESS;
 
     private NamespaceContext nsc;
 
@@ -198,13 +196,6 @@ public class DocbookMerger implements IPluggable
 
         log.trace( String.format( "New xml data: %s", new String( cargo.getCargoObject( orig.getDataStreamType() ).getBytes() ) ) );
         return cargo;
-    }
-
-
-    @Override
-    public PluginType getPluginType()
-    {
-        return this.pluginType;
     }
 
 

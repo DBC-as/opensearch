@@ -77,17 +77,6 @@ public interface IPluggable
     public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo ) throws PluginException;
 
     /**
-     * getPluginType returns the - at compile time given - type of the
-     * task the plugin is constructed to handle. The plugin type is used
-     * by the thread handling to decide which type of plugin to call. It
-     * is a private variable of the plugin classes.
-     * 
-     * @return a PluginType defining containing the plugin
-     */
-    public PluginType getPluginType();
-
-
-    /**
      * Creates an environment for the plugin.
      * The same plugin-instance can have several different environments.
      * The environments are given to the plugin-instance at runtime.

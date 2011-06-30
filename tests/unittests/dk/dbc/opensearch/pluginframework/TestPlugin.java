@@ -22,7 +22,6 @@ along with opensearch.  If not, see <http://www.gnu.org/licenses/>.
 
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluggable;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.io.InputStream;
@@ -37,12 +36,6 @@ public class TestPlugin implements IPluggable
 {
 
     public TestPlugin( String script, IObjectRepository repository ){}
-
-    @Override
-    public PluginType getPluginType()
-    {
-        return PluginType.ANNOTATE;
-    }
 
     @Override
     public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo ) throws PluginException

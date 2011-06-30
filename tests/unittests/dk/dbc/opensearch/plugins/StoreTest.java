@@ -36,7 +36,6 @@ import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.IObjectIdentifier;
 import dk.dbc.opensearch.types.DataStreamType;
@@ -59,7 +58,6 @@ public class StoreTest
 {
 
     Store storePlugin;
-    PluginType PT = PluginType.STORE;
     CargoContainer cargo = new CargoContainer();
     String testString = "testStringUsedToGenerateBytes";
     byte[] dataBytes = testString.getBytes();
@@ -229,16 +227,6 @@ public class StoreTest
         tearDownMocks();
     }
 
-    /**
-     *
-     */
-    @Test
-    public void getPluginTypeTest() throws Exception
-    {
-        storePlugin = new Store( mockedRepository );
-        assertTrue( PT == storePlugin.getPluginType() );
-    }
- 
     /**
      * testing the path through the plugin where there is no object in the
      * repository with the same identifier

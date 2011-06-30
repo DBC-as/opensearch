@@ -30,7 +30,6 @@ import dk.dbc.opensearch.fedora.PID;
 import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.DataStreamType;
 
@@ -129,15 +128,6 @@ public class ForceFedoraPidTest {
 
 	IPluginEnvironment env = forcePlugin.createEnvironment( mockIObjectRepository, mockArgsMap, null );
         forcePlugin.runPlugin( env, cargo );
-    }
-
-    /**
-     * Tests that the getPluginType method returns the correct type
-     */
-    @Test
-    public void getPluginTypeTest() throws Exception
-    {
-        assertTrue( forcePlugin.getPluginType() == PluginType.ANNOTATE );
     }
 
     /**

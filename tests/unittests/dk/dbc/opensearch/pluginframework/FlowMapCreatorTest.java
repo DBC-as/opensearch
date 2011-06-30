@@ -70,9 +70,6 @@ public class FlowMapCreatorTest
      */
     private static class DummyPlugin implements IPluggable
     {
-	@Override
-	public PluginType getPluginType() { return PluginType.ANNOTATE; }
-
 	@Override 
 	public CargoContainer runPlugin( IPluginEnvironment env, CargoContainer cargo )
 	{

@@ -31,7 +31,6 @@ import dk.dbc.opensearch.fedora.ObjectRepositoryException;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.io.IOException;
@@ -49,13 +48,6 @@ import org.apache.log4j.Logger;
 public class PurgeRelations implements IPluggable
 {
     private static Logger log = Logger.getLogger( PurgeRelations.class );
-
-
-    private PluginType pluginType = PluginType.RELATION;
-
-    //    private IObjectRepository objectRepository;
-    //    private PurgeRelationsEnvironment env = null;
-    
 
 
     /**
@@ -158,13 +150,6 @@ public class PurgeRelations implements IPluggable
         }
 
         return cargo;
-    }
-
-
-    @Override
-    public PluginType getPluginType()
-    {
-        return pluginType;
     }
 
 

@@ -30,7 +30,6 @@ import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.ITargetField;
 
@@ -51,11 +50,6 @@ import org.apache.log4j.Logger;
 public class MarcxchangeWorkRelation implements IPluggable
 {
     private static Logger log = Logger.getLogger( MarcxchangeWorkRelation.class );
-
-
-    private PluginType pluginType = PluginType.RELATION;
-
-    //private MarcxchangeWorkRelationEnvironment env = null;
 
 
     public MarcxchangeWorkRelation( IObjectRepository repository ) throws PluginException
@@ -98,13 +92,6 @@ public class MarcxchangeWorkRelation implements IPluggable
 	return returnCargo;
     }
 
-
-
-    @Override
-    public PluginType getPluginType()
-    {
-        return pluginType;
-    }
 
     @Override
     public IPluginEnvironment createEnvironment( IObjectRepository repository, Map< String, String > args, String scriptPath ) throws PluginException

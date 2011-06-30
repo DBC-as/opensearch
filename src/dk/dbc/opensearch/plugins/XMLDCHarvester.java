@@ -29,7 +29,6 @@ import dk.dbc.opensearch.fedora.IObjectRepository;
 import dk.dbc.opensearch.pluginframework.IPluggable;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 
 import java.util.HashMap;
@@ -54,9 +53,6 @@ public class XMLDCHarvester implements IPluggable
 {
     private static Logger log = Logger.getLogger( XMLDCHarvester.class );
 
-    private PluginType pluginType = PluginType.HARVEST;
-
-
     public XMLDCHarvester( IObjectRepository repository ) throws PluginException
     {
     }
@@ -75,12 +71,6 @@ public class XMLDCHarvester implements IPluggable
 
 	return env.myRun( cargo );
 
-    }
-
-    @Override
-    public PluginType getPluginType()
-    {
-        return pluginType;
     }
 
     @Override

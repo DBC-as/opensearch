@@ -22,7 +22,6 @@ package dk.dbc.opensearch.plugins;
 import dk.dbc.opensearch.metadata.IMetaData;
 import dk.dbc.opensearch.pluginframework.IPluginEnvironment;
 import dk.dbc.opensearch.pluginframework.PluginException;
-import dk.dbc.opensearch.pluginframework.PluginType;
 import dk.dbc.opensearch.types.CargoContainer;
 import dk.dbc.opensearch.types.DataStreamType;
 import dk.dbc.opensearch.fedora.IObjectRepository;
@@ -96,16 +95,4 @@ public class DocbookMergerTest {
         XMLUnit.compareXML( happyPathData, new String( result.getCargoObject( DataStreamType.OriginalData ).getBytes() ) );
     }
 
-
-    /**
-     * Test of getPluginType method, of class DocbookMerger.
-     */
-    @Test
-    public void testGetPluginType() throws PluginException
-    {
-        DocbookMerger instance = new DocbookMerger( mockIObjectRepository );
-        PluginType expResult = PluginType.PROCESS;
-        PluginType result = instance.getPluginType();
-        assertEquals( expResult, result );
-    }
 }
