@@ -58,24 +58,10 @@ public class SimpleRhinoWrapper
 
     
     private final ScriptableObject scope;
-    private static ScriptableObject sharedScope;
 
     protected final static String JS_FILE_PATH_VALUE_STRING = "jsFilePath";
 
-    // List of java script file names that have been loaded.
-    // Used to prevent loading the same file more than once.
-    private final static Set< String > knownScripts = new HashSet< String >();
-
     
-    private static synchronized ScriptableObject getSharedScope( Context cx)
-    {
-        if (sharedScope == null)
-        {
-            sharedScope = cx.initStandardObjects( null, true ); // true => sealed standard objects
-        }
-        return sharedScope;
-    }
-
     
     public SimpleRhinoWrapper( String jsFilePath, String jsFileName ) throws FileNotFoundException
     {
@@ -100,7 +86,7 @@ public class SimpleRhinoWrapper
             // Initialize the standard objects (Object, Function, etc.)
             // This must be done before scripts can be executed. Returns
             // a scope object that we use in later calls.
-            scope = getSharedScope( cx );
+            scope = cx.initStandardObjects( null, true ); // true => sealed standard objects
             if ( scope == null )
             {
                 // This should never happen!
@@ -113,44 +99,37 @@ public class SimpleRhinoWrapper
             String[] names = { "print", "use" };
             scope.defineFunctionProperties(names, JavaScriptHelperFunctions.class, ScriptableObject.DONTENUM);
 
-            synchronized (knownScripts)
+            FileReader inFile = new FileReader( jsFilePath + jsFileName); // can throw FileNotFindExcpetion
+            try
             {
-                // Check that the java script file as not already been loaded in this scope
-                if (!knownScripts.contains(jsFileName))
+                // Evaluate the javascript
+                Object o = cx.evaluateReader((Scriptable) scope, inFile, jsFileName, 1, null);
+            }
+            catch ( IOException ioe )
+            {
+                String errorMsg = "Could not run 'evaluateReader' on the javascript";
+                log.error( errorMsg, ioe );
+                throw new IllegalStateException( errorMsg, ioe );
+            }
+            catch ( RhinoException re )
+            {
+                log.debug( "Evaluate" );
+
+                logRhinoException( re );
+
+                throw re;
+            }
+            finally
+            {
+                // This is ugly - but necessary
+                log.debug( String.format( "Closing file: %s", jsFileName ) );
+                try
                 {
-                    FileReader inFile = new FileReader( jsFilePath + jsFileName); // can throw FileNotFindExcpetion
-                    try
-                    {
-                        // Evaluate the javascript
-                        Object o = cx.evaluateReader((Scriptable) scope, inFile, jsFileName, 1, null);
-                    }
-                    catch ( IOException ioe )
-                    {
-                        String errorMsg = "Could not run 'evaluateReader' on the javascript";
-                        log.error( errorMsg, ioe );
-                        throw new IllegalStateException( errorMsg, ioe );
-                    }
-                    catch ( RhinoException re )
-                    {
-                        log.debug( "Evaluate" );
-
-                        logRhinoException( re );
-
-                        throw re;
-                    }
-                    finally
-                    {
-                        // This is ugly - but necessary
-                        log.debug( String.format( "Closing file: %s", jsFileName ) );
-                        try
-                        {
-                            inFile.close();
-                        }
-                        catch( IOException ioe )
-                        {
-                            log.warn( String.format( "Could not close the file: \"%s\" I will regrettably leave it open." ) );
-                        }
-                    }
+                    inFile.close();
+                }
+                catch( IOException ioe )
+                {
+                    log.warn( String.format( "Could not close the file: \"%s\" I will regrettably leave it open." ) );
                 }
             }
             // Add objects to scope:
@@ -159,6 +138,8 @@ public class SimpleRhinoWrapper
                 log.debug( String.format( "Adding property: %s", objectPair.getFirst() ) );
                 scope.defineProperty( objectPair.getFirst(), objectPair.getSecond(), ScriptableObject.DONTENUM );
             }
+            // Seal scope:
+            scope.sealObject();
         }
         finally
         {
