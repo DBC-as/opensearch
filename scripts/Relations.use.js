@@ -363,7 +363,7 @@ var Relations = function() {
     var child;
 
     for each (child in trackXML.dkabm::record.dcterms::isPartOf) {
-      if (String(child.@xsi::type).match("oss:albumId")) {
+      if (String(child.@xsi::type).match("dkdcplus:albumId")) {
         Log.debug ( "Attribute: " + String(child.@xsi::type));
         Log.debug ( "Child: " + child);
         var identifier = child;

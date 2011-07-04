@@ -42,7 +42,7 @@ var DcCreator = function(){
     var child;
 
     for each (child in originalXml.dkabm::record.dc::language) {
-      if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("oss:subtitles") && !String(child.@xsi::type).match("oss:spoken")) {
+      if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("dkdcplus:subtitles") && !String(child.@xsi::type).match("dkdcplus:spoken")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
@@ -88,7 +88,7 @@ var DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@xsi::type).match("oss:upc")) {
+      if (String(child.@xsi::type).match("dkdcplus:upc")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
@@ -201,7 +201,7 @@ var DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@xsi::type).match("oss:upc")) {
+      if (String(child.@xsi::type).match("dkdcplus:upc")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
@@ -215,7 +215,7 @@ var DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dcterms::isPartOf) {
-      if (String(child.@xsi::type).match("oss:albumId")) {
+      if (String(child.@xsi::type).match("dkdcplus:albumId")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "albumId:" + String(child), "relation", dc );
       } else {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "relation", dc );
@@ -299,7 +299,7 @@ var DcCreator = function(){
     var child;
 
     for each (child in originalXml.dkabm::record.dc::language) {
-      if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("oss:subtitles") && !String(child.@xsi::type).match("oss:spoken")) {
+      if (!String(child.@xsi::type).match("dcterms:ISO639-2") && !String(child.@xsi::type).match("dkdcplus:subtitles") && !String(child.@xsi::type).match("dkdcplus:spoken")) {
         dcXml.oai_dc::dc += DcCreator.createElement( String(child), "language", dc );
       }
     }
@@ -345,7 +345,7 @@ var DcCreator = function(){
     }
 
     for each (child in originalXml.dkabm::record.dc::identifier) {
-      if (String(child.@xsi::type).match("oss:upc")) {
+      if (String(child.@xsi::type).match("dkdcplus:upc")) {
         dcXml.oai_dc::dc += DcCreator.createElement( "UPC:" + String(child).replace( /-/g, ""), "identifier", dc );
       }
     }
