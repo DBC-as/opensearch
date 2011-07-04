@@ -57,68 +57,67 @@ function checkmatch( newObject, workObject )
     var workSource = String(workObjectXml.dc::source).toLowerCase();
     var newCreator = String(newObjectXml.dc::creator).toLowerCase();
     var workCreator = String(workObjectXml.dc::creator).toLowerCase();
-    var workType = String(workObjectXml.dc::creator);
-    var newType = String(newObjectXml.dc::type);
-    var workType = String(workObjectXml.dc::type);
+    var newType = String(newObjectXml.dc::type).toLowerCase();
+    var workType = String(workObjectXml.dc::type).toLowerCase();
 
     Log.debug( "RLO: start match\n");
     //check for a match. Return true if there is, false if not ;-)
     switch (newType) {
-      case "Anmeldelse":
+      case "anmeldelse":
         Log.debug( "RLO: Anmeldelse\n");
         result = false;
         break;
-      case "Artikel":
+      case "artikel":
         Log.debug( "RLO: Artikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("artikel")) {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "Avis":
+      case "avis":
         Log.debug( "RLO: Avis\n");
-        if (newTitle === workTitle && workType === "Avis") {
+        if (newTitle === workTitle && (workType === "avis" || workType === "avis (net)")) {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "Avisartikel":
+      case "avisartikel":
         Log.debug( "RLO: Avisartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("artikel")) {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "Tidsskrift":
+      case "tidsskrift":
         Log.debug( "RLO: Tidsskrift\n");
-        if (newTitle === workTitle && workType === "Tidsskrift") {
+        if (newTitle === workTitle && workType === "tidsskrift") {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "Tidsskriftsartikel":
+      case "tidsskriftsartikel":
         Log.debug( "RLO: Tidsskriftsartikel\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("Artikel|Avisartikel|Tidsskriftsartikel")) {
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("artikel")) {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "CD": case "Grammofonplade": case "netmusik (album)":
-        Log.debug( "RLO: CD\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("CD|Grammofonplade|album")) {
+      case "cd (musik)": case "grammofonplade": case "musik (net)":
+        Log.debug( "RLO: Musik (album)\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("cd \(musik\)|grammofonplade|musik \(net)")) {
           result = true;
         } else {
           result = false;
         }
         break;
-      case "netmusik (track)": 
-        Log.debug( "RLO: netmusik (track)\n");
-        if (newTitle === workTitle && newCreator === workCreator && workType.match("track")) {
+      case "musiktrack (net)": 
+        Log.debug( "RLO: Musik (track)\n");
+        if (newTitle === workTitle && newCreator === workCreator && workType.match("musiktrack")) {
           result = true;
         } else {
           result = false;
@@ -127,13 +126,13 @@ function checkmatch( newObject, workObject )
       default:
         Log.debug( "RLO: default\n");
         if (newCreator === workCreator) {
-          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)| netmusik (track)")) {
+          if (newSource !== "" && workSource !== "" && newSource === workSource && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
             result = true;
-          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)|netmusik (track)")) {
+          } else if (newSource !== "" && workTitle !== "" && newSource === workTitle && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
             result = true;
-          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|Kassettelydb\u00e5nd|netmusik (album)| netmusik (track)")) {
+          } else if (newTitle !== "" && workSource !== "" && newTitle === workSource && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
             result = true;
-          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match("Anmeldelse|Artikel|Avis|Avisartikel|Tidsskrift|Tidsskriftsartikel|CD|Grammofonplade|netmusik (album)|netmusik (track)")) {
+          } else if (newTitle !== "" && workTitle !== "" && newTitle === workTitle && !workType.match("anmeldelse|artikel|avis|tidsskrift|periodikum|cd \(musik\)|grammofonplade|kassettelydb\u00e5nd|musik \(net\)|musiktrack")) {
             result = true;
           } else {
             result = false;
